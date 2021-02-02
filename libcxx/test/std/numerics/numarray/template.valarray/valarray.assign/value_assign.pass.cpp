@@ -18,17 +18,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef int T;
-    T a[] = {1, 2, 3, 4, 5};
-    const unsigned N = sizeof(a) / sizeof(a[0]);
-    std::valarray<T> v(a, N);
-    v = 7;
-    assert(v.size() == N);
-    for (std::size_t i = 0; i < v.size(); ++i)
-      assert(v[i] == 7);
-  }
+int main(int, char**)
+{
+    {
+        typedef int T;
+        T a[] = {1, 2, 3, 4, 5};
+        const unsigned N = sizeof(a)/sizeof(a[0]);
+        std::valarray<T> v(a, N);
+        v = 7;
+        assert(v.size() == N);
+        for (std::size_t i = 0; i < v.size(); ++i)
+            assert(v[i] == 7);
+    }
 
   return 0;
 }

@@ -80,4 +80,5 @@ TEST(CheckedArithmetic, CheckedMulAddUnsigned) {
   EXPECT_EQ(checkedMulAddUnsigned<uint64_t>(10, 2, 3), Optional<uint64_t>(23));
 }
 
+
 } // namespace

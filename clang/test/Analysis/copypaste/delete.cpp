@@ -2,7 +2,7 @@
 
 // expected-no-diagnostics
 
-bool foo1(int x, int *a) {
+bool foo1(int x, int* a) {
   if (x > 0)
     return false;
   else if (x < 0)
@@ -11,7 +11,7 @@ bool foo1(int x, int *a) {
 }
 
 // Explicit global delete
-bool foo2(int x, int *a) {
+bool foo2(int x, int* a) {
   if (x > 0)
     return false;
   else if (x < 0)
@@ -20,7 +20,7 @@ bool foo2(int x, int *a) {
 }
 
 // Array delete
-bool foo3(int x, int *a) {
+bool foo3(int x, int* a) {
   if (x > 0)
     return false;
   else if (x < 0)

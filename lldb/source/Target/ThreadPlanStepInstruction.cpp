@@ -9,6 +9,7 @@
 #include "lldb/Target/ThreadPlanStepInstruction.h"
 #include "lldb/Target/Process.h"
 #include "lldb/Target/RegisterContext.h"
+#include "lldb/Target/RegisterContext.h"
 #include "lldb/Target/StopInfo.h"
 #include "lldb/Target/Target.h"
 #include "lldb/Utility/Log.h"
@@ -102,8 +103,7 @@ bool ThreadPlanStepInstruction::IsPlanStale() {
     uint64_t pc = thread.GetRegisterContext()->GetPC(0);
     uint32_t max_opcode_size =
         GetTarget().GetArchitecture().GetMaximumOpcodeByteSize();
-    bool next_instruction_reached =
-        (pc > m_instruction_addr) &&
+    bool next_instruction_reached = (pc > m_instruction_addr) &&
         (pc <= m_instruction_addr + max_opcode_size);
     if (next_instruction_reached) {
       SetPlanComplete();
@@ -166,8 +166,9 @@ bool ThreadPlanStepInstruction::ShouldStop(Event *event_ptr) {
             StackFrameSP parent_frame_sp =
                 thread.GetFrameWithStackID(m_stack_id);
 
-            if (parent_frame_sp && parent_frame_sp->GetConcreteFrameIndex() ==
-                                       cur_frame_sp->GetConcreteFrameIndex()) {
+            if (parent_frame_sp &&
+                parent_frame_sp->GetConcreteFrameIndex() ==
+                    cur_frame_sp->GetConcreteFrameIndex()) {
               SetPlanComplete();
               if (log) {
                 LLDB_LOGF(log,

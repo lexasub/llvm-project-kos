@@ -104,14 +104,13 @@ public:
   typedef std::vector<CommandArgumentData>
       CommandArgumentEntry; // Used to build individual command argument lists
 
-  static ArgumentTableEntry
-      g_arguments_data[lldb::eArgTypeLastArg]; // Main argument information
-                                               // table
+  static ArgumentTableEntry g_arguments_data
+      [lldb::eArgTypeLastArg]; // Main argument information table
 
   typedef std::map<std::string, lldb::CommandObjectSP> CommandMap;
 
   CommandObject(CommandInterpreter &interpreter, llvm::StringRef name,
-                llvm::StringRef help = "", llvm::StringRef syntax = "",
+    llvm::StringRef help = "", llvm::StringRef syntax = "",
                 uint32_t flags = 0);
 
   virtual ~CommandObject();
@@ -396,7 +395,7 @@ protected:
 class CommandObjectRaw : public CommandObject {
 public:
   CommandObjectRaw(CommandInterpreter &interpreter, llvm::StringRef name,
-                   llvm::StringRef help = "", llvm::StringRef syntax = "",
+    llvm::StringRef help = "", llvm::StringRef syntax = "",
                    uint32_t flags = 0)
       : CommandObject(interpreter, name, help, syntax, flags) {}
 

@@ -20,18 +20,19 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**) {
-  {
-    std::ios ios(0);
-    assert(!ios.good());
-  }
-  {
-    testbuf sb;
-    std::ios ios(&sb);
-    assert(ios.good());
-    ios.setstate(std::ios::eofbit);
-    assert(!ios.good());
-  }
+int main(int, char**)
+{
+    {
+        std::ios ios(0);
+        assert(!ios.good());
+    }
+    {
+        testbuf sb;
+        std::ios ios(&sb);
+        assert(ios.good());
+        ios.setstate(std::ios::eofbit);
+        assert(!ios.good());
+    }
 
   return 0;
 }

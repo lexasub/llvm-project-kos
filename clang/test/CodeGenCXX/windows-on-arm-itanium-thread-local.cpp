@@ -9,3 +9,4 @@ void f(void *p) {
 // CHECK-LABEL: @_Z1fPv(i8* %p)
 // CHECK-NOT: call i8** @_ZTWL1c()
 // CHECK: call arm_aapcs_vfpcc i8** @_ZTWL1c()
+

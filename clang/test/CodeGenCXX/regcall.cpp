@@ -5,7 +5,8 @@
 
 int __regcall foo(int i);
 
-int main() {
+int main()
+{
   int p = 0, _data;
   auto lambda = [&](int parameter) -> int {
     _data = foo(parameter);
@@ -17,7 +18,7 @@ int main() {
 // CHECK-WIN64: call x86_regcallcc {{.+}} @"?foo@@YwHH@Z"
 // CHECK-WIN32: call x86_regcallcc {{.+}} @"?foo@@YwHH@Z"
 
-int __regcall foo(int i) {
+int __regcall foo (int i){
   return i;
 }
 // CHECK-LIN: define{{.*}} x86_regcallcc {{.+}}@_Z15__regcall3__foo
@@ -28,14 +29,11 @@ int __regcall foo(int i) {
 static int x = 0;
 class test_class {
   int a;
-
 public:
 #ifndef WIN_TEST
   __regcall
 #endif
-      test_class() {
-    ++x;
-  }
+    test_class(){++x;}
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_classC1Ev
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_classC2Ev
   // Windows ignores calling convention on constructor/destructors.
@@ -45,52 +43,44 @@ public:
 #ifndef WIN_TEST
   __regcall
 #endif
-      ~test_class() {
-    --x;
-  }
+  ~test_class(){--x;}
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_classD2Ev
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_classD1Ev
   // Windows ignores calling convention on constructor/destructors.
   // CHECK-WIN64-DAG: define linkonce_odr dso_local void @"??1test_class@@QEAA@XZ"
   // CHECK-WIN32-DAG: define linkonce_odr dso_local x86_thiscallcc void @"??1test_class@@QAE@XZ"
 
-  test_class &__regcall operator+=(const test_class &) {
+  test_class& __regcall operator+=(const test_class&){
     return *this;
   }
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc nonnull align 4 dereferenceable(4) %class.test_class* @_ZN10test_classpLERKS_
   // CHECK-WIN64-DAG: define linkonce_odr dso_local x86_regcallcc nonnull align 4 dereferenceable(4) %class.test_class* @"??Ytest_class@@QEAwAEAV0@AEBV0@@Z"
   // CHECK-WIN32-DAG: define linkonce_odr dso_local x86_regcallcc nonnull align 4 dereferenceable(4) %class.test_class* @"??Ytest_class@@QAwAAV0@ABV0@@Z"
-  void __regcall do_thing() {}
+  void __regcall do_thing(){}
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_class20__regcall3__do_thingEv
   // CHECK-WIN64-DAG: define linkonce_odr dso_local x86_regcallcc void @"?do_thing@test_class@@QEAwXXZ"
   // CHECK-WIN32-DAG: define linkonce_odr dso_local x86_regcallcc void @"?do_thing@test_class@@QAwXXZ"
 
-  template <typename T>
-  void __regcall tempFunc(T i) {}
+  template<typename T>
+  void __regcall tempFunc(T i){}
   // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_ZN10test_class20__regcall3__tempFuncIiEEvT_
   // CHECK-WIN64-DAG: define linkonce_odr dso_local x86_regcallcc void @"??$freeTempFunc@H@@YwXH@Z"
   // CHECK-WIN32-DAG: define linkonce_odr dso_local x86_regcallcc void @"??$freeTempFunc@H@@YwXH@Z"
 };
 
-bool __regcall operator==(const test_class &, const test_class &) {
-  --x;
-  return false;
-}
+bool __regcall operator ==(const test_class&, const test_class&){ --x; return false;}
 // CHECK-LIN-DAG: define{{.*}} x86_regcallcc zeroext i1 @_ZeqRK10test_classS1_
 // CHECK-WIN64-DAG: define dso_local x86_regcallcc zeroext i1 @"??8@Yw_NAEBVtest_class@@0@Z"
 // CHECK-WIN32-DAG: define dso_local x86_regcallcc zeroext i1 @"??8@Yw_NABVtest_class@@0@Z"
 
-test_class __regcall operator""_test_class(unsigned long long) {
-  ++x;
-  return test_class{};
-}
+test_class __regcall operator""_test_class (unsigned long long) { ++x; return test_class{};}
 // CHECK-LIN64-DAG: define{{.*}} x86_regcallcc void @_Zli11_test_classy(%class.test_class* noalias sret(%class.test_class) align 4 %agg.result, i64 %0)
 // CHECK-LIN32-DAG: define{{.*}} x86_regcallcc void @_Zli11_test_classy(%class.test_class* inreg noalias sret(%class.test_class) align 4 %agg.result, i64 %0)
 // CHECK-WIN64-DAG: ??__K_test_class@@Yw?AVtest_class@@_K@Z"
 // CHECK-WIN32-DAG: ??__K_test_class@@Yw?AVtest_class@@_K@Z"
 
-template <typename T>
-void __regcall freeTempFunc(T i) {}
+template<typename T>
+void __regcall freeTempFunc(T i){}
 // CHECK-LIN-DAG: define linkonce_odr x86_regcallcc void @_Z24__regcall3__freeTempFuncIiEvT_
 // CHECK-WIN64-DAG: define linkonce_odr dso_local x86_regcallcc void @"??$freeTempFunc@H@@YwXH@Z"
 // CHECK-WIN32-DAG: define linkonce_odr dso_local x86_regcallcc void @"??$freeTempFunc@H@@YwXH@Z"

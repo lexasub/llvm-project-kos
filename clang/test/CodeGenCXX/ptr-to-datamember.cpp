@@ -13,24 +13,24 @@ struct V {
   int iV;
 };
 
-struct B : virtual V {
+struct B  : virtual V{
   double d;
   int iB;
 };
 
-struct B1 : virtual V {
+struct B1  : virtual V{
   double d;
   int iB1;
 };
 
-class A : public B, public B1 {
+class A  : public B, public B1 {
 public:
   A() : f(1.0), d(2.0), Ai(3) {}
   float f;
   double d;
   int Ai;
   F Af;
-};
+}; 
 
 template <typename T> struct TT {
   int T::t::*pti;
@@ -41,12 +41,12 @@ struct I {
   int x;
 };
 
-void pr(const F &b) {
+void pr(const F& b) {
   printf(" %d %f\n", b.iF, b.fF);
 }
 
-void test_aggr_pdata(A &a1) {
-  F A::*af = &A::Af;
+void test_aggr_pdata(A& a1) {
+  F A::* af = &A::Af;
   pr(a1.*af);
 
   (a1.*af).iF = 100;
@@ -60,8 +60,8 @@ void test_aggr_pdata(A &a1) {
   pr(a1.*af);
 }
 
-void test_aggr_pdata_1(A *pa) {
-  F A::*af = &A::Af;
+void test_aggr_pdata_1(A* pa) {
+  F A::* af = &A::Af;
   pr(pa->*af);
 
   (pa->*af).iF = 100;
@@ -75,13 +75,14 @@ void test_aggr_pdata_1(A *pa) {
   pr(pa->*af);
 }
 
-int main() {
+int main() 
+{
   A a1;
   TT<I> tt;
   I i;
-  int A::*pa = &A::Ai;
-  float A::*pf = &A::f;
-  double A::*pd = &A::d;
+  int A::* pa = &A::Ai;
+  float A::* pf = &A::f;
+  double A::* pd = &A::d;
   tt.pti = &I::x;
   printf("%d %d %d\n", &A::Ai, &A::f, &A::d);
   printf("%d\n", &A::B::iB);

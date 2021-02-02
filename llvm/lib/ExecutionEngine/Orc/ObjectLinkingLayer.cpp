@@ -303,7 +303,8 @@ private:
           else if (&TargetSym != Sym)
             InternalSymDeps.insert(ES.intern(TargetSym.getName()));
         } else {
-          assert(TargetSym.isDefined() && "local symbols must be defined");
+          assert(TargetSym.isDefined() &&
+                 "local symbols must be defined");
           auto I = LocalDeps.find(&TargetSym);
           if (I != LocalDeps.end()) {
             for (auto &S : I->second.External)
@@ -374,7 +375,8 @@ private:
           if (TargetSym.getScope() != Scope::Local)
             SymNamedDeps.insert(&TargetSym);
           else {
-            assert(TargetSym.isDefined() && "local symbols must be defined");
+            assert(TargetSym.isDefined() &&
+                   "local symbols must be defined");
             LocalDeps.insert(&TargetSym);
           }
         }

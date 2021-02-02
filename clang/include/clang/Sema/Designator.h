@@ -36,13 +36,10 @@ class Sema;
 class Designator {
 public:
   enum DesignatorKind {
-    FieldDesignator,
-    ArrayDesignator,
-    ArrayRangeDesignator
+    FieldDesignator, ArrayDesignator, ArrayRangeDesignator
   };
-
 private:
-  Designator(){};
+  Designator() {};
 
   DesignatorKind Kind;
 
@@ -69,6 +66,7 @@ private:
   };
 
 public:
+
   DesignatorKind getKind() const { return Kind; }
   bool isFieldDesignator() const { return Kind == FieldDesignator; }
   bool isArrayDesignator() const { return Kind == ArrayDesignator; }
@@ -137,7 +135,8 @@ public:
     return D;
   }
 
-  static Designator getArray(Expr *Index, SourceLocation LBracketLoc) {
+  static Designator getArray(Expr *Index,
+                             SourceLocation LBracketLoc) {
     Designator D;
     D.Kind = ArrayDesignator;
     new (&D.ArrayInfo) ArrayDesignatorInfo;
@@ -147,7 +146,8 @@ public:
     return D;
   }
 
-  static Designator getArrayRange(Expr *Start, Expr *End,
+  static Designator getArrayRange(Expr *Start,
+                                  Expr *End,
                                   SourceLocation LBracketLoc,
                                   SourceLocation EllipsisLoc) {
     Designator D;
@@ -179,6 +179,7 @@ public:
   void FreeExprs(Sema &Actions) {}
 };
 
+
 /// Designation - Represent a full designation, which is a sequence of
 /// designators.  This class is mostly a helper for InitListDesignations.
 class Designation {
@@ -187,7 +188,9 @@ class Designation {
 
 public:
   /// AddDesignator - Add a designator to the end of this list.
-  void AddDesignator(Designator D) { Designators.push_back(D); }
+  void AddDesignator(Designator D) {
+    Designators.push_back(D);
+  }
 
   bool empty() const { return Designators.empty(); }
 

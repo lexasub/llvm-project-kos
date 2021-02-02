@@ -35,88 +35,83 @@
 
 #include "test_macros.h"
 
-void RunTheExample() {
-  using namespace std::chrono;
+void RunTheExample()
+{
+    using namespace std::chrono;
 
-  static_assert(year_month_day{sys_days{year{2017} / January / 0}} ==
-                year{2016} / December / 31);
-  static_assert(year_month_day{sys_days{year{2017} / January / 31}} ==
-                year{2017} / January / 31);
-  static_assert(year_month_day{sys_days{year{2017} / January / 32}} ==
-                year{2017} / February / 1);
+    static_assert(year_month_day{sys_days{year{2017}/January/0}}  == year{2016}/December/31);
+    static_assert(year_month_day{sys_days{year{2017}/January/31}} == year{2017}/January/31);
+    static_assert(year_month_day{sys_days{year{2017}/January/32}} == year{2017}/February/1);
 }
 
-int main(int, char**) {
-  using year = std::chrono::year;
-  using month = std::chrono::month;
-  using day = std::chrono::day;
-  using sys_days = std::chrono::sys_days;
-  using days = std::chrono::days;
-  using year_month_day = std::chrono::year_month_day;
+int main(int, char**)
+{
+    using year           = std::chrono::year;
+    using month          = std::chrono::month;
+    using day            = std::chrono::day;
+    using sys_days       = std::chrono::sys_days;
+    using days           = std::chrono::days;
+    using year_month_day = std::chrono::year_month_day;
 
-  ASSERT_NOEXCEPT(sys_days(std::declval<year_month_day>()));
-  RunTheExample();
+    ASSERT_NOEXCEPT(sys_days(std::declval<year_month_day>()));
+    RunTheExample();
 
-  {
+    {
     constexpr year_month_day ymd{year{1970}, month{1}, day{1}};
     constexpr sys_days sd{ymd};
 
-    static_assert(sd.time_since_epoch() == days{0}, "");
-    static_assert(year_month_day{sd} == ymd, ""); // and back
-  }
+    static_assert( sd.time_since_epoch() == days{0}, "");
+    static_assert( year_month_day{sd} == ymd, ""); // and back
+    }
 
-  {
+    {
     constexpr year_month_day ymd{year{2000}, month{2}, day{2}};
     constexpr sys_days sd{ymd};
 
-    static_assert(sd.time_since_epoch() == days{10957 + 32}, "");
-    static_assert(year_month_day{sd} == ymd, ""); // and back
-  }
+    static_assert( sd.time_since_epoch() == days{10957+32}, "");
+    static_assert( year_month_day{sd} == ymd, ""); // and back
+    }
 
-  //  There's one more leap day between 1/1/40 and 1/1/70
-  //  when compared to 1/1/70 -> 1/1/2000
-  {
+//  There's one more leap day between 1/1/40 and 1/1/70
+//  when compared to 1/1/70 -> 1/1/2000
+    {
     constexpr year_month_day ymd{year{1940}, month{1}, day{2}};
     constexpr sys_days sd{ymd};
 
-    static_assert(sd.time_since_epoch() == days{-10957}, "");
-    static_assert(year_month_day{sd} == ymd, ""); // and back
-  }
+    static_assert( sd.time_since_epoch() == days{-10957}, "");
+    static_assert( year_month_day{sd} == ymd, ""); // and back
+    }
 
-  {
+    {
     year_month_day ymd{year{1939}, month{11}, day{29}};
     sys_days sd{ymd};
 
-    assert(sd.time_since_epoch() == days{-(10957 + 34)});
-    assert(year_month_day{sd} == ymd); // and back
-  }
+    assert( sd.time_since_epoch() == days{-(10957+34)});
+    assert( year_month_day{sd} == ymd); // and back
+    }
 
-  //  These two tests check the wording for LWG 3206
-  {
+//  These two tests check the wording for LWG 3206
+    {
     constexpr year_month_day ymd{year{1971}, month{1}, day{0}}; // bad day
-    static_assert(!ymd.ok(), "");
-    static_assert(ymd.year().ok(), "");
-    static_assert(ymd.month().ok(), "");
-    static_assert(!ymd.day().ok(), "");
+    static_assert(!ymd.ok(),         "");
+    static_assert( ymd.year().ok(),  "");
+    static_assert( ymd.month().ok(), "");
+    static_assert(!ymd.day().ok(),   "");
     constexpr sys_days sd{ymd};
     static_assert(sd.time_since_epoch() == days{364}, "");
-    static_assert(sd == sys_days{ymd.year() / ymd.month() / day{1}} +
-                            (ymd.day() - day{1}),
-                  "");
-  }
+    static_assert(sd == sys_days{ymd.year()/ymd.month()/day{1}} + (ymd.day() - day{1}), "");
+    }
 
-  {
+    {
     constexpr year_month_day ymd{year{1970}, month{12}, day{32}}; // bad day
-    static_assert(!ymd.ok(), "");
-    static_assert(ymd.year().ok(), "");
-    static_assert(ymd.month().ok(), "");
-    static_assert(!ymd.day().ok(), "");
+    static_assert(!ymd.ok(),         "");
+    static_assert( ymd.year().ok(),  "");
+    static_assert( ymd.month().ok(), "");
+    static_assert(!ymd.day().ok(),   "");
     constexpr sys_days sd{ymd};
     static_assert(sd.time_since_epoch() == days{365}, "");
-    static_assert(sd == sys_days{ymd.year() / ymd.month() / day{1}} +
-                            (ymd.day() - day{1}),
-                  "");
-  }
+    static_assert(sd == sys_days{ymd.year()/ymd.month()/day{1}} + (ymd.day() - day{1}), "");
+    }
 
-  return 0;
+    return 0;
 }

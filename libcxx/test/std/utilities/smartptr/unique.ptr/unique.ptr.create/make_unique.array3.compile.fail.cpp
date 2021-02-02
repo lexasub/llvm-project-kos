@@ -10,8 +10,9 @@
 #include <string>
 #include <cassert>
 
-int main(int, char**) {
-  auto up3 = std::make_unique<int[5]>(); // this is deleted
+int main(int, char**)
+{
+    auto up3 = std::make_unique<int[5]>();    // this is deleted
 
   return 0;
 }

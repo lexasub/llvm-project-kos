@@ -1,5 +1,4 @@
-//===----------- ImmutableMapTest.cpp - ImmutableMap unit tests
-//------------===//
+//===----------- ImmutableMapTest.cpp - ImmutableMap unit tests ------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -82,10 +81,10 @@ TEST(ImmutableMapTest, MultiElemIntMapRefTest) {
   EXPECT_EQ(3U, S2.getHeight());
 }
 
-TEST(ImmutableMapTest, MapOfMapRefsTest) {
+  TEST(ImmutableMapTest, MapOfMapRefsTest) {
   ImmutableMap<int, ImmutableMapRef<int, int>>::Factory f;
 
   EXPECT_TRUE(f.getEmptyMap() == f.getEmptyMap());
-}
+  }
 
-} // namespace
+}

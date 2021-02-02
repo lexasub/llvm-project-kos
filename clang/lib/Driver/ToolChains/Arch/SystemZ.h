@@ -33,7 +33,7 @@ void getSystemZTargetFeatures(const Driver &D, const llvm::opt::ArgList &Args,
                               std::vector<llvm::StringRef> &Features);
 
 } // end namespace systemz
-} // namespace tools
+} // end namespace target
 } // end namespace driver
 } // end namespace clang
 

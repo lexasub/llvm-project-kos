@@ -127,8 +127,7 @@ STATISTIC(NumLDRToLDR, "Number of simplifiable LDR reachable by LDR");
 STATISTIC(NumADRPToLDR, "Number of simplifiable LDR reachable by ADRP");
 STATISTIC(NumADRSimpleCandidate, "Number of simplifiable ADRP + ADD");
 
-#define AARCH64_COLLECT_LOH_NAME                                               \
-  "AArch64 Collect Linker Optimization Hint (LOH)"
+#define AARCH64_COLLECT_LOH_NAME "AArch64 Collect Linker Optimization Hint (LOH)"
 
 namespace {
 

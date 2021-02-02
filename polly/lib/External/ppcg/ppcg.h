@@ -1,11 +1,11 @@
 #ifndef PPCG_H
 #define PPCG_H
 
-#include <isl/id_to_ast_expr.h>
 #include <isl/schedule.h>
 #include <isl/set.h>
-#include <isl/union_map.h>
 #include <isl/union_set.h>
+#include <isl/union_map.h>
+#include <isl/id_to_ast_expr.h>
 #include <pet.h>
 
 #include "ppcg_options.h"
@@ -72,57 +72,54 @@ int ppcg_extract_base_name(char *name, const char *input);
  * "pet" is the original pet_scop.
  */
 struct ppcg_scop {
-  struct ppcg_options *options;
+	struct ppcg_options *options;
 
-  unsigned start;
-  unsigned end;
+	unsigned start;
+	unsigned end;
 
-  isl_set *context;
-  isl_union_set *domain;
-  isl_union_set *call;
-  isl_union_map *tagged_reads;
-  isl_union_map *reads;
-  isl_union_map *live_in;
-  isl_union_map *tagged_may_writes;
-  isl_union_map *may_writes;
-  isl_union_map *tagged_must_writes;
-  isl_union_map *must_writes;
-  isl_union_map *live_out;
-  isl_union_map *tagged_must_kills;
-  isl_union_map *must_kills;
+	isl_set *context;
+	isl_union_set *domain;
+	isl_union_set *call;
+	isl_union_map *tagged_reads;
+	isl_union_map *reads;
+	isl_union_map *live_in;
+	isl_union_map *tagged_may_writes;
+	isl_union_map *may_writes;
+	isl_union_map *tagged_must_writes;
+	isl_union_map *must_writes;
+	isl_union_map *live_out;
+	isl_union_map *tagged_must_kills;
+	isl_union_map *must_kills;
 
-  isl_union_pw_multi_aff *tagger;
+	isl_union_pw_multi_aff *tagger;
 
-  isl_union_map *independence;
+	isl_union_map *independence;
 
-  isl_union_map *dep_flow;
-  isl_union_map *tagged_dep_flow;
-  isl_union_map *dep_false;
-  isl_union_map *dep_forced;
-  isl_union_map *dep_order;
-  isl_union_map *tagged_dep_order;
-  isl_schedule *schedule;
+	isl_union_map *dep_flow;
+	isl_union_map *tagged_dep_flow;
+	isl_union_map *dep_false;
+	isl_union_map *dep_forced;
+	isl_union_map *dep_order;
+	isl_union_map *tagged_dep_order;
+	isl_schedule *schedule;
 
-  isl_id_to_ast_expr *names;
+	isl_id_to_ast_expr *names;
 
-  struct pet_scop *pet;
+	struct pet_scop *pet;
 };
 
 int ppcg_scop_any_hidden_declarations(struct ppcg_scop *scop);
-__isl_give isl_id_list *ppcg_scop_generate_names(struct ppcg_scop *scop, int n,
-                                                 const char *prefix);
+__isl_give isl_id_list *ppcg_scop_generate_names(struct ppcg_scop *scop,
+	int n, const char *prefix);
 
 int ppcg_transform(isl_ctx *ctx, const char *input, FILE *out,
-                   struct ppcg_options *options,
-                   __isl_give isl_printer *(*fn)(__isl_take isl_printer *p,
-                                                 struct ppcg_scop *scop,
-                                                 void *user),
-                   void *user);
+	struct ppcg_options *options,
+	__isl_give isl_printer *(*fn)(__isl_take isl_printer *p,
+		struct ppcg_scop *scop, void *user), void *user);
 
-__isl_give isl_schedule *
-ppcg_compute_schedule(__isl_take isl_schedule_constraints *sc,
-                      __isl_keep isl_schedule *schedule,
-                      struct ppcg_options *options);
+__isl_give isl_schedule *ppcg_compute_schedule(
+	__isl_take isl_schedule_constraints *sc,
+	__isl_keep isl_schedule *schedule, struct ppcg_options *options);
 
 void compute_tagger(struct ppcg_scop *ps);
 void compute_dependences(struct ppcg_scop *scop);

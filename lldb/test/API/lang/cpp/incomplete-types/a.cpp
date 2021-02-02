@@ -1,6 +1,10 @@
 
 #include "a.h"
 
-A::A() {}
+A::A () { }
 
-int A::length() { return 123; }
+int
+A::length ()
+{
+  return 123;
+}

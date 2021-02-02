@@ -65,12 +65,12 @@ public:
                               const TargetRegisterClass *SuperRC,
                               unsigned SubIdx,
                               const TargetRegisterClass *SubRC) const;
-  MachineOperand
-  buildExtractSubRegOrImm(MachineBasicBlock::iterator MI,
-                          MachineRegisterInfo &MRI, MachineOperand &SuperReg,
-                          const TargetRegisterClass *SuperRC, unsigned SubIdx,
-                          const TargetRegisterClass *SubRC) const;
-
+  MachineOperand buildExtractSubRegOrImm(MachineBasicBlock::iterator MI,
+                                         MachineRegisterInfo &MRI,
+                                         MachineOperand &SuperReg,
+                                         const TargetRegisterClass *SuperRC,
+                                         unsigned SubIdx,
+                                         const TargetRegisterClass *SubRC) const;
 private:
   void swapOperands(MachineInstr &Inst) const;
 
@@ -81,18 +81,22 @@ private:
   void lowerSelect(SetVectorType &Worklist, MachineInstr &Inst,
                    MachineDominatorTree *MDT = nullptr) const;
 
-  void lowerScalarAbs(SetVectorType &Worklist, MachineInstr &Inst) const;
+  void lowerScalarAbs(SetVectorType &Worklist,
+                      MachineInstr &Inst) const;
 
-  void lowerScalarXnor(SetVectorType &Worklist, MachineInstr &Inst) const;
+  void lowerScalarXnor(SetVectorType &Worklist,
+                       MachineInstr &Inst) const;
 
-  void splitScalarNotBinop(SetVectorType &Worklist, MachineInstr &Inst,
+  void splitScalarNotBinop(SetVectorType &Worklist,
+                           MachineInstr &Inst,
                            unsigned Opcode) const;
 
-  void splitScalarBinOpN2(SetVectorType &Worklist, MachineInstr &Inst,
+  void splitScalarBinOpN2(SetVectorType &Worklist,
+                          MachineInstr &Inst,
                           unsigned Opcode) const;
 
-  void splitScalar64BitUnaryOp(SetVectorType &Worklist, MachineInstr &Inst,
-                               unsigned Opcode) const;
+  void splitScalar64BitUnaryOp(SetVectorType &Worklist,
+                               MachineInstr &Inst, unsigned Opcode) const;
 
   void splitScalar64BitAddSub(SetVectorType &Worklist, MachineInstr &Inst,
                               MachineDominatorTree *MDT = nullptr) const;
@@ -102,11 +106,14 @@ private:
                                 MachineDominatorTree *MDT = nullptr) const;
 
   void splitScalar64BitXnor(SetVectorType &Worklist, MachineInstr &Inst,
-                            MachineDominatorTree *MDT = nullptr) const;
+                                MachineDominatorTree *MDT = nullptr) const;
 
-  void splitScalar64BitBCNT(SetVectorType &Worklist, MachineInstr &Inst) const;
-  void splitScalar64BitBFE(SetVectorType &Worklist, MachineInstr &Inst) const;
-  void movePackToVALU(SetVectorType &Worklist, MachineRegisterInfo &MRI,
+  void splitScalar64BitBCNT(SetVectorType &Worklist,
+                            MachineInstr &Inst) const;
+  void splitScalar64BitBFE(SetVectorType &Worklist,
+                           MachineInstr &Inst) const;
+  void movePackToVALU(SetVectorType &Worklist,
+                      MachineRegisterInfo &MRI,
                       MachineInstr &Inst) const;
 
   void addUsersToMoveToVALUWorklist(Register Reg, MachineRegisterInfo &MRI,
@@ -125,9 +132,9 @@ private:
   Register findUsedSGPR(const MachineInstr &MI, int OpIndices[3]) const;
 
 protected:
-  bool swapSourceModifiers(MachineInstr &MI, MachineOperand &Src0,
-                           unsigned Src0OpName, MachineOperand &Src1,
-                           unsigned Src1OpName) const;
+  bool swapSourceModifiers(MachineInstr &MI,
+                           MachineOperand &Src0, unsigned Src0OpName,
+                           MachineOperand &Src1, unsigned Src1OpName) const;
 
   MachineInstr *commuteInstructionImpl(MachineInstr &MI, bool NewMI,
                                        unsigned OpIdx0,
@@ -160,12 +167,15 @@ public:
 
   explicit SIInstrInfo(const GCNSubtarget &ST);
 
-  const SIRegisterInfo &getRegisterInfo() const { return RI; }
+  const SIRegisterInfo &getRegisterInfo() const {
+    return RI;
+  }
 
   bool isReallyTriviallyReMaterializable(const MachineInstr &MI,
                                          AAResults *AA) const override;
 
-  bool areLoadsFromSameBasePtr(SDNode *Load1, SDNode *Load2, int64_t &Offset1,
+  bool areLoadsFromSameBasePtr(SDNode *Load1, SDNode *Load2,
+                               int64_t &Offset1,
                                int64_t &Offset2) const override;
 
   bool getMemOperandsWithOffsetWidth(
@@ -179,24 +189,28 @@ public:
                            unsigned NumLoads, unsigned NumBytes) const override;
 
   bool shouldScheduleLoadsNear(SDNode *Load0, SDNode *Load1, int64_t Offset0,
-                               int64_t Offset1,
-                               unsigned NumLoads) const override;
+                               int64_t Offset1, unsigned NumLoads) const override;
 
   void copyPhysReg(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,
                    const DebugLoc &DL, MCRegister DestReg, MCRegister SrcReg,
                    bool KillSrc) const override;
 
   void materializeImmediate(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MI, const DebugLoc &DL,
-                            unsigned DestReg, int64_t Value) const;
+                            MachineBasicBlock::iterator MI,
+                            const DebugLoc &DL,
+                            unsigned DestReg,
+                            int64_t Value) const;
 
-  const TargetRegisterClass *getPreferredSelectRegClass(unsigned Size) const;
+  const TargetRegisterClass *getPreferredSelectRegClass(
+                               unsigned Size) const;
 
-  Register insertNE(MachineBasicBlock *MBB, MachineBasicBlock::iterator I,
-                    const DebugLoc &DL, Register SrcReg, int Value) const;
+  Register insertNE(MachineBasicBlock *MBB,
+                    MachineBasicBlock::iterator I, const DebugLoc &DL,
+                    Register SrcReg, int Value) const;
 
-  Register insertEQ(MachineBasicBlock *MBB, MachineBasicBlock::iterator I,
-                    const DebugLoc &DL, Register SrcReg, int Value) const;
+  Register insertEQ(MachineBasicBlock *MBB,
+                    MachineBasicBlock::iterator I, const DebugLoc &DL,
+                    Register SrcReg, int Value)  const;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
                            MachineBasicBlock::iterator MI, Register SrcReg,
@@ -216,7 +230,7 @@ public:
   // Can split either post-RA with physical registers or pre-RA with
   // virtual registers. In latter case IR needs to be in SSA form and
   // and a REG_SEQUENCE is produced to define original register.
-  std::pair<MachineInstr *, MachineInstr *>
+  std::pair<MachineInstr*, MachineInstr*>
   expandMovDPP64(MachineInstr &MI) const;
 
   // Returns an opcode that can be used to move a value to a \p DstRC
@@ -241,8 +255,8 @@ public:
   bool findCommutedOpIndices(const MachineInstr &MI, unsigned &SrcOpIdx1,
                              unsigned &SrcOpIdx2) const override;
 
-  bool findCommutedOpIndices(MCInstrDesc Desc, unsigned &SrcOpIdx0,
-                             unsigned &SrcOpIdx1) const;
+  bool findCommutedOpIndices(MCInstrDesc Desc, unsigned & SrcOpIdx0,
+   unsigned & SrcOpIdx1) const;
 
   bool isBranchOffsetInRange(unsigned BranchOpc,
                              int64_t BrOffset) const override;
@@ -251,11 +265,14 @@ public:
 
   unsigned insertIndirectBranch(MachineBasicBlock &MBB,
                                 MachineBasicBlock &NewDestBB,
-                                const DebugLoc &DL, int64_t BrOffset,
+                                const DebugLoc &DL,
+                                int64_t BrOffset,
                                 RegScavenger *RS = nullptr) const override;
 
-  bool analyzeBranchImpl(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                         MachineBasicBlock *&TBB, MachineBasicBlock *&FBB,
+  bool analyzeBranchImpl(MachineBasicBlock &MBB,
+                         MachineBasicBlock::iterator I,
+                         MachineBasicBlock *&TBB,
+                         MachineBasicBlock *&FBB,
                          SmallVectorImpl<MachineOperand> &Cond,
                          bool AllowModify) const;
 
@@ -272,28 +289,30 @@ public:
                         const DebugLoc &DL,
                         int *BytesAdded = nullptr) const override;
 
-  bool
-  reverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
+  bool reverseBranchCondition(
+    SmallVectorImpl<MachineOperand> &Cond) const override;
 
   bool canInsertSelect(const MachineBasicBlock &MBB,
                        ArrayRef<MachineOperand> Cond, Register DstReg,
                        Register TrueReg, Register FalseReg, int &CondCycles,
                        int &TrueCycles, int &FalseCycles) const override;
 
-  void insertSelect(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                    const DebugLoc &DL, Register DstReg,
-                    ArrayRef<MachineOperand> Cond, Register TrueReg,
-                    Register FalseReg) const override;
+  void insertSelect(MachineBasicBlock &MBB,
+                    MachineBasicBlock::iterator I, const DebugLoc &DL,
+                    Register DstReg, ArrayRef<MachineOperand> Cond,
+                    Register TrueReg, Register FalseReg) const override;
 
-  void insertVectorSelect(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                          const DebugLoc &DL, Register DstReg,
-                          ArrayRef<MachineOperand> Cond, Register TrueReg,
-                          Register FalseReg) const;
+  void insertVectorSelect(MachineBasicBlock &MBB,
+                          MachineBasicBlock::iterator I, const DebugLoc &DL,
+                          Register DstReg, ArrayRef<MachineOperand> Cond,
+                          Register TrueReg, Register FalseReg) const;
 
-  unsigned getAddressSpaceForPseudoSourceKind(unsigned Kind) const override;
+  unsigned getAddressSpaceForPseudoSourceKind(
+             unsigned Kind) const override;
 
-  bool areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
-                                       const MachineInstr &MIb) const override;
+  bool
+  areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
+                                  const MachineInstr &MIb) const override;
 
   bool isFoldableCopy(const MachineInstr &MI) const;
 
@@ -650,9 +669,11 @@ public:
   }
 
   uint64_t getClampMask(const MachineInstr &MI) const {
-    const uint64_t ClampFlags = SIInstrFlags::FPClamp | SIInstrFlags::IntClamp |
-                                SIInstrFlags::ClampLo | SIInstrFlags::ClampHi;
-    return MI.getDesc().TSFlags & ClampFlags;
+    const uint64_t ClampFlags = SIInstrFlags::FPClamp |
+                                SIInstrFlags::IntClamp |
+                                SIInstrFlags::ClampLo |
+                                SIInstrFlags::ClampHi;
+      return MI.getDesc().TSFlags & ClampFlags;
   }
 
   static bool usesFPDPRounding(const MachineInstr &MI) {
@@ -684,8 +705,7 @@ public:
     const MachineRegisterInfo &MRI = MF.getRegInfo();
     return llvm::any_of(MI.explicit_uses(),
                         [&MRI, this](const MachineOperand &MO) {
-                          return MO.isReg() && RI.isVGPR(MRI, MO.getReg());
-                        });
+      return MO.isReg() && RI.isVGPR(MRI, MO.getReg());});
   }
 
   /// Return true if the instruction modifies the mode register.q
@@ -696,8 +716,7 @@ public:
 
   /// Returns true if the instruction could potentially depend on the value of
   /// exec. If false, exec dependencies may safely be ignored.
-  bool mayReadEXEC(const MachineRegisterInfo &MRI,
-                   const MachineInstr &MI) const;
+  bool mayReadEXEC(const MachineRegisterInfo &MRI, const MachineInstr &MI) const;
 
   bool isInlineConstant(const APInt &Imm) const;
 
@@ -714,7 +733,8 @@ public:
 
   /// \p returns true if \p UseMO is substituted with \p DefMO in \p MI it would
   /// be an inline immediate.
-  bool isInlineConstant(const MachineInstr &MI, const MachineOperand &UseMO,
+  bool isInlineConstant(const MachineInstr &MI,
+                        const MachineOperand &UseMO,
                         const MachineOperand &DefMO) const {
     assert(UseMO.getParent() == &MI);
     int OpIdx = MI.getOperandNo(&UseMO);
@@ -741,8 +761,8 @@ public:
       unsigned Size = getOpSize(MI, OpIdx);
       assert(Size == 8 || Size == 4);
 
-      uint8_t OpType = (Size == 8) ? AMDGPU::OPERAND_REG_IMM_INT64
-                                   : AMDGPU::OPERAND_REG_IMM_INT32;
+      uint8_t OpType = (Size == 8) ?
+        AMDGPU::OPERAND_REG_IMM_INT64 : AMDGPU::OPERAND_REG_IMM_INT32;
       return isInlineConstant(MO, OpType);
     }
 
@@ -779,19 +799,23 @@ public:
   bool hasVALU32BitEncoding(unsigned Opcode) const;
 
   /// Returns true if this operand uses the constant bus.
-  bool usesConstantBus(const MachineRegisterInfo &MRI, const MachineOperand &MO,
+  bool usesConstantBus(const MachineRegisterInfo &MRI,
+                       const MachineOperand &MO,
                        const MCOperandInfo &OpInfo) const;
 
   /// Return true if this instruction has any modifiers.
   ///  e.g. src[012]_mod, omod, clamp.
   bool hasModifiers(unsigned Opcode) const;
 
-  bool hasModifiersSet(const MachineInstr &MI, unsigned OpName) const;
+  bool hasModifiersSet(const MachineInstr &MI,
+                       unsigned OpName) const;
   bool hasAnyModifiersSet(const MachineInstr &MI) const;
 
-  bool canShrink(const MachineInstr &MI, const MachineRegisterInfo &MRI) const;
+  bool canShrink(const MachineInstr &MI,
+                 const MachineRegisterInfo &MRI) const;
 
-  MachineInstr *buildShrunkInst(MachineInstr &MI, unsigned NewOpcode) const;
+  MachineInstr *buildShrunkInst(MachineInstr &MI,
+                                unsigned NewOpcode) const;
 
   bool verifyInstruction(const MachineInstr &MI,
                          StringRef &ErrInfo) const override;
@@ -969,7 +993,7 @@ public:
 
   ScheduleHazardRecognizer *
   CreateTargetPostRAHazardRecognizer(const InstrItineraryData *II,
-                                     const ScheduleDAG *DAG) const override;
+                                 const ScheduleDAG *DAG) const override;
 
   ScheduleHazardRecognizer *
   CreateTargetPostRAHazardRecognizer(const MachineFunction &MF) const override;
@@ -995,27 +1019,33 @@ public:
   /// TODO: After GFX9 it should return a no-carry operation.
   MachineInstrBuilder getAddNoCarry(MachineBasicBlock &MBB,
                                     MachineBasicBlock::iterator I,
-                                    const DebugLoc &DL, Register DestReg) const;
+                                    const DebugLoc &DL,
+                                    Register DestReg) const;
 
   MachineInstrBuilder getAddNoCarry(MachineBasicBlock &MBB,
                                     MachineBasicBlock::iterator I,
-                                    const DebugLoc &DL, Register DestReg,
+                                    const DebugLoc &DL,
+                                    Register DestReg,
                                     RegScavenger &RS) const;
 
   static bool isKillTerminator(unsigned Opcode);
   const MCInstrDesc &getKillTerminatorFromPseudo(unsigned Opcode) const;
 
-  static bool isLegalMUBUFImmOffset(unsigned Imm) { return isUInt<12>(Imm); }
+  static bool isLegalMUBUFImmOffset(unsigned Imm) {
+    return isUInt<12>(Imm);
+  }
 
   /// Returns if \p Offset is legal for the subtarget as the offset to a FLAT
   /// encoded instruction. If \p Signed, this is for an instruction that
   /// interprets the offset as signed.
-  bool isLegalFLATOffset(int64_t Offset, unsigned AddrSpace, bool Signed) const;
+  bool isLegalFLATOffset(int64_t Offset, unsigned AddrSpace,
+                         bool Signed) const;
 
   /// Split \p COffsetVal into {immediate offset field, remainder offset}
   /// values.
-  std::pair<int64_t, int64_t>
-  splitFlatOffset(int64_t COffsetVal, unsigned AddrSpace, bool IsSigned) const;
+  std::pair<int64_t, int64_t> splitFlatOffset(int64_t COffsetVal,
+                                              unsigned AddrSpace,
+                                              bool IsSigned) const;
 
   /// \brief Return a target-specific opcode if Opcode is a pseudo instruction.
   /// Return -1 if the target-specific opcode for the pseudo instruction does
@@ -1026,10 +1056,10 @@ public:
   /// Return true if this opcode should not be used by codegen.
   bool isAsmOnlyOpcode(int MCOp) const;
 
-  const TargetRegisterClass *
-  getRegClass(const MCInstrDesc &TID, unsigned OpNum,
-              const TargetRegisterInfo *TRI,
-              const MachineFunction &MF) const override {
+  const TargetRegisterClass *getRegClass(const MCInstrDesc &TID, unsigned OpNum,
+                                         const TargetRegisterInfo *TRI,
+                                         const MachineFunction &MF)
+    const override {
     if (OpNum >= TID.getNumOperands())
       return nullptr;
     return RI.getRegClass(TID.OpInfo[OpNum].RegClass);
@@ -1069,8 +1099,8 @@ inline bool isOfRegClass(const TargetInstrInfo::RegSubRegPair &P,
 }
 
 /// \brief Create RegSubRegPair from a register MachineOperand
-inline TargetInstrInfo::RegSubRegPair
-getRegSubRegPair(const MachineOperand &O) {
+inline
+TargetInstrInfo::RegSubRegPair getRegSubRegPair(const MachineOperand &O) {
   assert(O.isReg());
   return TargetInstrInfo::RegSubRegPair(O.getReg(), O.getSubReg());
 }
@@ -1088,7 +1118,8 @@ MachineInstr *getVRegSubRegDef(const TargetInstrInfo::RegSubRegPair &P,
 /// \brief Return false if EXEC is not changed between the def of \p VReg at \p
 /// DefMI and the use at \p UseMI. Should be run on SSA. Currently does not
 /// attempt to track between blocks.
-bool execMayBeModifiedBeforeUse(const MachineRegisterInfo &MRI, Register VReg,
+bool execMayBeModifiedBeforeUse(const MachineRegisterInfo &MRI,
+                                Register VReg,
                                 const MachineInstr &DefMI,
                                 const MachineInstr &UseMI);
 
@@ -1096,68 +1127,69 @@ bool execMayBeModifiedBeforeUse(const MachineRegisterInfo &MRI, Register VReg,
 /// DefMI and all its uses. Should be run on SSA. Currently does not attempt to
 /// track between blocks.
 bool execMayBeModifiedBeforeAnyUse(const MachineRegisterInfo &MRI,
-                                   Register VReg, const MachineInstr &DefMI);
+                                   Register VReg,
+                                   const MachineInstr &DefMI);
 
 namespace AMDGPU {
 
-LLVM_READONLY
-int getVOPe64(uint16_t Opcode);
+  LLVM_READONLY
+  int getVOPe64(uint16_t Opcode);
 
-LLVM_READONLY
-int getVOPe32(uint16_t Opcode);
+  LLVM_READONLY
+  int getVOPe32(uint16_t Opcode);
 
-LLVM_READONLY
-int getSDWAOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getSDWAOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getDPPOp32(uint16_t Opcode);
+  LLVM_READONLY
+  int getDPPOp32(uint16_t Opcode);
 
-LLVM_READONLY
-int getBasicFromSDWAOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getBasicFromSDWAOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getCommuteRev(uint16_t Opcode);
+  LLVM_READONLY
+  int getCommuteRev(uint16_t Opcode);
 
-LLVM_READONLY
-int getCommuteOrig(uint16_t Opcode);
+  LLVM_READONLY
+  int getCommuteOrig(uint16_t Opcode);
 
-LLVM_READONLY
-int getAddr64Inst(uint16_t Opcode);
+  LLVM_READONLY
+  int getAddr64Inst(uint16_t Opcode);
 
-/// Check if \p Opcode is an Addr64 opcode.
-///
-/// \returns \p Opcode if it is an Addr64 opcode, otherwise -1.
-LLVM_READONLY
-int getIfAddr64Inst(uint16_t Opcode);
+  /// Check if \p Opcode is an Addr64 opcode.
+  ///
+  /// \returns \p Opcode if it is an Addr64 opcode, otherwise -1.
+  LLVM_READONLY
+  int getIfAddr64Inst(uint16_t Opcode);
 
-LLVM_READONLY
-int getMUBUFNoLdsInst(uint16_t Opcode);
+  LLVM_READONLY
+  int getMUBUFNoLdsInst(uint16_t Opcode);
 
-LLVM_READONLY
-int getAtomicRetOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getAtomicRetOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getAtomicNoRetOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getAtomicNoRetOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getSOPKOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getSOPKOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getGlobalSaddrOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getGlobalSaddrOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getVCMPXNoSDstOp(uint16_t Opcode);
+  LLVM_READONLY
+  int getVCMPXNoSDstOp(uint16_t Opcode);
 
-LLVM_READONLY
-int getFlatScratchInstSTfromSS(uint16_t Opcode);
+  LLVM_READONLY
+  int getFlatScratchInstSTfromSS(uint16_t Opcode);
 
-LLVM_READONLY
-int getFlatScratchInstSSfromSV(uint16_t Opcode);
+  LLVM_READONLY
+  int getFlatScratchInstSSfromSV(uint16_t Opcode);
 
-const uint64_t RSRC_DATA_FORMAT = 0xf00000000000LL;
-const uint64_t RSRC_ELEMENT_SIZE_SHIFT = (32 + 19);
-const uint64_t RSRC_INDEX_STRIDE_SHIFT = (32 + 21);
-const uint64_t RSRC_TID_ENABLE = UINT64_C(1) << (32 + 23);
+  const uint64_t RSRC_DATA_FORMAT = 0xf00000000000LL;
+  const uint64_t RSRC_ELEMENT_SIZE_SHIFT = (32 + 19);
+  const uint64_t RSRC_INDEX_STRIDE_SHIFT = (32 + 21);
+  const uint64_t RSRC_TID_ENABLE = UINT64_C(1) << (32 + 23);
 
 } // end namespace AMDGPU
 

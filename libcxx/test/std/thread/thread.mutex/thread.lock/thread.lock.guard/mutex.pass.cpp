@@ -26,7 +26,9 @@
 
 std::mutex m;
 
-void do_try_lock() { assert(m.try_lock() == false); }
+void do_try_lock() {
+  assert(m.try_lock() == false);
+}
 
 int main(int, char**) {
   {
@@ -40,8 +42,7 @@ int main(int, char**) {
 
 #ifdef __cpp_deduction_guides
   std::lock_guard lg(m);
-  static_assert(
-      (std::is_same<decltype(lg), std::lock_guard<decltype(m)> >::value), "");
+  static_assert((std::is_same<decltype(lg), std::lock_guard<decltype(m)>>::value), "" );
 #endif
 
   return 0;

@@ -19,7 +19,7 @@ private:
 
 public:
   explicit constexpr Integer(int x = 0) : value(x) {}
-  int getValue() { return value; }
+  int getValue() {return value;}
 };
 Integer coolestInteger(42);
 int getCoolestInteger() { return coolestInteger.getValue(); }

@@ -129,7 +129,7 @@ bool bad_any_of_control_flow2() {
       return true;
   }
 
-end:
+  end:
   return false;
 }
 

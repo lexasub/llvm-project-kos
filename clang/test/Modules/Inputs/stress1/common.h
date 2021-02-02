@@ -5,9 +5,7 @@ inline char function00(char x) { return x + x; }
 inline short function00(short x) { return x + x; }
 inline int function00(int x) { return x + x; }
 
-namespace N01 {
-struct S00;
-}
+namespace N01 { struct S00; }
 
 namespace N00 {
 struct S00 {
@@ -41,7 +39,7 @@ template <int I, template <typename> class U> struct S03<U<int>[I]>
   template <typename V = decltype(I)> S03(V);
 };
 template <> struct S03<S03<int>[42]> : S00 {};
-} // namespace N00
+}
 
 namespace N01 {
 struct S00 : N00::S00 {
@@ -49,7 +47,7 @@ struct S00 : N00::S00 {
 };
 struct S01 {};
 struct S02 {};
-} // namespace N01
+}
 
 using namespace N00;
 

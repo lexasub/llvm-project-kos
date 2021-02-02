@@ -38,6 +38,6 @@ class MurMur2HashBuilder {
     return x;
   }
 };
-}  // namespace __sanitizer
+}  //namespace __sanitizer
 
 #endif  // SANITIZER_HASH_H

@@ -18,6 +18,7 @@
 static_assert(__alignas_is_defined, "");
 static_assert(__alignof_is_defined, "");
 
+
 #include <stdint.h>
 
 #ifndef SIZE_MAX

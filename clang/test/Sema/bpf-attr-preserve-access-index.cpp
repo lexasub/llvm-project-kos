@@ -5,5 +5,5 @@
 struct t1 {
   int a;
   int b[4];
-  int c : 1;
+  int c:1;
 } __reloc__; // expected-warning {{'preserve_access_index' attribute ignored}}

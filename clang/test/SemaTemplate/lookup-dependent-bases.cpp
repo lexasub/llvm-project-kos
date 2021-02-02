@@ -17,14 +17,12 @@ struct B : A<T> {
 };
 
 template struct B<int>; // Instantiation has no warnings.
-} // namespace basic
+}
 
 namespace nested_nodep_base {
 // There are limits to our hacks, MSVC accepts this, but we don't.
 struct A {
-  struct D {
-    static void foo2();
-  };
+  struct D { static void foo2(); };
 };
 template <typename T>
 struct B : T {
@@ -36,15 +34,13 @@ struct B : T {
 };
 
 template struct B<A>; // Instantiation has no warnings.
-} // namespace nested_nodep_base
+}
 
 namespace nested_dep_base {
 // We actually accept this because the inner class has a dependent base even
 // though it isn't a template.
 struct A {
-  struct D {
-    static void foo2();
-  };
+  struct D { static void foo2(); };
 };
 template <typename T>
 struct B {
@@ -56,4 +52,4 @@ struct B {
 };
 
 template struct B<A>; // Instantiation has no warnings.
-} // namespace nested_dep_base
+}

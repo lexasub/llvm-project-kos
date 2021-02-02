@@ -1,8 +1,8 @@
 // RUN: %check_clang_tidy %s abseil-no-internal-dependencies %t,  -- -- -I %S/Inputs
 // RUN: clang-tidy -checks='-*, abseil-no-internal-dependencies' -header-filter='.*' %s -- -I %S/Inputs 2>&1 | FileCheck %s
 
-#include "absl/flags/internal-file.h"
 #include "absl/strings/internal-file.h"
+#include "absl/flags/internal-file.h"
 // CHECK-NOT: warning:
 
 #include "absl/external-file.h"
@@ -54,10 +54,8 @@ template <typename T>
 class B : absl::container_internal::InternalTemplate<T> {};
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: do not reference any 'internal' namespaces; those implementation details are reserved to Abseil
 
-template <typename T>
-class C : absl::container_internal::InternalTemplate<T> {
+template <typename T> class C : absl::container_internal::InternalTemplate<T> {
 public:
-  template <typename U>
-  static C Make(U *p) { return C{}; }
+  template <typename U> static C Make(U *p) { return C{}; }
 };
 // CHECK-MESSAGES: :[[@LINE-4]]:33: warning: do not reference any 'internal' namespaces; those implementation details are reserved to Abseil

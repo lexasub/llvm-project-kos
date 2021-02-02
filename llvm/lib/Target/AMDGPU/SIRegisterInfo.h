@@ -52,7 +52,9 @@ public:
   /// (e.g. getSubRegFromChannel(0) -> AMDGPU::sub0)
   static unsigned getSubRegFromChannel(unsigned Channel, unsigned NumRegs = 1);
 
-  bool spillSGPRToVGPR() const { return SpillSGPRToVGPR; }
+  bool spillSGPRToVGPR() const {
+    return SpillSGPRToVGPR;
+  }
 
   /// Return the end register initially reserved for the scratch buffer in case
   /// spilling is needed.
@@ -68,7 +70,9 @@ public:
 
   // Stack access is very expensive. CSRs are also the high registers, and we
   // want to minimize the number of used registers.
-  unsigned getCSRFirstUseCost() const override { return 100; }
+  unsigned getCSRFirstUseCost() const override {
+    return 100;
+  }
 
   Register getFrameRegister(const MachineFunction &MF) const override;
 
@@ -80,7 +84,7 @@ public:
 
   bool requiresFrameIndexScavenging(const MachineFunction &MF) const override;
   bool requiresFrameIndexReplacementScavenging(
-      const MachineFunction &MF) const override;
+    const MachineFunction &MF) const override;
   bool requiresVirtualBaseRegisters(const MachineFunction &Fn) const override;
 
   int64_t getScratchInstrOffset(const MachineInstr *MI) const;
@@ -99,9 +103,8 @@ public:
   bool isFrameOffsetLegal(const MachineInstr *MI, Register BaseReg,
                           int64_t Offset) const override;
 
-  const TargetRegisterClass *
-  getPointerRegClass(const MachineFunction &MF,
-                     unsigned Kind = 0) const override;
+  const TargetRegisterClass *getPointerRegClass(
+    const MachineFunction &MF, unsigned Kind = 0) const override;
 
   void buildSGPRSpillLoadStore(MachineBasicBlock::iterator MI, int Index,
                                int Offset, unsigned EltSize, Register VGPR,
@@ -109,10 +112,12 @@ public:
                                bool IsLoad) const;
 
   /// If \p OnlyToVGPR is true, this will only succeed if this
-  bool spillSGPR(MachineBasicBlock::iterator MI, int FI, RegScavenger *RS,
+  bool spillSGPR(MachineBasicBlock::iterator MI,
+                 int FI, RegScavenger *RS,
                  bool OnlyToVGPR = false) const;
 
-  bool restoreSGPR(MachineBasicBlock::iterator MI, int FI, RegScavenger *RS,
+  bool restoreSGPR(MachineBasicBlock::iterator MI,
+                   int FI, RegScavenger *RS,
                    bool OnlyToVGPR = false) const;
 
   void eliminateFrameIndex(MachineBasicBlock::iterator MI, int SPAdj,
@@ -219,9 +224,12 @@ public:
   ArrayRef<int16_t> getRegSplitParts(const TargetRegisterClass *RC,
                                      unsigned EltSize) const;
 
-  bool shouldCoalesce(MachineInstr *MI, const TargetRegisterClass *SrcRC,
-                      unsigned SubReg, const TargetRegisterClass *DstRC,
-                      unsigned DstSubReg, const TargetRegisterClass *NewRC,
+  bool shouldCoalesce(MachineInstr *MI,
+                      const TargetRegisterClass *SrcRC,
+                      unsigned SubReg,
+                      const TargetRegisterClass *DstRC,
+                      unsigned DstSubReg,
+                      const TargetRegisterClass *NewRC,
                       LiveIntervals &LIS) const override;
 
   unsigned getRegPressureLimit(const TargetRegisterClass *RC,
@@ -235,20 +243,24 @@ public:
   MCRegister getReturnAddressReg(const MachineFunction &MF) const;
 
   const TargetRegisterClass *
-  getRegClassForSizeOnBank(unsigned Size, const RegisterBank &Bank,
+  getRegClassForSizeOnBank(unsigned Size,
+                           const RegisterBank &Bank,
                            const MachineRegisterInfo &MRI) const;
 
   const TargetRegisterClass *
-  getRegClassForTypeOnBank(LLT Ty, const RegisterBank &Bank,
+  getRegClassForTypeOnBank(LLT Ty,
+                           const RegisterBank &Bank,
                            const MachineRegisterInfo &MRI) const {
     return getRegClassForSizeOnBank(Ty.getSizeInBits(), Bank, MRI);
   }
 
-  const TargetRegisterClass *getConstrainedRegClassForOperand(
-      const MachineOperand &MO, const MachineRegisterInfo &MRI) const override;
+  const TargetRegisterClass *
+  getConstrainedRegClassForOperand(const MachineOperand &MO,
+                                 const MachineRegisterInfo &MRI) const override;
 
   const TargetRegisterClass *getBoolRC() const {
-    return isWave32 ? &AMDGPU::SReg_32RegClass : &AMDGPU::SReg_64RegClass;
+    return isWave32 ? &AMDGPU::SReg_32RegClass
+                    : &AMDGPU::SReg_64RegClass;
   }
 
   const TargetRegisterClass *getWaveMaskRegClass() const {
@@ -262,7 +274,8 @@ public:
 
   // Find reaching register definition
   MachineInstr *findReachingDef(Register Reg, unsigned SubReg,
-                                MachineInstr &Use, MachineRegisterInfo &MRI,
+                                MachineInstr &Use,
+                                MachineRegisterInfo &MRI,
                                 LiveIntervals *LIS) const;
 
   const uint32_t *getAllVGPRRegMask() const;
@@ -306,10 +319,15 @@ public:
   ArrayRef<MCPhysReg> getAllSGPR32(const MachineFunction &MF) const;
 
 private:
-  void buildSpillLoadStore(MachineBasicBlock::iterator MI, unsigned LoadStoreOp,
-                           int Index, Register ValueReg, bool ValueIsKill,
-                           MCRegister ScratchOffsetReg, int64_t InstrOffset,
-                           MachineMemOperand *MMO, RegScavenger *RS) const;
+  void buildSpillLoadStore(MachineBasicBlock::iterator MI,
+                           unsigned LoadStoreOp,
+                           int Index,
+                           Register ValueReg,
+                           bool ValueIsKill,
+                           MCRegister ScratchOffsetReg,
+                           int64_t InstrOffset,
+                           MachineMemOperand *MMO,
+                           RegScavenger *RS) const;
 };
 
 } // End namespace llvm

@@ -1,8 +1,8 @@
 
 namespace NS {
-extern int gx;
-typedef int MyInt;
-} // namespace NS
+  extern int gx;
+  typedef int MyInt;
+}
 
 enum {
   EnumVal = 1
@@ -19,11 +19,11 @@ enum {
 };
 
 struct S {
-  S &operator++();
+  S& operator++();
   int operator*();
-  S &operator=(int x);
-  S &operator!=(int x);
-  S &operator()(int x);
+  S& operator=(int x);
+  S& operator!=(int x);
+  S& operator()(int x);
 };
 
 void foo2(S &s) {
@@ -35,16 +35,16 @@ void foo2(S &s) {
 }
 
 namespace NS {
-namespace Inn {}
-typedef int Foo;
-} // namespace NS
+  namespace Inn {}
+  typedef int Foo;
+}
 
 using namespace NS;
 using namespace NS::Inn;
 using NS::Foo;
 
 template <typename T1, typename T2>
-struct TS {};
+struct TS { };
 
 template <typename T>
 struct TS<T, int> {
@@ -62,11 +62,11 @@ const int default_param = 3;
 void foo4(int p = default_param);
 
 struct S2 {
-  int x, y;
+  int x,y;
 };
 
 void foo5() {
-  struct S2 s = {.y = 1, .x = 4};
+  struct S2 s = { .y = 1, .x = 4};
   s.y = s.x + 1;
   (void)&foo3;
   foo4(s.y);

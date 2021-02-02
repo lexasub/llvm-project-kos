@@ -277,7 +277,7 @@ void AggressiveDeadCodeElimination::initialize() {
     // Iterate over blocks in depth-first pre-order and
     // treat all edges to a block already seen as loop back edges
     // and mark the branch live it if there is a back edge.
-    for (auto *BB : depth_first_ext(&F.getEntryBlock(), State)) {
+    for (auto *BB: depth_first_ext(&F.getEntryBlock(), State)) {
       Instruction *Term = BB->getTerminator();
       if (isLive(Term))
         continue;
@@ -480,8 +480,10 @@ void AggressiveDeadCodeElimination::markLiveBranchesFromControlDependences() {
   // which currently have dead terminators that are control
   // dependence sources of a block which is in NewLiveBlocks.
 
-  const SmallPtrSet<BasicBlock *, 16> BWDT{BlocksWithDeadTerminators.begin(),
-                                           BlocksWithDeadTerminators.end()};
+  const SmallPtrSet<BasicBlock *, 16> BWDT{
+      BlocksWithDeadTerminators.begin(),
+      BlocksWithDeadTerminators.end()
+  };
   SmallVector<BasicBlock *, 32> IDFBlocks;
   ReverseIDFCalculator IDFs(PDT);
   IDFs.setDefiningBlocks(NewLiveBlocks);
@@ -638,12 +640,12 @@ void AggressiveDeadCodeElimination::computeReversePostOrder() {
 
   // For each block without successors, extend the DFS from the block
   // backward through the graph
-  SmallPtrSet<BasicBlock *, 16> Visited;
+  SmallPtrSet<BasicBlock*, 16> Visited;
   unsigned PostOrder = 0;
   for (auto &BB : F) {
     if (!succ_empty(&BB))
       continue;
-    for (BasicBlock *Block : inverse_post_order_ext(&BB, Visited))
+    for (BasicBlock *Block : inverse_post_order_ext(&BB,Visited))
       BlockInfo[Block].PostOrder = PostOrder++;
   }
 }

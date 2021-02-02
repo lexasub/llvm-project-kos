@@ -7,7 +7,7 @@
 // CHECK-LP64: %union.Test1 = type { i32, [4 x i8] }
 union Test1 {
   int a;
-  int b : 39;
+  int b: 39;
 };
 Test1 t1;
 
@@ -27,9 +27,7 @@ union Test4 {
 };
 Test4 t4;
 
-#define CHECK(x) \
-  if (!(x))      \
-  return __LINE__
+#define CHECK(x) if (!(x)) return __LINE__
 
 // CHECK: define{{.*}} i32 @_Z11test_assignv()
 int test_assign() {
@@ -40,7 +38,7 @@ int test_assign() {
 
     int c;
   } c;
-
+  
   c.a = 0;
   c.b = (unsigned long long)-1;
   c.c = 0;
@@ -91,8 +89,8 @@ int test_init() {
 extern "C" {
 int test_trunc_int() {
   union {
-    int i : 4;      // truncated to 0b1111 == -1
-  } const U = {15}; // 0b00001111
+    int i : 4; // truncated to 0b1111 == -1
+  } const U = {15};  // 0b00001111
   return U.i;
 }
 // CHECK: define dso_local i32 @test_trunc_int()
@@ -100,8 +98,8 @@ int test_trunc_int() {
 
 int test_trunc_three_bits() {
   union {
-    int i : 3;      // truncated to 0b111 == -1
-  } const U = {15}; // 0b00001111
+    int i : 3; // truncated to 0b111 == -1
+  } const U = {15};  // 0b00001111
   return U.i;
 }
 // CHECK: define dso_local i32 @test_trunc_three_bits()
@@ -109,8 +107,8 @@ int test_trunc_three_bits() {
 
 int test_trunc_1() {
   union {
-    int i : 1;      // truncated to 0b1 == -1
-  } const U = {15}; // 0b00001111
+    int i : 1; // truncated to 0b1 == -1
+  } const U = {15};  // 0b00001111
   return U.i;
 }
 // CHECK: define dso_local i32 @test_trunc_1()
@@ -118,8 +116,8 @@ int test_trunc_1() {
 
 int test_trunc_zero() {
   union {
-    int i : 4;      // truncated to 0b0000 == 0
-  } const U = {80}; // 0b01010000
+    int i : 4; // truncated to 0b0000 == 0
+  } const U = {80};  // 0b01010000
   return U.i;
 }
 // CHECK: define dso_local i32 @test_trunc_zero()
@@ -127,7 +125,7 @@ int test_trunc_zero() {
 
 int test_constexpr() {
   union {
-    int i : 3;                 // truncated to 0b111 == -1
+    int i : 3;           // truncated to 0b111 == -1
   } const U = {1 + 2 + 4 + 8}; // 0b00001111
   return U.i;
 }
@@ -136,7 +134,7 @@ int test_constexpr() {
 
 int test_notrunc() {
   union {
-    int i : 12;                // not truncated
+    int i : 12;          // not truncated
   } const U = {1 + 2 + 4 + 8}; // 0b00001111
   return U.i;
 }

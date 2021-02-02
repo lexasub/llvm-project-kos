@@ -63,7 +63,8 @@ class EditedSource {
   };
 
   llvm::DenseMap<SourceLocation, SmallVector<MacroArgUse, 2>> ExpansionToArgMap;
-  SmallVector<std::pair<SourceLocation, MacroArgUse>, 2> CurrCommitMacroArgExps;
+  SmallVector<std::pair<SourceLocation, MacroArgUse>, 2>
+    CurrCommitMacroArgExps;
 
   IdentifierTable IdentTable;
   llvm::BumpPtrAllocator StrAlloc;
@@ -101,7 +102,8 @@ private:
   StringRef getSourceText(FileOffset BeginOffs, FileOffset EndOffs,
                           bool &Invalid);
   FileEditsTy::iterator getActionForOffset(FileOffset Offs);
-  void deconstructMacroArgLoc(SourceLocation Loc, SourceLocation &ExpansionLoc,
+  void deconstructMacroArgLoc(SourceLocation Loc,
+                              SourceLocation &ExpansionLoc,
                               MacroArgUse &ArgUse);
 
   void startingCommit();

@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_type_traits.h"
-
 #include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_internal_defs.h"
 

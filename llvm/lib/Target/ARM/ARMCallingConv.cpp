@@ -11,17 +11,17 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "ARMCallingConv.h"
 #include "ARM.h"
-#include "ARMRegisterInfo.h"
+#include "ARMCallingConv.h"
 #include "ARMSubtarget.h"
+#include "ARMRegisterInfo.h"
 using namespace llvm;
 
 // APCS f64 is in register pairs, possibly split to stack
 static bool f64AssignAPCS(unsigned ValNo, MVT ValVT, MVT LocVT,
-                          CCValAssign::LocInfo LocInfo, CCState &State,
-                          bool CanFail) {
-  static const MCPhysReg RegList[] = {ARM::R0, ARM::R1, ARM::R2, ARM::R3};
+                          CCValAssign::LocInfo LocInfo,
+                          CCState &State, bool CanFail) {
+  static const MCPhysReg RegList[] = { ARM::R0, ARM::R1, ARM::R2, ARM::R3 };
 
   // Try to get the first register.
   if (unsigned Reg = State.AllocateReg(RegList))
@@ -48,23 +48,24 @@ static bool f64AssignAPCS(unsigned ValNo, MVT ValVT, MVT LocVT,
 
 static bool CC_ARM_APCS_Custom_f64(unsigned ValNo, MVT ValVT, MVT LocVT,
                                    CCValAssign::LocInfo LocInfo,
-                                   ISD::ArgFlagsTy ArgFlags, CCState &State) {
+                                   ISD::ArgFlagsTy ArgFlags,
+                                   CCState &State) {
   if (!f64AssignAPCS(ValNo, ValVT, LocVT, LocInfo, State, true))
     return false;
   if (LocVT == MVT::v2f64 &&
       !f64AssignAPCS(ValNo, ValVT, LocVT, LocInfo, State, false))
     return false;
-  return true; // we handled it
+  return true;  // we handled it
 }
 
 // AAPCS f64 is in aligned register pairs
 static bool f64AssignAAPCS(unsigned ValNo, MVT ValVT, MVT LocVT,
-                           CCValAssign::LocInfo LocInfo, CCState &State,
-                           bool CanFail) {
-  static const MCPhysReg HiRegList[] = {ARM::R0, ARM::R2};
-  static const MCPhysReg LoRegList[] = {ARM::R1, ARM::R3};
-  static const MCPhysReg ShadowRegList[] = {ARM::R0, ARM::R1};
-  static const MCPhysReg GPRArgRegs[] = {ARM::R0, ARM::R1, ARM::R2, ARM::R3};
+                           CCValAssign::LocInfo LocInfo,
+                           CCState &State, bool CanFail) {
+  static const MCPhysReg HiRegList[] = { ARM::R0, ARM::R2 };
+  static const MCPhysReg LoRegList[] = { ARM::R1, ARM::R3 };
+  static const MCPhysReg ShadowRegList[] = { ARM::R0, ARM::R1 };
+  static const MCPhysReg GPRArgRegs[] = { ARM::R0, ARM::R1, ARM::R2, ARM::R3 };
 
   unsigned Reg = State.AllocateReg(HiRegList, ShadowRegList);
   if (Reg == 0) {
@@ -93,26 +94,27 @@ static bool f64AssignAAPCS(unsigned ValNo, MVT ValVT, MVT LocVT,
   assert(T == LoRegList[i] && "Could not allocate register");
 
   State.addLoc(CCValAssign::getCustomReg(ValNo, ValVT, Reg, LocVT, LocInfo));
-  State.addLoc(
-      CCValAssign::getCustomReg(ValNo, ValVT, LoRegList[i], LocVT, LocInfo));
+  State.addLoc(CCValAssign::getCustomReg(ValNo, ValVT, LoRegList[i],
+                                         LocVT, LocInfo));
   return true;
 }
 
 static bool CC_ARM_AAPCS_Custom_f64(unsigned ValNo, MVT ValVT, MVT LocVT,
                                     CCValAssign::LocInfo LocInfo,
-                                    ISD::ArgFlagsTy ArgFlags, CCState &State) {
+                                    ISD::ArgFlagsTy ArgFlags,
+                                    CCState &State) {
   if (!f64AssignAAPCS(ValNo, ValVT, LocVT, LocInfo, State, true))
     return false;
   if (LocVT == MVT::v2f64 &&
       !f64AssignAAPCS(ValNo, ValVT, LocVT, LocInfo, State, false))
     return false;
-  return true; // we handled it
+  return true;  // we handled it
 }
 
 static bool f64RetAssign(unsigned ValNo, MVT ValVT, MVT LocVT,
                          CCValAssign::LocInfo LocInfo, CCState &State) {
-  static const MCPhysReg HiRegList[] = {ARM::R0, ARM::R2};
-  static const MCPhysReg LoRegList[] = {ARM::R1, ARM::R3};
+  static const MCPhysReg HiRegList[] = { ARM::R0, ARM::R2 };
+  static const MCPhysReg LoRegList[] = { ARM::R1, ARM::R3 };
 
   unsigned Reg = State.AllocateReg(HiRegList, LoRegList);
   if (Reg == 0)
@@ -124,8 +126,8 @@ static bool f64RetAssign(unsigned ValNo, MVT ValVT, MVT LocVT,
       break;
 
   State.addLoc(CCValAssign::getCustomReg(ValNo, ValVT, Reg, LocVT, LocInfo));
-  State.addLoc(
-      CCValAssign::getCustomReg(ValNo, ValVT, LoRegList[i], LocVT, LocInfo));
+  State.addLoc(CCValAssign::getCustomReg(ValNo, ValVT, LoRegList[i],
+                                         LocVT, LocInfo));
   return true;
 }
 
@@ -137,7 +139,7 @@ static bool RetCC_ARM_APCS_Custom_f64(unsigned ValNo, MVT ValVT, MVT LocVT,
     return false;
   if (LocVT == MVT::v2f64 && !f64RetAssign(ValNo, ValVT, LocVT, LocInfo, State))
     return false;
-  return true; // we handled it
+  return true;  // we handled it
 }
 
 static bool RetCC_ARM_AAPCS_Custom_f64(unsigned ValNo, MVT ValVT, MVT LocVT,
@@ -148,22 +150,24 @@ static bool RetCC_ARM_AAPCS_Custom_f64(unsigned ValNo, MVT ValVT, MVT LocVT,
                                    State);
 }
 
-static const MCPhysReg RRegList[] = {ARM::R0, ARM::R1, ARM::R2, ARM::R3};
+static const MCPhysReg RRegList[] = { ARM::R0,  ARM::R1,  ARM::R2,  ARM::R3 };
 
-static const MCPhysReg SRegList[] = {ARM::S0,  ARM::S1,  ARM::S2,  ARM::S3,
-                                     ARM::S4,  ARM::S5,  ARM::S6,  ARM::S7,
-                                     ARM::S8,  ARM::S9,  ARM::S10, ARM::S11,
-                                     ARM::S12, ARM::S13, ARM::S14, ARM::S15};
-static const MCPhysReg DRegList[] = {ARM::D0, ARM::D1, ARM::D2, ARM::D3,
-                                     ARM::D4, ARM::D5, ARM::D6, ARM::D7};
-static const MCPhysReg QRegList[] = {ARM::Q0, ARM::Q1, ARM::Q2, ARM::Q3};
+static const MCPhysReg SRegList[] = { ARM::S0,  ARM::S1,  ARM::S2,  ARM::S3,
+                                      ARM::S4,  ARM::S5,  ARM::S6,  ARM::S7,
+                                      ARM::S8,  ARM::S9,  ARM::S10, ARM::S11,
+                                      ARM::S12, ARM::S13, ARM::S14,  ARM::S15 };
+static const MCPhysReg DRegList[] = { ARM::D0, ARM::D1, ARM::D2, ARM::D3,
+                                      ARM::D4, ARM::D5, ARM::D6, ARM::D7 };
+static const MCPhysReg QRegList[] = { ARM::Q0, ARM::Q1, ARM::Q2, ARM::Q3 };
+
 
 // Allocate part of an AAPCS HFA or HVA. We assume that each member of the HA
 // has InConsecutiveRegs set, and that the last member also has
 // InConsecutiveRegsLast set. We must process all members of the HA before
 // we can allocate it, as we need to know the total number of registers that
 // will be needed in order to (attempt to) allocate a contiguous block.
-static bool CC_ARM_AAPCS_Custom_Aggregate(unsigned ValNo, MVT ValVT, MVT LocVT,
+static bool CC_ARM_AAPCS_Custom_Aggregate(unsigned ValNo, MVT ValVT,
+                                          MVT LocVT,
                                           CCValAssign::LocInfo LocInfo,
                                           ISD::ArgFlagsTy ArgFlags,
                                           CCState &State) {

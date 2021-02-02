@@ -7,8 +7,8 @@
 #endif
 
 struct UnPacked {
-  int X;
-  int Y;
+ 	int X;
+	int Y;
 };
 
 struct P M_Packed {
@@ -18,7 +18,7 @@ struct P M_Packed {
 
 struct M_Packed sM_Packed;
 
-int testM_Packed(void) {
+int testM_Packed (void) {
   struct M_Packed x;
   return (x.B.Y != 0);
 }

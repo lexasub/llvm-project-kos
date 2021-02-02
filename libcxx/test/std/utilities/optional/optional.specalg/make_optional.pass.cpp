@@ -26,34 +26,34 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using std::make_optional;
-  using std::optional;
-  {
-    int arr[10];
-    ((void)arr);
-    ASSERT_SAME_TYPE(decltype(make_optional(arr)), optional<int*>);
-  }
-  {
-    constexpr auto opt = make_optional(2);
-    ASSERT_SAME_TYPE(decltype(opt), const optional<int>);
-    static_assert(opt.value() == 2);
-  }
-  {
-    optional<int> opt = make_optional(2);
-    assert(*opt == 2);
-  }
-  {
-    std::string s("123");
-    optional<std::string> opt = make_optional(s);
-    assert(*opt == s);
-  }
-  {
-    std::unique_ptr<int> s(new int(3));
-    optional<std::unique_ptr<int> > opt = make_optional(std::move(s));
-    assert(**opt == 3);
-    assert(s == nullptr);
-  }
+int main(int, char**)
+{
+    using std::optional;
+    using std::make_optional;
+    {
+        int arr[10]; ((void)arr);
+        ASSERT_SAME_TYPE(decltype(make_optional(arr)), optional<int*>);
+    }
+    {
+        constexpr auto opt = make_optional(2);
+        ASSERT_SAME_TYPE(decltype(opt), const optional<int>);
+        static_assert(opt.value() == 2);
+    }
+    {
+        optional<int> opt = make_optional(2);
+        assert(*opt == 2);
+    }
+    {
+        std::string s("123");
+        optional<std::string> opt = make_optional(s);
+        assert(*opt == s);
+    }
+    {
+        std::unique_ptr<int> s(new int(3));
+        optional<std::unique_ptr<int>> opt = make_optional(std::move(s));
+        assert(**opt == 3);
+        assert(s == nullptr);
+    }
 
   return 0;
 }

@@ -11,7 +11,7 @@
 //===----------------------------------------------------------------------===//
 #ifndef MSAN_EXTERNAL_TEST_CONFIG
 #include "msan_test_config.h"
-#endif  // MSAN_EXTERNAL_TEST_CONFIG
+#endif // MSAN_EXTERNAL_TEST_CONFIG
 
 int main(int argc, char **argv) {
   testing::GTEST_FLAG(death_test_style) = "threadsafe";

@@ -2,6 +2,6 @@
 
 // A constructor shall not be declared with a ref-qualifier.
 struct X {
-  X() &;     // expected-error{{ref-qualifier '&' is not allowed on a constructor}}
+  X() &; // expected-error{{ref-qualifier '&' is not allowed on a constructor}}
   X(int) &&; // expected-error{{ref-qualifier '&&' is not allowed on a constructor}}
 };

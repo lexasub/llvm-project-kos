@@ -11,5 +11,5 @@
 
 // UNSUPPORTED: verify-support
 
-struct Foo {};
+struct Foo { };
 typedef Foo::x x;

@@ -60,3 +60,4 @@ int main() {
 
   return Sum != 2 * N * (2 + N - 1 + 2) / 2;
 }
+

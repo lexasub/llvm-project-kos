@@ -8,32 +8,32 @@ class OuterClass {
 #define PREFIX
 #endif
 
-  class AClass {
+class AClass {
 
-    int method(int x) {
-      return /*range inner=->+0:38*/ 1 + 2 * 2;
-    }
-    // CHECK-INNER: 1 'inner' results:
-    // CHECK-INNER:      static int extracted() {
-    // CHECK-INNER-NEXT: return 1 + 2 * 2;{{$}}
-    // CHECK-INNER-NEXT: }{{[[:space:]].*}}
-    // CHECK-INNER-NEXT: class AClass {
+  int method(int x) {
+    return /*range inner=->+0:38*/1 + 2 * 2;
+  }
+// CHECK-INNER: 1 'inner' results:
+// CHECK-INNER:      static int extracted() {
+// CHECK-INNER-NEXT: return 1 + 2 * 2;{{$}}
+// CHECK-INNER-NEXT: }{{[[:space:]].*}}
+// CHECK-INNER-NEXT: class AClass {
 
-    // CHECK-OUTER: 1 'inner' results:
-    // CHECK-OUTER:      static int extracted() {
-    // CHECK-OUTER-NEXT: return 1 + 2 * 2;{{$}}
-    // CHECK-OUTER-NEXT: }{{[[:space:]].*}}
-    // CHECK-OUTER-NEXT: class OuterClass {
+// CHECK-OUTER: 1 'inner' results:
+// CHECK-OUTER:      static int extracted() {
+// CHECK-OUTER-NEXT: return 1 + 2 * 2;{{$}}
+// CHECK-OUTER-NEXT: }{{[[:space:]].*}}
+// CHECK-OUTER-NEXT: class OuterClass {
 
-    int otherMethod(int x);
-  };
+  int otherMethod(int x);
+};
 
 #ifdef MULTIPLE
 };
 #endif
 
 int PREFIX AClass::otherMethod(int x) {
-  return /*range outofline=->+0:46*/ 2 * 2 - 1;
+  return /*range outofline=->+0:46*/2 * 2 - 1;
 }
 // CHECK: 1 'outofline' results:
 // CHECK:      static int extracted() {

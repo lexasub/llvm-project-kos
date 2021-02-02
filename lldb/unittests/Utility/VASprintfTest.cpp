@@ -13,10 +13,10 @@
 
 #include <locale.h>
 
-#if defined(_WIN32)
-#define TEST_ENCODING ".932" // On Windows, test codepage 932
+#if defined (_WIN32)
+#define TEST_ENCODING ".932"  // On Windows, test codepage 932
 #else
-#define TEST_ENCODING "C" // ...otherwise, any widely available uni-byte LC
+#define TEST_ENCODING "C"     // ...otherwise, any widely available uni-byte LC
 #endif
 
 using namespace lldb_private;

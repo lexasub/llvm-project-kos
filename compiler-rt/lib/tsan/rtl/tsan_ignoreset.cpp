@@ -15,7 +15,9 @@ namespace __tsan {
 
 const uptr IgnoreSet::kMaxSize;
 
-IgnoreSet::IgnoreSet() : size_() {}
+IgnoreSet::IgnoreSet()
+    : size_() {
+}
 
 void IgnoreSet::Add(u32 stack_id) {
   if (size_ == kMaxSize)
@@ -27,9 +29,13 @@ void IgnoreSet::Add(u32 stack_id) {
   stacks_[size_++] = stack_id;
 }
 
-void IgnoreSet::Reset() { size_ = 0; }
+void IgnoreSet::Reset() {
+  size_ = 0;
+}
 
-uptr IgnoreSet::Size() const { return size_; }
+uptr IgnoreSet::Size() const {
+  return size_;
+}
 
 u32 IgnoreSet::At(uptr i) const {
   CHECK_LT(i, size_);

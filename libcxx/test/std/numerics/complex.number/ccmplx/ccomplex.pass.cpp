@@ -12,9 +12,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::complex<double> d;
-  (void)d;
+int main(int, char**)
+{
+    std::complex<double> d;
+    (void)d;
 
   return 0;
 }

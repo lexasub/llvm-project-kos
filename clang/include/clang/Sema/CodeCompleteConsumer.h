@@ -174,7 +174,8 @@ QualType getDeclUsageType(ASTContext &C, const NamedDecl *ND);
 ///
 /// \param PreferredTypeIsPointer Whether the preferred type for the context
 /// of this macro is a pointer type.
-unsigned getMacroUsagePriority(StringRef MacroName, const LangOptions &LangOpts,
+unsigned getMacroUsagePriority(StringRef MacroName,
+                               const LangOptions &LangOpts,
                                bool PreferredTypeIsPointer = false);
 
 /// Determine the libclang cursor kind associated with the given
@@ -409,7 +410,9 @@ public:
   }
 
   /// Adds a visited context.
-  void addVisitedContext(DeclContext *Ctx) { VisitedContexts.insert(Ctx); }
+  void addVisitedContext(DeclContext *Ctx) {
+    VisitedContexts.insert(Ctx);
+  }
 
   /// Retrieves all visited contexts.
   const VisitedContextSet &getVisitedContexts() const {
@@ -580,7 +583,8 @@ private:
   CodeCompletionString(const Chunk *Chunks, unsigned NumChunks,
                        unsigned Priority, CXAvailabilityKind Availability,
                        const char **Annotations, unsigned NumAnnotations,
-                       StringRef ParentName, const char *BriefComment);
+                       StringRef ParentName,
+                       const char *BriefComment);
   ~CodeCompletionString() = default;
 
 public:
@@ -615,9 +619,13 @@ public:
   const char *getAnnotation(unsigned AnnotationNr) const;
 
   /// Retrieve the name of the parent context.
-  StringRef getParentContextName() const { return ParentName; }
+  StringRef getParentContextName() const {
+    return ParentName;
+  }
 
-  const char *getBriefComment() const { return BriefComment; }
+  const char *getBriefComment() const {
+    return BriefComment;
+  }
 
   /// Retrieve a string representation of the code completion string,
   /// which is mainly useful for debugging.
@@ -683,8 +691,8 @@ public:
       : Allocator(Allocator), CCTUInfo(CCTUInfo) {}
 
   CodeCompletionBuilder(CodeCompletionAllocator &Allocator,
-                        CodeCompletionTUInfo &CCTUInfo, unsigned Priority,
-                        CXAvailabilityKind Availability)
+                        CodeCompletionTUInfo &CCTUInfo,
+                        unsigned Priority, CXAvailabilityKind Availability)
       : Allocator(Allocator), CCTUInfo(CCTUInfo), Priority(Priority),
         Availability(Availability) {}
 
@@ -928,15 +936,17 @@ public:
   ///
   /// \param Allocator The allocator that will be used to allocate the
   /// string itself.
-  CodeCompletionString *
-  CreateCodeCompletionString(Sema &S, const CodeCompletionContext &CCContext,
-                             CodeCompletionAllocator &Allocator,
-                             CodeCompletionTUInfo &CCTUInfo,
-                             bool IncludeBriefComments);
-  CodeCompletionString *CreateCodeCompletionString(
-      ASTContext &Ctx, Preprocessor &PP, const CodeCompletionContext &CCContext,
-      CodeCompletionAllocator &Allocator, CodeCompletionTUInfo &CCTUInfo,
-      bool IncludeBriefComments);
+  CodeCompletionString *CreateCodeCompletionString(Sema &S,
+                                         const CodeCompletionContext &CCContext,
+                                           CodeCompletionAllocator &Allocator,
+                                           CodeCompletionTUInfo &CCTUInfo,
+                                           bool IncludeBriefComments);
+  CodeCompletionString *CreateCodeCompletionString(ASTContext &Ctx,
+                                                   Preprocessor &PP,
+                                         const CodeCompletionContext &CCContext,
+                                           CodeCompletionAllocator &Allocator,
+                                           CodeCompletionTUInfo &CCTUInfo,
+                                           bool IncludeBriefComments);
   /// Creates a new code-completion string for the macro result. Similar to the
   /// above overloads, except this only requires preprocessor information.
   /// The result kind must be `RK_Macro`.
@@ -973,7 +983,7 @@ inline bool operator>(const CodeCompletionResult &X,
 }
 
 inline bool operator<=(const CodeCompletionResult &X,
-                       const CodeCompletionResult &Y) {
+                      const CodeCompletionResult &Y) {
   return !(Y < X);
 }
 
@@ -1051,16 +1061,20 @@ public:
 
     /// Create a new code-completion string that describes the function
     /// signature of this overload candidate.
-    CodeCompletionString *CreateSignatureString(
-        unsigned CurrentArg, Sema &S, CodeCompletionAllocator &Allocator,
-        CodeCompletionTUInfo &CCTUInfo, bool IncludeBriefComments) const;
+    CodeCompletionString *CreateSignatureString(unsigned CurrentArg,
+                                                Sema &S,
+                                      CodeCompletionAllocator &Allocator,
+                                      CodeCompletionTUInfo &CCTUInfo,
+                                      bool IncludeBriefComments) const;
   };
 
   CodeCompleteConsumer(const CodeCompleteOptions &CodeCompleteOpts)
       : CodeCompleteOpts(CodeCompleteOpts) {}
 
   /// Whether the code-completion consumer wants to see macros.
-  bool includeMacros() const { return CodeCompleteOpts.IncludeMacros; }
+  bool includeMacros() const {
+    return CodeCompleteOpts.IncludeMacros;
+  }
 
   /// Whether the code-completion consumer wants to see code patterns.
   bool includeCodePatterns() const {
@@ -1089,7 +1103,9 @@ public:
 
   /// Hint whether to load data from the external AST in order to provide
   /// full results. If false, declarations from the preamble may be omitted.
-  bool loadExternal() const { return CodeCompleteOpts.LoadExternal; }
+  bool loadExternal() const {
+    return CodeCompleteOpts.LoadExternal;
+  }
 
   /// Deregisters and destroys this code-completion consumer.
   virtual ~CodeCompleteConsumer();
@@ -1176,8 +1192,7 @@ public:
                                  unsigned NumCandidates,
                                  SourceLocation OpenParLoc) override;
 
-  bool isResultFilteredOut(StringRef Filter,
-                           CodeCompletionResult Results) override;
+  bool isResultFilteredOut(StringRef Filter, CodeCompletionResult Results) override;
 
   CodeCompletionAllocator &getAllocator() override {
     return CCTUInfo.getAllocator();

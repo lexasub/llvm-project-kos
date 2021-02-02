@@ -125,13 +125,17 @@ ValueObjectSP ABI::GetReturnValueObject(Thread &thread, CompilerType &ast_type,
       // we don't do anything with these for now
       break;
     case Value::eValueTypeScalar:
-      expr_variable_sp->m_flags |= ExpressionVariable::EVIsFreezeDried;
-      expr_variable_sp->m_flags |= ExpressionVariable::EVIsLLDBAllocated;
-      expr_variable_sp->m_flags |= ExpressionVariable::EVNeedsAllocation;
+      expr_variable_sp->m_flags |=
+          ExpressionVariable::EVIsFreezeDried;
+      expr_variable_sp->m_flags |=
+          ExpressionVariable::EVIsLLDBAllocated;
+      expr_variable_sp->m_flags |=
+          ExpressionVariable::EVNeedsAllocation;
       break;
     case Value::eValueTypeLoadAddress:
       expr_variable_sp->m_live_sp = live_valobj_sp;
-      expr_variable_sp->m_flags |= ExpressionVariable::EVIsProgramReference;
+      expr_variable_sp->m_flags |=
+          ExpressionVariable::EVIsProgramReference;
       break;
     }
 
@@ -191,8 +195,7 @@ bool ABI::GetFallbackRegisterLocation(
   return false;
 }
 
-std::unique_ptr<llvm::MCRegisterInfo>
-ABI::MakeMCRegisterInfo(const ArchSpec &arch) {
+std::unique_ptr<llvm::MCRegisterInfo> ABI::MakeMCRegisterInfo(const ArchSpec &arch) {
   std::string triple = arch.GetTriple().getTriple();
   std::string lookup_error;
   const llvm::Target *target =

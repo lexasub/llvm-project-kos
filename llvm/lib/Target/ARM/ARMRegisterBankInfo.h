@@ -38,5 +38,5 @@ public:
   const InstructionMapping &
   getInstrMapping(const MachineInstr &MI) const override;
 };
-} // namespace llvm
+} // End llvm namespace.
 #endif

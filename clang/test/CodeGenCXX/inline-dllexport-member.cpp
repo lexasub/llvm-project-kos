@@ -10,3 +10,4 @@ struct __declspec(dllexport) s {
 // CHECK: [[UI]] = !DIGlobalVariableExpression(var: [[UIV:.*]], expr: !DIExpression())
 // CHECK: [[UIV]] = distinct !DIGlobalVariable(name: "ui", linkageName: "?ui@s@@2IB", scope: ![[SCOPE:[0-9]+]],
 // CHECK: ![[SCOPE]] = distinct !DICompileUnit(
+

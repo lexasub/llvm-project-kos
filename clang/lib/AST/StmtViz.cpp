@@ -11,15 +11,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/Decl.h"
 #include "clang/AST/StmtGraphTraits.h"
+#include "clang/AST/Decl.h"
 #include "llvm/Support/GraphWriter.h"
 
 using namespace clang;
 
 void Stmt::viewAST() const {
 #ifndef NDEBUG
-  llvm::ViewGraph(this, "AST");
+  llvm::ViewGraph(this,"AST");
 #else
   llvm::errs() << "Stmt::viewAST is only available in debug builds on "
                << "systems with Graphviz or gv!\n";
@@ -27,10 +27,11 @@ void Stmt::viewAST() const {
 }
 
 namespace llvm {
-template <> struct DOTGraphTraits<const Stmt *> : public DefaultDOTGraphTraits {
-  DOTGraphTraits(bool isSimple = false) : DefaultDOTGraphTraits(isSimple) {}
+template<>
+struct DOTGraphTraits<const Stmt*> : public DefaultDOTGraphTraits {
+  DOTGraphTraits (bool isSimple=false) : DefaultDOTGraphTraits(isSimple) {}
 
-  static std::string getNodeLabel(const Stmt *Node, const Stmt *Graph) {
+  static std::string getNodeLabel(const Stmt* Node, const Stmt* Graph) {
 
 #ifndef NDEBUG
     std::string OutSStr;
@@ -42,14 +43,13 @@ template <> struct DOTGraphTraits<const Stmt *> : public DefaultDOTGraphTraits {
       Out << "<NULL>";
 
     std::string OutStr = Out.str();
-    if (OutStr[0] == '\n')
-      OutStr.erase(OutStr.begin());
+    if (OutStr[0] == '\n') OutStr.erase(OutStr.begin());
 
     // Process string output to make it nicer...
     for (unsigned i = 0; i != OutStr.length(); ++i)
-      if (OutStr[i] == '\n') { // Left justify
+      if (OutStr[i] == '\n') {                            // Left justify
         OutStr[i] = '\\';
-        OutStr.insert(OutStr.begin() + i + 1, 'l');
+        OutStr.insert(OutStr.begin()+i+1, 'l');
       }
 
     return OutStr;

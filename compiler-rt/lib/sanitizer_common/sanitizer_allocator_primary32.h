@@ -13,8 +13,7 @@
 #error This file must be included inside sanitizer_allocator.h
 #endif
 
-template <class SizeClassAllocator>
-struct SizeClassAllocator32LocalCache;
+template<class SizeClassAllocator> struct SizeClassAllocator32LocalCache;
 
 // SizeClassAllocator32 -- allocator for 32-bit address space.
 // This allocator can theoretically be used on 64-bit arch, but there it is less
@@ -69,10 +68,9 @@ class SizeClassAllocator32 {
   COMPILER_CHECK(!SANITIZER_SIGN_EXTENDED_ADDRESSES ||
                  (kSpaceSize & (kSpaceSize - 1)) == 0);
 
-  static const bool kRandomShuffleChunks =
-      Params::kFlags & SizeClassAllocator32FlagMasks::kRandomShuffleChunks;
-  static const bool kUseSeparateSizeClassForBatch =
-      Params::kFlags &
+  static const bool kRandomShuffleChunks = Params::kFlags &
+      SizeClassAllocator32FlagMasks::kRandomShuffleChunks;
+  static const bool kUseSeparateSizeClassForBatch = Params::kFlags &
       SizeClassAllocator32FlagMasks::kUseSeparateSizeClassForBatch;
 
   struct TransferBatch {
@@ -80,7 +78,8 @@ class SizeClassAllocator32 {
     void SetFromArray(void *batch[], uptr count) {
       DCHECK_LE(count, kMaxNumCached);
       count_ = count;
-      for (uptr i = 0; i < count; i++) batch_[i] = batch[i];
+      for (uptr i = 0; i < count; i++)
+        batch_[i] = batch[i];
     }
     uptr Count() const { return count_; }
     void Clear() { count_ = 0; }
@@ -89,7 +88,8 @@ class SizeClassAllocator32 {
       DCHECK_LE(count_, kMaxNumCached);
     }
     void CopyToArray(void *to_batch[]) const {
-      for (uptr i = 0, n = Count(); i < n; i++) to_batch[i] = batch_[i];
+      for (uptr i = 0, n = Count(); i < n; i++)
+        to_batch[i] = batch_[i];
     }
 
     // How much memory do we need for a batch containing n elements.
@@ -112,9 +112,8 @@ class SizeClassAllocator32 {
   COMPILER_CHECK(kBatchSize == SizeClassMap::kMaxNumCachedHint * sizeof(uptr));
 
   static uptr ClassIdToSize(uptr class_id) {
-    return (class_id == SizeClassMap::kBatchClassID)
-               ? kBatchSize
-               : SizeClassMap::Size(class_id);
+    return (class_id == SizeClassMap::kBatchClassID) ?
+        kBatchSize : SizeClassMap::Size(class_id);
   }
 
   typedef SizeClassAllocator32<Params> ThisT;
@@ -125,7 +124,9 @@ class SizeClassAllocator32 {
     internal_memset(size_class_info_array, 0, sizeof(size_class_info_array));
   }
 
-  s32 ReleaseToOSIntervalMs() const { return kReleaseToOSIntervalNever; }
+  s32 ReleaseToOSIntervalMs() const {
+    return kReleaseToOSIntervalNever;
+  }
 
   void SetReleaseToOSIntervalMs(s32 release_to_os_interval_ms) {
     // This is empty here. Currently only implemented in 64-bit allocator.
@@ -148,7 +149,7 @@ class SizeClassAllocator32 {
 
   static bool CanAllocate(uptr size, uptr alignment) {
     return size <= SizeClassMap::kMaxSize &&
-           alignment <= SizeClassMap::kMaxSize;
+      alignment <= SizeClassMap::kMaxSize;
   }
 
   void *GetMetaData(const void *p) {
@@ -160,7 +161,7 @@ class SizeClassAllocator32 {
     u32 offset = mem - beg;
     uptr n = offset / (u32)size;  // 32-bit division
     uptr meta = (beg + kRegionSize) - (n + 1) * kMetadataSize;
-    return reinterpret_cast<void *>(meta);
+    return reinterpret_cast<void*>(meta);
   }
 
   NOINLINE TransferBatch *AllocateBatch(AllocatorStats *stat, AllocatorCache *c,
@@ -208,7 +209,7 @@ class SizeClassAllocator32 {
     u32 offset = mem - beg;
     u32 n = offset / (u32)size;  // 32-bit division
     uptr res = beg + (n * (u32)size);
-    return reinterpret_cast<void *>(res);
+    return reinterpret_cast<void*>(res);
   }
 
   uptr GetActuallyAllocatedSize(void *p) {
@@ -290,7 +291,9 @@ class SizeClassAllocator32 {
     return res;
   }
 
-  uptr ComputeRegionBeg(uptr mem) { return mem & ~(kRegionSize - 1); }
+  uptr ComputeRegionBeg(uptr mem) {
+    return mem & ~(kRegionSize - 1);
+  }
 
   uptr AllocateRegion(AllocatorStats *stat, uptr class_id) {
     DCHECK_LT(class_id, kNumClasses);
@@ -315,17 +318,17 @@ class SizeClassAllocator32 {
                        uptr *pointers_array, uptr count) {
     // If using a separate class for batches, we do not need to shuffle it.
     if (kRandomShuffleChunks && (!kUseSeparateSizeClassForBatch ||
-                                 class_id != SizeClassMap::kBatchClassID))
+        class_id != SizeClassMap::kBatchClassID))
       RandomShuffle(pointers_array, count, &sci->rand_state);
     TransferBatch *b = *current_batch;
     for (uptr i = 0; i < count; i++) {
       if (!b) {
-        b = c->CreateBatch(class_id, this, (TransferBatch *)pointers_array[i]);
+        b = c->CreateBatch(class_id, this, (TransferBatch*)pointers_array[i]);
         if (UNLIKELY(!b))
           return false;
         b->Clear();
       }
-      b->Add((void *)pointers_array[i]);
+      b->Add((void*)pointers_array[i]);
       if (b->Count() == max_count) {
         sci->free_list.push_back(b);
         b = nullptr;

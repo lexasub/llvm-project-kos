@@ -67,8 +67,8 @@ static codegen::RegisterCodeGenFlags CFG;
 // The OptimizationList is automatically populated with registered Passes by the
 // PassNameParser.
 //
-static cl::list<const PassInfo *, bool, PassNameParser>
-    PassList(cl::desc("Optimizations available:"));
+static cl::list<const PassInfo*, bool, PassNameParser>
+PassList(cl::desc("Optimizations available:"));
 
 static cl::opt<bool>
     EnableNewPassManager("enable-new-pm",
@@ -86,26 +86,26 @@ static cl::opt<std::string> PassPipeline(
 
 // Other command line options...
 //
-static cl::opt<std::string> InputFilename(cl::Positional,
-                                          cl::desc("<input bitcode file>"),
-                                          cl::init("-"),
-                                          cl::value_desc("filename"));
+static cl::opt<std::string>
+InputFilename(cl::Positional, cl::desc("<input bitcode file>"),
+    cl::init("-"), cl::value_desc("filename"));
 
-static cl::opt<std::string> OutputFilename("o",
-                                           cl::desc("Override output filename"),
-                                           cl::value_desc("filename"));
-
-static cl::opt<bool> Force("f", cl::desc("Enable binary output on terminals"));
+static cl::opt<std::string>
+OutputFilename("o", cl::desc("Override output filename"),
+               cl::value_desc("filename"));
 
 static cl::opt<bool>
-    PrintEachXForm("p", cl::desc("Print module after each transformation"));
+Force("f", cl::desc("Enable binary output on terminals"));
 
-static cl::opt<bool> NoOutput("disable-output",
-                              cl::desc("Do not write result bitcode file"),
-                              cl::Hidden);
+static cl::opt<bool>
+PrintEachXForm("p", cl::desc("Print module after each transformation"));
 
-static cl::opt<bool> OutputAssembly("S",
-                                    cl::desc("Write output as LLVM assembly"));
+static cl::opt<bool>
+NoOutput("disable-output",
+         cl::desc("Do not write result bitcode file"), cl::Hidden);
+
+static cl::opt<bool>
+OutputAssembly("S", cl::desc("Write output as LLVM assembly"));
 
 static cl::opt<bool>
     OutputThinLTOBC("thinlto-bc",
@@ -120,8 +120,8 @@ static cl::opt<std::string> ThinLinkBitcodeFile(
     cl::desc(
         "A file in which to write minimized bitcode for the thin link only"));
 
-static cl::opt<bool> NoVerify("disable-verify",
-                              cl::desc("Do not run the verifier"), cl::Hidden);
+static cl::opt<bool>
+NoVerify("disable-verify", cl::desc("Do not run the verifier"), cl::Hidden);
 
 static cl::opt<bool> NoUpgradeDebugInfo("disable-upgrade-debug-info",
                                         cl::desc("Generate invalid output"),
@@ -135,8 +135,8 @@ static cl::opt<bool>
                      cl::desc("Don't use a uniquing type map for debug info"));
 
 static cl::opt<bool>
-    StripDebug("strip-debug",
-               cl::desc("Strip debugger symbol info from translation unit"));
+StripDebug("strip-debug",
+           cl::desc("Strip debugger symbol info from translation unit"));
 
 static cl::opt<bool>
     StripNamedMetadata("strip-named-metadata",
@@ -146,40 +146,43 @@ static cl::opt<bool> DisableInline("disable-inlining",
                                    cl::desc("Do not run the inliner pass"));
 
 static cl::opt<bool>
-    DisableOptimizations("disable-opt",
-                         cl::desc("Do not run any optimization passes"));
+DisableOptimizations("disable-opt",
+                     cl::desc("Do not run any optimization passes"));
 
 static cl::opt<bool>
-    StandardLinkOpts("std-link-opts",
-                     cl::desc("Include the standard link time optimizations"));
+StandardLinkOpts("std-link-opts",
+                 cl::desc("Include the standard link time optimizations"));
 
 static cl::opt<bool>
-    OptLevelO0("O0", cl::desc("Optimization level 0. Similar to clang -O0"));
+OptLevelO0("O0",
+  cl::desc("Optimization level 0. Similar to clang -O0"));
 
 static cl::opt<bool>
-    OptLevelO1("O1", cl::desc("Optimization level 1. Similar to clang -O1"));
+OptLevelO1("O1",
+           cl::desc("Optimization level 1. Similar to clang -O1"));
 
 static cl::opt<bool>
-    OptLevelO2("O2", cl::desc("Optimization level 2. Similar to clang -O2"));
-
-static cl::opt<bool> OptLevelOs(
-    "Os",
-    cl::desc(
-        "Like -O2 with extra optimizations for size. Similar to clang -Os"));
-
-static cl::opt<bool> OptLevelOz(
-    "Oz",
-    cl::desc("Like -Os but reduces code size further. Similar to clang -Oz"));
+OptLevelO2("O2",
+           cl::desc("Optimization level 2. Similar to clang -O2"));
 
 static cl::opt<bool>
-    OptLevelO3("O3", cl::desc("Optimization level 3. Similar to clang -O3"));
+OptLevelOs("Os",
+           cl::desc("Like -O2 with extra optimizations for size. Similar to clang -Os"));
+
+static cl::opt<bool>
+OptLevelOz("Oz",
+           cl::desc("Like -Os but reduces code size further. Similar to clang -Oz"));
+
+static cl::opt<bool>
+OptLevelO3("O3",
+           cl::desc("Optimization level 3. Similar to clang -O3"));
 
 static cl::opt<unsigned>
-    CodeGenOptLevel("codegen-opt-level",
-                    cl::desc("Override optimization level for codegen hooks"));
+CodeGenOptLevel("codegen-opt-level",
+                cl::desc("Override optimization level for codegen hooks"));
 
 static cl::opt<std::string>
-    TargetTriple("mtriple", cl::desc("Override target triple for module"));
+TargetTriple("mtriple", cl::desc("Override target triple for module"));
 
 cl::opt<bool> DisableLoopUnrolling(
     "disable-loop-unrolling",
@@ -193,16 +196,16 @@ static cl::opt<bool> EmitModuleHash("module-hash", cl::desc("Emit module hash"),
                                     cl::init(false));
 
 static cl::opt<bool>
-    DisableSimplifyLibCalls("disable-simplify-libcalls",
-                            cl::desc("Disable simplify-libcalls"));
+DisableSimplifyLibCalls("disable-simplify-libcalls",
+                        cl::desc("Disable simplify-libcalls"));
 
-static cl::list<std::string> DisableBuiltins(
-    "disable-builtin",
-    cl::desc("Disable specific target library builtin function"),
-    cl::ZeroOrMore);
+static cl::list<std::string>
+DisableBuiltins("disable-builtin",
+                cl::desc("Disable specific target library builtin function"),
+                cl::ZeroOrMore);
 
 static cl::opt<bool>
-    AnalyzeOnly("analyze", cl::desc("Only perform analysis, no optimization"));
+AnalyzeOnly("analyze", cl::desc("Only perform analysis, no optimization"));
 
 static cl::opt<bool> EnableDebugify(
     "enable-debugify",
@@ -210,8 +213,8 @@ static cl::opt<bool> EnableDebugify(
         "Start the pipeline with debugify and end it with check-debugify"));
 
 static cl::opt<bool>
-    PrintBreakpoints("print-breakpoints-for-testing",
-                     cl::desc("Print select breakpoints location for testing"));
+PrintBreakpoints("print-breakpoints-for-testing",
+                 cl::desc("Print select breakpoints location for testing"));
 
 static cl::opt<std::string> ClDataLayout("data-layout",
                                          cl::desc("data layout string to use"),
@@ -238,22 +241,24 @@ static cl::opt<bool> DiscardValueNames(
     cl::desc("Discard names from Value (other than GlobalValue)."),
     cl::init(false), cl::Hidden);
 
-static cl::opt<bool> Coroutines("enable-coroutines",
-                                cl::desc("Enable coroutine passes."),
-                                cl::init(false), cl::Hidden);
+static cl::opt<bool> Coroutines(
+  "enable-coroutines",
+  cl::desc("Enable coroutine passes."),
+  cl::init(false), cl::Hidden);
 
-static cl::opt<bool> TimeTrace("time-trace", cl::desc("Record time trace"));
+static cl::opt<bool> TimeTrace(
+    "time-trace",
+    cl::desc("Record time trace"));
 
 static cl::opt<unsigned> TimeTraceGranularity(
     "time-trace-granularity",
-    cl::desc(
-        "Minimum time granularity (in microseconds) traced by time profiler"),
+    cl::desc("Minimum time granularity (in microseconds) traced by time profiler"),
     cl::init(500), cl::Hidden);
 
 static cl::opt<std::string>
     TimeTraceFile("time-trace-file",
-                  cl::desc("Specify time trace file destination"),
-                  cl::value_desc("filename"));
+                    cl::desc("Specify time trace file destination"),
+                    cl::value_desc("filename"));
 
 static cl::opt<bool> RemarksWithHotness(
     "pass-remarks-with-hotness",
@@ -344,9 +349,8 @@ static void AddOptimizationPasses(legacy::PassManagerBase &MPM,
   } else {
     Builder.Inliner = createAlwaysInlinerLegacyPass();
   }
-  Builder.DisableUnrollLoops = (DisableLoopUnrolling.getNumOccurrences() > 0)
-                                   ? DisableLoopUnrolling
-                                   : OptLevel == 0;
+  Builder.DisableUnrollLoops = (DisableLoopUnrolling.getNumOccurrences() > 0) ?
+                               DisableLoopUnrolling : OptLevel == 0;
 
   Builder.LoopVectorize = OptLevel > 1 && SizeLevel < 2;
 
@@ -416,7 +420,7 @@ static CodeGenOpt::Level GetCodeGenOptLevel() {
 }
 
 // Returns the TargetMachine instance or zero if no triple is provided.
-static TargetMachine *GetTargetMachine(Triple TheTriple, StringRef CPUStr,
+static TargetMachine* GetTargetMachine(Triple TheTriple, StringRef CPUStr,
                                        StringRef FeaturesStr,
                                        const TargetOptions &Options) {
   std::string Error;
@@ -575,8 +579,8 @@ int main(int argc, char **argv) {
   initializeExampleIRTransforms(Registry);
 #endif
 
-  cl::ParseCommandLineOptions(
-      argc, argv, "llvm .bc -> .bc modular optimizer and analysis printer\n");
+  cl::ParseCommandLineOptions(argc, argv,
+    "llvm .bc -> .bc modular optimizer and analysis printer\n");
 
   if (AnalyzeOnly && NoOutput) {
     errs() << argv[0] << ": analyze mode conflicts with no-output mode.\n";
@@ -666,8 +670,8 @@ int main(int argc, char **argv) {
       OutputFilename = "-";
 
     std::error_code EC;
-    sys::fs::OpenFlags Flags =
-        OutputAssembly ? sys::fs::OF_Text : sys::fs::OF_None;
+    sys::fs::OpenFlags Flags = OutputAssembly ? sys::fs::OF_Text
+                                              : sys::fs::OF_None;
     Out.reset(new ToolOutputFile(OutputFilename, EC, Flags));
     if (EC) {
       errs() << EC.message() << '\n';
@@ -824,7 +828,7 @@ int main(int argc, char **argv) {
 
       std::error_code EC;
       Out = std::make_unique<ToolOutputFile>(OutputFilename, EC,
-                                             sys::fs::OF_None);
+                                              sys::fs::OF_None);
       if (EC) {
         errs() << EC.message() << '\n';
         return 1;
@@ -884,8 +888,8 @@ int main(int argc, char **argv) {
     if (PassInf->getNormalCtor())
       P = PassInf->getNormalCtor()();
     else
-      errs() << argv[0] << ": cannot create pass: " << PassInf->getPassName()
-             << "\n";
+      errs() << argv[0] << ": cannot create pass: "
+             << PassInf->getPassName() << "\n";
     if (P) {
       PassKind Kind = P->getPassKind();
       addPass(Passes, P);

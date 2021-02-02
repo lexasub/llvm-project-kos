@@ -1,5 +1,6 @@
 // RUN: %clang_cc1 -emit-llvm %s -o -
 
+
 void doesntThrow() throw();
 struct F {
   ~F() { doesntThrow(); }
@@ -13,42 +14,28 @@ lab:
 }
 
 void test(int val) {
-label : {
-  F A;
-  F B;
-  if (val == 0)
-    goto label;
-  if (val == 1)
-    goto label;
+label: {
+   F A;
+   F B;
+   if (val == 0) goto label;
+   if (val == 1) goto label;
 }
 }
 
 void test3(int val) {
-label : {
-  F A;
-  F B;
-  if (val == 0) {
-    doesntThrow();
-    goto label;
-  }
-  if (val == 1) {
-    doesntThrow();
-    goto label;
-  }
+label: {
+   F A;
+   F B;
+   if (val == 0) { doesntThrow(); goto label; }
+   if (val == 1) { doesntThrow(); goto label; }
 }
 }
 
 void test4(int val) {
-label : {
-  F A;
-  F B;
-  if (val == 0) {
-    F C;
-    goto label;
-  }
-  if (val == 1) {
-    F D;
-    goto label;
-  }
+label: {
+   F A;
+   F B;
+   if (val == 0) { F C; goto label; }
+   if (val == 1) { F D; goto label; }
 }
 }

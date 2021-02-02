@@ -38,7 +38,7 @@ private:
   // Value objects created from raw data (i.e. in a different cluster) must
   // be referenced via shared pointer to keep them alive, however.
   std::vector<ValueObjectSP> m_elements;
-  ValueObject *m_first = nullptr;
+  ValueObject* m_first = nullptr;
   CompilerType m_bool_type;
   ByteOrder m_byte_order = eByteOrderInvalid;
   uint8_t m_byte_size = 0;
@@ -70,8 +70,7 @@ bool BitsetFrontEnd::Update() {
 
   m_elements.assign(size, ValueObjectSP());
 
-  m_first =
-      m_backend.GetChildMemberWithName(ConstString("__first_"), true).get();
+  m_first = m_backend.GetChildMemberWithName(ConstString("__first_"), true).get();
   return false;
 }
 

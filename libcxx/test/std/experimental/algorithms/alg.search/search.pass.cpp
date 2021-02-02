@@ -26,22 +26,23 @@
 int searcher_called = 0;
 
 struct MySearcher {
-  template <typename Iterator>
-  std::pair<Iterator, Iterator> operator()(Iterator b, Iterator e) const {
-    ++searcher_called;
-    return std::make_pair(b, e);
-  }
+    template <typename Iterator>
+    std::pair<Iterator, Iterator>
+    operator() (Iterator b, Iterator e) const
+    {
+        ++searcher_called;
+        return std::make_pair(b, e);
+    }
 };
 
-int main(int, char**) {
-  typedef int* RI;
-  static_assert((std::is_same<RI, decltype(std::experimental::search(
-                                      RI(), RI(), MySearcher()))>::value),
-                "");
 
-  RI it(nullptr);
-  assert(it == std::experimental::search(it, it, MySearcher()));
-  assert(searcher_called == 1);
+int main(int, char**) {
+    typedef int * RI;
+    static_assert((std::is_same<RI, decltype(std::experimental::search(RI(), RI(), MySearcher()))>::value), "" );
+
+    RI it(nullptr);
+    assert(it == std::experimental::search(it, it, MySearcher()));
+    assert(searcher_called == 1);
 
   return 0;
 }

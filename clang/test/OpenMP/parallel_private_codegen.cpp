@@ -64,12 +64,11 @@ struct SS {
   }
 };
 
-template <typename T>
+template<typename T>
 struct SST {
   T a;
   SST() : a(T()) {
-#pragma omp parallel private(a) allocate(omp_large_cap_mem_alloc \
-                                         : a)
+#pragma omp parallel private(a) allocate(omp_large_cap_mem_alloc:a)
 #ifdef LAMBDA
     [&]() {
       [&]() {
@@ -128,65 +127,65 @@ int main() {
   // LAMBDA-NOT: = getelementptr inbounds %{{.+}},
   // LAMBDA: call{{.*}} void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel private(g, sivar)
-    {
-      // LAMBDA: define {{.+}} @{{.+}}([[SS_TY]]*
-      // LAMBDA: store i{{[0-9]+}} 0, i{{[0-9]+}}* %
-      // LAMBDA: store i8
-      // LAMBDA: call void (%{{.+}}*, i{{[0-9]+}}, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)*, ...) @__kmpc_fork_call(%{{.+}}* @{{.+}}, i{{[0-9]+}} 1, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)* bitcast (void (i{{[0-9]+}}*, i{{[0-9]+}}*, [[SS_TY]]*)* [[SS_MICROTASK:@.+]] to void
-      // LAMBDA: ret
+  {
+    // LAMBDA: define {{.+}} @{{.+}}([[SS_TY]]*
+    // LAMBDA: store i{{[0-9]+}} 0, i{{[0-9]+}}* %
+    // LAMBDA: store i8
+    // LAMBDA: call void (%{{.+}}*, i{{[0-9]+}}, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)*, ...) @__kmpc_fork_call(%{{.+}}* @{{.+}}, i{{[0-9]+}} 1, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)* bitcast (void (i{{[0-9]+}}*, i{{[0-9]+}}*, [[SS_TY]]*)* [[SS_MICROTASK:@.+]] to void
+    // LAMBDA: ret
 
-      // LAMBDA: define internal void [[SS_MICROTASK]](i{{[0-9]+}}* noalias [[GTID_ADDR:%.+]], i{{[0-9]+}}* noalias %{{.+}}, [[SS_TY]]* %{{.+}})
-      // LAMBDA-NOT: getelementptr {{.*}}[[SS_TY]], [[SS_TY]]* %
-      // LAMBDA: call{{.*}} void
-      // LAMBDA: ret void
+    // LAMBDA: define internal void [[SS_MICROTASK]](i{{[0-9]+}}* noalias [[GTID_ADDR:%.+]], i{{[0-9]+}}* noalias %{{.+}}, [[SS_TY]]* %{{.+}})
+    // LAMBDA-NOT: getelementptr {{.*}}[[SS_TY]], [[SS_TY]]* %
+    // LAMBDA: call{{.*}} void
+    // LAMBDA: ret void
 
-      // LAMBDA: define internal void @{{.+}}(i{{[0-9]+}}* noalias [[GTID_ADDR:%.+]], i{{[0-9]+}}* noalias %{{.+}}, [[SS_TY]]* %{{.+}})
-      // LAMBDA: [[A_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[B_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[C_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: store i{{[0-9]+}}* [[A_PRIV]], i{{[0-9]+}}** [[REFA:%.+]],
-      // LAMBDA: store i{{[0-9]+}}* [[C_PRIV]], i{{[0-9]+}}** [[REFC:%.+]],
-      // LAMBDA-NEXT: [[A_PRIV:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[REFA]],
-      // LAMBDA-NEXT: [[A_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[A_PRIV]],
-      // LAMBDA-NEXT: [[INC:%.+]] = add nsw i{{[0-9]+}} [[A_VAL]], 1
-      // LAMBDA-NEXT: store i{{[0-9]+}} [[INC]], i{{[0-9]+}}* [[A_PRIV]],
-      // LAMBDA-NEXT: [[B_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[B_PRIV]],
-      // LAMBDA-NEXT: [[DEC:%.+]] = add nsw i{{[0-9]+}} [[B_VAL]], -1
-      // LAMBDA-NEXT: store i{{[0-9]+}} [[DEC]], i{{[0-9]+}}* [[B_PRIV]],
-      // LAMBDA-NEXT: [[C_PRIV:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[REFC]],
-      // LAMBDA-NEXT: [[C_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[C_PRIV]],
-      // LAMBDA-NEXT: [[DIV:%.+]] = sdiv i{{[0-9]+}} [[C_VAL]], 1
-      // LAMBDA-NEXT: store i{{[0-9]+}} [[DIV]], i{{[0-9]+}}* [[C_PRIV]],
-      // LAMBDA-NEXT: ret void
+    // LAMBDA: define internal void @{{.+}}(i{{[0-9]+}}* noalias [[GTID_ADDR:%.+]], i{{[0-9]+}}* noalias %{{.+}}, [[SS_TY]]* %{{.+}})
+    // LAMBDA: [[A_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[B_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[C_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: store i{{[0-9]+}}* [[A_PRIV]], i{{[0-9]+}}** [[REFA:%.+]],
+    // LAMBDA: store i{{[0-9]+}}* [[C_PRIV]], i{{[0-9]+}}** [[REFC:%.+]],
+    // LAMBDA-NEXT: [[A_PRIV:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[REFA]],
+    // LAMBDA-NEXT: [[A_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[A_PRIV]],
+    // LAMBDA-NEXT: [[INC:%.+]] = add nsw i{{[0-9]+}} [[A_VAL]], 1
+    // LAMBDA-NEXT: store i{{[0-9]+}} [[INC]], i{{[0-9]+}}* [[A_PRIV]],
+    // LAMBDA-NEXT: [[B_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[B_PRIV]],
+    // LAMBDA-NEXT: [[DEC:%.+]] = add nsw i{{[0-9]+}} [[B_VAL]], -1
+    // LAMBDA-NEXT: store i{{[0-9]+}} [[DEC]], i{{[0-9]+}}* [[B_PRIV]],
+    // LAMBDA-NEXT: [[C_PRIV:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[REFC]],
+    // LAMBDA-NEXT: [[C_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[C_PRIV]],
+    // LAMBDA-NEXT: [[DIV:%.+]] = sdiv i{{[0-9]+}} [[C_VAL]], 1
+    // LAMBDA-NEXT: store i{{[0-9]+}} [[DIV]], i{{[0-9]+}}* [[C_PRIV]],
+    // LAMBDA-NEXT: ret void
 
-      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      g = 1;
-      sivar = 2;
-      // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
-      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    g = 1;
+    sivar = 2;
+    // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+    // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+    // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
 
-      // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-      // LAMBDA: store i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
+    // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+    // LAMBDA: store i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
 
-      // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        g = 2;
-        sivar = 4;
-        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
-        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
-      }();
-    }
+    // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      g = 2;
+      sivar = 4;
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
+      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
+    }();
+  }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -199,34 +198,34 @@ int main() {
   // BLOCKS-NOT: = getelementptr inbounds %{{.+}},
   // BLOCKS: call{{.*}} void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel private(g, sivar)
-    {
-      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // BLOCKS: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      g = 1;
-      sivar = 20;
-      // BLOCKS: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-      // BLOCKS: store i{{[0-9]+}} 20, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+  {
+    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // BLOCKS: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    g = 1;
+    sivar = 20;
+    // BLOCKS: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+    // BLOCKS: store i{{[0-9]+}} 20, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+    // BLOCKS: i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+    // BLOCKS: call{{.*}} void {{%.+}}(i8
+    ^{
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      g = 2;
+      sivar = 40;
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
+      // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
       // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]]
+      // BLOCKS: store i{{[0-9]+}} 40, i{{[0-9]+}}*
       // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: call{{.*}} void {{%.+}}(i8
-      ^{
-        // BLOCKS: define {{.+}} void {{@.+}}(i8*
-        g = 2;
-        sivar = 40;
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-        // BLOCKS: store i{{[0-9]+}} 40, i{{[0-9]+}}*
-        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-        // BLOCKS: ret
-      }();
-    }
+      // BLOCKS: ret
+    }();
+  }
   }();
   return 0;
 // BLOCKS: define {{.+}} @{{.+}}([[SS_TY]]*
@@ -373,3 +372,4 @@ int main() {
 // CHECK-NEXT: ret void
 
 #endif
+

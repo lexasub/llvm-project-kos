@@ -17,26 +17,26 @@ char g = 'a';
 char h[] = "foo";
 
 void disambig() {
-  char8_t(a) = u8'x';
+  char8_t (a) = u8'x';
 }
 
 void operator""_a(char);
-void operator""_a(const char *, decltype(sizeof(0)));
+void operator""_a(const char*, decltype(sizeof(0)));
 
 void test_udl1() {
-  int &x = u8'a'_a;   // expected-error {{no matching literal operator}}
+  int &x = u8'a'_a; // expected-error {{no matching literal operator}}
   float &y = u8"a"_a; // expected-error {{no matching literal operator}}
 }
 
 int &operator""_a(char8_t);
-float &operator""_a(const char8_t *, decltype(sizeof(0)));
+float &operator""_a(const char8_t*, decltype(sizeof(0)));
 
 void test_udl2() {
   int &x = u8'a'_a;
   float &y = u8"a"_a;
 }
 
-template <typename E, typename T> void check(T &&t) {
+template<typename E, typename T> void check(T &&t) {
   using Check = E;
   using Check = T;
 }

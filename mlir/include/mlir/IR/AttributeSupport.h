@@ -36,8 +36,7 @@ public:
 
   /// This method is used by Dialect objects when they register the list of
   /// attributes they contain.
-  template <typename T>
-  static AbstractAttribute get(Dialect &dialect) {
+  template <typename T> static AbstractAttribute get(Dialect &dialect) {
     return AbstractAttribute(dialect, T::getInterfaceMap(), T::getTypeID());
   }
 
@@ -47,8 +46,7 @@ public:
   /// Returns an instance of the concept object for the given interface if it
   /// was registered to this attribute, null otherwise. This should not be used
   /// directly.
-  template <typename T>
-  typename T::Concept *getInterface() const {
+  template <typename T> typename T::Concept *getInterface() const {
     return interfaceMap.lookup<T>();
   }
 

@@ -93,10 +93,9 @@ class MCFixup {
 
   /// The source location which gave rise to the fixup, if any.
   SMLoc Loc;
-
 public:
-  static MCFixup create(uint32_t Offset, const MCExpr *Value, MCFixupKind Kind,
-                        SMLoc Loc = SMLoc()) {
+  static MCFixup create(uint32_t Offset, const MCExpr *Value,
+                        MCFixupKind Kind, SMLoc Loc = SMLoc()) {
     assert(Kind <= MaxFixupKind && "Kind out of range!");
     MCFixup FI;
     FI.Value = Value;
@@ -141,8 +140,7 @@ public:
   /// is an error to pass an unsupported size.
   static MCFixupKind getKindForSize(unsigned Size, bool IsPCRel) {
     switch (Size) {
-    default:
-      llvm_unreachable("Invalid generic fixup size!");
+    default: llvm_unreachable("Invalid generic fixup size!");
     case 1:
       return IsPCRel ? FK_PCRel_1 : FK_Data_1;
     case 2:
@@ -178,18 +176,12 @@ public:
   /// is an error to pass an unsupported size.
   static MCFixupKind getAddKindForKind(MCFixupKind Kind) {
     switch (Kind) {
-    default:
-      llvm_unreachable("Unknown type to convert!");
-    case FK_Data_1:
-      return FK_Data_Add_1;
-    case FK_Data_2:
-      return FK_Data_Add_2;
-    case FK_Data_4:
-      return FK_Data_Add_4;
-    case FK_Data_8:
-      return FK_Data_Add_8;
-    case FK_Data_6b:
-      return FK_Data_Add_6b;
+    default: llvm_unreachable("Unknown type to convert!");
+    case FK_Data_1: return FK_Data_Add_1;
+    case FK_Data_2: return FK_Data_Add_2;
+    case FK_Data_4: return FK_Data_Add_4;
+    case FK_Data_8: return FK_Data_Add_8;
+    case FK_Data_6b: return FK_Data_Add_6b;
     }
   }
 
@@ -197,24 +189,18 @@ public:
   /// is an error to pass an unsupported size.
   static MCFixupKind getSubKindForKind(MCFixupKind Kind) {
     switch (Kind) {
-    default:
-      llvm_unreachable("Unknown type to convert!");
-    case FK_Data_1:
-      return FK_Data_Sub_1;
-    case FK_Data_2:
-      return FK_Data_Sub_2;
-    case FK_Data_4:
-      return FK_Data_Sub_4;
-    case FK_Data_8:
-      return FK_Data_Sub_8;
-    case FK_Data_6b:
-      return FK_Data_Sub_6b;
+    default: llvm_unreachable("Unknown type to convert!");
+    case FK_Data_1: return FK_Data_Sub_1;
+    case FK_Data_2: return FK_Data_Sub_2;
+    case FK_Data_4: return FK_Data_Sub_4;
+    case FK_Data_8: return FK_Data_Sub_8;
+    case FK_Data_6b: return FK_Data_Sub_6b;
     }
   }
 
   SMLoc getLoc() const { return Loc; }
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

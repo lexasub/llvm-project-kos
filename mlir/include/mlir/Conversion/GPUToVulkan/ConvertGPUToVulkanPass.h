@@ -21,8 +21,7 @@
 namespace mlir {
 
 class ModuleOp;
-template <typename T>
-class OperationPass;
+template <typename T> class OperationPass;
 
 std::unique_ptr<OperationPass<ModuleOp>>
 createConvertVulkanLaunchFuncToVulkanCallsPass();

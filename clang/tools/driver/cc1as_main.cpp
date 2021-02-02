@@ -169,7 +169,7 @@ public:
                              DiagnosticsEngine &Diags);
 };
 
-} // namespace
+}
 
 bool AssemblerInvocation::CreateFromArgs(AssemblerInvocation &Opts,
                                          ArrayRef<const char *> Argv,
@@ -266,10 +266,10 @@ bool AssemblerInvocation::CreateFromArgs(AssemblerInvocation &Opts,
   if (Arg *A = Args.getLastArg(OPT_filetype)) {
     StringRef Name = A->getValue();
     unsigned OutputType = StringSwitch<unsigned>(Name)
-                              .Case("asm", FT_Asm)
-                              .Case("null", FT_Null)
-                              .Case("obj", FT_Obj)
-                              .Default(~0U);
+      .Case("asm", FT_Asm)
+      .Case("null", FT_Null)
+      .Case("obj", FT_Obj)
+      .Default(~0U);
     if (OutputType == ~0U) {
       Diags.Report(diag::err_drv_invalid_value) << A->getAsString(Args) << Name;
       Success = false;
@@ -390,7 +390,8 @@ static bool ExecuteAssembler(AssemblerInvocation &Opts,
   } else if (Opts.RelocationModel == "pic") {
     PIC = true;
   } else {
-    assert(Opts.RelocationModel == "dynamic-no-pic" && "Invalid PIC model!");
+    assert(Opts.RelocationModel == "dynamic-no-pic" &&
+           "Invalid PIC model!");
     PIC = false;
   }
 
@@ -544,7 +545,7 @@ static bool ExecuteAssembler(AssemblerInvocation &Opts,
 
 static void LLVMErrorHandler(void *UserData, const std::string &Message,
                              bool GenCrashDiag) {
-  DiagnosticsEngine &Diags = *static_cast<DiagnosticsEngine *>(UserData);
+  DiagnosticsEngine &Diags = *static_cast<DiagnosticsEngine*>(UserData);
 
   Diags.Report(diag::err_fe_error_backend) << Message;
 
@@ -560,16 +561,16 @@ int cc1as_main(ArrayRef<const char *> Argv, const char *Argv0, void *MainAddr) {
 
   // Construct our diagnostic client.
   IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
-  TextDiagnosticPrinter *DiagClient =
-      new TextDiagnosticPrinter(errs(), &*DiagOpts);
+  TextDiagnosticPrinter *DiagClient
+    = new TextDiagnosticPrinter(errs(), &*DiagOpts);
   DiagClient->setPrefix("clang -cc1as");
   IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
   DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagClient);
 
   // Set an error handler, so that any LLVM backend diagnostics go through our
   // error handler.
-  ScopedFatalErrorHandler FatalErrorHandler(LLVMErrorHandler,
-                                            static_cast<void *>(&Diags));
+  ScopedFatalErrorHandler FatalErrorHandler
+    (LLVMErrorHandler, static_cast<void*>(&Diags));
 
   // Parse the arguments.
   AssemblerInvocation Asm;
@@ -598,7 +599,7 @@ int cc1as_main(ArrayRef<const char *> Argv, const char *Argv0, void *MainAddr) {
   // FIXME: Remove this, one day.
   if (!Asm.LLVMArgs.empty()) {
     unsigned NumArgs = Asm.LLVMArgs.size();
-    auto Args = std::make_unique<const char *[]>(NumArgs + 2);
+    auto Args = std::make_unique<const char*[]>(NumArgs + 2);
     Args[0] = "clang (LLVM option parsing)";
     for (unsigned i = 0; i != NumArgs; ++i)
       Args[i + 1] = Asm.LLVMArgs[i].c_str();

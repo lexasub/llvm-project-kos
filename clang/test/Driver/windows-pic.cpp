@@ -56,3 +56,4 @@
 // CHECK-pic-ERROR: unsupported option '-fpic' for target '{{.*}}
 // CHECK-PIE-ERROR: unsupported option '-fPIE' for target '{{.*}}
 // CHECK-pie-ERROR: unsupported option '-fpie' for target '{{.*}}
+

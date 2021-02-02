@@ -2,10 +2,8 @@
 
 // Tests if function try blocks are correctly handled.
 
-void nonCompoundStmt1(int &x) try { x += 1; } catch (...) {
-  x -= 1;
-} // expected-warning{{Duplicate code detected}}
+void nonCompoundStmt1(int& x)
+  try { x += 1; } catch(...) { x -= 1; } // expected-warning{{Duplicate code detected}}
 
-void nonCompoundStmt2(int &x) try { x += 1; } catch (...) {
-  x -= 1;
-} // expected-note{{Similar code here}}
+void nonCompoundStmt2(int& x)
+  try { x += 1; } catch(...) { x -= 1; } // expected-note{{Similar code here}}

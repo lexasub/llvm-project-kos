@@ -21,5 +21,5 @@
 // CHECK-CONFORMING: #define zzz
 
 zzz
-    // expected-no-diagnostics
-    extern bool x;
+// expected-no-diagnostics
+extern bool x;

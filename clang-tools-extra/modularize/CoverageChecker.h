@@ -76,9 +76,9 @@ public:
   /// \param CommandLine Compile command line arguments.
   /// \param ModuleMap The module map to check.
   CoverageChecker(llvm::StringRef ModuleMapPath,
-                  std::vector<std::string> &IncludePaths,
-                  llvm::ArrayRef<std::string> CommandLine,
-                  clang::ModuleMap *ModuleMap);
+    std::vector<std::string> &IncludePaths,
+    llvm::ArrayRef<std::string> CommandLine,
+    clang::ModuleMap *ModuleMap);
 
   /// Create instance of CoverageChecker.
   /// \param ModuleMapPath The module.modulemap file path.

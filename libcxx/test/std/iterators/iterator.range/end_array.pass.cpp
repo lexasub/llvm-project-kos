@@ -15,12 +15,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  int ia[] = {1, 2, 3};
-  int* i = std::begin(ia);
-  int* e = std::end(ia);
-  assert(e == ia + 3);
-  assert(e - i == 3);
+int main(int, char**)
+{
+    int ia[] = {1, 2, 3};
+    int* i = std::begin(ia);
+    int* e = std::end(ia);
+    assert(e == ia + 3);
+    assert(e - i == 3);
 
   return 0;
 }

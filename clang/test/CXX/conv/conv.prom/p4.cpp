@@ -1,21 +1,18 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++0x %s
 // expected-no-diagnostics
 
-enum X : short { A,
-                 B };
+enum X : short { A, B };
 extern decltype(+A) x;
 extern int x;
 
-enum Y : long { C,
-                D };
+enum Y : long { C, D };
 extern decltype(+C) y;
 extern long y;
 
 // An enum with a fixed underlying type has an integral promotion to that type,
 // and to its promoted type.
-enum B : bool { false_,
-                true_ };
-template <bool> struct T {};
+enum B : bool { false_, true_ };
+template<bool> struct T {};
 T<false_> f;
 T<true_> t;
 // FIXME: DR1407 will make this ill-formed

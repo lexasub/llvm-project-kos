@@ -27,7 +27,7 @@ namespace {
 class ARMWinCOFFObjectWriter : public MCWinCOFFObjectTargetWriter {
 public:
   ARMWinCOFFObjectWriter(bool Is64Bit)
-      : MCWinCOFFObjectTargetWriter(COFF::IMAGE_FILE_MACHINE_ARMNT) {
+    : MCWinCOFFObjectTargetWriter(COFF::IMAGE_FILE_MACHINE_ARMNT) {
     assert(!Is64Bit && "AArch64 support not yet implemented");
   }
 
@@ -50,9 +50,8 @@ unsigned ARMWinCOFFObjectWriter::getRelocType(MCContext &Ctx,
   assert(getMachine() == COFF::IMAGE_FILE_MACHINE_ARMNT &&
          "AArch64 support not yet implemented");
 
-  MCSymbolRefExpr::VariantKind Modifier = Target.isAbsolute()
-                                              ? MCSymbolRefExpr::VK_None
-                                              : Target.getSymA()->getKind();
+  MCSymbolRefExpr::VariantKind Modifier =
+    Target.isAbsolute() ? MCSymbolRefExpr::VK_None : Target.getSymA()->getKind();
 
   switch (static_cast<unsigned>(Fixup.getKind())) {
   default: {

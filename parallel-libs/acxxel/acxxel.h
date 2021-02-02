@@ -1249,8 +1249,8 @@ private:
 template <typename T>
 AsyncHostMemory<T>::AsyncHostMemory(AsyncHostMemory &&) noexcept = default;
 template <typename T>
-AsyncHostMemory<T> &
-AsyncHostMemory<T>::operator=(AsyncHostMemory &&) noexcept = default;
+AsyncHostMemory<T> &AsyncHostMemory<T>::
+operator=(AsyncHostMemory &&) noexcept = default;
 
 /// Owned registered host memory.
 ///
@@ -1301,8 +1301,8 @@ template <typename T>
 OwnedAsyncHostMemory<T>::OwnedAsyncHostMemory(
     OwnedAsyncHostMemory &&) noexcept = default;
 template <typename T>
-OwnedAsyncHostMemory<T> &
-OwnedAsyncHostMemory<T>::operator=(OwnedAsyncHostMemory &&) noexcept = default;
+OwnedAsyncHostMemory<T> &OwnedAsyncHostMemory<T>::
+operator=(OwnedAsyncHostMemory &&) noexcept = default;
 
 /// View into registered host memory.
 ///

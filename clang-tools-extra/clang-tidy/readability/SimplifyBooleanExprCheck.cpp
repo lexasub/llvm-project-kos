@@ -339,7 +339,7 @@ bool containsDiscardedTokens(const MatchFinder::MatchResult &Result,
 } // namespace
 
 class SimplifyBooleanExprCheck::Visitor : public RecursiveASTVisitor<Visitor> {
-public:
+ public:
   Visitor(SimplifyBooleanExprCheck *Check,
           const MatchFinder::MatchResult &Result)
       : Check(Check), Result(Result) {}
@@ -349,7 +349,7 @@ public:
     return true;
   }
 
-private:
+ private:
   SimplifyBooleanExprCheck *Check;
   const MatchFinder::MatchResult &Result;
 };
@@ -408,34 +408,34 @@ void SimplifyBooleanExprCheck::reportBinOp(
   };
 
   switch (Op->getOpcode()) {
-  case BO_LAnd:
-    if (BoolValue) {
-      // expr && true -> expr
-      ReplaceWithExpression(Other, /*Negated=*/false);
-    } else {
-      // expr && false -> false
-      ReplaceWithExpression(Bool, /*Negated=*/false);
-    }
-    break;
-  case BO_LOr:
-    if (BoolValue) {
-      // expr || true -> true
-      ReplaceWithExpression(Bool, /*Negated=*/false);
-    } else {
-      // expr || false -> expr
-      ReplaceWithExpression(Other, /*Negated=*/false);
-    }
-    break;
-  case BO_EQ:
-    // expr == true -> expr, expr == false -> !expr
-    ReplaceWithExpression(Other, /*Negated=*/!BoolValue);
-    break;
-  case BO_NE:
-    // expr != true -> !expr, expr != false -> expr
-    ReplaceWithExpression(Other, /*Negated=*/BoolValue);
-    break;
-  default:
-    break;
+    case BO_LAnd:
+      if (BoolValue) {
+        // expr && true -> expr
+        ReplaceWithExpression(Other, /*Negated=*/false);
+      } else {
+        // expr && false -> false
+        ReplaceWithExpression(Bool, /*Negated=*/false);
+      }
+      break;
+    case BO_LOr:
+      if (BoolValue) {
+        // expr || true -> true
+        ReplaceWithExpression(Bool, /*Negated=*/false);
+      } else {
+        // expr || false -> expr
+        ReplaceWithExpression(Other, /*Negated=*/false);
+      }
+      break;
+    case BO_EQ:
+      // expr == true -> expr, expr == false -> !expr
+      ReplaceWithExpression(Other, /*Negated=*/!BoolValue);
+      break;
+    case BO_NE:
+      // expr != true -> !expr, expr != false -> expr
+      ReplaceWithExpression(Other, /*Negated=*/BoolValue);
+      break;
+    default:
+      break;
   }
 }
 

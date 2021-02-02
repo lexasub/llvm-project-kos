@@ -24,9 +24,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "NVPTX.h"
 #include "NVPTXUtilities.h"
+#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IntrinsicInst.h"
@@ -55,8 +55,8 @@ public:
 
 char NVPTXLowerAlloca::ID = 1;
 
-INITIALIZE_PASS(NVPTXLowerAlloca, "nvptx-lower-alloca", "Lower Alloca", false,
-                false)
+INITIALIZE_PASS(NVPTXLowerAlloca, "nvptx-lower-alloca",
+                "Lower Alloca", false, false)
 
 // =============================================================================
 // Main function for this pass.

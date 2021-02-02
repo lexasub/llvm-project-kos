@@ -1,8 +1,8 @@
 // RUN: %clang_cl_asan -Od %s -Fe%t
 // RUN: %run %t
 
-#include <process.h>
 #include <windows.h>
+#include <process.h>
 
 unsigned WINAPI thread_proc(void *) {
   volatile char stack_buffer[42];

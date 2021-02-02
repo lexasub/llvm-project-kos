@@ -29,8 +29,9 @@ struct ObjCMethodList {
   /// The next list object and 2 bits for extra info.
   llvm::PointerIntPair<ObjCMethodList *, 2> NextAndExtraBits;
 
-  ObjCMethodList() {}
-  ObjCMethodList(ObjCMethodDecl *M) : MethodAndHasMoreThanOneDecl(M, 0) {}
+  ObjCMethodList() { }
+  ObjCMethodList(ObjCMethodDecl *M)
+      : MethodAndHasMoreThanOneDecl(M, 0) {}
   ObjCMethodList(const ObjCMethodList &L)
       : MethodAndHasMoreThanOneDecl(L.MethodAndHasMoreThanOneDecl),
         NextAndExtraBits(L.NextAndExtraBits) {}
@@ -61,6 +62,6 @@ struct ObjCMethodList {
   }
 };
 
-} // namespace clang
+}
 
 #endif

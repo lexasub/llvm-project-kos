@@ -8,25 +8,25 @@
 // expected-error@+3 {{ISO C++17 does not allow dynamic exception specifications}}
 // expected-note@+2 {{use 'noexcept(false)' instead}}
 #endif
-void f() throw(...) {}
+void f() throw(...) { }
 
 namespace PR28080 {
-struct S; // expected-note {{forward declaration}}
+struct S;           // expected-note {{forward declaration}}
 #if __cplusplus >= 201703L
 // expected-error@+3 {{ISO C++17 does not allow dynamic exception specifications}}
 // expected-note@+2 {{use 'noexcept(false)' instead}}
 #endif
 void fn() throw(S); // expected-warning {{incomplete type}} expected-note{{previous declaration}}
 void fn() throw();  // expected-warning {{does not match previous declaration}}
-} // namespace PR28080
+}
 
 template <typename T> struct FooPtr {
   template <typename U> FooPtr(U *p) : m_pT(nullptr) {}
 
   template <>
-  // FIXME: It would be better if this note pointed at the primary template
-  // above.
-  // expected-note@+1 {{previous declaration is here}}
+      // FIXME: It would be better if this note pointed at the primary template
+      // above.
+      // expected-note@+1 {{previous declaration is here}}
   FooPtr(T *pInterface) throw() // expected-warning {{exception specification in declaration does not match previous declaration}}
       : m_pT(pInterface) {}
 

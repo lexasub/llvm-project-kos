@@ -23,7 +23,8 @@ SplitQualifiers(llvm::StringRef StringQualifiers) {
 }
 
 std::string createQualifiedNameForReplacement(
-    llvm::StringRef RawSymbolName, llvm::StringRef SymbolScopedQualifiersName,
+    llvm::StringRef RawSymbolName,
+    llvm::StringRef SymbolScopedQualifiersName,
     const find_all_symbols::SymbolInfo &MatchedSymbol) {
   // No need to add missing qualifiers if SymbolIdentifier has a global scope
   // operator "::".
@@ -110,5 +111,5 @@ IncludeFixerContext::IncludeFixerContext(
                     HeaderInfos.end());
 }
 
-} // namespace include_fixer
-} // namespace clang
+} // include_fixer
+} // clang

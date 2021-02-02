@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lldb/Utility/Timer.h"
 #include "lldb/Utility/StreamString.h"
+#include "lldb/Utility/Timer.h"
 #include "gtest/gtest.h"
 #include <thread>
 
@@ -96,11 +96,10 @@ TEST(TimerTest, CategoryTimesStats) {
   double seconds1, total1, child1, seconds2;
   int count1, count2;
   ASSERT_EQ(
-      6,
-      sscanf(ss.GetData(),
-             "%lf sec (total: %lfs; child: %lfs; count: %d) for CAT1%*[\n\r ]"
-             "%lf sec (total: %*fs; child: %*fs; count: %d) for CAT2",
-             &seconds1, &total1, &child1, &count1, &seconds2, &count2))
+      6, sscanf(ss.GetData(),
+                "%lf sec (total: %lfs; child: %lfs; count: %d) for CAT1%*[\n\r ]"
+                "%lf sec (total: %*fs; child: %*fs; count: %d) for CAT2",
+                &seconds1, &total1, &child1, &count1, &seconds2, &count2))
       << "String: " << ss.GetData();
   EXPECT_NEAR(total1 - child1, seconds1, 0.002);
   EXPECT_EQ(1, count1);

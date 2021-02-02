@@ -13,23 +13,20 @@ void wrong_argument_type() __attribute__((enforce_tcb(12))); // expected-error{{
 void no_arguments_leaf() __attribute__((enforce_tcb_leaf)); // expected-error{{'enforce_tcb_leaf' attribute takes one argument}}
 
 void too_many_arguments_leaf() __attribute__((enforce_tcb_leaf("test", 12))); // expected-error{{'enforce_tcb_leaf' attribute takes one argument}}
-void wrong_argument_type_leaf() __attribute__((enforce_tcb_leaf(12)));        // expected-error{{'enforce_tcb_leaf' attribute requires a string}}
+void wrong_argument_type_leaf() __attribute__((enforce_tcb_leaf(12))); // expected-error{{'enforce_tcb_leaf' attribute requires a string}}
 
 void foo();
 
 __attribute__((enforce_tcb("x")))
 __attribute__((enforce_tcb_leaf("x"))) // expected-error{{attributes 'enforce_tcb_leaf("x")' and 'enforce_tcb("x")' are mutually exclusive}}
-void
-both_tcb_and_tcb_leaf() {
+void both_tcb_and_tcb_leaf() {
   foo(); // no-warning
 }
 
 __attribute__((enforce_tcb_leaf("x"))) // expected-note{{conflicting attribute is here}}
-void
-both_tcb_and_tcb_leaf_on_separate_redeclarations();
+void both_tcb_and_tcb_leaf_on_separate_redeclarations();
 __attribute__((enforce_tcb("x"))) // expected-error{{attributes 'enforce_tcb("x")' and 'enforce_tcb_leaf("x")' are mutually exclusive}}
-void
-both_tcb_and_tcb_leaf_on_separate_redeclarations() {
+void both_tcb_and_tcb_leaf_on_separate_redeclarations() {
   // Error recovery: no need to emit a warning when we didn't
   // figure out our attributes to begin with.
   foo(); // no-warning
@@ -37,50 +34,46 @@ both_tcb_and_tcb_leaf_on_separate_redeclarations() {
 
 __attribute__((enforce_tcb_leaf("x")))
 __attribute__((enforce_tcb("x"))) // expected-error{{attributes 'enforce_tcb("x")' and 'enforce_tcb_leaf("x")' are mutually exclusive}}
-void
-both_tcb_and_tcb_leaf_opposite_order() {
+void both_tcb_and_tcb_leaf_opposite_order() {
   foo(); // no-warning
 }
 
 __attribute__((enforce_tcb("x"))) // expected-note{{conflicting attribute is here}}
-void
-both_tcb_and_tcb_leaf_on_separate_redeclarations_opposite_order();
+void both_tcb_and_tcb_leaf_on_separate_redeclarations_opposite_order();
 __attribute__((enforce_tcb_leaf("x"))) // expected-error{{attributes 'enforce_tcb_leaf("x")' and 'enforce_tcb("x")' are mutually exclusive}}
-void
-both_tcb_and_tcb_leaf_on_separate_redeclarations_opposite_order() {
+void both_tcb_and_tcb_leaf_on_separate_redeclarations_opposite_order() {
   foo(); // no-warning
 }
 
 __attribute__((enforce_tcb("x")))
 __attribute__((enforce_tcb_leaf("y"))) // no-error
-void
-both_tcb_and_tcb_leaf_but_different_identifiers() {
+void both_tcb_and_tcb_leaf_but_different_identifiers() {
   foo(); // expected-warning{{calling 'foo' is a violation of trusted computing base 'x'}}
 }
 __attribute__((enforce_tcb_leaf("x")))
 __attribute__((enforce_tcb("y"))) // no-error
-void
-both_tcb_and_tcb_leaf_but_different_identifiers_opposite_order() {
+void both_tcb_and_tcb_leaf_but_different_identifiers_opposite_order() {
   foo(); // expected-warning{{calling 'foo' is a violation of trusted computing base 'y'}}
 }
 
-__attribute__((enforce_tcb("x"))) void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations();
+__attribute__((enforce_tcb("x")))
+void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations();
 __attribute__((enforce_tcb_leaf("y"))) // no-error
-void
-both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations() {
+void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations() {
   foo(); // expected-warning{{calling 'foo' is a violation of trusted computing base 'x'}}
 }
 
-__attribute__((enforce_tcb_leaf("x"))) void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations_opposite_order();
-__attribute__((enforce_tcb("y"))) void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations_opposite_order() {
+__attribute__((enforce_tcb_leaf("x")))
+void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations_opposite_order();
+__attribute__((enforce_tcb("y")))
+void both_tcb_and_tcb_leaf_but_different_identifiers_on_separate_redeclarations_opposite_order() {
   foo(); // expected-warning{{calling 'foo' is a violation of trusted computing base 'y'}}
 }
 
 __attribute__((enforce_tcb("y")))
 __attribute__((enforce_tcb("x")))
 __attribute__((enforce_tcb_leaf("x"))) // expected-error{{attributes 'enforce_tcb_leaf("x")' and 'enforce_tcb("x")' are mutually exclusive}}
-void
-error_recovery_over_individual_tcbs() {
+void error_recovery_over_individual_tcbs() {
   // FIXME: Ideally this should warn. The conflict between attributes
   // for TCB "x" shouldn't affect the warning about TCB "y".
   foo(); // no-warning

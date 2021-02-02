@@ -5,7 +5,7 @@ namespace std {
 template <class>
 class function;
 class string {};
-} // namespace std
+}
 
 namespace boost {
 template <class>
@@ -22,148 +22,148 @@ typedef unsigned my_unsigned;
 typedef unsigned &my_unsigned_reference;
 typedef const unsigned &my_unsigned_const_reference;
 
-struct NO_DISCARD NoDiscardStruct {};
+struct NO_DISCARD NoDiscardStruct{};
 
 class Foo {
 public:
-  using size_type = unsigned;
+    using size_type = unsigned;
 
-  bool f1() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f1' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f1() const;
+    bool f1() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f1' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f1() const;
 
-  bool f2(int) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f2' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f2(int) const;
+    bool f2(int) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f2' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f2(int) const;
 
-  bool f3(const int &) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f3' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f3(const int &) const;
+    bool f3(const int &) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f3' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f3(const int &) const;
 
-  bool f4(void) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f4' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f4(void) const;
+    bool f4(void) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f4' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f4(void) const;
+    
+    // negative tests
 
-  // negative tests
+    void f5() const;
+    
+    bool f6();
+    
+    bool f7(int &);
+    
+    bool f8(int &) const;
+    
+    bool f9(int *) const;
+    
+    bool f10(const int &, int &) const;
+    
+    NO_DISCARD bool f12() const;
+    
+    MUST_USE_RESULT bool f13() const;
+    
+    [[nodiscard]] bool f11() const;
+    
+    [[clang::warn_unused_result]] bool f11a() const;
+    
+    [[gnu::warn_unused_result]] bool f11b() const;
 
-  void f5() const;
+    bool _f20() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function '_f20' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool _f20() const;
+    
+    NO_RETURN bool f21() const;
+    
+    ~Foo();
+    
+    bool operator+=(int) const;
+    
+    // extra keywords (virtual,inline,const) on return type
+    
+    virtual bool f14() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f14' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD virtual bool f14() const;
+    
+    const bool f15() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f15' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD const bool f15() const;
+    
+    inline const bool f16() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f16' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD inline const bool f16() const;
 
-  bool f6();
+    inline const std::string &f45() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f45' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD inline const std::string &f45() const;
 
-  bool f7(int &);
+    inline virtual const bool f17() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f17' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD inline virtual const bool f17() const;
 
-  bool f8(int &) const;
+    // inline with body
+    bool f18() const 
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f18' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f18() const 
+    {
+     return true;
+    }
 
-  bool f9(int *) const;
+    bool f19() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f19' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f19() const;
 
-  bool f10(const int &, int &) const;
+    BOOLEAN_FUNC;
+    
+    bool f24(size_type) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f24' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f24(size_type) const;
+    
+    bool f28(my_unsigned) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f28' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f28(my_unsigned) const;
 
-  NO_DISCARD bool f12() const;
+    bool f29(my_unsigned_reference) const;
 
-  MUST_USE_RESULT bool f13() const;
+    bool f30(my_unsigned_const_reference) const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f30' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool f30(my_unsigned_const_reference) const;
 
-  [[nodiscard]] bool f11() const;
+    template <class F>
+    F f37(F a, F b) const;
 
-  [[clang::warn_unused_result]] bool f11a() const;
+    template <class F>
+    bool f38(F a) const;
 
-  [[gnu::warn_unused_result]] bool f11b() const;
+    bool f39(const std::function<bool()> &predicate) const;
 
-  bool _f20() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function '_f20' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool _f20() const;
+    bool f39a(std::function<bool()> predicate) const;
 
-  NO_RETURN bool f21() const;
+    bool f39b(const std::function<bool()> predicate) const;
 
-  ~Foo();
+    bool f45(const boost::function<bool()> &predicate) const;
 
-  bool operator+=(int) const;
+    bool f45a(boost::function<bool()> predicate) const;
 
-  // extra keywords (virtual,inline,const) on return type
+    bool f45b(const boost::function<bool()> predicate) const;
 
-  virtual bool f14() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f14' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD virtual bool f14() const;
+    // Do not add ``[[nodiscard]]`` to parameter packs.
+    template <class... Args>
+    bool ParameterPack(Args... args) const;
 
-  const bool f15() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f15' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD const bool f15() const;
+    template <typename... Targs>
+    bool ParameterPack2(Targs... Fargs) const;
 
-  inline const bool f16() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f16' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD inline const bool f16() const;
+    // Do not add ``[[nodiscard]]`` to variadic functions.
+    bool VariadicFunctionTest(const int &, ...) const;
 
-  inline const std::string &f45() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f45' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD inline const std::string &f45() const;
+    // Do not add ``[[nodiscard]]`` to non constant static functions.
+    static bool not_empty();
 
-  inline virtual const bool f17() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f17' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD inline virtual const bool f17() const;
+    // Do not add ``[[nodiscard]]`` to conversion functions.
+    // explicit operator bool() const { return true; }
 
-  // inline with body
-  bool f18() const
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f18' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f18() const
-  {
-    return true;
-  }
-
-  bool f19() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f19' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f19() const;
-
-  BOOLEAN_FUNC;
-
-  bool f24(size_type) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f24' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f24(size_type) const;
-
-  bool f28(my_unsigned) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f28' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f28(my_unsigned) const;
-
-  bool f29(my_unsigned_reference) const;
-
-  bool f30(my_unsigned_const_reference) const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f30' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool f30(my_unsigned_const_reference) const;
-
-  template <class F>
-  F f37(F a, F b) const;
-
-  template <class F>
-  bool f38(F a) const;
-
-  bool f39(const std::function<bool()> &predicate) const;
-
-  bool f39a(std::function<bool()> predicate) const;
-
-  bool f39b(const std::function<bool()> predicate) const;
-
-  bool f45(const boost::function<bool()> &predicate) const;
-
-  bool f45a(boost::function<bool()> predicate) const;
-
-  bool f45b(const boost::function<bool()> predicate) const;
-
-  // Do not add ``[[nodiscard]]`` to parameter packs.
-  template <class... Args>
-  bool ParameterPack(Args... args) const;
-
-  template <typename... Targs>
-  bool ParameterPack2(Targs... Fargs) const;
-
-  // Do not add ``[[nodiscard]]`` to variadic functions.
-  bool VariadicFunctionTest(const int &, ...) const;
-
-  // Do not add ``[[nodiscard]]`` to non constant static functions.
-  static bool not_empty();
-
-  // Do not add ``[[nodiscard]]`` to conversion functions.
-  // explicit operator bool() const { return true; }
-
-  // Do not add ``[[nodiscard]]`` to functions returning types marked [[nodiscard]].
-  NoDiscardStruct f50() const;
+    // Do not add ``[[nodiscard]]`` to functions returning types marked [[nodiscard]].
+    NoDiscardStruct f50() const;
 };
 
 // Do not add ``[[nodiscard]]`` to Lambda.
@@ -173,15 +173,15 @@ const auto nonConstReferenceType = [] {
 
 auto lambda1 = [](int a, int b) { return a < b; };
 auto lambda1a = [](int a) { return a; };
-auto lambda1b = []() { return true; };
+auto lambda1b = []()  { return true;};
 
 auto get_functor = [](bool check) {
-  return [&](const std::string &sr) -> std::string {
-    if (check) {
-      return std::string();
-    }
-    return std::string();
-  };
+    return  [&](const std::string& sr)->std::string {
+        if(check){
+            return std::string();
+        }
+        return std::string();
+    };
 };
 
 // Do not add ``[[nodiscard]]`` to function definition.
@@ -192,46 +192,46 @@ bool Foo::f19() const {
 template <class T>
 class Bar {
 public:
-  using value_type = T;
-  using reference = value_type &;
-  using const_reference = const value_type &;
+    using value_type = T;
+    using reference = value_type &;
+    using const_reference = const value_type &;
 
-  // Do not add ``[[nodiscard]]`` to non explicit conversion functions.
-  operator bool() const { return true; }
+    // Do not add ``[[nodiscard]]`` to non explicit conversion functions.
+    operator bool() const { return true; }
 
-  bool empty() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'empty' should be marked NO_DISCARD [modernize-use-nodiscard]
-  // CHECK-FIXES: NO_DISCARD bool empty() const;
+    bool empty() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'empty' should be marked NO_DISCARD [modernize-use-nodiscard]
+    // CHECK-FIXES: NO_DISCARD bool empty() const;
 
-  // we cannot assume that the template parameter isn't a pointer
-  bool f25(value_type) const;
+    // we cannot assume that the template parameter isn't a pointer
+    bool f25(value_type) const;
 
-  bool f27(reference) const;
+    bool f27(reference) const;
 
-  typename T::value_type f35() const;
+    typename T::value_type f35() const;
 
-  T f34() const;
+    T f34() const;
 
-  bool f31(T) const;
+    bool f31(T) const;
 
-  bool f33(T &) const;
+    bool f33(T &) const;
 
-  bool f26(const_reference) const;
+    bool f26(const_reference) const;
 
-  bool f32(const T &) const;
+    bool f32(const T &) const;
 };
 
 template <typename _Tp, int cn>
 class Vec {
 public:
-  Vec(_Tp v0, _Tp v1); //!< 2-element vector constructor
+    Vec(_Tp v0, _Tp v1); //!< 2-element vector constructor
 
-  Vec cross(const Vec &v) const;
+    Vec cross(const Vec &v) const;
 
-  template <typename T2>
-  operator Vec<T2, cn>() const;
+    template <typename T2>
+    operator Vec<T2, cn>() const;
 };
-
+    
 template <class T>
 class Bar2 {
 public:

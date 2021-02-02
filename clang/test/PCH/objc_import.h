@@ -14,5 +14,5 @@
 @compatibility_alias OldID2 NewID2;
 @class OldID2;
 @interface OldID2
-- (void)meth;
+-(void)meth;
 @end

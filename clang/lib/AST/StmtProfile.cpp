@@ -25,190 +25,195 @@
 using namespace clang;
 
 namespace {
-class StmtProfiler : public ConstStmtVisitor<StmtProfiler> {
-protected:
-  llvm::FoldingSetNodeID &ID;
-  bool Canonical;
+  class StmtProfiler : public ConstStmtVisitor<StmtProfiler> {
+  protected:
+    llvm::FoldingSetNodeID &ID;
+    bool Canonical;
 
-public:
-  StmtProfiler(llvm::FoldingSetNodeID &ID, bool Canonical)
-      : ID(ID), Canonical(Canonical) {}
+  public:
+    StmtProfiler(llvm::FoldingSetNodeID &ID, bool Canonical)
+        : ID(ID), Canonical(Canonical) {}
 
-  virtual ~StmtProfiler() {}
+    virtual ~StmtProfiler() {}
 
-  void VisitStmt(const Stmt *S);
+    void VisitStmt(const Stmt *S);
 
-  virtual void HandleStmtClass(Stmt::StmtClass SC) = 0;
+    virtual void HandleStmtClass(Stmt::StmtClass SC) = 0;
 
 #define STMT(Node, Base) void Visit##Node(const Node *S);
 #include "clang/AST/StmtNodes.inc"
 
-  /// Visit a declaration that is referenced within an expression
-  /// or statement.
-  virtual void VisitDecl(const Decl *D) = 0;
+    /// Visit a declaration that is referenced within an expression
+    /// or statement.
+    virtual void VisitDecl(const Decl *D) = 0;
 
-  /// Visit a type that is referenced within an expression or
-  /// statement.
-  virtual void VisitType(QualType T) = 0;
+    /// Visit a type that is referenced within an expression or
+    /// statement.
+    virtual void VisitType(QualType T) = 0;
 
-  /// Visit a name that occurs within an expression or statement.
-  virtual void VisitName(DeclarationName Name, bool TreatAsDecl = false) = 0;
+    /// Visit a name that occurs within an expression or statement.
+    virtual void VisitName(DeclarationName Name, bool TreatAsDecl = false) = 0;
 
-  /// Visit identifiers that are not in Decl's or Type's.
-  virtual void VisitIdentifierInfo(IdentifierInfo *II) = 0;
+    /// Visit identifiers that are not in Decl's or Type's.
+    virtual void VisitIdentifierInfo(IdentifierInfo *II) = 0;
 
-  /// Visit a nested-name-specifier that occurs within an expression
-  /// or statement.
-  virtual void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) = 0;
+    /// Visit a nested-name-specifier that occurs within an expression
+    /// or statement.
+    virtual void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) = 0;
 
-  /// Visit a template name that occurs within an expression or
-  /// statement.
-  virtual void VisitTemplateName(TemplateName Name) = 0;
+    /// Visit a template name that occurs within an expression or
+    /// statement.
+    virtual void VisitTemplateName(TemplateName Name) = 0;
 
-  /// Visit template arguments that occur within an expression or
-  /// statement.
-  void VisitTemplateArguments(const TemplateArgumentLoc *Args,
-                              unsigned NumArgs);
+    /// Visit template arguments that occur within an expression or
+    /// statement.
+    void VisitTemplateArguments(const TemplateArgumentLoc *Args,
+                                unsigned NumArgs);
 
-  /// Visit a single template argument.
-  void VisitTemplateArgument(const TemplateArgument &Arg);
-};
+    /// Visit a single template argument.
+    void VisitTemplateArgument(const TemplateArgument &Arg);
+  };
 
-class StmtProfilerWithPointers : public StmtProfiler {
-  const ASTContext &Context;
+  class StmtProfilerWithPointers : public StmtProfiler {
+    const ASTContext &Context;
 
-public:
-  StmtProfilerWithPointers(llvm::FoldingSetNodeID &ID,
-                           const ASTContext &Context, bool Canonical)
-      : StmtProfiler(ID, Canonical), Context(Context) {}
-
-private:
-  void HandleStmtClass(Stmt::StmtClass SC) override { ID.AddInteger(SC); }
-
-  void VisitDecl(const Decl *D) override {
-    ID.AddInteger(D ? D->getKind() : 0);
-
-    if (Canonical && D) {
-      if (const NonTypeTemplateParmDecl *NTTP =
-              dyn_cast<NonTypeTemplateParmDecl>(D)) {
-        ID.AddInteger(NTTP->getDepth());
-        ID.AddInteger(NTTP->getIndex());
-        ID.AddBoolean(NTTP->isParameterPack());
-        VisitType(NTTP->getType());
-        return;
-      }
-
-      if (const ParmVarDecl *Parm = dyn_cast<ParmVarDecl>(D)) {
-        // The Itanium C++ ABI uses the type, scope depth, and scope
-        // index of a parameter when mangling expressions that involve
-        // function parameters, so we will use the parameter's type for
-        // establishing function parameter identity. That way, our
-        // definition of "equivalent" (per C++ [temp.over.link]) is at
-        // least as strong as the definition of "equivalent" used for
-        // name mangling.
-        VisitType(Parm->getType());
-        ID.AddInteger(Parm->getFunctionScopeDepth());
-        ID.AddInteger(Parm->getFunctionScopeIndex());
-        return;
-      }
-
-      if (const TemplateTypeParmDecl *TTP = dyn_cast<TemplateTypeParmDecl>(D)) {
-        ID.AddInteger(TTP->getDepth());
-        ID.AddInteger(TTP->getIndex());
-        ID.AddBoolean(TTP->isParameterPack());
-        return;
-      }
-
-      if (const TemplateTemplateParmDecl *TTP =
-              dyn_cast<TemplateTemplateParmDecl>(D)) {
-        ID.AddInteger(TTP->getDepth());
-        ID.AddInteger(TTP->getIndex());
-        ID.AddBoolean(TTP->isParameterPack());
-        return;
-      }
-    }
-
-    ID.AddPointer(D ? D->getCanonicalDecl() : nullptr);
-  }
-
-  void VisitType(QualType T) override {
-    if (Canonical && !T.isNull())
-      T = Context.getCanonicalType(T);
-
-    ID.AddPointer(T.getAsOpaquePtr());
-  }
-
-  void VisitName(DeclarationName Name, bool /*TreatAsDecl*/) override {
-    ID.AddPointer(Name.getAsOpaquePtr());
-  }
-
-  void VisitIdentifierInfo(IdentifierInfo *II) override { ID.AddPointer(II); }
-
-  void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) override {
-    if (Canonical)
-      NNS = Context.getCanonicalNestedNameSpecifier(NNS);
-    ID.AddPointer(NNS);
-  }
-
-  void VisitTemplateName(TemplateName Name) override {
-    if (Canonical)
-      Name = Context.getCanonicalTemplateName(Name);
-
-    Name.Profile(ID);
-  }
-};
-
-class StmtProfilerWithoutPointers : public StmtProfiler {
-  ODRHash &Hash;
-
-public:
-  StmtProfilerWithoutPointers(llvm::FoldingSetNodeID &ID, ODRHash &Hash)
-      : StmtProfiler(ID, false), Hash(Hash) {}
-
-private:
-  void HandleStmtClass(Stmt::StmtClass SC) override {
-    if (SC == Stmt::UnresolvedLookupExprClass) {
-      // Pretend that the name looked up is a Decl due to how templates
-      // handle some Decl lookups.
-      ID.AddInteger(Stmt::DeclRefExprClass);
-    } else {
+  public:
+    StmtProfilerWithPointers(llvm::FoldingSetNodeID &ID,
+                             const ASTContext &Context, bool Canonical)
+        : StmtProfiler(ID, Canonical), Context(Context) {}
+  private:
+    void HandleStmtClass(Stmt::StmtClass SC) override {
       ID.AddInteger(SC);
     }
-  }
 
-  void VisitType(QualType T) override { Hash.AddQualType(T); }
+    void VisitDecl(const Decl *D) override {
+      ID.AddInteger(D ? D->getKind() : 0);
 
-  void VisitName(DeclarationName Name, bool TreatAsDecl) override {
-    if (TreatAsDecl) {
-      // A Decl can be null, so each Decl is preceded by a boolean to
-      // store its nullness.  Add a boolean here to match.
-      ID.AddBoolean(true);
+      if (Canonical && D) {
+        if (const NonTypeTemplateParmDecl *NTTP =
+                dyn_cast<NonTypeTemplateParmDecl>(D)) {
+          ID.AddInteger(NTTP->getDepth());
+          ID.AddInteger(NTTP->getIndex());
+          ID.AddBoolean(NTTP->isParameterPack());
+          VisitType(NTTP->getType());
+          return;
+        }
+
+        if (const ParmVarDecl *Parm = dyn_cast<ParmVarDecl>(D)) {
+          // The Itanium C++ ABI uses the type, scope depth, and scope
+          // index of a parameter when mangling expressions that involve
+          // function parameters, so we will use the parameter's type for
+          // establishing function parameter identity. That way, our
+          // definition of "equivalent" (per C++ [temp.over.link]) is at
+          // least as strong as the definition of "equivalent" used for
+          // name mangling.
+          VisitType(Parm->getType());
+          ID.AddInteger(Parm->getFunctionScopeDepth());
+          ID.AddInteger(Parm->getFunctionScopeIndex());
+          return;
+        }
+
+        if (const TemplateTypeParmDecl *TTP =
+                dyn_cast<TemplateTypeParmDecl>(D)) {
+          ID.AddInteger(TTP->getDepth());
+          ID.AddInteger(TTP->getIndex());
+          ID.AddBoolean(TTP->isParameterPack());
+          return;
+        }
+
+        if (const TemplateTemplateParmDecl *TTP =
+                dyn_cast<TemplateTemplateParmDecl>(D)) {
+          ID.AddInteger(TTP->getDepth());
+          ID.AddInteger(TTP->getIndex());
+          ID.AddBoolean(TTP->isParameterPack());
+          return;
+        }
+      }
+
+      ID.AddPointer(D ? D->getCanonicalDecl() : nullptr);
     }
-    Hash.AddDeclarationName(Name, TreatAsDecl);
-  }
-  void VisitIdentifierInfo(IdentifierInfo *II) override {
-    ID.AddBoolean(II);
-    if (II) {
-      Hash.AddIdentifierInfo(II);
+
+    void VisitType(QualType T) override {
+      if (Canonical && !T.isNull())
+        T = Context.getCanonicalType(T);
+
+      ID.AddPointer(T.getAsOpaquePtr());
     }
-  }
-  void VisitDecl(const Decl *D) override {
-    ID.AddBoolean(D);
-    if (D) {
-      Hash.AddDecl(D);
+
+    void VisitName(DeclarationName Name, bool /*TreatAsDecl*/) override {
+      ID.AddPointer(Name.getAsOpaquePtr());
     }
-  }
-  void VisitTemplateName(TemplateName Name) override {
-    Hash.AddTemplateName(Name);
-  }
-  void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) override {
-    ID.AddBoolean(NNS);
-    if (NNS) {
-      Hash.AddNestedNameSpecifier(NNS);
+
+    void VisitIdentifierInfo(IdentifierInfo *II) override {
+      ID.AddPointer(II);
     }
-  }
-};
-} // namespace
+
+    void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) override {
+      if (Canonical)
+        NNS = Context.getCanonicalNestedNameSpecifier(NNS);
+      ID.AddPointer(NNS);
+    }
+
+    void VisitTemplateName(TemplateName Name) override {
+      if (Canonical)
+        Name = Context.getCanonicalTemplateName(Name);
+
+      Name.Profile(ID);
+    }
+  };
+
+  class StmtProfilerWithoutPointers : public StmtProfiler {
+    ODRHash &Hash;
+  public:
+    StmtProfilerWithoutPointers(llvm::FoldingSetNodeID &ID, ODRHash &Hash)
+        : StmtProfiler(ID, false), Hash(Hash) {}
+
+  private:
+    void HandleStmtClass(Stmt::StmtClass SC) override {
+      if (SC == Stmt::UnresolvedLookupExprClass) {
+        // Pretend that the name looked up is a Decl due to how templates
+        // handle some Decl lookups.
+        ID.AddInteger(Stmt::DeclRefExprClass);
+      } else {
+        ID.AddInteger(SC);
+      }
+    }
+
+    void VisitType(QualType T) override {
+      Hash.AddQualType(T);
+    }
+
+    void VisitName(DeclarationName Name, bool TreatAsDecl) override {
+      if (TreatAsDecl) {
+        // A Decl can be null, so each Decl is preceded by a boolean to
+        // store its nullness.  Add a boolean here to match.
+        ID.AddBoolean(true);
+      }
+      Hash.AddDeclarationName(Name, TreatAsDecl);
+    }
+    void VisitIdentifierInfo(IdentifierInfo *II) override {
+      ID.AddBoolean(II);
+      if (II) {
+        Hash.AddIdentifierInfo(II);
+      }
+    }
+    void VisitDecl(const Decl *D) override {
+      ID.AddBoolean(D);
+      if (D) {
+        Hash.AddDecl(D);
+      }
+    }
+    void VisitTemplateName(TemplateName Name) override {
+      Hash.AddTemplateName(Name);
+    }
+    void VisitNestedNameSpecifier(NestedNameSpecifier *NNS) override {
+      ID.AddBoolean(NNS);
+      if (NNS) {
+        Hash.AddNestedNameSpecifier(NNS);
+      }
+    }
+  };
+}
 
 void StmtProfiler::VisitStmt(const Stmt *S) {
   assert(S && "Requires non-null Stmt pointer");
@@ -229,13 +234,21 @@ void StmtProfiler::VisitDeclStmt(const DeclStmt *S) {
     VisitDecl(D);
 }
 
-void StmtProfiler::VisitNullStmt(const NullStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitNullStmt(const NullStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitCompoundStmt(const CompoundStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitCompoundStmt(const CompoundStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitCaseStmt(const CaseStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitCaseStmt(const CaseStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitDefaultStmt(const DefaultStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitDefaultStmt(const DefaultStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitLabelStmt(const LabelStmt *S) {
   VisitStmt(S);
@@ -262,9 +275,13 @@ void StmtProfiler::VisitWhileStmt(const WhileStmt *S) {
   VisitDecl(S->getConditionVariable());
 }
 
-void StmtProfiler::VisitDoStmt(const DoStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitDoStmt(const DoStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitForStmt(const ForStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitForStmt(const ForStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitGotoStmt(const GotoStmt *S) {
   VisitStmt(S);
@@ -275,11 +292,17 @@ void StmtProfiler::VisitIndirectGotoStmt(const IndirectGotoStmt *S) {
   VisitStmt(S);
 }
 
-void StmtProfiler::VisitContinueStmt(const ContinueStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitContinueStmt(const ContinueStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitBreakStmt(const BreakStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitBreakStmt(const BreakStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitReturnStmt(const ReturnStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitReturnStmt(const ReturnStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitGCCAsmStmt(const GCCAsmStmt *S) {
   VisitStmt(S);
@@ -314,7 +337,9 @@ void StmtProfiler::VisitCXXCatchStmt(const CXXCatchStmt *S) {
   VisitType(S->getCaughtType());
 }
 
-void StmtProfiler::VisitCXXTryStmt(const CXXTryStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitCXXTryStmt(const CXXTryStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitCXXForRangeStmt(const CXXForRangeStmt *S) {
   VisitStmt(S);
@@ -327,17 +352,25 @@ void StmtProfiler::VisitMSDependentExistsStmt(const MSDependentExistsStmt *S) {
   VisitName(S->getNameInfo().getName());
 }
 
-void StmtProfiler::VisitSEHTryStmt(const SEHTryStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitSEHTryStmt(const SEHTryStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitSEHFinallyStmt(const SEHFinallyStmt *S) {
   VisitStmt(S);
 }
 
-void StmtProfiler::VisitSEHExceptStmt(const SEHExceptStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitSEHExceptStmt(const SEHExceptStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitSEHLeaveStmt(const SEHLeaveStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitSEHLeaveStmt(const SEHLeaveStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitCapturedStmt(const CapturedStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitCapturedStmt(const CapturedStmt *S) {
+  VisitStmt(S);
+}
 
 void StmtProfiler::VisitObjCForCollectionStmt(const ObjCForCollectionStmt *S) {
   VisitStmt(S);
@@ -354,10 +387,12 @@ void StmtProfiler::VisitObjCAtFinallyStmt(const ObjCAtFinallyStmt *S) {
   VisitStmt(S);
 }
 
-void StmtProfiler::VisitObjCAtTryStmt(const ObjCAtTryStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitObjCAtTryStmt(const ObjCAtTryStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitObjCAtSynchronizedStmt(
-    const ObjCAtSynchronizedStmt *S) {
+void
+StmtProfiler::VisitObjCAtSynchronizedStmt(const ObjCAtSynchronizedStmt *S) {
   VisitStmt(S);
 }
 
@@ -365,8 +400,8 @@ void StmtProfiler::VisitObjCAtThrowStmt(const ObjCAtThrowStmt *S) {
   VisitStmt(S);
 }
 
-void StmtProfiler::VisitObjCAutoreleasePoolStmt(
-    const ObjCAutoreleasePoolStmt *S) {
+void
+StmtProfiler::VisitObjCAutoreleasePoolStmt(const ObjCAutoreleasePoolStmt *S) {
   VisitStmt(S);
 }
 
@@ -374,10 +409,11 @@ namespace {
 class OMPClauseProfiler : public ConstOMPClauseVisitor<OMPClauseProfiler> {
   StmtProfiler *Profiler;
   /// Process clauses with list of variables.
-  template <typename T> void VisitOMPClauseList(T *Node);
+  template <typename T>
+  void VisitOMPClauseList(T *Node);
 
 public:
-  OMPClauseProfiler(StmtProfiler *P) : Profiler(P) {}
+  OMPClauseProfiler(StmtProfiler *P) : Profiler(P) { }
 #define GEN_CLANG_CLAUSE_CLASS
 #define CLAUSE_CLASS(Enum, Str, Class) void Visit##Class(const Class *C);
 #include "llvm/Frontend/OpenMP/OMP.inc"
@@ -441,9 +477,9 @@ void OMPClauseProfiler::VisitOMPDetachClause(const OMPDetachClause *C) {
     Profiler->VisitStmt(Evt);
 }
 
-void OMPClauseProfiler::VisitOMPDefaultClause(const OMPDefaultClause *C) {}
+void OMPClauseProfiler::VisitOMPDefaultClause(const OMPDefaultClause *C) { }
 
-void OMPClauseProfiler::VisitOMPProcBindClause(const OMPProcBindClause *C) {}
+void OMPClauseProfiler::VisitOMPProcBindClause(const OMPProcBindClause *C) { }
 
 void OMPClauseProfiler::VisitOMPUnifiedAddressClause(
     const OMPUnifiedAddressClause *C) {}
@@ -503,7 +539,8 @@ void OMPClauseProfiler::VisitOMPNogroupClause(const OMPNogroupClause *) {}
 
 void OMPClauseProfiler::VisitOMPDestroyClause(const OMPDestroyClause *) {}
 
-template <typename T> void OMPClauseProfiler::VisitOMPClauseList(T *Node) {
+template<typename T>
+void OMPClauseProfiler::VisitOMPClauseList(T *Node) {
   for (auto *E : Node->varlists()) {
     if (E)
       Profiler->VisitStmt(E);
@@ -517,8 +554,8 @@ void OMPClauseProfiler::VisitOMPPrivateClause(const OMPPrivateClause *C) {
       Profiler->VisitStmt(E);
   }
 }
-void OMPClauseProfiler::VisitOMPFirstprivateClause(
-    const OMPFirstprivateClause *C) {
+void
+OMPClauseProfiler::VisitOMPFirstprivateClause(const OMPFirstprivateClause *C) {
   VisitOMPClauseList(C);
   VistOMPClauseWithPreInit(C);
   for (auto *E : C->private_copies()) {
@@ -530,8 +567,8 @@ void OMPClauseProfiler::VisitOMPFirstprivateClause(
       Profiler->VisitStmt(E);
   }
 }
-void OMPClauseProfiler::VisitOMPLastprivateClause(
-    const OMPLastprivateClause *C) {
+void
+OMPClauseProfiler::VisitOMPLastprivateClause(const OMPLastprivateClause *C) {
   VisitOMPClauseList(C);
   VistOMPClauseWithPostUpdate(C);
   for (auto *E : C->source_exprs()) {
@@ -550,7 +587,8 @@ void OMPClauseProfiler::VisitOMPLastprivateClause(
 void OMPClauseProfiler::VisitOMPSharedClause(const OMPSharedClause *C) {
   VisitOMPClauseList(C);
 }
-void OMPClauseProfiler::VisitOMPReductionClause(const OMPReductionClause *C) {
+void OMPClauseProfiler::VisitOMPReductionClause(
+                                         const OMPReductionClause *C) {
   Profiler->VisitNestedNameSpecifier(
       C->getQualifierLoc().getNestedNameSpecifier());
   Profiler->VisitName(C->getNameInfo().getName());
@@ -683,8 +721,8 @@ void OMPClauseProfiler::VisitOMPCopyinClause(const OMPCopyinClause *C) {
       Profiler->VisitStmt(E);
   }
 }
-void OMPClauseProfiler::VisitOMPCopyprivateClause(
-    const OMPCopyprivateClause *C) {
+void
+OMPClauseProfiler::VisitOMPCopyprivateClause(const OMPCopyprivateClause *C) {
   VisitOMPClauseList(C);
   for (auto *E : C->source_exprs()) {
     if (E)
@@ -799,8 +837,8 @@ void OMPClauseProfiler::VisitOMPAffinityClause(const OMPAffinityClause *C) {
 void OMPClauseProfiler::VisitOMPOrderClause(const OMPOrderClause *C) {}
 } // namespace
 
-void StmtProfiler::VisitOMPExecutableDirective(
-    const OMPExecutableDirective *S) {
+void
+StmtProfiler::VisitOMPExecutableDirective(const OMPExecutableDirective *S) {
   VisitStmt(S);
   OMPClauseProfiler P(this);
   ArrayRef<OMPClause *> Clauses = S->clauses();
@@ -851,8 +889,8 @@ void StmtProfiler::VisitOMPCriticalDirective(const OMPCriticalDirective *S) {
   VisitName(S->getDirectiveName().getName());
 }
 
-void StmtProfiler::VisitOMPParallelForDirective(
-    const OMPParallelForDirective *S) {
+void
+StmtProfiler::VisitOMPParallelForDirective(const OMPParallelForDirective *S) {
   VisitOMPLoopDirective(S);
 }
 
@@ -917,8 +955,7 @@ void StmtProfiler::VisitOMPTargetDirective(const OMPTargetDirective *S) {
   VisitOMPExecutableDirective(S);
 }
 
-void StmtProfiler::VisitOMPTargetDataDirective(
-    const OMPTargetDataDirective *S) {
+void StmtProfiler::VisitOMPTargetDataDirective(const OMPTargetDataDirective *S) {
   VisitOMPExecutableDirective(S);
 }
 
@@ -1073,9 +1110,13 @@ void StmtProfiler::VisitOMPTargetTeamsDistributeSimdDirective(
   VisitOMPLoopDirective(S);
 }
 
-void StmtProfiler::VisitExpr(const Expr *S) { VisitStmt(S); }
+void StmtProfiler::VisitExpr(const Expr *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitConstantExpr(const ConstantExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitConstantExpr(const ConstantExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitDeclRefExpr(const DeclRefExpr *S) {
   VisitExpr(S);
@@ -1129,9 +1170,13 @@ void StmtProfiler::VisitStringLiteral(const StringLiteral *S) {
   ID.AddInteger(S->getKind());
 }
 
-void StmtProfiler::VisitParenExpr(const ParenExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitParenExpr(const ParenExpr *S) {
+  VisitExpr(S);
+}
 
-void StmtProfiler::VisitParenListExpr(const ParenListExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitParenListExpr(const ParenListExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitUnaryOperator(const UnaryOperator *S) {
   VisitExpr(S);
@@ -1166,8 +1211,8 @@ void StmtProfiler::VisitOffsetOfExpr(const OffsetOfExpr *S) {
   VisitExpr(S);
 }
 
-void StmtProfiler::VisitUnaryExprOrTypeTraitExpr(
-    const UnaryExprOrTypeTraitExpr *S) {
+void
+StmtProfiler::VisitUnaryExprOrTypeTraitExpr(const UnaryExprOrTypeTraitExpr *S) {
   VisitExpr(S);
   ID.AddInteger(S->getKind());
   if (S->isArgumentType())
@@ -1196,7 +1241,9 @@ void StmtProfiler::VisitOMPIteratorExpr(const OMPIteratorExpr *S) {
     VisitDecl(S->getIteratorDecl(I));
 }
 
-void StmtProfiler::VisitCallExpr(const CallExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitCallExpr(const CallExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitMemberExpr(const MemberExpr *S) {
   VisitExpr(S);
@@ -1211,7 +1258,9 @@ void StmtProfiler::VisitCompoundLiteralExpr(const CompoundLiteralExpr *S) {
   ID.AddBoolean(S->isFileScope());
 }
 
-void StmtProfiler::VisitCastExpr(const CastExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitCastExpr(const CastExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitImplicitCastExpr(const ImplicitCastExpr *S) {
   VisitCastExpr(S);
@@ -1232,8 +1281,8 @@ void StmtProfiler::VisitBinaryOperator(const BinaryOperator *S) {
   ID.AddInteger(S->getOpcode());
 }
 
-void StmtProfiler::VisitCompoundAssignOperator(
-    const CompoundAssignOperator *S) {
+void
+StmtProfiler::VisitCompoundAssignOperator(const CompoundAssignOperator *S) {
   VisitBinaryOperator(S);
 }
 
@@ -1251,7 +1300,9 @@ void StmtProfiler::VisitAddrLabelExpr(const AddrLabelExpr *S) {
   VisitDecl(S->getLabel());
 }
 
-void StmtProfiler::VisitStmtExpr(const StmtExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitStmtExpr(const StmtExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitShuffleVectorExpr(const ShuffleVectorExpr *S) {
   VisitExpr(S);
@@ -1261,11 +1312,17 @@ void StmtProfiler::VisitConvertVectorExpr(const ConvertVectorExpr *S) {
   VisitExpr(S);
 }
 
-void StmtProfiler::VisitChooseExpr(const ChooseExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitChooseExpr(const ChooseExpr *S) {
+  VisitExpr(S);
+}
 
-void StmtProfiler::VisitGNUNullExpr(const GNUNullExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitGNUNullExpr(const GNUNullExpr *S) {
+  VisitExpr(S);
+}
 
-void StmtProfiler::VisitVAArgExpr(const VAArgExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitVAArgExpr(const VAArgExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitInitListExpr(const InitListExpr *S) {
   if (S->getSyntacticForm()) {
@@ -1332,7 +1389,8 @@ void StmtProfiler::VisitBlockExpr(const BlockExpr *S) {
 
 void StmtProfiler::VisitGenericSelectionExpr(const GenericSelectionExpr *S) {
   VisitExpr(S);
-  for (const GenericSelectionExpr::ConstAssociation Assoc : S->associations()) {
+  for (const GenericSelectionExpr::ConstAssociation Assoc :
+       S->associations()) {
     QualType T = Assoc.getType();
     if (T.isNull())
       ID.AddPointer(nullptr);
@@ -1344,9 +1402,8 @@ void StmtProfiler::VisitGenericSelectionExpr(const GenericSelectionExpr *S) {
 
 void StmtProfiler::VisitPseudoObjectExpr(const PseudoObjectExpr *S) {
   VisitExpr(S);
-  for (PseudoObjectExpr::const_semantics_iterator i = S->semantics_begin(),
-                                                  e = S->semantics_end();
-       i != e; ++i)
+  for (PseudoObjectExpr::const_semantics_iterator
+         i = S->semantics_begin(), e = S->semantics_end(); i != e; ++i)
     // Normally, we would not profile the source expressions of OVEs.
     if (const OpaqueValueExpr *OVE = dyn_cast<OpaqueValueExpr>(*i))
       Visit(OVE->getSourceExpr());
@@ -1358,7 +1415,7 @@ void StmtProfiler::VisitAtomicExpr(const AtomicExpr *S) {
 }
 
 void StmtProfiler::VisitConceptSpecializationExpr(
-    const ConceptSpecializationExpr *S) {
+                                           const ConceptSpecializationExpr *S) {
   VisitExpr(S);
   VisitDecl(S->getNamedConcept());
   for (const TemplateArgument &Arg : S->getTemplateArguments())
@@ -1571,11 +1628,13 @@ static Stmt::StmtClass DecodeOperatorCall(const CXXOperatorCallExpr *S,
     return Stmt::BinaryOperatorClass;
 
   case OO_PlusPlus:
-    UnaryOp = S->getNumArgs() == 1 ? UO_PreInc : UO_PostInc;
+    UnaryOp = S->getNumArgs() == 1? UO_PreInc
+                                  : UO_PostInc;
     return Stmt::UnaryOperatorClass;
 
   case OO_MinusMinus:
-    UnaryOp = S->getNumArgs() == 1 ? UO_PreDec : UO_PostDec;
+    UnaryOp = S->getNumArgs() == 1? UO_PreDec
+                                  : UO_PostDec;
     return Stmt::UnaryOperatorClass;
 
   case OO_Comma:
@@ -1602,8 +1661,7 @@ static Stmt::StmtClass DecodeOperatorCall(const CXXOperatorCallExpr *S,
 
 #if defined(_MSC_VER) && !defined(__clang__)
 #if _MSC_VER == 1911
-// Work around
-// https://developercommunity.visualstudio.com/content/problem/84002/clang-cl-when-built-with-vc-2017-crashes-cause-vc.html
+// Work around https://developercommunity.visualstudio.com/content/problem/84002/clang-cl-when-built-with-vc-2017-crashes-cause-vc.html
 // MSVC 2017 update 3 miscompiles this function, and a clang built with it
 // will crash in stage 2 of a bootstrap build.
 #pragma optimize("", off)
@@ -1666,7 +1724,9 @@ void StmtProfiler::VisitCUDAKernelCallExpr(const CUDAKernelCallExpr *S) {
   VisitCallExpr(S);
 }
 
-void StmtProfiler::VisitAsTypeExpr(const AsTypeExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitAsTypeExpr(const AsTypeExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitCXXNamedCastExpr(const CXXNamedCastExpr *S) {
   VisitExplicitCastExpr(S);
@@ -1680,8 +1740,8 @@ void StmtProfiler::VisitCXXDynamicCastExpr(const CXXDynamicCastExpr *S) {
   VisitCXXNamedCastExpr(S);
 }
 
-void StmtProfiler::VisitCXXReinterpretCastExpr(
-    const CXXReinterpretCastExpr *S) {
+void
+StmtProfiler::VisitCXXReinterpretCastExpr(const CXXReinterpretCastExpr *S) {
   VisitCXXNamedCastExpr(S);
 }
 
@@ -1743,7 +1803,9 @@ void StmtProfiler::VisitCXXThisExpr(const CXXThisExpr *S) {
   ID.AddBoolean(S->isImplicit());
 }
 
-void StmtProfiler::VisitCXXThrowExpr(const CXXThrowExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitCXXThrowExpr(const CXXThrowExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitCXXDefaultArgExpr(const CXXDefaultArgExpr *S) {
   VisitExpr(S);
@@ -1758,7 +1820,7 @@ void StmtProfiler::VisitCXXDefaultInitExpr(const CXXDefaultInitExpr *S) {
 void StmtProfiler::VisitCXXBindTemporaryExpr(const CXXBindTemporaryExpr *S) {
   VisitExpr(S);
   VisitDecl(
-      const_cast<CXXDestructorDecl *>(S->getTemporary()->getDestructor()));
+         const_cast<CXXDestructorDecl *>(S->getTemporary()->getDestructor()));
 }
 
 void StmtProfiler::VisitCXXConstructExpr(const CXXConstructExpr *S) {
@@ -1777,15 +1839,16 @@ void StmtProfiler::VisitCXXFunctionalCastExpr(const CXXFunctionalCastExpr *S) {
   VisitExplicitCastExpr(S);
 }
 
-void StmtProfiler::VisitCXXTemporaryObjectExpr(
-    const CXXTemporaryObjectExpr *S) {
+void
+StmtProfiler::VisitCXXTemporaryObjectExpr(const CXXTemporaryObjectExpr *S) {
   VisitCXXConstructExpr(S);
 }
 
-void StmtProfiler::VisitLambdaExpr(const LambdaExpr *S) {
+void
+StmtProfiler::VisitLambdaExpr(const LambdaExpr *S) {
   VisitExpr(S);
   for (LambdaExpr::capture_iterator C = S->explicit_capture_begin(),
-                                    CEnd = S->explicit_capture_end();
+                                 CEnd = S->explicit_capture_end();
        C != CEnd; ++C) {
     if (C->capturesVLAType())
       continue;
@@ -1810,8 +1873,8 @@ void StmtProfiler::VisitLambdaExpr(const LambdaExpr *S) {
   VisitStmt(S->getBody());
 }
 
-void StmtProfiler::VisitCXXScalarValueInitExpr(
-    const CXXScalarValueInitExpr *S) {
+void
+StmtProfiler::VisitCXXScalarValueInitExpr(const CXXScalarValueInitExpr *S) {
   VisitExpr(S);
 }
 
@@ -1834,8 +1897,8 @@ void StmtProfiler::VisitCXXNewExpr(const CXXNewExpr *S) {
   ID.AddInteger(S->getInitializationStyle());
 }
 
-void StmtProfiler::VisitCXXPseudoDestructorExpr(
-    const CXXPseudoDestructorExpr *S) {
+void
+StmtProfiler::VisitCXXPseudoDestructorExpr(const CXXPseudoDestructorExpr *S) {
   VisitExpr(S);
   ID.AddBoolean(S->isArrow());
   VisitNestedNameSpecifier(S->getQualifier());
@@ -1858,7 +1921,8 @@ void StmtProfiler::VisitOverloadExpr(const OverloadExpr *S) {
     VisitTemplateArguments(S->getTemplateArgs(), S->getNumTemplateArgs());
 }
 
-void StmtProfiler::VisitUnresolvedLookupExpr(const UnresolvedLookupExpr *S) {
+void
+StmtProfiler::VisitUnresolvedLookupExpr(const UnresolvedLookupExpr *S) {
   VisitOverloadExpr(S);
 }
 
@@ -1973,7 +2037,7 @@ void StmtProfiler::VisitFunctionParmPackExpr(const FunctionParmPackExpr *S) {
 }
 
 void StmtProfiler::VisitMaterializeTemporaryExpr(
-    const MaterializeTemporaryExpr *S) {
+                                           const MaterializeTemporaryExpr *S) {
   VisitExpr(S);
 }
 
@@ -1986,23 +2050,33 @@ void StmtProfiler::VisitCoroutineBodyStmt(const CoroutineBodyStmt *S) {
   VisitStmt(S);
 }
 
-void StmtProfiler::VisitCoreturnStmt(const CoreturnStmt *S) { VisitStmt(S); }
+void StmtProfiler::VisitCoreturnStmt(const CoreturnStmt *S) {
+  VisitStmt(S);
+}
 
-void StmtProfiler::VisitCoawaitExpr(const CoawaitExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitCoawaitExpr(const CoawaitExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitDependentCoawaitExpr(const DependentCoawaitExpr *S) {
   VisitExpr(S);
 }
 
-void StmtProfiler::VisitCoyieldExpr(const CoyieldExpr *S) { VisitExpr(S); }
+void StmtProfiler::VisitCoyieldExpr(const CoyieldExpr *S) {
+  VisitExpr(S);
+}
 
 void StmtProfiler::VisitOpaqueValueExpr(const OpaqueValueExpr *E) {
   VisitExpr(E);
 }
 
-void StmtProfiler::VisitTypoExpr(const TypoExpr *E) { VisitExpr(E); }
+void StmtProfiler::VisitTypoExpr(const TypoExpr *E) {
+  VisitExpr(E);
+}
 
-void StmtProfiler::VisitSourceLocExpr(const SourceLocExpr *E) { VisitExpr(E); }
+void StmtProfiler::VisitSourceLocExpr(const SourceLocExpr *E) {
+  VisitExpr(E);
+}
 
 void StmtProfiler::VisitRecoveryExpr(const RecoveryExpr *E) { VisitExpr(E); }
 
@@ -2010,7 +2084,9 @@ void StmtProfiler::VisitObjCStringLiteral(const ObjCStringLiteral *S) {
   VisitExpr(S);
 }
 
-void StmtProfiler::VisitObjCBoxedExpr(const ObjCBoxedExpr *E) { VisitExpr(E); }
+void StmtProfiler::VisitObjCBoxedExpr(const ObjCBoxedExpr *E) {
+  VisitExpr(E);
+}
 
 void StmtProfiler::VisitObjCArrayLiteral(const ObjCArrayLiteral *E) {
   VisitExpr(E);

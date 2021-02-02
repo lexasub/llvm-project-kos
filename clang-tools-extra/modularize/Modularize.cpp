@@ -290,42 +290,45 @@ static cl::opt<std::string> ModuleMapPath(
 // Option to specify list of problem files for assistant.
 // This will cause assistant to exclude these files.
 static cl::opt<std::string> ProblemFilesList(
-    "problem-files-list", cl::init(""),
-    cl::desc("List of files with compilation or modularization problems for"
-             " assistant mode.  This will be excluded."));
+  "problem-files-list", cl::init(""),
+  cl::desc(
+  "List of files with compilation or modularization problems for"
+    " assistant mode.  This will be excluded."));
 
 // Option for assistant mode, telling modularize the name of the root module.
 static cl::opt<std::string>
-    RootModule("root-module", cl::init(""),
-               cl::desc("Specify the name of the root module."));
+RootModule("root-module", cl::init(""),
+           cl::desc("Specify the name of the root module."));
 
 // Option for limiting the #include-inside-extern-or-namespace-block
 // check to only those headers explicitly listed in the header list.
 // This is a work-around for private includes that purposefully get
 // included inside blocks.
-static cl::opt<bool> BlockCheckHeaderListOnly(
-    "block-check-header-list-only", cl::init(false),
-    cl::desc("Only warn if #include directives are inside extern or namespace"
-             " blocks if the included header is in the header list."));
+static cl::opt<bool>
+BlockCheckHeaderListOnly("block-check-header-list-only", cl::init(false),
+cl::desc("Only warn if #include directives are inside extern or namespace"
+  " blocks if the included header is in the header list."));
 
 // Option for include paths for coverage check.
 static cl::list<std::string>
-    IncludePaths("I", cl::desc("Include path for coverage check."),
-                 cl::ZeroOrMore, cl::value_desc("path"));
+IncludePaths("I", cl::desc("Include path for coverage check."),
+cl::ZeroOrMore, cl::value_desc("path"));
 
 // Option for disabling the coverage check.
-static cl::opt<bool> NoCoverageCheck("no-coverage-check", cl::init(false),
-                                     cl::desc("Don't do the coverage check."));
+static cl::opt<bool>
+NoCoverageCheck("no-coverage-check", cl::init(false),
+cl::desc("Don't do the coverage check."));
 
 // Option for just doing the coverage check.
-static cl::opt<bool> CoverageCheckOnly("coverage-check-only", cl::init(false),
-                                       cl::desc("Only do the coverage check."));
+static cl::opt<bool>
+CoverageCheckOnly("coverage-check-only", cl::init(false),
+cl::desc("Only do the coverage check."));
 
 // Option for displaying lists of good, bad, and mixed files.
-static cl::opt<bool> DisplayFileLists(
-    "display-file-lists", cl::init(false),
-    cl::desc("Display lists of good files (no compile errors), problem files,"
-             " and a combined list with problem files preceded by a '#'."));
+static cl::opt<bool>
+DisplayFileLists("display-file-lists", cl::init(false),
+cl::desc("Display lists of good files (no compile errors), problem files,"
+  " and a combined list with problem files preceded by a '#'."));
 
 // Save the program name for error messages.
 const char *Argv0;
@@ -350,28 +353,28 @@ static std::string findInputFile(const CommandLineArguments &CLArgs) {
 // if no other "-x" option is present.
 static ArgumentsAdjuster
 getModularizeArgumentsAdjuster(DependencyMap &Dependencies) {
-  return
-      [&Dependencies](const CommandLineArguments &Args, StringRef /*unused*/) {
-        std::string InputFile = findInputFile(Args);
-        DependentsVector &FileDependents = Dependencies[InputFile];
-        CommandLineArguments NewArgs(Args);
-        if (int Count = FileDependents.size()) {
-          for (int Index = 0; Index < Count; ++Index) {
-            NewArgs.push_back("-include");
-            std::string File(std::string("\"") + FileDependents[Index] +
-                             std::string("\""));
-            NewArgs.push_back(FileDependents[Index]);
-          }
-        }
-        // Ignore warnings.  (Insert after "clang_tool" at beginning.)
-        NewArgs.insert(NewArgs.begin() + 1, "-w");
-        // Since we are compiling .h files, assume C++ unless given a -x option.
-        if (!llvm::is_contained(NewArgs, "-x")) {
-          NewArgs.insert(NewArgs.begin() + 2, "-x");
-          NewArgs.insert(NewArgs.begin() + 3, "c++");
-        }
-        return NewArgs;
-      };
+  return [&Dependencies](const CommandLineArguments &Args,
+                         StringRef /*unused*/) {
+    std::string InputFile = findInputFile(Args);
+    DependentsVector &FileDependents = Dependencies[InputFile];
+    CommandLineArguments NewArgs(Args);
+    if (int Count = FileDependents.size()) {
+      for (int Index = 0; Index < Count; ++Index) {
+        NewArgs.push_back("-include");
+        std::string File(std::string("\"") + FileDependents[Index] +
+                         std::string("\""));
+        NewArgs.push_back(FileDependents[Index]);
+      }
+    }
+    // Ignore warnings.  (Insert after "clang_tool" at beginning.)
+    NewArgs.insert(NewArgs.begin() + 1, "-w");
+    // Since we are compiling .h files, assume C++ unless given a -x option.
+    if (!llvm::is_contained(NewArgs, "-x")) {
+      NewArgs.insert(NewArgs.begin() + 2, "-x");
+      NewArgs.insert(NewArgs.begin() + 3, "c++");
+    }
+    return NewArgs;
+  };
 }
 
 // FIXME: The Location class seems to be something that we might
@@ -479,13 +482,13 @@ struct HeaderEntry {
 
 typedef std::vector<HeaderEntry> HeaderContents;
 
-class EntityMap : public StringMap<SmallVector<Entry, 2>> {
+class EntityMap : public StringMap<SmallVector<Entry, 2> > {
 public:
   DenseMap<const FileEntry *, HeaderContents> HeaderContentMismatches;
 
   void add(const std::string &Name, enum Entry::EntryKind Kind, Location Loc) {
     // Record this entity in its header.
-    HeaderEntry HE = {Name, Loc};
+    HeaderEntry HE = { Name, Loc };
     CurHeaderContents[Loc.File].push_back(HE);
 
     // Check whether we've seen this entry before.
@@ -496,7 +499,7 @@ public:
     }
 
     // We have not seen this entry before; record it.
-    Entry E = {Kind, Loc};
+    Entry E = { Kind, Loc };
     Entries.push_back(E);
   }
 
@@ -729,7 +732,8 @@ private:
   int &HadErrors;
 };
 
-class CompileCheckVisitor : public RecursiveASTVisitor<CompileCheckVisitor> {
+class CompileCheckVisitor
+  : public RecursiveASTVisitor<CompileCheckVisitor> {
 public:
   CompileCheckVisitor() {}
 
@@ -749,7 +753,7 @@ public:
     return true;
   }
   bool TraverseTemplateArguments(const TemplateArgument *Args,
-                                 unsigned NumArgs) {
+    unsigned NumArgs) {
     return true;
   }
   bool TraverseConstructorInitializer(CXXCtorInitializer *Init) { return true; }
@@ -759,13 +763,19 @@ public:
   }
 
   // Check 'extern "*" {}' block for #include directives.
-  bool VisitLinkageSpecDecl(LinkageSpecDecl *D) { return true; }
+  bool VisitLinkageSpecDecl(LinkageSpecDecl *D) {
+    return true;
+  }
 
   // Check 'namespace (name) {}' block for #include directives.
-  bool VisitNamespaceDecl(const NamespaceDecl *D) { return true; }
+  bool VisitNamespaceDecl(const NamespaceDecl *D) {
+    return true;
+  }
 
   // Collect definition entities.
-  bool VisitNamedDecl(NamedDecl *ND) { return true; }
+  bool VisitNamedDecl(NamedDecl *ND) {
+    return true;
+  }
 };
 
 class CompileCheckConsumer : public ASTConsumer {
@@ -783,7 +793,7 @@ public:
 
 protected:
   std::unique_ptr<clang::ASTConsumer>
-  CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override {
+    CreateASTConsumer(CompilerInstance &CI, StringRef InFile) override {
     return std::make_unique<CompileCheckConsumer>();
   }
 };
@@ -821,7 +831,8 @@ int main(int Argc, const char **Argv) {
   std::unique_ptr<ModularizeUtilities> ModUtil;
   int HadErrors = 0;
 
-  ModUtil.reset(ModularizeUtilities::createModularizeUtilities(
+  ModUtil.reset(
+    ModularizeUtilities::createModularizeUtilities(
       ListFileNames, HeaderPrefix, ProblemFilesList));
 
   // Get header file names and dependencies.
@@ -831,8 +842,8 @@ int main(int Argc, const char **Argv) {
   // If we are in assistant mode, output the module map and quit.
   if (ModuleMapPath.length() != 0) {
     if (!createModuleMap(ModuleMapPath, ModUtil->HeaderFileNames,
-                         ModUtil->ProblemFileNames, ModUtil->Dependencies,
-                         HeaderPrefix, RootModule))
+                         ModUtil->ProblemFileNames,
+                         ModUtil->Dependencies, HeaderPrefix, RootModule))
       return 1; // Failed.
     return 0;   // Success - Skip checks in assistant mode.
   }
@@ -856,8 +867,9 @@ int main(int Argc, const char **Argv) {
       new FixedCompilationDatabase(Twine(PathBuf), CC1Arguments));
 
   // Create preprocessor tracker, to watch for macro and conditional problems.
-  std::unique_ptr<PreprocessorTracker> PPTracker(PreprocessorTracker::create(
-      ModUtil->HeaderFileNames, BlockCheckHeaderListOnly));
+  std::unique_ptr<PreprocessorTracker> PPTracker(
+    PreprocessorTracker::create(ModUtil->HeaderFileNames,
+                                BlockCheckHeaderListOnly));
 
   // Coolect entities here.
   EntityMap Entities;
@@ -873,24 +885,25 @@ int main(int Argc, const char **Argv) {
       CompileCheckFileArray.push_back(CompileCheckFile);
       ClangTool CompileCheckTool(*Compilations, CompileCheckFileArray);
       CompileCheckTool.appendArgumentsAdjuster(
-          getModularizeArgumentsAdjuster(ModUtil->Dependencies));
+        getModularizeArgumentsAdjuster(ModUtil->Dependencies));
       int CompileCheckFileErrors = 0;
       // FIXME: use newFrontendActionFactory.
       CompileCheckFrontendActionFactory CompileCheckFactory;
       CompileCheckFileErrors |= CompileCheckTool.run(&CompileCheckFactory);
       if (CompileCheckFileErrors != 0) {
-        ModUtil->addUniqueProblemFile(CompileCheckFile); // Save problem file.
+        ModUtil->addUniqueProblemFile(CompileCheckFile);   // Save problem file.
         HadErrors |= 1;
-      } else
+      }
+      else
         ModUtil->addNoCompileErrorsFile(CompileCheckFile); // Save good file.
     }
   }
 
   // Then we make another pass on the good files to do the rest of the work.
-  ClangTool Tool(*Compilations, (DisplayFileLists ? ModUtil->GoodFileNames
-                                                  : ModUtil->HeaderFileNames));
+  ClangTool Tool(*Compilations,
+    (DisplayFileLists ? ModUtil->GoodFileNames : ModUtil->HeaderFileNames));
   Tool.appendArgumentsAdjuster(
-      getModularizeArgumentsAdjuster(ModUtil->Dependencies));
+    getModularizeArgumentsAdjuster(ModUtil->Dependencies));
   ModularizeFrontendActionFactory Factory(Entities, *PPTracker, HadErrors);
   HadErrors |= Tool.run(&Factory);
 
@@ -925,8 +938,7 @@ int main(int Argc, const char **Argv) {
     for (EntryBinArray::iterator DI = EntryBins.begin(), DE = EntryBins.end();
          DI != DE; ++DI, ++KindIndex) {
       int ECount = DI->size();
-      // If only 1 occurrence of this entity, skip it, we only report
-      // duplicates.
+      // If only 1 occurrence of this entity, skip it, we only report duplicates.
       if (ECount <= 1)
         continue;
       LocationArray::iterator FI = DI->begin();

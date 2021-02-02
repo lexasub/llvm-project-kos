@@ -15,33 +15,34 @@ using namespace llvm;
 
 namespace {
 
-class MCNullStreamer : public MCStreamer {
-public:
-  MCNullStreamer(MCContext &Context) : MCStreamer(Context) {}
+  class MCNullStreamer : public MCStreamer {
+  public:
+    MCNullStreamer(MCContext &Context) : MCStreamer(Context) {}
 
-  /// @name MCStreamer Interface
-  /// @{
+    /// @name MCStreamer Interface
+    /// @{
 
-  bool hasRawTextSupport() const override { return true; }
-  void emitRawTextImpl(StringRef String) override {}
+    bool hasRawTextSupport() const override { return true; }
+    void emitRawTextImpl(StringRef String) override {}
 
-  bool emitSymbolAttribute(MCSymbol *Symbol, MCSymbolAttr Attribute) override {
-    return true;
-  }
+    bool emitSymbolAttribute(MCSymbol *Symbol,
+                             MCSymbolAttr Attribute) override {
+      return true;
+    }
 
-  void emitCommonSymbol(MCSymbol *Symbol, uint64_t Size,
-                        unsigned ByteAlignment) override {}
-  void emitZerofill(MCSection *Section, MCSymbol *Symbol = nullptr,
-                    uint64_t Size = 0, unsigned ByteAlignment = 0,
-                    SMLoc Loc = SMLoc()) override {}
-  void emitGPRel32Value(const MCExpr *Value) override {}
-  void BeginCOFFSymbolDef(const MCSymbol *Symbol) override {}
-  void EmitCOFFSymbolStorageClass(int StorageClass) override {}
-  void EmitCOFFSymbolType(int Type) override {}
-  void EndCOFFSymbolDef() override {}
-};
+    void emitCommonSymbol(MCSymbol *Symbol, uint64_t Size,
+                          unsigned ByteAlignment) override {}
+    void emitZerofill(MCSection *Section, MCSymbol *Symbol = nullptr,
+                      uint64_t Size = 0, unsigned ByteAlignment = 0,
+                      SMLoc Loc = SMLoc()) override {}
+    void emitGPRel32Value(const MCExpr *Value) override {}
+    void BeginCOFFSymbolDef(const MCSymbol *Symbol) override {}
+    void EmitCOFFSymbolStorageClass(int StorageClass) override {}
+    void EmitCOFFSymbolType(int Type) override {}
+    void EndCOFFSymbolDef() override {}
+  };
 
-} // namespace
+}
 
 MCStreamer *llvm::createNullStreamer(MCContext &Context) {
   return new MCNullStreamer(Context);

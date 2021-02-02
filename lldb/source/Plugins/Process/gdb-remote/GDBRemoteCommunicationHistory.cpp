@@ -98,3 +98,4 @@ void GDBRemoteCommunicationHistory::Dump(Log *log) const {
               entry.packet.data.c_str());
   }
 }
+

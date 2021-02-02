@@ -25,8 +25,7 @@ public:
 
 } // namespace concurrency
 
-// Register the ConcurrencyTidyModule using this statically initialized
-// variable.
+// Register the ConcurrencyTidyModule using this statically initialized variable.
 static ClangTidyModuleRegistry::Add<concurrency::ConcurrencyModule>
     X("concurrency-module", "Adds concurrency checks.");
 

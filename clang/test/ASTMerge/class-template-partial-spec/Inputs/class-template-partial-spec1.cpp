@@ -1,19 +1,20 @@
-template <typename T, class P>
+template<typename T, class P>
 struct TwoOptionTemplate {};
 
-template <typename T>
+template<typename T>
 struct TwoOptionTemplate<T, char> {
   int member;
 };
 
-template <typename T>
+
+template<typename T>
 struct TwoOptionTemplate<T, double> {
   float member;
 };
 
-template <typename T>
+template<typename T>
 struct TwoOptionTemplate<T, T> {
-  T **member;
+  T** member;
 };
 
 TwoOptionTemplate<int, char> X0;
@@ -24,21 +25,22 @@ TwoOptionTemplate<float, float> X4;
 TwoOptionTemplate<long, long> SingleSource;
 TwoOptionTemplate<char, double> SecondDoubleSource;
 
-template <int I, class C>
+
+template<int I, class C>
 struct IntTemplateSpec {};
 
-template <class C>
+template<class C>
 struct IntTemplateSpec<4, C> {
   C member;
 };
 
-template <int I>
+template<int I>
 struct IntTemplateSpec<I, void *> {
   int member;
   static constexpr int val = I;
 };
 
-template <int I>
+template<int I>
 struct IntTemplateSpec<I, double> {
   char member;
   static constexpr int val = I;
@@ -54,27 +56,28 @@ static_assert(NumberSource.val == 42);
 
 namespace One {
 namespace Two {
-// Just an empty namespace to ensure we can deal with multiple namespace decls.
+  // Just an empty namespace to ensure we can deal with multiple namespace decls.
 }
-} // namespace One
+}
+
 
 namespace One {
 namespace Two {
 namespace Three {
 
-template <class T>
+template<class T>
 class Parent {};
 
 } // namespace Three
 
 } // namespace Two
 
-template <typename T, typename X>
-struct Child1 : public Two::Three::Parent<unsigned> {
+template<typename T, typename X>
+struct Child1: public Two::Three::Parent<unsigned> {
   char member;
 };
 
-template <class T>
+template<class T>
 struct Child1<T, One::Two::Three::Parent<T>> {
   T member;
 };
@@ -84,32 +87,32 @@ struct Child1<T, One::Two::Three::Parent<T>> {
 One::Child1<int, double> Z0Source;
 
 // Test import of nested namespace specifiers
-template <typename T>
+template<typename T>
 struct Outer {
-  template <typename U> class Inner0;
+  template<typename U> class Inner0;
 };
 
-template <typename X>
-template <typename Y>
+template<typename X>
+template<typename Y>
 class Outer<X>::Inner0 {
 public:
   void f(X, Y);
-  template <typename Z> struct Inner1;
+  template<typename Z> struct Inner1;
 };
 
-template <typename X>
-template <typename Y>
+template<typename X>
+template<typename Y>
 void Outer<X>::Inner0<Y>::f(X, Y) {}
 
-template <typename X>
-template <typename Y>
-template <typename Z>
+template<typename X>
+template<typename Y>
+template<typename Z>
 class Outer<X>::Inner0<Y>::Inner1 {
 public:
   void f(Y, Z);
 };
 
-template <typename X>
-template <typename Y>
-template <typename Z>
+template<typename X>
+template<typename Y>
+template<typename Z>
 void Outer<X>::Inner0<Y>::Inner1<Z>::f(Y, Z) {}

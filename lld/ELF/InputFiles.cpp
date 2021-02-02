@@ -605,6 +605,7 @@ void ObjFile<ELFT>::initializeSections(bool ignoreComdats) {
       StringRef signature = getShtGroupSignature(objSections, sec);
       this->sections[i] = &InputSection::discarded;
 
+
       ArrayRef<Elf_Word> entries =
           CHECK(obj.template getSectionContentsAsArray<Elf_Word>(sec), this);
       if (entries.empty())
@@ -929,8 +930,8 @@ InputSectionBase *ObjFile<ELFT>::createInputSection(const Elf_Shdr &sec) {
   case SHT_LLVM_DEPENDENT_LIBRARIES: {
     if (config->relocatable)
       break;
-    ArrayRef<char> data = CHECK(
-        this->getObj().template getSectionContentsAsArray<char>(sec), this);
+    ArrayRef<char> data =
+        CHECK(this->getObj().template getSectionContentsAsArray<char>(sec), this);
     if (!data.empty() && data.back() != '\0') {
       error(toString(this) +
             ": corrupted dependent libraries section (unterminated string): " +
@@ -1667,10 +1668,11 @@ BitcodeFile::BitcodeFile(MemoryBufferRef mb, StringRef archiveName,
   // into consideration at LTO time (which very likely causes undefined
   // symbols later in the link stage). So we append file offset to make
   // filename unique.
-  StringRef name = archiveName.empty()
-                       ? saver.save(path)
-                       : saver.save(archiveName + "(" + path::filename(path) +
-                                    " at " + utostr(offsetInArchive) + ")");
+  StringRef name =
+      archiveName.empty()
+          ? saver.save(path)
+          : saver.save(archiveName + "(" + path::filename(path) + " at " +
+                       utostr(offsetInArchive) + ")");
   MemoryBufferRef mbref(mb.getBuffer(), name);
 
   obj = CHECK(lto::InputFile::create(mbref), this);
@@ -1831,8 +1833,7 @@ template <class ELFT> void LazyObjFile::parse() {
     // Get existing symbols or insert placeholder symbols.
     for (size_t i = firstGlobal, end = eSyms.size(); i != end; ++i)
       if (eSyms[i].st_shndx != SHN_UNDEF)
-        this->symbols[i] =
-            symtab->insert(CHECK(eSyms[i].getName(strtab), this));
+        this->symbols[i] = symtab->insert(CHECK(eSyms[i].getName(strtab), this));
 
     // Replace existing symbols with LazyObject symbols.
     //

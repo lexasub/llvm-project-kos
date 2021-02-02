@@ -22,9 +22,9 @@ namespace {
 /// ordering effects on nearby instructions, or be volatile.
 /// TODO: Common w/ the version in AtomicExpandPass, and change the term used.
 /// Idemptotent is confusing in this context.
-bool isIdempotentRMW(AtomicRMWInst &RMWI) {
+bool isIdempotentRMW(AtomicRMWInst& RMWI) {
   if (auto CF = dyn_cast<ConstantFP>(RMWI.getValOperand()))
-    switch (RMWI.getOperation()) {
+    switch(RMWI.getOperation()) {
     case AtomicRMWInst::FAdd: // -0.0
       return CF->isZero() && CF->isNegative();
     case AtomicRMWInst::FSub: // +0.0
@@ -34,35 +34,35 @@ bool isIdempotentRMW(AtomicRMWInst &RMWI) {
     };
 
   auto C = dyn_cast<ConstantInt>(RMWI.getValOperand());
-  if (!C)
+  if(!C)
     return false;
 
-  switch (RMWI.getOperation()) {
-  case AtomicRMWInst::Add:
-  case AtomicRMWInst::Sub:
-  case AtomicRMWInst::Or:
-  case AtomicRMWInst::Xor:
-    return C->isZero();
-  case AtomicRMWInst::And:
-    return C->isMinusOne();
-  case AtomicRMWInst::Min:
-    return C->isMaxValue(true);
-  case AtomicRMWInst::Max:
-    return C->isMinValue(true);
-  case AtomicRMWInst::UMin:
-    return C->isMaxValue(false);
-  case AtomicRMWInst::UMax:
-    return C->isMinValue(false);
-  default:
-    return false;
+  switch(RMWI.getOperation()) {
+    case AtomicRMWInst::Add:
+    case AtomicRMWInst::Sub:
+    case AtomicRMWInst::Or:
+    case AtomicRMWInst::Xor:
+      return C->isZero();
+    case AtomicRMWInst::And:
+      return C->isMinusOne();
+    case AtomicRMWInst::Min:
+      return C->isMaxValue(true);
+    case AtomicRMWInst::Max:
+      return C->isMinValue(true);
+    case AtomicRMWInst::UMin:
+      return C->isMaxValue(false);
+    case AtomicRMWInst::UMax:
+      return C->isMinValue(false);
+    default:
+      return false;
   }
 }
 
 /// Return true if the given instruction always produces a value in memory
 /// equivalent to its value operand.
-bool isSaturating(AtomicRMWInst &RMWI) {
+bool isSaturating(AtomicRMWInst& RMWI) {
   if (auto CF = dyn_cast<ConstantFP>(RMWI.getValOperand()))
-    switch (RMWI.getOperation()) {
+    switch(RMWI.getOperation()) {
     case AtomicRMWInst::FAdd:
     case AtomicRMWInst::FSub:
       return CF->isNaN();
@@ -71,10 +71,10 @@ bool isSaturating(AtomicRMWInst &RMWI) {
     };
 
   auto C = dyn_cast<ConstantInt>(RMWI.getValOperand());
-  if (!C)
+  if(!C)
     return false;
 
-  switch (RMWI.getOperation()) {
+  switch(RMWI.getOperation()) {
   default:
     return false;
   case AtomicRMWInst::Xchg:
@@ -105,7 +105,8 @@ Instruction *InstCombinerImpl::visitAtomicRMWInst(AtomicRMWInst &RMWI) {
 
   // Any atomicrmw op which produces a known result in memory can be
   // replaced w/an atomicrmw xchg.
-  if (isSaturating(RMWI) && RMWI.getOperation() != AtomicRMWInst::Xchg) {
+  if (isSaturating(RMWI) &&
+      RMWI.getOperation() != AtomicRMWInst::Xchg) {
     RMWI.setOperation(AtomicRMWInst::Xchg);
     return &RMWI;
   }
@@ -117,12 +118,13 @@ Instruction *InstCombinerImpl::visitAtomicRMWInst(AtomicRMWInst &RMWI) {
 
   // Any atomicrmw xchg with no uses can be converted to a atomic store if the
   // ordering is compatible.
-  if (RMWI.getOperation() == AtomicRMWInst::Xchg && RMWI.use_empty()) {
+  if (RMWI.getOperation() == AtomicRMWInst::Xchg &&
+      RMWI.use_empty()) {
     if (Ordering != AtomicOrdering::Release &&
         Ordering != AtomicOrdering::Monotonic)
       return nullptr;
-    auto *SI =
-        new StoreInst(RMWI.getValOperand(), RMWI.getPointerOperand(), &RMWI);
+    auto *SI = new StoreInst(RMWI.getValOperand(),
+                             RMWI.getPointerOperand(), &RMWI);
     SI->setAtomic(Ordering, RMWI.getSyncScopeID());
     SI->setAlignment(DL.getABITypeAlign(RMWI.getType()));
     return eraseInstFromFunction(RMWI);

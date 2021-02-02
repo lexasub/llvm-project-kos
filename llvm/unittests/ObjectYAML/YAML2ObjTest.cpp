@@ -29,8 +29,7 @@ FileHeader:
   Class:    ELFCLASS64
   Data:     ELFDATA2LSB
   Type:     ET_REL
-  Machine:  EM_X86_64)",
-                                                    ErrHandler);
+  Machine:  EM_X86_64)", ErrHandler);
 
   ASSERT_FALSE(ErrorReported);
   ASSERT_TRUE(Obj);
@@ -67,7 +66,7 @@ Symbols:
   ASSERT_TRUE(Errors[0] == "ObjectYAML: repeated symbol name: 'foo'");
   ASSERT_TRUE(Errors[1] == Errors[0]);
 
-  // 2. Test convertYAML().
+  // 2. Test convertYAML(). 
 
   Errors.clear();
   Storage.clear();

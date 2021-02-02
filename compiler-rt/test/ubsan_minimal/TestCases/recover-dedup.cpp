@@ -8,17 +8,20 @@ int *_Nonnull h() {
   return NULL;
 }
 
-__attribute__((returns_nonnull)) int *i() {
+__attribute__((returns_nonnull))
+int *i() {
   // CHECK: nonnull-return
   return NULL;
 }
 
-__attribute__((noinline)) int f(int x, int y) {
+__attribute__((noinline))
+int f(int x, int y) {
   // CHECK: mul-overflow
   return x * y;
 }
 
-__attribute__((noinline)) int g(int x, int y) {
+__attribute__((noinline))
+int g(int x, int y) {
   // CHECK: mul-overflow
   return x * (y + 1);
 }

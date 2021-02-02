@@ -1,1 +1,1 @@
-int vprintf(const char *__restrict, va_list);
+int  vprintf(const char * __restrict, va_list);

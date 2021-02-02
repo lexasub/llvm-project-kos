@@ -90,8 +90,7 @@ void consecutive_dos() {
 }
 
 void loop_empty() {
-  for (x = 0; x < 5; ++x) {
-  }
+  for (x = 0; x < 5; ++x) {}
 }
 
 void loop_return() {
@@ -139,8 +138,7 @@ void nested_for_ranges() {
 }
 
 void consecutive_for_ranges() {
-  for (int a : arr) {
-  }
+  for (int a : arr) {}
   for (int b : arr)
     ++x;
 }
@@ -149,20 +147,15 @@ void nested_try_catch() {
   try {
     try {
       ++x;
-    } catch (...) {
-    }
-  } catch (...) {
-  }
+    } catch (...) {}
+  } catch (...) {}
 }
 
 void consecutive_try_catch() {
-  try {
-  } catch (...) {
-  }
+  try {} catch (...) {}
   try {
     ++x;
-  } catch (...) {
-  }
+  } catch (...) {}
 }
 
 void no_throw() {}
@@ -172,13 +165,11 @@ void has_throw() {
 }
 
 void single_lnot() {
-  if (!x) {
-  }
+  if (!x) {}
 }
 
 void double_lnot() {
-  if (!!x) {
-  }
+  if (!!x) {}
 }
 
 int main() {

@@ -24,12 +24,14 @@ namespace llvm {
 std::vector<const SUnit *> makeMinRegSchedule(ArrayRef<const SUnit *> TopRoots,
                                               const ScheduleDAG &DAG);
 
-std::vector<const SUnit *> makeGCNILPScheduler(ArrayRef<const SUnit *> BotRoots,
-                                               const ScheduleDAG &DAG);
-} // namespace llvm
+  std::vector<const SUnit*> makeGCNILPScheduler(ArrayRef<const SUnit*> BotRoots,
+    const ScheduleDAG &DAG);
+}
 
 // shim accessors for different order containers
-static inline MachineInstr *getMachineInstr(MachineInstr *MI) { return MI; }
+static inline MachineInstr *getMachineInstr(MachineInstr *MI) {
+  return MI;
+}
 static inline MachineInstr *getMachineInstr(const SUnit *SU) {
   return SU->getInstr();
 }
@@ -39,10 +41,12 @@ static inline MachineInstr *getMachineInstr(const SUnit &SU) {
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 LLVM_DUMP_METHOD
-static void
-printRegion(raw_ostream &OS, MachineBasicBlock::iterator Begin,
-            MachineBasicBlock::iterator End, const LiveIntervals *LIS,
-            unsigned MaxInstNum = std::numeric_limits<unsigned>::max()) {
+static void printRegion(raw_ostream &OS,
+                        MachineBasicBlock::iterator Begin,
+                        MachineBasicBlock::iterator End,
+                        const LiveIntervals *LIS,
+                        unsigned MaxInstNum =
+                          std::numeric_limits<unsigned>::max()) {
   auto BB = Begin->getParent();
   OS << BB->getParent()->getName() << ":" << printMBBReference(*BB) << ' '
      << BB->getName() << ":\n";
@@ -62,8 +66,7 @@ printRegion(raw_ostream &OS, MachineBasicBlock::iterator Begin,
   }
   if (End != BB->end()) { // print boundary inst if present
     OS << "----\n";
-    if (LIS)
-      OS << LIS->getInstructionIndex(*End) << '\t';
+    if (LIS) OS << LIS->getInstructionIndex(*End) << '\t';
     OS << *End;
   }
 }
@@ -99,7 +102,8 @@ void GCNIterativeScheduler::printRegions(raw_ostream &OS) const {
 }
 
 LLVM_DUMP_METHOD
-void GCNIterativeScheduler::printSchedResult(raw_ostream &OS, const Region *R,
+void GCNIterativeScheduler::printSchedResult(raw_ostream &OS,
+                                             const Region *R,
                                              const GCNRegPressure &RP) const {
   OS << "\nAfter scheduling ";
   printRegion(OS, R->Begin, R->End, LIS);
@@ -124,16 +128,16 @@ class GCNIterativeScheduler::BuildDAG {
   GCNIterativeScheduler &Sch;
   SmallVector<SUnit *, 8> TopRoots;
 
-  SmallVector<SUnit *, 8> BotRoots;
-
+  SmallVector<SUnit*, 8> BotRoots;
 public:
-  BuildDAG(const Region &R, GCNIterativeScheduler &_Sch) : Sch(_Sch) {
+  BuildDAG(const Region &R, GCNIterativeScheduler &_Sch)
+    : Sch(_Sch) {
     auto BB = R.Begin->getParent();
     Sch.BaseClass::startBlock(BB);
     Sch.BaseClass::enterRegion(BB, R.Begin, R.End, R.NumRegionInstrs);
 
     Sch.buildSchedGraph(Sch.AA, nullptr, nullptr, nullptr,
-                        /*TrackLaneMask*/ true);
+                        /*TrackLaneMask*/true);
     Sch.Topo.InitDAGTopologicalSorting();
     Sch.findRootsAndBiasEdges(TopRoots, BotRoots);
   }
@@ -143,8 +147,12 @@ public:
     Sch.BaseClass::finishBlock();
   }
 
-  ArrayRef<const SUnit *> getTopRoots() const { return TopRoots; }
-  ArrayRef<SUnit *> getBottomRoots() const { return BotRoots; }
+  ArrayRef<const SUnit *> getTopRoots() const {
+    return TopRoots;
+  }
+  ArrayRef<SUnit*> getBottomRoots() const {
+    return BotRoots;
+  }
 };
 
 class GCNIterativeScheduler::OverrideLegacyStrategy {
@@ -154,10 +162,13 @@ class GCNIterativeScheduler::OverrideLegacyStrategy {
   GCNRegPressure SaveMaxRP;
 
 public:
-  OverrideLegacyStrategy(Region &R, MachineSchedStrategy &OverrideStrategy,
+  OverrideLegacyStrategy(Region &R,
+                         MachineSchedStrategy &OverrideStrategy,
                          GCNIterativeScheduler &_Sch)
-      : Sch(_Sch), Rgn(R), SaveSchedImpl(std::move(_Sch.SchedImpl)),
-        SaveMaxRP(R.MaxPressure) {
+    : Sch(_Sch)
+    , Rgn(R)
+    , SaveSchedImpl(std::move(_Sch.SchedImpl))
+    , SaveMaxRP(R.MaxPressure) {
     Sch.SchedImpl.reset(&OverrideStrategy);
     auto BB = R.Begin->getParent();
     Sch.BaseClass::startBlock(BB);
@@ -179,7 +190,7 @@ public:
 
     // Unfortunatelly placeDebugValues incorrectly modifies RegionEnd, restore
     Sch.RegionEnd = Rgn.End;
-    // assert(Rgn.End == Sch.RegionEnd);
+    //assert(Rgn.End == Sch.RegionEnd);
     Rgn.Begin = Sch.RegionBegin;
     Rgn.MaxPressure.clear();
   }
@@ -210,12 +221,17 @@ public:
 
 GCNIterativeScheduler::GCNIterativeScheduler(MachineSchedContext *C,
                                              StrategyKind S)
-    : BaseClass(C, std::make_unique<SchedStrategyStub>()), Context(C),
-      Strategy(S), UPTracker(*LIS) {}
+  : BaseClass(C, std::make_unique<SchedStrategyStub>())
+  , Context(C)
+  , Strategy(S)
+  , UPTracker(*LIS) {
+}
 
 // returns max pressure for a region
-GCNRegPressure GCNIterativeScheduler::getRegionPressure(
-    MachineBasicBlock::iterator Begin, MachineBasicBlock::iterator End) const {
+GCNRegPressure
+GCNIterativeScheduler::getRegionPressure(MachineBasicBlock::iterator Begin,
+                                         MachineBasicBlock::iterator End)
+  const {
   // For the purpose of pressure tracking bottom inst of the region should
   // be also processed. End is either BB end, BB terminator inst or sched
   // boundary inst.
@@ -237,14 +253,14 @@ GCNRegPressure GCNIterativeScheduler::getRegionPressure(
 
   UPTracker.recede(*Begin);
 
-  assert(UPTracker.isValid() || (dbgs() << "Tracked region ",
-                                 printRegion(dbgs(), Begin, End, LIS), false));
+  assert(UPTracker.isValid() ||
+         (dbgs() << "Tracked region ",
+          printRegion(dbgs(), Begin, End, LIS), false));
   return UPTracker.moveMaxPressure();
 }
 
 // returns max pressure for a tentative schedule
-template <typename Range>
-GCNRegPressure
+template <typename Range> GCNRegPressure
 GCNIterativeScheduler::getSchedulePressure(const Region &R,
                                            Range &&Schedule) const {
   auto const BBEnd = R.Begin->getParent()->end();
@@ -270,8 +286,10 @@ void GCNIterativeScheduler::enterRegion(MachineBasicBlock *BB, // overriden
                                         unsigned NumRegionInstrs) {
   BaseClass::enterRegion(BB, Begin, End, NumRegionInstrs);
   if (NumRegionInstrs > 2) {
-    Regions.push_back(new (Alloc.Allocate()) Region{
-        Begin, End, NumRegionInstrs, getRegionPressure(Begin, End), nullptr});
+    Regions.push_back(
+      new (Alloc.Allocate())
+      Region { Begin, End, NumRegionInstrs,
+               getRegionPressure(Begin, End), nullptr });
   }
 }
 
@@ -290,26 +308,18 @@ void GCNIterativeScheduler::finalizeSchedule() { // overriden
   if (Regions.empty())
     return;
   switch (Strategy) {
-  case SCHEDULE_MINREGONLY:
-    scheduleMinReg();
-    break;
-  case SCHEDULE_MINREGFORCED:
-    scheduleMinReg(true);
-    break;
-  case SCHEDULE_LEGACYMAXOCCUPANCY:
-    scheduleLegacyMaxOccupancy();
-    break;
-  case SCHEDULE_ILP:
-    scheduleILP(false);
-    break;
+  case SCHEDULE_MINREGONLY: scheduleMinReg(); break;
+  case SCHEDULE_MINREGFORCED: scheduleMinReg(true); break;
+  case SCHEDULE_LEGACYMAXOCCUPANCY: scheduleLegacyMaxOccupancy(); break;
+  case SCHEDULE_ILP: scheduleILP(false); break;
   }
 }
 
 // Detach schedule from SUnits and interleave it with debug values.
 // Returned schedule becomes independent of DAG state.
-std::vector<MachineInstr *>
+std::vector<MachineInstr*>
 GCNIterativeScheduler::detachSchedule(ScheduleRef Schedule) const {
-  std::vector<MachineInstr *> Res;
+  std::vector<MachineInstr*> Res;
   Res.reserve(Schedule.size() * 2);
 
   if (FirstDbgValue)
@@ -327,9 +337,11 @@ GCNIterativeScheduler::detachSchedule(ScheduleRef Schedule) const {
   return Res;
 }
 
-void GCNIterativeScheduler::setBestSchedule(Region &R, ScheduleRef Schedule,
+void GCNIterativeScheduler::setBestSchedule(Region &R,
+                                            ScheduleRef Schedule,
                                             const GCNRegPressure &MaxRP) {
-  R.BestSchedule.reset(new TentativeSchedule{detachSchedule(Schedule), MaxRP});
+  R.BestSchedule.reset(
+    new TentativeSchedule{ detachSchedule(Schedule), MaxRP });
 }
 
 void GCNIterativeScheduler::scheduleBest(Region &R) {
@@ -365,8 +377,8 @@ void GCNIterativeScheduler::scheduleRegion(Region &R, Range &&Schedule,
           Op.setIsUndef(false);
 
       RegisterOperands RegOpers;
-      RegOpers.collect(*MI, *TRI, MRI, /*ShouldTrackLaneMasks*/ true,
-                       /*IgnoreDead*/ false);
+      RegOpers.collect(*MI, *TRI, MRI, /*ShouldTrackLaneMasks*/true,
+                                       /*IgnoreDead*/false);
       // Adjust liveness and add missing dead+read-undef flags.
       auto SlotIdx = LIS->getInstructionIndex(*MI).getRegSlot();
       RegOpers.adjustLaneLiveness(*LIS, MRI, SlotIdx, MI);
@@ -377,10 +389,10 @@ void GCNIterativeScheduler::scheduleRegion(Region &R, Range &&Schedule,
 
   // Schedule consisting of MachineInstr* is considered 'detached'
   // and already interleaved with debug values
-  if (!std::is_same<decltype(*Schedule.begin()), MachineInstr *>::value) {
+  if (!std::is_same<decltype(*Schedule.begin()), MachineInstr*>::value) {
     placeDebugValues();
     // Unfortunatelly placeDebugValues incorrectly modifies RegionEnd, restore
-    // assert(R.End == RegionEnd);
+    //assert(R.End == RegionEnd);
     RegionEnd = R.End;
   }
 
@@ -391,14 +403,15 @@ void GCNIterativeScheduler::scheduleRegion(Region &R, Range &&Schedule,
   const auto RegionMaxRP = getRegionPressure(R);
   const auto &ST = MF.getSubtarget<GCNSubtarget>();
 #endif
-  assert(
-      (SchedMaxRP == RegionMaxRP && (MaxRP.empty() || SchedMaxRP == MaxRP)) ||
-      (dbgs() << "Max RP mismatch!!!\n"
-                 "RP for schedule (calculated): ",
-       SchedMaxRP.print(dbgs(), &ST),
-       dbgs() << "RP for schedule (reported): ", MaxRP.print(dbgs(), &ST),
-       dbgs() << "RP after scheduling: ", RegionMaxRP.print(dbgs(), &ST),
-       false));
+  assert((SchedMaxRP == RegionMaxRP && (MaxRP.empty() || SchedMaxRP == MaxRP))
+  || (dbgs() << "Max RP mismatch!!!\n"
+                "RP for schedule (calculated): ",
+      SchedMaxRP.print(dbgs(), &ST),
+      dbgs() << "RP for schedule (reported): ",
+      MaxRP.print(dbgs(), &ST),
+      dbgs() << "RP after scheduling: ",
+      RegionMaxRP.print(dbgs(), &ST),
+      false));
 }
 
 // Sort recorded regions by pressure - highest at the front
@@ -456,7 +469,7 @@ unsigned GCNIterativeScheduler::tryMaximizeOccupancy(unsigned TargetOcc) {
 }
 
 void GCNIterativeScheduler::scheduleLegacyMaxOccupancy(
-    bool TryMaximizeOccupancy) {
+  bool TryMaximizeOccupancy) {
   const auto &ST = MF.getSubtarget<GCNSubtarget>();
   SIMachineFunctionInfo *MFI = MF.getInfo<SIMachineFunctionInfo>();
   auto TgtOcc = MFI->getMinAllowedOccupancy();
@@ -543,7 +556,8 @@ void GCNIterativeScheduler::scheduleMinReg(bool force) {
 ///////////////////////////////////////////////////////////////////////////////
 // ILP scheduler port
 
-void GCNIterativeScheduler::scheduleILP(bool TryMaximizeOccupancy) {
+void GCNIterativeScheduler::scheduleILP(
+  bool TryMaximizeOccupancy) {
   const auto &ST = MF.getSubtarget<GCNSubtarget>();
   SIMachineFunctionInfo *MFI = MF.getInfo<SIMachineFunctionInfo>();
   auto TgtOcc = MFI->getMinAllowedOccupancy();
@@ -570,7 +584,7 @@ void GCNIterativeScheduler::scheduleILP(bool TryMaximizeOccupancy) {
     if (RP.getOccupancy(ST) < TgtOcc) {
       LLVM_DEBUG(dbgs() << "Didn't fit into target occupancy O" << TgtOcc);
       if (R->BestSchedule.get() &&
-          R->BestSchedule->MaxPressure.getOccupancy(ST) >= TgtOcc) {
+        R->BestSchedule->MaxPressure.getOccupancy(ST) >= TgtOcc) {
         LLVM_DEBUG(dbgs() << ", scheduling minimal register\n");
         scheduleBest(*R);
       }

@@ -7,6 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "Interp.h"
+#include <limits>
+#include <vector>
 #include "Function.h"
 #include "InterpFrame.h"
 #include "InterpStack.h"
@@ -20,8 +22,6 @@
 #include "clang/AST/Expr.h"
 #include "clang/AST/ExprCXX.h"
 #include "llvm/ADT/APSInt.h"
-#include <limits>
-#include <vector>
 
 using namespace clang;
 using namespace clang::interp;
@@ -358,10 +358,10 @@ bool CheckCallable(InterpState &S, CodePtr OpPC, Function *F) {
       // it's not constexpr.
       if (CD && CD->isInheritingConstructor())
         S.FFDiag(Loc, diag::note_constexpr_invalid_inhctor, 1)
-            << CD->getInheritedConstructor().getConstructor()->getParent();
+          << CD->getInheritedConstructor().getConstructor()->getParent();
       else
         S.FFDiag(Loc, diag::note_constexpr_invalid_function, 1)
-            << DiagDecl->isConstexpr() << (bool)CD << DiagDecl;
+          << DiagDecl->isConstexpr() << (bool)CD << DiagDecl;
       S.Note(DiagDecl->getLocation(), diag::note_declared_at);
     } else {
       S.FFDiag(Loc, diag::note_invalid_subexpr_in_const_expr);

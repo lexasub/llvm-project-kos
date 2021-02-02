@@ -88,8 +88,7 @@ static void VisitComponent(const std::string &Name,
   // Lookup the component.
   AvailableComponent *AC = ComponentMap.lookup(Name);
   if (!AC) {
-    errs() << "Can't find component: '" << Name
-           << "' in the map. Available components are: ";
+    errs() << "Can't find component: '" << Name << "' in the map. Available components are: ";
     for (const auto &Component : ComponentMap) {
       errs() << "'" << Component.first() << "' ";
     }
@@ -161,13 +160,11 @@ static void VisitComponent(const std::string &Name,
 /// \param IncludeNonInstalled - Whether non-installed components should be
 /// reported.
 /// \param GetComponentNames - True if one would prefer the component names.
-static std::vector<std::string>
-ComputeLibsForComponents(const std::vector<StringRef> &Components,
-                         bool IncludeNonInstalled, bool GetComponentNames,
-                         const std::function<std::string(const StringRef &)>
-                             *GetComponentLibraryPath,
-                         std::vector<std::string> *Missing,
-                         const std::string &DirSep) {
+static std::vector<std::string> ComputeLibsForComponents(
+    const std::vector<StringRef> &Components, bool IncludeNonInstalled,
+    bool GetComponentNames, const std::function<std::string(const StringRef &)>
+                                *GetComponentLibraryPath,
+    std::vector<std::string> *Missing, const std::string &DirSep) {
   std::vector<std::string> RequiredLibs;
   std::set<AvailableComponent *> VisitedComponents;
 
@@ -267,8 +264,7 @@ std::vector<std::string> GetAllDyLibComponents(const bool IsInDevelopmentTree,
   size_t Offset = 0;
   while (true) {
     const size_t NextOffset = DyLibComponentsStr.find(';', Offset);
-    DyLibComponents.push_back(
-        DyLibComponentsStr.substr(Offset, NextOffset - Offset));
+    DyLibComponents.push_back(DyLibComponentsStr.substr(Offset, NextOffset-Offset));
     if (NextOffset == std::string::npos) {
       break;
     }
@@ -330,7 +326,7 @@ int main(int argc, char **argv) {
   // Compute various directory locations based on the derived location
   // information.
   std::string ActivePrefix, ActiveBinDir, ActiveIncludeDir, ActiveLibDir,
-      ActiveCMakeDir;
+              ActiveCMakeDir;
   std::string ActiveIncludeOption;
   if (IsInDevelopmentTree) {
     ActiveIncludeDir = std::string(LLVM_SRC_ROOT) + "/include";

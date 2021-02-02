@@ -6,18 +6,14 @@
 // Nested crash reported
 // UNSUPPORTED: freebsd
 
-struct S {
-  virtual int f() { return 0; }
-};
+struct S { virtual int f() { return 0; } };
 struct T : virtual S {};
 
-struct Foo {
-  virtual int f() { return 0; }
-};
+struct Foo { virtual int f() { return 0; } };
 
 int main(int argc, char **argv) {
   Foo foo;
-  T *t = (T *)&foo;
+  T *t = (T*)&foo;
   S *s = t;
   // CHECK: vptr-virtual-base.cpp:[[@LINE-1]]:10: runtime error: cast to virtual base of address [[PTR:0x[0-9a-f]*]] which does not point to an object of type 'T'
   // CHECK-NEXT: [[PTR]]: note: object is of type 'Foo'

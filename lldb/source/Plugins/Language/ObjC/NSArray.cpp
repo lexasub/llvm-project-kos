@@ -98,92 +98,95 @@ private:
 };
 
 namespace Foundation1010 {
-namespace {
-struct DataDescriptor_32 {
-  uint32_t _used;
-  uint32_t _offset;
-  uint32_t _size : 28;
-  uint64_t _priv1 : 4;
-  uint32_t _priv2;
-  uint32_t _data;
-};
+  namespace {
+    struct DataDescriptor_32 {
+      uint32_t _used;
+      uint32_t _offset;
+      uint32_t _size : 28;
+      uint64_t _priv1 : 4;
+      uint32_t _priv2;
+      uint32_t _data;
+    };
 
-struct DataDescriptor_64 {
-  uint64_t _used;
-  uint64_t _offset;
-  uint64_t _size : 60;
-  uint64_t _priv1 : 4;
-  uint32_t _priv2;
-  uint64_t _data;
-};
-} // namespace
+    struct DataDescriptor_64 {
+      uint64_t _used;
+      uint64_t _offset;
+      uint64_t _size : 60;
+      uint64_t _priv1 : 4;
+      uint32_t _priv2;
+      uint64_t _data;
+    };
+  }
 
-using NSArrayMSyntheticFrontEnd =
-    GenericNSArrayMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
-} // namespace Foundation1010
+  using NSArrayMSyntheticFrontEnd =
+      GenericNSArrayMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
+}
 
 namespace Foundation1428 {
-namespace {
-struct DataDescriptor_32 {
-  uint32_t _used;
-  uint32_t _offset;
-  uint32_t _size;
-  uint32_t _data;
-};
+  namespace {
+    struct DataDescriptor_32 {
+      uint32_t _used;
+      uint32_t _offset;
+      uint32_t _size;
+      uint32_t _data;
+    };
 
-struct DataDescriptor_64 {
-  uint64_t _used;
-  uint64_t _offset;
-  uint64_t _size;
-  uint64_t _data;
-};
-} // namespace
+    struct DataDescriptor_64 {
+      uint64_t _used;
+      uint64_t _offset;
+      uint64_t _size;
+      uint64_t _data;
+    };
+  }
 
-using NSArrayMSyntheticFrontEnd =
-    GenericNSArrayMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
-} // namespace Foundation1428
+  using NSArrayMSyntheticFrontEnd =
+      GenericNSArrayMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
+}
 
 namespace Foundation1437 {
-template <typename PtrType> struct DataDescriptor {
-  PtrType _cow;
-  // __deque
-  PtrType _data;
-  uint32_t _offset;
-  uint32_t _size;
-  uint32_t _muts;
-  uint32_t _used;
-};
+  template <typename PtrType>
+  struct DataDescriptor {
+    PtrType _cow;
+    // __deque
+    PtrType _data;
+    uint32_t _offset;
+    uint32_t _size;
+    uint32_t _muts;
+    uint32_t _used;
+  };
 
-using NSArrayMSyntheticFrontEnd =
-    GenericNSArrayMSyntheticFrontEnd<DataDescriptor<uint32_t>,
-                                     DataDescriptor<uint64_t>>;
+  using NSArrayMSyntheticFrontEnd =
+     GenericNSArrayMSyntheticFrontEnd<
+        DataDescriptor<uint32_t>, DataDescriptor<uint64_t>>;
 
-template <typename DD>
-uint64_t __NSArrayMSize_Impl(lldb_private::Process &process,
-                             lldb::addr_t valobj_addr, Status &error) {
-  const lldb::addr_t start_of_descriptor =
-      valobj_addr + process.GetAddressByteSize();
-  DD descriptor = DD();
-  process.ReadMemory(start_of_descriptor, &descriptor, sizeof(descriptor),
-                     error);
-  if (error.Fail()) {
-    return 0;
+  template <typename DD>
+  uint64_t
+  __NSArrayMSize_Impl(lldb_private::Process &process,
+                      lldb::addr_t valobj_addr, Status &error) {
+    const lldb::addr_t start_of_descriptor =
+    valobj_addr + process.GetAddressByteSize();
+    DD descriptor = DD();
+    process.ReadMemory(start_of_descriptor, &descriptor,
+                       sizeof(descriptor), error);
+    if (error.Fail()) {
+      return 0;
+    }
+    return descriptor._used;
   }
-  return descriptor._used;
-}
 
-uint64_t __NSArrayMSize(lldb_private::Process &process,
-                        lldb::addr_t valobj_addr, Status &error) {
-  if (process.GetAddressByteSize() == 4) {
-    return __NSArrayMSize_Impl<DataDescriptor<uint32_t>>(process, valobj_addr,
-                                                         error);
-  } else {
-    return __NSArrayMSize_Impl<DataDescriptor<uint64_t>>(process, valobj_addr,
-                                                         error);
+  uint64_t
+  __NSArrayMSize(lldb_private::Process &process, lldb::addr_t valobj_addr,
+                 Status &error) {
+    if (process.GetAddressByteSize() == 4) {
+      return __NSArrayMSize_Impl<DataDescriptor<uint32_t>>(process, valobj_addr,
+                                                           error);
+    } else {
+      return __NSArrayMSize_Impl<DataDescriptor<uint64_t>>(process, valobj_addr,
+                                                           error);
+    }
   }
-}
 
-} // namespace Foundation1437
+}
 
 namespace CallStackArray {
 struct DataDescriptor_32 {
@@ -231,49 +234,51 @@ private:
 };
 
 namespace Foundation1300 {
-struct IDD32 {
-  uint32_t used;
-  uint32_t list;
-};
+    struct IDD32 {
+        uint32_t used;
+        uint32_t list;
+    };
 
-struct IDD64 {
-  uint64_t used;
-  uint64_t list;
-};
+    struct IDD64 {
+        uint64_t used;
+        uint64_t list;
+    };
 
-using NSArrayISyntheticFrontEnd =
-    GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, true>;
-} // namespace Foundation1300
+    using NSArrayISyntheticFrontEnd =
+        GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, true>;
+}
 
 namespace Foundation1430 {
-using NSArrayISyntheticFrontEnd = Foundation1428::NSArrayMSyntheticFrontEnd;
+    using NSArrayISyntheticFrontEnd =
+        Foundation1428::NSArrayMSyntheticFrontEnd;
 }
 
 namespace Foundation1436 {
-struct IDD32 {
-  uint32_t used;
-  uint32_t list; // in Inline cases, this is the first element
-};
+    struct IDD32 {
+        uint32_t used;
+        uint32_t list; // in Inline cases, this is the first element
+    };
 
-struct IDD64 {
-  uint64_t used;
-  uint64_t list; // in Inline cases, this is the first element
-};
+    struct IDD64 {
+        uint64_t used;
+        uint64_t list; // in Inline cases, this is the first element
+    };
 
-using NSArrayI_TransferSyntheticFrontEnd =
-    GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, false>;
+    using NSArrayI_TransferSyntheticFrontEnd =
+        GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, false>;
 
-using NSArrayISyntheticFrontEnd =
-    GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, true>;
+    using NSArrayISyntheticFrontEnd =
+        GenericNSArrayISyntheticFrontEnd<IDD32, IDD64, true>;
 
-using NSFrozenArrayMSyntheticFrontEnd =
-    Foundation1437::NSArrayMSyntheticFrontEnd;
+    using NSFrozenArrayMSyntheticFrontEnd =
+        Foundation1437::NSArrayMSyntheticFrontEnd;
 
-uint64_t __NSFrozenArrayMSize(lldb_private::Process &process,
-                              lldb::addr_t valobj_addr, Status &error) {
-  return Foundation1437::__NSArrayMSize(process, valobj_addr, error);
+    uint64_t
+    __NSFrozenArrayMSize(lldb_private::Process &process, lldb::addr_t valobj_addr,
+                         Status &error) {
+      return Foundation1437::__NSArrayMSize(process, valobj_addr, error);
+    }
 }
-} // namespace Foundation1436
 
 class NSArray0SyntheticFrontEnd : public SyntheticChildrenFrontEnd {
 public:
@@ -363,7 +368,7 @@ bool lldb_private::formatters::NSArraySummaryProvider(
       return false;
   } else if (class_name == g_NSArrayM) {
     AppleObjCRuntime *apple_runtime =
-        llvm::dyn_cast_or_null<AppleObjCRuntime>(runtime);
+    llvm::dyn_cast_or_null<AppleObjCRuntime>(runtime);
     Status error;
     if (apple_runtime && apple_runtime->GetFoundationVersion() >= 1437) {
       value = Foundation1437::__NSArrayMSize(*process_sp, valobj_addr, error);
@@ -381,8 +386,7 @@ bool lldb_private::formatters::NSArraySummaryProvider(
       return false;
   } else if (class_name == g_NSFrozenArrayM) {
     Status error;
-    value =
-        Foundation1436::__NSFrozenArrayMSize(*process_sp, valobj_addr, error);
+    value = Foundation1436::__NSFrozenArrayMSize(*process_sp, valobj_addr, error);
     if (error.Fail())
       return false;
   } else if (class_name == g_NSArrayMLegacy) {
@@ -432,8 +436,8 @@ bool lldb_private::formatters::NSArraySummaryProvider(
   return true;
 }
 
-lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
-    NSArrayMSyntheticFrontEndBase(lldb::ValueObjectSP valobj_sp)
+lldb_private::formatters::NSArrayMSyntheticFrontEndBase::NSArrayMSyntheticFrontEndBase(
+    lldb::ValueObjectSP valobj_sp)
     : SyntheticChildrenFrontEnd(*valobj_sp), m_exe_ctx_ref(), m_ptr_size(8),
       m_id_type() {
   if (valobj_sp) {
@@ -449,13 +453,14 @@ lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
 }
 
 template <typename D32, typename D64>
-lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::GenericNSArrayMSyntheticFrontEnd(lldb::ValueObjectSP valobj_sp)
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    GenericNSArrayMSyntheticFrontEnd(lldb::ValueObjectSP valobj_sp)
     : NSArrayMSyntheticFrontEndBase(valobj_sp), m_data_32(nullptr),
       m_data_64(nullptr) {}
 
-size_t lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
-    CalculateNumChildren() {
+size_t
+lldb_private::formatters::NSArrayMSyntheticFrontEndBase::CalculateNumChildren() {
   return GetUsedCount();
 }
 
@@ -477,8 +482,9 @@ lldb_private::formatters::NSArrayMSyntheticFrontEndBase::GetChildAtIndex(
 }
 
 template <typename D32, typename D64>
-bool lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<D32,
-                                                                D64>::Update() {
+bool
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::Update() {
   ValueObjectSP valobj_sp = m_backend.GetSP();
   m_ptr_size = 0;
   delete m_data_32;
@@ -497,23 +503,26 @@ bool lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<D32,
   uint64_t data_location = valobj_sp->GetValueAsUnsigned(0) + m_ptr_size;
   if (m_ptr_size == 4) {
     m_data_32 = new D32();
-    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32), error);
+    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32),
+                           error);
   } else {
     m_data_64 = new D64();
-    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64), error);
+    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64),
+                           error);
   }
   if (error.Fail())
     return false;
   return false;
 }
 
-bool lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
-    MightHaveChildren() {
+bool
+lldb_private::formatters::NSArrayMSyntheticFrontEndBase::MightHaveChildren() {
   return true;
 }
 
-size_t lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
-    GetIndexOfChildWithName(ConstString name) {
+size_t
+lldb_private::formatters::NSArrayMSyntheticFrontEndBase::GetIndexOfChildWithName(
+    ConstString name) {
   const char *item_name = name.GetCString();
   uint32_t idx = ExtractIndexFromString(item_name);
   if (idx < UINT32_MAX && idx >= CalculateNumChildren())
@@ -522,8 +531,9 @@ size_t lldb_private::formatters::NSArrayMSyntheticFrontEndBase::
 }
 
 template <typename D32, typename D64>
-lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::~GenericNSArrayMSyntheticFrontEnd<D32, D64>() {
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    ~GenericNSArrayMSyntheticFrontEnd<D32, D64>() {
   delete m_data_32;
   m_data_32 = nullptr;
   delete m_data_64;
@@ -531,32 +541,40 @@ lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
 }
 
 template <typename D32, typename D64>
-lldb::addr_t lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::GenericNSArrayMSyntheticFrontEnd::GetDataAddress() {
+lldb::addr_t
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    GenericNSArrayMSyntheticFrontEnd::GetDataAddress() {
   if (!m_data_32 && !m_data_64)
     return LLDB_INVALID_ADDRESS;
   return m_data_32 ? m_data_32->_data : m_data_64->_data;
 }
 
 template <typename D32, typename D64>
-uint64_t lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::GenericNSArrayMSyntheticFrontEnd::GetUsedCount() {
+uint64_t
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    GenericNSArrayMSyntheticFrontEnd::GetUsedCount() {
   if (!m_data_32 && !m_data_64)
     return 0;
   return m_data_32 ? m_data_32->_used : m_data_64->_used;
 }
 
 template <typename D32, typename D64>
-uint64_t lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::GenericNSArrayMSyntheticFrontEnd::GetOffset() {
+uint64_t
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    GenericNSArrayMSyntheticFrontEnd::GetOffset() {
   if (!m_data_32 && !m_data_64)
     return 0;
   return m_data_32 ? m_data_32->_offset : m_data_64->_offset;
 }
 
 template <typename D32, typename D64>
-uint64_t lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
-    D32, D64>::GenericNSArrayMSyntheticFrontEnd::GetSize() {
+uint64_t
+lldb_private::formatters::
+  GenericNSArrayMSyntheticFrontEnd<D32, D64>::
+    GenericNSArrayMSyntheticFrontEnd::GetSize() {
   if (!m_data_32 && !m_data_64)
     return 0;
   return m_data_32 ? m_data_32->_size : m_data_64->_size;
@@ -564,7 +582,8 @@ uint64_t lldb_private::formatters::GenericNSArrayMSyntheticFrontEnd<
 
 template <typename D32, typename D64, bool Inline>
 lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
-    GenericNSArrayISyntheticFrontEnd(lldb::ValueObjectSP valobj_sp)
+  GenericNSArrayISyntheticFrontEnd(
+    lldb::ValueObjectSP valobj_sp)
     : SyntheticChildrenFrontEnd(*valobj_sp), m_exe_ctx_ref(), m_ptr_size(8),
       m_data_32(nullptr), m_data_64(nullptr) {
   if (valobj_sp) {
@@ -580,8 +599,8 @@ lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
 }
 
 template <typename D32, typename D64, bool Inline>
-lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::~GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>() {
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  ~GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>() {
   delete m_data_32;
   m_data_32 = nullptr;
   delete m_data_64;
@@ -589,8 +608,9 @@ lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
 }
 
 template <typename D32, typename D64, bool Inline>
-size_t lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::GetIndexOfChildWithName(ConstString name) {
+size_t
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  GetIndexOfChildWithName(ConstString name) {
   const char *item_name = name.GetCString();
   uint32_t idx = ExtractIndexFromString(item_name);
   if (idx < UINT32_MAX && idx >= CalculateNumChildren())
@@ -599,14 +619,16 @@ size_t lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
 }
 
 template <typename D32, typename D64, bool Inline>
-size_t lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::CalculateNumChildren() {
+size_t
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  CalculateNumChildren() {
   return m_data_32 ? m_data_32->used : m_data_64->used;
 }
 
 template <typename D32, typename D64, bool Inline>
-bool lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::Update() {
+bool
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  Update() {
   ValueObjectSP valobj_sp = m_backend.GetSP();
   m_ptr_size = 0;
   delete m_data_32;
@@ -625,10 +647,12 @@ bool lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
   uint64_t data_location = valobj_sp->GetValueAsUnsigned(0) + m_ptr_size;
   if (m_ptr_size == 4) {
     m_data_32 = new D32();
-    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32), error);
+    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32),
+                           error);
   } else {
     m_data_64 = new D64();
-    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64), error);
+    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64),
+                           error);
   }
   if (error.Fail())
     return false;
@@ -636,23 +660,23 @@ bool lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
 }
 
 template <typename D32, typename D64, bool Inline>
-bool lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::MightHaveChildren() {
+bool
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  MightHaveChildren() {
   return true;
 }
 
 template <typename D32, typename D64, bool Inline>
-lldb::ValueObjectSP lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<
-    D32, D64, Inline>::GetChildAtIndex(size_t idx) {
+lldb::ValueObjectSP
+lldb_private::formatters::GenericNSArrayISyntheticFrontEnd<D32, D64, Inline>::
+  GetChildAtIndex(size_t idx) {
   if (idx >= CalculateNumChildren())
     return lldb::ValueObjectSP();
   lldb::addr_t object_at_idx;
   if (Inline) {
     object_at_idx = m_backend.GetSP()->GetValueAsUnsigned(0) + m_ptr_size;
-    object_at_idx +=
-        m_ptr_size == 4 ? sizeof(D32) : sizeof(D64); // skip the data header
-    object_at_idx -= m_ptr_size; // we treat the last entry in the data header
-                                 // as the first pointer
+    object_at_idx += m_ptr_size == 4 ? sizeof(D32) : sizeof(D64); // skip the data header
+    object_at_idx -= m_ptr_size; // we treat the last entry in the data header as the first pointer
   } else {
     object_at_idx = m_data_32 ? m_data_32->list : m_data_64->list;
   }
@@ -798,7 +822,7 @@ lldb_private::formatters::NSArraySyntheticFrontEndCreator(
       return (new Foundation1430::NSArrayISyntheticFrontEnd(valobj_sp));
     return (new Foundation1300::NSArrayISyntheticFrontEnd(valobj_sp));
   } else if (class_name == g_NSArrayI_Transfer) {
-    return (new Foundation1436::NSArrayI_TransferSyntheticFrontEnd(valobj_sp));
+      return (new Foundation1436::NSArrayI_TransferSyntheticFrontEnd(valobj_sp));
   } else if (class_name == g_NSFrozenArrayM) {
     return (new Foundation1436::NSFrozenArrayMSyntheticFrontEnd(valobj_sp));
   } else if (class_name == g_NSArray0) {

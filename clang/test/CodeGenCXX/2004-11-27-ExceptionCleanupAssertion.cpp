@@ -3,12 +3,12 @@
 // This is PR421
 
 struct Strongbad {
-  Strongbad(const char *str);
-  ~Strongbad();
-  operator const char *() const;
+    Strongbad(const char *str );
+    ~Strongbad();
+    operator const char *() const;
 };
 
-void TheCheat() {
+void TheCheat () {
   Strongbad foo(0);
-  Strongbad dirs[] = {Strongbad(0) + 1};
+  Strongbad dirs[] = { Strongbad(0) + 1};
 }

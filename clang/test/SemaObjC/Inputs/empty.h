@@ -1,3 +1,1 @@
-struct S {
-  int x;
-};
+struct S { int x; };

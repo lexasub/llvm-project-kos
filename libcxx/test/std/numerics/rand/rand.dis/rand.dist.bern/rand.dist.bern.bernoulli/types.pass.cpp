@@ -17,12 +17,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::bernoulli_distribution D;
-    typedef D::result_type result_type;
-    static_assert((std::is_same<result_type, bool>::value), "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::bernoulli_distribution D;
+        typedef D::result_type result_type;
+        static_assert((std::is_same<result_type, bool>::value), "");
+    }
 
   return 0;
 }

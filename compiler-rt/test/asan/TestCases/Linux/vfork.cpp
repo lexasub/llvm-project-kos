@@ -4,11 +4,11 @@
 // REQUIRES: aarch64-target-arch || x86_64-target-arch || i386-target-arch || arm-target-arch || riscv64-target-arch
 
 #include <assert.h>
-#include <sanitizer/asan_interface.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <sanitizer/asan_interface.h>
 
 __attribute__((noinline, no_sanitize("address"))) void child() {
   alignas(8) char x[100000];

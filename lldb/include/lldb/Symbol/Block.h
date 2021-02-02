@@ -365,10 +365,10 @@ protected:
   RangeList m_ranges;
   lldb::InlineFunctionInfoSP m_inlineInfoSP; ///< Inlined function information.
   lldb::VariableListSP m_variable_list_sp; ///< The variable list for all local,
-                                           /// static and parameter variables
-                                           /// scoped to this block.
+                                           ///static and parameter variables
+                                           ///scoped to this block.
   bool m_parsed_block_info : 1, ///< Set to true if this block and it's children
-                                /// have all been parsed
+                                ///have all been parsed
       m_parsed_block_variables : 1, m_parsed_child_blocks : 1;
 
   // A parent of child blocks can be asked to find a sibling block given

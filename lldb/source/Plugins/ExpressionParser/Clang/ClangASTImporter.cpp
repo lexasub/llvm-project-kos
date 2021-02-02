@@ -49,8 +49,10 @@ CompilerType ClangASTImporter::CopyType(TypeSystemClang &dst_ast,
 
   llvm::Expected<QualType> ret_or_error = delegate_sp->Import(src_qual_type);
   if (!ret_or_error) {
-    Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_EXPRESSIONS);
-    LLDB_LOG_ERROR(log, ret_or_error.takeError(), "Couldn't import type: {0}");
+    Log *log =
+      lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_EXPRESSIONS);
+    LLDB_LOG_ERROR(log, ret_or_error.takeError(),
+        "Couldn't import type: {0}");
     return CompilerType();
   }
 
@@ -231,8 +233,8 @@ public:
   /// \param dst_ctx The ASTContext to which Decls are imported.
   /// \param src_ctx The ASTContext from which Decls are imported.
   explicit CompleteTagDeclsScope(ClangASTImporter &importer,
-                                 clang::ASTContext *dst_ctx,
-                                 clang::ASTContext *src_ctx)
+                            clang::ASTContext *dst_ctx,
+                            clang::ASTContext *src_ctx)
       : m_delegate(importer.GetDelegate(dst_ctx, src_ctx)), m_dst_ctx(dst_ctx),
         m_src_ctx(src_ctx), importer(importer) {
     m_delegate->SetImportListener(this);
@@ -549,7 +551,7 @@ bool ClangASTImporter::LayoutRecordType(
 }
 
 void ClangASTImporter::SetRecordLayout(clang::RecordDecl *decl,
-                                       const LayoutInfo &layout) {
+                                        const LayoutInfo &layout) {
   m_record_decl_to_layout_map.insert(std::make_pair(decl, layout));
 }
 
@@ -932,10 +934,9 @@ void ClangASTImporter::ASTImporterDelegate::ImportDefinitionTo(
           from_named_decl->printName(name_stream);
           name_stream.flush();
         }
-        LLDB_LOG(log_ast,
-                 "==== [ClangASTImporter][TUDecl: {0}] Imported "
-                 "({1}Decl*){2}, named {3} (from "
-                 "(Decl*){4})",
+        LLDB_LOG(log_ast, "==== [ClangASTImporter][TUDecl: {0}] Imported "
+                          "({1}Decl*){2}, named {3} (from "
+                          "(Decl*){4})",
                  static_cast<void *>(to->getTranslationUnitDecl()),
                  from->getDeclKindName(), static_cast<void *>(to), name_string,
                  static_cast<void *>(from));
@@ -1000,7 +1001,7 @@ void ClangASTImporter::ASTImporterDelegate::ImportDefinitionTo(
 /// types where Clang's CodeGen expects that the underlying records are already
 /// completed.
 static void MaybeCompleteReturnType(ClangASTImporter &importer,
-                                    CXXMethodDecl *to_method) {
+                                        CXXMethodDecl *to_method) {
   if (!to_method->isVirtual())
     return;
   QualType return_type = to_method->getReturnType();

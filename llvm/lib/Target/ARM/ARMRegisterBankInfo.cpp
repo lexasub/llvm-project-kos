@@ -126,7 +126,7 @@ static void checkValueMappings() {
          "Wrong value mapping for 3 DPR ops instruction");
 }
 #endif
-} // namespace ARM
+} // end namespace arm
 } // end namespace llvm
 
 ARMRegisterBankInfo::ARMRegisterBankInfo(const TargetRegisterInfo &TRI)
@@ -295,7 +295,7 @@ ARMRegisterBankInfo::getInstrMapping(const MachineInstr &MI) const {
   case G_FDIV:
   case G_FNEG: {
     LLT Ty = MRI.getType(MI.getOperand(0).getReg());
-    OperandsMapping = Ty.getSizeInBits() == 64
+    OperandsMapping =Ty.getSizeInBits() == 64
                           ? &ARM::ValueMappings[ARM::DPR3OpsIdx]
                           : &ARM::ValueMappings[ARM::SPR3OpsIdx];
     break;

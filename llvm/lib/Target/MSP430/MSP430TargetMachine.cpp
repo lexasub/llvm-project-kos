@@ -58,7 +58,7 @@ namespace {
 class MSP430PassConfig : public TargetPassConfig {
 public:
   MSP430PassConfig(MSP430TargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {}
+    : TargetPassConfig(TM, PM) {}
 
   MSP430TargetMachine &getMSP430TargetMachine() const {
     return getTM<MSP430TargetMachine>();

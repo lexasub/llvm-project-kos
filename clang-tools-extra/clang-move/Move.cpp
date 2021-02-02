@@ -173,7 +173,8 @@ private:
 
 class VarDeclarationMatch : public MatchFinder::MatchCallback {
 public:
-  explicit VarDeclarationMatch(ClangMoveTool *MoveTool) : MoveTool(MoveTool) {}
+  explicit VarDeclarationMatch(ClangMoveTool *MoveTool)
+      : MoveTool(MoveTool) {}
 
   void run(const MatchFinder::MatchResult &Result) override {
     const auto *VD = Result.Nodes.getNodeAs<VarDecl>("var");
@@ -187,15 +188,16 @@ private:
 
 class TypeAliasMatch : public MatchFinder::MatchCallback {
 public:
-  explicit TypeAliasMatch(ClangMoveTool *MoveTool) : MoveTool(MoveTool) {}
+  explicit TypeAliasMatch(ClangMoveTool *MoveTool)
+      : MoveTool(MoveTool) {}
 
   void run(const MatchFinder::MatchResult &Result) override {
     if (const auto *TD = Result.Nodes.getNodeAs<TypedefDecl>("typedef"))
       MoveDeclFromOldFileToNewFile(MoveTool, TD);
     else if (const auto *TAD =
                  Result.Nodes.getNodeAs<TypeAliasDecl>("type_alias")) {
-      const NamedDecl *D = TAD;
-      if (const auto *TD = TAD->getDescribedAliasTemplate())
+      const NamedDecl * D = TAD;
+      if (const auto * TD = TAD->getDescribedAliasTemplate())
         D = TD;
       MoveDeclFromOldFileToNewFile(MoveTool, D);
     }
@@ -207,7 +209,8 @@ private:
 
 class EnumDeclarationMatch : public MatchFinder::MatchCallback {
 public:
-  explicit EnumDeclarationMatch(ClangMoveTool *MoveTool) : MoveTool(MoveTool) {}
+  explicit EnumDeclarationMatch(ClangMoveTool *MoveTool)
+      : MoveTool(MoveTool) {}
 
   void run(const MatchFinder::MatchResult &Result) override {
     const auto *ED = Result.Nodes.getNodeAs<EnumDecl>("enum");
@@ -410,6 +413,7 @@ createInsertedReplacements(const std::vector<std::string> &Includes,
                                             CurrentIt);
     NextNamespaces.insert(NextNamespaces.end(), DeclIt, DeclNamespaces.end());
 
+
     // End with CurrentNamespace.
     bool HasEndCurrentNamespace = false;
     auto RemainingSize = CurrentNamespaces.end() - CurrentIt;
@@ -457,8 +461,8 @@ getUsedDecls(const HelperDeclRefGraph *RG,
   assert(RG);
   llvm::DenseSet<const CallGraphNode *> Nodes;
   for (const auto *D : Decls) {
-    auto Result =
-        RG->getReachableNodes(HelperDeclRGBuilder::getOutmostClassOrFunDecl(D));
+    auto Result = RG->getReachableNodes(
+        HelperDeclRGBuilder::getOutmostClassOrFunDecl(D));
     Nodes.insert(Result.begin(), Result.end());
   }
   llvm::DenseSet<const Decl *> Results;
@@ -516,7 +520,8 @@ void ClangMoveTool::registerMatchers(ast_matchers::MatchFinder *Finder) {
   auto AllDeclsInHeader = namedDecl(
       unless(ForwardClassDecls), unless(namespaceDecl()),
       unless(usingDirectiveDecl()), // using namespace decl.
-      notInMacro(), InOldHeader,
+      notInMacro(),
+      InOldHeader,
       hasParent(decl(anyOf(namespaceDecl(), translationUnitDecl()))),
       hasDeclContext(decl(anyOf(namespaceDecl(), translationUnitDecl()))));
   Finder->addMatcher(AllDeclsInHeader.bind("decls_in_header"), this);
@@ -566,7 +571,7 @@ void ClangMoveTool::registerMatchers(ast_matchers::MatchFinder *Finder) {
 
   // Matchers for helper declarations in old.cc.
   auto InAnonymousNS = hasParent(namespaceDecl(isAnonymous()));
-  auto NotInMovedClass = allOf(unless(InMovedClass), InOldCC);
+  auto NotInMovedClass= allOf(unless(InMovedClass), InOldCC);
   auto IsOldCCHelper =
       allOf(NotInMovedClass, anyOf(isStaticStorageClass(), InAnonymousNS));
   // Match helper classes separately with helper functions/variables since we
@@ -577,7 +582,7 @@ void ClangMoveTool::registerMatchers(ast_matchers::MatchFinder *Finder) {
   //
   // Forward declarations for variable helpers will be excluded as these
   // declarations (with "extern") are not supposed in cpp file.
-  auto HelperFuncOrVar =
+   auto HelperFuncOrVar =
       namedDecl(notInMacro(), anyOf(functionDecl(IsOldCCHelper),
                                     varDecl(isDefinition(), IsOldCCHelper)));
   auto HelperClasses =
@@ -714,8 +719,7 @@ void ClangMoveTool::addIncludes(llvm::StringRef IncludeHeader, bool IsAngled,
 }
 
 void ClangMoveTool::removeDeclsInOldFiles() {
-  if (RemovedDecls.empty())
-    return;
+  if (RemovedDecls.empty()) return;
 
   // If old_header is not specified (only move declarations from old.cc), remain
   // all the helper function declarations in old.cc as UnremovedDeclsInOldHeader
@@ -773,8 +777,7 @@ void ClangMoveTool::removeDeclsInOldFiles() {
 
     auto SI = FilePathToFileID.find(FilePath);
     // Ignore replacements for new.h/cc.
-    if (SI == FilePathToFileID.end())
-      continue;
+    if (SI == FilePathToFileID.end()) continue;
     llvm::StringRef Code = SM.getBufferData(SI->second);
     auto Style = format::getStyle(format::DefaultFormatStyle, FilePath,
                                   Context->FallbackStyle);

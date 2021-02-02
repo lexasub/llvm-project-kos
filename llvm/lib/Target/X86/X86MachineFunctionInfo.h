@@ -122,26 +122,25 @@ public:
 
   explicit X86MachineFunctionInfo(MachineFunction &MF) {}
 
-  bool getForceFramePointer() const { return ForceFramePointer; }
+  bool getForceFramePointer() const { return ForceFramePointer;}
   void setForceFramePointer(bool forceFP) { ForceFramePointer = forceFP; }
 
   bool getHasPushSequences() const { return HasPushSequences; }
   void setHasPushSequences(bool HasPush) { HasPushSequences = HasPush; }
 
-  bool getRestoreBasePointer() const { return RestoreBasePointerOffset != 0; }
+  bool getRestoreBasePointer() const { return RestoreBasePointerOffset!=0; }
   void setRestoreBasePointer(const MachineFunction *MF);
-  int getRestoreBasePointerOffset() const { return RestoreBasePointerOffset; }
+  int getRestoreBasePointerOffset() const {return RestoreBasePointerOffset; }
 
-  DenseMap<int, unsigned> &getWinEHXMMSlotInfo() { return WinEHXMMSlotInfo; }
-  const DenseMap<int, unsigned> &getWinEHXMMSlotInfo() const {
-    return WinEHXMMSlotInfo;
-  }
+  DenseMap<int, unsigned>& getWinEHXMMSlotInfo() { return WinEHXMMSlotInfo; }
+  const DenseMap<int, unsigned>& getWinEHXMMSlotInfo() const {
+    return WinEHXMMSlotInfo; }
 
   unsigned getCalleeSavedFrameSize() const { return CalleeSavedFrameSize; }
   void setCalleeSavedFrameSize(unsigned bytes) { CalleeSavedFrameSize = bytes; }
 
   unsigned getBytesToPopOnReturn() const { return BytesToPopOnReturn; }
-  void setBytesToPopOnReturn(unsigned bytes) { BytesToPopOnReturn = bytes; }
+  void setBytesToPopOnReturn (unsigned bytes) { BytesToPopOnReturn = bytes;}
 
   int getRAIndex() const { return ReturnAddrIndex; }
   void setRAIndex(int Index) { ReturnAddrIndex = Index; }
@@ -150,7 +149,7 @@ public:
   void setFAIndex(int Index) { FrameAddrIndex = Index; }
 
   int getTCReturnAddrDelta() const { return TailCallReturnAddrDelta; }
-  void setTCReturnAddrDelta(int delta) { TailCallReturnAddrDelta = delta; }
+  void setTCReturnAddrDelta(int delta) {TailCallReturnAddrDelta = delta;}
 
   Register getSRetReturnReg() const { return SRetReturnReg; }
   void setSRetReturnReg(Register Reg) { SRetReturnReg = Reg; }
@@ -226,6 +225,6 @@ public:
   }
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

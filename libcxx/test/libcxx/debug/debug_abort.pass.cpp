@@ -18,13 +18,15 @@
 
 #include "test_macros.h"
 
-void signal_handler(int signal) {
-  if (signal == SIGABRT)
-    std::_Exit(EXIT_SUCCESS);
-  std::_Exit(EXIT_FAILURE);
+void signal_handler(int signal)
+{
+    if (signal == SIGABRT)
+      std::_Exit(EXIT_SUCCESS);
+    std::_Exit(EXIT_FAILURE);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   if (std::signal(SIGABRT, signal_handler) != SIG_ERR)
     _LIBCPP_ASSERT(false, "foo");
   return EXIT_FAILURE;

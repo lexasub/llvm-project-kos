@@ -44,7 +44,8 @@ static Attr *handleFallThroughAttr(Sema &S, Stmt *St, const ParsedAttr &A,
 
   // If this is spelled as the standard C++17 attribute, but not in C++17, warn
   // about using it as an extension.
-  if (!S.getLangOpts().CPlusPlus17 && A.isCXX11Attribute() && !A.getScopeName())
+  if (!S.getLangOpts().CPlusPlus17 && A.isCXX11Attribute() &&
+      !A.getScopeName())
     S.Diag(A.getLoc(), diag::ext_cxx17_attr) << A;
 
   FnScope->setHasFallthroughStmt();
@@ -445,7 +446,7 @@ static Attr *ProcessStmtAttribute(Sema &S, Stmt *St, const ParsedAttr &A,
 StmtResult Sema::ProcessStmtAttributes(Stmt *S,
                                        const ParsedAttributesView &AttrList,
                                        SourceRange Range) {
-  SmallVector<const Attr *, 8> Attrs;
+  SmallVector<const Attr*, 8> Attrs;
   for (const ParsedAttr &AL : AttrList) {
     if (Attr *a = ProcessStmtAttribute(*this, S, AL, Range))
       Attrs.push_back(a);

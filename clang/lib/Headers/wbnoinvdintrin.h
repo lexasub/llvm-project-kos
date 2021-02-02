@@ -15,9 +15,10 @@
 #define __WBNOINVDINTRIN_H
 
 static __inline__ void
-    __attribute__((__always_inline__, __nodebug__, __target__("wbnoinvd")))
-    _wbnoinvd(void) {
-  __builtin_ia32_wbnoinvd();
+  __attribute__((__always_inline__, __nodebug__,  __target__("wbnoinvd")))
+_wbnoinvd (void)
+{
+  __builtin_ia32_wbnoinvd ();
 }
 
 #endif /* __WBNOINVDINTRIN_H */

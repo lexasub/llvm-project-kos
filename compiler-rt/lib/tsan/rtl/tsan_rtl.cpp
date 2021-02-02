@@ -11,18 +11,17 @@
 // Main file (entry points) for the TSan run-time.
 //===----------------------------------------------------------------------===//
 
-#include "tsan_rtl.h"
-
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_file.h"
 #include "sanitizer_common/sanitizer_libc.h"
-#include "sanitizer_common/sanitizer_placement_new.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
+#include "sanitizer_common/sanitizer_placement_new.h"
 #include "sanitizer_common/sanitizer_symbolizer.h"
 #include "tsan_defs.h"
-#include "tsan_mman.h"
 #include "tsan_platform.h"
+#include "tsan_rtl.h"
+#include "tsan_mman.h"
 #include "tsan_suppressions.h"
 #include "tsan_symbolize.h"
 #include "ubsan/ubsan_init.h"
@@ -39,7 +38,9 @@ typedef __m128i m128;
 
 volatile int __tsan_resumed = 0;
 
-extern "C" void __tsan_resume() { __tsan_resumed = 1; }
+extern "C" void __tsan_resume() {
+  __tsan_resumed = 1;
+}
 
 namespace __tsan {
 
@@ -56,7 +57,9 @@ bool OnFinalize(bool failed);
 void OnInitialize();
 #else
 SANITIZER_WEAK_CXX_DEFAULT_IMPL
-bool OnFinalize(bool failed) { return failed; }
+bool OnFinalize(bool failed) {
+  return failed;
+}
 SANITIZER_WEAK_CXX_DEFAULT_IMPL
 void OnInitialize() {}
 #endif
@@ -71,7 +74,7 @@ static ThreadContextBase *CreateThreadContext(u32 tid) {
   const uptr hdr = GetThreadTraceHeader(tid);
   internal_snprintf(name, sizeof(name), "trace header %u", tid);
   MapThreadTrace(hdr, sizeof(Trace), name);
-  new ((void *)hdr) Trace();
+  new((void*)hdr) Trace();
   // We are going to use only a small part of the trace with the default
   // value of history_size. However, the constructor writes to the whole trace.
   // Unmap the unused part.
@@ -79,9 +82,9 @@ static ThreadContextBase *CreateThreadContext(u32 tid) {
   hdr_end -= sizeof(TraceHeader) * (kTraceParts - TraceParts());
   hdr_end = RoundUp(hdr_end, GetPageSizeCached());
   if (hdr_end < hdr + sizeof(Trace))
-    UnmapOrDie((void *)hdr_end, hdr + sizeof(Trace) - hdr_end);
+    UnmapOrDie((void*)hdr_end, hdr + sizeof(Trace) - hdr_end);
   void *mem = internal_alloc(MBlockThreadContex, sizeof(ThreadContext));
-  return new (mem) ThreadContext(tid);
+  return new(mem) ThreadContext(tid);
 }
 
 #if !SANITIZER_GO
@@ -91,45 +94,42 @@ static const u32 kThreadQuarantineSize = 64;
 #endif
 
 Context::Context()
-    : initialized(),
-      report_mtx(MutexTypeReport, StatMtxReport),
-      nreported(),
-      nmissed_expected(),
-      thread_registry(new (thread_registry_placeholder) ThreadRegistry(
-          CreateThreadContext, kMaxTid, kThreadQuarantineSize, kMaxTidReuse)),
-      racy_mtx(MutexTypeRacy, StatMtxRacy),
-      racy_stacks(),
-      racy_addresses(),
-      fired_suppressions_mtx(MutexTypeFired, StatMtxFired),
-      clock_alloc("clock allocator") {
+  : initialized()
+  , report_mtx(MutexTypeReport, StatMtxReport)
+  , nreported()
+  , nmissed_expected()
+  , thread_registry(new(thread_registry_placeholder) ThreadRegistry(
+      CreateThreadContext, kMaxTid, kThreadQuarantineSize, kMaxTidReuse))
+  , racy_mtx(MutexTypeRacy, StatMtxRacy)
+  , racy_stacks()
+  , racy_addresses()
+  , fired_suppressions_mtx(MutexTypeFired, StatMtxFired)
+  , clock_alloc("clock allocator") {
   fired_suppressions.reserve(8);
 }
 
 // The objects are allocated in TLS, so one may rely on zero-initialization.
 ThreadState::ThreadState(Context *ctx, int tid, int unique_id, u64 epoch,
-                         unsigned reuse_count, uptr stk_addr, uptr stk_size,
+                         unsigned reuse_count,
+                         uptr stk_addr, uptr stk_size,
                          uptr tls_addr, uptr tls_size)
-    : fast_state(tid, epoch)
-      // Do not touch these, rely on zero initialization,
-      // they may be accessed before the ctor.
-      // , ignore_reads_and_writes()
-      // , ignore_interceptors()
-      ,
-      clock(tid, reuse_count)
+  : fast_state(tid, epoch)
+  // Do not touch these, rely on zero initialization,
+  // they may be accessed before the ctor.
+  // , ignore_reads_and_writes()
+  // , ignore_interceptors()
+  , clock(tid, reuse_count)
 #if !SANITIZER_GO
-      ,
-      jmp_bufs()
+  , jmp_bufs()
 #endif
-      ,
-      tid(tid),
-      unique_id(unique_id),
-      stk_addr(stk_addr),
-      stk_size(stk_size),
-      tls_addr(tls_addr),
-      tls_size(tls_size)
+  , tid(tid)
+  , unique_id(unique_id)
+  , stk_addr(stk_addr)
+  , stk_size(stk_size)
+  , tls_addr(tls_addr)
+  , tls_size(tls_size)
 #if !SANITIZER_GO
-      ,
-      last_sleep_clock(tid)
+  , last_sleep_clock(tid)
 #endif
 {
 }
@@ -165,7 +165,7 @@ static void *BackgroundThread(void *arg) {
       fd_t fd = OpenFile(filename.data(), WrOnly);
       if (fd == kInvalidFd) {
         Printf("ThreadSanitizer: failed to open memory profile file '%s'\n",
-               &filename[0]);
+            &filename[0]);
       } else {
         mprof_fd = fd;
       }
@@ -175,8 +175,8 @@ static void *BackgroundThread(void *arg) {
   u64 last_flush = NanoTime();
   uptr last_rss = 0;
   for (int i = 0;
-       atomic_load(&ctx->stop_background_thread, memory_order_relaxed) == 0;
-       i++) {
+      atomic_load(&ctx->stop_background_thread, memory_order_relaxed) == 0;
+      i++) {
     SleepForMillis(100);
     u64 now = NanoTime();
 
@@ -192,16 +192,14 @@ static void *BackgroundThread(void *arg) {
     if (flags()->memory_limit_mb > 0) {
       uptr rss = GetRSS();
       uptr limit = uptr(flags()->memory_limit_mb) << 20;
-      VPrintf(1,
-              "ThreadSanitizer: memory flush check"
-              " RSS=%llu LAST=%llu LIMIT=%llu\n",
+      VPrintf(1, "ThreadSanitizer: memory flush check"
+                 " RSS=%llu LAST=%llu LIMIT=%llu\n",
               (u64)rss >> 20, (u64)last_rss >> 20, (u64)limit >> 20);
       if (2 * rss > limit + last_rss) {
         VPrintf(1, "ThreadSanitizer: flushing memory due to RSS\n");
         FlushShadowMemory();
         rss = GetRSS();
-        VPrintf(1, "ThreadSanitizer: memory flushed RSS=%llu\n",
-                (u64)rss >> 20);
+        VPrintf(1, "ThreadSanitizer: memory flushed RSS=%llu\n", (u64)rss>>20);
       }
       last_rss = rss;
     }
@@ -212,8 +210,8 @@ static void *BackgroundThread(void *arg) {
 
     // Flush symbolizer cache if requested.
     if (flags()->flush_symbolizer_ms > 0) {
-      u64 last =
-          atomic_load(&ctx->last_symbolize_time_ns, memory_order_relaxed);
+      u64 last = atomic_load(&ctx->last_symbolize_time_ns,
+                             memory_order_relaxed);
       if (last != 0 && last + flags()->flush_symbolizer_ms * kMs2Ns < now) {
         Lock l(&ctx->report_mtx);
         ScopedErrorReportLock l2;
@@ -244,8 +242,7 @@ void DontNeedShadowFor(uptr addr, uptr size) {
 
 #if !SANITIZER_GO
 void UnmapShadow(ThreadState *thr, uptr addr, uptr size) {
-  if (size == 0)
-    return;
+  if (size == 0) return;
   DontNeedShadowFor(addr, size);
   ScopedGlobalProcessor sgp;
   ctx->metamap.ResetRange(thr->proc(), addr, size);
@@ -290,8 +287,8 @@ void MapShadow(uptr addr, uptr size) {
       Die();
     mapped_meta_end = meta_end;
   }
-  VPrintf(2, "mapped meta shadow for (%p-%p) at (%p-%p)\n", addr, addr + size,
-          meta_begin, meta_end);
+  VPrintf(2, "mapped meta shadow for (%p-%p) at (%p-%p)\n",
+      addr, addr+size, meta_begin, meta_end);
 }
 
 void MapThreadTrace(uptr addr, uptr size, const char *name) {
@@ -300,8 +297,8 @@ void MapThreadTrace(uptr addr, uptr size, const char *name) {
   CHECK_LE(addr + size, TraceMemEnd());
   CHECK_EQ(addr, addr & ~((64 << 10) - 1));  // windows wants 64K alignment
   if (!MmapFixedSuperNoReserve(addr, size, name)) {
-    Printf("FATAL: ThreadSanitizer can not mmap thread trace (%p/%p)\n", addr,
-           size);
+    Printf("FATAL: ThreadSanitizer can not mmap thread trace (%p/%p)\n",
+        addr, size);
     Die();
   }
 }
@@ -366,7 +363,7 @@ void Initialize(ThreadState *thr) {
   // Install tool-specific callbacks in sanitizer_common.
   SetCheckFailedCallback(TsanCheckFailed);
 
-  ctx = new (ctx_placeholder) Context;
+  ctx = new(ctx_placeholder) Context;
   const char *env_name = SANITIZER_GO ? "GORACE" : "TSAN_OPTIONS";
   const char *options = GetEnv(env_name);
   CacheBinaryName();
@@ -422,12 +419,10 @@ void Initialize(ThreadState *thr) {
 #endif
 
   if (flags()->stop_on_start) {
-    Printf(
-        "ThreadSanitizer is suspended at startup (pid %d)."
-        " Call __tsan_resume().\n",
-        (int)internal_getpid());
-    while (__tsan_resumed == 0) {
-    }
+    Printf("ThreadSanitizer is suspended at startup (pid %d)."
+           " Call __tsan_resume().\n",
+           (int)internal_getpid());
+    while (__tsan_resumed == 0) {}
   }
 
   OnInitialize();
@@ -447,6 +442,7 @@ void MaybeSpawnBackgroundThread() {
 #endif
 }
 
+
 int Finalize(ThreadState *thr) {
   bool failed = false;
 
@@ -462,8 +458,7 @@ int Finalize(ThreadState *thr) {
   ctx->report_mtx.Unlock();
 
 #if !SANITIZER_GO
-  if (Verbosity())
-    AllocatorPrintStats();
+  if (Verbosity()) AllocatorPrintStats();
 #endif
 
   ThreadFinalize(thr);
@@ -480,7 +475,7 @@ int Finalize(ThreadState *thr) {
   if (ctx->nmissed_expected) {
     failed = true;
     Printf("ThreadSanitizer: missed %d expected races\n",
-           ctx->nmissed_expected);
+        ctx->nmissed_expected);
   }
 
   if (common_flags()->print_suppressions)
@@ -526,10 +521,8 @@ void ForkChildAfter(ThreadState *thr, uptr pc) {
 
   uptr nthread = 0;
   ctx->thread_registry->GetNumberOfThreads(0, 0, &nthread /* alive threads */);
-  VPrintf(1,
-          "ThreadSanitizer: forked new process with pid %d,"
-          " parent had %d threads\n",
-          (int)internal_getpid(), (int)nthread);
+  VPrintf(1, "ThreadSanitizer: forked new process with pid %d,"
+      " parent had %d threads\n", (int)internal_getpid(), (int)nthread);
   if (nthread == 1) {
     StartBackgroundThread();
   } else {
@@ -549,8 +542,8 @@ NOINLINE
 void GrowShadowStack(ThreadState *thr) {
   const int sz = thr->shadow_stack_end - thr->shadow_stack;
   const int newsz = 2 * sz;
-  uptr *newstack =
-      (uptr *)internal_alloc(MBlockShadowStack, newsz * sizeof(uptr));
+  uptr *newstack = (uptr*)internal_alloc(MBlockShadowStack,
+      newsz * sizeof(uptr));
   internal_memcpy(newstack, thr->shadow_stack, sz * sizeof(uptr));
   internal_free(thr->shadow_stack);
   thr->shadow_stack = newstack;
@@ -595,10 +588,12 @@ void TraceSwitch(ThreadState *thr) {
   thr->nomalloc--;
 }
 
-Trace *ThreadTrace(int tid) { return (Trace *)GetThreadTraceHeader(tid); }
+Trace *ThreadTrace(int tid) {
+  return (Trace*)GetThreadTraceHeader(tid);
+}
 
 uptr TraceTopPC(ThreadState *thr) {
-  Event *events = (Event *)GetThreadTrace(thr->tid);
+  Event *events = (Event*)GetThreadTrace(thr->tid);
   uptr pc = events[thr->fast_state.GetTracePos()];
   return pc;
 }
@@ -607,23 +602,29 @@ uptr TraceSize() {
   return (uptr)(1ull << (kTracePartSizeBits + flags()->history_size + 1));
 }
 
-uptr TraceParts() { return TraceSize() / kTracePartSize; }
+uptr TraceParts() {
+  return TraceSize() / kTracePartSize;
+}
 
 #if !SANITIZER_GO
-extern "C" void __tsan_trace_switch() { TraceSwitch(cur_thread()); }
+extern "C" void __tsan_trace_switch() {
+  TraceSwitch(cur_thread());
+}
 
-extern "C" void __tsan_report_race() { ReportRace(cur_thread()); }
+extern "C" void __tsan_report_race() {
+  ReportRace(cur_thread());
+}
 #endif
 
 ALWAYS_INLINE
 Shadow LoadShadow(u64 *p) {
-  u64 raw = atomic_load((atomic_uint64_t *)p, memory_order_relaxed);
+  u64 raw = atomic_load((atomic_uint64_t*)p, memory_order_relaxed);
   return Shadow(raw);
 }
 
 ALWAYS_INLINE
 void StoreShadow(u64 *sp, u64 s) {
-  atomic_store((atomic_uint64_t *)sp, s, memory_order_relaxed);
+  atomic_store((atomic_uint64_t*)sp, s, memory_order_relaxed);
 }
 
 ALWAYS_INLINE
@@ -633,7 +634,8 @@ void StoreIfNotYetStored(u64 *sp, u64 *s) {
 }
 
 ALWAYS_INLINE
-void HandleRace(ThreadState *thr, u64 *shadow_mem, Shadow cur, Shadow old) {
+void HandleRace(ThreadState *thr, u64 *shadow_mem,
+                              Shadow cur, Shadow old) {
   thr->racy_state[0] = cur.raw();
   thr->racy_state[1] = old.raw();
   thr->racy_shadow_addr = shadow_mem;
@@ -649,9 +651,9 @@ static inline bool HappensBefore(Shadow old, ThreadState *thr) {
 }
 
 ALWAYS_INLINE
-void MemoryAccessImpl1(ThreadState *thr, uptr addr, int kAccessSizeLog,
-                       bool kAccessIsWrite, bool kIsAtomic, u64 *shadow_mem,
-                       Shadow cur) {
+void MemoryAccessImpl1(ThreadState *thr, uptr addr,
+    int kAccessSizeLog, bool kAccessIsWrite, bool kIsAtomic,
+    u64 *shadow_mem, Shadow cur) {
   StatInc(thr, StatMop);
   StatInc(thr, kAccessIsWrite ? StatMopWrite : StatMopRead);
   StatInc(thr, (StatType)(StatMop1 + kAccessSizeLog));
@@ -713,13 +715,13 @@ void MemoryAccessImpl1(ThreadState *thr, uptr addr, int kAccessSizeLog,
   StoreShadow(shadow_mem + (cur.epoch() % kShadowCnt), store_word);
   StatInc(thr, StatShadowReplace);
   return;
-RACE:
+ RACE:
   HandleRace(thr, shadow_mem, cur, old);
   return;
 }
 
-void UnalignedMemoryAccess(ThreadState *thr, uptr pc, uptr addr, int size,
-                           bool kAccessIsWrite, bool kIsAtomic) {
+void UnalignedMemoryAccess(ThreadState *thr, uptr pc, uptr addr,
+    int size, bool kAccessIsWrite, bool kIsAtomic) {
   while (size) {
     int size1 = 1;
     int kAccessSizeLog = kSizeLog1;
@@ -746,7 +748,8 @@ bool ContainsSameAccessSlow(u64 *s, u64 a, u64 sync_epoch, bool is_write) {
     Shadow old(LoadShadow(&s[i]));
     if (Shadow::Addr0AndSizeAreEqual(cur, old) &&
         old.TidWithIgnore() == cur.TidWithIgnore() &&
-        old.epoch() > sync_epoch && old.IsAtomic() == cur.IsAtomic() &&
+        old.epoch() > sync_epoch &&
+        old.IsAtomic() == cur.IsAtomic() &&
         old.IsRead() <= cur.IsRead())
       return true;
   }
@@ -754,44 +757,44 @@ bool ContainsSameAccessSlow(u64 *s, u64 a, u64 sync_epoch, bool is_write) {
 }
 
 #if defined(__SSE3__)
-#define SHUF(v0, v1, i0, i1, i2, i3)                                          \
-  _mm_castps_si128(_mm_shuffle_ps(_mm_castsi128_ps(v0), _mm_castsi128_ps(v1), \
-                                  (i0)*1 + (i1)*4 + (i2)*16 + (i3)*64))
+#define SHUF(v0, v1, i0, i1, i2, i3) _mm_castps_si128(_mm_shuffle_ps( \
+    _mm_castsi128_ps(v0), _mm_castsi128_ps(v1), \
+    (i0)*1 + (i1)*4 + (i2)*16 + (i3)*64))
 ALWAYS_INLINE
 bool ContainsSameAccessFast(u64 *s, u64 a, u64 sync_epoch, bool is_write) {
   // This is an optimized version of ContainsSameAccessSlow.
   // load current access into access[0:63]
-  const m128 access = _mm_cvtsi64_si128(a);
+  const m128 access     = _mm_cvtsi64_si128(a);
   // duplicate high part of access in addr0:
   // addr0[0:31]        = access[32:63]
   // addr0[32:63]       = access[32:63]
   // addr0[64:95]       = access[32:63]
   // addr0[96:127]      = access[32:63]
-  const m128 addr0 = SHUF(access, access, 1, 1, 1, 1);
+  const m128 addr0      = SHUF(access, access, 1, 1, 1, 1);
   // load 4 shadow slots
-  const m128 shadow0 = _mm_load_si128((__m128i *)s);
-  const m128 shadow1 = _mm_load_si128((__m128i *)s + 1);
+  const m128 shadow0    = _mm_load_si128((__m128i*)s);
+  const m128 shadow1    = _mm_load_si128((__m128i*)s + 1);
   // load high parts of 4 shadow slots into addr_vect:
   // addr_vect[0:31]    = shadow0[32:63]
   // addr_vect[32:63]   = shadow0[96:127]
   // addr_vect[64:95]   = shadow1[32:63]
   // addr_vect[96:127]  = shadow1[96:127]
-  m128 addr_vect = SHUF(shadow0, shadow1, 1, 3, 1, 3);
+  m128 addr_vect        = SHUF(shadow0, shadow1, 1, 3, 1, 3);
   if (!is_write) {
     // set IsRead bit in addr_vect
-    const m128 rw_mask1 = _mm_cvtsi64_si128(1 << 15);
-    const m128 rw_mask = SHUF(rw_mask1, rw_mask1, 0, 0, 0, 0);
-    addr_vect = _mm_or_si128(addr_vect, rw_mask);
+    const m128 rw_mask1 = _mm_cvtsi64_si128(1<<15);
+    const m128 rw_mask  = SHUF(rw_mask1, rw_mask1, 0, 0, 0, 0);
+    addr_vect           = _mm_or_si128(addr_vect, rw_mask);
   }
   // addr0 == addr_vect?
-  const m128 addr_res = _mm_cmpeq_epi32(addr0, addr_vect);
+  const m128 addr_res   = _mm_cmpeq_epi32(addr0, addr_vect);
   // epoch1[0:63]       = sync_epoch
-  const m128 epoch1 = _mm_cvtsi64_si128(sync_epoch);
+  const m128 epoch1     = _mm_cvtsi64_si128(sync_epoch);
   // epoch[0:31]        = sync_epoch[0:31]
   // epoch[32:63]       = sync_epoch[0:31]
   // epoch[64:95]       = sync_epoch[0:31]
   // epoch[96:127]      = sync_epoch[0:31]
-  const m128 epoch = SHUF(epoch1, epoch1, 0, 0, 0, 0);
+  const m128 epoch      = SHUF(epoch1, epoch1, 0, 0, 0, 0);
   // load low parts of shadow cell epochs into epoch_vect:
   // epoch_vect[0:31]   = shadow0[0:31]
   // epoch_vect[32:63]  = shadow0[64:95]
@@ -799,14 +802,14 @@ bool ContainsSameAccessFast(u64 *s, u64 a, u64 sync_epoch, bool is_write) {
   // epoch_vect[96:127] = shadow1[64:95]
   const m128 epoch_vect = SHUF(shadow0, shadow1, 0, 2, 0, 2);
   // epoch_vect >= sync_epoch?
-  const m128 epoch_res = _mm_cmpgt_epi32(epoch_vect, epoch);
+  const m128 epoch_res  = _mm_cmpgt_epi32(epoch_vect, epoch);
   // addr_res & epoch_res
-  const m128 res = _mm_and_si128(addr_res, epoch_res);
+  const m128 res        = _mm_and_si128(addr_res, epoch_res);
   // mask[0] = res[7]
   // mask[1] = res[15]
   // ...
   // mask[15] = res[127]
-  const int mask = _mm_movemask_epi8(res);
+  const int mask        = _mm_movemask_epi8(res);
   return mask != 0;
 }
 #endif
@@ -825,17 +828,16 @@ bool ContainsSameAccess(u64 *s, u64 a, u64 sync_epoch, bool is_write) {
 #endif
 }
 
-ALWAYS_INLINE USED void MemoryAccess(ThreadState *thr, uptr pc, uptr addr,
-                                     int kAccessSizeLog, bool kAccessIsWrite,
-                                     bool kIsAtomic) {
-  u64 *shadow_mem = (u64 *)MemToShadow(addr);
-  DPrintf2(
-      "#%d: MemoryAccess: @%p %p size=%d"
+ALWAYS_INLINE USED
+void MemoryAccess(ThreadState *thr, uptr pc, uptr addr,
+    int kAccessSizeLog, bool kAccessIsWrite, bool kIsAtomic) {
+  u64 *shadow_mem = (u64*)MemToShadow(addr);
+  DPrintf2("#%d: MemoryAccess: @%p %p size=%d"
       " is_write=%d shadow_mem=%p {%zx, %zx, %zx, %zx}\n",
-      (int)thr->fast_state.tid(), (void *)pc, (void *)addr,
+      (int)thr->fast_state.tid(), (void*)pc, (void*)addr,
       (int)(1 << kAccessSizeLog), kAccessIsWrite, shadow_mem,
-      (uptr)shadow_mem[0], (uptr)shadow_mem[1], (uptr)shadow_mem[2],
-      (uptr)shadow_mem[3]);
+      (uptr)shadow_mem[0], (uptr)shadow_mem[1],
+      (uptr)shadow_mem[2], (uptr)shadow_mem[3]);
 #if SANITIZER_DEBUG
   if (!IsAppMem(addr)) {
     Printf("Access to non app mem %zx\n", addr);
@@ -871,8 +873,8 @@ ALWAYS_INLINE USED void MemoryAccess(ThreadState *thr, uptr pc, uptr addr,
   cur.SetWrite(kAccessIsWrite);
   cur.SetAtomic(kIsAtomic);
 
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur.raw(), thr->fast_synch_epoch,
-                                kAccessIsWrite))) {
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur.raw(),
+      thr->fast_synch_epoch, kAccessIsWrite))) {
     StatInc(thr, StatMop);
     StatInc(thr, kAccessIsWrite ? StatMopWrite : StatMopRead);
     StatInc(thr, (StatType)(StatMop1 + kAccessSizeLog));
@@ -888,16 +890,16 @@ ALWAYS_INLINE USED void MemoryAccess(ThreadState *thr, uptr pc, uptr addr,
   }
 
   MemoryAccessImpl1(thr, addr, kAccessSizeLog, kAccessIsWrite, kIsAtomic,
-                    shadow_mem, cur);
+      shadow_mem, cur);
 }
 
 // Called by MemoryAccessRange in tsan_rtl_thread.cpp
-ALWAYS_INLINE USED void MemoryAccessImpl(ThreadState *thr, uptr addr,
-                                         int kAccessSizeLog,
-                                         bool kAccessIsWrite, bool kIsAtomic,
-                                         u64 *shadow_mem, Shadow cur) {
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur.raw(), thr->fast_synch_epoch,
-                                kAccessIsWrite))) {
+ALWAYS_INLINE USED
+void MemoryAccessImpl(ThreadState *thr, uptr addr,
+    int kAccessSizeLog, bool kAccessIsWrite, bool kIsAtomic,
+    u64 *shadow_mem, Shadow cur) {
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur.raw(),
+      thr->fast_synch_epoch, kAccessIsWrite))) {
     StatInc(thr, StatMop);
     StatInc(thr, kAccessIsWrite ? StatMopWrite : StatMopRead);
     StatInc(thr, (StatType)(StatMop1 + kAccessSizeLog));
@@ -906,7 +908,7 @@ ALWAYS_INLINE USED void MemoryAccessImpl(ThreadState *thr, uptr addr,
   }
 
   MemoryAccessImpl1(thr, addr, kAccessSizeLog, kAccessIsWrite, kIsAtomic,
-                    shadow_mem, cur);
+      shadow_mem, cur);
 }
 
 static void MemoryRangeSet(ThreadState *thr, uptr pc, uptr addr, uptr size,
@@ -934,35 +936,38 @@ static void MemoryRangeSet(ThreadState *thr, uptr pc, uptr addr, uptr size,
   size = (size + (kShadowCell - 1)) & ~(kShadowCell - 1);
   // UnmapOrDie/MmapFixedNoReserve does not work on Windows.
   if (SANITIZER_WINDOWS || size < common_flags()->clear_shadow_mmap_threshold) {
-    u64 *p = (u64 *)MemToShadow(addr);
+    u64 *p = (u64*)MemToShadow(addr);
     CHECK(IsShadowMem((uptr)p));
     CHECK(IsShadowMem((uptr)(p + size * kShadowCnt / kShadowCell - 1)));
     // FIXME: may overwrite a part outside the region
     for (uptr i = 0; i < size / kShadowCell * kShadowCnt;) {
       p[i++] = val;
-      for (uptr j = 1; j < kShadowCnt; j++) p[i++] = 0;
+      for (uptr j = 1; j < kShadowCnt; j++)
+        p[i++] = 0;
     }
   } else {
     // The region is big, reset only beginning and end.
     const uptr kPageSize = GetPageSizeCached();
-    u64 *begin = (u64 *)MemToShadow(addr);
+    u64 *begin = (u64*)MemToShadow(addr);
     u64 *end = begin + size / kShadowCell * kShadowCnt;
     u64 *p = begin;
     // Set at least first kPageSize/2 to page boundary.
     while ((p < begin + kPageSize / kShadowSize / 2) || ((uptr)p % kPageSize)) {
       *p++ = val;
-      for (uptr j = 1; j < kShadowCnt; j++) *p++ = 0;
+      for (uptr j = 1; j < kShadowCnt; j++)
+        *p++ = 0;
     }
     // Reset middle part.
     u64 *p1 = p;
     p = RoundDown(end, kPageSize);
-    UnmapOrDie((void *)p1, (uptr)p - (uptr)p1);
+    UnmapOrDie((void*)p1, (uptr)p - (uptr)p1);
     if (!MmapFixedSuperNoReserve((uptr)p1, (uptr)p - (uptr)p1))
       Die();
     // Set the ending.
     while (p < end) {
       *p++ = val;
-      for (uptr j = 1; j < kShadowCnt; j++) *p++ = 0;
+      for (uptr j = 1; j < kShadowCnt; j++)
+        *p++ = 0;
     }
   }
 }
@@ -1013,9 +1018,10 @@ void MemoryRangeImitateWriteOrResetRange(ThreadState *thr, uptr pc, uptr addr,
     MemoryResetRange(thr, pc, addr, size);
 }
 
-ALWAYS_INLINE USED void FuncEntry(ThreadState *thr, uptr pc) {
+ALWAYS_INLINE USED
+void FuncEntry(ThreadState *thr, uptr pc) {
   StatInc(thr, StatFuncEnter);
-  DPrintf2("#%d: FuncEntry %p\n", (int)thr->fast_state.tid(), (void *)pc);
+  DPrintf2("#%d: FuncEntry %p\n", (int)thr->fast_state.tid(), (void*)pc);
   if (kCollectHistory) {
     thr->fast_state.IncrementEpoch();
     TraceAddEvent(thr, thr->fast_state, EventTypeFuncEnter, pc);
@@ -1034,7 +1040,8 @@ ALWAYS_INLINE USED void FuncEntry(ThreadState *thr, uptr pc) {
   thr->shadow_stack_pos++;
 }
 
-ALWAYS_INLINE USED void FuncExit(ThreadState *thr) {
+ALWAYS_INLINE USED
+void FuncExit(ThreadState *thr) {
   StatInc(thr, StatFuncExit);
   DPrintf2("#%d: FuncExit\n", (int)thr->fast_state.tid());
   if (kCollectHistory) {
@@ -1073,8 +1080,8 @@ void ThreadIgnoreEnd(ThreadState *thr, uptr pc) {
 }
 
 #if !SANITIZER_GO
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE uptr
-__tsan_testonly_shadow_stack_current_size() {
+extern "C" SANITIZER_INTERFACE_ATTRIBUTE
+uptr __tsan_testonly_shadow_stack_current_size() {
   ThreadState *thr = cur_thread();
   return thr->shadow_stack_pos - thr->shadow_stack;
 }

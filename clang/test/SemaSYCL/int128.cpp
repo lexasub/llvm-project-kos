@@ -56,9 +56,7 @@ __int128 foo(__int128 P) { return P; }
 
 void foobar() {
   // expected-note@+1 {{'operator __int128' defined here}}
-  struct X {
-    operator __int128() const;
-  } x;
+  struct X { operator  __int128() const; } x;
   bool a = false;
   // expected-error@+1 {{'operator __int128' requires 128 bit size '__int128' type support, but device 'spir64' does not support it}}
   a = x == __int128(0);
@@ -114,8 +112,7 @@ BIGTY zoo(BIGTY h) {
 }
 
 namespace PR12964 {
-struct X {
-  operator __int128() const;
-} x;
-bool a = x == __int128(0);
-} // namespace PR12964
+  struct X { operator  __int128() const; } x;
+  bool a = x == __int128(0);
+}
+

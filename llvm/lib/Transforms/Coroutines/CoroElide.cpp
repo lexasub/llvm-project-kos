@@ -99,10 +99,8 @@ static std::pair<uint64_t, Align> getFrameLayout(Function *Resume) {
     auto *FrameTy = Resume->arg_begin()->getType()->getPointerElementType();
 
     const DataLayout &DL = Resume->getParent()->getDataLayout();
-    if (!Size)
-      Size = DL.getTypeAllocSize(FrameTy);
-    if (!Align)
-      Align = DL.getABITypeAlign(FrameTy);
+    if (!Size) Size = DL.getTypeAllocSize(FrameTy);
+    if (!Align) Align = DL.getABITypeAlign(FrameTy);
   }
 
   return std::make_pair(Size, *Align);
@@ -219,12 +217,12 @@ bool Lowerer::shouldElide(Function *F, DominatorTree &DT) const {
   // First gather all of the non-exceptional terminators for the function.
   // Consider the final coro.suspend as the real terminator when the current
   // function is a coroutine.
-  for (BasicBlock &B : *F) {
-    auto *TI = B.getTerminator();
-    if (TI->getNumSuccessors() == 0 && !TI->isExceptionalTerminator() &&
-        !isa<UnreachableInst>(TI))
-      Terminators.insert(&B);
-  }
+    for (BasicBlock &B : *F) {
+      auto *TI = B.getTerminator();
+      if (TI->getNumSuccessors() == 0 && !TI->isExceptionalTerminator() &&
+          !isa<UnreachableInst>(TI))
+        Terminators.insert(&B);
+    }
 
   // Filter out the coro.destroy that lie along exceptional paths.
   SmallPtrSet<CoroBeginInst *, 8> ReferencedCoroBegins;
@@ -444,7 +442,7 @@ struct CoroElideLegacy : FunctionPass {
   }
   StringRef getPassName() const override { return "Coroutine Elision"; }
 };
-} // namespace
+}
 
 char CoroElideLegacy::ID = 0;
 INITIALIZE_PASS_BEGIN(

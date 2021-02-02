@@ -3,9 +3,7 @@
 // Make sure virtual base base destructors get referenced and emitted if
 // necessary when the complete ("vbase") destructor is emitted. In this case,
 // clang previously did not emit ~DefaultedDtor.
-struct HasDtor {
-  ~HasDtor();
-};
+struct HasDtor { ~HasDtor(); };
 struct DefaultedDtor {
   ~DefaultedDtor() = default;
   HasDtor o;
@@ -24,3 +22,4 @@ void useCompleteDtor(HasCompleteDtor *p) { delete p; }
 
 // CHECK-LABEL: define linkonce_odr dso_local void @"??1DefaultedDtor@@QEAA@XZ"(%struct.DefaultedDtor* {{[^,]*}} %this)
 // CHECK: call void @"??1HasDtor@@QEAA@XZ"(%struct.HasDtor* {{[^,]*}} %{{.*}})
+

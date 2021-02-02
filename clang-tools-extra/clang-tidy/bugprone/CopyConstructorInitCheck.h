@@ -31,7 +31,7 @@ public:
   void check(const ast_matchers::MatchFinder::MatchResult &Result) override;
 };
 
-} // namespace bugprone
+} // namespace misc
 } // namespace tidy
 } // namespace clang
 

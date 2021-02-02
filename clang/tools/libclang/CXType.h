@@ -17,13 +17,12 @@
 #include "clang/AST/Type.h"
 
 namespace clang {
-
+  
 class ASTUnit;
-
+  
 namespace cxtype {
-
+  
 CXType MakeCXType(QualType T, CXTranslationUnit TU);
-
-}
-} // namespace clang
+  
+}} // end namespace clang::cxtype
 #endif

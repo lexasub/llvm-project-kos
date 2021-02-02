@@ -17,7 +17,6 @@ namespace llvm {
 class ARMAsmBackendDarwin : public ARMAsmBackend {
   const MCRegisterInfo &MRI;
   Triple TT;
-
 public:
   const MachO::CPUSubTypeARM Subtype;
   ARMAsmBackendDarwin(const Target &T, const MCSubtargetInfo &STI,

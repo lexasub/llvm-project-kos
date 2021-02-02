@@ -10,7 +10,8 @@ void f0(int);
 void f1(int *);
 void f2(int (*)());
 
-int main() {
+int main()
+{
   f0(a0);
   f0(a1);
   f1(a2);

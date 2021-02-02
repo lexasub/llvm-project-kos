@@ -4,11 +4,9 @@
 #if PEDANTIC
 void g() {
   if (true)
-      [[likely]] {
-  } // expected-warning {{use of the 'likely' attribute is a C++20 extension}}
+    [[likely]] {} // expected-warning {{use of the 'likely' attribute is a C++20 extension}}
   else
-      [[unlikely]] {
-  } // expected-warning {{use of the 'unlikely' attribute is a C++20 extension}}
+    [[unlikely]] {} // expected-warning {{use of the 'unlikely' attribute is a C++20 extension}}
 }
 #else
 void a() {
@@ -37,54 +35,49 @@ void d() {
 
 void g() {
   if (true)
-      [[likely]] {
-  } else
-      [[unlikely]] {
-  }
+    [[likely]] {}
+  else
+    [[unlikely]] {}
 }
 
 void h() {
   if (true)
-      [[likely]] {
-  } else {
+    [[likely]] {}
+  else {
   }
 }
 
 void i() {
   if (true)
-      [[unlikely]] {
-  } else {
+    [[unlikely]] {}
+  else {
   }
 }
 
 void j() {
   if (true) {
   } else
-      [[likely]] {
-  }
+    [[likely]] {}
 }
 
 void k() {
   if (true) {
   } else
-      [[likely]] {
-  }
+    [[likely]] {}
 }
 
 void l() {
   if (true)
-      [[likely]] {
-  } else
-      [[unlikely]] if (false) [[likely]] {
-  }
+    [[likely]] {}
+  else
+    [[unlikely]] if (false) [[likely]] {}
 }
 
 void m() {
   [[likely]] int x = 42; // expected-error {{'likely' attribute cannot be applied to a declaration}}
 
   if (x)
-      [[unlikely]] {
-  }
+    [[unlikely]] {}
   if (x) {
     [[unlikely]];
   }
@@ -132,29 +125,27 @@ void m() {
 void n() [[likely]] // expected-error {{'likely' attribute cannot be applied to types}}
 {
   try
-      [[likely]] {}        // expected-error {{expected '{'}}
+    [[likely]] {} // expected-error {{expected '{'}}
   catch (...) [[likely]] { // expected-error {{expected expression}}
   }
 }
 
-void o() {
+void o()
+{
   // expected-warning@+2 {{attribute 'likely' has no effect when annotating an 'if constexpr' statement}}
   // expected-note@+1 {{annotating the 'if constexpr' statement here}}
-  if constexpr (true)
-    [[likely]];
+  if constexpr (true) [[likely]];
 
   // expected-note@+1 {{annotating the 'if constexpr' statement here}}
   if constexpr (true) {
-    // expected-warning@+1 {{attribute 'unlikely' has no effect when annotating an 'if constexpr' statement}}
-  } else
-    [[unlikely]];
+  // expected-warning@+1 {{attribute 'unlikely' has no effect when annotating an 'if constexpr' statement}}
+  } else [[unlikely]];
 
   // Annotating both branches with conflicting likelihoods generates no diagnostic regarding the conflict.
   // expected-warning@+2 {{attribute 'likely' has no effect when annotating an 'if constexpr' statement}}
   // expected-note@+1 2 {{annotating the 'if constexpr' statement here}}
   if constexpr (true) [[likely]] {
-    // expected-warning@+1 {{attribute 'likely' has no effect when annotating an 'if constexpr' statement}}
-  } else
-    [[likely]];
+  // expected-warning@+1 {{attribute 'likely' has no effect when annotating an 'if constexpr' statement}}
+  } else [[likely]];
 }
 #endif

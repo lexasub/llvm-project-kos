@@ -17,17 +17,20 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(S s, typename S::difference_type pos, typename S::size_type n,
-          typename S::value_type c, S expected) {
-  typename S::const_iterator p = s.cbegin() + pos;
-  typename S::iterator i = s.insert(p, n, c);
-  LIBCPP_ASSERT(s.__invariants());
-  assert(i - s.begin() == pos);
-  assert(s == expected);
+void
+test(S s, typename S::difference_type pos, typename S::size_type n,
+     typename S::value_type c, S expected)
+{
+    typename S::const_iterator p = s.cbegin() + pos;
+    typename S::iterator i = s.insert(p, n, c);
+    LIBCPP_ASSERT(s.__invariants());
+    assert(i - s.begin() == pos);
+    assert(s == expected);
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S(""), 0, 0, '1', S(""));
     test(S(""), 0, 5, '1', S("11111"));
@@ -75,40 +78,28 @@ int main(int, char**) {
     test(S("abcdefghij"), 10, 20, '1', S("abcdefghij11111111111111111111"));
     test(S("abcdefghijklmnopqrst"), 0, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, 5, '1', S("11111abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, 10, '1',
-         S("1111111111abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, 20, '1',
-         S("11111111111111111111abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, 10, '1', S("1111111111abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, 20, '1', S("11111111111111111111abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, 5, '1', S("a11111bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, 10, '1',
-         S("a1111111111bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, 20, '1',
-         S("a11111111111111111111bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, 10, '1', S("a1111111111bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, 20, '1', S("a11111111111111111111bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, 5, '1', S("abcdefghij11111klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, 10, '1',
-         S("abcdefghij1111111111klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, 20, '1',
-         S("abcdefghij11111111111111111111klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, 10, '1', S("abcdefghij1111111111klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, 20, '1', S("abcdefghij11111111111111111111klmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, 5, '1', S("abcdefghijklmnopqrs11111t"));
-    test(S("abcdefghijklmnopqrst"), 19, 10, '1',
-         S("abcdefghijklmnopqrs1111111111t"));
-    test(S("abcdefghijklmnopqrst"), 19, 20, '1',
-         S("abcdefghijklmnopqrs11111111111111111111t"));
+    test(S("abcdefghijklmnopqrst"), 19, 10, '1', S("abcdefghijklmnopqrs1111111111t"));
+    test(S("abcdefghijklmnopqrst"), 19, 20, '1', S("abcdefghijklmnopqrs11111111111111111111t"));
     test(S("abcdefghijklmnopqrst"), 20, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, 5, '1', S("abcdefghijklmnopqrst11111"));
-    test(S("abcdefghijklmnopqrst"), 20, 10, '1',
-         S("abcdefghijklmnopqrst1111111111"));
-    test(S("abcdefghijklmnopqrst"), 20, 20, '1',
-         S("abcdefghijklmnopqrst11111111111111111111"));
-  }
+    test(S("abcdefghijklmnopqrst"), 20, 10, '1', S("abcdefghijklmnopqrst1111111111"));
+    test(S("abcdefghijklmnopqrst"), 20, 20, '1', S("abcdefghijklmnopqrst11111111111111111111"));
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S(""), 0, 0, '1', S(""));
     test(S(""), 0, 5, '1', S("11111"));
     test(S(""), 0, 10, '1', S("1111111111"));
@@ -155,35 +146,25 @@ int main(int, char**) {
     test(S("abcdefghij"), 10, 20, '1', S("abcdefghij11111111111111111111"));
     test(S("abcdefghijklmnopqrst"), 0, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, 5, '1', S("11111abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, 10, '1',
-         S("1111111111abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, 20, '1',
-         S("11111111111111111111abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, 10, '1', S("1111111111abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, 20, '1', S("11111111111111111111abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, 5, '1', S("a11111bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, 10, '1',
-         S("a1111111111bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, 20, '1',
-         S("a11111111111111111111bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, 10, '1', S("a1111111111bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, 20, '1', S("a11111111111111111111bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, 5, '1', S("abcdefghij11111klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, 10, '1',
-         S("abcdefghij1111111111klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, 20, '1',
-         S("abcdefghij11111111111111111111klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, 10, '1', S("abcdefghij1111111111klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, 20, '1', S("abcdefghij11111111111111111111klmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, 5, '1', S("abcdefghijklmnopqrs11111t"));
-    test(S("abcdefghijklmnopqrst"), 19, 10, '1',
-         S("abcdefghijklmnopqrs1111111111t"));
-    test(S("abcdefghijklmnopqrst"), 19, 20, '1',
-         S("abcdefghijklmnopqrs11111111111111111111t"));
+    test(S("abcdefghijklmnopqrst"), 19, 10, '1', S("abcdefghijklmnopqrs1111111111t"));
+    test(S("abcdefghijklmnopqrst"), 19, 20, '1', S("abcdefghijklmnopqrs11111111111111111111t"));
     test(S("abcdefghijklmnopqrst"), 20, 0, '1', S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, 5, '1', S("abcdefghijklmnopqrst11111"));
-    test(S("abcdefghijklmnopqrst"), 20, 10, '1',
-         S("abcdefghijklmnopqrst1111111111"));
-    test(S("abcdefghijklmnopqrst"), 20, 20, '1',
-         S("abcdefghijklmnopqrst11111111111111111111"));
-  }
+    test(S("abcdefghijklmnopqrst"), 20, 10, '1', S("abcdefghijklmnopqrst1111111111"));
+    test(S("abcdefghijklmnopqrst"), 20, 20, '1', S("abcdefghijklmnopqrst11111111111111111111"));
+    }
 #endif
 
   return 0;

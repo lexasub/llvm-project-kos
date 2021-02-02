@@ -15,8 +15,9 @@ struct Struct {
 
 // CHECK-DAG: !DICompositeType({{.*}}, name: "Annotated",{{.*}}flags: DIFlagTypePassByValue | DIFlagNonTrivial
 struct __attribute__((trivial_abi)) Annotated {
-  Annotated(){};
+  Annotated() {};
 } Annotated;
+
 
 // Check a non-composite type
 // CHECK-DAG: !DIGlobalVariable(name: "GlobalVar", {{.*}}type: {{.*}}, isLocal: false, isDefinition: true)
@@ -59,11 +60,12 @@ struct TrivialC {
 // CHECK-DAG:       {{.*}}!DIGlobalVariable(name: "TrivialD",
 // CHECK-DAG-NEXT:  {{^((?!\bDIFlagNonTrivial\b).)*$}}
 struct NT {
-  NT(){};
+  NT() {};
 };
 struct TrivialD {
   static struct NT x; // Member is non-trivial but is static.
 } TrivialD;
+
 
 // CHECK-DAG: !DICompositeType({{.*}}, name: "NonTrivial",{{.*}}flags: {{.*}}DIFlagNonTrivial
 struct NonTrivial {

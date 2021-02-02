@@ -20,11 +20,11 @@ void *FreeThread(void *arg) {
 }
 
 void *AccessThread(void *arg) {
-  *x = 43; // BOOM
+  *x = 43;  // BOOM
   return NULL;
 }
 
-typedef void *(*callback_type)(void *arg);
+typedef void* (*callback_type)(void* arg);
 
 void *RunnerThread(void *function) {
   pthread_t thread;
@@ -35,7 +35,7 @@ void *RunnerThread(void *function) {
 
 void RunThread(callback_type function) {
   pthread_t runner;
-  pthread_create(&runner, NULL, RunnerThread, (void *)function);
+  pthread_create(&runner, NULL, RunnerThread, (void*)function);
   pthread_join(runner, NULL);
 }
 

@@ -1,34 +1,21 @@
 // RUN: %clang_cc1 -std=c++2a -verify %s -pedantic
 
-template <typename T> struct Template {};
+template<typename T> struct Template {};
 
-struct Linkage1 {
-  struct Inner {};
-};
-typedef struct {
-  struct Inner {};
-} Linkage2;
+struct Linkage1 { struct Inner {}; };
+typedef struct { struct Inner {}; } Linkage2;
 
-typedef struct {
-} const NoLinkage1;
+typedef struct {} const NoLinkage1;
 auto x = [] {};
 typedef decltype(x) NoLinkage2;
-auto f() {
-  return [] {};
-}
+auto f() { return [] {}; }
 typedef decltype(f()) NoLinkage3;
 
-inline auto g() {
-  return [] {};
-}
+inline auto g() { return [] {}; }
 typedef decltype(g()) VisibleNoLinkage1;
 inline auto y = [] {};
 typedef decltype(y) VisibleNoLinkage2;
-inline auto h() {
-  struct {
-  } x;
-  return x;
-}
+inline auto h() { struct {} x; return x; }
 typedef decltype(h()) VisibleNoLinkage3;
 
 extern Linkage1 linkage1v;
@@ -66,8 +53,8 @@ void use_visible_no_linkage() {
 }
 
 namespace {
-struct InternalLinkage {};
-} // namespace
+  struct InternalLinkage {};
+}
 InternalLinkage internal_linkage(); // expected-error {{used but not defined}}
 void use_internal_linkage() {
   internal_linkage(); // expected-note {{used here}}
@@ -82,10 +69,10 @@ void use_inline_vars() {
 inline int defined_after_use;
 
 namespace {
-template <typename T> struct A {
-  static const int n;
-};
-template <typename T> const int A<T>::n = 3;
-static_assert(A<int>::n == 3);
-int k = A<float>::n;
-} // namespace
+  template<typename T> struct A {
+    static const int n;
+  };
+  template<typename T> const int A<T>::n = 3;
+  static_assert(A<int>::n == 3);
+  int k = A<float>::n;
+}

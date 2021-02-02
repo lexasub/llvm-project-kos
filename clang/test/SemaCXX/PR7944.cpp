@@ -3,14 +3,10 @@
 
 #define MACRO(x) x
 
-struct B {
-  int f() { return 0; }
-};
-struct A {
-  B *b() { return new B; }
-};
+struct B { int f() { return 0; } };
+struct A { B* b() { return new B; } };
 
 void g() {
   A a;
-  MACRO(a.b->f()); // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
+  MACRO(a.b->f());  // expected-error{{reference to non-static member function must be called; did you mean to call it with no arguments?}}
 }

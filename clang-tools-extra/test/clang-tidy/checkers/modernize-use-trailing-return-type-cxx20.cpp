@@ -9,7 +9,7 @@ struct is_same<T, T> { static constexpr auto value = true; };
 
 template <typename T>
 concept floating_point = std::is_same<T, float>::value || std::is_same<T, double>::value || std::is_same<T, long double>::value;
-} // namespace std
+}
 
 //
 // Concepts
@@ -29,7 +29,7 @@ concept Concept = true;
 
 template <typename T, typename U>
 concept BinaryConcept = true;
-} // namespace a
+}
 
 a::Concept decltype(auto) con2();
 // CHECK-MESSAGES: :[[@LINE-1]]:27: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
@@ -39,7 +39,7 @@ a::BinaryConcept<int> decltype(auto) con3();
 // CHECK-MESSAGES: :[[@LINE-1]]:38: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto con3() -> a::BinaryConcept<int> decltype(auto);{{$}}
 
-const std::floating_point auto *volatile con4();
+const std::floating_point auto* volatile con4();
 // CHECK-MESSAGES: :[[@LINE-1]]:42: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto con4() -> const std::floating_point auto* volatile;{{$}}
 
@@ -50,5 +50,5 @@ int req1(T t) requires std::floating_point<T>;
 
 template <typename T>
 T req2(T t) requires requires { t + t; };
-// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-// CHECK-FIXES: {{^}}auto req2(T t) -> T requires requires { t + t; };{{$}}
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+  // CHECK-FIXES: {{^}}auto req2(T t) -> T requires requires { t + t; };{{$}}

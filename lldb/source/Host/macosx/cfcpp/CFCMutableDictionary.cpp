@@ -17,8 +17,8 @@ CFCMutableDictionary::CFCMutableDictionary(const CFCMutableDictionary &rhs)
     : CFCReleaser<CFMutableDictionaryRef>(rhs) {}
 
 // CFCMutableDictionary copy constructor
-const CFCMutableDictionary &
-CFCMutableDictionary::operator=(const CFCMutableDictionary &rhs) {
+const CFCMutableDictionary &CFCMutableDictionary::
+operator=(const CFCMutableDictionary &rhs) {
   if (this != &rhs)
     *this = rhs;
   return *this;

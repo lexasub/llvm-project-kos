@@ -6,15 +6,15 @@
 #ifndef HEADER
 #define HEADER
 
-template <typename tx>
+template<typename tx>
 tx ftemplate(int n) {
   tx b[10];
 
-#pragma omp target
+  #pragma omp target
   {
     tx d = n;
-#pragma omp parallel for
-    for (int i = 0; i < 10; i++) {
+    #pragma omp parallel for
+    for(int i=0; i<10; i++) {
       b[i] += d;
     }
     b[3] += 1;
@@ -23,7 +23,7 @@ tx ftemplate(int n) {
   return b[3];
 }
 
-int bar(int n) {
+int bar(int n){
   int a = 0;
 
   a += ftemplate<int>(n);

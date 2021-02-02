@@ -5,7 +5,8 @@ void foo(bool x);
 int main() {
   volatile int kRepeat1 = 1 << 30;
   const int kRepeat = kRepeat1;
-  for (int i = 0; i < kRepeat; i++) foo(false);
+  for (int i = 0; i < kRepeat; i++)
+    foo(false);
 }
 
 __attribute__((noinline)) void bar(volatile bool x) {

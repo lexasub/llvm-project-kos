@@ -29,28 +29,28 @@ namespace __xray {
 class LogWriter {
 public:
 #if SANITIZER_FUCHSIA
-  LogWriter(zx_handle_t Vmo) : Vmo(Vmo) {}
+ LogWriter(zx_handle_t Vmo) : Vmo(Vmo) {}
 #else
   explicit LogWriter(int Fd) : Fd(Fd) {}
 #endif
-  ~LogWriter();
+ ~LogWriter();
 
-  // Write a character range into a log.
-  void WriteAll(const char *Begin, const char *End);
+ // Write a character range into a log.
+ void WriteAll(const char *Begin, const char *End);
 
-  void Flush();
+ void Flush();
 
-  // Returns a new log instance initialized using the flag-provided values.
-  static LogWriter *Open();
-  // Closes and deallocates the log instance.
-  static void Close(LogWriter *LogWriter);
+ // Returns a new log instance initialized using the flag-provided values.
+ static LogWriter *Open();
+ // Closes and deallocates the log instance.
+ static void Close(LogWriter *LogWriter);
 
 private:
 #if SANITIZER_FUCHSIA
-  zx_handle_t Vmo = ZX_HANDLE_INVALID;
-  uint64_t Offset = 0;
+ zx_handle_t Vmo = ZX_HANDLE_INVALID;
+ uint64_t Offset = 0;
 #else
-  int Fd = -1;
+ int Fd = -1;
 #endif
 };
 

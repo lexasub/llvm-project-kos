@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/StmtOpenMP.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/StmtOpenMP.h"
 
 using namespace clang;
 using namespace llvm::omp;
@@ -1134,11 +1134,10 @@ OMPParallelMasterTaskLoopSimdDirective::CreateEmpty(const ASTContext &C,
       CollapsedNum);
 }
 
-OMPDistributeDirective *
-OMPDistributeDirective::Create(const ASTContext &C, SourceLocation StartLoc,
-                               SourceLocation EndLoc, unsigned CollapsedNum,
-                               ArrayRef<OMPClause *> Clauses,
-                               Stmt *AssociatedStmt, const HelperExprs &Exprs) {
+OMPDistributeDirective *OMPDistributeDirective::Create(
+    const ASTContext &C, SourceLocation StartLoc, SourceLocation EndLoc,
+    unsigned CollapsedNum, ArrayRef<OMPClause *> Clauses, Stmt *AssociatedStmt,
+    const HelperExprs &Exprs) {
   auto *Dir = createDirective<OMPDistributeDirective>(
       C, Clauses, AssociatedStmt,
       numLoopChildren(CollapsedNum, OMPD_distribute), StartLoc, EndLoc,

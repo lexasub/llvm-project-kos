@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/DebugInfo/DWARF/DWARFDebugLine.h"
 #include "DwarfGenerator.h"
 #include "DwarfUtils.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
+#include "llvm/DebugInfo/DWARF/DWARFDebugLine.h"
 #include "llvm/Object/ObjectFile.h"
 #include "llvm/Testing/Support/Error.h"
 #include "gtest/gtest.h"
@@ -1337,10 +1337,8 @@ TEST_F(DebugLineBasicFixture, VerboseOutput) {
   EXPECT_EQ(NextLine(), "           name: \"a file\"");
   EXPECT_EQ(NextLine(), "      dir_index: 0");
   EXPECT_EQ(NextLine(), "");
-  EXPECT_EQ(NextLine(), "            Address            Line   Column File   "
-                        "ISA Discriminator Flags");
-  EXPECT_EQ(NextLine(), "            ------------------ ------ ------ ------ "
-                        "--- ------------- -------------");
+  EXPECT_EQ(NextLine(), "            Address            Line   Column File   ISA Discriminator Flags");
+  EXPECT_EQ(NextLine(), "            ------------------ ------ ------ ------ --- ------------- -------------");
   EXPECT_EQ(NextLine(),
             "0x00000038: 00 Badly formed extended line op (length 0)");
   EXPECT_EQ(NextLine(),

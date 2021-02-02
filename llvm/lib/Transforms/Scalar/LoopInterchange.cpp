@@ -127,9 +127,8 @@ static bool populateDependencyMatrix(CharMatrix &DepMatrix, unsigned Level,
       // Track Output, Flow, and Anti dependencies.
       if (auto D = DI->depends(Src, Dst, true)) {
         assert(D->isOrdered() && "Expected an output, flow or anti dep.");
-        LLVM_DEBUG(StringRef DepType = D->isFlow()   ? "flow"
-                                       : D->isAnti() ? "anti"
-                                                     : "output";
+        LLVM_DEBUG(StringRef DepType =
+                       D->isFlow() ? "flow" : D->isAnti() ? "anti" : "output";
                    dbgs() << "Found " << DepType
                           << " dependency between Src and Dst\n"
                           << " Src:" << *Src << "\n Dst:" << *Dst << '\n');
@@ -931,22 +930,22 @@ static bool areOuterLoopExitPHIsSupported(Loop *OuterLoop, Loop *InnerLoop) {
     if (PHI.getType()->isFloatingPointTy())
       return false;
     for (unsigned i = 0; i < PHI.getNumIncomingValues(); i++) {
-      Instruction *IncomingI = dyn_cast<Instruction>(PHI.getIncomingValue(i));
-      if (!IncomingI || IncomingI->getParent() != OuterLoop->getLoopLatch())
-        continue;
+     Instruction *IncomingI = dyn_cast<Instruction>(PHI.getIncomingValue(i));
+     if (!IncomingI || IncomingI->getParent() != OuterLoop->getLoopLatch())
+       continue;
 
-      // The incoming value is defined in the outer loop latch. Currently we
-      // only support that in case the outer loop latch has a single
-      // predecessor. This guarantees that the outer loop latch is executed if
-      // and only if the inner loop is executed (because tightlyNested()
-      // guarantees that the outer loop header only branches to the inner loop
-      // or the outer loop latch).
-      // FIXME: We could weaken this logic and allow multiple predecessors,
-      //        if the values are produced outside the loop latch. We would need
-      //        additional logic to update the PHI nodes in the exit block as
-      //        well.
-      if (OuterLoop->getLoopLatch()->getUniquePredecessor() == nullptr)
-        return false;
+     // The incoming value is defined in the outer loop latch. Currently we
+     // only support that in case the outer loop latch has a single predecessor.
+     // This guarantees that the outer loop latch is executed if and only if
+     // the inner loop is executed (because tightlyNested() guarantees that the
+     // outer loop header only branches to the inner loop or the outer loop
+     // latch).
+     // FIXME: We could weaken this logic and allow multiple predecessors,
+     //        if the values are produced outside the loop latch. We would need
+     //        additional logic to update the PHI nodes in the exit block as
+     //        well.
+     if (OuterLoop->getLoopLatch()->getUniquePredecessor() == nullptr)
+       return false;
     }
   }
   return true;
@@ -979,7 +978,8 @@ bool LoopInterchangeLegality::canInterchangeLoops(unsigned InnerLoopId,
                    << "safely.");
         ORE->emit([&]() {
           return OptimizationRemarkMissed(DEBUG_TYPE, "CallInst",
-                                          CI->getDebugLoc(), CI->getParent())
+                                          CI->getDebugLoc(),
+                                          CI->getParent())
                  << "Cannot interchange loops due to call instruction.";
         });
 
@@ -1364,11 +1364,11 @@ static void updateSuccessor(BranchInst *BI, BasicBlock *OldBB,
                             BasicBlock *NewBB,
                             std::vector<DominatorTree::UpdateType> &DTUpdates,
                             bool MustUpdateOnce = true) {
-  assert((!MustUpdateOnce || llvm::count_if(successors(BI),
-                                            [OldBB](BasicBlock *BB) {
-                                              return BB == OldBB;
-                                            }) == 1) &&
-         "BI must jump to OldBB exactly once.");
+  assert((!MustUpdateOnce ||
+          llvm::count_if(successors(BI),
+                         [OldBB](BasicBlock *BB) {
+                           return BB == OldBB;
+                         }) == 1) && "BI must jump to OldBB exactly once.");
   bool Changed = false;
   for (Use &Op : BI->operands())
     if (Op == OldBB) {
@@ -1559,6 +1559,7 @@ bool LoopInterchangeTransform::adjustLoopBranches() {
 
   updateSuccessor(InnerLoopLatchPredecessorBI, InnerLoopLatch,
                   InnerLoopLatchSuccessor, DTUpdates);
+
 
   if (OuterLoopLatchBI->getSuccessor(0) == OuterLoopHeader)
     OuterLoopLatchSuccessor = OuterLoopLatchBI->getSuccessor(1);

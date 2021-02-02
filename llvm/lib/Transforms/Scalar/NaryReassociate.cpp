@@ -124,7 +124,9 @@ public:
     initializeNaryReassociateLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 
-  bool doInitialization(Module &M) override { return false; }
+  bool doInitialization(Module &M) override {
+    return false;
+  }
 
   bool runOnFunction(Function &F) override;
 
@@ -267,7 +269,7 @@ bool NaryReassociatePass::doOneIteration(Function &F) {
   return Changed;
 }
 
-Instruction *NaryReassociatePass::tryReassociate(Instruction *I,
+Instruction *NaryReassociatePass::tryReassociate(Instruction * I,
                                                  const SCEV *&OrigSCEV) {
 
   if (!SE->isSCEVable(I->getType()))
@@ -304,8 +306,8 @@ Instruction *NaryReassociatePass::tryReassociateGEP(GetElementPtrInst *GEP) {
   gep_type_iterator GTI = gep_type_begin(*GEP);
   for (unsigned I = 1, E = GEP->getNumOperands(); I != E; ++I, ++GTI) {
     if (GTI.isSequential()) {
-      if (auto *NewGEP =
-              tryReassociateGEPAtIndex(GEP, I - 1, GTI.getIndexedType())) {
+      if (auto *NewGEP = tryReassociateGEPAtIndex(GEP, I - 1,
+                                                  GTI.getIndexedType())) {
         return NewGEP;
       }
     }
@@ -376,8 +378,8 @@ NaryReassociatePass::tryReassociateGEPAtIndex(GetElementPtrInst *GEP,
     IndexExprs[I] =
         SE->getZeroExtendExpr(IndexExprs[I], GEP->getOperand(I)->getType());
   }
-  const SCEV *CandidateExpr =
-      SE->getGEPExpr(cast<GEPOperator>(GEP), IndexExprs);
+  const SCEV *CandidateExpr = SE->getGEPExpr(cast<GEPOperator>(GEP),
+                                             IndexExprs);
 
   Value *Candidate = findClosestMatchingDominator(CandidateExpr, GEP);
   if (Candidate == nullptr)

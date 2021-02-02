@@ -25,7 +25,7 @@ struct Lowerer : coro::LowererBase {
   Lowerer(Module &M) : LowererBase(M), Builder(Context) {}
   bool lowerRemainingCoroIntrinsics(Function &F);
 };
-} // namespace
+}
 
 static void simplifyCFG(Function &F) {
   llvm::legacy::FunctionPassManager FPM(F.getParent());
@@ -141,7 +141,7 @@ struct CoroCleanupLegacy : FunctionPass {
   }
   StringRef getPassName() const override { return "Coroutine Cleanup"; }
 };
-} // namespace
+}
 
 char CoroCleanupLegacy::ID = 0;
 INITIALIZE_PASS(CoroCleanupLegacy, "coro-cleanup",

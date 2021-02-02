@@ -23,7 +23,7 @@ public:
                            const llvm::StringRef &log_channels,
                            uint32_t log_options);
 };
-} // namespace lldb_server
-} // namespace lldb_private
+}
+}
 
 #endif

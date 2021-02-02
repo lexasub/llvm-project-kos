@@ -40,7 +40,7 @@ public:
   bool WriteRegister(const RegisterInfo *reg_info,
                      const RegisterValue &reg_value) override;
 };
-} // namespace lldb_private
+}
 
 #endif // defined(__x86_64__) || defined(_M_X64)
 

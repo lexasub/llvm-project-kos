@@ -26,6 +26,7 @@
 
 #include "test_macros.h"
 
+
 struct UnconstrainedCtor {
   int value_;
 
@@ -37,8 +38,9 @@ struct UnconstrainedCtor {
   // but it does instantiate the noexcept specifier and it will blow up there.
   template <typename T>
   constexpr UnconstrainedCtor(T value) noexcept(noexcept(value_ = value))
-      : value_(static_cast<int>(value)) {
-    static_assert(std::is_same<int, T>::value, "");
+      : value_(static_cast<int>(value))
+  {
+      static_assert(std::is_same<int, T>::value, "");
   }
 };
 
@@ -49,49 +51,51 @@ struct ExplicitUnconstrainedCtor {
 
   template <typename T>
   constexpr explicit ExplicitUnconstrainedCtor(T value)
-      noexcept(noexcept(value_ = value))
-      : value_(static_cast<int>(value)) {
-    static_assert(std::is_same<int, T>::value, "");
+    noexcept(noexcept(value_ = value))
+      : value_(static_cast<int>(value))
+  {
+      static_assert(std::is_same<int, T>::value, "");
   }
+
 };
 
 int main(int, char**) {
-  typedef UnconstrainedCtor A;
-  typedef ExplicitUnconstrainedCtor ExplicitA;
-  {
-    static_assert(std::is_copy_constructible<std::tuple<A> >::value, "");
-    static_assert(std::is_move_constructible<std::tuple<A> >::value, "");
-    static_assert(std::is_copy_constructible<std::tuple<ExplicitA> >::value,
-                  "");
-    static_assert(std::is_move_constructible<std::tuple<ExplicitA> >::value,
-                  "");
-  }
-  {
-    static_assert(
-        std::is_constructible<std::tuple<A>, std::allocator_arg_t,
-                              std::allocator<int>, std::tuple<A> const&>::value,
-        "");
-    static_assert(
-        std::is_constructible<std::tuple<A>, std::allocator_arg_t,
-                              std::allocator<int>, std::tuple<A>&&>::value,
-        "");
-    static_assert(
-        std::is_constructible<std::tuple<ExplicitA>, std::allocator_arg_t,
-                              std::allocator<int>,
-                              std::tuple<ExplicitA> const&>::value,
-        "");
-    static_assert(
-        std::is_constructible<std::tuple<ExplicitA>, std::allocator_arg_t,
-                              std::allocator<int>,
-                              std::tuple<ExplicitA>&&>::value,
-        "");
-  }
-  {
-    std::tuple<A&&> t(std::forward_as_tuple(A{}));
-    ((void)t);
-    std::tuple<ExplicitA&&> t2(std::forward_as_tuple(ExplicitA{}));
-    ((void)t2);
-  }
+    typedef UnconstrainedCtor A;
+    typedef ExplicitUnconstrainedCtor ExplicitA;
+    {
+        static_assert(std::is_copy_constructible<std::tuple<A>>::value, "");
+        static_assert(std::is_move_constructible<std::tuple<A>>::value, "");
+        static_assert(std::is_copy_constructible<std::tuple<ExplicitA>>::value, "");
+        static_assert(std::is_move_constructible<std::tuple<ExplicitA>>::value, "");
+    }
+    {
+        static_assert(std::is_constructible<
+            std::tuple<A>,
+            std::allocator_arg_t, std::allocator<int>,
+            std::tuple<A> const&
+        >::value, "");
+        static_assert(std::is_constructible<
+            std::tuple<A>,
+            std::allocator_arg_t, std::allocator<int>,
+            std::tuple<A> &&
+        >::value, "");
+        static_assert(std::is_constructible<
+            std::tuple<ExplicitA>,
+            std::allocator_arg_t, std::allocator<int>,
+            std::tuple<ExplicitA> const&
+        >::value, "");
+        static_assert(std::is_constructible<
+            std::tuple<ExplicitA>,
+            std::allocator_arg_t, std::allocator<int>,
+            std::tuple<ExplicitA> &&
+        >::value, "");
+    }
+    {
+        std::tuple<A&&> t(std::forward_as_tuple(A{}));
+        ((void)t);
+        std::tuple<ExplicitA&&> t2(std::forward_as_tuple(ExplicitA{}));
+        ((void)t2);
+    }
 
   return 0;
 }

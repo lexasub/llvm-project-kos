@@ -30,21 +30,22 @@ public:
   }
 };
 
+
 TEST(RecursiveASTVisitor, AttributesAreVisited) {
   AttrVisitor Visitor;
   Visitor.ExpectMatch("Attr", 4, 24);
   Visitor.ExpectMatch("guarded_by", 4, 24);
-  Visitor.ExpectMatch("mu1", 4, 35);
+  Visitor.ExpectMatch("mu1",  4, 35);
   Visitor.ExpectMatch("Attr", 5, 29);
-  Visitor.ExpectMatch("mu1", 5, 54);
-  Visitor.ExpectMatch("mu2", 5, 59);
+  Visitor.ExpectMatch("mu1",  5, 54);
+  Visitor.ExpectMatch("mu2",  5, 59);
   EXPECT_TRUE(Visitor.runOver(
-      "class Foo {\n"
-      "  int mu1;\n"
-      "  int mu2;\n"
-      "  int a __attribute__((guarded_by(mu1)));\n"
-      "  void bar() __attribute__((exclusive_locks_required(mu1, mu2)));\n"
-      "};\n"));
+    "class Foo {\n"
+    "  int mu1;\n"
+    "  int mu2;\n"
+    "  int a __attribute__((guarded_by(mu1)));\n"
+    "  void bar() __attribute__((exclusive_locks_required(mu1, mu2)));\n"
+    "};\n"));
 }
 
 } // end anonymous namespace

@@ -86,8 +86,8 @@ private:
   struct CIE {
     dw_offset_t cie_offset;
     uint8_t version;
-    char augmentation[CFI_AUG_MAX_SIZE];     // This is typically empty or very
-                                             // short.
+    char augmentation[CFI_AUG_MAX_SIZE]; // This is typically empty or very
+                                         // short.
     uint8_t address_size = sizeof(uint32_t); // The size of a target address.
     uint8_t segment_size = 0;                // The size of a segment selector.
 
@@ -152,7 +152,7 @@ private:
 
   FDEEntryMap m_fde_index;
   bool m_fde_index_initialized = false; // only scan the section for FDEs once
-  std::mutex m_fde_index_mutex;         // and isolate the thread that does it
+  std::mutex m_fde_index_mutex; // and isolate the thread that does it
 
   Type m_type;
 

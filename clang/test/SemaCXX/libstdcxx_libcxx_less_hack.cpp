@@ -5,52 +5,52 @@
 // RUN: %clang_cc1 -verify %s -std=c++14
 
 namespace std {
-template <typename T = void> struct less {};
-template <typename T = void> struct less_equal {};
-template <typename T = void> struct greater {};
-template <typename T = void> struct greater_equal {};
+  template<typename T = void> struct less {};
+  template<typename T = void> struct less_equal {};
+  template<typename T = void> struct greater {};
+  template<typename T = void> struct greater_equal {};
 
-template <> struct less<> {
-  template <class T1, class T2>
-  auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t < u))
-      -> decltype(t < u) {
-    return t < u;
-  }
-};
+  template<> struct less<> {
+    template <class T1, class T2>
+    auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t < u))
+        -> decltype(t < u) {
+      return t < u;
+    }
+  };
 
-template <> struct less_equal<> {
-  template <class T1, class T2>
-  auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t <= u))
-      -> decltype(t <= u) {
-    return t <= u;
-  }
-};
+  template<> struct less_equal<> {
+    template <class T1, class T2>
+    auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t <= u))
+        -> decltype(t <= u) {
+      return t <= u;
+    }
+  };
 
-template <> struct greater<> {
-  template <class T1, class T2>
-  auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t > u))
-      -> decltype(t > u) {
-    return t > u;
-  }
-};
+  template<> struct greater<> {
+    template <class T1, class T2>
+    auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t > u))
+        -> decltype(t > u) {
+      return t > u;
+    }
+  };
 
-template <> struct greater_equal<> {
-  template <class T1, class T2>
-  auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t >= u))
-      -> decltype(t >= u) {
-    return t >= u;
-  }
-};
+  template<> struct greater_equal<> {
+    template <class T1, class T2>
+    auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t >= u))
+        -> decltype(t >= u) {
+      return t >= u;
+    }
+  };
 
-template <typename = void> struct unrelated;
-template <> struct unrelated<> {
-  template <class T1, class T2>
-  auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t < u)) // expected-note {{substitution failure}}
-      -> decltype(t < u) {
-    return t < u;
-  }
+  template<typename = void> struct unrelated;
+  template<> struct unrelated<> {
+    template <class T1, class T2>
+    auto operator()(T1 &&t, T2 &&u) const noexcept(noexcept(t < u)) // expected-note {{substitution failure}}
+        -> decltype(t < u) {
+      return t < u;
+    }
+  };
 };
-}; // namespace std
 
 void test(int *p) {
   using namespace std;

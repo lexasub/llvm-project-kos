@@ -18,12 +18,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::uniform_int_distribution<long> D;
-    typedef D::result_type result_type;
-    static_assert((std::is_same<result_type, long>::value), "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::uniform_int_distribution<long> D;
+        typedef D::result_type result_type;
+        static_assert((std::is_same<result_type, long>::value), "");
+    }
 
   return 0;
 }

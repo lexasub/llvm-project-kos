@@ -57,23 +57,25 @@ namespace internal {
 // characters, malformed paths, etc.
 
 class GTEST_API_ FilePath {
-public:
-  FilePath() : pathname_("") {}
-  FilePath(const FilePath &rhs) : pathname_(rhs.pathname_) {}
+ public:
+  FilePath() : pathname_("") { }
+  FilePath(const FilePath& rhs) : pathname_(rhs.pathname_) { }
 
-  explicit FilePath(const std::string &pathname) : pathname_(pathname) {
+  explicit FilePath(const std::string& pathname) : pathname_(pathname) {
     Normalize();
   }
 
-  FilePath &operator=(const FilePath &rhs) {
+  FilePath& operator=(const FilePath& rhs) {
     Set(rhs);
     return *this;
   }
 
-  void Set(const FilePath &rhs) { pathname_ = rhs.pathname_; }
+  void Set(const FilePath& rhs) {
+    pathname_ = rhs.pathname_;
+  }
 
-  const std::string &string() const { return pathname_; }
-  const char *c_str() const { return pathname_.c_str(); }
+  const std::string& string() const { return pathname_; }
+  const char* c_str() const { return pathname_.c_str(); }
 
   // Returns the current working directory, or "" if unsuccessful.
   static FilePath GetCurrentDir();
@@ -82,15 +84,16 @@ public:
   // extension = "xml", returns "dir/test.xml". If number is greater
   // than zero (e.g., 12), returns "dir/test_12.xml".
   // On Windows platform, uses \ as the separator rather than /.
-  static FilePath MakeFileName(const FilePath &directory,
-                               const FilePath &base_name, int number,
-                               const char *extension);
+  static FilePath MakeFileName(const FilePath& directory,
+                               const FilePath& base_name,
+                               int number,
+                               const char* extension);
 
   // Given directory = "dir", relative_path = "test.xml",
   // returns "dir/test.xml".
   // On Windows, uses \ as the separator rather than /.
-  static FilePath ConcatPaths(const FilePath &directory,
-                              const FilePath &relative_path);
+  static FilePath ConcatPaths(const FilePath& directory,
+                              const FilePath& relative_path);
 
   // Returns a pathname for a file that does not currently exist. The pathname
   // will be directory/base_name.extension or
@@ -100,9 +103,9 @@ public:
   // Examples: 'dir/foo_test.xml' or 'dir/foo_test_1.xml'.
   // There could be a race condition if two or more processes are calling this
   // function at the same time -- they could both pick the same filename.
-  static FilePath GenerateUniqueFileName(const FilePath &directory,
-                                         const FilePath &base_name,
-                                         const char *extension);
+  static FilePath GenerateUniqueFileName(const FilePath& directory,
+                                         const FilePath& base_name,
+                                         const char* extension);
 
   // Returns true iff the path is "".
   bool IsEmpty() const { return pathname_.empty(); }
@@ -132,7 +135,7 @@ public:
   // Example: FilePath("dir/file.exe").RemoveExtension("EXE") returns
   // FilePath("dir/file"). If a case-insensitive extension is not
   // found, returns a copy of the original FilePath.
-  FilePath RemoveExtension(const char *extension) const;
+  FilePath RemoveExtension(const char* extension) const;
 
   // Creates directories so that path exists. Returns true if successful or if
   // the directories already exist; returns false if unable to create
@@ -166,7 +169,7 @@ public:
   // Returns true if pathname describes an absolute path.
   bool IsAbsolutePath() const;
 
-private:
+ private:
   // Replaces multiple consecutive separators with a single separator.
   // For example, "bar///foo" becomes "bar/foo". Does not eliminate other
   // redundancies that might be in a pathname involving "." or "..".
@@ -192,12 +195,12 @@ private:
   // Returns a pointer to the last occurrence of a valid path separator in
   // the FilePath. On Windows, for example, both '/' and '\' are valid path
   // separators. Returns NULL if no path separator was found.
-  const char *FindLastPathSeparator() const;
+  const char* FindLastPathSeparator() const;
 
   std::string pathname_;
-}; // class FilePath
+};  // class FilePath
 
-} // namespace internal
-} // namespace testing
+}  // namespace internal
+}  // namespace testing
 
-#endif // GTEST_INCLUDE_GTEST_INTERNAL_GTEST_FILEPATH_H_
+#endif  // GTEST_INCLUDE_GTEST_INTERNAL_GTEST_FILEPATH_H_

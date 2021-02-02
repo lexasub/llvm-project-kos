@@ -17,6 +17,7 @@
 //
 // Returns: os << ymdl.year() << '/' << ymdl.month_day_last().
 
+
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -24,13 +25,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using year_month_day_last = std::chrono::year_month_day_last;
-  using year = std::chrono::year;
-  using month = std::chrono::month;
-  using month_day_last = std::chrono::month_day_last;
+int main(int, char**)
+{
+    using year_month_day_last = std::chrono::year_month_day_last;
+    using year                = std::chrono::year;
+    using month               = std::chrono::month;
+    using month_day_last      = std::chrono::month_day_last;
 
-  std::cout << year_month_day_last{year{2018}, month_day_last{month{3}}};
+    std::cout << year_month_day_last{year{2018}, month_day_last{month{3}}};
 
   return 0;
 }

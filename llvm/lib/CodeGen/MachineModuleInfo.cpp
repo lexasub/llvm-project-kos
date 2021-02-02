@@ -50,7 +50,9 @@ public:
   MMIAddrLabelMapCallbackPtr() = default;
   MMIAddrLabelMapCallbackPtr(Value *V) : CallbackVH(V) {}
 
-  void setPtr(BasicBlock *BB) { ValueHandleBase::operator=(BB); }
+  void setPtr(BasicBlock *BB) {
+    ValueHandleBase::operator=(BB);
+  }
 
   void setMap(MMIAddrLabelMap *map) { Map = map; }
 
@@ -115,13 +117,13 @@ void MMIAddrLabelMap::UpdateForDeletedBlock(BasicBlock *BB) {
   AddrLabelSymEntry Entry = std::move(AddrLabelSymbols[BB]);
   AddrLabelSymbols.erase(BB);
   assert(!Entry.Symbols.empty() && "Didn't have a symbol, why a callback?");
-  BBCallbacks[Entry.Index] = nullptr; // Clear the callback.
+  BBCallbacks[Entry.Index] = nullptr;  // Clear the callback.
 
   assert((BB->getParent() == nullptr || BB->getParent() == Entry.Fn) &&
          "Block/parent mismatch");
 
-  assert(llvm::all_of(Entry.Symbols,
-                      [](MCSymbol *Sym) { return Sym->isDefined(); }));
+  assert(llvm::all_of(Entry.Symbols, [](MCSymbol *Sym) {
+    return Sym->isDefined(); }));
 }
 
 void MMIAddrLabelMap::UpdateForRAUWBlock(BasicBlock *Old, BasicBlock *New) {
@@ -134,12 +136,12 @@ void MMIAddrLabelMap::UpdateForRAUWBlock(BasicBlock *Old, BasicBlock *New) {
 
   // If New is not address taken, just move our symbol over to it.
   if (NewEntry.Symbols.empty()) {
-    BBCallbacks[OldEntry.Index].setPtr(New); // Update the callback.
-    NewEntry = std::move(OldEntry);          // Set New's entry.
+    BBCallbacks[OldEntry.Index].setPtr(New);    // Update the callback.
+    NewEntry = std::move(OldEntry);             // Set New's entry.
     return;
   }
 
-  BBCallbacks[OldEntry.Index] = nullptr; // Update the callback.
+  BBCallbacks[OldEntry.Index] = nullptr;    // Update the callback.
 
   // Otherwise, we need to add the old symbols to the new block's set.
   llvm::append_range(NewEntry.Symbols, OldEntry.Symbols);
@@ -213,8 +215,7 @@ MachineModuleInfo::getAddrLabelSymbolToEmit(const BasicBlock *BB) {
   // Lazily create AddrLabelSymbols.
   if (!AddrLabelSymbols)
     AddrLabelSymbols = new MMIAddrLabelMap(getContext());
-  return AddrLabelSymbols->getAddrLabelSymbolToEmit(
-      const_cast<BasicBlock *>(BB));
+ return AddrLabelSymbols->getAddrLabelSymbolToEmit(const_cast<BasicBlock*>(BB));
 }
 
 /// \name Exception Handling
@@ -286,7 +287,9 @@ public:
     return true;
   }
 
-  StringRef getPassName() const override { return "Free MachineFunction"; }
+  StringRef getPassName() const override {
+    return "Free MachineFunction";
+  }
 };
 
 } // end anonymous namespace

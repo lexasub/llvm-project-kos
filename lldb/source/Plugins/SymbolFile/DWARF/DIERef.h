@@ -65,7 +65,7 @@ static_assert(sizeof(DIERef) == 8, "");
 typedef std::vector<DIERef> DIEArray;
 
 namespace llvm {
-template <> struct format_provider<DIERef> {
+template<> struct format_provider<DIERef> {
   static void format(const DIERef &ref, raw_ostream &OS, StringRef Style);
 };
 } // namespace llvm

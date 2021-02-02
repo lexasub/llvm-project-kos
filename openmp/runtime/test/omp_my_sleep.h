@@ -10,12 +10,13 @@
 #include <time.h>
 
 #if defined(_WIN32)
-#include <windows.h>
+# include <windows.h>
 // Windows version of my_sleep() function
 static void my_sleep(double sleeptime) {
-  DWORD ms = (DWORD)(sleeptime * 1000.0);
+  DWORD ms = (DWORD) (sleeptime * 1000.0);
   Sleep(ms);
 }
+
 
 #else // _WIN32
 

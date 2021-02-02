@@ -20,15 +20,14 @@
 
 #include <charconv>
 
-int main(int, char**) {
-  using std::to_chars;
-  char buf[10];
-  bool lv = true;
+int main(int, char**)
+{
+    using std::to_chars;
+    char buf[10];
+    bool lv = true;
 
-  to_chars(buf, buf + sizeof(buf),
-           false); // expected-error {{call to deleted function}}
-  to_chars(buf, buf + sizeof(buf), lv,
-           16); // expected-error {{call to deleted function}}
+    to_chars(buf, buf + sizeof(buf), false);   // expected-error {{call to deleted function}}
+    to_chars(buf, buf + sizeof(buf), lv, 16);  // expected-error {{call to deleted function}}
 
   return 0;
 }

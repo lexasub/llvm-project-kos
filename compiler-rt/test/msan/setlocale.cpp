@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int main(void) {
-  char *locale = setlocale(LC_ALL, "");
+  char *locale = setlocale (LC_ALL, "");
   assert(locale);
   if (locale[0])
     exit(0);

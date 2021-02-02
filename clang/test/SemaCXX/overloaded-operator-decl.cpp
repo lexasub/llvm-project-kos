@@ -1,14 +1,11 @@
-// RUN: %clang_cc1 -fsyntax-only -verify %s
-struct X {
+// RUN: %clang_cc1 -fsyntax-only -verify %s 
+struct X { 
   X();
-  X(int);
+  X(int); 
 };
 
 X operator+(X, X);
-X operator-(X, X) {
-  X x;
-  return x;
-}
+X operator-(X, X) { X x; return x; }
 
 struct Y {
   Y operator-() const;
@@ -17,6 +14,7 @@ struct Y {
 
   static int operator+(Y, Y); // expected-error{{overloaded 'operator+' cannot be a static member function}}
 };
+
 
 void f(X x) {
   x = operator+(x, x);
@@ -30,34 +28,33 @@ X operator/(X, X, ...); // expected-error{{overloaded 'operator/' cannot be vari
 
 X operator%(Y); // expected-error{{overloaded 'operator%' must be a binary operator (has 1 parameter)}}
 
-void operator()(Y &, int, int); // expected-error{{overloaded 'operator()' must be a non-static member function}}
+void operator()(Y&, int, int); // expected-error{{overloaded 'operator()' must be a non-static member function}}
 
 typedef int INT;
 typedef float FLOAT;
-Y &operator++(Y &);
-Y operator++(Y &, INT);
-X operator++(X &, FLOAT); // expected-error{{parameter of overloaded post-increment operator must have type 'int' (not 'FLOAT' (aka 'float'))}}
+Y& operator++(Y&);
+Y operator++(Y&, INT);
+X operator++(X&, FLOAT); // expected-error{{parameter of overloaded post-increment operator must have type 'int' (not 'FLOAT' (aka 'float'))}}
 
 int operator+; // expected-error{{'operator+' cannot be the name of a variable or data member}}
 
 namespace PR6238 {
-static struct {
-  void operator()();
-} plus;
-} // namespace PR6238
+  static struct {
+    void operator()();
+  } plus;
+}
 
 struct PR10839 {
-  operator int;  // expected-error{{'operator int' cannot be the name of a variable or data member}}
+  operator int; // expected-error{{'operator int' cannot be the name of a variable or data member}}
   int operator+; // expected-error{{'operator+' cannot be the name of a variable or data member}}
 };
 
 namespace PR14120 {
-struct A {
-  static void operator()(int &i) { ++i; } // expected-error{{overloaded 'operator()' cannot be a static member function}}
-};
-void f() {
-  int i = 0;
-  A()
-  (i);
+  struct A {
+    static void operator()(int& i) { ++i; } // expected-error{{overloaded 'operator()' cannot be a static member function}}
+  };
+  void f() {
+    int i = 0;
+    A()(i);
+  }
 }
-} // namespace PR14120

@@ -2,9 +2,9 @@
 // RUN: %clang_cc1 -emit-llvm %s -o - -DMS_ABI -triple=i386-pc-win32 | FileCheck -check-prefix MSABI %s
 
 #ifdef MS_ABI
-#define METHOD_CC __thiscall
+# define METHOD_CC __thiscall
 #else
-#define METHOD_CC __attribute__((cdecl))
+# define METHOD_CC __attribute__ ((cdecl))
 #endif
 
 // Test that it's OK to have multiple function declarations with the default CC
@@ -53,4 +53,4 @@ void __cdecl callee(int args[I]);
 // MSABI: declare dso_local void @"??$callee@$00@PR31656@@YAXQAH@Z"(
 
 void caller() { callee<1>(0); }
-} // namespace PR31656
+}

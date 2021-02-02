@@ -29,26 +29,27 @@ template <class T>
 struct TestFn {
   void operator()() const {
     {
-      typedef std::atomic<T> A;
-      A t;
-      std::atomic_init(&t, T(1));
-      assert(std::atomic_fetch_and_explicit(&t, T(2),
-                                            std::memory_order_seq_cst) == T(1));
-      assert(t == T(0));
+        typedef std::atomic<T> A;
+        A t;
+        std::atomic_init(&t, T(1));
+        assert(std::atomic_fetch_and_explicit(&t, T(2),
+               std::memory_order_seq_cst) == T(1));
+        assert(t == T(0));
     }
     {
-      typedef std::atomic<T> A;
-      volatile A t;
-      std::atomic_init(&t, T(3));
-      assert(std::atomic_fetch_and_explicit(&t, T(2),
-                                            std::memory_order_seq_cst) == T(3));
-      assert(t == T(2));
+        typedef std::atomic<T> A;
+        volatile A t;
+        std::atomic_init(&t, T(3));
+        assert(std::atomic_fetch_and_explicit(&t, T(2),
+               std::memory_order_seq_cst) == T(3));
+        assert(t == T(2));
     }
   }
 };
 
-int main(int, char**) {
-  TestEachIntegralType<TestFn>()();
+int main(int, char**)
+{
+    TestEachIntegralType<TestFn>()();
 
   return 0;
 }

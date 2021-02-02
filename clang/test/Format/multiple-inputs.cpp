@@ -4,4 +4,4 @@
 
 // CHECK: {{^int\ \*i;}}
 // CHECK: {{^int\ \*i;}}
-int *i;
+ int   *  i  ;

@@ -18,9 +18,9 @@
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/IRBuilderFolder.h"
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
+#include "llvm/IR/IRBuilderFolder.h"
 
 namespace llvm {
 
@@ -35,8 +35,8 @@ public:
   // Binary Operators
   //===--------------------------------------------------------------------===//
 
-  Constant *CreateAdd(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateAdd(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return ConstantExpr::getAdd(LHS, RHS, HasNUW, HasNSW);
   }
 
@@ -44,8 +44,8 @@ public:
     return ConstantExpr::getFAdd(LHS, RHS);
   }
 
-  Constant *CreateSub(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateSub(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return ConstantExpr::getSub(LHS, RHS, HasNUW, HasNSW);
   }
 
@@ -53,8 +53,8 @@ public:
     return ConstantExpr::getFSub(LHS, RHS);
   }
 
-  Constant *CreateMul(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateMul(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return ConstantExpr::getMul(LHS, RHS, HasNUW, HasNSW);
   }
 
@@ -63,12 +63,12 @@ public:
   }
 
   Constant *CreateUDiv(Constant *LHS, Constant *RHS,
-                       bool isExact = false) const override {
+                               bool isExact = false) const override {
     return ConstantExpr::getUDiv(LHS, RHS, isExact);
   }
 
   Constant *CreateSDiv(Constant *LHS, Constant *RHS,
-                       bool isExact = false) const override {
+                               bool isExact = false) const override {
     return ConstantExpr::getSDiv(LHS, RHS, isExact);
   }
 
@@ -88,8 +88,8 @@ public:
     return ConstantExpr::getFRem(LHS, RHS);
   }
 
-  Constant *CreateShl(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateShl(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return ConstantExpr::getShl(LHS, RHS, HasNUW, HasNSW);
   }
 
@@ -115,8 +115,8 @@ public:
     return ConstantExpr::getXor(LHS, RHS);
   }
 
-  Constant *CreateBinOp(Instruction::BinaryOps Opc, Constant *LHS,
-                        Constant *RHS) const override {
+  Constant *CreateBinOp(Instruction::BinaryOps Opc,
+                        Constant *LHS, Constant *RHS) const override {
     return ConstantExpr::get(Opc, LHS, RHS);
   }
 
@@ -124,8 +124,8 @@ public:
   // Unary Operators
   //===--------------------------------------------------------------------===//
 
-  Constant *CreateNeg(Constant *C, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateNeg(Constant *C,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return ConstantExpr::getNeg(C, HasNUW, HasNSW);
   }
 
@@ -163,9 +163,8 @@ public:
     return ConstantExpr::getGetElementPtr(Ty, C, IdxList);
   }
 
-  Constant *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Constant *> IdxList) const override {
+  Constant *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Constant *> IdxList) const override {
     return ConstantExpr::getInBoundsGetElementPtr(Ty, C, IdxList);
   }
 
@@ -177,9 +176,8 @@ public:
     return ConstantExpr::getInBoundsGetElementPtr(Ty, C, Idx);
   }
 
-  Constant *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Value *> IdxList) const override {
+  Constant *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Value *> IdxList) const override {
     return ConstantExpr::getInBoundsGetElementPtr(Ty, C, IdxList);
   }
 

@@ -32,7 +32,7 @@
 // EMPTY: Found 0 types:
 // NAME: Found 4 types:
 // CONTEXT: Found 1 types:
-struct foo {};
+struct foo { };
 // NAME-DAG: name = "foo", {{.*}} decl = find-basic-type.cpp:[[@LINE-1]]
 
 namespace bar {
@@ -43,12 +43,12 @@ struct foo {};
 namespace baz {
 struct foo {};
 // NAME-DAG: name = "foo", {{.*}} decl = find-basic-type.cpp:[[@LINE-1]]
-} // namespace baz
-} // namespace bar
+}
+}
 
 struct sbar {
   struct foo {};
-  // NAME-DAG: name = "foo", {{.*}} decl = find-basic-type.cpp:[[@LINE-1]]
+// NAME-DAG: name = "foo", {{.*}} decl = find-basic-type.cpp:[[@LINE-1]]
 };
 
 struct foobar {};

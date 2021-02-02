@@ -17,10 +17,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  int index = std::ios_base::xalloc();
-  for (int i = 0; i < 10000; ++i)
-    assert(std::ios_base::xalloc() == ++index);
+int main(int, char**)
+{
+    int index = std::ios_base::xalloc();
+    for (int i = 0; i < 10000; ++i)
+        assert(std::ios_base::xalloc() == ++index);
 
   return 0;
 }

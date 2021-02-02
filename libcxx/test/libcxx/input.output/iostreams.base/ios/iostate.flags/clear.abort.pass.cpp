@@ -24,17 +24,20 @@
 
 #include "test_macros.h"
 
-void exit_success(int) { std::_Exit(EXIT_SUCCESS); }
+
+void exit_success(int) {
+    std::_Exit(EXIT_SUCCESS);
+}
 
 struct testbuf : public std::streambuf {};
 
 int main(int, char**) {
-  std::signal(SIGABRT, exit_success);
+    std::signal(SIGABRT, exit_success);
 
-  testbuf buf;
-  std::ios ios(&buf);
-  ios.exceptions(std::ios::badbit);
-  ios.clear(std::ios::badbit);
+    testbuf buf;
+    std::ios ios(&buf);
+    ios.exceptions(std::ios::badbit);
+    ios.clear(std::ios::badbit);
 
-  return EXIT_FAILURE;
+    return EXIT_FAILURE;
 }

@@ -22,13 +22,13 @@
 #include "test_macros.h"
 
 struct X {
-  int test() noexcept { return 3; }
+    int test() noexcept {return 3;}
 };
 
 int main(int, char**) {
-  std::optional<X> opt;
-  assert(opt->test() == 3);
-  assert(false);
+    std::optional<X> opt;
+    assert(opt->test() == 3);
+    assert(false);
 
-  return 0;
+    return 0;
 }

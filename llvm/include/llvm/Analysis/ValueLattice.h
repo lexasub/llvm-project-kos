@@ -463,8 +463,8 @@ public:
            getNotConstant() == Other.getConstant()) ||
           (isConstant() && Other.isNotConstant() &&
            getConstant() == Other.getNotConstant()))
-        return Pred == ICmpInst::ICMP_NE ? ConstantInt::getTrue(Ty)
-                                         : ConstantInt::getFalse(Ty);
+        return Pred == ICmpInst::ICMP_NE
+            ? ConstantInt::getTrue(Ty) : ConstantInt::getFalse(Ty);
     }
 
     // Integer constants are represented as ConstantRanges with single

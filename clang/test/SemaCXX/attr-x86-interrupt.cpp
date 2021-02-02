@@ -40,7 +40,7 @@ __attribute__((interrupt)) void foo6(float *a, int b) {}
 #endif
 __attribute__((interrupt)) void foo7(int *a, unsigned b) {}
 __attribute__((interrupt)) void foo8(int *a) {}
-template <typename T>
+template<typename T>
 __attribute__((interrupt)) void foo9(T *a) {}
 
 template <typename T>
@@ -65,7 +65,8 @@ int main(int argc, char **argv) {
   // expected-error@+2 {{interrupt service routine cannot be called directly}}
 #endif
   foo7((int *)argv, argc);
-  foo8((int *)argv); // expected-error {{interrupt service routine cannot be called directly}}
-  bar(argv);         // expected-note {{in instantiation of function template specialization 'bar<char *>' requested here}}
+  foo8((int *)argv);       // expected-error {{interrupt service routine cannot be called directly}}
+  bar(argv); // expected-note {{in instantiation of function template specialization 'bar<char *>' requested here}}
   return 0;
 }
+

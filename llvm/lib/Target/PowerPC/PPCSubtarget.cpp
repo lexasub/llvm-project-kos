@@ -36,10 +36,8 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_CTOR
 #include "PPCGenSubtargetInfo.inc"
 
-static cl::opt<bool>
-    UseSubRegLiveness("ppc-track-subreg-liveness",
-                      cl::desc("Enable subregister liveness tracking for PPC"),
-                      cl::Hidden);
+static cl::opt<bool> UseSubRegLiveness("ppc-track-subreg-liveness",
+cl::desc("Enable subregister liveness tracking for PPC"), cl::Hidden);
 
 static cl::opt<bool>
     EnableMachinePipeliner("ppc-enable-pipeliner",
@@ -171,7 +169,7 @@ void PPCSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
     SecurePlt = true;
 
   if (HasSPE && IsPPC64)
-    report_fatal_error("SPE is only supported for 32-bit targets.\n", false);
+    report_fatal_error( "SPE is only supported for 32-bit targets.\n", false);
   if (HasSPE && (HasAltivec || HasVSX || HasFPU))
     report_fatal_error(
         "SPE and traditional floating point cannot both be enabled.\n", false);
@@ -199,15 +197,14 @@ bool PPCSubtarget::useDFAforSMS() const { return false; }
 // This overrides the PostRAScheduler bit in the SchedModel for each CPU.
 bool PPCSubtarget::enablePostRAScheduler() const { return true; }
 
-PPCGenSubtargetInfo::AntiDepBreakMode
-PPCSubtarget::getAntiDepBreakMode() const {
+PPCGenSubtargetInfo::AntiDepBreakMode PPCSubtarget::getAntiDepBreakMode() const {
   return TargetSubtargetInfo::ANTIDEP_ALL;
 }
 
 void PPCSubtarget::getCriticalPathRCs(RegClassVector &CriticalPathRCs) const {
   CriticalPathRCs.clear();
-  CriticalPathRCs.push_back(isPPC64() ? &PPC::G8RCRegClass
-                                      : &PPC::GPRCRegClass);
+  CriticalPathRCs.push_back(isPPC64() ?
+                            &PPC::G8RCRegClass : &PPC::GPRCRegClass);
 }
 
 void PPCSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
@@ -223,9 +220,13 @@ void PPCSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
   Policy.ShouldTrackPressure = true;
 }
 
-bool PPCSubtarget::useAA() const { return true; }
+bool PPCSubtarget::useAA() const {
+  return true;
+}
 
-bool PPCSubtarget::enableSubRegLiveness() const { return UseSubRegLiveness; }
+bool PPCSubtarget::enableSubRegLiveness() const {
+  return UseSubRegLiveness;
+}
 
 bool PPCSubtarget::isGVIndirectSymbol(const GlobalValue *GV) const {
   // Large code model always uses the TOC even for local symbols.

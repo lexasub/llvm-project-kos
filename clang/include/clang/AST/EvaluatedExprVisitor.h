@@ -26,7 +26,7 @@ class ASTContext;
 
 /// Given a potentially-evaluated expression, this visitor visits all
 /// of its potentially-evaluated subexpressions, recursively.
-template <template <typename> class Ptr, typename ImplClass>
+template<template <typename> class Ptr, typename ImplClass>
 class EvaluatedExprVisitorBase : public StmtVisitorBase<Ptr, ImplClass, void> {
 protected:
   const ASTContext &Context;
@@ -34,18 +34,17 @@ protected:
 public:
 #define PTR(CLASS) typename Ptr<CLASS>::type
 
-  explicit EvaluatedExprVisitorBase(const ASTContext &Context)
-      : Context(Context) {}
+  explicit EvaluatedExprVisitorBase(const ASTContext &Context) : Context(Context) { }
 
   // Expressions that have no potentially-evaluated subexpressions (but may have
   // other sub-expressions).
-  void VisitDeclRefExpr(PTR(DeclRefExpr) E) {}
-  void VisitOffsetOfExpr(PTR(OffsetOfExpr) E) {}
-  void VisitUnaryExprOrTypeTraitExpr(PTR(UnaryExprOrTypeTraitExpr) E) {}
-  void VisitExpressionTraitExpr(PTR(ExpressionTraitExpr) E) {}
-  void VisitBlockExpr(PTR(BlockExpr) E) {}
-  void VisitCXXUuidofExpr(PTR(CXXUuidofExpr) E) {}
-  void VisitCXXNoexceptExpr(PTR(CXXNoexceptExpr) E) {}
+  void VisitDeclRefExpr(PTR(DeclRefExpr) E) { }
+  void VisitOffsetOfExpr(PTR(OffsetOfExpr) E) { }
+  void VisitUnaryExprOrTypeTraitExpr(PTR(UnaryExprOrTypeTraitExpr) E) { }
+  void VisitExpressionTraitExpr(PTR(ExpressionTraitExpr) E) { }
+  void VisitBlockExpr(PTR(BlockExpr) E) { }
+  void VisitCXXUuidofExpr(PTR(CXXUuidofExpr) E) { }
+  void VisitCXXNoexceptExpr(PTR(CXXNoexceptExpr) E) { }
 
   void VisitMemberExpr(PTR(MemberExpr) E) {
     // Only the base matters.
@@ -84,7 +83,7 @@ public:
 
   void VisitCallExpr(PTR(CallExpr) CE) {
     if (!CE->isUnevaluatedBuiltinCall(Context))
-      return static_cast<ImplClass *>(this)->VisitExpr(CE);
+      return static_cast<ImplClass*>(this)->VisitExpr(CE);
   }
 
   void VisitLambdaExpr(PTR(LambdaExpr) LE) {
@@ -124,6 +123,6 @@ public:
   explicit ConstEvaluatedExprVisitor(const ASTContext &Context)
       : EvaluatedExprVisitorBase<llvm::make_const_ptr, ImplClass>(Context) {}
 };
-} // namespace clang
+}
 
 #endif // LLVM_CLANG_AST_EVALUATEDEXPRVISITOR_H

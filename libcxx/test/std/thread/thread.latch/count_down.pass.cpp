@@ -28,11 +28,14 @@
 #include "make_test_thread.h"
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::latch l(2);
 
   l.count_down();
-  std::thread t = support::make_test_thread([&]() { l.count_down(); });
+  std::thread t = support::make_test_thread([&](){
+    l.count_down();
+  });
   l.wait();
   t.join();
 

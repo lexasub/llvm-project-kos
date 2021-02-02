@@ -13,8 +13,7 @@
 #error This file must be included inside sanitizer_allocator.h
 #endif
 
-template <class SizeClassAllocator>
-struct SizeClassAllocator64LocalCache;
+template<class SizeClassAllocator> struct SizeClassAllocator64LocalCache;
 
 // SizeClassAllocator64 -- allocator for 64-bit address space.
 // The template parameter Params is a class containing the actual parameters.
@@ -109,7 +108,7 @@ class SizeClassAllocator64 {
 
   static bool CanAllocate(uptr size, uptr alignment) {
     return size <= SizeClassMap::kMaxSize &&
-           alignment <= SizeClassMap::kMaxSize;
+      alignment <= SizeClassMap::kMaxSize;
   }
 
   NOINLINE void ReturnToAllocator(AllocatorStats *stat, uptr class_id,
@@ -123,12 +122,11 @@ class SizeClassAllocator64 {
     uptr new_num_freed_chunks = old_num_chunks + n_chunks;
     // Failure to allocate free array space while releasing memory is non
     // recoverable.
-    if (UNLIKELY(
-            !EnsureFreeArraySpace(region, region_beg, new_num_freed_chunks))) {
-      Report(
-          "FATAL: Internal error: %s's allocator exhausted the free list "
-          "space for size class %zd (%zd bytes).\n",
-          SanitizerToolName, class_id, ClassIdToSize(class_id));
+    if (UNLIKELY(!EnsureFreeArraySpace(region, region_beg,
+                                       new_num_freed_chunks))) {
+      Report("FATAL: Internal error: %s's allocator exhausted the free list "
+             "space for size class %zd (%zd bytes).\n", SanitizerToolName,
+             class_id, ClassIdToSize(class_id));
       Die();
     }
     for (uptr i = 0; i < n_chunks; i++)
@@ -154,7 +152,8 @@ class SizeClassAllocator64 {
     }
     region->num_freed_chunks -= n_chunks;
     uptr base_idx = region->num_freed_chunks;
-    for (uptr i = 0; i < n_chunks; i++) chunks[i] = free_array[base_idx + i];
+    for (uptr i = 0; i < n_chunks; i++)
+      chunks[i] = free_array[base_idx + i];
     region->stats.n_allocated += n_chunks;
     return true;
   }
@@ -170,8 +169,8 @@ class SizeClassAllocator64 {
     if (kUsingConstantSpaceBeg)
       return reinterpret_cast<uptr>(p) & ~(kRegionSize - 1);
     uptr space_beg = SpaceBeg();
-    return ((reinterpret_cast<uptr>(p) - space_beg) & ~(kRegionSize - 1)) +
-           space_beg;
+    return ((reinterpret_cast<uptr>(p)  - space_beg) & ~(kRegionSize - 1)) +
+        space_beg;
   }
 
   uptr GetRegionBeginBySizeClass(uptr class_id) const {
@@ -187,18 +186,16 @@ class SizeClassAllocator64 {
 
   void *GetBlockBegin(const void *p) {
     uptr class_id = GetSizeClass(p);
-    if (class_id >= kNumClasses)
-      return nullptr;
+    if (class_id >= kNumClasses) return nullptr;
     uptr size = ClassIdToSize(class_id);
-    if (!size)
-      return nullptr;
+    if (!size) return nullptr;
     uptr chunk_idx = GetChunkIdx((uptr)p, size);
     uptr reg_beg = GetRegionBegin(p);
     uptr beg = chunk_idx * size;
     uptr next_beg = beg + size;
     const RegionInfo *region = AddressSpaceView::Load(GetRegionInfo(class_id));
     if (region->mapped_user >= next_beg)
-      return reinterpret_cast<void *>(reg_beg + beg);
+      return reinterpret_cast<void*>(reg_beg + beg);
     return nullptr;
   }
 
@@ -232,7 +229,7 @@ class SizeClassAllocator64 {
   }
 
   static void FillMemoryProfile(uptr start, uptr rss, bool file, uptr *stats,
-                                uptr stats_size) {
+                           uptr stats_size) {
     for (uptr class_id = 0; class_id < stats_size; class_id++)
       if (stats[class_id] == start)
         stats[class_id] = rss;
@@ -240,8 +237,7 @@ class SizeClassAllocator64 {
 
   void PrintStats(uptr class_id, uptr rss) {
     RegionInfo *region = GetRegionInfo(class_id);
-    if (region->mapped_user == 0)
-      return;
+    if (region->mapped_user == 0) return;
     uptr in_use = region->stats.n_allocated - region->stats.n_freed;
     uptr avail_chunks = region->allocated_user / ClassIdToSize(class_id);
     Printf(
@@ -276,11 +272,9 @@ class SizeClassAllocator64 {
       n_freed += region->stats.n_freed;
     }
 
-    Printf(
-        "Stats: SizeClassAllocator64: %zdM mapped (%zdM rss) in "
-        "%zd allocations; remains %zd\n",
-        total_mapped >> 20, total_rss >> 20, n_allocated,
-        n_allocated - n_freed);
+    Printf("Stats: SizeClassAllocator64: %zdM mapped (%zdM rss) in "
+           "%zd allocations; remains %zd\n", total_mapped >> 20,
+           total_rss >> 20, n_allocated, n_allocated - n_freed);
     for (uptr class_id = 1; class_id < kNumClasses; class_id++)
       PrintStats(class_id, rss_stats[class_id]);
   }
@@ -337,7 +331,7 @@ class SizeClassAllocator64 {
   // For the performance sake, none of the accessors check the validity of the
   // arguments, it is assumed that index is always in [0, n) range and the value
   // is not incremented past max_value.
-  template <class MemoryMapperT>
+  template<class MemoryMapperT>
   class PackedCounterArray {
    public:
     PackedCounterArray(u64 num_counters, u64 max_value, MemoryMapperT *mapper)
@@ -361,7 +355,7 @@ class SizeClassAllocator64 {
       buffer_size =
           (RoundUpTo(n, 1ULL << packing_ratio_log) >> packing_ratio_log) *
           sizeof(*buffer);
-      buffer = reinterpret_cast<u64 *>(
+      buffer = reinterpret_cast<u64*>(
           memory_mapper->MapPackedCounterArrayBuffer(buffer_size));
     }
     ~PackedCounterArray() {
@@ -371,9 +365,13 @@ class SizeClassAllocator64 {
       }
     }
 
-    bool IsAllocated() const { return !!buffer; }
+    bool IsAllocated() const {
+      return !!buffer;
+    }
 
-    u64 GetCount() const { return n; }
+    u64 GetCount() const {
+      return n;
+    }
 
     uptr Get(uptr i) const {
       DCHECK_LT(i, n);
@@ -391,7 +389,8 @@ class SizeClassAllocator64 {
 
     void IncRange(uptr from, uptr to) const {
       DCHECK_LE(from, to);
-      for (uptr i = from; i <= to; i++) Inc(i);
+      for (uptr i = from; i <= to; i++)
+        Inc(i);
     }
 
    private:
@@ -401,20 +400,18 @@ class SizeClassAllocator64 {
     u64 packing_ratio_log;
     u64 bit_offset_mask;
 
-    MemoryMapperT *const memory_mapper;
+    MemoryMapperT* const memory_mapper;
     u64 buffer_size;
-    u64 *buffer;
+    u64* buffer;
   };
 
-  template <class MemoryMapperT>
+  template<class MemoryMapperT>
   class FreePagesRangeTracker {
    public:
-    explicit FreePagesRangeTracker(MemoryMapperT *mapper)
+    explicit FreePagesRangeTracker(MemoryMapperT* mapper)
         : memory_mapper(mapper),
           page_size_scaled_log(Log2(GetPageSizeCached() >> kCompactPtrScale)),
-          in_the_range(false),
-          current_page(0),
-          current_range_start_page(0) {}
+          in_the_range(false), current_page(0), current_range_start_page(0) {}
 
     void NextPage(bool freed) {
       if (freed) {
@@ -428,7 +425,9 @@ class SizeClassAllocator64 {
       current_page++;
     }
 
-    void Done() { CloseOpenedRange(); }
+    void Done() {
+      CloseOpenedRange();
+    }
 
    private:
     void CloseOpenedRange() {
@@ -440,7 +439,7 @@ class SizeClassAllocator64 {
       }
     }
 
-    MemoryMapperT *const memory_mapper;
+    MemoryMapperT* const memory_mapper;
     const uptr page_size_scaled_log;
     bool in_the_range;
     uptr current_page;
@@ -451,7 +450,7 @@ class SizeClassAllocator64 {
   // chunks only and returns these pages back to OS.
   // allocated_pages_count is the total number of pages allocated for the
   // current bucket.
-  template <class MemoryMapperT>
+  template<class MemoryMapperT>
   static void ReleaseFreeMemoryToOS(CompactPtrT *free_array,
                                     uptr free_array_count, uptr chunk_size,
                                     uptr allocated_pages_count,
@@ -467,7 +466,7 @@ class SizeClassAllocator64 {
       full_pages_chunk_count_max = page_size / chunk_size;
       same_chunk_count_per_page = true;
     } else if (chunk_size <= page_size && page_size % chunk_size != 0 &&
-               chunk_size % (page_size % chunk_size) == 0) {
+        chunk_size % (page_size % chunk_size) == 0) {
       // Some chunks are crossing page boundaries, which means that the page
       // contains one or two partial chunks, but all pages contain the same
       // number of chunks.
@@ -491,8 +490,9 @@ class SizeClassAllocator64 {
       UNREACHABLE("All chunk_size/page_size ratios must be handled.");
     }
 
-    PackedCounterArray<MemoryMapperT> counters(
-        allocated_pages_count, full_pages_chunk_count_max, memory_mapper);
+    PackedCounterArray<MemoryMapperT> counters(allocated_pages_count,
+                                               full_pages_chunk_count_max,
+                                               memory_mapper);
     if (!counters.IsAllocated())
       return;
 
@@ -572,7 +572,7 @@ class SizeClassAllocator64 {
   uptr SpaceBeg() const {
     return kUsingConstantSpaceBeg ? kSpaceBeg : NonConstSpaceBeg;
   }
-  uptr SpaceEnd() const { return SpaceBeg() + kSpaceSize; }
+  uptr SpaceEnd() const { return  SpaceBeg() + kSpaceSize; }
   // kRegionSize must be >= 2^32.
   COMPILER_CHECK((kRegionSize) >= (1ULL << (SANITIZER_WORDSIZE / 2)));
   // kRegionSize must be <= 2^36, see CompactPtrT.
@@ -600,12 +600,12 @@ class SizeClassAllocator64 {
 
   struct ALIGNED(SANITIZER_CACHE_LINE_SIZE) RegionInfo {
     BlockingMutex mutex;
-    uptr num_freed_chunks;   // Number of elements in the freearray.
+    uptr num_freed_chunks;  // Number of elements in the freearray.
     uptr mapped_free_array;  // Bytes mapped for freearray.
-    uptr allocated_user;     // Bytes allocated for user memory.
-    uptr allocated_meta;     // Bytes allocated for metadata.
-    uptr mapped_user;        // Bytes mapped for user memory.
-    uptr mapped_meta;        // Bytes mapped for metadata.
+    uptr allocated_user;  // Bytes allocated for user memory.
+    uptr allocated_meta;  // Bytes allocated for metadata.
+    uptr mapped_user;  // Bytes mapped for user memory.
+    uptr mapped_meta;  // Bytes mapped for metadata.
     u32 rand_state;  // Seed for random shuffle, used if kRandomShuffleChunks.
     bool exhausted;  // Whether region is out of space for new chunks.
     Stats stats;
@@ -679,8 +679,7 @@ class SizeClassAllocator64 {
   bool IsRegionExhausted(RegionInfo *region, uptr class_id,
                          uptr additional_map_size) {
     if (LIKELY(region->mapped_user + region->mapped_meta +
-                   additional_map_size <=
-               kRegionSize - kFreeArraySize))
+               additional_map_size <= kRegionSize - kFreeArraySize))
       return false;
     if (!region->exhausted) {
       region->exhausted = true;
@@ -733,18 +732,15 @@ class SizeClassAllocator64 {
       // Calculate the required space for metadata.
       const uptr total_meta_bytes =
           region->allocated_meta + new_chunks_count * kMetadataSize;
-      const uptr meta_map_size =
-          (total_meta_bytes > region->mapped_meta)
-              ? RoundUpTo(total_meta_bytes - region->mapped_meta, kMetaMapSize)
-              : 0;
+      const uptr meta_map_size = (total_meta_bytes > region->mapped_meta) ?
+          RoundUpTo(total_meta_bytes - region->mapped_meta, kMetaMapSize) : 0;
       // Map more space for metadata, if necessary.
       if (meta_map_size) {
         if (UNLIKELY(IsRegionExhausted(region, class_id, meta_map_size)))
           return false;
-        if (UNLIKELY(!MapWithCallback(GetMetadataEnd(region_beg) -
-                                          region->mapped_meta - meta_map_size,
-                                      meta_map_size,
-                                      "SizeClassAllocator: region metadata")))
+        if (UNLIKELY(!MapWithCallback(
+            GetMetadataEnd(region_beg) - region->mapped_meta - meta_map_size,
+            meta_map_size, "SizeClassAllocator: region metadata")))
           return false;
         region->mapped_meta += meta_map_size;
       }
@@ -781,15 +777,20 @@ class SizeClassAllocator64 {
 
   class MemoryMapper {
    public:
-    MemoryMapper(const ThisT &base_allocator, uptr class_id)
+    MemoryMapper(const ThisT& base_allocator, uptr class_id)
         : allocator(base_allocator),
           region_base(base_allocator.GetRegionBeginBySizeClass(class_id)),
           released_ranges_count(0),
-          released_bytes(0) {}
+          released_bytes(0) {
+    }
 
-    uptr GetReleasedRangesCount() const { return released_ranges_count; }
+    uptr GetReleasedRangesCount() const {
+      return released_ranges_count;
+    }
 
-    uptr GetReleasedBytes() const { return released_bytes; }
+    uptr GetReleasedBytes() const {
+      return released_bytes;
+    }
 
     uptr MapPackedCounterArrayBuffer(uptr buffer_size) {
       // TODO(alekseyshl): The idea to explore is to check if we have enough
@@ -814,7 +815,7 @@ class SizeClassAllocator64 {
     }
 
    private:
-    const ThisT &allocator;
+    const ThisT& allocator;
     const uptr region_base;
     uptr released_ranges_count;
     uptr released_bytes;
@@ -830,9 +831,8 @@ class SizeClassAllocator64 {
     uptr n = region->num_freed_chunks;
     if (n * chunk_size < page_size)
       return;  // No chance to release anything.
-    if ((region->stats.n_freed - region->rtoi.n_freed_at_last_release) *
-            chunk_size <
-        page_size) {
+    if ((region->stats.n_freed -
+         region->rtoi.n_freed_at_last_release) * chunk_size < page_size) {
       return;  // Nothing new to release.
     }
 

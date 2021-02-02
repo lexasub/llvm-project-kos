@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   assert(result < 0);
   char *x = (char *)malloc(10 * sizeof(char));
   free(x);
-  x[argc] = 'X'; // BOOM
+  x[argc] = 'X';  // BOOM
   // CHECK-FILE: {{.*ERROR: AddressSanitizer: heap-use-after-free on address}}
   // CHECK-FILE:   {{0x.* at pc 0x.* bp 0x.* sp 0x.*}}
   // CHECK-FILE: {{WRITE of size 1 at 0x.* thread T0}}

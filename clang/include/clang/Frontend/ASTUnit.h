@@ -22,12 +22,12 @@
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Basic/TargetOptions.h"
-#include "clang/Frontend/PrecompiledPreamble.h"
 #include "clang/Lex/HeaderSearchOptions.h"
 #include "clang/Lex/ModuleLoader.h"
 #include "clang/Lex/PreprocessingRecord.h"
 #include "clang/Sema/CodeCompleteConsumer.h"
 #include "clang/Serialization/ASTBitCodes.h"
+#include "clang/Frontend/PrecompiledPreamble.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
@@ -106,18 +106,18 @@ public:
   };
 
 private:
-  std::shared_ptr<LangOptions> LangOpts;
-  IntrusiveRefCntPtr<DiagnosticsEngine> Diagnostics;
-  IntrusiveRefCntPtr<FileManager> FileMgr;
-  IntrusiveRefCntPtr<SourceManager> SourceMgr;
+  std::shared_ptr<LangOptions>            LangOpts;
+  IntrusiveRefCntPtr<DiagnosticsEngine>   Diagnostics;
+  IntrusiveRefCntPtr<FileManager>         FileMgr;
+  IntrusiveRefCntPtr<SourceManager>       SourceMgr;
   IntrusiveRefCntPtr<InMemoryModuleCache> ModuleCache;
-  std::unique_ptr<HeaderSearch> HeaderInfo;
-  IntrusiveRefCntPtr<TargetInfo> Target;
-  std::shared_ptr<Preprocessor> PP;
-  IntrusiveRefCntPtr<ASTContext> Ctx;
-  std::shared_ptr<TargetOptions> TargetOpts;
-  std::shared_ptr<HeaderSearchOptions> HSOpts;
-  std::shared_ptr<PreprocessorOptions> PPOpts;
+  std::unique_ptr<HeaderSearch>           HeaderInfo;
+  IntrusiveRefCntPtr<TargetInfo>          Target;
+  std::shared_ptr<Preprocessor>           PP;
+  IntrusiveRefCntPtr<ASTContext>          Ctx;
+  std::shared_ptr<TargetOptions>          TargetOpts;
+  std::shared_ptr<HeaderSearchOptions>    HSOpts;
+  std::shared_ptr<PreprocessorOptions>    PPOpts;
   IntrusiveRefCntPtr<ASTReader> Reader;
   bool HadModuleLoaderFatalFailure = false;
 
@@ -168,7 +168,7 @@ private:
   // of a PCH file when using the Index library on an ASTUnit loaded from
   // source. In the long term we should make the Index library use efficient and
   // more scalable search mechanisms.
-  std::vector<Decl *> TopLevelDecls;
+  std::vector<Decl*> TopLevelDecls;
 
   /// Sorted (by file offset) vector of pairs of file offset/Decl.
   using LocDeclsTy = SmallVector<std::pair<unsigned, Decl *>, 64>;
@@ -255,10 +255,10 @@ private:
   static void ConfigureDiags(IntrusiveRefCntPtr<DiagnosticsEngine> Diags,
                              ASTUnit &AST, CaptureDiagsKind CaptureDiagnostics);
 
-  void
-  TranslateStoredDiagnostics(FileManager &FileMgr, SourceManager &SrcMan,
-                             const SmallVectorImpl<StandaloneDiagnostic> &Diags,
-                             SmallVectorImpl<StoredDiagnostic> &Out);
+  void TranslateStoredDiagnostics(FileManager &FileMgr,
+                                  SourceManager &SrcMan,
+                      const SmallVectorImpl<StandaloneDiagnostic> &Diags,
+                            SmallVectorImpl<StoredDiagnostic> &Out);
 
   void clearFileLevelDecls();
 
@@ -412,7 +412,9 @@ public:
       Self.ConcurrencyCheckValue.start();
     }
 
-    ~ConcurrencyCheck() { Self.ConcurrencyCheckValue.finish(); }
+    ~ConcurrencyCheck() {
+      Self.ConcurrencyCheckValue.finish();
+    }
   };
 
   ASTUnit(const ASTUnit &) = delete;
@@ -478,7 +480,9 @@ public:
 
   IntrusiveRefCntPtr<ASTReader> getASTReader() const;
 
-  StringRef getOriginalSourceFileName() const { return OriginalSourceFile; }
+  StringRef getOriginalSourceFileName() const {
+    return OriginalSourceFile;
+  }
 
   ASTMutationListener *getASTMutationListener();
   ASTDeserializationListener *getDeserializationListener();
@@ -520,7 +524,9 @@ public:
   }
 
   /// Add a new top-level declaration.
-  void addTopLevelDecl(Decl *D) { TopLevelDecls.push_back(D); }
+  void addTopLevelDecl(Decl *D) {
+    TopLevelDecls.push_back(D);
+  }
 
   /// Add a new local file-level declaration.
   void addFileLevelDecl(Decl *D);
@@ -541,8 +547,8 @@ public:
   /// The difference with SourceManager::getLocation is that this method checks
   /// whether the requested location points inside the precompiled preamble
   /// in which case the returned source location will be a "loaded" one.
-  SourceLocation getLocation(const FileEntry *File, unsigned Line,
-                             unsigned Col) const;
+  SourceLocation getLocation(const FileEntry *File,
+                             unsigned Line, unsigned Col) const;
 
   /// Get the source location for the given file:offset pair.
   SourceLocation getLocation(const FileEntry *File, unsigned Offset) const;
@@ -584,13 +590,17 @@ public:
     return StoredDiagnostics.begin();
   }
 
-  stored_diag_iterator stored_diag_begin() { return StoredDiagnostics.begin(); }
+  stored_diag_iterator stored_diag_begin() {
+    return StoredDiagnostics.begin();
+  }
 
   stored_diag_const_iterator stored_diag_end() const {
     return StoredDiagnostics.end();
   }
 
-  stored_diag_iterator stored_diag_end() { return StoredDiagnostics.end(); }
+  stored_diag_iterator stored_diag_end() {
+    return StoredDiagnostics.end();
+  }
 
   unsigned stored_diag_size() const { return StoredDiagnostics.size(); }
 

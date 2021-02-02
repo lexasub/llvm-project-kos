@@ -31,8 +31,9 @@ constexpr nothrow_t nothrow = {};
 // Required when get_return_object_on_allocation_failure() is defined by
 // the promise.
 using SizeT = decltype(sizeof(int));
-void *operator new(SizeT __sz, const std::nothrow_t &) noexcept;
-void operator delete(void *__p, const std::nothrow_t &) noexcept;
+void* operator new(SizeT __sz, const std::nothrow_t&) noexcept;
+void  operator delete(void* __p, const std::nothrow_t&) noexcept;
+
 
 struct suspend_always {
   bool await_ready() noexcept { return false; }
@@ -42,7 +43,7 @@ struct suspend_always {
 
 struct global_new_delete_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, global_new_delete_tag> {
   struct promise_type {
     void get_return_object() {}
@@ -82,7 +83,7 @@ extern "C" void f0(global_new_delete_tag) {
 
 struct promise_new_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, promise_new_tag> {
   struct promise_type {
     void *operator new(unsigned long);
@@ -94,7 +95,7 @@ struct std::experimental::coroutine_traits<void, promise_new_tag> {
 };
 
 // CHECK-LABEL: f1(
-extern "C" void f1(promise_new_tag) {
+extern "C" void f1(promise_new_tag ) {
   // CHECK: %[[ID:.+]] = call token @llvm.coro.id(i32 16
   // CHECK: %[[SIZE:.+]] = call i64 @llvm.coro.size.i64()
   // CHECK: call i8* @_ZNSt12experimental16coroutine_traitsIJv15promise_new_tagEE12promise_typenwEm(i64 %[[SIZE]])
@@ -107,7 +108,7 @@ extern "C" void f1(promise_new_tag) {
 
 struct promise_matching_placement_new_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, promise_matching_placement_new_tag, int, float, double> {
   struct promise_type {
     void *operator new(unsigned long, promise_matching_placement_new_tag,
@@ -120,7 +121,7 @@ struct std::experimental::coroutine_traits<void, promise_matching_placement_new_
 };
 
 // CHECK-LABEL: f1a(
-extern "C" void f1a(promise_matching_placement_new_tag, int x, float y, double z) {
+extern "C" void f1a(promise_matching_placement_new_tag, int x, float y , double z) {
   // CHECK: store i32 %x, i32* %x.addr, align 4
   // CHECK: store float %y, float* %y.addr, align 4
   // CHECK: store double %z, double* %z.addr, align 8
@@ -135,12 +136,12 @@ extern "C" void f1a(promise_matching_placement_new_tag, int x, float y, double z
 
 // Declare a placement form operator new, such as the one described in
 // C++ 18.6.1.3.1, which takes a void* argument.
-void *operator new(SizeT __sz, void *__p) noexcept;
+void* operator new(SizeT __sz, void *__p) noexcept;
 
 struct promise_matching_global_placement_new_tag {};
 struct dummy {};
-template <>
-struct std::experimental::coroutine_traits<void, promise_matching_global_placement_new_tag, dummy *> {
+template<>
+struct std::experimental::coroutine_traits<void, promise_matching_global_placement_new_tag, dummy*> {
   struct promise_type {
     void get_return_object() {}
     suspend_always initial_suspend() { return {}; }
@@ -161,10 +162,10 @@ extern "C" void f1b(promise_matching_global_placement_new_tag, dummy *) {
 
 struct promise_delete_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, promise_delete_tag> {
   struct promise_type {
-    void operator delete(void *);
+    void operator delete(void*);
     void get_return_object() {}
     suspend_always initial_suspend() { return {}; }
     suspend_always final_suspend() noexcept { return {}; }
@@ -186,10 +187,10 @@ extern "C" void f2(promise_delete_tag) {
 
 struct promise_sized_delete_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, promise_sized_delete_tag> {
   struct promise_type {
-    void operator delete(void *, unsigned long);
+    void operator delete(void*, unsigned long);
     void get_return_object() {}
     suspend_always initial_suspend() { return {}; }
     suspend_always final_suspend() noexcept { return {}; }
@@ -212,7 +213,7 @@ extern "C" void f3(promise_sized_delete_tag) {
 
 struct promise_on_alloc_failure_tag {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<int, promise_on_alloc_failure_tag> {
   struct promise_type {
     int get_return_object() { return 0; }

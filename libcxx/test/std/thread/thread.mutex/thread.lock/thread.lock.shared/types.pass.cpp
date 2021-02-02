@@ -9,6 +9,7 @@
 // UNSUPPORTED: libcpp-has-no-threads
 // UNSUPPORTED: c++03, c++11
 
+
 // <shared_mutex>
 
 // template <class Mutex>
@@ -24,10 +25,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert((std::is_same<std::shared_lock<std::mutex>::mutex_type,
-                              std::mutex>::value),
-                "");
+int main(int, char**)
+{
+    static_assert((std::is_same<std::shared_lock<std::mutex>::mutex_type,
+                   std::mutex>::value), "");
 
   return 0;
 }

@@ -15,7 +15,9 @@
 using namespace fs;
 
 struct ConvToPath {
-  operator fs::path() const { return ""; }
+  operator fs::path() const {
+    return "";
+  }
 };
 
 int main(int, char**) {

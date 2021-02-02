@@ -21,6 +21,6 @@ public:
 /// Create a legacy pass manager instance of the LoadStoreVectorizer pass
 Pass *createLoadStoreVectorizerPass();
 
-} // namespace llvm
+}
 
 #endif /* LLVM_TRANSFORMS_VECTORIZE_LOADSTOREVECTORIZER_H */

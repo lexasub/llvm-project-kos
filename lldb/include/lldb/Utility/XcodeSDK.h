@@ -51,6 +51,7 @@ public:
     bool operator==(const Info &other) const;
   };
 
+
   /// Default constructor, constructs an empty string.
   XcodeSDK() = default;
   /// Construct an XcodeSDK object from a specification.
@@ -67,7 +68,7 @@ public:
   void Merge(const XcodeSDK &other);
 
   XcodeSDK &operator=(const XcodeSDK &other);
-  XcodeSDK(const XcodeSDK &) = default;
+  XcodeSDK(const XcodeSDK&) = default;
   bool operator==(const XcodeSDK &other);
 
   /// Return parsed SDK type and version number.

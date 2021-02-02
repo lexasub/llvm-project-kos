@@ -7,9 +7,9 @@
 //===----------------------------------------------------------------------===//
 // This file reports various statistics about analyzer visitation.
 //===----------------------------------------------------------------------===//
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/Basic/SourceManager.h"
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -25,23 +25,24 @@ using namespace ento;
 
 #define DEBUG_TYPE "StatsChecker"
 
-STATISTIC(NumBlocks, "The # of blocks in top level functions");
+STATISTIC(NumBlocks,
+          "The # of blocks in top level functions");
 STATISTIC(NumBlocksUnreachable,
           "The # of unreachable blocks in analyzing top level functions");
 
 namespace {
 class AnalyzerStatsChecker : public Checker<check::EndAnalysis> {
 public:
-  void checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
-                        ExprEngine &Eng) const;
+  void checkEndAnalysis(ExplodedGraph &G, BugReporter &B,ExprEngine &Eng) const;
 };
-} // namespace
+}
 
-void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
+void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G,
+                                            BugReporter &B,
                                             ExprEngine &Eng) const {
   const CFG *C = nullptr;
   const SourceManager &SM = B.getSourceManager();
-  llvm::SmallPtrSet<const CFGBlock *, 32> reachable;
+  llvm::SmallPtrSet<const CFGBlock*, 32> reachable;
 
   // Root node should have the location context of the top most function.
   const ExplodedNode *GraphRoot = *G.roots_begin();
@@ -50,8 +51,8 @@ void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
   const Decl *D = LC->getDecl();
 
   // Iterate over the exploded graph.
-  for (ExplodedGraph::node_iterator I = G.nodes_begin(); I != G.nodes_end();
-       ++I) {
+  for (ExplodedGraph::node_iterator I = G.nodes_begin();
+      I != G.nodes_end(); ++I) {
     const ProgramPoint &P = I->getLocation();
 
     // Only check the coverage in the top level function (optimization).
@@ -95,7 +96,8 @@ void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
   if (isa<FunctionDecl>(D) || isa<ObjCMethodDecl>(D)) {
     const NamedDecl *ND = cast<NamedDecl>(D);
     output << *ND;
-  } else if (isa<BlockDecl>(D)) {
+  }
+  else if (isa<BlockDecl>(D)) {
     output << "block(line:" << Loc.getLine() << ":col:" << Loc.getColumn();
   }
 
@@ -103,10 +105,11 @@ void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
   NumBlocks += total;
   std::string NameOfRootFunction = std::string(output.str());
 
-  output << " -> Total CFGBlocks: " << total
-         << " | Unreachable CFGBlocks: " << unreachable
-         << " | Exhausted Block: " << (Eng.wasBlocksExhausted() ? "yes" : "no")
-         << " | Empty WorkList: " << (Eng.hasEmptyWorkList() ? "yes" : "no");
+  output << " -> Total CFGBlocks: " << total << " | Unreachable CFGBlocks: "
+      << unreachable << " | Exhausted Block: "
+      << (Eng.wasBlocksExhausted() ? "yes" : "no")
+      << " | Empty WorkList: "
+      << (Eng.hasEmptyWorkList() ? "yes" : "no");
 
   B.EmitBasicReport(D, this, "Analyzer Statistics", "Internal Statistics",
                     output.str(), PathDiagnosticLocation(D, SM));
@@ -115,9 +118,8 @@ void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
   typedef CoreEngine::BlocksExhausted::const_iterator ExhaustedIterator;
   const CoreEngine &CE = Eng.getCoreEngine();
   for (ExhaustedIterator I = CE.blocks_exhausted_begin(),
-                         E = CE.blocks_exhausted_end();
-       I != E; ++I) {
-    const BlockEdge &BE = I->first;
+      E = CE.blocks_exhausted_end(); I != E; ++I) {
+    const BlockEdge &BE =  I->first;
     const CFGBlock *Exit = BE.getDst();
     if (Exit->empty())
       continue;
@@ -125,8 +127,8 @@ void AnalyzerStatsChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &B,
     if (Optional<CFGStmt> CS = CE.getAs<CFGStmt>()) {
       SmallString<128> bufI;
       llvm::raw_svector_ostream outputI(bufI);
-      outputI << "(" << NameOfRootFunction << ")"
-              << ": The analyzer generated a sink at this point";
+      outputI << "(" << NameOfRootFunction << ")" <<
+                 ": The analyzer generated a sink at this point";
       B.EmitBasicReport(
           D, this, "Sink Point", "Internal Statistics", outputI.str(),
           PathDiagnosticLocation::createBegin(CS->getStmt(), SM, LC));

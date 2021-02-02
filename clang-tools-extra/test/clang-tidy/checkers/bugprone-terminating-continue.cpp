@@ -5,30 +5,30 @@ void f() {
     continue;
     // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: 'continue' in loop with false condition is equivalent to 'break' [bugprone-terminating-continue]
     // CHECK-FIXES: break;
-  } while (false);
+  } while(false);
 
   do {
     continue;
     // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: 'continue' in loop with false condition is equivalent to 'break' [bugprone-terminating-continue]
     // CHECK-FIXES: break;
-  } while (0);
+  } while(0);
 
   do {
     continue;
     // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: 'continue' in loop with false condition is equivalent to 'break' [bugprone-terminating-continue]
     // CHECK-FIXES: break;
-  } while (nullptr);
+  } while(nullptr);
 
   do {
     continue;
     // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: 'continue' in loop with false condition is equivalent to 'break' [bugprone-terminating-continue]
     // CHECK-FIXES: break;
-  } while (__null);
+  } while(__null);
+
 
   do {
     int x = 1;
-    if (x > 0)
-      continue;
+    if (x > 0) continue;
     // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: 'continue' in loop with false condition is equivalent to 'break' [bugprone-terminating-continue]
     // CHECK-FIXES: if (x > 0) break;
   } while (false);
@@ -56,11 +56,10 @@ void g() {
     }
   } while (false);
 
-  int v[] = {1, 2, 3, 34};
+  int v[] = {1,2,3,34};
   do {
     for (int n : v) {
-      if (n > 2)
-        continue;
+      if (n>2) continue;
     }
   } while (false);
 }

@@ -41,7 +41,7 @@ class APInt;
 class Constant : public User {
 protected:
   Constant(Type *ty, ValueTy vty, Use *Ops, unsigned NumOps)
-      : User(ty, vty, Ops, NumOps) {}
+    : User(ty, vty, Ops, NumOps) {}
 
   ~Constant() = default;
 
@@ -163,8 +163,7 @@ public:
 
   //// Methods for support type inquiry through isa, cast, and dyn_cast:
   static bool classof(const Value *V) {
-    static_assert(ConstantFirstVal == 0,
-                  "V->getValueID() >= ConstantFirstVal always succeeds");
+    static_assert(ConstantFirstVal == 0, "V->getValueID() >= ConstantFirstVal always succeeds");
     return V->getValueID() <= ConstantLastVal;
   }
 
@@ -180,12 +179,12 @@ public:
   ///
   void handleOperandChange(Value *, Value *);
 
-  static Constant *getNullValue(Type *Ty);
+  static Constant *getNullValue(Type* Ty);
 
   /// @returns the value for an integer or vector of integer constant of the
   /// given type that has all its bits set to true.
   /// Get the all ones value
-  static Constant *getAllOnesValue(Type *Ty);
+  static Constant *getAllOnesValue(Type* Ty);
 
   /// Return the value for an integer or pointer constant, or a vector thereof,
   /// with the given scalar value.
@@ -202,8 +201,8 @@ public:
   }
 
   Constant *stripPointerCasts() {
-    return const_cast<Constant *>(
-        static_cast<const Constant *>(this)->stripPointerCasts());
+    return const_cast<Constant*>(
+                      static_cast<const Constant *>(this)->stripPointerCasts());
   }
 
   /// Try to replace undefined constant C or undefined elements in C with

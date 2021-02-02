@@ -11,7 +11,7 @@ struct A {
 };
 
 typedef struct A TypedefOfA;
-typedef const __private TypedefOfA *PointerOfA;
+typedef const __private TypedefOfA* PointerOfA;
 
 void f(void);
 
@@ -23,3 +23,4 @@ __attribute__((overloadable)) void g(long x);
 __attribute__((overloadable)) void g(void);
 
 #endif // INCLUDED
+

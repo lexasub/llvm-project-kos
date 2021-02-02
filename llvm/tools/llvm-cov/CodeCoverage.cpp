@@ -170,7 +170,7 @@ private:
   /// Whitelist from -name-whitelist to be used for filtering.
   std::unique_ptr<SpecialCaseList> NameWhitelist;
 };
-} // namespace
+}
 
 static std::string getErrorString(const Twine &Message, StringRef Whence,
                                   bool Warning) {
@@ -224,8 +224,8 @@ void CodeCoverageTool::collectPaths(const std::string &Path) {
 
   if (llvm::sys::fs::is_directory(Status)) {
     std::error_code EC;
-    for (llvm::sys::fs::recursive_directory_iterator F(Path, EC), E; F != E;
-         F.increment(EC)) {
+    for (llvm::sys::fs::recursive_directory_iterator F(Path, EC), E;
+         F != E; F.increment(EC)) {
 
       auto Status = F->status();
       if (!Status) {
@@ -325,9 +325,9 @@ CodeCoverageTool::createFunctionView(const FunctionRecord &Function,
 
   auto Branches = FunctionCoverage.getBranches();
   auto Expansions = FunctionCoverage.getExpansions();
-  auto View =
-      SourceCoverageView::create(DC.demangle(Function.Name), SourceBuffer.get(),
-                                 ViewOpts, std::move(FunctionCoverage));
+  auto View = SourceCoverageView::create(DC.demangle(Function.Name),
+                                         SourceBuffer.get(), ViewOpts,
+                                         std::move(FunctionCoverage));
   attachExpansionSubViews(*View, Expansions, Coverage);
   attachBranchSubViews(*View, DC.demangle(Function.Name), Branches,
                        SourceBuffer.get(), FunctionCoverage);
@@ -687,7 +687,8 @@ int CodeCoverageTool::run(Command Cmd, int argc, const char **argv) {
 
   cl::opt<bool> RegionSummary(
       "show-region-summary", cl::Optional,
-      cl::desc("Show region statistics in summary table"), cl::init(true));
+      cl::desc("Show region statistics in summary table"),
+      cl::init(true));
 
   cl::opt<bool> BranchSummary(
       "show-branch-summary", cl::Optional,
@@ -1118,16 +1119,16 @@ int CodeCoverageTool::doExport(int argc, const char **argv,
 
   switch (ViewOpts.Format) {
   case CoverageViewOptions::OutputFormat::Text:
-    Exporter = std::make_unique<CoverageExporterJson>(*Coverage.get(), ViewOpts,
-                                                      outs());
+    Exporter = std::make_unique<CoverageExporterJson>(*Coverage.get(),
+                                                       ViewOpts, outs());
     break;
   case CoverageViewOptions::OutputFormat::HTML:
     // Unreachable because we should have gracefully terminated with an error
     // above.
     llvm_unreachable("Export in HTML is not supported!");
   case CoverageViewOptions::OutputFormat::Lcov:
-    Exporter = std::make_unique<CoverageExporterLcov>(*Coverage.get(), ViewOpts,
-                                                      outs());
+    Exporter = std::make_unique<CoverageExporterLcov>(*Coverage.get(),
+                                                       ViewOpts, outs());
     break;
   }
 

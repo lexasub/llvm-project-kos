@@ -19,15 +19,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::weibull_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p0(10, .125);
-    param_type p = p0;
-    assert(p.a() == 10);
-    assert(p.b() == .125);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::weibull_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p0(10, .125);
+        param_type p = p0;
+        assert(p.a() == 10);
+        assert(p.b() == .125);
+    }
 
   return 0;
 }

@@ -23,22 +23,23 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**) {
-  std::locale l(LOCALE_en_US_UTF_8);
-  {
-    std::string x1("1234");
-    std::string x2("12345");
-    const std::collate<char>& f = std::use_facet<std::collate<char> >(l);
-    assert(f.hash(x1.data(), x1.data() + x1.size()) !=
-           f.hash(x2.data(), x2.data() + x2.size()));
-  }
-  {
-    std::wstring x1(L"1234");
-    std::wstring x2(L"12345");
-    const std::collate<wchar_t>& f = std::use_facet<std::collate<wchar_t> >(l);
-    assert(f.hash(x1.data(), x1.data() + x1.size()) !=
-           f.hash(x2.data(), x2.data() + x2.size()));
-  }
+int main(int, char**)
+{
+    std::locale l(LOCALE_en_US_UTF_8);
+    {
+        std::string x1("1234");
+        std::string x2("12345");
+        const std::collate<char>& f = std::use_facet<std::collate<char> >(l);
+        assert(f.hash(x1.data(), x1.data() + x1.size())
+            != f.hash(x2.data(), x2.data() + x2.size()));
+    }
+    {
+        std::wstring x1(L"1234");
+        std::wstring x2(L"12345");
+        const std::collate<wchar_t>& f = std::use_facet<std::collate<wchar_t> >(l);
+        assert(f.hash(x1.data(), x1.data() + x1.size())
+            != f.hash(x2.data(), x2.data() + x2.size()));
+    }
 
   return 0;
 }

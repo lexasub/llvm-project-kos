@@ -18,8 +18,8 @@
 using namespace llvm;
 
 int main(int argc, char **argv) {
-#if defined(__i386__) || defined(_M_IX86) || defined(__x86_64__) ||            \
-    defined(_M_X64)
+#if defined(__i386__) || defined(_M_IX86) || \
+    defined(__x86_64__) || defined(_M_X64)
   StringMap<bool> features;
 
   if (!sys::getHostCPUFeatures(features))

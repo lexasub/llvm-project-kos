@@ -3,18 +3,18 @@
 // CHECK-LABEL: define linkonce_odr void @_Z11inline_funci
 inline void inline_func(int n) {
   // CHECK: call i32 @_ZZ11inline_funciENKUlvE_clEv
-  int i = [] { return 1; }();
+  int i = []{ return 1; }();
 
   // CHECK: call i32 @_ZZ11inline_funciENKUlvE0_clEv
   int j = [=] { return n + i; }();
 
   // CHECK: call double @_ZZ11inline_funciENKUlvE1_clEv
-  int k = [=]() -> double { return n + i; }();
+  int k = [=] () -> double { return n + i; }();
 
   // CHECK: call i32 @_ZZ11inline_funciENKUliE_clEi
-  int l = [=](int x) -> int { return x + i; }(n);
+  int l = [=] (int x) -> int { return x + i; }(n);
 
-  int inner(int i = [] { return 17; }());
+  int inner(int i = []{ return 17; }());
   // CHECK: call i32 @_ZZ11inline_funciENKUlvE2_clEv
   // CHECK-NEXT: call i32 @_Z5inneri
   inner();
@@ -37,7 +37,7 @@ int *use_inline_var = inline_var();
 
 // CHECK-LABEL: define linkonce_odr i32* @_ZNK12var_templateIiEMUlvE_clEv(
 // CHECK: @_ZZNK12var_templateIiEMUlvE_clEvE1n
-template <typename T> auto var_template = [] {
+template<typename T> auto var_template = [] {
   static int n = 9;
   return &n;
 };
@@ -45,15 +45,14 @@ template <typename T> auto var_template = [] {
 int *use_var_template = var_template<int>();
 
 struct S {
-  void f(
-      int = [] { return 1; }() + [] { return 2; }(),
-      int = [] { return 3; }());
+  void f(int = []{return 1;}()
+             + []{return 2;}(),
+         int = []{return 3;}());
   void g(int, int);
 };
 
-void S::g(
-    int i = [] { return 1; }(),
-    int j = [] { return 2; }()) {}
+void S::g(int i = []{return 1;}(),
+          int j = []{return 2; }()) {}
 
 // CHECK-LABEL: define{{.*}} void @_Z6test_S1S
 void test_S(S s) {
@@ -66,7 +65,7 @@ void test_S(S s) {
 
   // NOTE: These manglings don't actually matter that much, because
   // the lambdas in the default arguments of g() won't be seen by
-  // multiple translation units. We check them mainly to ensure that they don't
+  // multiple translation units. We check them mainly to ensure that they don't 
   // get the special mangling for lambdas in in-class default arguments.
   // CHECK: call i32 @"_ZNK1S3$_0clEv"
   // CHECK-NEXT: call i32 @"_ZNK1S3$_1clEv"
@@ -88,11 +87,11 @@ void test_S(S s) {
 // CHECK-LABEL: define internal i32 @"_ZNK1S3$_1clEv"
 // CHECK: ret i32 2
 
-template <typename T>
+template<typename T>
 struct ST {
-  void f(
-      T = [] { return T() + 1; }() + [] { return T() + 2; }(),
-      T = [] { return T(3); }());
+  void f(T = []{return T() + 1;}()
+           + []{return T() + 2;}(),
+         T = []{return T(3);}());
 };
 
 // CHECK-LABEL: define{{.*}} void @_Z7test_ST2STIdE
@@ -115,7 +114,7 @@ void test_ST(ST<double> st) {
 // CHECK-LABEL: define linkonce_odr double @_ZZN2STIdE1fEddEd_NKUlvE_clEv
 // CHECK: ret double 3
 
-template <typename T>
+template<typename T> 
 struct StaticMembers {
   static T x;
   static T y;
@@ -123,19 +122,19 @@ struct StaticMembers {
   static int (*f)();
 };
 
-template <typename T> int accept_lambda(T);
+template<typename T> int accept_lambda(T);
 
-template <typename T>
-T StaticMembers<T>::x = [] { return 1; }() + [] { return 2; }();
+template<typename T>
+T StaticMembers<T>::x = []{return 1;}() + []{return 2;}();
 
-template <typename T>
-T StaticMembers<T>::y = [] { return 3; }();
+template<typename T>
+T StaticMembers<T>::y = []{return 3;}();
 
-template <typename T>
-T StaticMembers<T>::z = accept_lambda([] { return 4; });
+template<typename T>
+T StaticMembers<T>::z = accept_lambda([]{return 4;});
 
-template <typename T>
-int (*StaticMembers<T>::f)() = [] { return 5; };
+template<typename T>
+int (*StaticMembers<T>::f)() = []{return 5;};
 
 // CHECK-LABEL: define internal void @__cxx_global_var_init
 // CHECK: call i32 @_ZNK13StaticMembersIfE1xMUlvE_clEv
@@ -167,10 +166,10 @@ template int (*StaticMembers<float>::f)();
 // CHECK: call i32 @"_ZNK13StaticMembersIdE3$_2clEv"
 // CHECK-LABEL: define internal i32 @"_ZNK13StaticMembersIdE3$_2clEv"
 // CHECK: ret i32 42
-template <> double StaticMembers<double>::z = [] { return 42; }();
+template<> double StaticMembers<double>::z = []{return 42; }();
 
-template <typename T>
-void func_template(T = [] { return T(); }());
+template<typename T>
+void func_template(T = []{ return T(); }());
 
 // CHECK-LABEL: define{{.*}} void @_Z17use_func_templatev()
 void use_func_template() {
@@ -179,27 +178,20 @@ void use_func_template() {
 }
 
 namespace std {
-struct type_info {
-  bool before(const type_info &) const noexcept;
-};
-} // namespace std
-namespace PR12123 {
-struct A {
-  virtual ~A();
-} g;
-struct C {
-  virtual ~C();
-} k;
-struct B {
-  void f(const std::type_info &x = typeid([]() -> A & { return g; }()));
-  void h();
-  void j(bool cond = typeid([]() -> A & { return g; }()).before(typeid([]() -> C & { return k; }())));
-};
-void B::h() {
-  f();
-  j();
+  struct type_info {
+    bool before(const type_info &) const noexcept;
+  };
 }
-} // namespace PR12123
+namespace PR12123 {
+  struct A { virtual ~A(); } g;
+  struct C { virtual ~C(); } k;
+  struct B {
+    void f(const std::type_info& x = typeid([]()->A& { return g; }()));
+    void h();
+    void j(bool cond = typeid([]() -> A & { return g; }()).before(typeid([]() -> C & { return k; }())));
+  };
+  void B::h() { f(); j(); }
+}
 
 // CHECK-LABEL: define linkonce_odr nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %"struct.PR12123::A"* @_ZZN7PR121231B1fERKSt9type_infoEd_NKUlvE_clEv
 // CHECK-LABEL: define linkonce_odr nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %"struct.PR12123::A"* @_ZZN7PR121231B1jEbEd_NKUlvE_clEv
@@ -234,6 +226,7 @@ int k = testVarargsLambdaNumbering();
 // CHECK: call i32 @_ZNK7Members1yMUlvE_clEv
 // CHECK: ret void
 
+
 // Check the linkage of the lambdas used in test_Members.
 // CHECK-LABEL: define linkonce_odr i32 @_ZNK7Members1xMUlvE_clEv
 // CHECK: ret i32 1
@@ -244,20 +237,22 @@ int k = testVarargsLambdaNumbering();
 
 // CHECK-LABEL: define linkonce_odr void @_Z1fIZZNK23TestNestedInstantiationclEvENKUlvE_clEvEUlvE_EvT_
 
+
 namespace PR12808 {
-template <typename> struct B {
-  int a;
-  template <typename L> constexpr B(L &&x) : a(x()) {}
-};
-template <typename> void b(int) {
-  [&] { (void)B<int>([&] { return 1; }); }();
+  template <typename> struct B {
+    int a;
+    template <typename L> constexpr B(L&& x) : a(x()) { }
+  };
+  template <typename> void b(int) {
+    [&]{ (void)B<int>([&]{ return 1; }); }();
+  }
+  void f() {
+    b<int>(1);
+  }
+  // CHECK-LABEL: define linkonce_odr void @_ZZN7PR128081bIiEEviENKUlvE_clEv
+  // CHECK-LABEL: define linkonce_odr i32 @_ZZZN7PR128081bIiEEviENKUlvE_clEvENKUlvE_clEv
 }
-void f() {
-  b<int>(1);
-}
-// CHECK-LABEL: define linkonce_odr void @_ZZN7PR128081bIiEEviENKUlvE_clEv
-// CHECK-LABEL: define linkonce_odr i32 @_ZZZN7PR128081bIiEEviENKUlvE_clEvENKUlvE_clEv
-} // namespace PR12808
+
 
 struct Members {
   int x = [] { return 1; }() + [] { return 2; }();
@@ -268,14 +263,14 @@ void test_Members() {
   Members members;
 }
 
-template <typename P> void f(P) {}
+template<typename P> void f(P) { }
 
 struct TestNestedInstantiation {
-  void operator()() const {
-    []() -> void {
-      return f([] {});
-    }();
-  }
+   void operator()() const {
+     []() -> void {
+       return f([]{});
+     }();
+   }
 };
 
 void test_NestedInstantiation() {

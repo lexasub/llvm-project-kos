@@ -22,7 +22,7 @@ using std::experimental::propagate_const;
 typedef propagate_const<X> P;
 
 int main(int, char**) {
-  static_assert(!std::is_convertible<const P, const int*>::value, "");
+  static_assert(!std::is_convertible<const P, const int *>::value, "");
 
   return 0;
 }

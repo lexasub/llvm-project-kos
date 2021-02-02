@@ -17,11 +17,12 @@
 void f1() {}
 void f2() {}
 
-int main(int, char**) {
-  std::set_terminate(f1);
-  assert(std::get_terminate() == f1);
-  std::set_terminate(f2);
-  assert(std::get_terminate() == f2);
+int main(int, char**)
+{
+    std::set_terminate(f1);
+    assert(std::get_terminate() == f1);
+    std::set_terminate(f2);
+    assert(std::get_terminate() == f2);
 
   return 0;
 }

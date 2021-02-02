@@ -55,36 +55,36 @@ using namespace llvm;
 #define DEBUG_TYPE "deadargelim"
 
 STATISTIC(NumArgumentsEliminated, "Number of unread args removed");
-STATISTIC(NumRetValsEliminated, "Number of unused return values removed");
+STATISTIC(NumRetValsEliminated  , "Number of unused return values removed");
 STATISTIC(NumArgumentsReplacedWithUndef,
           "Number of unread args replaced with undef");
 
 namespace {
 
-/// DAE - The dead argument elimination pass.
-class DAE : public ModulePass {
-protected:
-  // DAH uses this to specify a different ID.
-  explicit DAE(char &ID) : ModulePass(ID) {}
+  /// DAE - The dead argument elimination pass.
+  class DAE : public ModulePass {
+  protected:
+    // DAH uses this to specify a different ID.
+    explicit DAE(char &ID) : ModulePass(ID) {}
 
-public:
-  static char ID; // Pass identification, replacement for typeid
+  public:
+    static char ID; // Pass identification, replacement for typeid
 
-  DAE() : ModulePass(ID) {
-    initializeDAEPass(*PassRegistry::getPassRegistry());
-  }
+    DAE() : ModulePass(ID) {
+      initializeDAEPass(*PassRegistry::getPassRegistry());
+    }
 
-  bool runOnModule(Module &M) override {
-    if (skipModule(M))
-      return false;
-    DeadArgumentEliminationPass DAEP(ShouldHackArguments());
-    ModuleAnalysisManager DummyMAM;
-    PreservedAnalyses PA = DAEP.run(M, DummyMAM);
-    return !PA.areAllPreserved();
-  }
+    bool runOnModule(Module &M) override {
+      if (skipModule(M))
+        return false;
+      DeadArgumentEliminationPass DAEP(ShouldHackArguments());
+      ModuleAnalysisManager DummyMAM;
+      PreservedAnalyses PA = DAEP.run(M, DummyMAM);
+      return !PA.areAllPreserved();
+    }
 
-  virtual bool ShouldHackArguments() const { return false; }
-};
+    virtual bool ShouldHackArguments() const { return false; }
+  };
 
 } // end anonymous namespace
 
@@ -94,24 +94,24 @@ INITIALIZE_PASS(DAE, "deadargelim", "Dead Argument Elimination", false, false)
 
 namespace {
 
-/// DAH - DeadArgumentHacking pass - Same as dead argument elimination, but
-/// deletes arguments to functions which are external.  This is only for use
-/// by bugpoint.
-struct DAH : public DAE {
-  static char ID;
+  /// DAH - DeadArgumentHacking pass - Same as dead argument elimination, but
+  /// deletes arguments to functions which are external.  This is only for use
+  /// by bugpoint.
+  struct DAH : public DAE {
+    static char ID;
 
-  DAH() : DAE(ID) {}
+    DAH() : DAE(ID) {}
 
-  bool ShouldHackArguments() const override { return true; }
-};
+    bool ShouldHackArguments() const override { return true; }
+  };
 
 } // end anonymous namespace
 
 char DAH::ID = 0;
 
 INITIALIZE_PASS(DAH, "deadarghaX0r",
-                "Dead Argument Hacking (BUGPOINT USE ONLY; DO NOT USE)", false,
-                false)
+                "Dead Argument Hacking (BUGPOINT USE ONLY; DO NOT USE)",
+                false, false)
 
 /// createDeadArgEliminationPass - This pass removes arguments from functions
 /// which are not used by the body of the function.
@@ -123,8 +123,7 @@ ModulePass *llvm::createDeadArgHackingPass() { return new DAH(); }
 /// llvm.vastart is never called, the varargs list is dead for the function.
 bool DeadArgumentEliminationPass::DeleteDeadVarargs(Function &Fn) {
   assert(Fn.getFunctionType()->isVarArg() && "Function isn't varargs!");
-  if (Fn.isDeclaration() || !Fn.hasLocalLinkage())
-    return false;
+  if (Fn.isDeclaration() || !Fn.hasLocalLinkage()) return false;
 
   // Ensure that the function is only directly called.
   if (Fn.hasAddressTaken())
@@ -161,7 +160,8 @@ bool DeadArgumentEliminationPass::DeleteDeadVarargs(Function &Fn) {
   FunctionType *FTy = Fn.getFunctionType();
 
   std::vector<Type *> Params(FTy->param_begin(), FTy->param_end());
-  FunctionType *NFTy = FunctionType::get(FTy->getReturnType(), Params, false);
+  FunctionType *NFTy = FunctionType::get(FTy->getReturnType(),
+                                                Params, false);
   unsigned NumArgs = Params.size();
 
   // Create the new function body and insert it into the module...
@@ -175,7 +175,7 @@ bool DeadArgumentEliminationPass::DeleteDeadVarargs(Function &Fn) {
   // to pass in a smaller number of arguments into the new function.
   //
   std::vector<Value *> Args;
-  for (Value::user_iterator I = Fn.user_begin(), E = Fn.user_end(); I != E;) {
+  for (Value::user_iterator I = Fn.user_begin(), E = Fn.user_end(); I != E; ) {
     CallBase *CB = dyn_cast<CallBase>(*I++);
     if (!CB)
       continue;
@@ -227,11 +227,10 @@ bool DeadArgumentEliminationPass::DeleteDeadVarargs(Function &Fn) {
   NF->getBasicBlockList().splice(NF->begin(), Fn.getBasicBlockList());
 
   // Loop over the argument list, transferring uses of the old arguments over to
-  // the new arguments, also transferring over the names as well.  While we're
-  // at it, remove the dead arguments from the DeadArguments list.
+  // the new arguments, also transferring over the names as well.  While we're at
+  // it, remove the dead arguments from the DeadArguments list.
   for (Function::arg_iterator I = Fn.arg_begin(), E = Fn.arg_end(),
-                              I2 = NF->arg_begin();
-       I != E; ++I, ++I2) {
+       I2 = NF->arg_begin(); I != E; ++I, ++I2) {
     // Move the name and users over to the new version.
     I->replaceAllUsesWith(&*I2);
     I2->takeName(&*I);
@@ -377,82 +376,82 @@ DeadArgumentEliminationPass::MarkIfNotLive(RetOrArg Use,
 DeadArgumentEliminationPass::Liveness
 DeadArgumentEliminationPass::SurveyUse(const Use *U, UseVector &MaybeLiveUses,
                                        unsigned RetValNum) {
-  const User *V = U->getUser();
-  if (const ReturnInst *RI = dyn_cast<ReturnInst>(V)) {
-    // The value is returned from a function. It's only live when the
-    // function's return value is live. We use RetValNum here, for the case
-    // that U is really a use of an insertvalue instruction that uses the
-    // original Use.
-    const Function *F = RI->getParent()->getParent();
-    if (RetValNum != -1U) {
-      RetOrArg Use = CreateRet(F, RetValNum);
-      // We might be live, depending on the liveness of Use.
-      return MarkIfNotLive(Use, MaybeLiveUses);
-    } else {
-      DeadArgumentEliminationPass::Liveness Result = MaybeLive;
-      for (unsigned Ri = 0; Ri < NumRetVals(F); ++Ri) {
-        RetOrArg Use = CreateRet(F, Ri);
-        // We might be live, depending on the liveness of Use. If any
-        // sub-value is live, then the entire value is considered live. This
-        // is a conservative choice, and better tracking is possible.
-        DeadArgumentEliminationPass::Liveness SubResult =
-            MarkIfNotLive(Use, MaybeLiveUses);
-        if (Result != Live)
-          Result = SubResult;
+    const User *V = U->getUser();
+    if (const ReturnInst *RI = dyn_cast<ReturnInst>(V)) {
+      // The value is returned from a function. It's only live when the
+      // function's return value is live. We use RetValNum here, for the case
+      // that U is really a use of an insertvalue instruction that uses the
+      // original Use.
+      const Function *F = RI->getParent()->getParent();
+      if (RetValNum != -1U) {
+        RetOrArg Use = CreateRet(F, RetValNum);
+        // We might be live, depending on the liveness of Use.
+        return MarkIfNotLive(Use, MaybeLiveUses);
+      } else {
+        DeadArgumentEliminationPass::Liveness Result = MaybeLive;
+        for (unsigned Ri = 0; Ri < NumRetVals(F); ++Ri) {
+          RetOrArg Use = CreateRet(F, Ri);
+          // We might be live, depending on the liveness of Use. If any
+          // sub-value is live, then the entire value is considered live. This
+          // is a conservative choice, and better tracking is possible.
+          DeadArgumentEliminationPass::Liveness SubResult =
+              MarkIfNotLive(Use, MaybeLiveUses);
+          if (Result != Live)
+            Result = SubResult;
+        }
+        return Result;
+      }
+    }
+    if (const InsertValueInst *IV = dyn_cast<InsertValueInst>(V)) {
+      if (U->getOperandNo() != InsertValueInst::getAggregateOperandIndex()
+          && IV->hasIndices())
+        // The use we are examining is inserted into an aggregate. Our liveness
+        // depends on all uses of that aggregate, but if it is used as a return
+        // value, only index at which we were inserted counts.
+        RetValNum = *IV->idx_begin();
+
+      // Note that if we are used as the aggregate operand to the insertvalue,
+      // we don't change RetValNum, but do survey all our uses.
+
+      Liveness Result = MaybeLive;
+      for (const Use &UU : IV->uses()) {
+        Result = SurveyUse(&UU, MaybeLiveUses, RetValNum);
+        if (Result == Live)
+          break;
       }
       return Result;
     }
-  }
-  if (const InsertValueInst *IV = dyn_cast<InsertValueInst>(V)) {
-    if (U->getOperandNo() != InsertValueInst::getAggregateOperandIndex() &&
-        IV->hasIndices())
-      // The use we are examining is inserted into an aggregate. Our liveness
-      // depends on all uses of that aggregate, but if it is used as a return
-      // value, only index at which we were inserted counts.
-      RetValNum = *IV->idx_begin();
 
-    // Note that if we are used as the aggregate operand to the insertvalue,
-    // we don't change RetValNum, but do survey all our uses.
+    if (const auto *CB = dyn_cast<CallBase>(V)) {
+      const Function *F = CB->getCalledFunction();
+      if (F) {
+        // Used in a direct call.
 
-    Liveness Result = MaybeLive;
-    for (const Use &UU : IV->uses()) {
-      Result = SurveyUse(&UU, MaybeLiveUses, RetValNum);
-      if (Result == Live)
-        break;
+        // The function argument is live if it is used as a bundle operand.
+        if (CB->isBundleOperand(U))
+          return Live;
+
+        // Find the argument number. We know for sure that this use is an
+        // argument, since if it was the function argument this would be an
+        // indirect call and the we know can't be looking at a value of the
+        // label type (for the invoke instruction).
+        unsigned ArgNo = CB->getArgOperandNo(U);
+
+        if (ArgNo >= F->getFunctionType()->getNumParams())
+          // The value is passed in through a vararg! Must be live.
+          return Live;
+
+        assert(CB->getArgOperand(ArgNo) == CB->getOperand(U->getOperandNo()) &&
+               "Argument is not where we expected it");
+
+        // Value passed to a normal call. It's only live when the corresponding
+        // argument to the called function turns out live.
+        RetOrArg Use = CreateArg(F, ArgNo);
+        return MarkIfNotLive(Use, MaybeLiveUses);
+      }
     }
-    return Result;
-  }
-
-  if (const auto *CB = dyn_cast<CallBase>(V)) {
-    const Function *F = CB->getCalledFunction();
-    if (F) {
-      // Used in a direct call.
-
-      // The function argument is live if it is used as a bundle operand.
-      if (CB->isBundleOperand(U))
-        return Live;
-
-      // Find the argument number. We know for sure that this use is an
-      // argument, since if it was the function argument this would be an
-      // indirect call and the we know can't be looking at a value of the
-      // label type (for the invoke instruction).
-      unsigned ArgNo = CB->getArgOperandNo(U);
-
-      if (ArgNo >= F->getFunctionType()->getNumParams())
-        // The value is passed in through a vararg! Must be live.
-        return Live;
-
-      assert(CB->getArgOperand(ArgNo) == CB->getOperand(U->getOperandNo()) &&
-             "Argument is not where we expected it");
-
-      // Value passed to a normal call. It's only live when the corresponding
-      // argument to the called function turns out live.
-      RetOrArg Use = CreateArg(F, ArgNo);
-      return MarkIfNotLive(Use, MaybeLiveUses);
-    }
-  }
-  // Used in any other way? Value must be live.
-  return Live;
+    // Used in any other way? Value must be live.
+    return Live;
 }
 
 /// SurveyUses - This looks at all the uses of the given value
@@ -517,9 +516,8 @@ void DeadArgumentEliminationPass::SurveyFunction(const Function &F) {
 
   for (Function::const_iterator BB = F.begin(), E = F.end(); BB != E; ++BB) {
     if (const ReturnInst *RI = dyn_cast<ReturnInst>(BB->getTerminator())) {
-      if (RI->getNumOperands() != 0 &&
-          RI->getOperand(0)->getType() !=
-              F.getFunctionType()->getReturnType()) {
+      if (RI->getNumOperands() != 0 && RI->getOperand(0)->getType()
+          != F.getFunctionType()->getReturnType()) {
         // We don't support old style multiple return values.
         MarkLive(F);
         return;
@@ -655,23 +653,23 @@ void DeadArgumentEliminationPass::SurveyFunction(const Function &F) {
 void DeadArgumentEliminationPass::MarkValue(const RetOrArg &RA, Liveness L,
                                             const UseVector &MaybeLiveUses) {
   switch (L) {
-  case Live:
-    MarkLive(RA);
-    break;
-  case MaybeLive:
-    assert(!IsLive(RA) && "Use is already live!");
-    for (const auto &MaybeLiveUse : MaybeLiveUses) {
-      if (IsLive(MaybeLiveUse)) {
-        // A use is live, so this value is live.
-        MarkLive(RA);
-        break;
-      } else {
-        // Note any uses of this value, so this value can be
-        // marked live whenever one of the uses becomes live.
-        Uses.insert(std::make_pair(MaybeLiveUse, RA));
+    case Live:
+      MarkLive(RA);
+      break;
+    case MaybeLive:
+      assert(!IsLive(RA) && "Use is already live!");
+      for (const auto &MaybeLiveUse : MaybeLiveUses) {
+        if (IsLive(MaybeLiveUse)) {
+          // A use is live, so this value is live.
+          MarkLive(RA);
+          break;
+        } else {
+          // Note any uses of this value, so this value can be
+          // marked live whenever one of the uses becomes live.
+          Uses.insert(std::make_pair(MaybeLiveUse, RA));
+        }
       }
-    }
-    break;
+      break;
   }
 }
 
@@ -739,7 +737,7 @@ bool DeadArgumentEliminationPass::RemoveDeadStuffFromFunction(Function *F) {
   // Start by computing a new prototype for the function, which is the same as
   // the old function, but has fewer arguments and a different return type.
   FunctionType *FTy = F->getFunctionType();
-  std::vector<Type *> Params;
+  std::vector<Type*> Params;
 
   // Keep track of if we have a live 'returned' argument
   bool HasLiveReturnedArg = false;
@@ -777,7 +775,7 @@ bool DeadArgumentEliminationPass::RemoveDeadStuffFromFunction(Function *F) {
 
   // -1 means unused, other numbers are the new index
   SmallVector<int, 5> NewRetIdxs(RetCount, -1);
-  std::vector<Type *> RetTypes;
+  std::vector<Type*> RetTypes;
 
   // If there is a function with a live 'returned' argument but a dead return
   // value, then there are two possible actions:
@@ -878,7 +876,7 @@ bool DeadArgumentEliminationPass::RemoveDeadStuffFromFunction(Function *F) {
 
   // Loop over all of the callers of the function, transforming the call sites
   // to pass in a smaller number of arguments into the new function.
-  std::vector<Value *> Args;
+  std::vector<Value*> Args;
   while (!F->use_empty()) {
     CallBase &CB = cast<CallBase>(*F->user_back());
 
@@ -931,8 +929,8 @@ bool DeadArgumentEliminationPass::RemoveDeadStuffFromFunction(Function *F) {
     AttributeSet FnAttrs = CallPAL.getFnAttributes().removeAttribute(
         F->getContext(), Attribute::AllocSize);
 
-    AttributeList NewCallPAL =
-        AttributeList::get(F->getContext(), FnAttrs, RetAttrs, ArgAttrVec);
+    AttributeList NewCallPAL = AttributeList::get(
+        F->getContext(), FnAttrs, RetAttrs, ArgAttrVec);
 
     SmallVector<OperandBundleDef, 1> OpBundles;
     CB.getOperandBundlesAsDefs(OpBundles);
@@ -1092,7 +1090,7 @@ PreservedAnalyses DeadArgumentEliminationPass::run(Module &M,
   // fused with the next loop, because deleting a function invalidates
   // information computed while surveying other functions.
   LLVM_DEBUG(dbgs() << "DeadArgumentEliminationPass - Deleting dead varargs\n");
-  for (Module::iterator I = M.begin(), E = M.end(); I != E;) {
+  for (Module::iterator I = M.begin(), E = M.end(); I != E; ) {
     Function &F = *I++;
     if (F.getFunctionType()->isVarArg())
       Changed |= DeleteDeadVarargs(F);
@@ -1108,7 +1106,7 @@ PreservedAnalyses DeadArgumentEliminationPass::run(Module &M,
 
   // Now, remove all dead arguments and return values from each function in
   // turn.
-  for (Module::iterator I = M.begin(), E = M.end(); I != E;) {
+  for (Module::iterator I = M.begin(), E = M.end(); I != E; ) {
     // Increment now, because the function will probably get removed (ie.
     // replaced by a new one).
     Function *F = &*I++;

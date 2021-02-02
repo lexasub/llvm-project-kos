@@ -21,13 +21,14 @@
 #include <tuple>
 #include <type_traits>
 
-int main(int, char**) {
-  using T = std::tuple<int, long, void*>;
-  using E1 = typename std::tuple_element<
-      1, T&>::type; // expected-error{{undefined template}}
-  using E2 = typename std::tuple_element<3, T>::type;
-  using E3 = typename std::tuple_element<4, T const>::type;
-  // expected-error@__tuple:* 2 {{static_assert failed}}
+int main(int, char**)
+{
+    using T =  std::tuple<int, long, void*>;
+    using E1 = typename std::tuple_element<1, T &>::type; // expected-error{{undefined template}}
+    using E2 = typename std::tuple_element<3, T>::type;
+    using E3 = typename std::tuple_element<4, T const>::type;
+        // expected-error@__tuple:* 2 {{static_assert failed}}
+
 
   return 0;
 }

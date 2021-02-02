@@ -9,19 +9,19 @@ void pure_bitmask_types() {
   std::locale::category C = std::locale::category::ctype;
 
   SResult = std::locale::category::none | std::locale::category::collate;
-  SResult |= std::locale::category::collate;
+  SResult|= std::locale::category::collate;
   SResult = std::locale::category::ctype & std::locale::category::monetary;
-  SResult &= std::locale::category::monetary;
+  SResult&= std::locale::category::monetary;
   SResult = std::locale::category::numeric ^ std::locale::category::time;
-  SResult ^= std::locale::category::time;
+  SResult^= std::locale::category::time;
   SResult = std::locale::category::messages | std::locale::category::all;
 
   SResult = std::locale::category::all & C;
-  SResult &= std::locale::category::all;
+  SResult&= std::locale::category::all;
   SResult = std::locale::category::all | C;
-  SResult |= std::locale::category::all;
+  SResult|= std::locale::category::all;
   SResult = std::locale::category::all ^ C;
-  SResult ^= std::locale::category::all;
+  SResult^= std::locale::category::all;
 
   // std::ctype_base::mask
   std::ctype_base::mask M = std::ctype_base::mask::punct;
@@ -29,13 +29,13 @@ void pure_bitmask_types() {
   SResult = std::ctype_base::mask::space | std::ctype_base::mask::print;
   SResult = std::ctype_base::mask::cntrl & std::ctype_base::mask::upper;
   SResult = std::ctype_base::mask::lower ^ std::ctype_base::mask::alpha;
-  SResult |= std::ctype_base::mask::digit | std::ctype_base::mask::punct;
-  SResult &= std::ctype_base::mask::xdigit & std::ctype_base::mask::alnum;
-  SResult ^= std::ctype_base::mask::alnum ^ std::ctype_base::mask::graph;
+  SResult|= std::ctype_base::mask::digit | std::ctype_base::mask::punct;
+  SResult&= std::ctype_base::mask::xdigit & std::ctype_base::mask::alnum;
+  SResult^= std::ctype_base::mask::alnum ^ std::ctype_base::mask::graph;
 
-  SResult &= std::ctype_base::mask::space & M;
-  SResult |= std::ctype_base::mask::space | M;
-  SResult ^= std::ctype_base::mask::space ^ M;
+  SResult&= std::ctype_base::mask::space & M;
+  SResult|= std::ctype_base::mask::space | M;
+  SResult^= std::ctype_base::mask::space ^ M;
 
   // std::ios_base::fmtflags
   std::ios_base::fmtflags F = std::ios_base::fmtflags::floatfield;
@@ -43,23 +43,23 @@ void pure_bitmask_types() {
   SResult = std::ios_base::fmtflags::dec | std::ios_base::fmtflags::oct;
   SResult = std::ios_base::fmtflags::hex & std::ios_base::fmtflags::basefield;
   SResult = std::ios_base::fmtflags::left ^ std::ios_base::fmtflags::right;
-  SResult |= std::ios_base::fmtflags::internal | std::ios_base::fmtflags::adjustfield;
-  SResult &= std::ios_base::fmtflags::scientific & std::ios_base::fmtflags::fixed;
-  SResult ^= std::ios_base::fmtflags::floatfield ^ std::ios_base::fmtflags::boolalpha;
+  SResult|= std::ios_base::fmtflags::internal | std::ios_base::fmtflags::adjustfield;
+  SResult&= std::ios_base::fmtflags::scientific & std::ios_base::fmtflags::fixed;
+  SResult^= std::ios_base::fmtflags::floatfield ^ std::ios_base::fmtflags::boolalpha;
   SResult = std::ios_base::fmtflags::showbase | std::ios_base::fmtflags::showpoint;
   SResult = std::ios_base::fmtflags::showpos & std::ios_base::fmtflags::skipws;
   SResult = std::ios_base::fmtflags::unitbuf ^ std::ios_base::fmtflags::uppercase;
 
-  SResult |= std::ios_base::fmtflags::unitbuf | F;
-  SResult &= std::ios_base::fmtflags::unitbuf & F;
-  SResult ^= std::ios_base::fmtflags::unitbuf ^ F;
+  SResult|= std::ios_base::fmtflags::unitbuf | F;
+  SResult&= std::ios_base::fmtflags::unitbuf & F;
+  SResult^= std::ios_base::fmtflags::unitbuf ^ F;
 
   // std::ios_base::iostate
   std::ios_base::iostate S = std::ios_base::iostate::goodbit;
 
-  SResult ^= std::ios_base::iostate::goodbit | std::ios_base::iostate::badbit;
-  SResult |= std::ios_base::iostate::failbit & std::ios_base::iostate::eofbit;
-  SResult &= std::ios_base::iostate::failbit ^ std::ios_base::iostate::eofbit;
+  SResult^= std::ios_base::iostate::goodbit | std::ios_base::iostate::badbit;
+  SResult|= std::ios_base::iostate::failbit & std::ios_base::iostate::eofbit;
+  SResult&= std::ios_base::iostate::failbit ^ std::ios_base::iostate::eofbit;
 
   SResult = std::ios_base::iostate::goodbit | S;
   SResult = std::ios_base::iostate::goodbit & S;
@@ -72,9 +72,9 @@ void pure_bitmask_types() {
   SResult = std::ios_base::openmode::in & std::ios_base::openmode::out;
   SResult = std::ios_base::openmode::trunc ^ std::ios_base::openmode::ate;
 
-  SResult &= std::ios_base::openmode::trunc | B;
-  SResult ^= std::ios_base::openmode::trunc & B;
-  SResult |= std::ios_base::openmode::trunc ^ B;
+  SResult&= std::ios_base::openmode::trunc | B;
+  SResult^= std::ios_base::openmode::trunc & B;
+  SResult|= std::ios_base::openmode::trunc ^ B;
 }
 
 void still_forbidden() {
@@ -90,13 +90,13 @@ void still_forbidden() {
   // CHECK-MESSAGES: [[@LINE-1]]:13: warning: use of a signed integer operand with a binary bitwise operator
   SResult = std::ctype_base::mask::lower ^ -8;
   // CHECK-MESSAGES: [[@LINE-1]]:13: warning: use of a signed integer operand with a binary bitwise operator
-
+  
   // Staying within the allowed standard types is ok for bitwise assignment
   // operations.
   std::ctype_base::mask var = std::ctype_base::mask::print;
-  SResult <<= std::ctype_base::mask::upper;
+  SResult<<= std::ctype_base::mask::upper;
   // CHECK-MESSAGES: [[@LINE-1]]:13: warning: use of a signed integer operand with a binary bitwise operator
-  SResult >>= std::ctype_base::mask::upper;
+  SResult>>= std::ctype_base::mask::upper;
   // CHECK-MESSAGES: [[@LINE-1]]:13: warning: use of a signed integer operand with a binary bitwise operator
   SResult &= std::ctype_base::mask::upper;
   // CHECK-MESSAGES: [[@LINE-1]]:13: warning: use of a signed integer operand with a binary bitwise operator

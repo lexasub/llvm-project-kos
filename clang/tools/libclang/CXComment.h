@@ -22,7 +22,7 @@
 
 namespace clang {
 namespace comments {
-class CommandTraits;
+  class CommandTraits;
 }
 
 namespace cxcomment {
@@ -39,7 +39,8 @@ static inline const comments::Comment *getASTNode(CXComment CXC) {
   return static_cast<const comments::Comment *>(CXC.ASTNode);
 }
 
-template <typename T> static inline const T *getASTNodeAs(CXComment CXC) {
+template<typename T>
+static inline const T *getASTNodeAs(CXComment CXC) {
   const comments::Comment *C = getASTNode(CXC);
   if (!C)
     return nullptr;
@@ -59,3 +60,4 @@ static inline comments::CommandTraits &getCommandTraits(CXComment CXC) {
 } // end namespace clang
 
 #endif
+

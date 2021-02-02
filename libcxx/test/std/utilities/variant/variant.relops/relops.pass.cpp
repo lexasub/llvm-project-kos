@@ -45,36 +45,35 @@
 #ifndef TEST_HAS_NO_EXCEPTIONS
 struct MakeEmptyT {
   MakeEmptyT() = default;
-  MakeEmptyT(MakeEmptyT&&) { throw 42; }
-  MakeEmptyT& operator=(MakeEmptyT&&) { throw 42; }
+  MakeEmptyT(MakeEmptyT &&) { throw 42; }
+  MakeEmptyT &operator=(MakeEmptyT &&) { throw 42; }
 };
-inline bool operator==(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator==(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
-inline bool operator!=(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator!=(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
-inline bool operator<(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator<(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
-inline bool operator<=(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator<=(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
-inline bool operator>(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator>(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
-inline bool operator>=(const MakeEmptyT&, const MakeEmptyT&) {
+inline bool operator>=(const MakeEmptyT &, const MakeEmptyT &) {
   assert(false);
   return false;
 }
 
-template <class Variant>
-void makeEmpty(Variant& v) {
+template <class Variant> void makeEmpty(Variant &v) {
   Variant v2(std::in_place_type<MakeEmptyT>);
   try {
     v = std::move(v2);
@@ -94,28 +93,22 @@ struct MyBool {
 struct ComparesToMyBool {
   int value = 0;
 };
-inline constexpr MyBool operator==(const ComparesToMyBool& LHS,
-                                   const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator==(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value == RHS.value);
 }
-inline constexpr MyBool operator!=(const ComparesToMyBool& LHS,
-                                   const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator!=(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value != RHS.value);
 }
-inline constexpr MyBool operator<(const ComparesToMyBool& LHS,
-                                  const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator<(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value < RHS.value);
 }
-inline constexpr MyBool operator<=(const ComparesToMyBool& LHS,
-                                   const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator<=(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value <= RHS.value);
 }
-inline constexpr MyBool operator>(const ComparesToMyBool& LHS,
-                                  const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator>(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value > RHS.value);
 }
-inline constexpr MyBool operator>=(const ComparesToMyBool& LHS,
-                                   const ComparesToMyBool& RHS) noexcept {
+inline constexpr MyBool operator>=(const ComparesToMyBool& LHS, const ComparesToMyBool& RHS) noexcept {
   return MyBool(LHS.value >= RHS.value);
 }
 
@@ -200,7 +193,7 @@ void test_equality() {
 }
 
 template <class Var>
-constexpr bool test_less(const Var& l, const Var& r, bool expect_less,
+constexpr bool test_less(const Var &l, const Var &r, bool expect_less,
                          bool expect_greater) {
   static_assert(std::is_same_v<decltype(l < r), bool>, "");
   static_assert(std::is_same_v<decltype(l <= r), bool>, "");

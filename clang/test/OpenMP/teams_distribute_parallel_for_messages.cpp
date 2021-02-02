@@ -21,8 +21,8 @@ static int pvt;
 #pragma omp teams distribute parallel for // expected-error {{unexpected OpenMP directive '#pragma omp teams distribute parallel for'}}
 
 int main(int argc, char **argv) {
-#pragma omp target
-#pragma omp teams distribute parallel for
+  #pragma omp target
+  #pragma omp teams distribute parallel for
   f; // expected-error {{use of undeclared identifier 'f'}}
 #pragma omp target
 #pragma omp teams distribute parallel for { // expected-warning {{extra tokens at the end of '#pragma omp teams distribute parallel for' are ignored}}
@@ -95,7 +95,7 @@ L1:
 #pragma omp teams distribute parallel for
   for (int i = 0; i < argc; ++i)
   L2:
-    foo();
+  foo();
 #pragma omp target
 #pragma omp teams distribute parallel for
   for (int i = 0; i < argc; ++i) {
@@ -110,8 +110,7 @@ L1:
 
 #pragma omp target
 #pragma omp teams distribute parallel for copyin(pvt)
-  for (int n = 0; n < 100; ++n) {
-  }
+  for (int n = 0; n < 100; ++n) {}
 
   return 0;
 }
@@ -151,3 +150,4 @@ void test_cancel() {
     ;
   }
 }
+

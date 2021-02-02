@@ -1,9 +1,9 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 #include "test.h"
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
 
 // dup2(oldfd, newfd) races with read(newfd).
 // This is not reported as race because:

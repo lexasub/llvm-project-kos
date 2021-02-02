@@ -1,14 +1,14 @@
 // RUN: %clang_cc1 -std=c++1z -verify %s
 
-template <typename T, bool B> using Fn = T() noexcept(B);
+template<typename T, bool B> using Fn = T () noexcept(B);
 
 // - If the original A is a function pointer type, A can be "pointer to
 //   function" even if the deduced A is "pointer to noexcept function".
 struct A {
-  template <typename T> operator Fn<T, false> *(); // expected-note {{candidate}}
+  template<typename T> operator Fn<T, false>*(); // expected-note {{candidate}}
 };
 struct B {
-  template <typename T> operator Fn<T, true> *();
+  template<typename T> operator Fn<T, true>*();
 };
 void (*p1)() = A();
 void (*p2)() = B();
@@ -19,10 +19,10 @@ void (*p4)() noexcept = B();
 //   to member of type function" even if the deduced A is "pointer to member of
 //   type noexcept function".
 struct C {
-  template <typename T> operator Fn<T, false> A::*(); // expected-note {{candidate}}
+  template<typename T> operator Fn<T, false> A::*(); // expected-note {{candidate}}
 };
 struct D {
-  template <typename T> operator Fn<T, true> A::*();
+  template<typename T> operator Fn<T, true> A::*();
 };
 void (A::*q1)() = C();
 void (A::*q2)() = D();
@@ -39,10 +39,10 @@ void (A::*q4)() noexcept = D();
 // Note that this *does* allow discarding noexcept, since that conversion has
 // Exact Match rank.
 struct E {
-  template <typename T> operator Fn<T, false> &(); // expected-note {{candidate}}
+  template<typename T> operator Fn<T, false>&(); // expected-note {{candidate}}
 };
 struct F {
-  template <typename T> operator Fn<T, true> &();
+  template<typename T> operator Fn<T, true>&();
 };
 void (&r1)() = E();
 void (&r2)() = F();
@@ -52,12 +52,10 @@ void (&r4)() noexcept = F();
 // FIXME: We reject this for entirely the wrong reason. We incorrectly succeed
 // in deducing T = void, U = G::B, and only fail due to [over.ics.user]p3.
 struct G {
-  template <typename, typename> struct A {};
-  template <typename U> struct A<U, int> : A<U, void> {};
-  struct B {
-    typedef int type;
-  };
+  template<typename, typename> struct A {};
+  template<typename U> struct A<U, int> : A<U, void> {};
+  struct B { typedef int type; };
 
-  template <typename T, typename U = B> operator A<T, typename U::type> *(); // expected-note {{candidate function [with T = void, U = G::B]}}
+  template<typename T, typename U = B> operator A<T, typename U::type> *(); // expected-note {{candidate function [with T = void, U = G::B]}}
 };
 G::A<void, void> *g = G(); // expected-error {{no viable conversion}}

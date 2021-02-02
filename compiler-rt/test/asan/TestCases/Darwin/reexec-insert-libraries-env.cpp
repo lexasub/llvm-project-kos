@@ -22,6 +22,6 @@ int main() {
   // CHECK: {{DYLD_INSERT_LIBRARIES=.*darwin-dummy-shared-lib-so.dylib.*}}
   return 0;
 }
-#else // SHARED_LIB
+#else  // SHARED_LIB
 void foo() {}
-#endif // SHARED_LIB
+#endif  // SHARED_LIB

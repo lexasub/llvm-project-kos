@@ -43,33 +43,41 @@ class LLVM_LIBRARY_VISIBILITY InstrEmitter {
 
   /// EmitCopyFromReg - Generate machine code for an CopyFromReg node or an
   /// implicit physical register output.
-  void EmitCopyFromReg(SDNode *Node, unsigned ResNo, bool IsClone,
-                       bool IsCloned, Register SrcReg,
+  void EmitCopyFromReg(SDNode *Node, unsigned ResNo,
+                       bool IsClone, bool IsCloned,
+                       Register SrcReg,
                        DenseMap<SDValue, Register> &VRBaseMap);
 
-  void CreateVirtualRegisters(SDNode *Node, MachineInstrBuilder &MIB,
-                              const MCInstrDesc &II, bool IsClone,
-                              bool IsCloned,
+  void CreateVirtualRegisters(SDNode *Node,
+                              MachineInstrBuilder &MIB,
+                              const MCInstrDesc &II,
+                              bool IsClone, bool IsCloned,
                               DenseMap<SDValue, Register> &VRBaseMap);
 
   /// getVR - Return the virtual register corresponding to the specified result
   /// of the specified node.
-  Register getVR(SDValue Op, DenseMap<SDValue, Register> &VRBaseMap);
+  Register getVR(SDValue Op,
+                 DenseMap<SDValue, Register> &VRBaseMap);
 
   /// AddRegisterOperand - Add the specified register as an operand to the
   /// specified machine instr. Insert register copies if the register is
   /// not in the required register class.
-  void AddRegisterOperand(MachineInstrBuilder &MIB, SDValue Op,
-                          unsigned IIOpNum, const MCInstrDesc *II,
-                          DenseMap<SDValue, Register> &VRBaseMap, bool IsDebug,
-                          bool IsClone, bool IsCloned);
+  void AddRegisterOperand(MachineInstrBuilder &MIB,
+                          SDValue Op,
+                          unsigned IIOpNum,
+                          const MCInstrDesc *II,
+                          DenseMap<SDValue, Register> &VRBaseMap,
+                          bool IsDebug, bool IsClone, bool IsCloned);
 
   /// AddOperand - Add the specified operand to the specified machine instr.  II
   /// specifies the instruction information for the node, and IIOpNum is the
   /// operand number (in the II) that we are adding. IIOpNum and II are used for
   /// assertions only.
-  void AddOperand(MachineInstrBuilder &MIB, SDValue Op, unsigned IIOpNum,
-                  const MCInstrDesc *II, DenseMap<SDValue, Register> &VRBaseMap,
+  void AddOperand(MachineInstrBuilder &MIB,
+                  SDValue Op,
+                  unsigned IIOpNum,
+                  const MCInstrDesc *II,
+                  DenseMap<SDValue, Register> &VRBaseMap,
                   bool IsDebug, bool IsClone, bool IsCloned);
 
   /// ConstrainForSubReg - Try to constrain VReg to a register class that
@@ -94,7 +102,6 @@ class LLVM_LIBRARY_VISIBILITY InstrEmitter {
   ///
   void EmitRegSequence(SDNode *Node, DenseMap<SDValue, Register> &VRBaseMap,
                        bool IsClone, bool IsCloned);
-
 public:
   /// CountResults - The results of target nodes have register or immediate
   /// operands first, then an optional chain, and optional flag operands
@@ -142,6 +149,6 @@ private:
                        DenseMap<SDValue, Register> &VRBaseMap);
 };
 
-} // namespace llvm
+}
 
 #endif

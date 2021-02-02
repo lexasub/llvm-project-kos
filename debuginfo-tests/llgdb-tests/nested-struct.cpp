@@ -10,7 +10,9 @@
 
 int foo() {
   struct Local {
-    static int my_number() { return 42; }
+    static int my_number() {
+      return 42;
+    }
   };
 
   int i = 0;

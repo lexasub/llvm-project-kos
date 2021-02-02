@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     printf("%02x", x[i]);
   }
   printf("-\n");
-  delete[] x;
+  delete [] x;
 }
 
 // CHECK: -bebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebe-

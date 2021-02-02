@@ -12,9 +12,9 @@
 #include <cstdlib>
 
 int main() {
-  void *Pointers[16];
+  void* Pointers[16];
   for (unsigned i = 0; i < 16; ++i) {
-    char *Ptr = reinterpret_cast<char *>(malloc(1 << i));
+    char *Ptr = reinterpret_cast<char*>(malloc(1 << i));
     Pointers[i] = Ptr;
     *Ptr = 0;
     Ptr[(1 << i) - 1] = 0;

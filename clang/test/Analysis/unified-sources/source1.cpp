@@ -4,8 +4,7 @@
 // the unified sources file. The run-line in this file is there
 // only to suppress LIT warning for the complete lack of run-line.
 int foo(int x) {
-  if (x) {
-  }
+  if (x) {}
   return 1 / x; // expected-warning{{}}
 }
 

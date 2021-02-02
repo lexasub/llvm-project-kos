@@ -1,17 +1,17 @@
 namespace std {
-inline namespace __1 {
-namespace __is_function_imp {}
-} // namespace __1
-} // namespace std
+  inline namespace __1 {
+    namespace __is_function_imp {}
+  }
+}
 
 namespace std {
-inline namespace __1 {
-typedef int size_t;
+  inline namespace __1 {
+    typedef int size_t;
+  }
 }
-} // namespace std
 
 namespace X {
-inline namespace Y {
-struct Z;
+  inline namespace Y {
+    struct Z;
+  }
 }
-} // namespace X

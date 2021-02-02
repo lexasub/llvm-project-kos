@@ -61,21 +61,22 @@
 // The MD5 transformation for all four rounds.
 #define STEP(f, a, b, c, d, x, t, s)                                           \
   (a) += f((b), (c), (d)) + (x) + (t);                                         \
-  (a) = (((a) << (s)) | (((a)&0xffffffff) >> (32 - (s))));                     \
+  (a) = (((a) << (s)) | (((a) & 0xffffffff) >> (32 - (s))));                   \
   (a) += (b);
 
 // SET reads 4 input bytes in little-endian byte order and stores them
 // in a properly aligned word in host byte order.
 #define SET(n)                                                                 \
-  (block[(n)] = (MD5_u32plus)ptr[(n)*4] | ((MD5_u32plus)ptr[(n)*4 + 1] << 8) | \
-                ((MD5_u32plus)ptr[(n)*4 + 2] << 16) |                          \
-                ((MD5_u32plus)ptr[(n)*4 + 3] << 24))
+  (block[(n)] =                                                                \
+       (MD5_u32plus) ptr[(n) * 4] | ((MD5_u32plus) ptr[(n) * 4 + 1] << 8) |    \
+       ((MD5_u32plus) ptr[(n) * 4 + 2] << 16) |                                \
+       ((MD5_u32plus) ptr[(n) * 4 + 3] << 24))
 #define GET(n) (block[(n)])
 
 using namespace llvm;
 
 /// This processes one or more 64-byte data blocks, but does NOT update
-/// the bit counters.  There are no alignment requirements.
+///the bit counters.  There are no alignment requirements.
 const uint8_t *MD5::body(ArrayRef<uint8_t> Data) {
   const uint8_t *ptr;
   MD5_u32plus a, b, c, d;
@@ -214,7 +215,7 @@ void MD5::update(ArrayRef<uint8_t> Data) {
   }
 
   if (Size >= 64) {
-    Ptr = body(makeArrayRef(Ptr, Size & ~(unsigned long)0x3f));
+    Ptr = body(makeArrayRef(Ptr, Size & ~(unsigned long) 0x3f));
     Size &= 0x3f;
   }
 

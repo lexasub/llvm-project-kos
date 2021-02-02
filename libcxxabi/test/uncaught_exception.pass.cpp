@@ -19,14 +19,10 @@
 // }
 
 struct A {
-  ~A() { assert(__cxxabiv1::__cxa_uncaught_exception()); }
+    ~A() { assert( __cxxabiv1::__cxa_uncaught_exception()); }
 };
 
-int main() {
-  try {
-    A a;
-    throw 3;
-    assert(false);
-  } catch (int) {
-  }
+int main () {
+    try { A a; throw 3; assert(false); }
+    catch (int) {}
 }

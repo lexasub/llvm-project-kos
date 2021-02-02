@@ -346,10 +346,10 @@ void HexagonDYLDRendezvous::DumpToLog(Log *log) const {
   LLDB_LOGF(log, "   Break  : %" PRIx64, GetBreakAddress());
   LLDB_LOGF(log, "   LDBase : %" PRIx64, GetLDBase());
   LLDB_LOGF(log, "   State  : %s",
-            (state == eConsistent) ? "consistent"
-            : (state == eAdd)      ? "add"
-            : (state == eDelete)   ? "delete"
-                                   : "unknown");
+            (state == eConsistent)
+                ? "consistent"
+                : (state == eAdd) ? "add"
+                                  : (state == eDelete) ? "delete" : "unknown");
 
   iterator I = begin();
   iterator E = end();

@@ -25,12 +25,12 @@ void bar() { printf("bar\n"); }
 int main(int argc, char **argv) {
   fprintf(stderr, "PID: %d\n", getpid());
   assert(argc > 2);
-  void *handle1 = dlopen(argv[1], RTLD_LAZY); // %dynamiclib1
+  void *handle1 = dlopen(argv[1], RTLD_LAZY);  // %dynamiclib1
   assert(handle1);
   void (*bar1)() = (void (*)())dlsym(handle1, "bar");
   assert(bar1);
   bar1();
-  void *handle2 = dlopen(argv[2], RTLD_LAZY); // %dynamiclib2
+  void *handle2 = dlopen(argv[2], RTLD_LAZY);  // %dynamiclib2
   assert(handle2);
   void (*bar2)() = (void (*)())dlsym(handle2, "bar");
   assert(bar2);

@@ -119,7 +119,8 @@ SBThread SBQueueItem::GetExtendedBacktraceThread(const char *type) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBQueueItem>(Registry &R) {
+template <>
+void RegisterMethods<SBQueueItem>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBQueueItem, ());
   LLDB_REGISTER_CONSTRUCTOR(SBQueueItem, (const lldb::QueueItemSP &));
   LLDB_REGISTER_METHOD_CONST(bool, SBQueueItem, IsValid, ());
@@ -131,9 +132,9 @@ template <> void RegisterMethods<SBQueueItem>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBQueueItem, SetKind, (lldb::QueueItemKind));
   LLDB_REGISTER_METHOD_CONST(lldb::SBAddress, SBQueueItem, GetAddress, ());
   LLDB_REGISTER_METHOD(void, SBQueueItem, SetAddress, (lldb::SBAddress));
-  LLDB_REGISTER_METHOD(lldb::SBThread, SBQueueItem, GetExtendedBacktraceThread,
-                       (const char *));
+  LLDB_REGISTER_METHOD(lldb::SBThread, SBQueueItem,
+                       GetExtendedBacktraceThread, (const char *));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

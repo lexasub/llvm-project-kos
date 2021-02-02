@@ -143,10 +143,10 @@ CPPLanguageRuntime::FindLibCppStdFunctionCallableInfo(
 
   if (member__f_) {
     ValueObjectSP sub_member__f_(
-        member__f_->GetChildMemberWithName(ConstString("__f_"), true));
+       member__f_->GetChildMemberWithName(ConstString("__f_"), true));
 
     if (sub_member__f_)
-      member__f_ = sub_member__f_;
+        member__f_ = sub_member__f_;
   }
 
   if (!member__f_)

@@ -285,7 +285,7 @@ inline uint32_t PTraceSize(uint16_t vq, uint16_t flags) {
              : ptrace_fpsimd_offset + PTraceFPSIMDSize(vq, flags);
 }
 
-} // namespace sve
+} // namespace SVE
 } // namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_LINUXPTRACEDEFINES_ARM64SVE_H

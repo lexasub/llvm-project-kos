@@ -14,8 +14,8 @@
 // RUN:   -fmodule-file=%t/b.pcm \
 // RUN:   -verify %s
 
-#include "def.h"
 #include "friend.h"
+#include "def.h"
 
 ::ns::C<int> c;
 

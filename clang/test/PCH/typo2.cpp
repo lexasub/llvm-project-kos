@@ -8,7 +8,7 @@ void func(struct Test);
 
 #else
 
-::Yest *T; // expected-error{{did you mean 'Test'}}
-           // expected-note@7{{'Test' declared here}}
+::Yest *T;  // expected-error{{did you mean 'Test'}}
+            // expected-note@7{{'Test' declared here}}
 
 #endif

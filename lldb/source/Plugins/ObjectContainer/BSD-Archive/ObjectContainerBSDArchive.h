@@ -165,8 +165,8 @@ protected:
     std::vector<Object> m_objects;
     ObjectNameToIndexMap m_object_name_to_index_map;
     lldb_private::DataExtractor m_data; ///< The data for this object container
-                                        /// so we don't lose data if the .a
-                                        /// files gets modified
+                                        ///so we don't lose data if the .a files
+                                        ///gets modified
   };
 
   void SetArchive(Archive::shared_ptr &archive_sp);

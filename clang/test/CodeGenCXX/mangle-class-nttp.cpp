@@ -3,21 +3,15 @@
 
 #define fold(x) (__builtin_constant_p(x) ? (x) : (x))
 
-struct A {
-  int a;
-  const int b;
-};
-template <A> void f() {}
+struct A { int a; const int b; };
+template<A> void f() {}
 
 // CHECK: define weak_odr void @_Z1fIXtl1ALi1ELi2EEEEvv(
 // MSABI: define {{.*}} @"??$f@$2UA@@H00$$CBH01@@@YAXXZ"
 template void f<A{1, 2}>();
 
-struct B {
-  const int *p;
-  int k;
-};
-template <B> void f() {}
+struct B { const int *p; int k; };
+template<B> void f() {}
 
 int n = 0;
 // CHECK: define weak_odr void @_Z1fIXtl1BadL_Z1nEEEEvv(
@@ -32,24 +26,17 @@ template void f<B{nullptr}>();
 // These are extensions, but they seem like the obvious manglings.
 // CHECK: define weak_odr void @_Z1fIXtl1BLPKi32EEEEvv(
 // MSABI: define {{.*}} @"??$f@$2UB@@PEBH0CA@H0A@@@@YAXXZ"
-template void f<B{fold((int *)32)}>();
+template void f<B{fold((int*)32)}>();
 #ifndef _WIN32
 // FIXME: On MS ABI, we mangle this the same as nullptr, despite considering a
 // null pointer and zero bitcast to a pointer to be distinct pointer values.
 // CHECK: define weak_odr void @_Z1fIXtl1BrcPKiLi0EEEEvv(
-template void f<B{fold(reinterpret_cast<int *>(0))}>();
+template void f<B{fold(reinterpret_cast<int*>(0))}>();
 #endif
 
 // Pointers to subobjects.
-struct Nested {
-  union {
-    int k;
-    int arr[2];
-  };
-} nested[2];
-struct Derived : A, Nested {
-  int z;
-} extern derived;
+struct Nested { union { int k; int arr[2]; }; } nested[2];
+struct Derived : A, Nested { int z; } extern derived;
 // CHECK: define weak_odr void @_Z1fIXtl1BadsoKiL_Z7derivedE16EEEEvv
 // MSABI: define {{.*}} void @"??$f@$2UB@@PEBH56E?derived@@3UDerived@@Az@@@H0A@@@@YAXXZ"
 template void f<B{&derived.z}>();
@@ -67,10 +54,8 @@ template void f<B{fold(&derived.b + 3)}>();
 #endif
 
 // References to subobjects.
-struct BR {
-  const int &r;
-};
-template <BR> void f() {}
+struct BR { const int &r; };
+template<BR> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl2BRsoKiL_Z7derivedE16EEEEvv
 // MSABI: define {{.*}} void @"??$f@$2UBR@@AEBH6E?derived@@3UDerived@@Az@@@@@YAXXZ"
 template void f<BR{derived.z}>();
@@ -87,10 +72,8 @@ template void f<BR{fold(*(&derived.b + 3))}>();
 #endif
 
 // Qualification conversions.
-struct C {
-  const int *p;
-};
-template <C> void f() {}
+struct C { const int *p; };
+template<C> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1CadsoKiL_Z7derivedE16EEEEvv
 // MSABI: define {{.*}} void @"??$f@$2UC@@PEBH56E?derived@@3UDerived@@Az@@@@@@YAXXZ"
 template void f<C{&derived.z}>();
@@ -100,11 +83,8 @@ template void f<C{&derived.b}>();
 #endif
 
 // Pointers to members.
-struct D {
-  const int Derived::*p;
-  int k;
-};
-template <D> void f() {}
+struct D { const int Derived::*p; int k; };
+template<D> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1DLM7DerivedKi0ELi1EEEEvv
 // MSABI: define {{.*}} @"??$f@$2UD@@PERDerived@@H0?0H00@@@YAXXZ"
 template void f<D{nullptr, 1}>();
@@ -126,9 +106,7 @@ template void f<D{&A::b}>();
 // FIXME: This mangles the same as &A::a (bug in the MS ABI).
 // MSABI-FIXME: define {{.*}} @"??$f@$2UD@@PERDerived@@H0A@H01@@@YAXXZ"
 template void f<D{&Nested::k, 2}>();
-struct MoreDerived : A, Derived {
-  int z;
-};
+struct MoreDerived : A, Derived { int z; };
 // CHECK: define weak_odr void @_Z1fIXtl1DmcM7DerivedKiadL_ZN11MoreDerived1zEEn8EEEEvv
 // MSABI-FIXME: define {{.*}} @"??$f@$2UD@@PERDerived@@H0BI@H0A@@@@YAXXZ"
 template void f<D{(int Derived::*)&MoreDerived::z}>();
@@ -143,7 +121,7 @@ union E {
   constexpr E(int n) : n(n) {}
   constexpr E(float f) : f(f) {}
 };
-template <E> void f() {}
+template<E> void f() {}
 
 // Union members.
 // CHECK: define weak_odr void @_Z1fIL1EEEvv(
@@ -163,18 +141,12 @@ template void f<E(0.f)>();
 typedef float __m128 __attribute__((__vector_size__(16)));
 typedef double __m128d __attribute__((__vector_size__(16)));
 typedef long long __m128i __attribute__((__vector_size__(16)));
-struct M128 {
-  __m128 a;
-};
-struct M128D {
-  __m128d b;
-};
-struct M128I {
-  __m128i c;
-};
-template <M128> void f() {}
-template <M128D> void f() {}
-template <M128I> void f() {}
+struct M128 { __m128 a; };
+struct M128D { __m128d b; };
+struct M128I { __m128i c; };
+template<M128> void f() {}
+template<M128D> void f() {}
+template<M128I> void f() {}
 // MSABI: define {{.*}} @"??$f@$2UM128@@2T__m128@@3MADPIAAAAA@@AEAAAAAAA@@AEAEAAAAA@@AEAIAAAAA@@@@@@@YAXXZ"
 template void f<M128{1, 2, 3, 4}>();
 // MSABI: define {{.*}} @"??$f@$2UM128D@@2U__m128d@@3NBDPPAAAAAAAAAAAAA@@BEAAAAAAAAAAAAAAA@@@@@@@YAXXZ"
@@ -188,12 +160,8 @@ template void f<M128I{1, 2}>();
 // Extensions, and dropping trailing zero-initialized elements of 'tl'
 // manglings.
 typedef int __attribute__((ext_vector_type(3))) VI3;
-struct F {
-  VI3 v;
-  _Complex int ci;
-  _Complex float cf;
-};
-template <F> void f() {}
+struct F { VI3 v; _Complex int ci; _Complex float cf; };
+template<F> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1FtlDv3_iLi1ELi2ELi3EEtlCiLi4ELi5EEtlCfLf40c00000ELf40e00000EEEEEvv
 // MSABI: define {{.*}} @"??$f@$2UF@@2T?$__vector@H$02@__clang@@3H00@01@02@@@2U?$_Complex@H@3@0304@2U?$_Complex@M@3@AEAMAAAAA@AEAOAAAAA@@@@@YAXXZ"
 template void f<F{{1, 2, 3}, {4, 5}, {6, 7}}>();
@@ -221,7 +189,7 @@ struct G {
   int b : 6;
   int : 7;
 };
-template <G> void f() {}
+template<G> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1GEEEvv
 // MSABI: define {{.*}} @"??$f@$2UG@@H0A@H0A@@@@YAXXZ"
 template void f<(G())>();
@@ -239,19 +207,13 @@ template void f<G{-8, -32}>();
 // Some of the MSVC manglings here are our invention, because MSVC rejects, but
 // seem likely to be right.
 union H1 {};
-union H2 {
-  int : 1, : 2, : 3;
-};
-union H3 {
-  int : 1, a, : 2, b, : 3;
-};
-struct H4 {
-  H2 h2;
-};
-template <H1> void f() {}
-template <H2> void f() {}
-template <H3> void f() {}
-template <H4> void f() {}
+union H2 { int : 1, : 2, : 3; };
+union H3 { int : 1, a, : 2, b, : 3; };
+struct H4 { H2 h2; };
+template<H1> void f() {}
+template<H2> void f() {}
+template<H3> void f() {}
+template<H4> void f() {}
 // CHECK: define weak_odr void @_Z1fIL2H1EEvv
 // MSABI: define {{.*}} @"??$f@$7TH1@@@@@YAXXZ"
 template void f<H1{}>();
@@ -277,7 +239,7 @@ struct I {
   double d;
   long double ld;
 };
-template <I> void f() {}
+template<I> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1IEEEvv
 // MSABI: define {{.*}} @"??$f@$2UI@@MAA@NBA@OBA@@@@YAXXZ"
 template void f<I{0.0, 0.0, 0.0}>();
@@ -298,17 +260,11 @@ template void f<I{0.0, 0.2e-323, 0.5e-323}>();
 template void f<I{0.0, 1.0e-323, -1.0e-323}>();
 
 // Base classes and members of class type.
-struct J1 {
-  int a, b;
-};
+struct J1 { int a, b; };
 struct JEmpty {};
-struct J2 {
-  int c, d;
-};
-struct J : J1, JEmpty, J2 {
-  int e;
-};
-template <J> void f() {}
+struct J2 { int c, d; };
+struct J : J1, JEmpty, J2 { int e; };
+template<J> void f() {}
 // CHECK: define weak_odr void @_Z1fIXtl1JEEEvv
 // MSABI: define {{.*}} @"??$f@$2UJ@@2UJ1@@H0A@H0A@@2UJEmpty@@@2UJ2@@H0A@H0A@@H0A@@@@YAXXZ"
 template void f<J{}>();
@@ -316,19 +272,15 @@ template void f<J{}>();
 // MSABI: define {{.*}} @"??$f@$2UJ@@2UJ1@@H00H01@2UJEmpty@@@2UJ2@@H02H03@H04@@@YAXXZ"
 template void f<J{{1, 2}, {}, {3, 4}, 5}>();
 
-struct J3 {
-  J1 j1;
-};
-template <J3> void f() {}
+struct J3 { J1 j1; };
+template<J3> void f() {}
 // CHECK: define {{.*}} @_Z1fIXtl2J3tl2J1Li1ELi2EEEEEvv
 // MSABI: define {{.*}} @"??$f@$2UJ3@@2UJ1@@H00H01@@@@YAXXZ"
 template void f<J3{1, 2}>();
 
 // Arrays.
-struct K {
-  int n[2][3];
-};
-template <K> void f() {}
+struct K { int n[2][3]; };
+template<K> void f() {}
 // CHECK: define {{.*}} @_Z1fIXtl1KtlA2_A3_itlS1_Li1ELi2EEEEEEvv
 // MSABI: define {{.*}} @"??$f@$2UK@@3$$BY02H3H00@01@0A@@@@3H0A@@0A@@0A@@@@@@@@YAXXZ"
 template void f<K{1, 2}>();
@@ -336,43 +288,31 @@ template void f<K{1, 2}>();
 // MSABI: define {{.*}} @"??$f@$2UK@@3$$BY02H3H00@01@02@@@3H03@04@05@@@@@@@YAXXZ"
 template void f<K{1, 2, 3, 4, 5, 6}>();
 
-struct K1 {
-  int a, b;
-};
-struct K2 : K1 {
-  int c;
-};
-struct K3 {
-  K2 k2[2];
-};
-template <K3> void f() {}
+struct K1 { int a, b; };
+struct K2 : K1 { int c; };
+struct K3 { K2 k2[2]; };
+template<K3> void f() {}
 // CHECK: define {{.*}} @_Z1fIXtl2K3tlA2_2K2tlS1_tl2K1Li1EEEEEEEvv
 // MSABI: define {{.*}} @"??$f@$2UK3@@3UK2@@2U2@2UK1@@H00H0A@@H0A@@@2U2@2U3@H0A@H0A@@H0A@@@@@@@YAXXZ"
 template void f<K3{1}>();
 template void f<K3{1, 2, 3, 4, 5, 6}>();
 
 namespace CvQualifiers {
-struct A {
-  const int a;
-  int *const b;
-  int c;
-};
-template <A> void f() {}
-// CHECK: define {{.*}} @_ZN12CvQualifiers1fIXtlNS_1AELi0ELPi0ELi1EEEEEvv
-// MSABI: define {{.*}} @"??$f@$2UA@CvQualifiers@@$$CBH0A@QEAH0A@H00@@CvQualifiers@@YAXXZ"
-template void f<A{.c = 1}>();
+  struct A { const int a; int *const b; int c; };
+  template<A> void f() {}
+  // CHECK: define {{.*}} @_ZN12CvQualifiers1fIXtlNS_1AELi0ELPi0ELi1EEEEEvv
+  // MSABI: define {{.*}} @"??$f@$2UA@CvQualifiers@@$$CBH0A@QEAH0A@H00@@CvQualifiers@@YAXXZ"
+  template void f<A{.c = 1}>();
 
-using T1 = const int;
-using T2 = T1[5];
-using T3 = const T2;
-struct B {
-  T3 arr;
-};
-template <B> void f() {}
-// CHECK: define {{.*}} @_ZN12CvQualifiers1fIXtlNS_1BEtlA5_iLi1ELi2ELi3ELi4ELi5EEEEEEvv
-// MSABI: define {{.*}} @"??$f@$2UB@CvQualifiers@@3$$CBH00@01@02@03@04@@@@CvQualifiers@@YAXXZ"
-template void f<B{1, 2, 3, 4, 5}>();
-} // namespace CvQualifiers
+  using T1 = const int;
+  using T2 = T1[5];
+  using T3 = const T2;
+  struct B { T3 arr; };
+  template<B> void f() {}
+  // CHECK: define {{.*}} @_ZN12CvQualifiers1fIXtlNS_1BEtlA5_iLi1ELi2ELi3ELi4ELi5EEEEEEvv
+  // MSABI: define {{.*}} @"??$f@$2UB@CvQualifiers@@3$$CBH00@01@02@03@04@@@@CvQualifiers@@YAXXZ"
+  template void f<B{1, 2, 3, 4, 5}>();
+}
 
 struct L {
   signed char a = -1;
@@ -386,23 +326,21 @@ struct L {
   long long i = -1;
   unsigned long long j = -1;
 };
-template <L> void f() {}
+template<L> void f() {}
 // CHECK: define {{.*}} @_Z1fIXtl1LLan1ELh255ELsn1ELt65535ELin1ELj4294967295ELln1ELm18446744073709551615ELxn1ELy18446744073709551615EEEEvv
 // MSABI: define {{.*}} @"??$f@$2UL@@C0?0E0PP@F0?0G0PPPP@H0?0I0PPPPPPPP@J0?0K0PPPPPPPP@_J0?0_K0?0@@@YAXXZ"
 template void f<L{}>();
 
 // Template parameter objects.
-struct M {
-  int n;
-};
-template <M a> constexpr const M &f() { return a; }
+struct M { int n; };
+template<M a> constexpr const M &f() { return a; }
 // CHECK: define {{.*}} @_Z1fIXtl1MLi42EEEERKS0_v
 // CHECK: ret {{.*}} @_ZTAXtl1MLi42EEE
 // MSABI: define {{.*}} @"??$f@$2UM@@H0CK@@@@YAAEBUM@@XZ"
 // MSABI: ret {{.*}} @"??__N2UM@@H0CK@@@"
 template const M &f<M{42}>();
 
-template <const M *p> void g() {}
+template<const M *p> void g() {}
 // CHECK: define {{.*}} @_Z1gIXadL_ZTAXtl1MLi10EEEEEEvv
 // MSABI: define {{.*}} @"??$g@$1??__N2UM@@H09@@@@YAXXZ"
 template void g<&f<M{10}>()>();

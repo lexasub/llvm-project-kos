@@ -440,7 +440,9 @@ struct Variant {
     Value.UInt64 = V;
   }
 
-  Variant(const Variant &Other) { *this = Other; }
+  Variant(const Variant &Other) {
+    *this = Other;
+  }
 
   ~Variant() {
     if (Type == PDB_VariantType::String)

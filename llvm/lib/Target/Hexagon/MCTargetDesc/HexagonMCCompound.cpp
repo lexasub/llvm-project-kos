@@ -396,8 +396,7 @@ static bool lookForCompound(MCInstrInfo const &MCII, MCContext &Context,
 /// is found update the contents fo the bundle with the compound insn.
 /// If a compound instruction is found then the bundle will have one
 /// additional slot.
-void HexagonMCInstrInfo::tryCompound(MCInstrInfo const &MCII,
-                                     MCSubtargetInfo const &STI,
+void HexagonMCInstrInfo::tryCompound(MCInstrInfo const &MCII, MCSubtargetInfo const &STI,
                                      MCContext &Context, MCInst &MCI) {
   assert(HexagonMCInstrInfo::isBundle(MCI) &&
          "Non-Bundle where Bundle expected");

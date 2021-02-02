@@ -1,7 +1,7 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include <pthread.h>
 
-volatile int N; // Prevent loop unrolling.
+volatile int N;  // Prevent loop unrolling.
 int **data;
 
 void *Thread1(void *x) {
@@ -12,7 +12,7 @@ void *Thread1(void *x) {
 
 int main() {
   N = 4;
-  data = new int *[N];
+  data = new int*[N];
   for (int i = 0; i < N; i++)
     data[i] = new int;
   pthread_t t;

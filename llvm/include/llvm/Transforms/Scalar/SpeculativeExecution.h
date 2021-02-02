@@ -86,6 +86,6 @@ private:
 
   TargetTransformInfo *TTI = nullptr;
 };
-} // namespace llvm
+}
 
-#endif // LLVM_TRANSFORMS_SCALAR_SPECULATIVEEXECUTION_H
+#endif //LLVM_TRANSFORMS_SCALAR_SPECULATIVEEXECUTION_H

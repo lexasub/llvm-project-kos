@@ -163,7 +163,7 @@ void elf::writeMapFile() {
   os << right_justify("VMA", w) << ' ' << right_justify("LMA", w)
      << "     Size Align Out     In      Symbol\n";
 
-  OutputSection *osec = nullptr;
+  OutputSection* osec = nullptr;
   for (BaseCommand *base : script->sectionCommands) {
     if (auto *cmd = dyn_cast<SymbolAssignment>(base)) {
       if (cmd->provide && !cmd->sym)

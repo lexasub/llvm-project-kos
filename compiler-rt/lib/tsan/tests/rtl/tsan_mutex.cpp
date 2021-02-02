@@ -9,13 +9,12 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include <stdint.h>
-
-#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "tsan_interface.h"
 #include "tsan_interface_ann.h"
 #include "tsan_test_util.h"
+#include "gtest/gtest.h"
+#include <stdint.h>
 
 namespace __tsan {
 
@@ -165,7 +164,7 @@ TEST(ThreadSanitizer, StaticMutex) {
 
 static void *singleton_thread(void *param) {
   atomic_uintptr_t *singleton = (atomic_uintptr_t *)param;
-  for (int i = 0; i < 4 * 1024 * 1024; i++) {
+  for (int i = 0; i < 4*1024*1024; i++) {
     int *val = (int *)atomic_load(singleton, memory_order_acquire);
     __tsan_acquire(singleton);
     __tsan_read4(val);
@@ -193,12 +192,13 @@ TEST(DISABLED_BENCH_ThreadSanitizer, Singleton) {
   pthread_t threads[kThreadCount];
   for (int t = 0; t < kThreadCount; t++)
     pthread_create(&threads[t], 0, singleton_thread, &singleton);
-  for (int t = 0; t < kThreadCount; t++) pthread_join(threads[t], 0);
+  for (int t = 0; t < kThreadCount; t++)
+    pthread_join(threads[t], 0);
 }
 
 TEST(DISABLED_BENCH_ThreadSanitizer, StopFlag) {
   const int kClockSize = 100;
-  const int kIters = 16 * 1024 * 1024;
+  const int kIters = 16*1024*1024;
 
   // Puff off thread's clock.
   for (int i = 0; i < kClockSize; i++) {

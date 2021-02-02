@@ -69,7 +69,8 @@ void writerMustWait() {
   assert(t1 - t0 >= WaitTime);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   int threads = 5;
 
   countDown.store(threads);

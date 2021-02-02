@@ -8,7 +8,8 @@ public:
   int32_t b;
 };
 
-class EmptyBase {};
+class EmptyBase {
+};
 class Class2 : EmptyBase {
 public:
   int32_t b;

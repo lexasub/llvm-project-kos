@@ -3,24 +3,24 @@
 
 void h();
 
-template <typename T> void f() noexcept(sizeof(T) == 4) { h(); }
-template <typename T> void g() noexcept(sizeof(T) == 4);
+template<typename T> void f() noexcept(sizeof(T) == 4) { h(); }
+template<typename T> void g() noexcept(sizeof(T) == 4);
 
-template <typename T> struct S {
+template<typename T> struct S {
   static void f() noexcept(sizeof(T) == 4) { h(); }
   static void g() noexcept(sizeof(T) == 4);
 };
 
 // CHECK: define {{.*}} @_Z1fIsEvv() [[NONE:#[0-9]+]] {
-template <> void f<short>() { h(); }
+template<> void f<short>() { h(); }
 // CHECK: define {{.*}} @_Z1fIA2_sEvv() [[NUW:#[0-9]+]] personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*) {
-template <> void f<short[2]>() noexcept { h(); }
+template<> void f<short[2]>() noexcept { h(); }
 
 // CHECK: define {{.*}} @_ZN1SIsE1fEv()
 // CHECK-NOT: [[NUW]]
-template <> void S<short>::f() { h(); }
+template<> void S<short>::f() { h(); }
 // CHECK: define {{.*}} @_ZN1SIA2_sE1fEv() [[NUW]]
-template <> void S<short[2]>::f() noexcept { h(); }
+template<> void S<short[2]>::f() noexcept { h(); }
 
 // CHECK: define {{.*}} @_Z1fIDsEvv() [[NONE]] comdat {
 template void f<char16_t>();
@@ -107,8 +107,8 @@ void i() {
   (void)&S<char>::g;
 }
 
-template <typename T> struct Nested {
-  template <bool b, typename U> void f() noexcept(sizeof(T) == sizeof(U));
+template<typename T> struct Nested {
+  template<bool b, typename U> void f() noexcept(sizeof(T) == sizeof(U));
 };
 
 // CHECK: define {{.*}} @_Z1jv
@@ -124,7 +124,9 @@ void j() {
 // CHECK: attributes [[NUW]] = { noinline nounwind{{.*}} }
 // CHECK: attributes [[NUW2]] = { nounwind{{.*}} }
 
+
+
 namespace PR19190 {
 template <class T> struct DWFIterator { virtual void get() throw(int) = 0; };
 void foo(DWFIterator<int> *foo) { foo->get(); }
-} // namespace PR19190
+}

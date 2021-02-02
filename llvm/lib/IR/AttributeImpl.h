@@ -87,14 +87,12 @@ public:
   static void Profile(FoldingSetNodeID &ID, Attribute::AttrKind Kind,
                       uint64_t Val) {
     ID.AddInteger(Kind);
-    if (Val)
-      ID.AddInteger(Val);
+    if (Val) ID.AddInteger(Val);
   }
 
   static void Profile(FoldingSetNodeID &ID, StringRef Kind, StringRef Values) {
     ID.AddString(Kind);
-    if (!Values.empty())
-      ID.AddString(Values);
+    if (!Values.empty()) ID.AddString(Values);
   }
 
   static void Profile(FoldingSetNodeID &ID, Attribute::AttrKind Kind,
@@ -215,7 +213,7 @@ class AttributeSetNode final
       private TrailingObjects<AttributeSetNode, Attribute> {
   friend TrailingObjects;
 
-  unsigned NumAttrs;              ///< Number of attributes in this node.
+  unsigned NumAttrs; ///< Number of attributes in this node.
   AttributeBitSet AvailableAttrs; ///< Available enum attributes.
 
   DenseMap<StringRef, Attribute> StringAttrs;

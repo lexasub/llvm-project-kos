@@ -8,8 +8,8 @@
 // FIXME: seems to fail on ARM
 // REQUIRES: x86_64-target-arch
 #include <assert.h>
-#include <sanitizer/asan_interface.h>
 #include <stdio.h>
+#include <sanitizer/asan_interface.h>
 
 void death() {
   fprintf(stderr, "DEATH CALLBACK\n");

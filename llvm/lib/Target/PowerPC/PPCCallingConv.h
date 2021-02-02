@@ -41,6 +41,7 @@ bool CC_PPC32_SVR4_VarArg(unsigned ValNo, MVT ValVT, MVT LocVT,
                           CCValAssign::LocInfo LocInfo,
                           ISD::ArgFlagsTy ArgFlags, CCState &State);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif
+

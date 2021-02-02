@@ -5,10 +5,10 @@ void handle(bool);
 template <bool branch>
 void shouldFail() {
   if constexpr (branch)
-    // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: statement should be inside braces [readability-braces-around-statements]
+  // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: statement should be inside braces [readability-braces-around-statements]
     handle(true);
   else
-    // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: statement should be inside braces [readability-braces-around-statements]
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: statement should be inside braces [readability-braces-around-statements]
     handle(false);
 }
 
@@ -24,10 +24,10 @@ void shouldPass() {
 void shouldFailNonTemplate() {
   constexpr bool branch = false;
   if constexpr (branch)
-    // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: statement should be inside braces [readability-braces-around-statements]
+  // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: statement should be inside braces [readability-braces-around-statements]
     handle(true);
   else
-    // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: statement should be inside braces [readability-braces-around-statements]
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: statement should be inside braces [readability-braces-around-statements]
     handle(false);
 }
 
@@ -41,8 +41,8 @@ void shouldPass() {
 }
 
 void run() {
-  shouldFail<true>();
-  shouldFail<false>();
-  shouldPass<true>();
-  shouldPass<false>();
+    shouldFail<true>();
+    shouldFail<false>();
+    shouldPass<true>();
+    shouldPass<false>();
 }

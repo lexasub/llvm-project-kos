@@ -8,8 +8,9 @@
 
 #if defined(__arm64__) || defined(__aarch64__)
 
-#include "NativeRegisterContextLinux_arm64.h"
 #include "NativeRegisterContextLinux_arm.h"
+#include "NativeRegisterContextLinux_arm64.h"
+
 
 #include "lldb/Host/common/NativeProcessProtocol.h"
 #include "lldb/Utility/DataBufferHeap.h"
@@ -44,10 +45,10 @@ NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
   switch (target_arch.GetMachine()) {
   case llvm::Triple::arm:
     return std::make_unique<NativeRegisterContextLinux_arm>(target_arch,
-                                                            native_thread);
+                                                             native_thread);
   case llvm::Triple::aarch64:
     return std::make_unique<NativeRegisterContextLinux_arm64>(target_arch,
-                                                              native_thread);
+                                                               native_thread);
   default:
     llvm_unreachable("have no register context for architecture");
   }

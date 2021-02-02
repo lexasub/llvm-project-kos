@@ -8,9 +8,9 @@ int vbad2 = 10; // expected-warning{{no previous extern declaration for non-stat
 // expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}
 
 namespace x {
-int vbad3; // expected-warning{{no previous extern declaration for non-static variable 'vbad3'}}
-// expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}
-} // namespace x
+  int vbad3; // expected-warning{{no previous extern declaration for non-static variable 'vbad3'}}
+  // expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}
+}
 
 // Variable declarations that should not trigger a warning.
 static int vgood1;
@@ -43,7 +43,7 @@ class CGood1 {
 };
 int CGood1::MGood1;
 namespace {
-int mgood4;
+  int mgood4;
 }
 
 class C {
@@ -54,7 +54,7 @@ class C {
 
 // There is also no need to use static in anonymous namespaces.
 namespace {
-int vgood4;
+  int vgood4;
 }
 
 inline int inline_var = 0;
@@ -66,20 +66,20 @@ extern const int extern_const_var = 0; // expected-warning {{no previous extern 
 extern constexpr int extern_constexpr_var = 0; // expected-warning {{no previous extern declaration}}
 // expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}
 
-template <typename> int var_template = 0;
-template <typename> constexpr int const_var_template = 0;
-template <typename> static int static_var_template = 0;
+template<typename> int var_template = 0;
+template<typename> constexpr int const_var_template = 0;
+template<typename> static int static_var_template = 0;
 
-template <typename T> int var_template<T *>;
+template<typename T> int var_template<T*>;
 
 template int var_template<int[1]>;
 int use_var_template() { return var_template<int[2]>; }
 template int var_template<int[3]>;
 extern template int var_template<int[4]>;
-template <> int var_template<int[5]>; // expected-warning {{no previous extern declaration}}
+template<> int var_template<int[5]>; // expected-warning {{no previous extern declaration}}
 // expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}
 
 // FIXME: We give this specialization internal linkage rather than inheriting
 // the linkage from the template! We should not warn here.
-template <> int static_var_template<int[5]>; // expected-warning {{no previous extern declaration}}
+template<> int static_var_template<int[5]>; // expected-warning {{no previous extern declaration}}
 // expected-note@-1{{declare 'static' if the variable is not intended to be used outside of this translation unit}}

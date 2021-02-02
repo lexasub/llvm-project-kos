@@ -47,10 +47,14 @@ REGISTER_MAP_WITH_PROGRAMSTATE(MostSpecializedTypeArgsMap, SymbolRef,
                                const ObjCObjectPointerType *)
 
 namespace {
-class DynamicTypePropagation
-    : public Checker<check::PreCall, check::PostCall, check::DeadSymbols,
-                     check::PostStmt<CastExpr>, check::PostStmt<CXXNewExpr>,
-                     check::PreObjCMessage, check::PostObjCMessage> {
+class DynamicTypePropagation:
+    public Checker< check::PreCall,
+                    check::PostCall,
+                    check::DeadSymbols,
+                    check::PostStmt<CastExpr>,
+                    check::PostStmt<CXXNewExpr>,
+                    check::PreObjCMessage,
+                    check::PostObjCMessage > {
 
   const ObjCObjectType *getObjectTypeForAllocAndNew(const ObjCMessageExpr *MsgE,
                                                     CheckerContext &C) const;
@@ -444,7 +448,8 @@ DynamicTypePropagation::getBetterObjCType(const Expr *CastE,
   if (OldDTy.isNull()) {
     return NewTy;
   }
-  const ObjCObjectPointerType *OldTy = OldDTy->getAs<ObjCObjectPointerType>();
+  const ObjCObjectPointerType *OldTy =
+    OldDTy->getAs<ObjCObjectPointerType>();
   if (!OldTy)
     return nullptr;
 
@@ -768,10 +773,9 @@ findMethodDecl(const ObjCMessageExpr *MessageExpr,
 /// Get the returned ObjCObjectPointerType by a method based on the tracked type
 /// information, or null pointer when the returned type is not an
 /// ObjCObjectPointerType.
-static QualType getReturnTypeForMethod(const ObjCMethodDecl *Method,
-                                       ArrayRef<QualType> TypeArgs,
-                                       const ObjCObjectPointerType *SelfType,
-                                       ASTContext &C) {
+static QualType getReturnTypeForMethod(
+    const ObjCMethodDecl *Method, ArrayRef<QualType> TypeArgs,
+    const ObjCObjectPointerType *SelfType, ASTContext &C) {
   QualType StaticResultType = Method->getReturnType();
 
   // Is the return type declared as instance type?

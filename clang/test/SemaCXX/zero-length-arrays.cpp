@@ -5,8 +5,7 @@
 // <rdar://problem/10228639>
 class Foo {
   ~Foo();
-  Foo(const Foo &);
-
+  Foo(const Foo&);
 public:
   Foo(int);
 };
@@ -21,8 +20,8 @@ class Bar {
   Foo foos3[2][0];
 
 public:
-  Bar() : foo_count(0) {}
-  ~Bar() {}
+  Bar(): foo_count(0) { }    
+  ~Bar() { }
 };
 
 void testBar() {

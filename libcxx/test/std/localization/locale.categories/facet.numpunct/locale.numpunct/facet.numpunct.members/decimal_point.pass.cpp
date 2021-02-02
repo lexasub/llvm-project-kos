@@ -17,18 +17,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::locale l = std::locale::classic();
-  {
-    typedef char C;
-    const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-    assert(np.decimal_point() == '.');
-  }
-  {
-    typedef wchar_t C;
-    const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-    assert(np.decimal_point() == L'.');
-  }
+int main(int, char**)
+{
+    std::locale l = std::locale::classic();
+    {
+        typedef char C;
+        const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+        assert(np.decimal_point() == '.');
+    }
+    {
+        typedef wchar_t C;
+        const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+        assert(np.decimal_point() == L'.');
+    }
 
   return 0;
 }

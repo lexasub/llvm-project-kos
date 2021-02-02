@@ -52,8 +52,8 @@ protected:
                                   llvm::Type *&PipeTy);
 
 public:
-  CGOpenCLRuntime(CodeGenModule &CGM)
-      : CGM(CGM), PipeROTy(nullptr), PipeWOTy(nullptr), SamplerTy(nullptr) {}
+  CGOpenCLRuntime(CodeGenModule &CGM) : CGM(CGM),
+    PipeROTy(nullptr), PipeWOTy(nullptr), SamplerTy(nullptr) {}
   virtual ~CGOpenCLRuntime();
 
   /// Emit the IR required for a work-group-local variable declaration, and add
@@ -97,7 +97,7 @@ public:
   llvm::Function *getInvokeFunction(const Expr *E);
 };
 
-} // namespace CodeGen
-} // namespace clang
+}
+}
 
 #endif

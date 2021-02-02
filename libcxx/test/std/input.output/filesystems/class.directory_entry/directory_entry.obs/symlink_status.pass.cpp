@@ -32,10 +32,8 @@ TEST_CASE(test_signature) {
   {
     const directory_entry e("foo");
     std::error_code ec;
-    static_assert(
-        std::is_same<decltype(e.symlink_status()), file_status>::value, "");
-    static_assert(
-        std::is_same<decltype(e.symlink_status(ec)), file_status>::value, "");
+    static_assert(std::is_same<decltype(e.symlink_status()), file_status>::value, "");
+    static_assert(std::is_same<decltype(e.symlink_status(ec)), file_status>::value, "");
     static_assert(noexcept(e.symlink_status()) == false, "");
     static_assert(noexcept(e.symlink_status(ec)) == true, "");
   }

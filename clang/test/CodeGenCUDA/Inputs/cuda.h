@@ -43,4 +43,4 @@ extern "C" cudaError_t cudaLaunchKernel(const void *func, dim3 gridDim,
                                         size_t sharedMem, cudaStream_t stream);
 #endif
 
-extern "C" __device__ int printf(const char *, ...);
+extern "C" __device__ int printf(const char*, ...);

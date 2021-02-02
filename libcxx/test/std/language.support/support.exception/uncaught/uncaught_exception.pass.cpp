@@ -14,26 +14,36 @@
 
 #include "test_macros.h"
 
-struct A {
-  ~A() { assert(std::uncaught_exception()); }
+struct A
+{
+    ~A()
+    {
+        assert(std::uncaught_exception());
+    }
 };
 
-struct B {
-  B() {
-    // http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#475
-    assert(!std::uncaught_exception());
-  }
+struct B
+{
+    B()
+    {
+        // http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#475
+        assert(!std::uncaught_exception());
+    }
 };
 
-int main(int, char**) {
-  try {
-    A a;
+int main(int, char**)
+{
+    try
+    {
+        A a;
+        assert(!std::uncaught_exception());
+        throw B();
+    }
+    catch (...)
+    {
+        assert(!std::uncaught_exception());
+    }
     assert(!std::uncaught_exception());
-    throw B();
-  } catch (...) {
-    assert(!std::uncaught_exception());
-  }
-  assert(!std::uncaught_exception());
 
   return 0;
 }

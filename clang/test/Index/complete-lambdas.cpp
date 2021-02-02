@@ -15,6 +15,7 @@ struct X {
   }
 };
 
+
 // RUN: c-index-test -code-completion-at=%s:12:8 -std=c++11 %s | FileCheck -check-prefix=CHECK-CC1 %s
 // CHECK-CC1: VarDecl:{ResultType int}{TypedText inner_local} (34)
 // CHECK-CC1-NEXT: VarDecl:{ResultType int}{TypedText local} (34)

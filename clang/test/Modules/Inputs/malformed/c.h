@@ -1,1 +1,1 @@
-template <typename T> void f() { T::error; }
+template<typename T> void f() { T::error; }

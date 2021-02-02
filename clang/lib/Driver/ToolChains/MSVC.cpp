@@ -30,12 +30,12 @@
 #include <cstdio>
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #define NOGDI
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+  #include <windows.h>
 #endif
 
 #ifdef _MSC_VER
@@ -182,8 +182,8 @@ findVCToolChainViaEnvironment(std::string &Path,
           VSLayout = MSVCToolChain::ToolsetLayout::OlderVS;
           return true;
         }
-        if (ParentFilename == "x86ret" || ParentFilename == "x86chk" ||
-            ParentFilename == "amd64ret" || ParentFilename == "amd64chk") {
+        if (ParentFilename == "x86ret" || ParentFilename == "x86chk"
+          || ParentFilename == "amd64ret" || ParentFilename == "amd64chk") {
           Path = std::string(ParentPath);
           VSLayout = MSVCToolChain::ToolsetLayout::DevDivInternal;
           return true;
@@ -229,9 +229,8 @@ findVCToolChainViaEnvironment(std::string &Path,
 // and find its default VC toolchain.
 // This is the preferred way to discover new Visual Studios, as they're no
 // longer listed in the registry.
-static bool
-findVCToolChainViaSetupConfig(std::string &Path,
-                              MSVCToolChain::ToolsetLayout &VSLayout) {
+static bool findVCToolChainViaSetupConfig(std::string &Path,
+                                          MSVCToolChain::ToolsetLayout &VSLayout) {
 #if !defined(USE_MSVC_SETUP_API)
   return false;
 #else
@@ -465,14 +464,13 @@ void visualstudio::Linker::ConstructJob(Compilation &C, const JobAction &JA,
         CmdArgs.push_back(TC.getCompilerRTArgString(Args, Lib));
       // Make sure the dynamic runtime thunk is not optimized out at link time
       // to ensure proper SEH handling.
-      CmdArgs.push_back(
-          Args.MakeArgString(TC.getArch() == llvm::Triple::x86
-                                 ? "-include:___asan_seh_interceptor"
-                                 : "-include:__asan_seh_interceptor"));
+      CmdArgs.push_back(Args.MakeArgString(
+          TC.getArch() == llvm::Triple::x86
+              ? "-include:___asan_seh_interceptor"
+              : "-include:__asan_seh_interceptor"));
       // Make sure the linker consider all object files from the dynamic runtime
       // thunk.
-      CmdArgs.push_back(Args.MakeArgString(
-          std::string("-wholearchive:") +
+      CmdArgs.push_back(Args.MakeArgString(std::string("-wholearchive:") +
           TC.getCompilerRT(Args, "asan_dynamic_runtime_thunk")));
     } else if (DLL) {
       CmdArgs.push_back(TC.getCompilerRTArgString(Args, "asan_dll_thunk"));
@@ -483,7 +481,7 @@ void visualstudio::Linker::ConstructJob(Compilation &C, const JobAction &JA,
         // This is necessary because instrumented dlls need access to all the
         // interface exported by the static lib in the main executable.
         CmdArgs.push_back(Args.MakeArgString(std::string("-wholearchive:") +
-                                             TC.getCompilerRT(Args, Lib)));
+            TC.getCompilerRT(Args, Lib)));
       }
     }
   }
@@ -825,7 +823,9 @@ Tool *MSVCToolChain::buildAssembler() const {
   return nullptr;
 }
 
-bool MSVCToolChain::IsIntegratedAssemblerDefault() const { return true; }
+bool MSVCToolChain::IsIntegratedAssemblerDefault() const {
+  return true;
+}
 
 bool MSVCToolChain::IsUnwindTablesDefault(const ArgList &Args) const {
   // Don't emit unwind tables by default for MachO targets.
@@ -843,7 +843,9 @@ bool MSVCToolChain::isPICDefault() const {
   return getArch() == llvm::Triple::x86_64;
 }
 
-bool MSVCToolChain::isPIEDefault() const { return false; }
+bool MSVCToolChain::isPIEDefault() const {
+  return false;
+}
 
 bool MSVCToolChain::isPICDefaultForced() const {
   return getArch() == llvm::Triple::x86_64;
@@ -1127,8 +1129,7 @@ static bool getWindowsSDKDirViaCommandLine(const ArgList &Args,
       if (!SDKVersion.empty())
         llvm::sys::path::append(SDKPath, Twine(SDKVersion.getMajor()));
       else
-        llvm::sys::path::append(SDKPath,
-                                getHighestNumericTupleInDirectory(SDKPath));
+        llvm::sys::path::append(SDKPath, getHighestNumericTupleInDirectory(SDKPath));
       Path = std::string(SDKPath.str());
     } else {
       Path = A->getValue();
@@ -1150,14 +1151,13 @@ static bool getWindowsSDKDir(const ArgList &Args, std::string &Path, int &Major,
                              std::string &WindowsSDKIncludeVersion,
                              std::string &WindowsSDKLibVersion) {
   // Trust /winsdkdir and /winsdkversion if present.
-  if (getWindowsSDKDirViaCommandLine(Args, Path, Major,
-                                     WindowsSDKIncludeVersion)) {
+  if (getWindowsSDKDirViaCommandLine(
+          Args, Path, Major, WindowsSDKIncludeVersion)) {
     WindowsSDKLibVersion = WindowsSDKIncludeVersion;
     return true;
   }
 
-  // FIXME: Try env vars (%WindowsSdkDir%, %UCRTVersion%) before going to
-  // registry.
+  // FIXME: Try env vars (%WindowsSdkDir%, %UCRTVersion%) before going to registry.
 
   // Try the Windows registry.
   std::string RegistrySDKVersion;
@@ -1200,8 +1200,8 @@ static bool getWindowsSDKDir(const ArgList &Args, std::string &Path, int &Major,
 }
 
 // Gets the library path required to link against the Windows SDK.
-bool MSVCToolChain::getWindowsSDKLibraryPath(const ArgList &Args,
-                                             std::string &path) const {
+bool MSVCToolChain::getWindowsSDKLibraryPath(
+    const ArgList &Args, std::string &path) const {
   std::string sdkPath;
   int sdkMajor = 0;
   std::string windowsSDKIncludeVersion;
@@ -1305,8 +1305,8 @@ static VersionTuple getMSVCVersionFromExe(const std::string &BinDir) {
   if (!llvm::ConvertUTF8toWide(ClExe.c_str(), ClExeWide))
     return Version;
 
-  const DWORD VersionSize =
-      ::GetFileVersionInfoSizeW(ClExeWide.c_str(), nullptr);
+  const DWORD VersionSize = ::GetFileVersionInfoSizeW(ClExeWide.c_str(),
+                                                      nullptr);
   if (VersionSize == 0)
     return Version;
 
@@ -1323,7 +1323,7 @@ static VersionTuple getMSVCVersionFromExe(const std::string &BinDir) {
     return Version;
 
   const unsigned Major = (FileInfo->dwFileVersionMS >> 16) & 0xFFFF;
-  const unsigned Minor = (FileInfo->dwFileVersionMS) & 0xFFFF;
+  const unsigned Minor = (FileInfo->dwFileVersionMS      ) & 0xFFFF;
   const unsigned Micro = (FileInfo->dwFileVersionLS >> 16) & 0xFFFF;
 
   Version = VersionTuple(Major, Minor, Micro);
@@ -1421,11 +1421,12 @@ void MSVCToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   // As a fallback, select default install paths.
   // FIXME: Don't guess drives and paths like this on Windows.
   const StringRef Paths[] = {
-      "C:/Program Files/Microsoft Visual Studio 10.0/VC/include",
-      "C:/Program Files/Microsoft Visual Studio 9.0/VC/include",
-      "C:/Program Files/Microsoft Visual Studio 9.0/VC/PlatformSDK/Include",
-      "C:/Program Files/Microsoft Visual Studio 8/VC/include",
-      "C:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include"};
+    "C:/Program Files/Microsoft Visual Studio 10.0/VC/include",
+    "C:/Program Files/Microsoft Visual Studio 9.0/VC/include",
+    "C:/Program Files/Microsoft Visual Studio 9.0/VC/PlatformSDK/Include",
+    "C:/Program Files/Microsoft Visual Studio 8/VC/include",
+    "C:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK/Include"
+  };
   addSystemIncludes(DriverArgs, CC1Args, Paths);
 #endif
 }
@@ -1530,8 +1531,7 @@ static void TranslateOptArg(Arg *A, llvm::opt::DerivedArgList &DAL,
           DAL.AddFlagArg(A, Opts.getOption(options::OPT_fno_inline));
           break;
         case '1':
-          DAL.AddFlagArg(A,
-                         Opts.getOption(options::OPT_finline_hint_functions));
+          DAL.AddFlagArg(A, Opts.getOption(options::OPT_finline_hint_functions));
           break;
         case '2':
           DAL.AddFlagArg(A, Opts.getOption(options::OPT_finline_functions));
@@ -1565,10 +1565,11 @@ static void TranslateOptArg(Arg *A, llvm::opt::DerivedArgList &DAL,
       }
       if (SupportsForcingFramePointer) {
         if (OmitFramePointer)
-          DAL.AddFlagArg(A, Opts.getOption(options::OPT_fomit_frame_pointer));
-        else
           DAL.AddFlagArg(A,
-                         Opts.getOption(options::OPT_fno_omit_frame_pointer));
+                         Opts.getOption(options::OPT_fomit_frame_pointer));
+        else
+          DAL.AddFlagArg(
+              A, Opts.getOption(options::OPT_fno_omit_frame_pointer));
       } else {
         // Don't warn about /Oy- in x86-64 builds (where
         // SupportsForcingFramePointer is false).  The flag having no effect

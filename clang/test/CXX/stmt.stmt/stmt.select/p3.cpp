@@ -5,7 +5,7 @@ int f();
 
 void g() {
   if (int x = f()) { // expected-note 2{{previous definition}}
-    int x;           // expected-error{{redefinition of 'x'}}
+    int x; // expected-error{{redefinition of 'x'}}
   } else {
     int x; // expected-error{{redefinition of 'x'}}
   }
@@ -13,7 +13,7 @@ void g() {
 
 void h() {
   if (int x = f()) // expected-note 2{{previous definition}}
-    int x;         // expected-error{{redefinition of 'x'}}
+    int x; // expected-error{{redefinition of 'x'}}
   else
     int x; // expected-error{{redefinition of 'x'}}
 }
@@ -21,12 +21,9 @@ void h() {
 void ifInitStatement() {
   int Var = 0;
 
-  if (int I = 0; true) {
-  }
-  if (Var + Var; true) {
-  }
-  if (; true) {
-  }
+  if (int I = 0; true) {}
+  if (Var + Var; true) {}
+  if (; true) {}
 #ifdef CPP17
   // expected-warning@-4 {{if initialization statements are incompatible with C++ standards before C++17}}
   // expected-warning@-4 {{if initialization statements are incompatible with C++ standards before C++17}}
@@ -57,14 +54,12 @@ void switchInitStatement() {
 
 // TODO: Better diagnostics for while init statements.
 void whileInitStatement() {
-  while (int I = 10; I--)
-    ; // expected-error {{expected ')'}}
+  while (int I = 10; I--); // expected-error {{expected ')'}}
   // expected-note@-1 {{to match this '('}}
   // expected-error@-2 {{use of undeclared identifier 'I'}}
 
   int Var = 10;
-  while (Var + Var; Var--) {
-  } // expected-error {{expected ')'}}
+  while (Var + Var; Var--) {} // expected-error {{expected ')'}}
   // expected-note@-1 {{to match this '('}}
   // expected-error@-2 {{expected ';' after expression}}
   // expected-error@-3 {{expected expression}}
@@ -75,8 +70,7 @@ void whileInitStatement() {
 // TODO: This is needed because clang can't seem to diagnose invalid syntax after the
 // last loop above. It would be nice to remove this.
 void whileInitStatement2() {
-  while (; false) {
-  } // expected-error {{expected expression}}
+  while (; false) {} // expected-error {{expected expression}}
   // expected-error@-1 {{expected ';' after expression}}
   // expected-error@-2 {{expected expression}}
 }

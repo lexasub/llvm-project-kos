@@ -36,10 +36,9 @@ int main() {
   pthread_attr_t a;
   pthread_attr_init(&a);
   size_t stack_size = N * 256 + (1 << 20);
-  stack_size = RoundUp(stack_size, 0x10000); // round the stack size to 64k
+  stack_size = RoundUp(stack_size, 0x10000);  // round the stack size to 64k
   int ret = pthread_attr_setstacksize(&a, stack_size);
-  if (ret)
-    abort();
+  if (ret) abort();
   pthread_create(&t, &a, Thread, 0);
 #ifdef ORDER2
   barrier_wait(&barrier);
@@ -55,3 +54,4 @@ int main() {
 // CHECK: WARNING: ThreadSanitizer: data race
 // CHECK:    #100 foo
 // We must output suffucuently large stack (at least 100 frames)
+

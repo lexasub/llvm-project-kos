@@ -57,26 +57,24 @@ static bool skipArgs(const char *Flag, bool HaveCrashVFS, int &SkipNum,
   SkipNum = 2;
   // These flags are all of the form -Flag <Arg> and are treated as two
   // arguments.  Therefore, we need to skip the flag and the next argument.
-  bool ShouldSkip =
-      llvm::StringSwitch<bool>(Flag)
-          .Cases("-MF", "-MT", "-MQ", "-serialize-diagnostic-file", true)
-          .Cases("-o", "-dependency-file", true)
-          .Cases("-fdebug-compilation-dir", "-diagnostic-log-file", true)
-          .Cases("-dwarf-debug-flags", "-ivfsoverlay", true)
-          .Default(false);
+  bool ShouldSkip = llvm::StringSwitch<bool>(Flag)
+    .Cases("-MF", "-MT", "-MQ", "-serialize-diagnostic-file", true)
+    .Cases("-o", "-dependency-file", true)
+    .Cases("-fdebug-compilation-dir", "-diagnostic-log-file", true)
+    .Cases("-dwarf-debug-flags", "-ivfsoverlay", true)
+    .Default(false);
   if (ShouldSkip)
     return true;
 
   // Some include flags shouldn't be skipped if we have a crash VFS
-  IsInclude =
-      llvm::StringSwitch<bool>(Flag)
-          .Cases("-include", "-header-include-file", true)
-          .Cases("-idirafter", "-internal-isystem", "-iwithprefix", true)
-          .Cases("-internal-externc-isystem", "-iprefix", true)
-          .Cases("-iwithprefixbefore", "-isystem", "-iquote", true)
-          .Cases("-isysroot", "-I", "-F", "-resource-dir", true)
-          .Cases("-iframework", "-include-pch", true)
-          .Default(false);
+  IsInclude = llvm::StringSwitch<bool>(Flag)
+    .Cases("-include", "-header-include-file", true)
+    .Cases("-idirafter", "-internal-isystem", "-iwithprefix", true)
+    .Cases("-internal-externc-isystem", "-iprefix", true)
+    .Cases("-iwithprefixbefore", "-isystem", "-iquote", true)
+    .Cases("-isysroot", "-I", "-F", "-resource-dir", true)
+    .Cases("-iframework", "-include-pch", true)
+    .Default(false);
   if (IsInclude)
     return !HaveCrashVFS;
 
@@ -84,9 +82,9 @@ static bool skipArgs(const char *Flag, bool HaveCrashVFS, int &SkipNum,
 
   // These flags are all of the form -Flag and have no second argument.
   ShouldSkip = llvm::StringSwitch<bool>(Flag)
-                   .Cases("-M", "-MM", "-MG", "-MP", "-MD", true)
-                   .Case("-MMD", true)
-                   .Default(false);
+    .Cases("-M", "-MM", "-MG", "-MP", "-MD", true)
+    .Case("-MMD", true)
+    .Default(false);
 
   // Match found.
   SkipNum = 1;
@@ -182,7 +180,7 @@ rewriteIncludes(const llvm::ArrayRef<const char *> &Args, size_t Idx,
   if (NumArgs == 1) {
     StringRef FlagRef(Args[Idx + NumArgs - 1]);
     assert((FlagRef.startswith("-F") || FlagRef.startswith("-I")) &&
-           "Expecting -I or -F");
+            "Expecting -I or -F");
     StringRef Inc = FlagRef.slice(2, StringRef::npos);
     if (getAbsPath(Inc, NewInc)) {
       SmallString<128> NewArg(FlagRef.slice(0, 2));
@@ -427,8 +425,8 @@ FallbackCommand::FallbackCommand(const Action &Source_, const Tool &Creator_,
               Inputs, Outputs),
       Fallback(std::move(Fallback_)) {}
 
-void FallbackCommand::Print(raw_ostream &OS, const char *Terminator, bool Quote,
-                            CrashReportInfo *CrashInfo) const {
+void FallbackCommand::Print(raw_ostream &OS, const char *Terminator,
+                            bool Quote, CrashReportInfo *CrashInfo) const {
   Command::Print(OS, "", Quote, CrashInfo);
   OS << " ||";
   Fallback->Print(OS, Terminator, Quote, CrashInfo);
@@ -469,7 +467,7 @@ ForceSuccessCommand::ForceSuccessCommand(
               Inputs, Outputs) {}
 
 void ForceSuccessCommand::Print(raw_ostream &OS, const char *Terminator,
-                                bool Quote, CrashReportInfo *CrashInfo) const {
+                            bool Quote, CrashReportInfo *CrashInfo) const {
   Command::Print(OS, "", Quote, CrashInfo);
   OS << " || (exit 0)" << Terminator;
 }

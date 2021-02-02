@@ -1,3 +1,1 @@
-class A1 {
-  A1(int);
-};
+class A1 { A1(int); };

@@ -13,19 +13,24 @@
 
 #include <cstdio>
 
-[[clang::xray_always_instrument]] unsigned short foo(unsigned b);
+[[clang::xray_always_instrument]]
+unsigned short foo (unsigned b);
 
-[[clang::xray_always_instrument]] unsigned short bar(unsigned short a) {
+[[clang::xray_always_instrument]]
+unsigned short bar (unsigned short a)
+{
   printf("bar() is always instrumented!\n");
   return foo(a);
 }
 
-unsigned short foo(unsigned b) {
+unsigned short foo (unsigned b)
+{
   printf("foo() is always instrumented!\n");
   return b + b + 5;
 }
 
-int main() {
+int main ()
+{
   // CHECK: XRay: Log file in 'pic-test-logging-{{.*}}'
   bar(10);
   // CHECK: bar() is always instrumented!

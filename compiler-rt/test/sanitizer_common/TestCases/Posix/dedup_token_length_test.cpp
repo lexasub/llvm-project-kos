@@ -15,11 +15,10 @@
 volatile int *null = 0;
 
 namespace Xyz {
-template <class A, class B>
-void Abc() {
-  *null = 0;
+  template<class A, class B> void Abc() {
+    *null = 0;
+  }
 }
-} // namespace Xyz
 
 extern "C" void bar() {
   Xyz::Abc<int, int>();

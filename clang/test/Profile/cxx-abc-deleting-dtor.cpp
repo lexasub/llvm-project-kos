@@ -43,6 +43,7 @@ DerivedABC *useABCVTable() { return new DerivedABC(); }
 // MSVC:   call void @llvm.instrprof.increment({{.*}})
 // MSVC:   ret void
 
+
 // D2 is the base, D1 and D0 are deleting and complete dtors.
 
 // LINUX-NOT: @__profn_{{.*D[01]Ev}} =

@@ -64,11 +64,12 @@ SBCommandReturnObject::SBCommandReturnObject(const SBCommandReturnObject &rhs)
   m_opaque_up = clone(rhs.m_opaque_up);
 }
 
-SBCommandReturnObject &
-SBCommandReturnObject::operator=(const SBCommandReturnObject &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBCommandReturnObject &,
-                     SBCommandReturnObject, operator=,
-                     (const lldb::SBCommandReturnObject &), rhs);
+SBCommandReturnObject &SBCommandReturnObject::
+operator=(const SBCommandReturnObject &rhs) {
+  LLDB_RECORD_METHOD(
+      lldb::SBCommandReturnObject &,
+      SBCommandReturnObject, operator=,(const lldb::SBCommandReturnObject &),
+      rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -369,15 +370,16 @@ void SBCommandReturnObject::SetError(const char *error_cstr) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBCommandReturnObject>(Registry &R) {
+template <>
+void RegisterMethods<SBCommandReturnObject>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBCommandReturnObject, ());
   LLDB_REGISTER_CONSTRUCTOR(SBCommandReturnObject,
                             (lldb_private::CommandReturnObject &));
   LLDB_REGISTER_CONSTRUCTOR(SBCommandReturnObject,
                             (const lldb::SBCommandReturnObject &));
-  LLDB_REGISTER_METHOD(lldb::SBCommandReturnObject &,
-                       SBCommandReturnObject, operator=,
-                       (const lldb::SBCommandReturnObject &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBCommandReturnObject &,
+      SBCommandReturnObject, operator=,(const lldb::SBCommandReturnObject &));
   LLDB_REGISTER_METHOD_CONST(bool, SBCommandReturnObject, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBCommandReturnObject, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBCommandReturnObject, GetOutput, ());
@@ -421,12 +423,13 @@ template <> void RegisterMethods<SBCommandReturnObject>(Registry &R) {
                        (FILE *, bool));
   LLDB_REGISTER_METHOD(void, SBCommandReturnObject, PutCString,
                        (const char *, int));
-  LLDB_REGISTER_METHOD(const char *, SBCommandReturnObject, GetOutput, (bool));
+  LLDB_REGISTER_METHOD(const char *, SBCommandReturnObject, GetOutput,
+                       (bool));
   LLDB_REGISTER_METHOD(const char *, SBCommandReturnObject, GetError, (bool));
   LLDB_REGISTER_METHOD(void, SBCommandReturnObject, SetError,
                        (lldb::SBError &, const char *));
   LLDB_REGISTER_METHOD(void, SBCommandReturnObject, SetError, (const char *));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

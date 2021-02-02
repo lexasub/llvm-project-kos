@@ -1,9 +1,9 @@
 // RUN: %clang_cc1 -triple i686-pc-linux-gnu %s -emit-llvm -o - | FileCheck %s
 struct foo {
-  template <typename T>
-  __attribute__((regparm(3))) foo(T x) {}
-  __attribute__((regparm(3))) foo();
-  __attribute__((regparm(3))) ~foo();
+  template<typename T>
+  __attribute__ ((regparm (3))) foo(T x) {}
+  __attribute__ ((regparm (3))) foo();
+  __attribute__ ((regparm (3))) ~foo();
 };
 
 foo::foo() {

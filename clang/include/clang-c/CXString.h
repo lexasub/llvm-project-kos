@@ -66,3 +66,4 @@ CINDEX_LINKAGE void clang_disposeStringSet(CXStringSet *set);
 LLVM_CLANG_C_EXTERN_C_END
 
 #endif
+

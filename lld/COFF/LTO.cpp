@@ -110,7 +110,7 @@ BitcodeCompiler::BitcodeCompiler() {
   }
 
   ltoObj = std::make_unique<lto::LTO>(createConfig(), backend,
-                                      config->ltoPartitions);
+                                       config->ltoPartitions);
 }
 
 BitcodeCompiler::~BitcodeCompiler() = default;

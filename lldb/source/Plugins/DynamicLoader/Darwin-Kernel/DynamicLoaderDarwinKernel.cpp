@@ -162,7 +162,7 @@ DynamicLoader *DynamicLoaderDarwinKernel::CreateInstance(Process *process,
     case llvm::Triple::IOS:
     case llvm::Triple::TvOS:
     case llvm::Triple::WatchOS:
-      // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
+    // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
       if (triple_ref.getVendor() != llvm::Triple::Apple) {
         return nullptr;
       }
@@ -255,33 +255,31 @@ DynamicLoaderDarwinKernel::SearchForKernelWithDebugHints(Process *process) {
 
   uint8_t uval[8];
   if (process->GetAddressByteSize() == 8) {
-    for (size_t i = 0; kernel_addresses_64[i] != LLDB_INVALID_ADDRESS; i++) {
-      if (process->ReadMemoryFromInferior(kernel_addresses_64[i], uval, 8,
-                                          read_err) == 8) {
-        DataExtractor data(&uval, 8, process->GetByteOrder(),
-                           process->GetAddressByteSize());
-        offset_t offset = 0;
-        uint64_t addr = data.GetU64(&offset);
-        if (CheckForKernelImageAtAddress(addr, process).IsValid()) {
-          return addr;
-        }
+  for (size_t i = 0; kernel_addresses_64[i] != LLDB_INVALID_ADDRESS; i++) {
+      if (process->ReadMemoryFromInferior (kernel_addresses_64[i], uval, 8, read_err) == 8)
+      {
+          DataExtractor data (&uval, 8, process->GetByteOrder(), process->GetAddressByteSize());
+          offset_t offset = 0;
+          uint64_t addr = data.GetU64 (&offset);
+          if (CheckForKernelImageAtAddress(addr, process).IsValid()) {
+              return addr;
+          }
       }
-    }
+  }
   }
 
   if (process->GetAddressByteSize() == 4) {
-    for (size_t i = 0; kernel_addresses_32[i] != LLDB_INVALID_ADDRESS; i++) {
-      if (process->ReadMemoryFromInferior(kernel_addresses_32[i], uval, 4,
-                                          read_err) == 4) {
-        DataExtractor data(&uval, 4, process->GetByteOrder(),
-                           process->GetAddressByteSize());
-        offset_t offset = 0;
-        uint32_t addr = data.GetU32(&offset);
-        if (CheckForKernelImageAtAddress(addr, process).IsValid()) {
-          return addr;
-        }
+  for (size_t i = 0; kernel_addresses_32[i] != LLDB_INVALID_ADDRESS; i++) {
+      if (process->ReadMemoryFromInferior (kernel_addresses_32[i], uval, 4, read_err) == 4)
+      {
+          DataExtractor data (&uval, 4, process->GetByteOrder(), process->GetAddressByteSize());
+          offset_t offset = 0;
+          uint32_t addr = data.GetU32 (&offset);
+          if (CheckForKernelImageAtAddress(addr, process).IsValid()) {
+              return addr;
+          }
       }
-    }
+  }
   }
 
   return LLDB_INVALID_ADDRESS;
@@ -321,9 +319,9 @@ DynamicLoaderDarwinKernel::SearchForKernelNearPC(Process *process) {
   if (pc == LLDB_INVALID_ADDRESS)
     return LLDB_INVALID_ADDRESS;
 
-  int pagesize = 0x4000; // 16k pages on 64-bit targets
+  int pagesize = 0x4000;  // 16k pages on 64-bit targets
   if (ptrsize == 4)
-    pagesize = 0x1000; // 4k pages on 32-bit targets
+    pagesize = 0x1000;    // 4k pages on 32-bit targets
 
   // The kernel will be loaded on a page boundary.
   // Round the current pc down to the nearest page boundary.
@@ -394,9 +392,9 @@ lldb::addr_t DynamicLoaderDarwinKernel::SearchForKernelViaExhaustiveSearch(
 // Returns false if there was a problem reading the header, or it was not
 // a Mach-O header.
 
-bool DynamicLoaderDarwinKernel::ReadMachHeader(addr_t addr, Process *process,
-                                               llvm::MachO::mach_header &header,
-                                               bool *read_error) {
+bool
+DynamicLoaderDarwinKernel::ReadMachHeader(addr_t addr, Process *process, llvm::MachO::mach_header &header,
+                                          bool *read_error) {
   Status error;
   if (read_error)
     *read_error = false;
@@ -409,13 +407,12 @@ bool DynamicLoaderDarwinKernel::ReadMachHeader(addr_t addr, Process *process,
     return false;
   }
 
-  const uint32_t magicks[] = {llvm::MachO::MH_MAGIC_64, llvm::MachO::MH_MAGIC,
-                              llvm::MachO::MH_CIGAM, llvm::MachO::MH_CIGAM_64};
+  const uint32_t magicks[] = { llvm::MachO::MH_MAGIC_64, llvm::MachO::MH_MAGIC, llvm::MachO::MH_CIGAM, llvm::MachO::MH_CIGAM_64};
 
   bool found_matching_pattern = false;
-  for (size_t i = 0; i < llvm::array_lengthof(magicks); i++)
-    if (::memcmp(&header.magic, &magicks[i], sizeof(uint32_t)) == 0)
-      found_matching_pattern = true;
+  for (size_t i = 0; i < llvm::array_lengthof (magicks); i++)
+    if (::memcmp (&header.magic, &magicks[i], sizeof (uint32_t)) == 0)
+        found_matching_pattern = true;
 
   if (!found_matching_pattern)
     return false;
@@ -438,8 +435,10 @@ bool DynamicLoaderDarwinKernel::ReadMachHeader(addr_t addr, Process *process,
 // address.
 // Returns a UUID; if a kernel was not found at that address, UUID.IsValid()
 // will be false.
-lldb_private::UUID DynamicLoaderDarwinKernel::CheckForKernelImageAtAddress(
-    lldb::addr_t addr, Process *process, bool *read_error) {
+lldb_private::UUID
+DynamicLoaderDarwinKernel::CheckForKernelImageAtAddress(lldb::addr_t addr,
+                                                        Process *process,
+                                                        bool *read_error) {
   Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_DYNAMIC_LOADER));
   if (addr == LLDB_INVALID_ADDRESS) {
     if (read_error)
@@ -618,8 +617,8 @@ void DynamicLoaderDarwinKernel::KextImageInfo::SetProcessStopId(
   m_load_process_stop_id = stop_id;
 }
 
-bool DynamicLoaderDarwinKernel::KextImageInfo::operator==(
-    const KextImageInfo &rhs) {
+bool DynamicLoaderDarwinKernel::KextImageInfo::
+operator==(const KextImageInfo &rhs) {
   if (m_uuid.IsValid() || rhs.GetUUID().IsValid()) {
     return m_uuid == rhs.GetUUID();
   }
@@ -759,8 +758,7 @@ bool DynamicLoaderDarwinKernel::KextImageInfo::LoadImageUsingMemoryModule(
   Target &target = process->GetTarget();
 
   // kexts will have a uuid from the table.
-  // for the kernel, we'll need to read the load commands out of memory to get
-  // it.
+  // for the kernel, we'll need to read the load commands out of memory to get it.
   if (m_uuid.IsValid() == false) {
     if (ReadMemoryModule(process) == false) {
       Log *log(GetLogIfAnyCategoriesSet(LIBLLDB_LOG_DYNAMIC_LOADER));
@@ -857,7 +855,7 @@ bool DynamicLoaderDarwinKernel::KextImageInfo::LoadImageUsingMemoryModule(
   // If we've found a binary, read the load commands out of memory so we
   // can set the segment load addresses.
   if (m_module_sp)
-    ReadMemoryModule(process);
+    ReadMemoryModule (process);
 
   static ConstString g_section_name_LINKEDIT("__LINKEDIT");
 
@@ -1340,8 +1338,7 @@ bool DynamicLoaderDarwinKernel::ParseKextSummaries(
 
   if (load_kexts) {
     s.Printf(" done.\n");
-    if (kexts_failed_to_load.size() > 0 &&
-        number_of_new_kexts_being_added > 0) {
+    if (kexts_failed_to_load.size() > 0 && number_of_new_kexts_being_added > 0) {
       s.Printf("Failed to load %d of %d kexts:\n",
                (int)kexts_failed_to_load.size(),
                number_of_new_kexts_being_added);
@@ -1434,7 +1431,7 @@ void DynamicLoaderDarwinKernel::KextImageInfo::PutToLog(Log *log) const {
              m_name);
   } else {
     LLDB_LOG(log, "addr={0:x+16} size={1:x+16} uuid={2} name=\"{3}\"",
-             m_load_address, m_size, m_uuid.GetAsString(), m_name);
+        m_load_address, m_size, m_uuid.GetAsString(), m_name);
   }
 }
 

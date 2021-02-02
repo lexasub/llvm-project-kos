@@ -19,11 +19,11 @@ namespace fuzzer {
 // A bit map containing kMapSizeInWords bits.
 struct ValueBitMap {
   static const size_t kMapSizeInBits = 1 << 16;
-  static const size_t kMapPrimeMod = 65371; // Largest Prime < kMapSizeInBits;
+  static const size_t kMapPrimeMod = 65371;  // Largest Prime < kMapSizeInBits;
   static const size_t kBitsInWord = (sizeof(uintptr_t) * 8);
   static const size_t kMapSizeInWords = kMapSizeInBits / kBitsInWord;
+ public:
 
-public:
   // Clears all bits.
   void Reset() { memset(Map, 0, sizeof(Map)); }
 
@@ -55,7 +55,8 @@ public:
   size_t SizeInBits() const { return kMapSizeInBits; }
 
   template <class Callback>
-  ATTRIBUTE_NO_SANITIZE_ALL void ForEach(Callback CB) const {
+  ATTRIBUTE_NO_SANITIZE_ALL
+  void ForEach(Callback CB) const {
     for (size_t i = 0; i < kMapSizeInWords; i++)
       if (uintptr_t M = Map[i])
         for (size_t j = 0; j < sizeof(M) * 8; j++)
@@ -63,10 +64,10 @@ public:
             CB(i * sizeof(M) * 8 + j);
   }
 
-private:
+ private:
   ATTRIBUTE_ALIGNED(512) uintptr_t Map[kMapSizeInWords];
 };
 
-} // namespace fuzzer
+}  // namespace fuzzer
 
-#endif // LLVM_FUZZER_VALUE_BIT_MAP_H
+#endif  // LLVM_FUZZER_VALUE_BIT_MAP_H

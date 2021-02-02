@@ -16,27 +16,27 @@
 /* Darwin (from 11.x on) provide an unwind.h. If that's available,
  * use it. libunwind wraps some of its definitions in #ifdef _GNU_SOURCE,
  * so define that around the include.*/
-#ifndef _GNU_SOURCE
-#define _SHOULD_UNDEFINE_GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+# ifndef _GNU_SOURCE
+#  define _SHOULD_UNDEFINE_GNU_SOURCE
+#  define _GNU_SOURCE
+# endif
 // libunwind's unwind.h reflects the current visibility.  However, Mozilla
 // builds with -fvisibility=hidden and relies on gcc's unwind.h to reset the
 // visibility to default and export its contents.  gcc also allows users to
 // override its override by #defining HIDE_EXPORTS (but note, this only obeys
 // the user's -fvisibility setting; it doesn't hide any exports on its own).  We
 // imitate gcc's header here:
-#ifdef HIDE_EXPORTS
-#include_next <unwind.h>
-#else
-#pragma GCC visibility push(default)
-#include_next <unwind.h>
-#pragma GCC visibility pop
-#endif
-#ifdef _SHOULD_UNDEFINE_GNU_SOURCE
-#undef _GNU_SOURCE
-#undef _SHOULD_UNDEFINE_GNU_SOURCE
-#endif
+# ifdef HIDE_EXPORTS
+#  include_next <unwind.h>
+# else
+#  pragma GCC visibility push(default)
+#  include_next <unwind.h>
+#  pragma GCC visibility pop
+# endif
+# ifdef _SHOULD_UNDEFINE_GNU_SOURCE
+#  undef _GNU_SOURCE
+#  undef _SHOULD_UNDEFINE_GNU_SOURCE
+# endif
 #else
 
 #include <stdint.h>
@@ -62,8 +62,7 @@ typedef intptr_t _sleb128_t;
 typedef uintptr_t _uleb128_t;
 
 struct _Unwind_Context;
-#if defined(__arm__) &&                                                        \
-    !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
+#if defined(__arm__) && !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
 struct _Unwind_Control_Block;
 typedef struct _Unwind_Control_Block _Unwind_Exception; /* Alias */
 #else
@@ -72,7 +71,7 @@ typedef struct _Unwind_Exception _Unwind_Exception;
 #endif
 typedef enum {
   _URC_NO_REASON = 0,
-#if defined(__arm__) && !defined(__USING_SJLJ_EXCEPTIONS__) &&                 \
+#if defined(__arm__) && !defined(__USING_SJLJ_EXCEPTIONS__) && \
     !defined(__ARM_DWARF_EH__)
   _URC_OK = 0, /* used by ARM EHABI */
 #endif
@@ -86,7 +85,7 @@ typedef enum {
   _URC_HANDLER_FOUND = 6,
   _URC_INSTALL_CONTEXT = 7,
   _URC_CONTINUE_UNWIND = 8,
-#if defined(__arm__) && !defined(__USING_SJLJ_EXCEPTIONS__) &&                 \
+#if defined(__arm__) && !defined(__USING_SJLJ_EXCEPTIONS__) && \
     !defined(__ARM_DWARF_EH__)
   _URC_FAILURE = 9 /* used by ARM EHABI */
 #endif
@@ -104,8 +103,7 @@ typedef enum {
 typedef void (*_Unwind_Exception_Cleanup_Fn)(_Unwind_Reason_Code,
                                              _Unwind_Exception *);
 
-#if defined(__arm__) &&                                                        \
-    !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
+#if defined(__arm__) && !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
 typedef struct _Unwind_Control_Block _Unwind_Control_Block;
 typedef uint32_t _Unwind_EHT_Header;
 
@@ -142,7 +140,7 @@ struct _Unwind_Control_Block {
 struct _Unwind_Exception {
   _Unwind_Exception_Class exception_class;
   _Unwind_Exception_Cleanup_Fn exception_cleanup;
-#if !defined(__USING_SJLJ_EXCEPTIONS__) && defined(__SEH__)
+#if !defined (__USING_SJLJ_EXCEPTIONS__) && defined (__SEH__)
   _Unwind_Word private_[6];
 #else
   _Unwind_Word private_1;
@@ -169,13 +167,12 @@ typedef _Unwind_Personality_Fn __personality_routine;
 typedef _Unwind_Reason_Code (*_Unwind_Trace_Fn)(struct _Unwind_Context *,
                                                 void *);
 
-#if defined(__arm__) &&                                                        \
-    !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
+#if defined(__arm__) && !(defined(__USING_SJLJ_EXCEPTIONS__) || defined(__ARM_DWARF_EH__))
 typedef enum {
-  _UVRSC_CORE = 0,  /* integer register */
-  _UVRSC_VFP = 1,   /* vfp */
-  _UVRSC_WMMXD = 3, /* Intel WMMX data register */
-  _UVRSC_WMMXC = 4  /* Intel WMMX control register */
+  _UVRSC_CORE = 0,        /* integer register */
+  _UVRSC_VFP = 1,         /* vfp */
+  _UVRSC_WMMXD = 3,       /* Intel WMMX data register */
+  _UVRSC_WMMXC = 4        /* Intel WMMX control register */
 } _Unwind_VRS_RegClass;
 
 typedef enum {
@@ -193,44 +190,45 @@ typedef enum {
 } _Unwind_VRS_Result;
 
 typedef uint32_t _Unwind_State;
-#define _US_VIRTUAL_UNWIND_FRAME ((_Unwind_State)0)
+#define _US_VIRTUAL_UNWIND_FRAME  ((_Unwind_State)0)
 #define _US_UNWIND_FRAME_STARTING ((_Unwind_State)1)
-#define _US_UNWIND_FRAME_RESUME ((_Unwind_State)2)
-#define _US_ACTION_MASK ((_Unwind_State)3)
-#define _US_FORCE_UNWIND ((_Unwind_State)8)
+#define _US_UNWIND_FRAME_RESUME   ((_Unwind_State)2)
+#define _US_ACTION_MASK           ((_Unwind_State)3)
+#define _US_FORCE_UNWIND          ((_Unwind_State)8)
 
-_Unwind_VRS_Result
-_Unwind_VRS_Get(struct _Unwind_Context *__context,
-                _Unwind_VRS_RegClass __regclass, uint32_t __regno,
-                _Unwind_VRS_DataRepresentation __representation,
-                void *__valuep);
+_Unwind_VRS_Result _Unwind_VRS_Get(struct _Unwind_Context *__context,
+  _Unwind_VRS_RegClass __regclass,
+  uint32_t __regno,
+  _Unwind_VRS_DataRepresentation __representation,
+  void *__valuep);
 
-_Unwind_VRS_Result
-_Unwind_VRS_Set(struct _Unwind_Context *__context,
-                _Unwind_VRS_RegClass __regclass, uint32_t __regno,
-                _Unwind_VRS_DataRepresentation __representation,
-                void *__valuep);
+_Unwind_VRS_Result _Unwind_VRS_Set(struct _Unwind_Context *__context,
+  _Unwind_VRS_RegClass __regclass,
+  uint32_t __regno,
+  _Unwind_VRS_DataRepresentation __representation,
+  void *__valuep);
 
-static __inline__ _Unwind_Word _Unwind_GetGR(struct _Unwind_Context *__context,
-                                             int __index) {
+static __inline__
+_Unwind_Word _Unwind_GetGR(struct _Unwind_Context *__context, int __index) {
   _Unwind_Word __value;
   _Unwind_VRS_Get(__context, _UVRSC_CORE, __index, _UVRSD_UINT32, &__value);
   return __value;
 }
 
-static __inline__ void _Unwind_SetGR(struct _Unwind_Context *__context,
-                                     int __index, _Unwind_Word __value) {
+static __inline__
+void _Unwind_SetGR(struct _Unwind_Context *__context, int __index,
+                   _Unwind_Word __value) {
   _Unwind_VRS_Set(__context, _UVRSC_CORE, __index, _UVRSD_UINT32, &__value);
 }
 
-static __inline__ _Unwind_Word
-_Unwind_GetIP(struct _Unwind_Context *__context) {
+static __inline__
+_Unwind_Word _Unwind_GetIP(struct _Unwind_Context *__context) {
   _Unwind_Word __ip = _Unwind_GetGR(__context, 15);
   return __ip & ~(_Unwind_Word)(0x1); /* Remove thumb mode bit. */
 }
 
-static __inline__ void _Unwind_SetIP(struct _Unwind_Context *__context,
-                                     _Unwind_Word __value) {
+static __inline__
+void _Unwind_SetIP(struct _Unwind_Context *__context, _Unwind_Word __value) {
   _Unwind_Word __thumb_mode_bit = _Unwind_GetGR(__context, 15) & 0x1;
   _Unwind_SetGR(__context, 15, __value | __thumb_mode_bit);
 }
@@ -241,6 +239,7 @@ void _Unwind_SetGR(struct _Unwind_Context *, int, _Unwind_Word);
 _Unwind_Word _Unwind_GetIP(struct _Unwind_Context *);
 void _Unwind_SetIP(struct _Unwind_Context *, _Unwind_Word);
 #endif
+
 
 _Unwind_Word _Unwind_GetIPInfo(struct _Unwind_Context *, int *);
 
@@ -297,17 +296,15 @@ struct dwarf_eh_bases {
 void *_Unwind_Find_FDE(const void *, struct dwarf_eh_bases *);
 
 void __register_frame_info_bases(const void *, void *, void *, void *)
-    __attribute__((__unavailable__));
-void __register_frame_info(const void *, void *)
-    __attribute__((__unavailable__));
-void __register_frame_info_table_bases(const void *, void *, void *, void *)
-    __attribute__((__unavailable__));
+  __attribute__((__unavailable__));
+void __register_frame_info(const void *, void *) __attribute__((__unavailable__));
+void __register_frame_info_table_bases(const void *, void*, void *, void *)
+  __attribute__((__unavailable__));
 void __register_frame_info_table(const void *, void *)
-    __attribute__((__unavailable__));
+  __attribute__((__unavailable__));
 void __register_frame_table(const void *) __attribute__((__unavailable__));
 void __deregister_frame_info(const void *) __attribute__((__unavailable__));
-void __deregister_frame_info_bases(const void *)
-    __attribute__((__unavailable__));
+void __deregister_frame_info_bases(const void *)__attribute__((__unavailable__));
 
 #else
 
@@ -315,6 +312,7 @@ _Unwind_Ptr _Unwind_GetDataRelBase(struct _Unwind_Context *);
 _Unwind_Ptr _Unwind_GetTextRelBase(struct _Unwind_Context *);
 
 #endif
+
 
 #ifndef HIDE_EXPORTS
 #pragma GCC visibility pop

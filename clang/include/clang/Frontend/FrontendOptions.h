@@ -149,7 +149,11 @@ private:
 
 public:
   /// The input file format.
-  enum Format { Source, ModuleMap, Precompiled };
+  enum Format {
+    Source,
+    ModuleMap,
+    Precompiled
+  };
 
   constexpr InputKind(Language L = Language::Unknown, Format F = Source,
                       bool PP = false)
@@ -356,11 +360,11 @@ public:
     /// Enable converting setter/getter expressions to property-dot syntx.
     ObjCMT_PropertyDotSyntax = 0x1000,
 
-    ObjCMT_MigrateDecls =
-        (ObjCMT_ReadonlyProperty | ObjCMT_ReadwriteProperty |
-         ObjCMT_Annotation | ObjCMT_Instancetype | ObjCMT_NsMacros |
-         ObjCMT_ProtocolConformance | ObjCMT_NsAtomicIOSOnlyProperty |
-         ObjCMT_DesignatedInitializer),
+    ObjCMT_MigrateDecls = (ObjCMT_ReadonlyProperty | ObjCMT_ReadwriteProperty |
+                           ObjCMT_Annotation | ObjCMT_Instancetype |
+                           ObjCMT_NsMacros | ObjCMT_ProtocolConformance |
+                           ObjCMT_NsAtomicIOSOnlyProperty |
+                           ObjCMT_DesignatedInitializer),
     ObjCMT_MigrateAll = (ObjCMT_Literals | ObjCMT_Subscripting |
                          ObjCMT_MigrateDecls | ObjCMT_PropertyDotSyntax)
   };
@@ -396,7 +400,7 @@ public:
   std::string ActionName;
 
   /// Args to pass to the plugins
-  std::unordered_map<std::string, std::vector<std::string>> PluginArgs;
+  std::unordered_map<std::string,std::vector<std::string>> PluginArgs;
 
   /// The list of plugin actions to run in addition to the normal action.
   std::vector<std::string> AddPluginActions;

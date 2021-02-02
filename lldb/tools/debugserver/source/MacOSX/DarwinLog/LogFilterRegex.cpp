@@ -76,9 +76,8 @@ bool LogFilterRegex::DoesMatch(const LogMessage &message) const {
     }
 
     bool match = ::regexec(&m_regex, message_text, 0, nullptr, 0) == 0;
-    DNBLogThreadedIf(LOG_DARWIN_LOG,
-                     "LogFilterRegex: regex "
-                     "\"%s\" %s message \"%s\".",
+    DNBLogThreadedIf(LOG_DARWIN_LOG, "LogFilterRegex: regex "
+                                     "\"%s\" %s message \"%s\".",
                      m_regex_text.c_str(), match ? "matches" : "does not match",
                      message_text);
     return match;

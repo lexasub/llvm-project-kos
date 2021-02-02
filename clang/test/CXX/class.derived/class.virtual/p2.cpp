@@ -15,29 +15,23 @@ struct C : virtual A {
   virtual void f(); // expected-note{{final overrider of 'A::f'}}
 };
 
-struct D : B, C {}; // expected-error{{virtual function 'A::f' has more than one final overrider in 'D'}}
+struct D : B, C { }; // expected-error{{virtual function 'A::f' has more than one final overrider in 'D'}}
 
-struct B2 : B {};
+struct B2 : B { };
 
-struct E : B, B2 {}; //expected-error{{virtual function 'A::f' has more than one final overrider in 'E'}}
+struct E : B, B2 { }; //expected-error{{virtual function 'A::f' has more than one final overrider in 'E'}}
 
 struct F : B, B2 {
   virtual void f(); // okay
 };
 
-struct G : F {}; // okay
+struct G : F { }; // okay
 
-struct H : G, A {}; // okay
+struct H : G, A { }; // okay
 
 namespace MultipleSubobjects {
-struct A {
-  virtual void f();
-};
-struct B : A {
-  virtual void f();
-};
-struct C : A {
-  virtual void f();
-};
-struct D : B, C {}; // okay
-} // namespace MultipleSubobjects
+  struct A { virtual void f(); };
+  struct B : A { virtual void f(); };
+  struct C : A { virtual void f(); };
+  struct D : B, C { }; // okay
+}

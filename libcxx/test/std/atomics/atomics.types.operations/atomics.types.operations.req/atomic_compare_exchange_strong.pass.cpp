@@ -31,34 +31,35 @@ template <class T>
 struct TestFn {
   void operator()() const {
     {
-      typedef std::atomic<T> A;
-      A a;
-      T t(T(1));
-      std::atomic_init(&a, t);
-      assert(std::atomic_compare_exchange_strong(&a, &t, T(2)) == true);
-      assert(a == T(2));
-      assert(t == T(1));
-      assert(std::atomic_compare_exchange_strong(&a, &t, T(3)) == false);
-      assert(a == T(2));
-      assert(t == T(2));
+        typedef std::atomic<T> A;
+        A a;
+        T t(T(1));
+        std::atomic_init(&a, t);
+        assert(std::atomic_compare_exchange_strong(&a, &t, T(2)) == true);
+        assert(a == T(2));
+        assert(t == T(1));
+        assert(std::atomic_compare_exchange_strong(&a, &t, T(3)) == false);
+        assert(a == T(2));
+        assert(t == T(2));
     }
     {
-      typedef std::atomic<T> A;
-      volatile A a;
-      T t(T(1));
-      std::atomic_init(&a, t);
-      assert(std::atomic_compare_exchange_strong(&a, &t, T(2)) == true);
-      assert(a == T(2));
-      assert(t == T(1));
-      assert(std::atomic_compare_exchange_strong(&a, &t, T(3)) == false);
-      assert(a == T(2));
-      assert(t == T(2));
+        typedef std::atomic<T> A;
+        volatile A a;
+        T t(T(1));
+        std::atomic_init(&a, t);
+        assert(std::atomic_compare_exchange_strong(&a, &t, T(2)) == true);
+        assert(a == T(2));
+        assert(t == T(1));
+        assert(std::atomic_compare_exchange_strong(&a, &t, T(3)) == false);
+        assert(a == T(2));
+        assert(t == T(2));
     }
   }
 };
 
-int main(int, char**) {
-  TestEachAtomicType<TestFn>()();
+int main(int, char**)
+{
+    TestEachAtomicType<TestFn>()();
 
   return 0;
 }

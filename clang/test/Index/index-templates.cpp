@@ -1,70 +1,70 @@
 // Test is line- and column-sensitive. See run lines below.
 
-template <typename T, T Value, template <typename U, U ValU> class X>
+template<typename T, T Value, template<typename U, U ValU> class X>
 void f(X<T, Value> x);
 
-template <typename T> class allocator;
+template<typename T> class allocator;
 
-template <typename T, typename Alloc = allocator<T>>
+template<typename T, typename Alloc = allocator<T> >
 class vector {
   void clear();
 };
 
-template <typename T>
-class vector<T *> {};
+template<typename T>
+class vector<T*> { };
 
-struct Z1 {};
+struct Z1 { };
 
 template class vector<Z1>;
 
-struct Z2 {};
+struct Z2 { };
 
-template <>
+template<>
 class vector<Z2> {
   void clear();
 };
 
-template <typename T, typename U>
+template<typename T, typename U>
 struct Y {
   using typename T::type;
   using U::operator Z2;
 };
 
-struct Z3 {};
+struct Z3 { };
 
 const unsigned OneDimension = 1;
-template <typename T, unsigned Dimensions = OneDimension>
-struct array {};
+template<typename T, unsigned Dimensions = OneDimension>
+struct array { };
 
-template <template <typename, unsigned> class DataStructure = array>
-struct storage {};
+template<template<typename, unsigned> class DataStructure = array>
+struct storage { };
 
 typedef unsigned Unsigned;
 
-template <typename T, Unsigned Value>
+template<typename T, Unsigned Value>
 struct value_c;
 
-template class vector<int *>;
+template class vector<int*>;
 
 struct Z4 {
-  template <typename T> T getAs();
+  template<typename T> T getAs();
 };
-template <typename T, T> struct value {};
+template<typename T, T> struct value { };
 void template_exprs() {
   f<Unsigned, OneDimension, value>(value<Unsigned, OneDimension>());
   Z4().getAs<Unsigned>();
 }
 
-template <typename T> void swap(T &, T &);
-template <typename T, typename U> void swap(Y<T, U> &, Y<T, U> &);
-void swap(Z4 &, Z4 &);
+template<typename T> void swap(T&, T&);
+template<typename T, typename U> void swap(Y<T, U>&, Y<T, U>&);
+void swap(Z4&, Z4&);
 
 struct Z5 {
   int f(int);
   float f(float);
 };
 
-template <typename T>
+template<typename T>
 void unresolved_exprs(T &x) {
   swap(x, x);
   Z5 z5;
@@ -72,38 +72,36 @@ void unresolved_exprs(T &x) {
   swap<T>(x, x);
 }
 
-template <typename T, typename U>
+template<typename T, typename U>
 struct Pair {
   T first;
   U second;
 };
 
-template <typename T, typename U>
+template<typename T, typename U>
 void init_list(T t, U u) {
   typedef U second_type;
 
-  Pair<T, U> p = {t, second_type(u)};
+  Pair<T, U> p = { t, second_type(u) };
 }
 
-template <typename T>
-struct compare {};
+template<typename T>
+struct compare { };
 
-template <typename Key, typename Value,
-          typename Comparison = compare<Pair<Key, Value>>,
-          typename Allocator = allocator<Pair<Key, Value>>>
+template<typename Key, typename Value, 
+         typename Comparison = compare<Pair<Key, Value> >,
+         typename Allocator = allocator<Pair<Key, Value> > >
 struct map;
 
-void f(map<Z4, Pair<int, Z4>>);
+void f(map<Z4, Pair<int, Z4> >);
 
 template class Pair<int, int>;
 
-template <typename T, typename U>
-struct SuperPair : Pair<int, int>, Pair<T, U> {};
+template<typename T, typename U>
+struct SuperPair : Pair<int, int>, Pair<T, U> { };
 
 enum FxnTmplEnum {
-  FxnTmplEnum_A,
-  FxnTmplEnum_B,
-  FxnTmplEnum_C,
+  FxnTmplEnum_A, FxnTmplEnum_B, FxnTmplEnum_C,
 };
 template <typename T, int I, FxnTmplEnum, int E>
 void foo(T Value) {}

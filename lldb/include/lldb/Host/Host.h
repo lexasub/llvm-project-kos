@@ -61,11 +61,11 @@ inline bool operator!=(WaitStatus a, WaitStatus b) { return !(a == b); }
 /// Host is a class that answers information about the host operating system.
 class Host {
 public:
-  typedef std::function<bool(lldb::pid_t pid, bool exited,
-                             int signal,  // Zero for no signal
-                             int status)> // Exit value of process if signal is
-                                          // zero
-                                              MonitorChildProcessCallback;
+  typedef std::function<bool(
+      lldb::pid_t pid, bool exited,
+      int signal,  // Zero for no signal
+      int status)> // Exit value of process if signal is zero
+      MonitorChildProcessCallback;
 
   /// Start monitoring a child process.
   ///

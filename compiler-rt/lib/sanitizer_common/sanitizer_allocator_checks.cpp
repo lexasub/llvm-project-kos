@@ -15,6 +15,8 @@
 
 namespace __sanitizer {
 
-void SetErrnoToENOMEM() { errno = errno_ENOMEM; }
+void SetErrnoToENOMEM() {
+  errno = errno_ENOMEM;
+}
 
-}  // namespace __sanitizer
+} // namespace __sanitizer

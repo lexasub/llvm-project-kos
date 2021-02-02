@@ -4,7 +4,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-
 #include "internal_macros.h"
 
 namespace benchmark {
@@ -47,13 +46,13 @@ void ReplaceAll(std::string* str, const std::string& from,
  * namespace, not std:: namespace.
  */
 unsigned long stoul(const std::string& str, size_t* pos = nullptr,
-                    int base = 10);
+                           int base = 10);
 int stoi(const std::string& str, size_t* pos = nullptr, int base = 10);
 double stod(const std::string& str, size_t* pos = nullptr);
 #else
-using std::stod;
-using std::stoi;
 using std::stoul;
+using std::stoi;
+using std::stod;
 #endif
 
 }  // end namespace benchmark

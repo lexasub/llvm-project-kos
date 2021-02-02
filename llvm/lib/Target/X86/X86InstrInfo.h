@@ -212,7 +212,8 @@ public:
 
   unsigned isLoadFromStackSlot(const MachineInstr &MI,
                                int &FrameIndex) const override;
-  unsigned isLoadFromStackSlot(const MachineInstr &MI, int &FrameIndex,
+  unsigned isLoadFromStackSlot(const MachineInstr &MI,
+                               int &FrameIndex,
                                unsigned &MemBytes) const override;
   /// isLoadFromStackSlotPostFE - Check for post-frame ptr elimination
   /// stack locations as well.  This uses a heuristic so it isn't
@@ -222,7 +223,8 @@ public:
 
   unsigned isStoreToStackSlot(const MachineInstr &MI,
                               int &FrameIndex) const override;
-  unsigned isStoreToStackSlot(const MachineInstr &MI, int &FrameIndex,
+  unsigned isStoreToStackSlot(const MachineInstr &MI,
+                              int &FrameIndex,
                               unsigned &MemBytes) const override;
   /// isStoreToStackSlotPostFE - Check for post-frame ptr elimination
   /// stack locations as well.  This uses a heuristic so it isn't
@@ -374,12 +376,12 @@ public:
   /// folding and return true, otherwise it should return false.  If it folds
   /// the instruction, it is likely that the MachineInstruction the iterator
   /// references has been changed.
-  MachineInstr *foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
-                                      ArrayRef<unsigned> Ops,
-                                      MachineBasicBlock::iterator InsertPt,
-                                      int FrameIndex,
-                                      LiveIntervals *LIS = nullptr,
-                                      VirtRegMap *VRM = nullptr) const override;
+  MachineInstr *
+  foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
+                        ArrayRef<unsigned> Ops,
+                        MachineBasicBlock::iterator InsertPt, int FrameIndex,
+                        LiveIntervals *LIS = nullptr,
+                        VirtRegMap *VRM = nullptr) const override;
 
   /// foldMemoryOperand - Same as the previous version except it allows folding
   /// of any load and store from / to any address, not just from a specific
@@ -538,8 +540,8 @@ public:
   bool isFunctionSafeToOutlineFrom(MachineFunction &MF,
                                    bool OutlineFromLinkOnceODRs) const override;
 
-  outliner::InstrType getOutliningType(MachineBasicBlock::iterator &MIT,
-                                       unsigned Flags) const override;
+  outliner::InstrType
+  getOutliningType(MachineBasicBlock::iterator &MIT, unsigned Flags) const override;
 
   void buildOutlinedFrame(MachineBasicBlock &MBB, MachineFunction &MF,
                           const outliner::OutlinedFunction &OF) const override;
@@ -622,7 +624,8 @@ private:
   ///
   /// If IsIntrinsic is set, operand 1 will be ignored for commuting.
   bool findThreeSrcCommutedOpIndices(const MachineInstr &MI,
-                                     unsigned &SrcOpIdx1, unsigned &SrcOpIdx2,
+                                     unsigned &SrcOpIdx1,
+                                     unsigned &SrcOpIdx2,
                                      bool IsIntrinsic = false) const;
 };
 

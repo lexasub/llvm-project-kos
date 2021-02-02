@@ -1089,7 +1089,8 @@ Error ResourceFileWriter::writeDialogBody(const RCResource *Base) {
     struct {
       ulittle32_t Style;
       ulittle32_t ExtStyle;
-    } Prefix{ulittle32_t(UsedStyle), ulittle32_t(ExStyle)};
+    } Prefix{ulittle32_t(UsedStyle),
+             ulittle32_t(ExStyle)};
 
     writeObject(Prefix);
   } else {
@@ -1100,8 +1101,7 @@ Error ResourceFileWriter::writeDialogBody(const RCResource *Base) {
       ulittle32_t ExtStyle;
       ulittle32_t Style;
     } Prefix{ulittle16_t(1), ulittle16_t(DialogExMagic),
-             ulittle32_t(Res->HelpID), ulittle32_t(ExStyle),
-             ulittle32_t(UsedStyle)};
+             ulittle32_t(Res->HelpID), ulittle32_t(ExStyle), ulittle32_t(UsedStyle)};
 
     writeObject(Prefix);
   }

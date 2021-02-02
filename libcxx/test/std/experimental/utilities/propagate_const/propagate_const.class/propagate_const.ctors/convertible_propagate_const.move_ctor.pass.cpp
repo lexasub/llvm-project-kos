@@ -26,7 +26,7 @@ int main(int, char**) {
   PX px(1);
   PY py(std::move(px));
 
-  assert(*py == 1);
+  assert(*py==1);
 
   return 0;
 }

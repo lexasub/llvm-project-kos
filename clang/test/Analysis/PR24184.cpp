@@ -70,7 +70,7 @@ struct A_1 {
 };
 struct {
   A_1 HashAlgId;
-} * b;
+} *b;
 void fn3() {
   uint32_t c, d;
   d = b->HashAlgId.m_fn1();
@@ -86,7 +86,7 @@ struct ST {
 char *p;
 int foo1(ST);
 int foo2() {
-  ST *p1 = (ST *)(p); // expected-warning{{Casting a non-structure type to a structure type and accessing a field can lead to memory access errors or data corruption}}
+  ST *p1 = (ST *)(p);      // expected-warning{{Casting a non-structure type to a structure type and accessing a field can lead to memory access errors or data corruption}}
   while (p1->c & 0x0F || p1->c & 0x07)
     p1 = p1 + foo1(*p1);
 }

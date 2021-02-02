@@ -23,6 +23,7 @@
 // template <class InputIterator>
 //      path& append(InputIterator first, InputIterator last);
 
+
 #include "filesystem_include.h"
 #include <type_traits>
 #include <string_view>
@@ -33,6 +34,7 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
+
 struct AppendOperatorTestcase {
   MultiStringType lhs;
   MultiStringType rhs;
@@ -40,33 +42,39 @@ struct AppendOperatorTestcase {
 };
 
 #define S(Str) MKSTR(Str)
-const AppendOperatorTestcase Cases[] = {
-    {S(""), S(""), S("")},
-    {S("p1"), S("p2"), S("p1/p2")},
-    {S("p1/"), S("p2"), S("p1/p2")},
-    {S("p1"), S("/p2"), S("/p2")},
-    {S("p1/"), S("/p2"), S("/p2")},
-    {S("p1"), S("\\p2"), S("p1/\\p2")},
-    {S("p1\\"), S("p2"), S("p1\\/p2")},
-    {S("p1\\"), S("\\p2"), S("p1\\/\\p2")},
-    {S(""), S("p2"), S("p2")},
-    {S("/p1"), S("p2"), S("/p1/p2")},
-    {S("/p1"), S("/p2"), S("/p2")},
-    {S("/p1/p3"), S("p2"), S("/p1/p3/p2")},
-    {S("/p1/p3/"), S("p2"), S("/p1/p3/p2")},
-    {S("/p1/"), S("p2"), S("/p1/p2")},
-    {S("/p1/p3/"), S("/p2/p4"), S("/p2/p4")},
-    {S("/"), S(""), S("/")},
-    {S("/p1"), S("/p2/"), S("/p2/")},
-    {S("p1"), S(""), S("p1/")},
-    {S("p1/"), S(""), S("p1/")}};
+const AppendOperatorTestcase Cases[] =
+    {
+        {S(""),     S(""),      S("")}
+      , {S("p1"),   S("p2"),    S("p1/p2")}
+      , {S("p1/"),  S("p2"),    S("p1/p2")}
+      , {S("p1"),   S("/p2"),   S("/p2")}
+      , {S("p1/"),  S("/p2"),   S("/p2")}
+      , {S("p1"),   S("\\p2"),  S("p1/\\p2")}
+      , {S("p1\\"), S("p2"),  S("p1\\/p2")}
+      , {S("p1\\"), S("\\p2"),  S("p1\\/\\p2")}
+      , {S(""),     S("p2"),    S("p2")}
+      , {S("/p1"),  S("p2"),    S("/p1/p2")}
+      , {S("/p1"),  S("/p2"),    S("/p2")}
+      , {S("/p1/p3"),  S("p2"),    S("/p1/p3/p2")}
+      , {S("/p1/p3/"),  S("p2"),    S("/p1/p3/p2")}
+      , {S("/p1/"),  S("p2"),    S("/p1/p2")}
+      , {S("/p1/p3/"),  S("/p2/p4"),    S("/p2/p4")}
+      , {S("/"),    S(""),      S("/")}
+      , {S("/p1"), S("/p2/"), S("/p2/")}
+      , {S("p1"),   S(""),      S("p1/")}
+      , {S("p1/"),  S(""),      S("p1/")}
+    };
 
-const AppendOperatorTestcase LongLHSCases[] = {
-    {S("p1"), S("p2"), S("p1/p2")},
-    {S("p1/"), S("p2"), S("p1/p2")},
-    {S("p1"), S("/p2"), S("/p2")},
-    {S("/p1"), S("p2"), S("/p1/p2")}};
+
+const AppendOperatorTestcase LongLHSCases[] =
+    {
+        {S("p1"),   S("p2"),    S("p1/p2")}
+      , {S("p1/"),  S("p2"),    S("p1/p2")}
+      , {S("p1"),   S("/p2"),   S("/p2")}
+      , {S("/p1"),  S("p2"),    S("/p1/p2")}
+    };
 #undef S
+
 
 // The append operator may need to allocate a temporary buffer before a code_cvt
 // conversion. Test if this allocation occurs by:
@@ -76,7 +84,8 @@ const AppendOperatorTestcase LongLHSCases[] = {
 //      (The string must not trigger the SSO)
 //   3. Append `RHS` to `LHS` and check for the expected allocation behavior.
 template <class CharT>
-void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
+void doAppendSourceAllocTest(AppendOperatorTestcase const& TC)
+{
   using namespace fs;
   using Ptr = CharT const*;
   using Str = std::basic_string<CharT>;
@@ -95,9 +104,8 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
   std::size_t ReserveSize = E.size() + 3;
   // basic_string
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
-    Str RHS(R);
+    path LHS(L); PathReserve(LHS, ReserveSize);
+    Str  RHS(R);
     {
       DisableAllocationGuard g;
       LHS /= RHS;
@@ -106,9 +114,8 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
   }
   // basic_string_view
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
-    StrView RHS(R);
+    path LHS(L); PathReserve(LHS, ReserveSize);
+    StrView  RHS(R);
     {
       DisableAllocationGuard g;
       LHS /= RHS;
@@ -117,8 +124,7 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
   }
   // CharT*
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
+    path LHS(L); PathReserve(LHS, ReserveSize);
     Ptr RHS(R);
     {
       DisableAllocationGuard g;
@@ -127,8 +133,7 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
     assert(PathEq(LHS, E));
   }
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
+    path LHS(L); PathReserve(LHS, ReserveSize);
     Ptr RHS(R);
     {
       DisableAllocationGuard g;
@@ -143,27 +148,22 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
   // required.
   bool DisableAllocations = std::is_same<CharT, char>::value;
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
+    path LHS(L); PathReserve(LHS, ReserveSize);
     InputIter RHS(R);
     {
-      RequireAllocationGuard
-          g; // requires 1 or more allocations occur by default
-      if (DisableAllocations)
-        g.requireExactly(0);
+      RequireAllocationGuard  g; // requires 1 or more allocations occur by default
+      if (DisableAllocations) g.requireExactly(0);
       LHS /= RHS;
     }
     assert(PathEq(LHS, E));
   }
   {
-    path LHS(L);
-    PathReserve(LHS, ReserveSize);
+    path LHS(L); PathReserve(LHS, ReserveSize);
     InputIter RHS(R);
     InputIter REnd(StrEnd(R));
     {
       RequireAllocationGuard g;
-      if (DisableAllocations)
-        g.requireExactly(0);
+      if (DisableAllocations) g.requireExactly(0);
       LHS.append(RHS, REnd);
     }
     assert(PathEq(LHS, E));
@@ -171,7 +171,8 @@ void doAppendSourceAllocTest(AppendOperatorTestcase const& TC) {
 }
 
 template <class CharT>
-void doAppendSourceTest(AppendOperatorTestcase const& TC) {
+void doAppendSourceTest(AppendOperatorTestcase const& TC)
+{
   using namespace fs;
   using Ptr = CharT const*;
   using Str = std::basic_string<CharT>;
@@ -241,8 +242,7 @@ void doAppendSourceTest(AppendOperatorTestcase const& TC) {
     assert(&Ref == &LHS);
   }
   {
-    path LHS(L);
-    InputIter RHS(R);
+    path LHS(L); InputIter RHS(R);
     path& Ref = LHS.append(RHS);
     assert(PathEq(LHS, E));
     assert(&Ref == &LHS);
@@ -257,23 +257,17 @@ void doAppendSourceTest(AppendOperatorTestcase const& TC) {
   }
 }
 
+
+
 template <class It, class = decltype(fs::path{}.append(std::declval<It>()))>
-constexpr bool has_append(int) {
-  return true;
-}
+constexpr bool has_append(int) { return true; }
 template <class It>
-constexpr bool has_append(long) {
-  return false;
-}
+constexpr bool has_append(long) { return false; }
 
 template <class It, class = decltype(fs::path{}.operator/=(std::declval<It>()))>
-constexpr bool has_append_op(int) {
-  return true;
-}
+constexpr bool has_append_op(int) { return true; }
 template <class It>
-constexpr bool has_append_op(long) {
-  return false;
-}
+constexpr bool has_append_op(long) { return false; }
 
 template <class It>
 constexpr bool has_append() {
@@ -281,7 +275,8 @@ constexpr bool has_append() {
   return has_append<It>(0) && has_append_op<It>(0);
 }
 
-void test_sfinae() {
+void test_sfinae()
+{
   using namespace fs;
   {
     using It = const char* const;
@@ -305,17 +300,21 @@ void test_sfinae() {
   {
     using It = output_iterator<const char*>;
     static_assert(!has_append<It>(), "");
+
   }
-  { static_assert(!has_append<int*>(), ""); }
+  {
+    static_assert(!has_append<int*>(), "");
+  }
   {
     static_assert(!has_append<char>(), "");
     static_assert(!has_append<const char>(), "");
   }
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   using namespace fs;
-  for (auto const& TC : Cases) {
+  for (auto const & TC : Cases) {
     {
       const char* LHS_In = TC.lhs;
       const char* RHS_In = TC.rhs;
@@ -325,12 +324,12 @@ int main(int, char**) {
       assert(PathEq(Res, (const char*)TC.expect));
       assert(&Res == &LHS);
     }
-    doAppendSourceTest<char>(TC);
-    doAppendSourceTest<wchar_t>(TC);
+    doAppendSourceTest<char>    (TC);
+    doAppendSourceTest<wchar_t> (TC);
     doAppendSourceTest<char16_t>(TC);
     doAppendSourceTest<char32_t>(TC);
   }
-  for (auto const& TC : LongLHSCases) {
+  for (auto const & TC : LongLHSCases) {
     (void)TC;
     LIBCPP_ONLY(doAppendSourceAllocTest<char>(TC));
     LIBCPP_ONLY(doAppendSourceAllocTest<wchar_t>(TC));

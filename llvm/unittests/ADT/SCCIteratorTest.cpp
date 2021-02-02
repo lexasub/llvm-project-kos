@@ -75,12 +75,11 @@ TEST(SCCIteratorTest, AllSmallGraphs) {
         if (NodesInThisSCC.count(i)) {
           GT::NodeSubset NodesReachableFromSCC = G.NodesReachableFrom(i);
           GT::NodeSubset ReachableButNotInSCC =
-              NodesReachableFromSCC.Meet(NodesInThisSCC.Complement());
+            NodesReachableFromSCC.Meet(NodesInThisSCC.Complement());
 
           for (unsigned j = 0; j != NUM_NODES; ++j)
             if (ReachableButNotInSCC.count(j)) {
-              EXPECT_TRUE(
-                  G.NodesReachableFrom(j).Meet(NodesInThisSCC).isEmpty());
+              EXPECT_TRUE(G.NodesReachableFrom(j).Meet(NodesInThisSCC).isEmpty());
             }
 
           // The result must be the same for all other nodes in this SCC, so
@@ -118,4 +117,4 @@ TEST(SCCIteratorTest, AllSmallGraphs) {
   }
 }
 
-} // namespace llvm
+}

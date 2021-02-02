@@ -32,10 +32,10 @@ void ReductionTreeUtils::updateSmallestNode(ReductionNode *currNode,
                                             ReductionNode *&smallestNode,
                                             std::vector<int> path) {
   LLVM_DEBUG(llvm::dbgs() << "\nTree Path: root");
-#ifndef NDEBUG
+  #ifndef NDEBUG
   for (int nodeIndex : path)
     LLVM_DEBUG(llvm::dbgs() << " -> " << nodeIndex);
-#endif
+  #endif
 
   LLVM_DEBUG(llvm::dbgs() << "\nSize (chars): " << currNode->getSize());
   if (currNode->getSize() < smallestNode->getSize()) {

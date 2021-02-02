@@ -58,10 +58,9 @@ void test(int *List, int Length) {
   switch (i) {
   case 1:
 #pragma unroll
-    /* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll'}} */ [[fallthrough]];
+/* expected-error {{expected a for, while, or do-while loop to follow '#pragma unroll'}} */ [[fallthrough]];
   case 2:
-    for (int i = 0; i < 10; ++i)
-      ;
+    for (int i = 0; i < 10; ++i);
     break;
   }
 

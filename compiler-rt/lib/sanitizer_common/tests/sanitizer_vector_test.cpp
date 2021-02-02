@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_vector.h"
-
 #include "gtest/gtest.h"
 
 namespace __sanitizer {

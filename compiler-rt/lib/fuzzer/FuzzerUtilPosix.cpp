@@ -111,7 +111,7 @@ void SetTimer(int Seconds) {
   SetSigaction(SIGALRM, AlarmHandler);
 }
 
-void SetSignalHandler(const FuzzingOptions &Options) {
+void SetSignalHandler(const FuzzingOptions& Options) {
   // setitimer is not implemented in emscripten.
   if (Options.HandleAlrm && Options.UnitTimeoutSec > 0 && !LIBFUZZER_EMSCRIPTEN)
     SetTimer(Options.UnitTimeoutSec / 2 + 1);
@@ -163,7 +163,9 @@ FILE *OpenProcessPipe(const char *Command, const char *Mode) {
   return popen(Command, Mode);
 }
 
-int CloseProcessPipe(FILE *F) { return pclose(F); }
+int CloseProcessPipe(FILE *F) {
+  return pclose(F);
+}
 
 const void *SearchMemory(const void *Data, size_t DataLen, const void *Patt,
                          size_t PattLen) {
@@ -178,6 +180,6 @@ std::string SearchRegexCmd(const std::string &Regex) {
   return "grep '" + Regex + "'";
 }
 
-} // namespace fuzzer
+}  // namespace fuzzer
 
 #endif // LIBFUZZER_POSIX

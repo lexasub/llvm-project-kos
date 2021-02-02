@@ -84,7 +84,7 @@ public:
                                 // macro stringizing or charizing operator.
     CommaAfterElided = 0x200, // The comma following this token was elided (MS).
     IsEditorPlaceholder = 0x400, // This identifier is a placeholder.
-    IsReinjected = 0x800,        // A phase 4 token that was produced before and
+    IsReinjected = 0x800, // A phase 4 token that was produced before and
                           // re-added, e.g. via EnterTokenStream. Annotation
                           // tokens are *not* reinjected.
   };
@@ -106,14 +106,20 @@ public:
 
   /// Return true if this is a raw identifier (when lexing
   /// in raw mode) or a non-keyword identifier (when lexing in non-raw mode).
-  bool isAnyIdentifier() const { return tok::isAnyIdentifier(getKind()); }
+  bool isAnyIdentifier() const {
+    return tok::isAnyIdentifier(getKind());
+  }
 
   /// Return true if this is a "literal", like a numeric
   /// constant, string, etc.
-  bool isLiteral() const { return tok::isLiteral(getKind()); }
+  bool isLiteral() const {
+    return tok::isLiteral(getKind());
+  }
 
   /// Return true if this is any of tok::annot_* kind tokens.
-  bool isAnnotation() const { return tok::isAnnotation(getKind()); }
+  bool isAnnotation() const {
+    return tok::isAnnotation(getKind());
+  }
 
   /// Return a source location identifier for the specified
   /// offset in the current file.
@@ -173,14 +179,15 @@ public:
   IdentifierInfo *getIdentifierInfo() const {
     assert(isNot(tok::raw_identifier) &&
            "getIdentifierInfo() on a tok::raw_identifier token!");
-    assert(!isAnnotation() && "getIdentifierInfo() on an annotation token!");
-    if (isLiteral())
-      return nullptr;
-    if (is(tok::eof))
-      return nullptr;
-    return (IdentifierInfo *)PtrData;
+    assert(!isAnnotation() &&
+           "getIdentifierInfo() on an annotation token!");
+    if (isLiteral()) return nullptr;
+    if (is(tok::eof)) return nullptr;
+    return (IdentifierInfo*) PtrData;
   }
-  void setIdentifierInfo(IdentifierInfo *II) { PtrData = (void *)II; }
+  void setIdentifierInfo(IdentifierInfo *II) {
+    PtrData = (void*) II;
+  }
 
   const void *getEofData() const {
     assert(is(tok::eof));
@@ -201,7 +208,7 @@ public:
   }
   void setRawIdentifierData(const char *Ptr) {
     assert(is(tok::raw_identifier));
-    PtrData = const_cast<char *>(Ptr);
+    PtrData = const_cast<char*>(Ptr);
   }
 
   /// getLiteralData - For a literal token (numeric constant, string, etc), this
@@ -209,11 +216,11 @@ public:
   /// otherwise.
   const char *getLiteralData() const {
     assert(isLiteral() && "Cannot get literal data of non-literal");
-    return reinterpret_cast<const char *>(PtrData);
+    return reinterpret_cast<const char*>(PtrData);
   }
   void setLiteralData(const char *Ptr) {
     assert(isLiteral() && "Cannot set literal data of non-literal");
-    PtrData = const_cast<char *>(Ptr);
+    PtrData = const_cast<char*>(Ptr);
   }
 
   void *getAnnotationValue() const {
@@ -226,19 +233,27 @@ public:
   }
 
   /// Set the specified flag.
-  void setFlag(TokenFlags Flag) { Flags |= Flag; }
+  void setFlag(TokenFlags Flag) {
+    Flags |= Flag;
+  }
 
   /// Get the specified flag.
-  bool getFlag(TokenFlags Flag) const { return (Flags & Flag) != 0; }
+  bool getFlag(TokenFlags Flag) const {
+    return (Flags & Flag) != 0;
+  }
 
   /// Unset the specified flag.
-  void clearFlag(TokenFlags Flag) { Flags &= ~Flag; }
+  void clearFlag(TokenFlags Flag) {
+    Flags &= ~Flag;
+  }
 
   /// Return the internal represtation of the flags.
   ///
   /// This is only intended for low-level operations such as writing tokens to
   /// disk.
-  unsigned getFlags() const { return Flags; }
+  unsigned getFlags() const {
+    return Flags;
+  }
 
   /// Set a flag to either true or false.
   void setFlagValue(TokenFlags Flag, bool Val) {

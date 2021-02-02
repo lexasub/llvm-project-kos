@@ -20,41 +20,42 @@
 #include "test_macros.h"
 
 #if TEST_STD_VER >= 11
-class MoveOnly {
-  MoveOnly(const MoveOnly&);
-  MoveOnly& operator=(const MoveOnly&);
+class MoveOnly
+{
+    MoveOnly(const MoveOnly&);
+    MoveOnly& operator=(const MoveOnly&);
 
-  int data_;
-
+    int data_;
 public:
-  MoveOnly(int data = 1) : data_(data) {}
-  MoveOnly(MoveOnly&& x) : data_(x.data_) { x.data_ = 0; }
-  MoveOnly& operator=(MoveOnly&& x) {
-    data_ = x.data_;
-    x.data_ = 0;
-    return *this;
-  }
+    MoveOnly(int data = 1) : data_(data) {}
+    MoveOnly(MoveOnly&& x)
+        : data_(x.data_) {x.data_ = 0;}
+    MoveOnly& operator=(MoveOnly&& x)
+        {data_ = x.data_; x.data_ = 0; return *this;}
 
-  int get() const { return data_; }
+    int get() const {return data_;}
 };
 #endif
 
+
 template <class T>
-void test() {
-  typedef std::reference_wrapper<T> Wrap;
-  static_assert(std::is_copy_constructible<Wrap>::value, "");
-  static_assert(std::is_copy_assignable<Wrap>::value, "");
+void test()
+{
+    typedef std::reference_wrapper<T> Wrap;
+    static_assert(std::is_copy_constructible<Wrap>::value, "");
+    static_assert(std::is_copy_assignable<Wrap>::value, "");
 #if TEST_STD_VER >= 14
-  static_assert(std::is_trivially_copyable<Wrap>::value, "");
+    static_assert(std::is_trivially_copyable<Wrap>::value, "");
 #endif
 }
 
-int main(int, char**) {
-  test<int>();
-  test<double>();
-  test<std::string>();
+int main(int, char**)
+{
+    test<int>();
+    test<double>();
+    test<std::string>();
 #if TEST_STD_VER >= 11
-  test<MoveOnly>();
+    test<MoveOnly>();
 #endif
 
   return 0;

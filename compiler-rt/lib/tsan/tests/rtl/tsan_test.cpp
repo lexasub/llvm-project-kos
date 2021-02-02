@@ -9,9 +9,9 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "gtest/gtest.h"
 #include "tsan_interface.h"
 #include "tsan_test_util.h"
+#include "gtest/gtest.h"
 
 static void foo() {}
 static void bar() {}
@@ -33,7 +33,7 @@ int run_tests(int argc, char **argv) {
   TestMutexBeforeInit();  // Mutexes must be usable before __tsan_init();
   __tsan_init();
   __tsan_func_entry(__builtin_return_address(0));
-  __tsan_func_entry((void *)((intptr_t)&run_tests + 1));
+  __tsan_func_entry((void*)((intptr_t)&run_tests + 1));
 
   testing::GTEST_FLAG(death_test_style) = "threadsafe";
   testing::InitGoogleTest(&argc, argv);
@@ -48,14 +48,16 @@ const char *argv0;
 
 #ifdef __APPLE__
 // On Darwin, turns off symbolication and crash logs to make tests faster.
-extern "C" const char *__tsan_default_options() {
+extern "C" const char* __tsan_default_options() {
   return "symbolize=false:abort_on_error=0";
 }
 #endif
 
 namespace __sanitizer {
-bool ReexecDisabled() { return true; }
-}  // namespace __sanitizer
+bool ReexecDisabled() {
+  return true;
+}
+}
 
 int main(int argc, char **argv) {
   argv0 = argv[0];

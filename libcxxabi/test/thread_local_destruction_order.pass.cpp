@@ -31,9 +31,11 @@ int seq = 0;
 
 class OrderChecker {
 public:
-  explicit OrderChecker(int n) : n_{n} {}
+  explicit OrderChecker(int n) : n_{n} { }
 
-  ~OrderChecker() { assert(seq++ == n_); }
+  ~OrderChecker() {
+    assert(seq++ == n_);
+  }
 
 private:
   int n_;
@@ -42,7 +44,9 @@ private:
 template <int ID>
 class CreatesThreadLocalInDestructor {
 public:
-  ~CreatesThreadLocalInDestructor() { thread_local OrderChecker checker{ID}; }
+  ~CreatesThreadLocalInDestructor() {
+    thread_local OrderChecker checker{ID};
+  }
 };
 
 OrderChecker global{7};

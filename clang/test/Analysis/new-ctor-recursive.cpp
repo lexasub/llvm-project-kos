@@ -23,8 +23,8 @@ enum class ConstructionKind : char {
 struct S {
 public:
   int x;
-  S() : x(1) {}
-  S(int y) : x(y) {}
+  S(): x(1) {}
+  S(int y): x(y) {}
 
   S(ConstructionKind k) {
     switch (k) {
@@ -58,6 +58,7 @@ void testThatCharConstructorIndeedYieldsGarbage() {
   s->x += 1; // no-warning
   delete s;
 }
+
 
 void testChainedOperatorNew() {
   S *s;
@@ -110,8 +111,8 @@ void testChainedOperatorNew() {
   // * Bind value for our custom new (nullptr).
   global_s = nullptr;
   s = new (nullptr) S(ConstructionKind::Recursive);
-  clang_analyzer_eval(global_s);         // expected-warning{{TRUE}}
+  clang_analyzer_eval(global_s); // expected-warning{{TRUE}}
   clang_analyzer_eval(global_s->x == 5); // expected-warning{{TRUE}}
-  clang_analyzer_eval(s->x == 6);        // expected-warning{{TRUE}}
+  clang_analyzer_eval(s->x == 6); // expected-warning{{TRUE}}
   delete s;
 }

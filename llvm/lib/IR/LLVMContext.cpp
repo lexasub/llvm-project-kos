@@ -84,7 +84,8 @@ LLVMContext::LLVMContext() : pImpl(new LLVMContextImpl(*this)) {
          "singlethread synchronization scope ID drifted!");
   (void)SingleThreadSSID;
 
-  SyncScope::ID SystemSSID = pImpl->getOrInsertSyncScopeID("");
+  SyncScope::ID SystemSSID =
+      pImpl->getOrInsertSyncScopeID("");
   assert(SystemSSID == SyncScope::System &&
          "system synchronization scope ID drifted!");
   (void)SystemSSID;
@@ -92,16 +93,21 @@ LLVMContext::LLVMContext() : pImpl(new LLVMContextImpl(*this)) {
 
 LLVMContext::~LLVMContext() { delete pImpl; }
 
-void LLVMContext::addModule(Module *M) { pImpl->OwnedModules.insert(M); }
+void LLVMContext::addModule(Module *M) {
+  pImpl->OwnedModules.insert(M);
+}
 
-void LLVMContext::removeModule(Module *M) { pImpl->OwnedModules.erase(M); }
+void LLVMContext::removeModule(Module *M) {
+  pImpl->OwnedModules.erase(M);
+}
 
 //===----------------------------------------------------------------------===//
 // Recoverable Backend Errors
 //===----------------------------------------------------------------------===//
 
-void LLVMContext::setInlineAsmDiagnosticHandler(
-    InlineAsmDiagHandlerTy DiagHandler, void *DiagContext) {
+void LLVMContext::
+setInlineAsmDiagnosticHandler(InlineAsmDiagHandlerTy DiagHandler,
+                              void *DiagContext) {
   pImpl->InlineAsmDiagHandler = DiagHandler;
   pImpl->InlineAsmDiagContext = DiagContext;
 }
@@ -128,7 +134,7 @@ void LLVMContext::setDiagnosticHandlerCallBack(
 }
 
 void LLVMContext::setDiagnosticHandler(std::unique_ptr<DiagnosticHandler> &&DH,
-                                       bool RespectFilters) {
+                                      bool RespectFilters) {
   pImpl->DiagHandler = std::move(DH);
   pImpl->RespectDiagnosticFilters = RespectFilters;
 }
@@ -183,8 +189,8 @@ void *LLVMContext::getDiagnosticContext() const {
   return pImpl->DiagHandler->DiagnosticContext;
 }
 
-void LLVMContext::setYieldCallback(YieldCallbackTy Callback,
-                                   void *OpaqueHandle) {
+void LLVMContext::setYieldCallback(YieldCallbackTy Callback, void *OpaqueHandle)
+{
   pImpl->YieldCallback = Callback;
   pImpl->YieldOpaqueHandle = OpaqueHandle;
 }
@@ -199,7 +205,7 @@ void LLVMContext::emitError(const Twine &ErrorStr) {
 }
 
 void LLVMContext::emitError(const Instruction *I, const Twine &ErrorStr) {
-  assert(I && "Invalid instruction");
+  assert (I && "Invalid instruction");
   diagnose(DiagnosticInfoInlineAsm(*I, ErrorStr));
 }
 
@@ -267,8 +273,9 @@ void LLVMContext::emitError(unsigned LocCookie, const Twine &ErrorStr) {
 /// Return a unique non-zero ID for the specified metadata kind.
 unsigned LLVMContext::getMDKindID(StringRef Name) const {
   // If this is new, assign it its ID.
-  return pImpl->CustomMDKindNames
-      .insert(std::make_pair(Name, pImpl->CustomMDKindNames.size()))
+  return pImpl->CustomMDKindNames.insert(
+                                     std::make_pair(
+                                         Name, pImpl->CustomMDKindNames.size()))
       .first->second;
 }
 
@@ -277,8 +284,7 @@ unsigned LLVMContext::getMDKindID(StringRef Name) const {
 void LLVMContext::getMDKindNames(SmallVectorImpl<StringRef> &Names) const {
   Names.resize(pImpl->CustomMDKindNames.size());
   for (StringMap<unsigned>::const_iterator I = pImpl->CustomMDKindNames.begin(),
-                                           E = pImpl->CustomMDKindNames.end();
-       I != E; ++I)
+       E = pImpl->CustomMDKindNames.end(); I != E; ++I)
     Names[I->second] = I->first();
 }
 
@@ -317,7 +323,9 @@ const std::string &LLVMContext::getGC(const Function &Fn) {
   return pImpl->GCNames[&Fn];
 }
 
-void LLVMContext::deleteGC(const Function &Fn) { pImpl->GCNames.erase(&Fn); }
+void LLVMContext::deleteGC(const Function &Fn) {
+  pImpl->GCNames.erase(&Fn);
+}
 
 bool LLVMContext::shouldDiscardValueNames() const {
   return pImpl->DiscardValueNames;
@@ -342,7 +350,7 @@ OptPassGate &LLVMContext::getOptPassGate() const {
   return pImpl->getOptPassGate();
 }
 
-void LLVMContext::setOptPassGate(OptPassGate &OPG) {
+void LLVMContext::setOptPassGate(OptPassGate& OPG) {
   pImpl->setOptPassGate(OPG);
 }
 

@@ -7,8 +7,8 @@
 // TODO(yln): introduce 'ptrauth' lit feature
 // REQUIRES: stable-runtime, cxxabi, arch=arm64e
 
-#include <ptrauth.h>
 #include <typeinfo>
+#include <ptrauth.h>
 
 struct S {
   S() {}

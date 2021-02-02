@@ -1,12 +1,8 @@
 // RUN: %clang_cc1 %s -emit-llvm-only -verify
 // expected-no-diagnostics
 
-struct A {
-  int a;
-};
-struct B {
-  float a;
-};
+struct A {int a;};
+struct B {float a;};
 struct C {
   union {
     A a;

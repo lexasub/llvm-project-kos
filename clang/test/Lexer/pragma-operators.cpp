@@ -10,10 +10,9 @@
 // CHECK: #pragma warning(push)
 // CHECK:  int foo() { return 0; } }
 // CHECK: #pragma warning(pop)
-#define A(X)                                    \
-  extern "C" {                                  \
-  __pragma(warning(push)) int X() { return 0; } \
-  }
+#define A(X) extern "C" { __pragma(warning(push)) \
+  int X() { return 0; } \
+}
 #define B(X) A(X)
 #pragma warning(push)
 B(foo)
@@ -37,7 +36,7 @@ B(foo)
 // CHECK: 0;
 int n = pragma_L pragma_u8 pragma_u pragma_U pragma_R pragma_UR pragma_hello 0;
 
-#pragma warning(disable : 1 2L 3U; error : 4 5 6; suppress : 7 8 9)
+#pragma warning(disable : 1 2L 3U ; error : 4 5 6 ; suppress : 7 8 9)
 // CHECK: #pragma warning(disable: 1 2 3)
 // CHECK: #line [[@LINE-2]]
 // CHECK: #pragma warning(error: 4 5 6)

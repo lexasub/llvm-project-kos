@@ -18,10 +18,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::allocator<int> a;
-  a.allocate(
-      3); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+int main(int, char**)
+{
+    std::allocator<int> a;
+    a.allocate(3); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
 
-  return 0;
+    return 0;
 }

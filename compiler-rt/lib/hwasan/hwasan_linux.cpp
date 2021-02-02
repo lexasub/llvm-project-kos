@@ -15,20 +15,6 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD
 
-#include <dlfcn.h>
-#include <elf.h>
-#include <errno.h>
-#include <link.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/prctl.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <unwind.h>
-
 #include "hwasan.h"
 #include "hwasan_dynamic_shadow.h"
 #include "hwasan_interface_internal.h"
@@ -36,6 +22,21 @@
 #include "hwasan_report.h"
 #include "hwasan_thread.h"
 #include "hwasan_thread_list.h"
+
+#include <dlfcn.h>
+#include <elf.h>
+#include <link.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <unwind.h>
+#include <sys/prctl.h>
+#include <errno.h>
+
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_procmaps.h"
 
@@ -232,7 +233,9 @@ static void HwasanAtExit(void) {
   }
 }
 
-void InstallAtExitHandler() { atexit(HwasanAtExit); }
+void InstallAtExitHandler() {
+  atexit(HwasanAtExit);
+}
 
 // ---------------------- TSD ---------------- {{{1
 
@@ -278,9 +281,13 @@ void HwasanTSDThreadInit() {}
 #endif
 
 #if SANITIZER_ANDROID
-uptr *GetCurrentThreadLongPtr() { return (uptr *)get_android_tls_ptr(); }
+uptr *GetCurrentThreadLongPtr() {
+  return (uptr *)get_android_tls_ptr();
+}
 #else
-uptr *GetCurrentThreadLongPtr() { return &__hwasan_tls; }
+uptr *GetCurrentThreadLongPtr() {
+  return &__hwasan_tls;
+}
 #endif
 
 #if SANITIZER_ANDROID
@@ -331,14 +338,14 @@ static AccessInfo GetAccessInfo(siginfo_t *info, ucontext_t *uc) {
   uptr pc = (uptr)info->si_addr;
   const unsigned code = ((*(u32 *)pc) >> 5) & 0xffff;
   if ((code & 0xff00) != 0x900)
-    return AccessInfo{};  // Not ours.
+    return AccessInfo{}; // Not ours.
 
   const bool is_store = code & 0x10;
   const bool recover = code & 0x20;
   const uptr addr = uc->uc_mcontext.regs[0];
   const unsigned size_log = code & 0xf;
   if (size_log > 4 && size_log != 0xf)
-    return AccessInfo{};  // Not ours.
+    return AccessInfo{}; // Not ours.
   const uptr size = size_log == 0xf ? uc->uc_mcontext.regs[1] : 1U << size_log;
 
 #elif defined(__x86_64__)
@@ -346,10 +353,10 @@ static AccessInfo GetAccessInfo(siginfo_t *info, ucontext_t *uc) {
   // NOP DWORD ptr [EAX + 0x40 + 0xXY]. For Y == 0xF, access size is stored in
   // RSI register. Access address is always in RDI register.
   uptr pc = (uptr)uc->uc_mcontext.gregs[REG_RIP];
-  uint8_t *nop = (uint8_t *)pc;
-  if (*nop != 0x0f || *(nop + 1) != 0x1f || *(nop + 2) != 0x40 ||
+  uint8_t *nop = (uint8_t*)pc;
+  if (*nop != 0x0f || *(nop + 1) != 0x1f || *(nop + 2) != 0x40  ||
       *(nop + 3) < 0x40)
-    return AccessInfo{};  // Not ours.
+    return AccessInfo{}; // Not ours.
   const unsigned code = *(nop + 3);
 
   const bool is_store = code & 0x10;
@@ -357,12 +364,12 @@ static AccessInfo GetAccessInfo(siginfo_t *info, ucontext_t *uc) {
   const uptr addr = uc->uc_mcontext.gregs[REG_RDI];
   const unsigned size_log = code & 0xf;
   if (size_log > 4 && size_log != 0xf)
-    return AccessInfo{};  // Not ours.
+    return AccessInfo{}; // Not ours.
   const uptr size =
       size_log == 0xf ? uc->uc_mcontext.gregs[REG_RSI] : 1U << size_log;
 
 #else
-#error Unsupported architecture
+# error Unsupported architecture
 #endif
 
   return AccessInfo{addr, size, is_store, !is_store, recover};
@@ -402,7 +409,7 @@ static bool HwasanOnSIGTRAP(int signo, siginfo_t *info, ucontext_t *uc) {
   uc->uc_mcontext.pc += 4;
 #elif defined(__x86_64__)
 #else
-#error Unsupported architecture
+# error Unsupported architecture
 #endif
   return true;
 }
@@ -416,13 +423,14 @@ static void OnStackUnwind(const SignalContext &sig, const void *,
 void HwasanOnDeadlySignal(int signo, void *info, void *context) {
   // Probably a tag mismatch.
   if (signo == SIGTRAP)
-    if (HwasanOnSIGTRAP(signo, (siginfo_t *)info, (ucontext_t *)context))
+    if (HwasanOnSIGTRAP(signo, (siginfo_t *)info, (ucontext_t*)context))
       return;
 
   HandleDeadlySignal(info, context, GetTid(), &OnStackUnwind, nullptr);
 }
 
-}  // namespace __hwasan
+
+} // namespace __hwasan
 
 // Entry point for interoperability between __hwasan_tag_mismatch (ASM) and the
 // rest of the mismatch handling code (C++).
@@ -444,4 +452,4 @@ void __hwasan_tag_mismatch4(uptr addr, uptr access_info, uptr *registers_frame,
   __builtin_unreachable();
 }
 
-#endif  // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD
+#endif // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD

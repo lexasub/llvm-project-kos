@@ -17,14 +17,15 @@
 #include <utility>
 #include <cassert>
 
-int main(int, char**) {
-  {
-    typedef std::pair<int, short> P;
-    const P p(3, 4);
-    assert(std::get<0>(p) == 3);
-    assert(std::get<1>(p) == 4);
-    std::get<0>(p) = 5;
-  }
+int main(int, char**)
+{
+    {
+        typedef std::pair<int, short> P;
+        const P p(3, 4);
+        assert(std::get<0>(p) == 3);
+        assert(std::get<1>(p) == 4);
+        std::get<0>(p) = 5;
+    }
 
   return 0;
 }

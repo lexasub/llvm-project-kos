@@ -6,6 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #include "ArchHandler.h"
 #include "Atoms.h"
 #include "MachONormalizedFileBinaryUtils.h"
@@ -20,12 +21,15 @@ using namespace lld::mach_o::normalized;
 namespace lld {
 namespace mach_o {
 
-ArchHandler::ArchHandler() {}
 
-ArchHandler::~ArchHandler() {}
+ArchHandler::ArchHandler() {
+}
 
-std::unique_ptr<mach_o::ArchHandler>
-ArchHandler::create(MachOLinkingContext::Arch arch) {
+ArchHandler::~ArchHandler() {
+}
+
+std::unique_ptr<mach_o::ArchHandler> ArchHandler::create(
+                                               MachOLinkingContext::Arch arch) {
   switch (arch) {
   case MachOLinkingContext::arch_x86_64:
     return create_x86_64();
@@ -42,6 +46,7 @@ ArchHandler::create(MachOLinkingContext::Arch arch) {
   }
 }
 
+
 bool ArchHandler::isLazyPointer(const Reference &ref) {
   // A lazy bind entry is needed for a lazy pointer.
   const StubInfo &info = stubInfo();
@@ -52,6 +57,7 @@ bool ArchHandler::isLazyPointer(const Reference &ref) {
   return (ref.kindValue() == info.lazyPointerReferenceToFinal.kind);
 }
 
+
 ArchHandler::RelocPattern ArchHandler::relocPattern(const Relocation &reloc) {
   assert((reloc.type & 0xFFF0) == 0);
   uint16_t result = reloc.type;
@@ -61,7 +67,7 @@ ArchHandler::RelocPattern ArchHandler::relocPattern(const Relocation &reloc) {
     result |= rPcRel;
   if (reloc.isExtern)
     result |= rExtern;
-  switch (reloc.length) {
+  switch(reloc.length) {
   case 0:
     break;
   case 1:
@@ -82,13 +88,13 @@ ArchHandler::RelocPattern ArchHandler::relocPattern(const Relocation &reloc) {
 normalized::Relocation
 ArchHandler::relocFromPattern(ArchHandler::RelocPattern pattern) {
   normalized::Relocation result;
-  result.offset = 0;
+  result.offset    = 0;
   result.scattered = (pattern & rScattered);
-  result.type = (RelocationInfoType)(pattern & 0xF);
-  result.pcRel = (pattern & rPcRel);
+  result.type     = (RelocationInfoType)(pattern & 0xF);
+  result.pcRel    = (pattern & rPcRel);
   result.isExtern = (pattern & rExtern);
-  result.value = 0;
-  result.symbol = 0;
+  result.value    = 0;
+  result.symbol    = 0;
   switch (pattern & 0x300) {
   case rLength1:
     result.length = 0;
@@ -112,12 +118,13 @@ void ArchHandler::appendReloc(normalized::Relocations &relocs, uint32_t offset,
   normalized::Relocation reloc = relocFromPattern(pattern);
   reloc.offset = offset;
   reloc.symbol = symbol;
-  reloc.value = value;
+  reloc.value  = value;
   relocs.push_back(reloc);
 }
 
+
 int16_t ArchHandler::readS16(const uint8_t *addr, bool isBig) {
-  return read16(addr, isBig);
+    return read16(addr, isBig);
 }
 
 int32_t ArchHandler::readS32(const uint8_t *addr, bool isBig) {
@@ -128,7 +135,7 @@ uint32_t ArchHandler::readU32(const uint8_t *addr, bool isBig) {
   return read32(addr, isBig);
 }
 
-int64_t ArchHandler::readS64(const uint8_t *addr, bool isBig) {
+  int64_t ArchHandler::readS64(const uint8_t *addr, bool isBig) {
   return read64(addr, isBig);
 }
 
@@ -159,3 +166,6 @@ const Atom *ArchHandler::fdeTargetFunction(const DefinedAtom *fde) {
 
 } // namespace mach_o
 } // namespace lld
+
+
+

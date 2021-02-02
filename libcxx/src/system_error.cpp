@@ -27,26 +27,32 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 
 // class error_category
 
-#if defined(                                                                   \
-    _LIBCPP_DEPRECATED_ABI_LEGACY_LIBRARY_DEFINITIONS_FOR_INLINE_FUNCTIONS)
-error_category::error_category() _NOEXCEPT {}
+#if defined(_LIBCPP_DEPRECATED_ABI_LEGACY_LIBRARY_DEFINITIONS_FOR_INLINE_FUNCTIONS)
+error_category::error_category() _NOEXCEPT
+{
+}
 #endif
 
-error_category::~error_category() _NOEXCEPT {}
+error_category::~error_category() _NOEXCEPT
+{
+}
 
 error_condition
-error_category::default_error_condition(int ev) const _NOEXCEPT {
-  return error_condition(ev, *this);
+error_category::default_error_condition(int ev) const _NOEXCEPT
+{
+    return error_condition(ev, *this);
 }
 
-bool error_category::equivalent(
-    int code, const error_condition& condition) const _NOEXCEPT {
-  return default_error_condition(code) == condition;
+bool
+error_category::equivalent(int code, const error_condition& condition) const _NOEXCEPT
+{
+    return default_error_condition(code) == condition;
 }
 
-bool error_category::equivalent(const error_code& code,
-                                int condition) const _NOEXCEPT {
-  return *this == code.category() && code.value() == condition;
+bool
+error_category::equivalent(const error_code& code, int condition) const _NOEXCEPT
+{
+    return *this == code.category() && code.value() == condition;
 }
 
 #if !defined(_LIBCPP_HAS_NO_THREADS)
@@ -71,8 +77,8 @@ string do_strerror_r(int ev) {
 // the return type of strerror_r:
 
 // For the GNU variant, a char* return value:
-__attribute__((unused)) const char*
-handle_strerror_r_return(char* strerror_return, char* buffer) {
+__attribute__((unused)) const char *
+handle_strerror_r_return(char *strerror_return, char *buffer) {
   // GNU always returns a string pointer in its return value. The
   // string might point to either the input buffer, or a static
   // buffer, but we don't care which.
@@ -80,8 +86,8 @@ handle_strerror_r_return(char* strerror_return, char* buffer) {
 }
 
 // For the POSIX variant: an int return value.
-__attribute__((unused)) const char*
-handle_strerror_r_return(int strerror_return, char* buffer) {
+__attribute__((unused)) const char *
+handle_strerror_r_return(int strerror_return, char *buffer) {
   // The POSIX variant either:
   // - fills in the provided buffer and returns 0
   // - returns a positive error value, or
@@ -103,137 +109,186 @@ handle_strerror_r_return(int strerror_return, char* buffer) {
 // This function handles both GNU and POSIX variants, dispatching to
 // one of the two above functions.
 string do_strerror_r(int ev) {
-  char buffer[strerror_buff_size];
-  // Preserve errno around the call. (The C++ standard requires that
-  // system_error functions not modify errno).
-  const int old_errno = errno;
-  const char* error_message = handle_strerror_r_return(
-      ::strerror_r(ev, buffer, strerror_buff_size), buffer);
-  // If we didn't get any message, print one now.
-  if (!error_message[0]) {
-    std::snprintf(buffer, strerror_buff_size, "Unknown error %d", ev);
-    error_message = buffer;
-  }
-  errno = old_errno;
-  return string(error_message);
+    char buffer[strerror_buff_size];
+    // Preserve errno around the call. (The C++ standard requires that
+    // system_error functions not modify errno).
+    const int old_errno = errno;
+    const char *error_message = handle_strerror_r_return(
+        ::strerror_r(ev, buffer, strerror_buff_size), buffer);
+    // If we didn't get any message, print one now.
+    if (!error_message[0]) {
+      std::snprintf(buffer, strerror_buff_size, "Unknown error %d", ev);
+      error_message = buffer;
+    }
+    errno = old_errno;
+    return string(error_message);
 }
 #endif
 } // end namespace
 #endif
 
-string __do_message::message(int ev) const {
+string
+__do_message::message(int ev) const
+{
 #if defined(_LIBCPP_HAS_NO_THREADS)
-  return string(::strerror(ev));
+    return string(::strerror(ev));
 #else
-  return do_strerror_r(ev);
+    return do_strerror_r(ev);
 #endif
 }
 
-class _LIBCPP_HIDDEN __generic_error_category : public __do_message {
+class _LIBCPP_HIDDEN __generic_error_category
+    : public __do_message
+{
 public:
-  virtual const char* name() const _NOEXCEPT;
-  virtual string message(int ev) const;
+    virtual const char* name() const _NOEXCEPT;
+    virtual string message(int ev) const;
 };
 
-const char* __generic_error_category::name() const _NOEXCEPT {
-  return "generic";
+const char*
+__generic_error_category::name() const _NOEXCEPT
+{
+    return "generic";
 }
 
-string __generic_error_category::message(int ev) const {
+string
+__generic_error_category::message(int ev) const
+{
 #ifdef _LIBCPP_ELAST
-  if (ev > _LIBCPP_ELAST)
-    return string("unspecified generic_category error");
-#endif // _LIBCPP_ELAST
-  return __do_message::message(ev);
+    if (ev > _LIBCPP_ELAST)
+      return string("unspecified generic_category error");
+#endif  // _LIBCPP_ELAST
+    return __do_message::message(ev);
 }
 
-const error_category& generic_category() _NOEXCEPT {
-  static __generic_error_category s;
-  return s;
+const error_category&
+generic_category() _NOEXCEPT
+{
+    static __generic_error_category s;
+    return s;
 }
 
-class _LIBCPP_HIDDEN __system_error_category : public __do_message {
+class _LIBCPP_HIDDEN __system_error_category
+    : public __do_message
+{
 public:
-  virtual const char* name() const _NOEXCEPT;
-  virtual string message(int ev) const;
-  virtual error_condition default_error_condition(int ev) const _NOEXCEPT;
+    virtual const char* name() const _NOEXCEPT;
+    virtual string message(int ev) const;
+    virtual error_condition default_error_condition(int ev) const _NOEXCEPT;
 };
 
-const char* __system_error_category::name() const _NOEXCEPT { return "system"; }
+const char*
+__system_error_category::name() const _NOEXCEPT
+{
+    return "system";
+}
 
-string __system_error_category::message(int ev) const {
+string
+__system_error_category::message(int ev) const
+{
 #ifdef _LIBCPP_ELAST
-  if (ev > _LIBCPP_ELAST)
-    return string("unspecified system_category error");
-#endif // _LIBCPP_ELAST
-  return __do_message::message(ev);
+    if (ev > _LIBCPP_ELAST)
+      return string("unspecified system_category error");
+#endif  // _LIBCPP_ELAST
+    return __do_message::message(ev);
 }
 
 error_condition
-__system_error_category::default_error_condition(int ev) const _NOEXCEPT {
+__system_error_category::default_error_condition(int ev) const _NOEXCEPT
+{
 #ifdef _LIBCPP_ELAST
-  if (ev > _LIBCPP_ELAST)
-    return error_condition(ev, system_category());
-#endif // _LIBCPP_ELAST
-  return error_condition(ev, generic_category());
+    if (ev > _LIBCPP_ELAST)
+      return error_condition(ev, system_category());
+#endif  // _LIBCPP_ELAST
+    return error_condition(ev, generic_category());
 }
 
-const error_category& system_category() _NOEXCEPT {
-  static __system_error_category s;
-  return s;
+const error_category&
+system_category() _NOEXCEPT
+{
+    static __system_error_category s;
+    return s;
 }
 
 // error_condition
 
-string error_condition::message() const { return __cat_->message(__val_); }
+string
+error_condition::message() const
+{
+    return __cat_->message(__val_);
+}
 
 // error_code
 
-string error_code::message() const { return __cat_->message(__val_); }
+string
+error_code::message() const
+{
+    return __cat_->message(__val_);
+}
 
 // system_error
 
-string system_error::__init(const error_code& ec, string what_arg) {
-  if (ec) {
-    if (!what_arg.empty())
-      what_arg += ": ";
-    what_arg += ec.message();
-  }
-  return what_arg;
+string
+system_error::__init(const error_code& ec, string what_arg)
+{
+    if (ec)
+    {
+        if (!what_arg.empty())
+            what_arg += ": ";
+        what_arg += ec.message();
+    }
+    return what_arg;
 }
 
 system_error::system_error(error_code ec, const string& what_arg)
-    : runtime_error(__init(ec, what_arg)), __ec_(ec) {}
+    : runtime_error(__init(ec, what_arg)),
+      __ec_(ec)
+{
+}
 
 system_error::system_error(error_code ec, const char* what_arg)
-    : runtime_error(__init(ec, what_arg)), __ec_(ec) {}
+    : runtime_error(__init(ec, what_arg)),
+      __ec_(ec)
+{
+}
 
 system_error::system_error(error_code ec)
-    : runtime_error(__init(ec, "")), __ec_(ec) {}
+    : runtime_error(__init(ec, "")),
+      __ec_(ec)
+{
+}
 
-system_error::system_error(int ev, const error_category& ecat,
-                           const string& what_arg)
+system_error::system_error(int ev, const error_category& ecat, const string& what_arg)
     : runtime_error(__init(error_code(ev, ecat), what_arg)),
-      __ec_(error_code(ev, ecat)) {}
+      __ec_(error_code(ev, ecat))
+{
+}
 
-system_error::system_error(int ev, const error_category& ecat,
-                           const char* what_arg)
+system_error::system_error(int ev, const error_category& ecat, const char* what_arg)
     : runtime_error(__init(error_code(ev, ecat), what_arg)),
-      __ec_(error_code(ev, ecat)) {}
+      __ec_(error_code(ev, ecat))
+{
+}
 
 system_error::system_error(int ev, const error_category& ecat)
     : runtime_error(__init(error_code(ev, ecat), "")),
-      __ec_(error_code(ev, ecat)) {}
+      __ec_(error_code(ev, ecat))
+{
+}
 
-system_error::~system_error() _NOEXCEPT {}
+system_error::~system_error() _NOEXCEPT
+{
+}
 
-void __throw_system_error(int ev, const char* what_arg) {
+void
+__throw_system_error(int ev, const char* what_arg)
+{
 #ifndef _LIBCPP_NO_EXCEPTIONS
-  throw system_error(error_code(ev, system_category()), what_arg);
+    throw system_error(error_code(ev, system_category()), what_arg);
 #else
-  (void)ev;
-  (void)what_arg;
-  _VSTD::abort();
+    (void)ev;
+    (void)what_arg;
+    _VSTD::abort();
 #endif
 }
 

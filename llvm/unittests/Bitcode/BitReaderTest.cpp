@@ -62,19 +62,19 @@ static std::unique_ptr<Module> getLazyModuleFromAssembly(LLVMContext &Context,
 TEST(BitReaderTest, MaterializeFunctionsOutOfOrder) {
   SmallString<1024> Mem;
   LLVMContext Context;
-  std::unique_ptr<Module> M = getLazyModuleFromAssembly(Context, Mem,
-                                                        "define void @f() {\n"
-                                                        "  unreachable\n"
-                                                        "}\n"
-                                                        "define void @g() {\n"
-                                                        "  unreachable\n"
-                                                        "}\n"
-                                                        "define void @h() {\n"
-                                                        "  unreachable\n"
-                                                        "}\n"
-                                                        "define void @j() {\n"
-                                                        "  unreachable\n"
-                                                        "}\n");
+  std::unique_ptr<Module> M = getLazyModuleFromAssembly(
+      Context, Mem, "define void @f() {\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define void @g() {\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define void @h() {\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define void @j() {\n"
+                    "  unreachable\n"
+                    "}\n");
   EXPECT_FALSE(verifyModule(*M, &dbgs()));
 
   Function *F = M->getFunction("f");
@@ -127,12 +127,11 @@ TEST(BitReaderTest, MaterializeFunctionsStrictFP) {
 
   LLVMContext Context;
   std::unique_ptr<Module> M = getLazyModuleFromAssembly(
-      Context, Mem,
-      "define double @foo(double %a) {\n"
-      "  %result = call double @bar(double %a) strictfp\n"
-      "  ret double %result\n"
-      "}\n"
-      "declare double @bar(double)\n");
+      Context, Mem, "define double @foo(double %a) {\n"
+                    "  %result = call double @bar(double %a) strictfp\n"
+                    "  ret double %result\n"
+                    "}\n"
+                    "declare double @bar(double)\n");
   Function *Foo = M->getFunction("foo");
   ASSERT_FALSE(Foo->materialize());
   EXPECT_FALSE(Foo->empty());
@@ -192,13 +191,12 @@ TEST(BitReaderTest, MaterializeFunctionsForBlockAddr) { // PR11677
 
   LLVMContext Context;
   std::unique_ptr<Module> M = getLazyModuleFromAssembly(
-      Context, Mem,
-      "@table = constant i8* blockaddress(@func, %bb)\n"
-      "define void @func() {\n"
-      "  unreachable\n"
-      "bb:\n"
-      "  unreachable\n"
-      "}\n");
+      Context, Mem, "@table = constant i8* blockaddress(@func, %bb)\n"
+                    "define void @func() {\n"
+                    "  unreachable\n"
+                    "bb:\n"
+                    "  unreachable\n"
+                    "}\n");
   EXPECT_FALSE(verifyModule(*M, &dbgs()));
   EXPECT_FALSE(M->getFunction("func")->empty());
 }
@@ -207,19 +205,18 @@ TEST(BitReaderTest, MaterializeFunctionsForBlockAddrInFunctionBefore) {
   SmallString<1024> Mem;
 
   LLVMContext Context;
-  std::unique_ptr<Module> M =
-      getLazyModuleFromAssembly(Context, Mem,
-                                "define i8* @before() {\n"
-                                "  ret i8* blockaddress(@func, %bb)\n"
-                                "}\n"
-                                "define void @other() {\n"
-                                "  unreachable\n"
-                                "}\n"
-                                "define void @func() {\n"
-                                "  unreachable\n"
-                                "bb:\n"
-                                "  unreachable\n"
-                                "}\n");
+  std::unique_ptr<Module> M = getLazyModuleFromAssembly(
+      Context, Mem, "define i8* @before() {\n"
+                    "  ret i8* blockaddress(@func, %bb)\n"
+                    "}\n"
+                    "define void @other() {\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define void @func() {\n"
+                    "  unreachable\n"
+                    "bb:\n"
+                    "  unreachable\n"
+                    "}\n");
   EXPECT_TRUE(M->getFunction("before")->empty());
   EXPECT_TRUE(M->getFunction("func")->empty());
   EXPECT_FALSE(verifyModule(*M, &dbgs()));
@@ -235,19 +232,18 @@ TEST(BitReaderTest, MaterializeFunctionsForBlockAddrInFunctionAfter) {
   SmallString<1024> Mem;
 
   LLVMContext Context;
-  std::unique_ptr<Module> M =
-      getLazyModuleFromAssembly(Context, Mem,
-                                "define void @func() {\n"
-                                "  unreachable\n"
-                                "bb:\n"
-                                "  unreachable\n"
-                                "}\n"
-                                "define void @other() {\n"
-                                "  unreachable\n"
-                                "}\n"
-                                "define i8* @after() {\n"
-                                "  ret i8* blockaddress(@func, %bb)\n"
-                                "}\n");
+  std::unique_ptr<Module> M = getLazyModuleFromAssembly(
+      Context, Mem, "define void @func() {\n"
+                    "  unreachable\n"
+                    "bb:\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define void @other() {\n"
+                    "  unreachable\n"
+                    "}\n"
+                    "define i8* @after() {\n"
+                    "  ret i8* blockaddress(@func, %bb)\n"
+                    "}\n");
   EXPECT_TRUE(M->getFunction("after")->empty());
   EXPECT_TRUE(M->getFunction("func")->empty());
   EXPECT_FALSE(verifyModule(*M, &dbgs()));

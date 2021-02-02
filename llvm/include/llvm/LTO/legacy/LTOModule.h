@@ -26,11 +26,11 @@
 
 // Forward references to llvm classes.
 namespace llvm {
-class Function;
-class GlobalValue;
-class MemoryBuffer;
-class TargetOptions;
-class Value;
+  class Function;
+  class GlobalValue;
+  class MemoryBuffer;
+  class TargetOptions;
+  class Value;
 
 //===----------------------------------------------------------------------===//
 /// C++ class which implements the opaque lto_module_t type.
@@ -39,8 +39,8 @@ struct LTOModule {
 private:
   struct NameAndAttributes {
     StringRef name;
-    uint32_t attributes = 0;
-    bool isFunction = 0;
+    uint32_t           attributes = 0;
+    bool               isFunction = 0;
     const GlobalValue *symbol = 0;
   };
 
@@ -55,7 +55,7 @@ private:
   std::vector<NameAndAttributes> _symbols;
 
   // _defines and _undefines only needed to disambiguate tentative definitions
-  StringSet<> _defines;
+  StringSet<>                             _defines;
   StringMap<NameAndAttributes> _undefines;
   std::vector<StringRef> _asm_undefines;
 
@@ -118,7 +118,9 @@ public:
   std::unique_ptr<Module> takeModule() { return std::move(Mod); }
 
   /// Return the Module's target triple.
-  const std::string &getTargetTriple() { return getModule().getTargetTriple(); }
+  const std::string &getTargetTriple() {
+    return getModule().getTargetTriple();
+  }
 
   /// Set the Module's target triple.
   void setTargetTriple(StringRef Triple) {
@@ -126,7 +128,9 @@ public:
   }
 
   /// Get the number of symbols
-  uint32_t getSymbolCount() { return _symbols.size(); }
+  uint32_t getSymbolCount() {
+    return _symbols.size();
+  }
 
   /// Get the attributes for a symbol at the specified index.
   lto_symbol_attributes getSymbolAttributes(uint32_t index) {
@@ -153,13 +157,11 @@ public:
   const std::vector<StringRef> &getAsmUndefinedRefs() { return _asm_undefines; }
 
   static lto::InputFile *createInputFile(const void *buffer, size_t buffer_size,
-                                         const char *path,
-                                         std::string &out_error);
+                                         const char *path, std::string &out_error);
 
   static size_t getDependentLibraryCount(lto::InputFile *input);
 
-  static const char *getDependentLibrary(lto::InputFile *input, size_t index,
-                                         size_t *size);
+  static const char *getDependentLibrary(lto::InputFile *input, size_t index, size_t *size);
 
   Expected<uint32_t> getMachOCPUType() const;
 
@@ -176,7 +178,8 @@ private:
   void parseSymbols();
 
   /// Add a symbol which isn't defined just yet to a list to be resolved later.
-  void addPotentialUndefinedSymbol(ModuleSymbolTable::Symbol Sym, bool isFunc);
+  void addPotentialUndefinedSymbol(ModuleSymbolTable::Symbol Sym,
+                                   bool isFunc);
 
   /// Add a defined symbol to the list.
   void addDefinedSymbol(StringRef Name, const GlobalValue *def,
@@ -213,5 +216,5 @@ private:
   makeLTOModule(MemoryBufferRef Buffer, const TargetOptions &options,
                 LLVMContext &Context, bool ShouldBeLazy);
 };
-} // namespace llvm
+}
 #endif

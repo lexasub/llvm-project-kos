@@ -12,8 +12,8 @@
 
 #include "RNBServices.h"
 
-#include "CFString.h"
 #include "DNB.h"
+#include "CFString.h"
 #include "DNBLog.h"
 #include "MacOSX/CFUtils.h"
 #include <CoreFoundation/CoreFoundation.h>

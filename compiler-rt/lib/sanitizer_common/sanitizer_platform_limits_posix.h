@@ -24,7 +24,7 @@
 #include "sanitizer_glibc_version.h"
 #endif
 
-#define GET_LINK_MAP_BY_DLOPEN_HANDLE(handle) ((link_map *)(handle))
+# define GET_LINK_MAP_BY_DLOPEN_HANDLE(handle) ((link_map*)(handle))
 
 namespace __sanitizer {
 extern unsigned struct_utsname_sz;
@@ -58,7 +58,7 @@ extern unsigned struct_fstab_sz;
 extern unsigned struct_statfs_sz;
 extern unsigned struct_sockaddr_sz;
 extern unsigned ucontext_t_sz;
-#endif  // !SANITIZER_ANDROID
+#endif // !SANITIZER_ANDROID
 
 #if SANITIZER_LINUX
 
@@ -179,7 +179,7 @@ struct __sanitizer_sem_t {
   uptr data[4];
 #endif
 };
-#endif  // SANITIZER_LINUX
+#endif // SANITIZER_LINUX
 
 #if SANITIZER_ANDROID
 struct __sanitizer_struct_mallinfo {
@@ -311,9 +311,9 @@ struct __sanitizer_ifaddrs {
   void *ifa_addr;     // (struct sockaddr *)
   void *ifa_netmask;  // (struct sockaddr *)
   // This is a union on Linux.
-#ifdef ifa_dstaddr
-#undef ifa_dstaddr
-#endif
+# ifdef ifa_dstaddr
+# undef ifa_dstaddr
+# endif
   void *ifa_dstaddr;  // (struct sockaddr *)
   void *ifa_data;
 };
@@ -547,11 +547,11 @@ union __sanitizer_pthread_attr_t {
 };
 
 #if SANITIZER_ANDROID
-#if SANITIZER_MIPS
+# if SANITIZER_MIPS
 typedef unsigned long __sanitizer_sigset_t[16 / sizeof(unsigned long)];
-#else
+# else
 typedef unsigned long __sanitizer_sigset_t;
-#endif
+# endif
 #elif SANITIZER_MAC
 typedef unsigned __sanitizer_sigset_t;
 #elif SANITIZER_LINUX
@@ -601,7 +601,7 @@ struct __sanitizer_sigaction {
   uptr sa_flags;
   void (*sa_restorer)();
 };
-#else  // !SANITIZER_ANDROID
+#else // !SANITIZER_ANDROID
 struct __sanitizer_sigaction {
 #if defined(__mips__) && !SANITIZER_FREEBSD
   unsigned int sa_flags;
@@ -621,7 +621,7 @@ struct __sanitizer_sigaction {
 #endif
 #ifndef __mips__
 #if defined(__sparc__)
-#if __GLIBC_PREREQ(2, 20)
+#if __GLIBC_PREREQ (2, 20)
   // On sparc glibc 2.19 and earlier sa_flags was unsigned long.
 #if defined(__arch64__)
   // To maintain ABI compatibility on sparc64 when switching to an int,
@@ -647,7 +647,7 @@ struct __sanitizer_sigaction {
   __sanitizer_sigset_t sa_mask;
 #endif
 };
-#endif  // !SANITIZER_ANDROID
+#endif // !SANITIZER_ANDROID
 
 #if defined(__mips__)
 struct __sanitizer_kernel_sigset_t {
@@ -721,7 +721,7 @@ struct __sanitizer_addrinfo {
   unsigned ai_addrlen;
   char *ai_canonname;
   void *ai_addr;
-#else  // LINUX
+#else // LINUX
   unsigned ai_addrlen;
   void *ai_addr;
   char *ai_canonname;
@@ -750,7 +750,7 @@ typedef unsigned long __sanitizer_nfds_t;
 #endif
 
 #if !SANITIZER_ANDROID
-#if SANITIZER_LINUX
+# if SANITIZER_LINUX
 struct __sanitizer_glob_t {
   uptr gl_pathc;
   char **gl_pathv;
@@ -763,12 +763,12 @@ struct __sanitizer_glob_t {
   int (*gl_lstat)(const char *, void *);
   int (*gl_stat)(const char *, void *);
 };
-#endif  // SANITIZER_LINUX
+# endif  // SANITIZER_LINUX
 
-#if SANITIZER_LINUX
+# if SANITIZER_LINUX
 extern int glob_nomatch;
 extern int glob_altdirfunc;
-#endif
+# endif
 #endif  // !SANITIZER_ANDROID
 
 extern unsigned path_max;
@@ -797,10 +797,10 @@ struct __sanitizer_FILE {
   __sanitizer_FILE *_chain;
   int _fileno;
 };
-#define SANITIZER_HAS_STRUCT_FILE 1
+# define SANITIZER_HAS_STRUCT_FILE 1
 #else
 typedef void __sanitizer_FILE;
-#define SANITIZER_HAS_STRUCT_FILE 0
+# define SANITIZER_HAS_STRUCT_FILE 0
 #endif
 
 #if SANITIZER_LINUX && !SANITIZER_ANDROID &&                               \
@@ -830,7 +830,7 @@ extern int ptrace_setregset;
 extern int ptrace_geteventmsg;
 #endif
 
-#if SANITIZER_LINUX && !SANITIZER_ANDROID
+#if SANITIZER_LINUX  && !SANITIZER_ANDROID
 extern unsigned struct_shminfo_sz;
 extern unsigned struct_shm_info_sz;
 extern int shmctl_ipc_stat;
@@ -979,7 +979,7 @@ extern unsigned struct_sbi_instrument_sz;
 extern unsigned struct_seq_event_rec_sz;
 extern unsigned struct_synth_info_sz;
 extern unsigned struct_vt_mode_sz;
-#endif  // SANITIZER_LINUX
+#endif // SANITIZER_LINUX
 
 #if SANITIZER_LINUX && !SANITIZER_ANDROID
 extern unsigned struct_ax25_parms_struct_sz;

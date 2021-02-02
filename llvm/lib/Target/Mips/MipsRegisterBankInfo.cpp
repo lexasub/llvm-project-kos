@@ -32,17 +32,19 @@ enum PartialMappingIdx {
   PMI_Min = PMI_GPR,
 };
 
-RegisterBankInfo::PartialMapping PartMappings[]{{0, 32, GPRBRegBank},
-                                                {0, 32, FPRBRegBank},
-                                                {0, 64, FPRBRegBank},
-                                                {0, 128, FPRBRegBank}};
+RegisterBankInfo::PartialMapping PartMappings[]{
+    {0, 32, GPRBRegBank},
+    {0, 32, FPRBRegBank},
+    {0, 64, FPRBRegBank},
+    {0, 128, FPRBRegBank}
+};
 
 enum ValueMappingIdx {
-  InvalidIdx = 0,
-  GPRIdx = 1,
-  SPRIdx = 4,
-  DPRIdx = 7,
-  MSAIdx = 10
+    InvalidIdx = 0,
+    GPRIdx = 1,
+    SPRIdx = 4,
+    DPRIdx = 7,
+    MSAIdx = 10
 };
 
 RegisterBankInfo::ValueMapping ValueMappings[] = {
@@ -63,7 +65,8 @@ RegisterBankInfo::ValueMapping ValueMappings[] = {
     // up to 3 operands in FPRs - MSA
     {&PartMappings[PMI_MSA - PMI_Min], 1},
     {&PartMappings[PMI_MSA - PMI_Min], 1},
-    {&PartMappings[PMI_MSA - PMI_Min], 1}};
+    {&PartMappings[PMI_MSA - PMI_Min], 1}
+};
 
 } // end namespace Mips
 } // end namespace llvm
@@ -258,7 +261,7 @@ MipsRegisterBankInfo::AmbiguousRegDefUseContainer::AmbiguousRegDefUseContainer(
     addUseDef(MI->getOperand(MI->getNumOperands() - 1).getReg(), MRI);
 
   if (MI->getOpcode() == TargetOpcode::G_MERGE_VALUES)
-    addDefUses(MI->getOperand(0).getReg(), MRI);
+      addDefUses(MI->getOperand(0).getReg(), MRI);
 }
 
 bool MipsRegisterBankInfo::TypeInfoForMF::visit(

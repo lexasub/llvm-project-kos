@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 // Make sure we correctly treat __typeof as potentially-evaluated when appropriate
-template <typename T> void f(T n) {
+template<typename T> void f(T n) {
   int buffer[n];
   [&buffer] { __typeof(buffer) x; }();
 }

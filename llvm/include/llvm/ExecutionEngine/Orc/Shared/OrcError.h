@@ -52,7 +52,6 @@ public:
   std::error_code convertToErrorCode() const override;
   void log(raw_ostream &OS) const override;
   const std::string &getSymbolName() const;
-
 private:
   std::string SymbolName;
 };
@@ -65,7 +64,6 @@ public:
   std::error_code convertToErrorCode() const override;
   void log(raw_ostream &OS) const override;
   const std::string &getSymbolName() const;
-
 private:
   std::string SymbolName;
 };

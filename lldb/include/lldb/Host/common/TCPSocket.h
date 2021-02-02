@@ -55,6 +55,6 @@ private:
 
   std::map<int, SocketAddress> m_listen_sockets;
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_HOST_COMMON_TCPSOCKET_H

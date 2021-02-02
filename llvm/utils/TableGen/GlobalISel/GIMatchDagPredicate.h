@@ -9,8 +9,8 @@
 #ifndef LLVM_UTILS_TABLEGEN_GIMATCHDAGPREDICATE_H
 #define LLVM_UTILS_TABLEGEN_GIMATCHDAGPREDICATE_H
 
-#include "GIMatchDag.h"
 #include "llvm/ADT/StringRef.h"
+#include "GIMatchDag.h"
 
 namespace llvm {
 class CodeExpansions;

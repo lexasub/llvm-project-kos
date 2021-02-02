@@ -1,12 +1,12 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 // RUN: not %clang_cc1 -std=c++11 -fsyntax-only -fdiagnostics-parseable-fixits %s 2>&1 | FileCheck %s
 namespace std {
-template <class X>
-class initializer_list {
-public:
-  initializer_list();
-};
-} // namespace std
+  template <class X>
+  class initializer_list {
+    public:
+    initializer_list();
+  };
+}
 
 class Foo {
 public:
@@ -16,37 +16,37 @@ public:
   Foo operator+(const Foo);
 };
 
-#define EQ(x, y) (void)(x == y) // expected-note 6{{defined here}}
+#define EQ(x,y) (void)(x == y)  // expected-note 6{{defined here}}
 void test_EQ() {
   Foo F;
-  F = Foo{1, 2};
+  F = Foo{1,2};
 
-  EQ(F, F);
-  EQ(F, Foo());
-  EQ(F, Foo({1, 2, 3}));
-  EQ(Foo({1, 2, 3}), F);
-  EQ((Foo{1, 2, 3}), (Foo{1, 2, 3}));
+  EQ(F,F);
+  EQ(F,Foo());
+  EQ(F,Foo({1,2,3}));
+  EQ(Foo({1,2,3}),F);
+  EQ((Foo{1,2,3}),(Foo{1,2,3}));
   EQ(F, F + F);
-  EQ(F, Foo({1, 2, 3}) + Foo({1, 2, 3}));
-  EQ(F, (Foo{1, 2, 3} + Foo{1, 2, 3}));
+  EQ(F, Foo({1,2,3}) + Foo({1,2,3}));
+  EQ(F, (Foo{1,2,3} + Foo{1,2,3}));
 
-  EQ(F, Foo{1, 2, 3});
+  EQ(F,Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
-  EQ(Foo{1, 2, 3}, F);
+  EQ(Foo{1,2,3},F);
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
-  EQ(Foo{1, 2, 3}, Foo{1, 2, 3});
+  EQ(Foo{1,2,3},Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
 
-  EQ(Foo{1, 2, 3} + Foo{1, 2, 3}, F);
+  EQ(Foo{1,2,3} + Foo{1,2,3}, F);
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
-  EQ(F, Foo({1, 2, 3}) + Foo{1, 2, 3});
+  EQ(F, Foo({1,2,3}) + Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
-  EQ(F, Foo{1, 2, 3} + Foo{1, 2, 3});
+  EQ(F, Foo{1,2,3} + Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
 }
@@ -71,43 +71,43 @@ void test_EQ() {
 // CHECK: fix-it:"{{.*}}macro_with_initializer_list.cpp":{49:9-49:9}:"("
 // CHECK: fix-it:"{{.*}}macro_with_initializer_list.cpp":{49:32-49:32}:")"
 
-#define NE(x, y) (void)(x != y) // expected-note 6{{defined here}}
+#define NE(x,y) (void)(x != y)  // expected-note 6{{defined here}}
 // Operator != isn't defined.  This tests that the corrected macro arguments
 // are used in the macro expansion.
 void test_NE() {
   Foo F;
 
-  NE(F, F);
+  NE(F,F);
   // expected-error@-1 {{invalid operands}}
-  NE(F, Foo());
+  NE(F,Foo());
   // expected-error@-1 {{invalid operands}}
-  NE(F, Foo({1, 2, 3}));
+  NE(F,Foo({1,2,3}));
   // expected-error@-1 {{invalid operands}}
-  NE((Foo{1, 2, 3}), (Foo{1, 2, 3}));
+  NE((Foo{1,2,3}),(Foo{1,2,3}));
   // expected-error@-1 {{invalid operands}}
 
-  NE(F, Foo{1, 2, 3});
+  NE(F,Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
-  NE(Foo{1, 2, 3}, F);
+  NE(Foo{1,2,3},F);
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
-  NE(Foo{1, 2, 3}, Foo{1, 2, 3});
+  NE(Foo{1,2,3},Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
 
-  NE(Foo{1, 2, 3} + Foo{1, 2, 3}, F);
+  NE(Foo{1,2,3} + Foo{1,2,3}, F);
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
-  NE(F, Foo({1, 2, 3}) + Foo{1, 2, 3});
+  NE(F, Foo({1,2,3}) + Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
-  NE(F, Foo{1, 2, 3} + Foo{1, 2, 3});
+  NE(F, Foo{1,2,3} + Foo{1,2,3});
   // expected-error@-1 {{too many arguments provided}}
   // expected-note@-2 {{parentheses are required}}
   // expected-error@-3 {{invalid operands}}
@@ -162,20 +162,20 @@ void test() {
 // CHECK: fix-it:"{{.*}}macro_with_initializer_list.cpp":{145:11-145:11}:"("
 // CHECK: fix-it:"{{.*}}macro_with_initializer_list.cpp":{145:23-145:23}:")"
 
-#define M(name, a, b, c, d, e, f, g, h, i, j, k, l) \
+#define M(name,a,b,c,d,e,f,g,h,i,j,k,l) \
   Foo name = a + b + c + d + e + f + g + h + i + j + k + l;
 // expected-note@-2 2{{defined here}}
 void test2() {
   M(F1, Foo(), Foo(), Foo(), Foo(), Foo(), Foo(),
-    Foo(), Foo(), Foo(), Foo(), Foo(), Foo());
+        Foo(), Foo(), Foo(), Foo(), Foo(), Foo());
 
-  M(F2, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3},
-    Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3}, Foo{1, 2, 3});
+  M(F2, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3},
+        Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3}, Foo{1,2,3});
   // expected-error@-2 {{too many arguments provided}}
   // expected-note@-3 {{parentheses are required}}
 
-  M(F3, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3},
-    {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3});
+  M(F3, {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3},
+        {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3}, {1,2,3});
   // expected-error@-2 {{too many arguments provided}}
   // expected-error@-3 {{use of undeclared identifier}}
   // expected-note@-4 {{cannot use initializer list at the beginning of a macro argument}}

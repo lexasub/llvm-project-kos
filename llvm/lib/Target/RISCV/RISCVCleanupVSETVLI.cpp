@@ -49,8 +49,8 @@ public:
 
 char RISCVCleanupVSETVLI::ID = 0;
 
-INITIALIZE_PASS(RISCVCleanupVSETVLI, DEBUG_TYPE, RISCV_CLEANUP_VSETVLI_NAME,
-                false, false)
+INITIALIZE_PASS(RISCVCleanupVSETVLI, DEBUG_TYPE,
+                RISCV_CLEANUP_VSETVLI_NAME, false, false)
 
 bool RISCVCleanupVSETVLI::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
   bool Changed = false;
@@ -60,8 +60,9 @@ bool RISCVCleanupVSETVLI::runOnMachineBasicBlock(MachineBasicBlock &MBB) {
     MachineInstr &MI = *MII++;
 
     if (MI.getOpcode() != RISCV::PseudoVSETVLI) {
-      if (PrevVSETVLI && (MI.isCall() || MI.modifiesRegister(RISCV::VL) ||
-                          MI.modifiesRegister(RISCV::VTYPE))) {
+      if (PrevVSETVLI &&
+          (MI.isCall() || MI.modifiesRegister(RISCV::VL) ||
+           MI.modifiesRegister(RISCV::VTYPE))) {
         // Old VL/VTYPE is overwritten.
         PrevVSETVLI = nullptr;
       }

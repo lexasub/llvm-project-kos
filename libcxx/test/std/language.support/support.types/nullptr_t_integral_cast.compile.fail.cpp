@@ -10,8 +10,9 @@
 
 #include <cstddef>
 
-int main(int, char**) {
-  std::ptrdiff_t i = static_cast<std::ptrdiff_t>(nullptr);
+int main(int, char**)
+{
+    std::ptrdiff_t i = static_cast<std::ptrdiff_t>(nullptr);
 
   return 0;
 }

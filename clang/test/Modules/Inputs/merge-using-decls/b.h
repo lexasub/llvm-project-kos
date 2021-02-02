@@ -14,35 +14,35 @@ struct YBRev {
   int type;
 };
 
-template <typename T> struct C : X, T {
+template<typename T> struct C : X, T {
   using T::value;
   using typename T::type;
-  using typename X::t;
   using X::v;
+  using typename X::t;
 };
 
-template <typename T> struct D : X, T {
+template<typename T> struct D : X, T {
   // Mismatch in type/non-type-ness.
-  using T::type;
   using typename T::value;
-  using typename X::t;
+  using T::type;
   using X::v;
+  using typename X::t;
 };
 
 #if __cplusplus <= 199711L // C++11 does not allow access declarations
-template <typename T> struct E : X, T {
+template<typename T> struct E : X, T {
   // Mismatch in using/access-declaration-ness.
   T::value;
   X::v;
 };
 #endif
 
-template <typename T> struct F : X, T {
+template<typename T> struct F : X, T {
   // Mismatch in nested-name-specifier.
   using T::Y::value;
-  using typename ::X::t;
   using typename T::Y::type;
   using ::X::v;
+  using typename ::X::t;
 };
 
 // Force instantiation.

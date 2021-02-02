@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/IR/AbstractCallSite.h"
 #include "llvm/AsmParser/Parser.h"
+#include "llvm/IR/AbstractCallSite.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/SourceMgr.h"
@@ -31,9 +31,7 @@ TEST(AbstractCallSite, CallbackCall) {
       "  ret void\n"
       "}\n"
       "define void @foo(i32* %A) {\n"
-      "  call void (i32, void (i8*, ...)*, ...) @broker(i32 1, void (i8*, "
-      "...)* bitcast (void (i8*, i32*)* @callback to void (i8*, ...)*), i32* "
-      "%A)\n"
+      "  call void (i32, void (i8*, ...)*, ...) @broker(i32 1, void (i8*, ...)* bitcast (void (i8*, i32*)* @callback to void (i8*, ...)*), i32* %A)\n"
       "  ret void\n"
       "}\n"
       "declare !callback !0 void @broker(i32, void (i8*, ...)*, ...)\n"

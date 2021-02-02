@@ -35,9 +35,9 @@ int &usr = us1;
 __typeof__(0 + 0UL) ul0;
 unsigned long &ulr = ul0;
 
-template <bool T> struct selector;
-template <> struct selector<true> { typedef long type; };
-template <> struct selector<false> { typedef unsigned long type; };
+template<bool T> struct selector;
+template<> struct selector<true> { typedef long type; };
+template<> struct selector<false> {typedef unsigned long type; };
 __typeof__(0U + 0L) ui_l0;
 selector<(sizeof(long) > sizeof(unsigned int))>::type &ui_lr = ui_l0;
 

@@ -53,8 +53,9 @@ HexagonHazardRecognizer::getHazardType(SUnit *SU, int stalls) {
       // The .new store version uses different resources so check if it
       // causes a hazard.
       MachineFunction *MF = MI->getParent()->getParent();
-      MachineInstr *NewMI = MF->CreateMachineInstr(
-          TII->get(TII->getDotNewOp(*MI)), MI->getDebugLoc());
+      MachineInstr *NewMI =
+        MF->CreateMachineInstr(TII->get(TII->getDotNewOp(*MI)),
+                               MI->getDebugLoc());
       if (Resources->canReserveResources(*NewMI))
         RetVal = NoHazard;
       LLVM_DEBUG(dbgs() << "*** Try .new version? " << (RetVal == NoHazard)
@@ -123,12 +124,14 @@ void HexagonHazardRecognizer::EmitInstruction(SUnit *SU) {
     // reserved at this point.
     assert(TII->mayBeNewStore(*MI) && "Expecting .new store");
     MachineFunction *MF = MI->getParent()->getParent();
-    MachineInstr *NewMI = MF->CreateMachineInstr(
-        TII->get(TII->getDotNewOp(*MI)), MI->getDebugLoc());
+    MachineInstr *NewMI =
+        MF->CreateMachineInstr(TII->get(TII->getDotNewOp(*MI)),
+                               MI->getDebugLoc());
     assert(Resources->canReserveResources(*NewMI));
     Resources->reserveResources(*NewMI);
     MF->DeleteMachineInstr(NewMI);
-  } else
+  }
+  else
     Resources->reserveResources(*MI);
   LLVM_DEBUG(dbgs() << " Add instruction " << *MI);
 

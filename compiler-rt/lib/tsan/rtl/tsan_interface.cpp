@@ -11,11 +11,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "tsan_interface.h"
-
-#include "sanitizer_common/sanitizer_internal_defs.h"
-#include "sanitizer_common/sanitizer_ptrauth.h"
 #include "tsan_interface_ann.h"
 #include "tsan_rtl.h"
+#include "sanitizer_common/sanitizer_internal_defs.h"
+#include "sanitizer_common/sanitizer_ptrauth.h"
 
 #define CALLERPC ((uptr)__builtin_return_address(0))
 
@@ -26,7 +25,9 @@ void __tsan_init() {
   Initialize(cur_thread());
 }
 
-void __tsan_flush_memory() { FlushShadowMemory(); }
+void __tsan_flush_memory() {
+  FlushShadowMemory();
+}
 
 void __tsan_read16(void *addr) {
   MemoryRead(cur_thread(), CALLERPC, (uptr)addr, kSizeLog8);
@@ -122,7 +123,9 @@ void __sanitizer_unaligned_store64(uu64 *addr, u64 v) {
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__tsan_get_current_fiber() { return cur_thread(); }
+void *__tsan_get_current_fiber() {
+  return cur_thread();
+}
 
 SANITIZER_INTERFACE_ATTRIBUTE
 void *__tsan_create_fiber(unsigned flags) {
@@ -145,6 +148,10 @@ void __tsan_set_fiber_name(void *fiber, const char *name) {
 }
 }  // extern "C"
 
-void __tsan_acquire(void *addr) { Acquire(cur_thread(), CALLERPC, (uptr)addr); }
+void __tsan_acquire(void *addr) {
+  Acquire(cur_thread(), CALLERPC, (uptr)addr);
+}
 
-void __tsan_release(void *addr) { Release(cur_thread(), CALLERPC, (uptr)addr); }
+void __tsan_release(void *addr) {
+  Release(cur_thread(), CALLERPC, (uptr)addr);
+}

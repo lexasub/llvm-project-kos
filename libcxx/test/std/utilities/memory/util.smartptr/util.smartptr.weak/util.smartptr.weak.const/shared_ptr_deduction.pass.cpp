@@ -21,7 +21,8 @@
 
 struct A {};
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::shared_ptr<A> s(new A);
   auto w = std::weak_ptr(s);
   ASSERT_SAME_TYPE(decltype(w), std::weak_ptr<A>);

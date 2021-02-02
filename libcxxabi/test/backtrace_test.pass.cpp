@@ -12,15 +12,16 @@
 #include <stddef.h>
 #include <unwind.h>
 
-extern "C" _Unwind_Reason_Code trace_function(struct _Unwind_Context*,
-                                              void* ntraced) {
+extern "C" _Unwind_Reason_Code
+trace_function(struct _Unwind_Context*, void* ntraced) {
   (*reinterpret_cast<size_t*>(ntraced))++;
   // We should never have a call stack this deep...
   assert(*reinterpret_cast<size_t*>(ntraced) < 20);
   return _URC_NO_REASON;
 }
 
-__attribute__((__noinline__)) void call3_throw(size_t* ntraced) {
+__attribute__ ((__noinline__))
+void call3_throw(size_t* ntraced) {
   try {
     _Unwind_Backtrace(trace_function, ntraced);
   } catch (...) {
@@ -28,13 +29,13 @@ __attribute__((__noinline__)) void call3_throw(size_t* ntraced) {
   }
 }
 
-__attribute__((__noinline__, __disable_tail_calls__)) void
-call3_nothrow(size_t* ntraced) {
+__attribute__ ((__noinline__, __disable_tail_calls__))
+void call3_nothrow(size_t* ntraced) {
   _Unwind_Backtrace(trace_function, ntraced);
 }
 
-__attribute__((__noinline__, __disable_tail_calls__)) void
-call2(size_t* ntraced, bool do_throw) {
+__attribute__ ((__noinline__, __disable_tail_calls__))
+void call2(size_t* ntraced, bool do_throw) {
   if (do_throw) {
     call3_throw(ntraced);
   } else {
@@ -42,8 +43,8 @@ call2(size_t* ntraced, bool do_throw) {
   }
 }
 
-__attribute__((__noinline__, __disable_tail_calls__)) void
-call1(size_t* ntraced, bool do_throw) {
+__attribute__ ((__noinline__, __disable_tail_calls__))
+void call1(size_t* ntraced, bool do_throw) {
   call2(ntraced, do_throw);
 }
 

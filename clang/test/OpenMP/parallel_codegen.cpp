@@ -31,18 +31,17 @@ void foo(T argc) {}
 
 template <typename T>
 int tmain(T argc) {
-  typedef double(*chunk_t)[argc[0][0]];
+  typedef double (*chunk_t)[argc[0][0]];
 #pragma omp parallel
   {
-    foo(argc);
-    chunk_t var;
-    (void)var[0][0];
+  foo(argc);
+  chunk_t var;(void)var[0][0];
   }
   return 0;
 }
 
 int global;
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   int a[argc];
 #pragma omp parallel shared(global, a) default(none)
   foo(a[1]), a[1] = global;
@@ -125,6 +124,7 @@ int main(int argc, char **argv) {
 
 // CHECK:           define internal {{.*}}void [[OMP_OUTLINED2]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i{{[0-9]+}}{{.*}} [[VLA_SIZE:%.+]], i32* {{.+}} [[VLA_ADDR:%[^)]+]])
 // CHECK:           call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* [[DEF_LOC_2]], i32 2, void (i32*, i32*, ...)* bitcast (void (i32*, i32*, i{{[0-9]+}}, i32*)* [[OMP_OUTLINED21:@.+]] to void (i32*, i32*, ...)*), i{{[0-9]+}} %{{.+}}, i32* %{{.+}})
+
 
 // CHECK:           define internal {{.*}}void [[OMP_OUTLINED21]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i{{[0-9]+}}{{.*}} [[VLA_SIZE:%.+]], i32* {{.+}} [[VLA_ADDR:%[^)]+]])
 // CHECK:           load i32, i32* @

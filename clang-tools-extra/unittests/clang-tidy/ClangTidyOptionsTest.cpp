@@ -225,21 +225,21 @@ class TestCheck : public ClangTidyCheck {
 public:
   TestCheck(ClangTidyContext *Context) : ClangTidyCheck("test", Context) {}
 
-  template <typename... Args> auto getLocal(Args &&...Arguments) {
+  template <typename... Args> auto getLocal(Args &&... Arguments) {
     return Options.get(std::forward<Args>(Arguments)...);
   }
 
-  template <typename... Args> auto getGlobal(Args &&...Arguments) {
+  template <typename... Args> auto getGlobal(Args &&... Arguments) {
     return Options.getLocalOrGlobal(std::forward<Args>(Arguments)...);
   }
 
   template <typename IntType = int, typename... Args>
-  auto getIntLocal(Args &&...Arguments) {
+  auto getIntLocal(Args &&... Arguments) {
     return Options.get<IntType>(std::forward<Args>(Arguments)...);
   }
 
   template <typename IntType = int, typename... Args>
-  auto getIntGlobal(Args &&...Arguments) {
+  auto getIntGlobal(Args &&... Arguments) {
     return Options.getLocalOrGlobal<IntType>(std::forward<Args>(Arguments)...);
   }
 };

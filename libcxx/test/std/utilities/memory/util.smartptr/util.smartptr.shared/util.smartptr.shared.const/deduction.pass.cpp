@@ -23,10 +23,14 @@
 struct A {};
 
 struct D {
-  void operator()(A* ptr) const { delete ptr; }
+  void operator()(A* ptr) const
+  {
+    delete ptr;
+  }
 };
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     std::shared_ptr<A> s0(new A);
     std::weak_ptr<A> w = s0;

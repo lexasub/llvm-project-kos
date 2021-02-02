@@ -6,7 +6,12 @@
 #define THREE 3
 #define FOUR 4
 
-class Simple {
+class Simple
+{
 public:
-  int Method() { return ONE + TWO; };
+    int
+    Method()
+    {
+        return ONE + TWO;
+    };
 };

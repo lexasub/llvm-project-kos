@@ -31,7 +31,8 @@ enum class Token {
 };
 }
 
-template <typename T> static T stringTo(llvm::StringRef Str);
+template<typename T>
+static T stringTo(llvm::StringRef Str);
 
 template <> Token stringTo<Token>(llvm::StringRef Str) {
   return llvm::StringSwitch<Token>(Str)
@@ -75,7 +76,8 @@ llvm::Triple::ArchType stringTo<llvm::Triple::ArchType>(llvm::StringRef Str) {
       .Default(Triple::UnknownArch);
 }
 
-template <typename T> static T consume(llvm::StringRef &Str) {
+template<typename T>
+static T consume(llvm::StringRef &Str) {
   llvm::StringRef Token;
   std::tie(Token, Str) = getToken(Str);
   return stringTo<T>(Token);

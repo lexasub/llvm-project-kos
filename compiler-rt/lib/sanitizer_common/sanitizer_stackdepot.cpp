@@ -21,7 +21,7 @@ namespace __sanitizer {
 struct StackDepotNode {
   StackDepotNode *link;
   u32 id;
-  atomic_uint32_t hash_and_use_count;  // hash_bits : 12; use_count : 20;
+  atomic_uint32_t hash_and_use_count; // hash_bits : 12; use_count : 20;
   u32 size;
   u32 tag;
   uptr stack[1];  // [size]
@@ -42,8 +42,7 @@ struct StackDepotNode {
       return false;
     uptr i = 0;
     for (; i < size; i++) {
-      if (stack[i] != args.trace[i])
-        return false;
+      if (stack[i] != args.trace[i]) return false;
     }
     return true;
   }
@@ -64,7 +63,9 @@ struct StackDepotNode {
     tag = args.tag;
     internal_memcpy(stack, args.trace, size * sizeof(uptr));
   }
-  args_type load() const { return args_type(&stack[0], size, tag); }
+  args_type load() const {
+    return args_type(&stack[0], size, tag);
+  }
   StackDepotHandle get_handle() { return StackDepotHandle(this); }
 
   typedef StackDepotHandle handle_type;
@@ -89,7 +90,9 @@ typedef StackDepotBase<StackDepotNode, 1, StackDepotNode::kTabSizeLog>
     StackDepot;
 static StackDepot theDepot;
 
-StackDepotStats *StackDepotGetStats() { return theDepot.GetStats(); }
+StackDepotStats *StackDepotGetStats() {
+  return theDepot.GetStats();
+}
 
 u32 StackDepotPut(StackTrace stack) {
   StackDepotHandle h = theDepot.Put(stack);
@@ -100,11 +103,17 @@ StackDepotHandle StackDepotPut_WithHandle(StackTrace stack) {
   return theDepot.Put(stack);
 }
 
-StackTrace StackDepotGet(u32 id) { return theDepot.Get(id); }
+StackTrace StackDepotGet(u32 id) {
+  return theDepot.Get(id);
+}
 
-void StackDepotLockAll() { theDepot.LockAll(); }
+void StackDepotLockAll() {
+  theDepot.LockAll();
+}
 
-void StackDepotUnlockAll() { theDepot.UnlockAll(); }
+void StackDepotUnlockAll() {
+  theDepot.UnlockAll();
+}
 
 void StackDepotPrintAll() {
 #if !SANITIZER_GO
@@ -123,7 +132,7 @@ StackDepotReverseMap::StackDepotReverseMap() {
   for (int idx = 0; idx < StackDepot::kTabSize; idx++) {
     atomic_uintptr_t *p = &theDepot.tab[idx];
     uptr v = atomic_load(p, memory_order_consume);
-    StackDepotNode *s = (StackDepotNode *)(v & ~1);
+    StackDepotNode *s = (StackDepotNode*)(v & ~1);
     for (; s; s = s->link) {
       IdDescPair pair = {s->id, s};
       map_.push_back(pair);
@@ -142,4 +151,4 @@ StackTrace StackDepotReverseMap::Get(u32 id) {
   return map_[idx].desc->load();
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer

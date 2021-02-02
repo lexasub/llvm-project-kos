@@ -10,8 +10,7 @@ bool cond(const char *) {
 #define EMPTY_MACRO_FUN()
 
 void test() {
-  if (cond("if0") /*comment*/)
-    do_something("same-line");
+  if (cond("if0") /*comment*/) do_something("same-line");
   // CHECK-MESSAGES: :[[@LINE-1]]:31: warning: statement should be inside braces
   // CHECK-FIXES:   if (cond("if0") /*comment*/) { do_something("same-line");
   // CHECK-FIXES: }
@@ -135,7 +134,7 @@ void test() {
     // comment
     if (cond("ifif2"))
       // comment
-      /*comment*/; // comment
+      /*comment*/ ; // comment
   // CHECK-MESSAGES: :[[@LINE-5]]:21: warning: statement should be inside braces
   // CHECK-MESSAGES: :[[@LINE-4]]:23: warning: statement should be inside braces
   // CHECK-FIXES: if (cond("ifif1")) {
@@ -160,13 +159,7 @@ void test() {
   // CHECK-FIXES: if (cond("ifif5")) {
   // CHECK-FIXES: }/* multi-line
 
-  if (1)
-    while (2)
-      if (3)
-        for (;;)
-          do
-            ;
-          while (false) /**/; /**/
+  if (1) while (2) if (3) for (;;) do ; while(false) /**/;/**/
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: statement should be inside braces
   // CHECK-MESSAGES: :[[@LINE-2]]:19: warning: statement should be inside braces
   // CHECK-MESSAGES: :[[@LINE-3]]:26: warning: statement should be inside braces
@@ -203,7 +196,9 @@ int test_macros(bool b) {
   // CHECK-FIXES-NEXT:   M(return 2);
   // CHECK-FIXES-NEXT: }
   M(
-      for (;;););
+    for (;;)
+      ;
+  );
   // CHECK-MESSAGES: :[[@LINE-3]]:13: warning: statement should be inside braces
   // CHECK-FIXES: {{^}}    for (;;) {{{$}}
   // CHECK-FIXES-NEXT: {{^      ;$}}

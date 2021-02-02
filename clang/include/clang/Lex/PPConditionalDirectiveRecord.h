@@ -33,14 +33,13 @@ class PPConditionalDirectiveRecord : public PPCallbacks {
 
   public:
     CondDirectiveLoc(SourceLocation Loc, SourceLocation RegionLoc)
-        : Loc(Loc), RegionLoc(RegionLoc) {}
+      : Loc(Loc), RegionLoc(RegionLoc) {}
 
     SourceLocation getLoc() const { return Loc; }
     SourceLocation getRegionLoc() const { return RegionLoc; }
 
     class Comp {
       SourceManager &SM;
-
     public:
       explicit Comp(SourceManager &SM) : SM(SM) {}
       bool operator()(const CondDirectiveLoc &LHS,
@@ -80,7 +79,7 @@ public:
   bool areInDifferentConditionalDirectiveRegion(SourceLocation LHS,
                                                 SourceLocation RHS) const {
     return findConditionalDirectiveRegionLoc(LHS) !=
-           findConditionalDirectiveRegionLoc(RHS);
+        findConditionalDirectiveRegionLoc(RHS);
   }
 
   SourceLocation findConditionalDirectiveRegionLoc(SourceLocation Loc) const;

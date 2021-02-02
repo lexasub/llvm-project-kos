@@ -14,7 +14,11 @@ using namespace llvm;
 namespace {
 
 static const char *const NameTable1[] = {
-    "llvm.foo", "llvm.foo.a", "llvm.foo.b", "llvm.foo.b.a", "llvm.foo.c",
+  "llvm.foo",
+  "llvm.foo.a",
+  "llvm.foo.b",
+  "llvm.foo.b.a",
+  "llvm.foo.c",
 };
 
 TEST(IntrinNameLookup, Basic) {

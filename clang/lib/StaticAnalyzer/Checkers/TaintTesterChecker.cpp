@@ -22,27 +22,29 @@ using namespace ento;
 using namespace taint;
 
 namespace {
-class TaintTesterChecker : public Checker<check::PostStmt<Expr>> {
+class TaintTesterChecker : public Checker< check::PostStmt<Expr> > {
 
   mutable std::unique_ptr<BugType> BT;
   void initBugType() const;
 
   /// Given a pointer argument, get the symbol of the value it contains
   /// (points to).
-  SymbolRef getPointedToSymbol(CheckerContext &C, const Expr *Arg,
+  SymbolRef getPointedToSymbol(CheckerContext &C,
+                               const Expr* Arg,
                                bool IssueWarning = true) const;
 
 public:
   void checkPostStmt(const Expr *E, CheckerContext &C) const;
 };
-} // namespace
+}
 
 inline void TaintTesterChecker::initBugType() const {
   if (!BT)
     BT.reset(new BugType(this, "Tainted data", "General"));
 }
 
-void TaintTesterChecker::checkPostStmt(const Expr *E, CheckerContext &C) const {
+void TaintTesterChecker::checkPostStmt(const Expr *E,
+                                       CheckerContext &C) const {
   ProgramStateRef State = C.getState();
   if (!State)
     return;

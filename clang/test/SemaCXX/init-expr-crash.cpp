@@ -8,7 +8,8 @@ template <class T> struct A {
 
   const int M = UNDEFINED; // expected-error {{use of undeclared identifier}}
 
-  int main() {
+  int main()
+  {
     A<char> a;
 
     return 0;
@@ -21,7 +22,8 @@ template <class T> struct B {
   // expected-error@+1 {{invalid application of 'sizeof' to an incomplete type}}
   const int N = sizeof(B<char>::tab) / sizeof(char);
 
-  int main() {
+  int main()
+  {
     B<char> b;
 
     return 0;
@@ -30,7 +32,8 @@ template <class T> struct B {
 
 // This test checks for a crash that resulted from us miscomputing the
 // dependence of a nested initializer list.
-template <int> struct X {
+template<int> struct X {
   static constexpr int n = 4;
   static constexpr int a[1][1] = {n};
 };
+

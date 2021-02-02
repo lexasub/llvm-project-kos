@@ -21,7 +21,7 @@ inline namespace __1 {
 int abs(int);
 long int abs(long int);
 long long int abs(long long int);
-} // namespace __1
+}
 
 float abs(float);
 double abs(double);
@@ -30,7 +30,7 @@ long double abs(long double);
 template <typename T>
 double abs(T);
 
-} // namespace std
+}
 
 void test_int(int x) {
   (void)std::abs(x);
@@ -99,7 +99,7 @@ void test_int(int x) {
 void test_long(long x) {
   (void)std::abs(x);
 
-  (void)abs(x); // no warning - int and long are same length for this target
+  (void)abs(x);  // no warning - int and long are same length for this target
   (void)labs(x);
   (void)llabs(x);
 
@@ -129,8 +129,8 @@ void test_long(long x) {
   // expected-note@-2 {{use function 'std::abs' instead}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-3]]:9-[[@LINE-3]]:14}:"std::abs"
 
-  (void)__builtin_abs(x); // no warning - int and long are same length for
-                          // this target
+  (void)__builtin_abs(x);  // no warning - int and long are same length for
+                           // this target
   (void)__builtin_labs(x);
   (void)__builtin_llabs(x);
 
@@ -465,6 +465,7 @@ void test_complex_double(_Complex double x) {
   (void)cabs(x);
   (void)cabsl(x);
 
+
   (void)__builtin_cabsf(x);
   // expected-warning@-1 {{absolute value function '__builtin_cabsf' given an argument of type '_Complex double' but has parameter of type '_Complex float' which may cause truncation of value}}
   // expected-note@-2 {{use function '__builtin_cabs' instead}}
@@ -664,3 +665,4 @@ void test_unsigned_long(unsigned long x) {
   // expected-note@-2 {{remove the call to '__builtin_cabsl' since unsigned values cannot be negative}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-3]]:9-[[@LINE-3]]:24}:""
 }
+

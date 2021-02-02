@@ -17,13 +17,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
 #ifndef _LIBCPP_HAS_NO_UNICODE_CHARS
 #if TEST_STD_VER >= 11
-  assert(std::char_traits<char16_t>::eq(u 'a', u 'a'));
-  assert(!std::char_traits<char16_t>::eq(u 'a', u 'A'));
+    assert(std::char_traits<char16_t>::eq(u'a', u'a'));
+    assert(!std::char_traits<char16_t>::eq(u'a', u'A'));
 #endif
-#endif // _LIBCPP_HAS_NO_UNICODE_CHARS
+#endif  // _LIBCPP_HAS_NO_UNICODE_CHARS
 
   return 0;
 }

@@ -17,8 +17,8 @@
 //   is_integral_v<IntegerType> is true.
 
 int main(int, char**) {
-  constexpr std::byte b1{static_cast<std::byte>(1)};
-  constexpr std::byte b2 = b1 >> 2.0f;
+    constexpr std::byte b1{static_cast<std::byte>(1)};
+    constexpr std::byte b2 = b1 >> 2.0f;
 
   return 0;
 }

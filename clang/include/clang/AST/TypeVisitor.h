@@ -17,9 +17,9 @@
 
 namespace clang {
 
-#define DISPATCH(CLASS)                                                        \
-  return static_cast<ImplClass *>(this)->Visit##CLASS(                         \
-      static_cast<const CLASS *>(T))
+#define DISPATCH(CLASS) \
+  return static_cast<ImplClass*>(this)-> \
+           Visit##CLASS(static_cast<const CLASS*>(T))
 
 /// An operation on a type.
 ///
@@ -60,16 +60,16 @@ namespace clang {
 ///
 /// The first function of this sequence that is defined will handle object of
 /// type \c ConstantArrayType.
-template <typename ImplClass, typename RetTy = void> class TypeVisitor {
+template<typename ImplClass, typename RetTy=void>
+class TypeVisitor {
 public:
+
   /// Performs the operation associated with this visitor object.
   RetTy Visit(const Type *T) {
     // Top switch stmt: dispatch to VisitFooType for each FooType.
     switch (T->getTypeClass()) {
 #define ABSTRACT_TYPE(CLASS, PARENT)
-#define TYPE(CLASS, PARENT)                                                    \
-  case Type::CLASS:                                                            \
-    DISPATCH(CLASS##Type);
+#define TYPE(CLASS, PARENT) case Type::CLASS: DISPATCH(CLASS##Type);
 #include "clang/AST/TypeNodes.inc"
     }
     llvm_unreachable("Unknown type class!");
@@ -77,17 +77,18 @@ public:
 
   // If the implementation chooses not to implement a certain visit method, fall
   // back on superclass.
-#define TYPE(CLASS, PARENT)                                                    \
-  RetTy Visit##CLASS##Type(const CLASS##Type *T) { DISPATCH(PARENT); }
+#define TYPE(CLASS, PARENT) RetTy Visit##CLASS##Type(const CLASS##Type *T) { \
+  DISPATCH(PARENT);                                                          \
+}
 #include "clang/AST/TypeNodes.inc"
 
   /// Method called if \c ImpClass doesn't provide specific handler
   /// for some type class.
-  RetTy VisitType(const Type *) { return RetTy(); }
+  RetTy VisitType(const Type*) { return RetTy(); }
 };
 
 #undef DISPATCH
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

@@ -271,7 +271,9 @@ TEST(MathExtras, alignTo) {
   EXPECT_EQ(552u, alignTo(321, 255, 42));
 }
 
-template <typename T> void SaturatingAddTestHelper() {
+template<typename T>
+void SaturatingAddTestHelper()
+{
   const T Max = std::numeric_limits<T>::max();
   bool ResultOverflowed;
 
@@ -303,7 +305,9 @@ TEST(MathExtras, SaturatingAdd) {
   SaturatingAddTestHelper<uint64_t>();
 }
 
-template <typename T> void SaturatingMultiplyTestHelper() {
+template<typename T>
+void SaturatingMultiplyTestHelper()
+{
   const T Max = std::numeric_limits<T>::max();
   bool ResultOverflowed;
 
@@ -361,7 +365,7 @@ template <typename T> void SaturatingMultiplyTestHelper() {
       T Y = (T(1) << B) + K;
       bool OverflowExpected = A > B && K == 1;
 
-      if (OverflowExpected) {
+      if(OverflowExpected) {
         EXPECT_EQ(Max, SaturatingMultiply(X, Y));
         EXPECT_EQ(Max, SaturatingMultiply(X, Y, &ResultOverflowed));
         EXPECT_TRUE(ResultOverflowed);
@@ -381,7 +385,9 @@ TEST(MathExtras, SaturatingMultiply) {
   SaturatingMultiplyTestHelper<uint64_t>();
 }
 
-template <typename T> void SaturatingMultiplyAddTestHelper() {
+template<typename T>
+void SaturatingMultiplyAddTestHelper()
+{
   const T Max = std::numeric_limits<T>::max();
   bool ResultOverflowed;
 
@@ -423,6 +429,7 @@ template <typename T> void SaturatingMultiplyAddTestHelper() {
 
   EXPECT_EQ(T(0), SaturatingMultiplyAdd(T(0), T(0), T(0), &ResultOverflowed));
   EXPECT_FALSE(ResultOverflowed);
+
 }
 
 TEST(MathExtras, SaturatingMultiplyAdd) {
@@ -470,10 +477,11 @@ TEST(MathExtras, IsShiftedInt) {
   EXPECT_FALSE((isShiftedInt<6, 10>(int64_t(1) << 15)));
 }
 
-template <typename T> class OverflowTest : public ::testing::Test {};
+template <typename T>
+class OverflowTest : public ::testing::Test { };
 
-using OverflowTestTypes =
-    ::testing::Types<signed char, short, int, long, long long>;
+using OverflowTestTypes = ::testing::Types<signed char, short, int, long,
+                                           long long>;
 
 TYPED_TEST_CASE(OverflowTest, OverflowTestTypes);
 

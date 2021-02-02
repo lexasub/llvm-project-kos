@@ -214,7 +214,7 @@ static MemoryAccessKind checkFunctionMemoryAccess(Function &F, bool ThisBody,
     ReadsMemory |= I->mayReadFromMemory();
   }
 
-  if (WritesMemory) {
+  if (WritesMemory) { 
     if (!ReadsMemory)
       return MAK_WriteOnly;
     else
@@ -243,8 +243,8 @@ static bool addReadAttrs(const SCCNodeSet &SCCNodes, AARGetterT &&AARGetter) {
     // Non-exact function definitions may not be selected at link time, and an
     // alternative version that writes to memory may be selected.  See the
     // comment on GlobalValue::isDefinitionExact for more details.
-    switch (
-        checkFunctionMemoryAccess(*F, F->hasExactDefinition(), AAR, SCCNodes)) {
+    switch (checkFunctionMemoryAccess(*F, F->hasExactDefinition(),
+                                      AAR, SCCNodes)) {
     case MAK_MayWrite:
       return false;
     case MAK_ReadOnly:
@@ -665,13 +665,13 @@ static bool addArgumentAttrsFromCallsites(Function &F) {
 }
 
 static bool addReadAttr(Argument *A, Attribute::AttrKind R) {
-  assert((R == Attribute::ReadOnly || R == Attribute::ReadNone) &&
-         "Must be a Read attribute.");
+  assert((R == Attribute::ReadOnly || R == Attribute::ReadNone)
+         && "Must be a Read attribute.");
   assert(A && "Argument must not be null.");
 
   // If the argument already has the attribute, nothing needs to be done.
   if (A->hasAttribute(R))
-    return false;
+      return false;
 
   // Otherwise, remove potentially conflicting attribute, add the new one,
   // and update statistics.
@@ -950,7 +950,8 @@ static bool addNoAliasAttrs(const SCCNodeSet &SCCNodes) {
 
   bool MadeChange = false;
   for (Function *F : SCCNodes) {
-    if (F->returnDoesNotAlias() || !F->getReturnType()->isPointerTy())
+    if (F->returnDoesNotAlias() ||
+        !F->getReturnType()->isPointerTy())
       continue;
 
     F->setReturnDoesNotAlias();
@@ -1343,7 +1344,9 @@ static bool inferAttrsFromFunctionBodies(const SCCNodeSet &SCCNodes) {
         // Skip functions known not to free memory.
         [](const Function &F) { return F.doesNotFreeMemory(); },
         // Instructions that break non-deallocating assumption.
-        [&SCCNodes](Instruction &I) { return InstrBreaksNoFree(I, SCCNodes); },
+        [&SCCNodes](Instruction &I) {
+          return InstrBreaksNoFree(I, SCCNodes);
+        },
         [](Function &F) {
           LLVM_DEBUG(dbgs()
                      << "Adding nofree attr to fn " << F.getName() << "\n");

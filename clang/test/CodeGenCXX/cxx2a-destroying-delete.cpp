@@ -8,15 +8,15 @@
 // RUN: %clang_cc1 -std=c++2a -fexceptions -emit-llvm-only %s -triple i386-windows -O2
 
 namespace std {
-using size_t = decltype(sizeof(0));
-enum class align_val_t : size_t;
-struct destroying_delete_t {};
-} // namespace std
+  using size_t = decltype(sizeof(0));
+  enum class align_val_t : size_t;
+  struct destroying_delete_t {};
+}
 
 struct A {
   void *data;
   ~A();
-  void operator delete(A *, std::destroying_delete_t);
+  void operator delete(A*, std::destroying_delete_t);
 };
 void delete_A(A *a) { delete a; }
 // CHECK-LABEL: define {{.*}}delete_A
@@ -34,7 +34,7 @@ void delete_A(A *a) { delete a; }
 
 struct B {
   virtual ~B();
-  void operator delete(B *, std::destroying_delete_t);
+  void operator delete(B*, std::destroying_delete_t);
 };
 void delete_B(B *b) { delete b; }
 // CHECK-LABEL: define {{.*}}delete_B
@@ -78,9 +78,7 @@ void delete_C(C *c) { delete c; }
 // CHECK-NOT: call
 // CHECK: }
 
-struct VDel {
-  virtual ~VDel();
-};
+struct VDel { virtual ~VDel(); };
 struct D : Padding, VDel, B {};
 void delete_D(D *d) { delete d; }
 // CHECK-LABEL: define {{.*}}delete_D
@@ -139,16 +137,9 @@ K *k() {
   // CHECK: }
 }
 
-struct E {
-  void *data;
-};
-struct F {
-  void operator delete(F *, std::destroying_delete_t, std::size_t, std::align_val_t);
-  void *data;
-};
-struct alignas(16) G : E, F {
-  void *data;
-};
+struct E { void *data; };
+struct F { void operator delete(F *, std::destroying_delete_t, std::size_t, std::align_val_t); void *data; };
+struct alignas(16) G : E, F { void *data; };
 
 void delete_G(G *g) { delete g; }
 // CHECK-LABEL: define {{.*}}delete_G
@@ -161,9 +152,7 @@ void delete_G(G *g) { delete g; }
 
 void call_in_dtor();
 
-struct H : G {
-  virtual ~H();
-} h;
+struct H : G { virtual ~H(); } h;
 H::~H() { call_in_dtor(); }
 // CHECK-ITANIUM-LABEL: define{{.*}} void @_ZN1HD0Ev(
 // CHECK-ITANIUM-NOT: call
@@ -194,10 +183,7 @@ H::~H() { call_in_dtor(); }
 //
 // CHECK-MSABI: }
 
-struct I : H {
-  virtual ~I();
-  alignas(32) char buffer[32];
-} i;
+struct I : H { virtual ~I(); alignas(32) char buffer[32]; } i;
 I::~I() { call_in_dtor(); }
 // CHECK-ITANIUM-LABEL: define{{.*}} void @_ZN1ID0Ev(
 // CHECK-ITANIUM-NOT: call

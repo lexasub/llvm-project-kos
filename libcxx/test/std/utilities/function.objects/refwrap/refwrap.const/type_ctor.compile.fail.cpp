@@ -17,8 +17,9 @@
 #include <functional>
 #include <cassert>
 
-int main(int, char**) {
-  std::reference_wrapper<const int> r(3);
+int main(int, char**)
+{
+    std::reference_wrapper<const int> r(3);
 
   return 0;
 }

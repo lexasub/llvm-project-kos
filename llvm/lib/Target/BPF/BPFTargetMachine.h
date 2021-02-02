@@ -42,6 +42,6 @@ public:
   void registerPassBuilderCallbacks(PassBuilder &PB,
                                     bool DebugPassManager) override;
 };
-} // namespace llvm
+}
 
 #endif

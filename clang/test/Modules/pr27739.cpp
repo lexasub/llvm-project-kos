@@ -5,8 +5,8 @@
 #include "DataInputHandler.h"
 
 void DataInputHandler::AddTree() {
-  fInputTrees[(char *)""];
-  fExplicitTrainTest[(char *)""];
+   fInputTrees[(char*)""];
+   fExplicitTrainTest[(char*)""];
 }
 
 // expected-no-diagnostics

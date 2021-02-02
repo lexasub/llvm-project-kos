@@ -8,15 +8,18 @@
 // CHECK: expect_watch_value.cpp:
 
 unsigned long Factorial(int n) {
-  volatile unsigned long fac = 1; // DexLabel('entry')
+    volatile unsigned long fac = 1; // DexLabel('entry')
 
-  for (int i = 1; i <= n; ++i)
-    fac *= i; // DexLabel('loop')
+    for (int i = 1; i <= n; ++i)
+        fac *= i;                   // DexLabel('loop')
 
-  return fac; // DexLabel('ret')
+    return fac;                     // DexLabel('ret')
 }
 
-int main() { return Factorial(8); }
+int main()
+{
+    return Factorial(8);
+}
 
 /*
 DexExpectWatchValue('n', '8', on_line='entry')

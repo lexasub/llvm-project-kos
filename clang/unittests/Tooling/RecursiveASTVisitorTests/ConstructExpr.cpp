@@ -29,16 +29,16 @@ public:
     ShouldVisitImplicitCode = NewValue;
   }
 
-  bool VisitCXXConstructExpr(CXXConstructExpr *Expr) {
-    if (const CXXConstructorDecl *Ctor = Expr->getConstructor()) {
-      if (const CXXRecordDecl *Class = Ctor->getParent()) {
+  bool VisitCXXConstructExpr(CXXConstructExpr* Expr) {
+    if (const CXXConstructorDecl* Ctor = Expr->getConstructor()) {
+      if (const CXXRecordDecl* Class = Ctor->getParent()) {
         Match(Class->getName(), Expr->getLocation());
       }
     }
     return true;
   }
 
-private:
+ private:
   bool ShouldVisitImplicitCode;
 };
 
@@ -50,9 +50,10 @@ TEST(RecursiveASTVisitor, CanVisitImplicitMemberInitializations) {
   // that a visitor that visits implicit code visits that initialization.
   // Note: Clang lazily instantiates implicit declarations, so we need
   // to use them in order to force them to appear in the AST.
-  EXPECT_TRUE(Visitor.runOver("struct WithCtor { WithCtor(); }; \n"
-                              "struct Simple { WithCtor w; }; \n"
-                              "int main() { Simple s; }\n"));
+  EXPECT_TRUE(Visitor.runOver(
+      "struct WithCtor { WithCtor(); }; \n"
+      "struct Simple { WithCtor w; }; \n"
+      "int main() { Simple s; }\n"));
 }
 
 // The same as CanVisitImplicitMemberInitializations, but checking that the
@@ -65,9 +66,10 @@ TEST(RecursiveASTVisitor, CanSkipImplicitMemberInitializations) {
   // that a visitor that skips implicit code skips that initialization.
   // Note: Clang lazily instantiates implicit declarations, so we need
   // to use them in order to force them to appear in the AST.
-  EXPECT_TRUE(Visitor.runOver("struct WithCtor { WithCtor(); }; \n"
-                              "struct Simple { WithCtor w; }; \n"
-                              "int main() { Simple s; }\n"));
+  EXPECT_TRUE(Visitor.runOver(
+      "struct WithCtor { WithCtor(); }; \n"
+      "struct Simple { WithCtor w; }; \n"
+      "int main() { Simple s; }\n"));
 }
 
 } // end anonymous namespace

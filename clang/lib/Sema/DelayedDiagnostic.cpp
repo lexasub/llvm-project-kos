@@ -20,12 +20,15 @@
 using namespace clang;
 using namespace sema;
 
-DelayedDiagnostic DelayedDiagnostic::makeAvailability(
-    AvailabilityResult AR, ArrayRef<SourceLocation> Locs,
-    const NamedDecl *ReferringDecl, const NamedDecl *OffendingDecl,
-    const ObjCInterfaceDecl *UnknownObjCClass,
-    const ObjCPropertyDecl *ObjCProperty, StringRef Msg,
-    bool ObjCPropertyAccess) {
+DelayedDiagnostic
+DelayedDiagnostic::makeAvailability(AvailabilityResult AR,
+                                    ArrayRef<SourceLocation> Locs,
+                                    const NamedDecl *ReferringDecl,
+                                    const NamedDecl *OffendingDecl,
+                                    const ObjCInterfaceDecl *UnknownObjCClass,
+                                    const ObjCPropertyDecl  *ObjCProperty,
+                                    StringRef Msg,
+                                    bool ObjCPropertyAccess) {
   assert(!Locs.empty());
   DelayedDiagnostic DD;
   DD.Kind = Availability;
@@ -37,7 +40,7 @@ DelayedDiagnostic DelayedDiagnostic::makeAvailability(
   DD.AvailabilityData.ObjCProperty = ObjCProperty;
   char *MessageData = nullptr;
   if (!Msg.empty()) {
-    MessageData = new char[Msg.size()];
+    MessageData = new char [Msg.size()];
     memcpy(MessageData, Msg.data(), Msg.size());
   }
   DD.AvailabilityData.Message = MessageData;

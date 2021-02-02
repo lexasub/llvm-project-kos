@@ -38,7 +38,7 @@ class TypeRecord;
 namespace msf {
 class MSFBuilder;
 struct MSFLayout;
-} // namespace msf
+}
 namespace pdb {
 class PDBFile;
 class TpiStream;
@@ -88,7 +88,7 @@ private:
   const TpiStreamHeader *Header;
   uint32_t Idx;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 
 #endif

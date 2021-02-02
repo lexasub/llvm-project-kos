@@ -3,9 +3,7 @@
 #ifdef IS_SYSHEADER
 
 #pragma clang system_header
-#define Func(x) \
-  if (x) {      \
-  }
+#define Func(x) if (x) {}
 #define SomeType int
 
 #else

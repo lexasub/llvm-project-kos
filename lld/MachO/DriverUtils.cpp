@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Config.h"
 #include "Driver.h"
+#include "Config.h"
 #include "InputFiles.h"
 
 #include "lld/Common/Args.h"

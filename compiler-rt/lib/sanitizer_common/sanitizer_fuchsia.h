@@ -15,10 +15,10 @@
 #include "sanitizer_platform.h"
 #if SANITIZER_FUCHSIA
 
+#include "sanitizer_common.h"
+
 #include <zircon/sanitizer.h>
 #include <zircon/syscalls/object.h>
-
-#include "sanitizer_common.h"
 
 namespace __sanitizer {
 

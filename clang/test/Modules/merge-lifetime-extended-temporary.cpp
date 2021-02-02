@@ -4,8 +4,8 @@
 
 // expected-no-diagnostics
 #if ORDER == 1
-#include "b.h"
 #include "c.h"
+#include "b.h"
 #else
 #include "b.h"
 #include "c.h"

@@ -8,8 +8,7 @@ int main(int argc, char const *argv[]) {
   const char *a_name = "loadunload_a";
   const char *c_name = "loadunload_c";
   void *a_dylib_handle = NULL;
-  void *c_dylib_handle = NULL; // Set break point at this line for
-                               // test_lldb_process_load_and_unload_commands().
+  void *c_dylib_handle = NULL; // Set break point at this line for test_lldb_process_load_and_unload_commands().
   int (*a_function)(void);
 
   a_dylib_handle = dylib_open(a_name);

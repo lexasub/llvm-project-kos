@@ -14,17 +14,17 @@
 #include "sanitizer_common/sanitizer_rtems.h"
 #if SANITIZER_RTEMS
 
-#include <pthread.h>
-#include <stdlib.h>
-
-#include "asan_interceptors.h"
 #include "asan_internal.h"
+#include "asan_interceptors.h"
 #include "asan_mapping.h"
 #include "asan_poisoning.h"
 #include "asan_report.h"
 #include "asan_stack.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
+
+#include <pthread.h>
+#include <stdlib.h>
 
 namespace __asan {
 
@@ -40,8 +40,8 @@ static void ResetShadowMemory() {
 
 void InitializeShadowMemory() {
   kHighMemEnd = 0;
-  kMidMemBeg = 0;
-  kMidMemEnd = 0;
+  kMidMemBeg =  0;
+  kMidMemEnd =  0;
 
   ResetShadowMemory();
 }
@@ -116,8 +116,8 @@ static AsanThread *CreateAsanThread(StackTrace *stack, u32 parent_tid,
   // On other systems, AsanThread::Init() is called from the new
   // thread itself.  But on RTEMS we already know the stack address
   // range beforehand, so we can do most of the setup right now.
-  const AsanThread::InitOptions options = {stack_bottom, stack_size, tls_bottom,
-                                           tls_size};
+  const AsanThread::InitOptions options = {stack_bottom, stack_size,
+                                           tls_bottom, tls_size};
   thread->Init(&options);
   return thread;
 }
@@ -151,14 +151,13 @@ static void *BeforeThreadCreateHook(uptr user_id, bool detached,
                                     uptr tls_bottom, uptr tls_size) {
   EnsureMainThreadIDIsCorrect();
   // Strict init-order checking is thread-hostile.
-  if (flags()->strict_init_order)
-    StopInitOrderChecking();
+  if (flags()->strict_init_order) StopInitOrderChecking();
 
   GET_STACK_TRACE_THREAD;
   u32 parent_tid = GetCurrentTidOrInvalid();
 
-  return CreateAsanThread(&stack, parent_tid, user_id, detached, stack_bottom,
-                          stack_size, tls_bottom, tls_size);
+  return CreateAsanThread(&stack, parent_tid, user_id, detached,
+                          stack_bottom, stack_size, tls_bottom, tls_size);
 }
 
 // This is called after creating a new thread (in the creating thread),
@@ -233,14 +232,17 @@ bool HandleDlopenInit() {
 // The system runtime will call our definitions directly.
 
 extern "C" {
-void __sanitizer_early_init() { __asan::EarlyInit(); }
+void __sanitizer_early_init() {
+  __asan::EarlyInit();
+}
 
 void *__sanitizer_before_thread_create_hook(uptr thread, bool detached,
-                                            const char *name, void *stack_base,
-                                            size_t stack_size, void *tls_base,
-                                            size_t tls_size) {
+                                            const char *name,
+                                            void *stack_base, size_t stack_size,
+                                            void *tls_base, size_t tls_size) {
   return __asan::BeforeThreadCreateHook(
-      thread, detached, reinterpret_cast<uptr>(stack_base), stack_size,
+      thread, detached,
+      reinterpret_cast<uptr>(stack_base), stack_size,
       reinterpret_cast<uptr>(tls_base), tls_size);
 }
 
@@ -256,7 +258,9 @@ void __sanitizer_thread_exit_hook(void *handle, uptr self) {
   __asan::ThreadExitHook(handle, self);
 }
 
-void __sanitizer_exit() { __asan::HandleExit(); }
+void __sanitizer_exit() {
+  __asan::HandleExit();
+}
 }  // "C"
 
 #endif  // SANITIZER_RTEMS

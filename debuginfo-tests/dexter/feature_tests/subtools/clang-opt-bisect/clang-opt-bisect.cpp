@@ -12,4 +12,6 @@
 // CHECK: wrote{{.*}}pass-summary
 // CHECK: wrote{{.*}}overall-pass-summary
 
-int main() { return 0; }
+int main() {
+    return 0;
+}

@@ -1,3 +1,3 @@
 @interface BaseInterface
-- (void)test;
+- (void) test;
 @end

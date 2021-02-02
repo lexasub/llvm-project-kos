@@ -41,7 +41,8 @@ struct ErrorDeadlySignal : ErrorBase {
 
   ErrorDeadlySignal() = default;  // (*)
   ErrorDeadlySignal(u32 tid, const SignalContext &sig)
-      : ErrorBase(tid), signal(sig) {
+      : ErrorBase(tid),
+        signal(sig) {
     scariness.Clear();
     if (signal.IsStackOverflow()) {
       scariness.Scare(10, "stack-overflow");
@@ -69,7 +70,8 @@ struct ErrorDoubleFree : ErrorBase {
 
   ErrorDoubleFree() = default;  // (*)
   ErrorDoubleFree(u32 tid, BufferedStackTrace *stack, uptr addr)
-      : ErrorBase(tid, 42, "double-free"), second_free_stack(stack) {
+      : ErrorBase(tid, 42, "double-free"),
+        second_free_stack(stack) {
     CHECK_GT(second_free_stack->size, 0);
     GetHeapAddressInformation(addr, 1, &addr_description);
   }
@@ -183,7 +185,9 @@ struct ErrorPvallocOverflow : ErrorBase {
 
   ErrorPvallocOverflow() = default;  // (*)
   ErrorPvallocOverflow(u32 tid, BufferedStackTrace *stack_, uptr size_)
-      : ErrorBase(tid, 10, "pvalloc-overflow"), stack(stack_), size(size_) {}
+      : ErrorBase(tid, 10, "pvalloc-overflow"),
+        stack(stack_),
+        size(size_) {}
   void Print();
 };
 
@@ -250,7 +254,8 @@ struct ErrorRssLimitExceeded : ErrorBase {
 
   ErrorRssLimitExceeded() = default;  // (*)
   ErrorRssLimitExceeded(u32 tid, BufferedStackTrace *stack_)
-      : ErrorBase(tid, 10, "rss-limit-exceeded"), stack(stack_) {}
+      : ErrorBase(tid, 10, "rss-limit-exceeded"),
+        stack(stack_) {}
   void Print();
 };
 

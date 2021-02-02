@@ -19,7 +19,6 @@ class TestOrder : public C, public B, public virtual A {
   A a;
   int i;
   A *p;
-
 public:
   ~TestOrder();
 };
@@ -29,7 +28,6 @@ TestOrder::~TestOrder() {}
 class TestArray {
   A a[2];
   A b[0];
-
 public:
   ~TestArray();
 };

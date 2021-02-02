@@ -22,6 +22,6 @@ public:
   unsigned CFStackSize;
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

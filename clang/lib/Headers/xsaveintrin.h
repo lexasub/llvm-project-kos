@@ -19,23 +19,21 @@
 #endif
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("xsave")))
+#define __DEFAULT_FN_ATTRS __attribute__((__always_inline__, __nodebug__,  __target__("xsave")))
 
-static __inline__ void __DEFAULT_FN_ATTRS _xsave(void *__p,
-                                                 unsigned long long __m) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_xsave(void *__p, unsigned long long __m) {
   __builtin_ia32_xsave(__p, __m);
 }
 
-static __inline__ void __DEFAULT_FN_ATTRS _xrstor(void *__p,
-                                                  unsigned long long __m) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_xrstor(void *__p, unsigned long long __m) {
   __builtin_ia32_xrstor(__p, __m);
 }
 
 #ifndef _MSC_VER
 #define _xgetbv(A) __builtin_ia32_xgetbv((long long)(A))
-#define _xsetbv(A, B)                                                          \
-  __builtin_ia32_xsetbv((unsigned int)(A), (unsigned long long)(B))
+#define _xsetbv(A, B) __builtin_ia32_xsetbv((unsigned int)(A), (unsigned long long)(B))
 #else
 #ifdef __cplusplus
 extern "C" {
@@ -48,13 +46,13 @@ void __cdecl _xsetbv(unsigned int, unsigned __int64);
 #endif /* _MSC_VER */
 
 #ifdef __x86_64__
-static __inline__ void __DEFAULT_FN_ATTRS _xsave64(void *__p,
-                                                   unsigned long long __m) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_xsave64(void *__p, unsigned long long __m) {
   __builtin_ia32_xsave64(__p, __m);
 }
 
-static __inline__ void __DEFAULT_FN_ATTRS _xrstor64(void *__p,
-                                                    unsigned long long __m) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_xrstor64(void *__p, unsigned long long __m) {
   __builtin_ia32_xrstor64(__p, __m);
 }
 

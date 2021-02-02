@@ -6,8 +6,8 @@
 
 class __declspec(dllexport) A {
 public:
-  A();
-  ~A();
+    A();
+    ~A();
 };
 
 A::A() {}

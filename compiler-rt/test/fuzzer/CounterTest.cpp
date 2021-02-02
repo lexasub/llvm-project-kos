@@ -12,7 +12,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     if (Data[i] == 'A' + i)
       Num++;
   if (Num >= 4) {
-    std::cerr << "BINGO!\n";
+    std::cerr <<  "BINGO!\n";
     exit(1);
   }
   return 0;

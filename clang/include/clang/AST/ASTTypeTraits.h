@@ -55,7 +55,8 @@ public:
   ASTNodeKind() : KindId(NKI_None) {}
 
   /// Construct an identifier for T.
-  template <class T> static ASTNodeKind getFromNodeKind() {
+  template <class T>
+  static ASTNodeKind getFromNodeKind() {
     return ASTNodeKind(KindToKindId<T>::Id);
   }
 
@@ -169,7 +170,8 @@ private:
   template <class T> struct KindToKindId {
     static const NodeKindId Id = NKI_None;
   };
-  template <class T> struct KindToKindId<const T> : KindToKindId<T> {};
+  template <class T>
+  struct KindToKindId<const T> : KindToKindId<T> {};
 
   /// Per kind info.
   struct KindInfo {
@@ -231,7 +233,8 @@ inline raw_ostream &operator<<(raw_ostream &OS, ASTNodeKind K) {
 class DynTypedNode {
 public:
   /// Creates a \c DynTypedNode from \c Node.
-  template <typename T> static DynTypedNode create(const T &Node) {
+  template <typename T>
+  static DynTypedNode create(const T &Node) {
     return BaseConverter<T>::create(Node);
   }
 
@@ -254,7 +257,8 @@ public:
   /// Retrieve the stored node as type \c T.
   ///
   /// Similar to \c get(), but asserts that the type is what we are expecting.
-  template <typename T> const T &getUnchecked() const {
+  template <typename T>
+  const T &getUnchecked() const {
     return BaseConverter<T>::getUnchecked(NodeKind, &Storage);
   }
 
@@ -483,36 +487,37 @@ struct DynTypedNode::BaseConverter<
     : public DynCastPtrConverter<T, OMPClause> {};
 
 template <>
-struct DynTypedNode::BaseConverter<NestedNameSpecifier, void>
-    : public PtrConverter<NestedNameSpecifier> {};
+struct DynTypedNode::BaseConverter<
+    NestedNameSpecifier, void> : public PtrConverter<NestedNameSpecifier> {};
 
 template <>
-struct DynTypedNode::BaseConverter<CXXCtorInitializer, void>
-    : public PtrConverter<CXXCtorInitializer> {};
+struct DynTypedNode::BaseConverter<
+    CXXCtorInitializer, void> : public PtrConverter<CXXCtorInitializer> {};
 
 template <>
-struct DynTypedNode::BaseConverter<TemplateArgument, void>
-    : public ValueConverter<TemplateArgument> {};
+struct DynTypedNode::BaseConverter<
+    TemplateArgument, void> : public ValueConverter<TemplateArgument> {};
 
 template <>
 struct DynTypedNode::BaseConverter<TemplateArgumentLoc, void>
     : public ValueConverter<TemplateArgumentLoc> {};
 
 template <>
-struct DynTypedNode::BaseConverter<TemplateName, void>
-    : public ValueConverter<TemplateName> {};
+struct DynTypedNode::BaseConverter<
+    TemplateName, void> : public ValueConverter<TemplateName> {};
 
 template <>
-struct DynTypedNode::BaseConverter<NestedNameSpecifierLoc, void>
-    : public ValueConverter<NestedNameSpecifierLoc> {};
+struct DynTypedNode::BaseConverter<
+    NestedNameSpecifierLoc,
+    void> : public ValueConverter<NestedNameSpecifierLoc> {};
 
 template <>
-struct DynTypedNode::BaseConverter<QualType, void>
-    : public ValueConverter<QualType> {};
+struct DynTypedNode::BaseConverter<QualType,
+                                   void> : public ValueConverter<QualType> {};
 
 template <>
-struct DynTypedNode::BaseConverter<TypeLoc, void>
-    : public ValueConverter<TypeLoc> {};
+struct DynTypedNode::BaseConverter<
+    TypeLoc, void> : public ValueConverter<TypeLoc> {};
 
 template <>
 struct DynTypedNode::BaseConverter<CXXBaseSpecifier, void>
@@ -538,6 +543,6 @@ struct DenseMapInfo<clang::ASTNodeKind> : clang::ASTNodeKind::DenseMapInfo {};
 template <>
 struct DenseMapInfo<clang::DynTypedNode> : clang::DynTypedNode::DenseMapInfo {};
 
-} // end namespace llvm
+}  // end namespace llvm
 
 #endif

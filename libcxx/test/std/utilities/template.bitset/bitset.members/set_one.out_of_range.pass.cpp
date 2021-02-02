@@ -17,30 +17,18 @@
 #include <stdexcept>
 
 int main(int, char**) {
-  {
-    std::bitset<0> v;
-    try {
-      v.set(0);
-      assert(false);
-    } catch (std::out_of_range const&) {
+    {
+        std::bitset<0> v;
+        try { v.set(0); assert(false); } catch (std::out_of_range const&) { }
     }
-  }
-  {
-    std::bitset<1> v("0");
-    try {
-      v.set(2);
-      assert(false);
-    } catch (std::out_of_range const&) {
+    {
+        std::bitset<1> v("0");
+        try { v.set(2); assert(false); } catch (std::out_of_range const&) { }
     }
-  }
-  {
-    std::bitset<10> v("0000000000");
-    try {
-      v.set(10);
-      assert(false);
-    } catch (std::out_of_range const&) {
+    {
+        std::bitset<10> v("0000000000");
+        try { v.set(10); assert(false); } catch (std::out_of_range const&) { }
     }
-  }
 
-  return 0;
+    return 0;
 }

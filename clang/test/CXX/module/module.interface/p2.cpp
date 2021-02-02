@@ -21,21 +21,19 @@ export import X;
 import Y; // not exported
 
 namespace A {
-int f();
-export int g();
-int h();
-namespace inner {}
-} // namespace A
+  int f();
+  export int g();
+  int h();
+  namespace inner {}
+}
 export namespace B {
-namespace inner {}
-} // namespace B
+  namespace inner {}
+}
 namespace B {
-int f();
+  int f();
 }
 namespace C {}
-namespace D {
-int f();
-}
+namespace D { int f(); }
 export namespace D {}
 
 #elif defined(IMPLEMENTATION)
@@ -73,14 +71,14 @@ void use() {
   // namespace A is implicitly exported by the export of A::g.
   A::f(); // expected-error {{no member named 'f' in namespace 'A'}}
   A::g();
-  A::h();                   // expected-error {{no member named 'h' in namespace 'A'}}
+  A::h(); // expected-error {{no member named 'h' in namespace 'A'}}
   using namespace A::inner; // expected-error {{expected namespace name}}
 
   // namespace B and B::inner are explicitly exported
   using namespace B;
   using namespace B::inner;
   B::f(); // expected-error {{no member named 'f' in namespace 'B'}}
-  f();    // expected-error {{undeclared identifier 'f'}}
+  f(); // expected-error {{undeclared identifier 'f'}}
 
   // namespace C is not exported
   using namespace C; // expected-error {{expected namespace name}}

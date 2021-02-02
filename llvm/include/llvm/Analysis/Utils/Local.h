@@ -79,8 +79,7 @@ Value *EmitGEPOffset(IRBuilderTy *Builder, const DataLayout &DL, User *GEP,
 
       // Convert to correct type.
       if (Op->getType() != IntIdxTy)
-        Op = Builder->CreateIntCast(Op, IntIdxTy, true,
-                                    Op->getName().str() + ".c");
+        Op = Builder->CreateIntCast(Op, IntIdxTy, true, Op->getName().str()+".c");
       if (Size != 1) {
         // We'll let instcombine(mul) convert this to a shl if possible.
         Op = Builder->CreateMul(Op, ConstantInt::get(IntIdxTy, Size),
@@ -91,15 +90,14 @@ Value *EmitGEPOffset(IRBuilderTy *Builder, const DataLayout &DL, User *GEP,
     }
 
     if (Result)
-      Result =
-          Builder->CreateAdd(Result, Offset, GEP->getName().str() + ".offs",
-                             false /*NUW*/, isInBounds /*NSW*/);
+      Result = Builder->CreateAdd(Result, Offset, GEP->getName().str()+".offs",
+                                  false /*NUW*/, isInBounds /*NSW*/);
     else
       Result = Offset;
   }
   return Result ? Result : Constant::getNullValue(IntIdxTy);
 }
 
-} // namespace llvm
+}
 
 #endif // LLVM_TRANSFORMS_UTILS_LOCAL_H

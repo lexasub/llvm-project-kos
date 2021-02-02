@@ -12,17 +12,17 @@
 // RUN: %clang_cc1  -fopenmp -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1  -fopenmp -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix CHECK --check-prefix CHECK-32
 
-// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY
+// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY 
 // RUN: %clang_cc1 -DLAMBDA -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1 -DLAMBDA -fopenmp-simd -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix SIMD-ONLY
-// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY
+// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY 
 // RUN: %clang_cc1 -DLAMBDA -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1 -DLAMBDA -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix SIMD-ONLY
 
-// RUN: %clang_cc1  -verify -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY
+// RUN: %clang_cc1  -verify -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY 
 // RUN: %clang_cc1  -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1  -fopenmp-simd -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix SIMD-ONLY
-// RUN: %clang_cc1  -verify -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY
+// RUN: %clang_cc1  -verify -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix SIMD-ONLY 
 // RUN: %clang_cc1  -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1  -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix SIMD-ONLY
 // SIMD-ONLY-NOT: {{__kmpc|__tgt}}
@@ -49,7 +49,7 @@ T tmain() {
   T vec[] = {1, 2};
   S<T> s_arr[] = {1, 2};
   S<T> &var = test;
-#pragma omp target teams distribute parallel for lastprivate(t_var, vec, s_arr, s_arr, var, var)
+  #pragma omp target teams distribute parallel for lastprivate(t_var, vec, s_arr, s_arr, var, var)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
@@ -62,18 +62,18 @@ int main() {
   volatile double g;
   volatile double &g1 = g;
 
-#ifdef LAMBDA
+  #ifdef LAMBDA
   // LAMBDA-LABEL: @main
   // LAMBDA: call{{.*}} void [[OUTER_LAMBDA:@.+]](
   [&]() {
     static float sfvar;
-// LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-// LAMBDA: call void [[OFFLOADING_FUN:@.+]](
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+    // LAMBDA: call void [[OFFLOADING_FUN:@.+]](
 
-// LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
-// LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
-#pragma omp target teams distribute parallel for lastprivate(g, g1, svar, sfvar)
+    // LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
+    // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
+    #pragma omp target teams distribute parallel for lastprivate(g, g1, svar, sfvar)
     for (int i = 0; i < 2; ++i) {
       // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_OUTLINED]](i32* {{.+}}, i32* {{.+}}, {{.+}} [[G1_IN:%.+]], {{.+}} [[SVAR_IN:%.+]], {{.+}} [[SFVAR_IN:%.+]], {{.+}} [[G_IN:%.+]])
       // skip gbl and bound tid
@@ -154,6 +154,7 @@ int main() {
       // LAMBDA-64-DAG: [[SVAR_TGT:%.+]] = bitcast {{.+}} [[SVAR_ADDR]] to
       // LAMBDA-DAG: [[SFVAR_TGT:%.+]] = bitcast {{.+}} [[SFVAR_ADDR]] to
 
+
       // LAMBDA: call {{.*}}void @__kmpc_for_static_init_4(
       // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](
       // LAMBDA: call {{.*}}void @__kmpc_for_static_fini(
@@ -197,14 +198,14 @@ int main() {
     }
   }();
   return 0;
-#else
+  #else
   S<float> test;
   int t_var = 0;
   int vec[] = {1, 2};
   S<float> s_arr[] = {1, 2};
   S<float> &var = test;
 
-#pragma omp target teams distribute parallel for lastprivate(t_var, vec, s_arr, s_arr, var, var, svar)
+  #pragma omp target teams distribute parallel for lastprivate(t_var, vec, s_arr, s_arr, var, var, svar)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
@@ -212,7 +213,7 @@ int main() {
   int i;
 
   return tmain<int>();
-#endif
+  #endif
 }
 
 // CHECK: define{{.*}} i{{[0-9]+}} @main()

@@ -57,15 +57,15 @@ int main(int argc, char **argv) {
 #pragma omp barrier
     break;
   }
-  // CHECK-NEXT: switch (argc) {
-  // CHECK-NEXT: case 0:
-  // CHECK-NEXT: #pragma omp barrier
-  // CHECK-NEXT: #pragma omp barrier
-  // CHECK-NEXT: break;
-  // CHECK-NEXT: default:
-  // CHECK-NEXT: #pragma omp barrier
-  // CHECK-NEXT: break;
-  // CHECK-NEXT: }
+// CHECK-NEXT: switch (argc) {
+// CHECK-NEXT: case 0:
+// CHECK-NEXT: #pragma omp barrier
+// CHECK-NEXT: #pragma omp barrier
+// CHECK-NEXT: break;
+// CHECK-NEXT: default:
+// CHECK-NEXT: #pragma omp barrier
+// CHECK-NEXT: break;
+// CHECK-NEXT: }
   return tmain(argc) + tmain(argv[0][0]) + a;
 }
 

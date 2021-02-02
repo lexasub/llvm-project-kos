@@ -1,3 +1,4 @@
-void f() {
-  int unused_variable;
+void f()
+{
+    int unused_variable;
 }

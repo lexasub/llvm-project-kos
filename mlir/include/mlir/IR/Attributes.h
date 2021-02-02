@@ -45,16 +45,12 @@ public:
 
   bool operator!() const { return impl == nullptr; }
 
-  template <typename U>
-  bool isa() const;
+  template <typename U> bool isa() const;
   template <typename First, typename Second, typename... Rest>
   bool isa() const;
-  template <typename U>
-  U dyn_cast() const;
-  template <typename U>
-  U dyn_cast_or_null() const;
-  template <typename U>
-  U cast() const;
+  template <typename U> U dyn_cast() const;
+  template <typename U> U dyn_cast_or_null() const;
+  template <typename U> U cast() const;
 
   // Support dyn_cast'ing Attribute to itself.
   static bool classof(Attribute) { return true; }
@@ -99,8 +95,7 @@ inline raw_ostream &operator<<(raw_ostream &os, Attribute attr) {
   return os;
 }
 
-template <typename U>
-bool Attribute::isa() const {
+template <typename U> bool Attribute::isa() const {
   assert(impl && "isa<> used on a null attribute.");
   return U::classof(*this);
 }
@@ -110,16 +105,13 @@ bool Attribute::isa() const {
   return isa<First>() || isa<Second, Rest...>();
 }
 
-template <typename U>
-U Attribute::dyn_cast() const {
+template <typename U> U Attribute::dyn_cast() const {
   return isa<U>() ? U(impl) : U(nullptr);
 }
-template <typename U>
-U Attribute::dyn_cast_or_null() const {
+template <typename U> U Attribute::dyn_cast_or_null() const {
   return (impl && isa<U>()) ? U(impl) : U(nullptr);
 }
-template <typename U>
-U Attribute::cast() const {
+template <typename U> U Attribute::cast() const {
   assert(isa<U>());
   return U(impl);
 }
@@ -181,8 +173,7 @@ private:
 namespace llvm {
 
 // Attribute hash just like pointers.
-template <>
-struct DenseMapInfo<mlir::Attribute> {
+template <> struct DenseMapInfo<mlir::Attribute> {
   static mlir::Attribute getEmptyKey() {
     auto pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::Attribute(static_cast<mlir::Attribute::ImplType *>(pointer));
@@ -200,8 +191,7 @@ struct DenseMapInfo<mlir::Attribute> {
 };
 
 /// Allow LLVM to steal the low bits of Attributes.
-template <>
-struct PointerLikeTypeTraits<mlir::Attribute> {
+template <> struct PointerLikeTypeTraits<mlir::Attribute> {
   static inline void *getAsVoidPointer(mlir::Attribute attr) {
     return const_cast<void *>(attr.getAsOpaquePointer());
   }

@@ -17,8 +17,10 @@
 
 #include "../A.h"
 
-void test() {
-  {
+void
+test()
+{
+    {
     A* p1 = new A(1);
     const std::auto_ptr<A> ap1(p1);
     A* p2 = new A(2);
@@ -31,12 +33,13 @@ void test() {
     assert(A::count == 1);
     assert(ap1.get() == 0);
     assert(ap2.get() == p1);
-  }
-  assert(A::count == 0);
+    }
+    assert(A::count == 0);
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 
   return 0;
 }

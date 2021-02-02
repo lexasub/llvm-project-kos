@@ -33,75 +33,47 @@ using namespace llvm::Win64EH;
 
 // Returns the name of the unwind code.
 static StringRef getUnwindCodeTypeName(uint8_t Code) {
-  switch (Code) {
-  default:
-    llvm_unreachable("Invalid unwind code");
-  case UOP_PushNonVol:
-    return "UOP_PushNonVol";
-  case UOP_AllocLarge:
-    return "UOP_AllocLarge";
-  case UOP_AllocSmall:
-    return "UOP_AllocSmall";
-  case UOP_SetFPReg:
-    return "UOP_SetFPReg";
-  case UOP_SaveNonVol:
-    return "UOP_SaveNonVol";
-  case UOP_SaveNonVolBig:
-    return "UOP_SaveNonVolBig";
-  case UOP_SaveXMM128:
-    return "UOP_SaveXMM128";
-  case UOP_SaveXMM128Big:
-    return "UOP_SaveXMM128Big";
-  case UOP_PushMachFrame:
-    return "UOP_PushMachFrame";
+  switch(Code) {
+  default: llvm_unreachable("Invalid unwind code");
+  case UOP_PushNonVol: return "UOP_PushNonVol";
+  case UOP_AllocLarge: return "UOP_AllocLarge";
+  case UOP_AllocSmall: return "UOP_AllocSmall";
+  case UOP_SetFPReg: return "UOP_SetFPReg";
+  case UOP_SaveNonVol: return "UOP_SaveNonVol";
+  case UOP_SaveNonVolBig: return "UOP_SaveNonVolBig";
+  case UOP_SaveXMM128: return "UOP_SaveXMM128";
+  case UOP_SaveXMM128Big: return "UOP_SaveXMM128Big";
+  case UOP_PushMachFrame: return "UOP_PushMachFrame";
   }
 }
 
 // Returns the name of a referenced register.
 static StringRef getUnwindRegisterName(uint8_t Reg) {
-  switch (Reg) {
-  default:
-    llvm_unreachable("Invalid register");
-  case 0:
-    return "RAX";
-  case 1:
-    return "RCX";
-  case 2:
-    return "RDX";
-  case 3:
-    return "RBX";
-  case 4:
-    return "RSP";
-  case 5:
-    return "RBP";
-  case 6:
-    return "RSI";
-  case 7:
-    return "RDI";
-  case 8:
-    return "R8";
-  case 9:
-    return "R9";
-  case 10:
-    return "R10";
-  case 11:
-    return "R11";
-  case 12:
-    return "R12";
-  case 13:
-    return "R13";
-  case 14:
-    return "R14";
-  case 15:
-    return "R15";
+  switch(Reg) {
+  default: llvm_unreachable("Invalid register");
+  case 0: return "RAX";
+  case 1: return "RCX";
+  case 2: return "RDX";
+  case 3: return "RBX";
+  case 4: return "RSP";
+  case 5: return "RBP";
+  case 6: return "RSI";
+  case 7: return "RDI";
+  case 8: return "R8";
+  case 9: return "R9";
+  case 10: return "R10";
+  case 11: return "R11";
+  case 12: return "R12";
+  case 13: return "R13";
+  case 14: return "R14";
+  case 15: return "R15";
   }
 }
 
 // Calculates the number of array slots required for the unwind code.
 static unsigned getNumUsedSlots(const UnwindCode &UnwindCode) {
   switch (UnwindCode.getUnwindOp()) {
-  default:
-    llvm_unreachable("Invalid unwind code");
+  default: llvm_unreachable("Invalid unwind code");
   case UOP_PushNonVol:
   case UOP_AllocSmall:
   case UOP_SetFPReg:
@@ -123,7 +95,7 @@ static unsigned getNumUsedSlots(const UnwindCode &UnwindCode) {
 // slots is provided.
 static void printUnwindCode(ArrayRef<UnwindCode> UCs) {
   assert(UCs.size() >= getNumUsedSlots(UCs[0]));
-  outs() << format("      0x%02x: ", unsigned(UCs[0].u.CodeOffset))
+  outs() <<  format("      0x%02x: ", unsigned(UCs[0].u.CodeOffset))
          << getUnwindCodeTypeName(UCs[0].getUnwindOp());
   switch (UCs[0].getUnwindOp()) {
   case UOP_PushNonVol:
@@ -133,9 +105,8 @@ static void printUnwindCode(ArrayRef<UnwindCode> UCs) {
     if (UCs[0].getOpInfo() == 0) {
       outs() << " " << UCs[1].FrameOffset;
     } else {
-      outs() << " "
-             << UCs[1].FrameOffset +
-                    (static_cast<uint32_t>(UCs[2].FrameOffset) << 16);
+      outs() << " " << UCs[1].FrameOffset
+                       + (static_cast<uint32_t>(UCs[2].FrameOffset) << 16);
     }
     break;
   case UOP_AllocSmall:
@@ -150,9 +121,8 @@ static void printUnwindCode(ArrayRef<UnwindCode> UCs) {
     break;
   case UOP_SaveNonVolBig:
     outs() << " " << getUnwindRegisterName(UCs[0].getOpInfo())
-           << format(" [0x%08x]",
-                     UCs[1].FrameOffset +
-                         (static_cast<uint32_t>(UCs[2].FrameOffset) << 16));
+           << format(" [0x%08x]", UCs[1].FrameOffset
+                    + (static_cast<uint32_t>(UCs[2].FrameOffset) << 16));
     break;
   case UOP_SaveXMM128:
     outs() << " XMM" << static_cast<uint32_t>(UCs[0].getOpInfo())
@@ -160,26 +130,27 @@ static void printUnwindCode(ArrayRef<UnwindCode> UCs) {
     break;
   case UOP_SaveXMM128Big:
     outs() << " XMM" << UCs[0].getOpInfo()
-           << format(" [0x%08x]",
-                     UCs[1].FrameOffset +
-                         (static_cast<uint32_t>(UCs[2].FrameOffset) << 16));
+           << format(" [0x%08x]", UCs[1].FrameOffset
+                           + (static_cast<uint32_t>(UCs[2].FrameOffset) << 16));
     break;
   case UOP_PushMachFrame:
-    outs() << " " << (UCs[0].getOpInfo() ? "w/o" : "w") << " error code";
+    outs() << " " << (UCs[0].getOpInfo() ? "w/o" : "w")
+           << " error code";
     break;
   }
   outs() << "\n";
 }
 
 static void printAllUnwindCodes(ArrayRef<UnwindCode> UCs) {
-  for (const UnwindCode *I = UCs.begin(), *E = UCs.end(); I < E;) {
+  for (const UnwindCode *I = UCs.begin(), *E = UCs.end(); I < E; ) {
     unsigned UsedSlots = getNumUsedSlots(*I);
     if (UsedSlots > UCs.size()) {
       outs() << "Unwind data corrupted: Encountered unwind op "
-             << getUnwindCodeTypeName((*I).getUnwindOp()) << " which requires "
-             << UsedSlots << " slots, but only " << UCs.size()
+             << getUnwindCodeTypeName((*I).getUnwindOp())
+             << " which requires " << UsedSlots
+             << " slots, but only " << UCs.size()
              << " remaining in buffer";
-      return;
+      return ;
     }
     printUnwindCode(makeArrayRef(I, E));
     I += UsedSlots;
@@ -205,7 +176,7 @@ static Error resolveSectionAndAddress(const COFFObjectFile *Obj,
 // Given a vector of relocations for a section and an offset into this section
 // the function returns the symbol used for the relocation at the offset.
 static Error resolveSymbol(const std::vector<RelocationRef> &Rels,
-                           uint64_t Offset, SymbolRef &Sym) {
+                                     uint64_t Offset, SymbolRef &Sym) {
   for (auto &R : Rels) {
     uint64_t Ofs = R.getOffset();
     if (Ofs == Offset) {
@@ -220,10 +191,10 @@ static Error resolveSymbol(const std::vector<RelocationRef> &Rels,
 // the function resolves the symbol used for the relocation at the offset and
 // returns the section content and the address inside the content pointed to
 // by the symbol.
-static Error getSectionContents(const COFFObjectFile *Obj,
-                                const std::vector<RelocationRef> &Rels,
-                                uint64_t Offset, ArrayRef<uint8_t> &Contents,
-                                uint64_t &Addr) {
+static Error
+getSectionContents(const COFFObjectFile *Obj,
+                   const std::vector<RelocationRef> &Rels, uint64_t Offset,
+                   ArrayRef<uint8_t> &Contents, uint64_t &Addr) {
   SymbolRef Sym;
   if (Error E = resolveSymbol(Rels, Offset, Sym))
     return E;
@@ -261,8 +232,8 @@ static void printCOFFSymbolAddress(raw_ostream &Out,
   }
 }
 
-static void printSEHTable(const COFFObjectFile *Obj, uint32_t TableVA,
-                          int Count) {
+static void
+printSEHTable(const COFFObjectFile *Obj, uint32_t TableVA, int Count) {
   if (Count == 0)
     return;
 
@@ -289,9 +260,13 @@ static void printTLSDirectoryT(const coff_tls_directory<T> *TLSDir) {
          << format_hex(TLSDir->AddressOfIndex, FormatWidth)
          << "\n  AddressOfCallBacks: "
          << format_hex(TLSDir->AddressOfCallBacks, FormatWidth)
-         << "\n  SizeOfZeroFill: " << TLSDir->SizeOfZeroFill
-         << "\n  Characteristics: " << TLSDir->Characteristics
-         << "\n  Alignment: " << TLSDir->getAlignment() << "\n\n";
+         << "\n  SizeOfZeroFill: "
+         << TLSDir->SizeOfZeroFill
+         << "\n  Characteristics: "
+         << TLSDir->Characteristics
+         << "\n  Alignment: "
+         << TLSDir->getAlignment()
+         << "\n\n";
 }
 
 static void printTLSDirectory(const COFFObjectFile *Obj) {
@@ -310,7 +285,8 @@ static void printTLSDirectory(const COFFObjectFile *Obj) {
     return;
 
   uintptr_t IntPtr = 0;
-  if (Error E = Obj->getRvaPtr(DataDir->RelativeVirtualAddress, IntPtr))
+  if (Error E =
+          Obj->getRvaPtr(DataDir->RelativeVirtualAddress, IntPtr))
     reportError(std::move(E), Obj->getFileName());
 
   if (PE32Header) {
@@ -333,8 +309,7 @@ static void printLoadConfiguration(const COFFObjectFile *Obj) {
   if (Obj->getMachine() != COFF::IMAGE_FILE_MACHINE_I386)
     return;
 
-  const data_directory *DataDir =
-      Obj->getDataDirectory(COFF::LOAD_CONFIG_TABLE);
+  const data_directory *DataDir = Obj->getDataDirectory(COFF::LOAD_CONFIG_TABLE);
   if (!DataDir)
     reportError("no load config data dir", Obj->getFileName());
 
@@ -342,7 +317,8 @@ static void printLoadConfiguration(const COFFObjectFile *Obj) {
   if (DataDir->RelativeVirtualAddress == 0)
     return;
 
-  if (Error E = Obj->getRvaPtr(DataDir->RelativeVirtualAddress, IntPtr))
+  if (Error E =
+          Obj->getRvaPtr(DataDir->RelativeVirtualAddress, IntPtr))
     reportError(std::move(E), Obj->getFileName());
 
   auto *LoadConf = reinterpret_cast<const coff_load_configuration32 *>(IntPtr);
@@ -352,12 +328,9 @@ static void printLoadConfiguration(const COFFObjectFile *Obj) {
          << "\n  Minor Version: " << LoadConf->MinorVersion
          << "\n  GlobalFlags Clear: " << LoadConf->GlobalFlagsClear
          << "\n  GlobalFlags Set: " << LoadConf->GlobalFlagsSet
-         << "\n  Critical Section Default Timeout: "
-         << LoadConf->CriticalSectionDefaultTimeout
-         << "\n  Decommit Free Block Threshold: "
-         << LoadConf->DeCommitFreeBlockThreshold
-         << "\n  Decommit Total Free Threshold: "
-         << LoadConf->DeCommitTotalFreeThreshold
+         << "\n  Critical Section Default Timeout: " << LoadConf->CriticalSectionDefaultTimeout
+         << "\n  Decommit Free Block Threshold: " << LoadConf->DeCommitFreeBlockThreshold
+         << "\n  Decommit Total Free Threshold: " << LoadConf->DeCommitTotalFreeThreshold
          << "\n  Lock Prefix Table: " << LoadConf->LockPrefixTable
          << "\n  Maximum Allocation Size: " << LoadConf->MaximumAllocationSize
          << "\n  Virtual Memory Threshold: " << LoadConf->VirtualMemoryThreshold
@@ -366,7 +339,8 @@ static void printLoadConfiguration(const COFFObjectFile *Obj) {
          << "\n  CSD Version: " << LoadConf->CSDVersion
          << "\n  Security Cookie: " << LoadConf->SecurityCookie
          << "\n  SEH Table: " << LoadConf->SEHandlerTable
-         << "\n  SEH Count: " << LoadConf->SEHandlerCount << "\n\n";
+         << "\n  SEH Count: " << LoadConf->SEHandlerCount
+         << "\n\n";
   printSEHTable(Obj, LoadConf->SEHandlerTable, LoadConf->SEHandlerCount);
   outs() << "\n";
 }
@@ -382,10 +356,8 @@ static void printImportTables(const COFFObjectFile *Obj) {
   for (const ImportDirectoryEntryRef &DirRef : Obj->import_directories()) {
     const coff_import_directory_table_entry *Dir;
     StringRef Name;
-    if (DirRef.getImportTableEntry(Dir))
-      return;
-    if (DirRef.getName(Name))
-      return;
+    if (DirRef.getImportTableEntry(Dir)) return;
+    if (DirRef.getName(Name)) return;
 
     outs() << format("  lookup %08x time %08x fwd %08x name %08x addr %08x\n\n",
                      static_cast<uint32_t>(Dir->ImportLookupTableRVA),
@@ -718,8 +690,7 @@ void objdump::printCOFFSymbolTable(const COFFObjectFile *coff) {
     }
     outs() << "\n";
 
-    for (unsigned AI = 0, AE = Symbol->getNumberOfAuxSymbols(); AI < AE;
-         ++AI, ++SI) {
+    for (unsigned AI = 0, AE = Symbol->getNumberOfAuxSymbols(); AI < AE; ++AI, ++SI) {
       if (Symbol->isSectionDefinition()) {
         const coff_aux_section_definition *asd;
         if (Error E =
@@ -729,13 +700,14 @@ void objdump::printCOFFSymbolTable(const COFFObjectFile *coff) {
         int32_t AuxNumber = asd->getNumber(Symbol->isBigObj());
 
         outs() << "AUX "
-               << format("scnlen 0x%x nreloc %d nlnno %d checksum 0x%x ",
-                         unsigned(asd->Length),
-                         unsigned(asd->NumberOfRelocations),
-                         unsigned(asd->NumberOfLinenumbers),
-                         unsigned(asd->CheckSum))
-               << format("assoc %d comdat %d\n", unsigned(AuxNumber),
-                         unsigned(asd->Selection));
+               << format("scnlen 0x%x nreloc %d nlnno %d checksum 0x%x "
+                         , unsigned(asd->Length)
+                         , unsigned(asd->NumberOfRelocations)
+                         , unsigned(asd->NumberOfLinenumbers)
+                         , unsigned(asd->CheckSum))
+               << format("assoc %d comdat %d\n"
+                         , unsigned(AuxNumber)
+                         , unsigned(asd->Selection));
       } else if (Symbol->isFileRecord()) {
         const char *FileName;
         if (Error E = coff->getAuxSymbol<char>(SI + 1, FileName))
@@ -743,7 +715,7 @@ void objdump::printCOFFSymbolTable(const COFFObjectFile *coff) {
 
         StringRef Name(FileName, Symbol->getNumberOfAuxSymbols() *
                                      coff->getSymbolTableEntrySize());
-        outs() << "AUX " << Name.rtrim(StringRef("\0", 1)) << '\n';
+        outs() << "AUX " << Name.rtrim(StringRef("\0", 1))  << '\n';
 
         SI = SI + Symbol->getNumberOfAuxSymbols();
         break;
@@ -752,10 +724,9 @@ void objdump::printCOFFSymbolTable(const COFFObjectFile *coff) {
         if (Error E = coff->getAuxSymbol<coff_aux_weak_external>(SI + 1, awe))
           reportError(std::move(E), coff->getFileName());
 
-        outs() << "AUX "
-               << format("indx %d srch %d\n",
-                         static_cast<uint32_t>(awe->TagIndex),
-                         static_cast<uint32_t>(awe->Characteristics));
+        outs() << "AUX " << format("indx %d srch %d\n",
+                                   static_cast<uint32_t>(awe->TagIndex),
+                                   static_cast<uint32_t>(awe->Characteristics));
       } else {
         outs() << "AUX Unknown\n";
       }

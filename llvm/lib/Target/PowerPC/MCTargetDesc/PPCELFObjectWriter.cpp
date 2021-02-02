@@ -20,23 +20,23 @@
 using namespace llvm;
 
 namespace {
-class PPCELFObjectWriter : public MCELFObjectTargetWriter {
-public:
-  PPCELFObjectWriter(bool Is64Bit, uint8_t OSABI);
+  class PPCELFObjectWriter : public MCELFObjectTargetWriter {
+  public:
+    PPCELFObjectWriter(bool Is64Bit, uint8_t OSABI);
 
-protected:
-  unsigned getRelocType(MCContext &Ctx, const MCValue &Target,
-                        const MCFixup &Fixup, bool IsPCRel) const override;
+  protected:
+    unsigned getRelocType(MCContext &Ctx, const MCValue &Target,
+                          const MCFixup &Fixup, bool IsPCRel) const override;
 
-  bool needsRelocateWithSymbol(const MCSymbol &Sym,
-                               unsigned Type) const override;
-};
-} // namespace
+    bool needsRelocateWithSymbol(const MCSymbol &Sym,
+                                 unsigned Type) const override;
+  };
+}
 
 PPCELFObjectWriter::PPCELFObjectWriter(bool Is64Bit, uint8_t OSABI)
-    : MCELFObjectTargetWriter(Is64Bit, OSABI,
-                              Is64Bit ? ELF::EM_PPC64 : ELF::EM_PPC,
-                              /*HasRelocationAddend*/ true) {}
+  : MCELFObjectTargetWriter(Is64Bit, OSABI,
+                            Is64Bit ?  ELF::EM_PPC64 : ELF::EM_PPC,
+                            /*HasRelocationAddend*/ true) {}
 
 static MCSymbolRefExpr::VariantKind getAccessVariant(const MCValue &Target,
                                                      const MCFixup &Fixup) {
@@ -88,8 +88,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
     case PPC::fixup_ppc_br24abs:
     case PPC::fixup_ppc_br24_notoc:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_None:
         Type = ELF::R_PPC_REL24;
         break;
@@ -110,8 +109,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
       break;
     case PPC::fixup_ppc_half16:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_None:
         Type = ELF::R_PPC_REL16;
         break;
@@ -162,8 +160,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
     }
   } else {
     switch (Fixup.getTargetKind()) {
-    default:
-      llvm_unreachable("invalid fixup kind!");
+      default: llvm_unreachable("invalid fixup kind!");
     case PPC::fixup_ppc_br24abs:
       Type = ELF::R_PPC_ADDR24;
       break;
@@ -172,8 +169,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
       break;
     case PPC::fixup_ppc_half16:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_None:
         Type = ELF::R_PPC_ADDR16;
         break;
@@ -354,8 +350,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
       break;
     case PPC::fixup_ppc_half16ds:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_None:
         Type = ELF::R_PPC64_ADDR16_DS;
         break;
@@ -402,8 +397,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
       break;
     case PPC::fixup_ppc_nofixup:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_PPC_TLSGD:
         if (is64Bit())
           Type = ELF::R_PPC64_TLSGD;
@@ -441,8 +435,7 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
       break;
     case FK_Data_8:
       switch (Modifier) {
-      default:
-        llvm_unreachable("Unsupported Modifier");
+      default: llvm_unreachable("Unsupported Modifier");
       case MCSymbolRefExpr::VK_PPC_TOCBASE:
         Type = ELF::R_PPC64_TOC;
         break;
@@ -474,18 +467,18 @@ unsigned PPCELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
 bool PPCELFObjectWriter::needsRelocateWithSymbol(const MCSymbol &Sym,
                                                  unsigned Type) const {
   switch (Type) {
-  default:
-    return false;
+    default:
+      return false;
 
-  case ELF::R_PPC_REL24:
-  case ELF::R_PPC64_REL24_NOTOC:
-    // If the target symbol has a local entry point, we must keep the
-    // target symbol to preserve that information for the linker.
-    // The "other" values are stored in the last 6 bits of the second byte.
-    // The traditional defines for STO values assume the full byte and thus
-    // the shift to pack it.
-    unsigned Other = cast<MCSymbolELF>(Sym).getOther() << 2;
-    return (Other & ELF::STO_PPC64_LOCAL_MASK) != 0;
+    case ELF::R_PPC_REL24:
+    case ELF::R_PPC64_REL24_NOTOC:
+      // If the target symbol has a local entry point, we must keep the
+      // target symbol to preserve that information for the linker.
+      // The "other" values are stored in the last 6 bits of the second byte.
+      // The traditional defines for STO values assume the full byte and thus
+      // the shift to pack it.
+      unsigned Other = cast<MCSymbolELF>(Sym).getOther() << 2;
+      return (Other & ELF::STO_PPC64_LOCAL_MASK) != 0;
   }
 }
 

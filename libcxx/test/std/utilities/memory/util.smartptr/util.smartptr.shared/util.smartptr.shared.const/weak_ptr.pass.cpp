@@ -17,59 +17,69 @@
 
 #include "test_macros.h"
 
-struct B {
-  static int count;
+struct B
+{
+    static int count;
 
-  B() { ++count; }
-  B(const B&) { ++count; }
-  virtual ~B() { --count; }
+    B() {++count;}
+    B(const B&) {++count;}
+    virtual ~B() {--count;}
 };
 
 int B::count = 0;
 
-struct A : public B {
-  static int count;
+struct A
+    : public B
+{
+    static int count;
 
-  A() { ++count; }
-  A(const A& other) : B(other) { ++count; }
-  ~A() { --count; }
+    A() {++count;}
+    A(const A& other) : B(other) {++count;}
+    ~A() {--count;}
 };
 
 int A::count = 0;
 
-int main(int, char**) {
+int main(int, char**)
+{
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  {
-    std::weak_ptr<A> wp;
-    try {
-      std::shared_ptr<A> sp(wp);
-      assert(false);
-    } catch (std::bad_weak_ptr&) {
+    {
+        std::weak_ptr<A> wp;
+        try
+        {
+            std::shared_ptr<A> sp(wp);
+            assert(false);
+        }
+        catch (std::bad_weak_ptr&)
+        {
+        }
+        assert(A::count == 0);
+    }
+#endif
+    {
+        std::shared_ptr<A> sp0(new A);
+        std::weak_ptr<A> wp(sp0);
+        std::shared_ptr<A> sp(wp);
+        assert(sp.use_count() == 2);
+        assert(sp.get() == sp0.get());
+        assert(A::count == 1);
     }
     assert(A::count == 0);
-  }
-#endif
-  {
-    std::shared_ptr<A> sp0(new A);
-    std::weak_ptr<A> wp(sp0);
-    std::shared_ptr<A> sp(wp);
-    assert(sp.use_count() == 2);
-    assert(sp.get() == sp0.get());
-    assert(A::count == 1);
-  }
-  assert(A::count == 0);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  {
-    std::shared_ptr<A> sp0(new A);
-    std::weak_ptr<A> wp(sp0);
-    sp0.reset();
-    try {
-      std::shared_ptr<A> sp(wp);
-      assert(false);
-    } catch (std::bad_weak_ptr&) {
+    {
+        std::shared_ptr<A> sp0(new A);
+        std::weak_ptr<A> wp(sp0);
+        sp0.reset();
+        try
+        {
+            std::shared_ptr<A> sp(wp);
+            assert(false);
+        }
+        catch (std::bad_weak_ptr&)
+        {
+        }
     }
-  }
-  assert(A::count == 0);
+    assert(A::count == 0);
 #endif
 
   return 0;

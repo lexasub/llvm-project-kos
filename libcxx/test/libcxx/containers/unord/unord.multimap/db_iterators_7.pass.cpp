@@ -23,14 +23,14 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  typedef std::unordered_multimap<int, std::string> C;
-  C c;
-  c.insert(std::make_pair(1, "one"));
-  C::iterator i = c.begin();
-  ++i;
-  assert(i == c.end());
-  ++i;
-  assert(false);
+    typedef std::unordered_multimap<int, std::string> C;
+    C c;
+    c.insert(std::make_pair(1, "one"));
+    C::iterator i = c.begin();
+    ++i;
+    assert(i == c.end());
+    ++i;
+    assert(false);
 
-  return 0;
+    return 0;
 }

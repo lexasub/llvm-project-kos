@@ -30,8 +30,8 @@ typedef __attribute__((neon_vector_type(8))) float16_t float16x8_t;
 #ifdef __aarch64__
 typedef __attribute__((neon_vector_type(2))) float64_t float64x2_t;
 #endif
-typedef __attribute__((neon_polyvector_type(16))) poly8_t poly8x16_t;
-typedef __attribute__((neon_polyvector_type(8))) poly16_t poly16x8_t;
+typedef __attribute__((neon_polyvector_type(16))) poly8_t  poly8x16_t;
+typedef __attribute__((neon_polyvector_type(8)))  poly16_t poly16x8_t;
 
 #if defined(__ARM_FEATURE_BF16)
 typedef __attribute__((neon_vector_type(4))) __bf16 bfloat16x4_t;
@@ -39,27 +39,27 @@ typedef __attribute__((neon_vector_type(4))) __bf16 bfloat16x4_t;
 
 // CHECK: 16__simd64_int32_t
 // CHECK-AARCH64: 11__Int32x2_t
-void f1(int32x2_t v) {}
+void f1(int32x2_t v) { }
 
 // CHECK: 17__simd128_int32_t
 // CHECK-AARCH64: 11__Int32x4_t
-void f2(int32x4_t v) {}
+void f2(int32x4_t v) { }
 
 // CHECK: 17__simd64_uint64_t
 // CHECK-AARCH64: 12__Uint64x1_t
-void f3(uint64x1_t v) {}
+void f3(uint64x1_t v) { }
 
 // CHECK: 18__simd128_uint64_t
 // CHECK-AARCH64: 12__Uint64x2_t
-void f4(uint64x2_t v) {}
+void f4(uint64x2_t v) { }
 
 // CHECK: 18__simd64_float32_t
 // CHECK-AARCH64: 13__Float32x2_t
-void f5(float32x2_t v) {}
+void f5(float32x2_t v) { }
 
 // CHECK: 19__simd128_float32_t
 // CHECK-AARCH64: 13__Float32x4_t
-void f6(float32x4_t v) {}
+void f6(float32x4_t v) { }
 
 // CHECK: 18__simd64_float16_t
 // CHECK-AARCH64: 13__Float16x4_t
@@ -79,7 +79,7 @@ void f10(poly16x8_t v) {}
 
 #ifdef __aarch64__
 // CHECK-AARCH64: 13__Float64x2_t
-void f11(float64x2_t v) {}
+void f11(float64x2_t v) { }
 #endif
 
 #if defined(__ARM_FEATURE_BF16)

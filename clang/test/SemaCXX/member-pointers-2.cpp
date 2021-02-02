@@ -16,11 +16,9 @@ struct Test0 {
   int memint;
   int memarr[10];
   Test0 *memptr;
-  struct MemClass {
-    int a;
-  } memstruct;
+  struct MemClass { int a; } memstruct;
   int &memfun();
-
+  
   void test() {
     int *p;
     p = &Test0::memfoo++;
@@ -38,15 +36,16 @@ void test0() {
 }
 
 namespace rdar9065289 {
-typedef void (*FuncPtr)();
-struct X0 {};
+  typedef void (*FuncPtr)();
+  struct X0 { };
 
-struct X1 {
-  X0 *x0;
-  FuncPtr X0::*fptr;
-};
+  struct X1
+  {
+    X0* x0;
+    FuncPtr X0::*fptr;
+  };
 
-void f(X1 p) {
-  (p.x0->*(p.fptr))();
+  void f(X1 p) {
+    (p.x0->*(p.fptr))();
+  }
 }
-} // namespace rdar9065289

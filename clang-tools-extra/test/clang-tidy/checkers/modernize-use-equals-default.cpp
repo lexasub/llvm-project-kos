@@ -7,7 +7,7 @@ public:
   ~OL();
 };
 
-OL::OL(){};
+OL::OL() {};
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use '= default' to define a trivial default constructor [modernize-use-equals-default]
 // CHECK-FIXES: OL::OL() = default;
 OL::~OL() {}
@@ -17,7 +17,7 @@ OL::~OL() {}
 // Inline definitions.
 class IL {
 public:
-  IL(){}; // Note embedded tab on this line
+  IL() {} 	 ; // Note embedded tab on this line
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use '= default'
   // CHECK-FIXES: IL() = default 	 ; // Note embedded tab on this line
   ~IL() {}
@@ -46,7 +46,7 @@ public:
 // Default member initializer
 class DMI {
 public:
-  DMI(){} // Comment before semi-colon on next line
+  DMI() {} // Comment before semi-colon on next line
   ;
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use '= default'
   // CHECK-FIXES: DMI() = default // Comment before semi-colon on next line
@@ -57,7 +57,7 @@ public:
 // Class member
 class CM {
 public:
-  CM(){} /* Comments */ /* before */ /* semicolon */;
+  CM() {} /* Comments */ /* before */ /* semicolon */;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use '= default'
   // CHECK-FIXES: CM() = default /* Comments */ /* before */ /* semicolon */;
   OL o;
@@ -68,7 +68,7 @@ class Priv {
   Priv() {}
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use '= default'
   // CHECK-FIXES: Priv() = default;
-  ~Priv(){};
+  ~Priv() {};
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use '= default'
   // CHECK-FIXES: ~Priv() = default;
 };
@@ -189,25 +189,16 @@ struct Comments {
 
 // Try-catch.
 struct ITC {
-  ITC()
-  try {
-  } catch (...) {
-  }
-  ~ITC() try {
-  } catch (...) {
-  }
+  ITC() try {} catch(...) {}
+  ~ITC() try {} catch(...) {}
 };
 
 struct OTC {
   OTC();
   ~OTC();
 };
-OTC::OTC() try {
-} catch (...) {
-}
-OTC::~OTC() try {
-} catch (...) {
-}
+OTC::OTC() try {} catch(...) {}
+OTC::~OTC() try {} catch(...) {}
 
 #define STRUCT_WITH_DEFAULT(_base, _type) \
   struct _type {                          \

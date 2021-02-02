@@ -24,16 +24,17 @@
 #include "poisoned_hash_helper.h"
 #endif
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     typedef std::hash<std::type_index> H;
-    static_assert(
-        (std::is_same<typename H::argument_type, std::type_index>::value), "");
-    static_assert((std::is_same<typename H::result_type, std::size_t>::value),
-                  "");
+    static_assert((std::is_same<typename H::argument_type, std::type_index>::value), "" );
+    static_assert((std::is_same<typename H::result_type, std::size_t>::value), "" );
   }
 #if TEST_STD_VER >= 11
-  { test_hash_enabled_for_type<std::type_index>(std::type_index(typeid(int))); }
+  {
+    test_hash_enabled_for_type<std::type_index>(std::type_index(typeid(int)));
+  }
 #endif
 
   return 0;

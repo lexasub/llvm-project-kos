@@ -10,34 +10,33 @@ struct S {
   ~S() {}
 };
 
-#pragma omp declare reduction(+   \
-                              : S \
-                              : omp_out.a += omp_in.a) initializer(omp_priv = omp_orig)
+#pragma omp declare reduction(+:S:omp_out.a += omp_in.a) initializer(omp_priv = omp_orig)
 
 float g;
 
 int a;
 #pragma omp threadprivate(a)
-int main(int argc, char *argv[]) {
-  int i, n;
-  float a[100], b[100], sum, e[argc + 100];
-  S c[100];
-  float &d = g;
+int main (int argc, char *argv[])
+{
+int   i, n;
+float a[100], b[100], sum, e[argc + 100];
+S c[100];
+float &d = g;
 
-  /* Some initializations */
-  n = 100;
-  for (i = 0; i < n; i++)
-    a[i] = b[i] = i * 1.0;
-  sum = 0.0;
+/* Some initializations */
+n = 100;
+for (i=0; i < n; i++)
+  a[i] = b[i] = i * 1.0;
+sum = 0.0;
 
-#pragma omp taskloop simd reduction(+ \
-                                    : sum, c[:n], d, e)
-  for (i = 0; i < n; i++) {
+#pragma omp taskloop simd reduction(+:sum, c[:n], d, e)
+  for (i=0; i < n; i++) {
     sum = sum + (a[i] * b[i]);
-    c[i].a = i * i;
-    d += i * i;
+    c[i].a = i*i;
+    d += i*i;
     e[i] = i;
   }
+
 }
 
 // CHECK-LABEL: @main(

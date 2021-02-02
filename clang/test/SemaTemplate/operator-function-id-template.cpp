@@ -1,14 +1,14 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 // expected-no-diagnostics
 
-template <typename T>
-struct A {
-  template <typename U> A<T> operator+(U);
+template<typename T>
+struct A { 
+  template<typename U> A<T> operator+(U);
 };
 
-template <int Value, typename T> bool operator==(A<T>, A<T>);
+template<int Value, typename T> bool operator==(A<T>, A<T>);
 
-template <> bool operator==<0>(A<int>, A<int>);
+template<> bool operator==<0>(A<int>, A<int>);
 
 bool test_qualified_id(A<int> ai) {
   return ::operator==<0, int>(ai, ai);
@@ -18,7 +18,7 @@ void test_op(A<int> a, int i) {
   const A<int> &air = a.operator+<int>(i);
 }
 
-template <typename T>
+template<typename T>
 void test_op_template(A<T> at, T x) {
   const A<T> &atr = at.template operator+<T>(x);
   const A<T> &atr2 = at.A::template operator+<T>(x);

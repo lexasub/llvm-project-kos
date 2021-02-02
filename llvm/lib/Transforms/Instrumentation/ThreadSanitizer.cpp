@@ -195,7 +195,7 @@ void insertModuleCtor(Module &M) {
       [&](Function *Ctor, FunctionCallee) { appendToGlobalCtors(M, Ctor, 0); });
 }
 
-} // namespace
+}  // namespace
 
 PreservedAnalyses ThreadSanitizerPass::run(Function &F,
                                            FunctionAnalysisManager &FAM) {
@@ -535,9 +535,9 @@ bool ThreadSanitizer::sanitizeFunction(Function &F,
     return false;
   initialize(*F.getParent());
   SmallVector<InstructionInfo, 8> AllLoadsAndStores;
-  SmallVector<Instruction *, 8> LocalLoadsAndStores;
-  SmallVector<Instruction *, 8> AtomicAccesses;
-  SmallVector<Instruction *, 8> MemIntrinCalls;
+  SmallVector<Instruction*, 8> LocalLoadsAndStores;
+  SmallVector<Instruction*, 8> AtomicAccesses;
+  SmallVector<Instruction*, 8> MemIntrinCalls;
   bool Res = false;
   bool HasCalls = false;
   bool SanitizeFunction = F.hasFnAttribute(Attribute::SanitizeThread);
@@ -688,27 +688,16 @@ bool ThreadSanitizer::instrumentLoadOrStore(const InstructionInfo &II,
 static ConstantInt *createOrdering(IRBuilder<> *IRB, AtomicOrdering ord) {
   uint32_t v = 0;
   switch (ord) {
-  case AtomicOrdering::NotAtomic:
-    llvm_unreachable("unexpected atomic ordering!");
-  case AtomicOrdering::Unordered:
-    LLVM_FALLTHROUGH;
-  case AtomicOrdering::Monotonic:
-    v = 0;
-    break;
-  // Not specified yet:
-  // case AtomicOrdering::Consume:                v = 1; break;
-  case AtomicOrdering::Acquire:
-    v = 2;
-    break;
-  case AtomicOrdering::Release:
-    v = 3;
-    break;
-  case AtomicOrdering::AcquireRelease:
-    v = 4;
-    break;
-  case AtomicOrdering::SequentiallyConsistent:
-    v = 5;
-    break;
+    case AtomicOrdering::NotAtomic:
+      llvm_unreachable("unexpected atomic ordering!");
+    case AtomicOrdering::Unordered:              LLVM_FALLTHROUGH;
+    case AtomicOrdering::Monotonic:              v = 0; break;
+    // Not specified yet:
+    // case AtomicOrdering::Consume:                v = 1; break;
+    case AtomicOrdering::Acquire:                v = 2; break;
+    case AtomicOrdering::Release:                v = 3; break;
+    case AtomicOrdering::AcquireRelease:         v = 4; break;
+    case AtomicOrdering::SequentiallyConsistent: v = 5; break;
   }
   return IRB->getInt32(v);
 }
@@ -807,10 +796,12 @@ bool ThreadSanitizer::instrumentAtomic(Instruction *I, const DataLayout &DL) {
     Type *Ty = Type::getIntNTy(IRB.getContext(), BitSize);
     Type *PtrTy = Ty->getPointerTo();
     Value *CmpOperand =
-        IRB.CreateBitOrPointerCast(CASI->getCompareOperand(), Ty);
+      IRB.CreateBitOrPointerCast(CASI->getCompareOperand(), Ty);
     Value *NewOperand =
-        IRB.CreateBitOrPointerCast(CASI->getNewValOperand(), Ty);
-    Value *Args[] = {IRB.CreatePointerCast(Addr, PtrTy), CmpOperand, NewOperand,
+      IRB.CreateBitOrPointerCast(CASI->getNewValOperand(), Ty);
+    Value *Args[] = {IRB.CreatePointerCast(Addr, PtrTy),
+                     CmpOperand,
+                     NewOperand,
                      createOrdering(&IRB, CASI->getSuccessOrdering()),
                      createOrdering(&IRB, CASI->getFailureOrdering())};
     CallInst *C = IRB.CreateCall(TsanAtomicCAS[Idx], Args);
@@ -823,7 +814,7 @@ bool ThreadSanitizer::instrumentAtomic(Instruction *I, const DataLayout &DL) {
     }
 
     Value *Res =
-        IRB.CreateInsertValue(UndefValue::get(CASI->getType()), OldVal, 0);
+      IRB.CreateInsertValue(UndefValue::get(CASI->getType()), OldVal, 0);
     Res = IRB.CreateInsertValue(Res, Success, 1);
 
     I->replaceAllUsesWith(Res);
@@ -845,8 +836,8 @@ int ThreadSanitizer::getMemoryAccessFuncIndex(Value *Addr,
   Type *OrigTy = cast<PointerType>(OrigPtrTy)->getElementType();
   assert(OrigTy->isSized());
   uint32_t TypeSize = DL.getTypeStoreSizeInBits(OrigTy);
-  if (TypeSize != 8 && TypeSize != 16 && TypeSize != 32 && TypeSize != 64 &&
-      TypeSize != 128) {
+  if (TypeSize != 8  && TypeSize != 16 &&
+      TypeSize != 32 && TypeSize != 64 && TypeSize != 128) {
     NumAccessesWithBadSize++;
     // Ignore all unusual sizes.
     return -1;

@@ -27,12 +27,9 @@ SDValue XCoreSelectionDAGInfo::EmitTargetCodeForMemcpy(
     TargetLowering::ArgListTy Args;
     TargetLowering::ArgListEntry Entry;
     Entry.Ty = DAG.getDataLayout().getIntPtrType(*DAG.getContext());
-    Entry.Node = Dst;
-    Args.push_back(Entry);
-    Entry.Node = Src;
-    Args.push_back(Entry);
-    Entry.Node = Size;
-    Args.push_back(Entry);
+    Entry.Node = Dst; Args.push_back(Entry);
+    Entry.Node = Src; Args.push_back(Entry);
+    Entry.Node = Size; Args.push_back(Entry);
 
     TargetLowering::CallLoweringInfo CLI(DAG);
     CLI.setDebugLoc(dl)
@@ -44,7 +41,7 @@ SDValue XCoreSelectionDAGInfo::EmitTargetCodeForMemcpy(
                       std::move(Args))
         .setDiscardResult();
 
-    std::pair<SDValue, SDValue> CallResult = TLI.LowerCallTo(CLI);
+    std::pair<SDValue,SDValue> CallResult = TLI.LowerCallTo(CLI);
     return CallResult.second;
   }
 

@@ -16,9 +16,9 @@
 #ifndef SANITIZER_LIBIGNORE_H
 #define SANITIZER_LIBIGNORE_H
 
-#include "sanitizer_atomic.h"
-#include "sanitizer_common.h"
 #include "sanitizer_internal_defs.h"
+#include "sanitizer_common.h"
+#include "sanitizer_atomic.h"
 #include "sanitizer_mutex.h"
 
 namespace __sanitizer {
@@ -83,8 +83,8 @@ class LibIgnore {
   bool track_instrumented_libs_;
 
   // Disallow copying of LibIgnore objects.
-  LibIgnore(const LibIgnore &);       // not implemented
-  void operator=(const LibIgnore &);  // not implemented
+  LibIgnore(const LibIgnore&);  // not implemented
+  void operator = (const LibIgnore&);  // not implemented
 };
 
 inline bool LibIgnore::IsIgnored(uptr pc, bool *pc_in_ignored_lib) const {

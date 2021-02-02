@@ -20,17 +20,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::poisson_distribution<> D;
-    typedef D::result_type result_type;
-    static_assert((std::is_same<result_type, int>::value), "");
-  }
-  {
-    typedef std::poisson_distribution<unsigned long long> D;
-    typedef D::result_type result_type;
-    static_assert((std::is_same<result_type, unsigned long long>::value), "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::poisson_distribution<> D;
+        typedef D::result_type result_type;
+        static_assert((std::is_same<result_type, int>::value), "");
+    }
+    {
+        typedef std::poisson_distribution<unsigned long long> D;
+        typedef D::result_type result_type;
+        static_assert((std::is_same<result_type, unsigned long long>::value), "");
+    }
 
   return 0;
 }

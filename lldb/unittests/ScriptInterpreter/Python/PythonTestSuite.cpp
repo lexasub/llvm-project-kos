@@ -67,8 +67,8 @@ extern "C" void init_lldb(void) {}
 // C-linkage specified, but returns UDT 'llvm::Expected<bool>' which is
 // incompatible with C
 #if _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4190)
+#pragma warning (push)
+#pragma warning (disable : 4190)
 #endif
 
 extern "C" llvm::Expected<bool> LLDBSwigPythonBreakpointCallbackFunction(
@@ -80,7 +80,7 @@ extern "C" llvm::Expected<bool> LLDBSwigPythonBreakpointCallbackFunction(
 }
 
 #if _MSC_VER
-#pragma warning(pop)
+#pragma warning (pop)
 #endif
 
 #pragma clang diagnostic pop
@@ -114,7 +114,8 @@ LLDBSwigPythonCreateCommandObject(const char *python_class_name,
 
 extern "C" void *LLDBSwigPythonCreateScriptedThreadPlan(
     const char *python_class_name, const char *session_dictionary_name,
-    StructuredDataImpl *args_data, std::string &error_string,
+    StructuredDataImpl *args_data,
+    std::string &error_string,
     const lldb::ThreadPlanSP &thread_plan_sp) {
   return nullptr;
 }

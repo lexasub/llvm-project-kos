@@ -7,11 +7,11 @@
 #include "Inputs/system-header-simulator-cxx.h"
 
 template <typename Container>
-long clang_analyzer_container_begin(const Container &);
+long clang_analyzer_container_begin(const Container&);
 template <typename Container>
-long clang_analyzer_container_end(const Container &);
+long clang_analyzer_container_end(const Container&);
 
-void clang_analyzer_denote(long, const char *);
+void clang_analyzer_denote(long, const char*);
 void clang_analyzer_express(long);
 void clang_analyzer_eval(bool);
 void clang_analyzer_warnIfReached();
@@ -52,8 +52,8 @@ void move_assignment(std::vector<int> &V1, std::vector<int> &V2) {
   V1 = std::move(V2);
   clang_analyzer_eval(clang_analyzer_container_begin(V1) == B2); // expected-warning{{TRUE}}
                                                                  // expected-note@-1{{TRUE}}
-  clang_analyzer_eval(clang_analyzer_container_end(V2) == E2);   // expected-warning{{TRUE}}
-                                                                 // expected-note@-1{{TRUE}}
+  clang_analyzer_eval(clang_analyzer_container_end(V2) == E2); // expected-warning{{TRUE}}
+                                                               // expected-note@-1{{TRUE}}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ void move_assignment(std::vector<int> &V1, std::vector<int> &V2) {
 /// Design decision: extends containers to the ->BACK-> (i.e. the
 /// past-the-end position of the container is incremented).
 
-void clang_analyzer_dump(void *);
+void clang_analyzer_dump(void*);
 
 void push_back(std::vector<int> &V, int n) {
   V.cbegin();
@@ -80,8 +80,8 @@ void push_back(std::vector<int> &V, int n) {
 
   clang_analyzer_express(clang_analyzer_container_begin(V)); // expected-warning{{$V.begin()}}
                                                              // expected-note@-1{{$V.begin()}}
-  clang_analyzer_express(clang_analyzer_container_end(V));   // expected-warning{{$V.end() + 1}}
-                                                             // expected-note@-1{{$V.end() + 1}}
+  clang_analyzer_express(clang_analyzer_container_end(V)); // expected-warning{{$V.end() + 1}}
+                                                           // expected-note@-1{{$V.end() + 1}}
 }
 
 /// emplace_back()
@@ -100,8 +100,8 @@ void emplace_back(std::vector<int> &V, int n) {
 
   clang_analyzer_express(clang_analyzer_container_begin(V)); // expected-warning{{$V.begin()}}
                                                              // expected-note@-1{{$V.begin()}}
-  clang_analyzer_express(clang_analyzer_container_end(V));   // expected-warning{{$V.end() + 1}}
-                                                             // expected-note@-1{{$V.end() + 1}}
+  clang_analyzer_express(clang_analyzer_container_end(V)); // expected-warning{{$V.end() + 1}}
+                                                           // expected-note@-1{{$V.end() + 1}}
 }
 
 /// pop_back()
@@ -118,10 +118,11 @@ void pop_back(std::vector<int> &V, int n) {
 
   V.pop_back(); // expected-note 2{{Container 'V' shrank from the back by 1 position}}
 
+
   clang_analyzer_express(clang_analyzer_container_begin(V)); // expected-warning{{$V.begin()}}
                                                              // expected-note@-1{{$V.begin()}}
-  clang_analyzer_express(clang_analyzer_container_end(V));   // expected-warning{{$V.end() - 1}}
-                                                             // expected-note@-1{{$V.end() - 1}}
+  clang_analyzer_express(clang_analyzer_container_end(V)); // expected-warning{{$V.end() - 1}}
+                                                           // expected-note@-1{{$V.end() - 1}}
 }
 
 /// push_front()
@@ -140,8 +141,8 @@ void push_front(std::list<int> &L, int n) {
 
   clang_analyzer_express(clang_analyzer_container_begin(L)); // expected-warning{{$L.begin() - 1}}
                                                              // expected-note@-1{{$L.begin() - 1}}
-  clang_analyzer_express(clang_analyzer_container_end(L));   // expected-warning{{$L.end()}}
-                                                             // expected-note@-1{{$L.end()}}
+  clang_analyzer_express(clang_analyzer_container_end(L)); // expected-warning{{$L.end()}}
+                                                           // expected-note@-1{{$L.end()}}
 }
 
 /// emplace_front()
@@ -160,8 +161,8 @@ void emplace_front(std::list<int> &L, int n) {
 
   clang_analyzer_express(clang_analyzer_container_begin(L)); // expected-warning{{$L.begin() - 1}}
                                                              // expected-note@-1{{$L.begin() - 1}}
-  clang_analyzer_express(clang_analyzer_container_end(L));   // expected-warning{{$L.end()}}
-                                                             // expected-note@-1{{$L.end()}}
+  clang_analyzer_express(clang_analyzer_container_end(L)); // expected-warning{{$L.end()}}
+                                                           // expected-note@-1{{$L.end()}}
 }
 
 /// pop_front()
@@ -180,8 +181,8 @@ void pop_front(std::list<int> &L, int n) {
 
   clang_analyzer_express(clang_analyzer_container_begin(L)); // expected-warning{{$L.begin() + 1}}
                                                              // expected-note@-1{{$L.begin() + 1}}
-  clang_analyzer_express(clang_analyzer_container_end(L));   // expected-warning{{$L.end()}}
-                                                             // expected-note@-1{{$L.end()}}
+  clang_analyzer_express(clang_analyzer_container_end(L)); // expected-warning{{$L.end()}}
+                                                           // expected-note@-1{{$L.end()}}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +196,7 @@ void pop_front(std::list<int> &L, int n) {
 void push_back() {
   std::vector<int> V;
   V.end();
-
+  
   clang_analyzer_denote(clang_analyzer_container_end(V), "$V.end()");
 
   V.push_back(1); // expected-note{{Container 'V' extended to the back by 1 position}}
@@ -247,18 +248,18 @@ void print_state(std::vector<int> &V) {
   V.cbegin();
   clang_analyzer_printState();
 
-  // CHECK:      "checker_messages": [
-  // CHECK-NEXT:   { "checker": "alpha.cplusplus.ContainerModeling", "messages": [
-  // CHECK-NEXT:     "Container Data :",
-  // CHECK-NEXT:     "SymRegion{reg_$[[#]]<std::vector<int> & V>} : [ conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} .. <Unknown> ]"
-  // CHECK-NEXT:   ]}
+// CHECK:      "checker_messages": [
+// CHECK-NEXT:   { "checker": "alpha.cplusplus.ContainerModeling", "messages": [
+// CHECK-NEXT:     "Container Data :",
+// CHECK-NEXT:     "SymRegion{reg_$[[#]]<std::vector<int> & V>} : [ conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} .. <Unknown> ]"
+// CHECK-NEXT:   ]}
 
   V.cend();
   clang_analyzer_printState();
-
-  // CHECK:      "checker_messages": [
-  // CHECK-NEXT:   { "checker": "alpha.cplusplus.ContainerModeling", "messages": [
-  // CHECK-NEXT:     "Container Data :",
-  // CHECK-NEXT:     "SymRegion{reg_$[[#]]<std::vector<int> & V>} : [ conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} .. conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} ]"
-  // CHECK-NEXT:   ]}
+  
+// CHECK:      "checker_messages": [
+// CHECK-NEXT:   { "checker": "alpha.cplusplus.ContainerModeling", "messages": [
+// CHECK-NEXT:     "Container Data :",
+// CHECK-NEXT:     "SymRegion{reg_$[[#]]<std::vector<int> & V>} : [ conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} .. conj_$[[#]]{long, LC[[#]], S[[#]], #[[#]]} ]"
+// CHECK-NEXT:   ]}
 }

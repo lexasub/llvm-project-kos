@@ -11,7 +11,7 @@
 constexpr std::size_t MAX_STRING_LEN = 8 << 14;
 
 // Benchmark when there is no match.
-static void BM_StringFindNoMatch(benchmark::State& state) {
+static void BM_StringFindNoMatch(benchmark::State &state) {
   std::string s1(state.range(0), '-');
   std::string s2(8, '*');
   for (auto _ : state)
@@ -20,7 +20,7 @@ static void BM_StringFindNoMatch(benchmark::State& state) {
 BENCHMARK(BM_StringFindNoMatch)->Range(10, MAX_STRING_LEN);
 
 // Benchmark when the string matches first time.
-static void BM_StringFindAllMatch(benchmark::State& state) {
+static void BM_StringFindAllMatch(benchmark::State &state) {
   std::string s1(MAX_STRING_LEN, '-');
   std::string s2(state.range(0), '-');
   for (auto _ : state)
@@ -29,7 +29,7 @@ static void BM_StringFindAllMatch(benchmark::State& state) {
 BENCHMARK(BM_StringFindAllMatch)->Range(1, MAX_STRING_LEN);
 
 // Benchmark when the string matches somewhere in the end.
-static void BM_StringFindMatch1(benchmark::State& state) {
+static void BM_StringFindMatch1(benchmark::State &state) {
   std::string s1(MAX_STRING_LEN / 2, '*');
   s1 += std::string(state.range(0), '-');
   std::string s2(state.range(0), '-');
@@ -39,7 +39,7 @@ static void BM_StringFindMatch1(benchmark::State& state) {
 BENCHMARK(BM_StringFindMatch1)->Range(1, MAX_STRING_LEN / 4);
 
 // Benchmark when the string matches somewhere from middle to the end.
-static void BM_StringFindMatch2(benchmark::State& state) {
+static void BM_StringFindMatch2(benchmark::State &state) {
   std::string s1(MAX_STRING_LEN / 2, '*');
   s1 += std::string(state.range(0), '-');
   s1 += std::string(state.range(0), '*');
@@ -49,7 +49,7 @@ static void BM_StringFindMatch2(benchmark::State& state) {
 }
 BENCHMARK(BM_StringFindMatch2)->Range(1, MAX_STRING_LEN / 4);
 
-static void BM_StringCtorDefault(benchmark::State& state) {
+static void BM_StringCtorDefault(benchmark::State &state) {
   for (auto _ : state) {
     std::string Default;
     benchmark::DoNotOptimize(Default);
@@ -77,14 +77,14 @@ static constexpr char SmallStringLiteral[] = "012345678";
 
 TEST_ALWAYS_INLINE const char* getSmallString(DiffType D) {
   switch (D) {
-  case DiffType::Control:
-    return SmallStringLiteral;
-  case DiffType::ChangeFirst:
-    return "-12345678";
-  case DiffType::ChangeMiddle:
-    return "0123-5678";
-  case DiffType::ChangeLast:
-    return "01234567-";
+    case DiffType::Control:
+      return SmallStringLiteral;
+    case DiffType::ChangeFirst:
+      return "-12345678";
+    case DiffType::ChangeMiddle:
+      return "0123-5678";
+    case DiffType::ChangeLast:
+      return "01234567-";
   }
 }
 
@@ -95,14 +95,14 @@ TEST_ALWAYS_INLINE const char* getLargeString(DiffType D) {
 #define LARGE_STRING_FIRST "123456789012345678901234567890"
 #define LARGE_STRING_SECOND "234567890123456789012345678901"
   switch (D) {
-  case DiffType::Control:
-    return "0" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "2";
-  case DiffType::ChangeFirst:
-    return "-" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "2";
-  case DiffType::ChangeMiddle:
-    return "0" LARGE_STRING_FIRST "-" LARGE_STRING_SECOND "2";
-  case DiffType::ChangeLast:
-    return "0" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "-";
+    case DiffType::Control:
+      return "0" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "2";
+    case DiffType::ChangeFirst:
+      return "-" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "2";
+    case DiffType::ChangeMiddle:
+      return "0" LARGE_STRING_FIRST "-" LARGE_STRING_SECOND "2";
+    case DiffType::ChangeLast:
+      return "0" LARGE_STRING_FIRST "1" LARGE_STRING_SECOND "-";
   }
 }
 
@@ -113,14 +113,14 @@ TEST_ALWAYS_INLINE const char* getHugeString(DiffType D) {
 #define HUGE_STRING3 HUGE_STRING2 HUGE_STRING2 HUGE_STRING2 HUGE_STRING2
 #define HUGE_STRING4 HUGE_STRING3 HUGE_STRING3 HUGE_STRING3 HUGE_STRING3
   switch (D) {
-  case DiffType::Control:
-    return "0123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "0123456789";
-  case DiffType::ChangeFirst:
-    return "-123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "0123456789";
-  case DiffType::ChangeMiddle:
-    return "0123456789" HUGE_STRING4 "01234-6789" HUGE_STRING4 "0123456789";
-  case DiffType::ChangeLast:
-    return "0123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "012345678-";
+    case DiffType::Control:
+      return "0123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "0123456789";
+    case DiffType::ChangeFirst:
+      return "-123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "0123456789";
+    case DiffType::ChangeMiddle:
+      return "0123456789" HUGE_STRING4 "01234-6789" HUGE_STRING4 "0123456789";
+    case DiffType::ChangeLast:
+      return "0123456789" HUGE_STRING4 "0123456789" HUGE_STRING4 "012345678-";
   }
 }
 
@@ -214,18 +214,16 @@ template <class Length>
 struct StringMove {
   static void run(benchmark::State& state) {
     // Keep two object locations and move construct back and forth.
-    std::aligned_storage<sizeof(std::string), alignof(std::string)>::type
-        Storage[2];
+    std::aligned_storage<sizeof(std::string), alignof(std::string)>::type Storage[2];
     using S = std::string;
     size_t I = 0;
-    S* newS =
-        new (static_cast<void*>(Storage)) std::string(makeString(Length()));
+    S *newS = new (static_cast<void*>(Storage)) std::string(makeString(Length()));
     for (auto _ : state) {
       // Switch locations.
       I ^= 1;
       benchmark::DoNotOptimize(Storage);
       // Move construct into the new location,
-      S* tmpS = new (static_cast<void*>(Storage + I)) S(std::move(*newS));
+      S *tmpS = new (static_cast<void*>(Storage + I)) S(std::move(*newS));
       // then destroy the old one.
       newS->~S();
       newS = tmpS;
@@ -446,10 +444,11 @@ struct StringRelationalLiteral {
     auto Lhs = makeString(LHLength(), DiffType());
     for (auto _ : state) {
       benchmark::DoNotOptimize(Lhs);
-      constexpr const char* Literal = RHLength::value == Length::Empty ? ""
-                                      : RHLength::value == Length::Small
-                                          ? SmallStringLiteral
-                                          : LargeStringLiteral;
+      constexpr const char* Literal = RHLength::value == Length::Empty
+                                          ? ""
+                                          : RHLength::value == Length::Small
+                                                ? SmallStringLiteral
+                                                : LargeStringLiteral;
       switch (Rel()) {
       case Relation::Eq:
         benchmark::DoNotOptimize(Lhs == Literal);
@@ -580,7 +579,9 @@ bool StringEqString(const std::string& a, const std::string& b) {
 }
 bool StringEqCStr(const std::string& a, const char* b) { return a == b; }
 bool CStrEqString(const char* a, const std::string& b) { return a == b; }
-bool StringEqCStrLiteralEmpty(const std::string& a) { return a == ""; }
+bool StringEqCStrLiteralEmpty(const std::string& a) {
+  return a == "";
+}
 bool StringEqCStrLiteralSmall(const std::string& a) {
   return a == SmallStringLiteral;
 }

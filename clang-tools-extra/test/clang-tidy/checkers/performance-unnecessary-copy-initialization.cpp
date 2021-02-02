@@ -235,12 +235,12 @@ struct NegativeConstructor {
   ExpensiveToCopyType Obj;
 };
 
-#define UNNECESSARY_COPY_INIT_IN_MACRO_BODY(TYPE) \
-  void functionWith##TYPE(const TYPE &T) {        \
-    auto AssignedInMacro = T.reference();         \
-  }                                               \
-  // Ensure fix is not applied.                   \
-  // CHECK-FIXES: auto AssignedInMacro = T.reference();
+#define UNNECESSARY_COPY_INIT_IN_MACRO_BODY(TYPE)                              \
+  void functionWith##TYPE(const TYPE &T) {                                     \
+    auto AssignedInMacro = T.reference();                                      \
+  }                                                                            \
+// Ensure fix is not applied.
+// CHECK-FIXES: auto AssignedInMacro = T.reference();
 
 UNNECESSARY_COPY_INIT_IN_MACRO_BODY(ExpensiveToCopyType)
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: the variable 'AssignedInMacro' is copy-constructed
@@ -299,6 +299,7 @@ void PositiveLocalCopyTwice() {
   copy_6.constMethod();
   orig.constMethod();
 }
+
 
 void PositiveLocalCopyWeirdCopy() {
   WeirdCopyCtorType orig;

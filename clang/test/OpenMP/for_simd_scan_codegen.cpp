@@ -25,8 +25,7 @@ void baz(int n) {
 
   // double b_buffer[10];
   // CHECK: [[B_BUF:%.+]] = alloca double, i64 10,
-#pragma omp for simd reduction(inscan, + \
-                               : a[:n], b)
+#pragma omp for simd reduction(inscan, +:a[:n], b)
   for (int i = 0; i < 10; ++i) {
     // CHECK: call void @__kmpc_for_static_init_4(
     // CHECK: call i8* @llvm.stacksave()
@@ -167,8 +166,7 @@ void baz(int n) {
 
   // double b_buffer[10];
   // CHECK: [[B_BUF:%.+]] = alloca double, i64 10,
-#pragma omp for simd reduction(inscan, + \
-                               : a[:n], b)
+#pragma omp for simd reduction(inscan, +:a[:n], b)
   for (int i = 0; i < 10; ++i) {
     // CHECK: call void @__kmpc_for_static_init_4(
     // CHECK: call i8* @llvm.stacksave()
@@ -311,3 +309,4 @@ void baz(int n) {
 
 #endif
 // CHECK: !{!"llvm.loop.vectorize.enable", i1 true}
+

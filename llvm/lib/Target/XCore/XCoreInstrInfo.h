@@ -24,7 +24,6 @@ namespace llvm {
 class XCoreInstrInfo : public XCoreGenInstrInfo {
   const XCoreRegisterInfo RI;
   virtual void anchor();
-
 public:
   XCoreInstrInfo();
 
@@ -68,18 +67,19 @@ public:
                    bool KillSrc) const override;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MI, Register SrcReg,
-                           bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MI,
+                           Register SrcReg, bool isKill, int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MI, Register DestReg,
-                            int FrameIndex, const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MI,
+                            Register DestReg, int FrameIndex,
+                            const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
-  bool
-  reverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
+  bool reverseBranchCondition(
+                          SmallVectorImpl<MachineOperand> &Cond) const override;
 
   // Emit code before MBBI to load immediate value into physical register Reg.
   // Returns an iterator to the new instruction.
@@ -88,6 +88,6 @@ public:
                                             unsigned Reg, uint64_t Value) const;
 };
 
-} // namespace llvm
+}
 
 #endif

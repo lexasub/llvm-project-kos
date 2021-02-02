@@ -7,7 +7,7 @@ class B : virtual public A {
   virtual void x() {}
 };
 
-void b(A *p) {
+void b(A* p) {
   p->x();
   // Instantiating a class that virtually inherits 'A'
   // triggers calculation of the vtable offsets in 'A'.

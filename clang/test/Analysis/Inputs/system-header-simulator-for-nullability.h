@@ -4,7 +4,7 @@
 #define BOOL int
 
 #define NS_ASSUME_NONNULL_BEGIN _Pragma("clang assume_nonnull begin")
-#define NS_ASSUME_NONNULL_END _Pragma("clang assume_nonnull end")
+#define NS_ASSUME_NONNULL_END   _Pragma("clang assume_nonnull end")
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,29 +43,30 @@ typedef struct {
 } NSFastEnumerationState;
 
 __attribute__((objc_root_class))
-@interface NSObject<NSObject>
+@interface
+NSObject<NSObject>
 @end
 
-@interface NSString : NSObject <NSCopying>
-- (BOOL)isEqualToString:(NSString *)aString;
+@interface NSString : NSObject<NSCopying>
+- (BOOL)isEqualToString : (NSString *)aString;
 - (NSString *)stringByAppendingString:(NSString *)aString;
 - (nullable NSString *)nullableStringByAppendingString:(NSString *)aString;
-+ (NSString *_Nonnull)generateString;
-+ (NSString *)generateImplicitlyNonnullString;
-+ (NSString *_Nullable)generatePossiblyNullString;
++ (NSString * _Nonnull) generateString;
++ (NSString *) generateImplicitlyNonnullString;
++ (NSString * _Nullable) generatePossiblyNullString;
 @end
 
 void NSSystemFunctionTakingNonnull(NSString *s);
 
 @interface NSSystemClass : NSObject
-- (void)takesNonnull:(NSString *)s;
+- (void) takesNonnull:(NSString *)s;
 @end
 
-NSString *_Nullable getPossiblyNullString();
-NSString *_Nonnull getString();
+NSString* _Nullable getPossiblyNullString();
+NSString* _Nonnull  getString();
 
 @protocol MyProtocol
-- (NSString *_Nonnull)getString;
+- (NSString * _Nonnull) getString;
 @end
 
 NS_ASSUME_NONNULL_END
@@ -82,15 +83,15 @@ NS_ASSUME_NONNULL_END
 @interface NSDictionary (NSDictionaryCreation)
 
 + (id)dictionary;
-+ (id)dictionaryWithObject:(id)object forKey:(id<NSCopying>)key;
-+ (instancetype)dictionaryWithObjects:(const id[])objects forKeys:(const id<NSCopying>[])keys count:(NSUInteger)cnt;
++ (id)dictionaryWithObject:(id)object forKey:(id <NSCopying>)key;
++ (instancetype)dictionaryWithObjects:(const id [])objects forKeys:(const id <NSCopying> [])keys count:(NSUInteger)cnt;
 
 @end
 
 @interface NSMutableDictionary : NSDictionary
 
 - (void)removeObjectForKey:(id)aKey;
-- (void)setObject:(id)anObject forKey:(id<NSCopying>)aKey;
+- (void)setObject:(id)anObject forKey:(id <NSCopying>)aKey;
 
 @end
 
@@ -99,6 +100,6 @@ NS_ASSUME_NONNULL_END
 - (void)addEntriesFromDictionary:(NSDictionary *)otherDictionary;
 - (void)removeAllObjects;
 - (void)setDictionary:(NSDictionary *)otherDictionary;
-- (void)setObject:(id)obj forKeyedSubscript:(id<NSCopying>)key __attribute__((availability(macosx, introduced = 10.8)));
+- (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key __attribute__((availability(macosx,introduced=10.8)));
 
 @end

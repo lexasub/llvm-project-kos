@@ -23,15 +23,16 @@
 
 template <class charT>
 struct test_traits {
-  typedef charT char_type;
+    typedef charT char_type;
 };
 
-void round_trip(const char* p) {
-  std::stringstream ss;
-  ss << std::quoted(p);
-  std::basic_string<char, test_traits<char> > s;
-  ss >> std::quoted(
-            s); // expected-error {{invalid operands to binary expression}}
+void round_trip ( const char *p ) {
+    std::stringstream ss;
+    ss << std::quoted(p);
+    std::basic_string<char, test_traits<char>> s;
+    ss >> std::quoted(s); // expected-error {{invalid operands to binary expression}}
 }
 
-int main(int, char**) { round_trip("Hi Mom"); }
+int main(int, char**) {
+    round_trip("Hi Mom");
+}

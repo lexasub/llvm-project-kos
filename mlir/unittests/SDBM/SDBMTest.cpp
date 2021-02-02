@@ -17,6 +17,7 @@
 
 using namespace mlir;
 
+
 static MLIRContext *ctx() {
   static thread_local MLIRContext context;
   context.getOrLoadDialect<SDBMDialect>();

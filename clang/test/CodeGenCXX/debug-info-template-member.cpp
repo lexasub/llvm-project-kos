@@ -74,7 +74,7 @@ inline int add3(int x) {
 // CHECK: [[VIRT_TEMP_PARAM]] = !{[[VIRT_T:![0-9]*]]}
 // CHECK: [[VIRT_T]] = !DITemplateTypeParameter(name: "T", type: [[ELEM]])
 
-template <typename T>
+template<typename T>
 struct outer {
   struct inner {
     int i;
@@ -96,7 +96,7 @@ outer<foo>::inner x;
 
 template <typename T>
 struct virt {
-  T *values;
+  T* values;
   virtual ~virt();
 };
 struct elem {

@@ -22,8 +22,8 @@
 #include "llvm/ExecutionEngine/Orc/IndirectionUtils.h"
 #include "llvm/ExecutionEngine/Orc/Layer.h"
 #include "llvm/ExecutionEngine/Orc/LazyReexports.h"
-#include "llvm/ExecutionEngine/Orc/Shared/OrcError.h"
 #include "llvm/ExecutionEngine/Orc/Speculation.h"
+#include "llvm/ExecutionEngine/Orc/Shared/OrcError.h"
 #include "llvm/ExecutionEngine/RuntimeDyld.h"
 #include "llvm/IR/Attributes.h"
 #include "llvm/IR/Constant.h"
@@ -83,8 +83,8 @@ public:
 
   /// Construct a CompileOnDemandLayer.
   CompileOnDemandLayer(ExecutionSession &ES, IRLayer &BaseLayer,
-                       LazyCallThroughManager &LCTMgr,
-                       IndirectStubsManagerBuilder BuildIndirectStubsManager);
+                        LazyCallThroughManager &LCTMgr,
+                        IndirectStubsManagerBuilder BuildIndirectStubsManager);
 
   /// Sets the partition function.
   void setPartitionFunction(PartitionFunction Partition);

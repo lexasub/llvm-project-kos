@@ -51,8 +51,9 @@ TEST(IVDescriptorsTest, LoopWithSingleLatch) {
   // Parse the module.
   LLVMContext Context;
 
-  std::unique_ptr<Module> M = parseIR(Context,
-                                      R"(define void @foo(i32* %A, i32 %ub) {
+  std::unique_ptr<Module> M = parseIR(
+    Context,
+    R"(define void @foo(i32* %A, i32 %ub) {
 entry:
   br label %for.body
 for.body:
@@ -67,7 +68,8 @@ for.exit:
   br label %for.end
 for.end:
   ret void
-})");
+})"
+    );
 
   runWithLoopInfoAndSE(
       *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {

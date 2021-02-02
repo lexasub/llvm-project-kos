@@ -5,17 +5,17 @@
 //   injected-class-name (Clause 9). The injected-class-name can
 //   be used as a template-name or a type-name.
 
-template <typename> char id;
+template<typename> char id;
 
-template <typename> struct TempType {};
-template <template <typename> class> struct TempTemp {};
+template<typename> struct TempType {};
+template<template<typename> class> struct TempTemp {};
 
-template <typename> void use(int &);                    // expected-note {{invalid explicitly-specified argument}} expected-note {{no known conversion}}
-template <template <typename> class> void use(float &); // expected-note 2{{no known conversion}}
-template <int> void use(char &);                        // expected-note 2{{invalid explicitly-specified argument}}
+template<typename> void use(int&); // expected-note {{invalid explicitly-specified argument}} expected-note {{no known conversion}}
+template<template<typename> class> void use(float&); // expected-note 2{{no known conversion}}
+template<int> void use(char&); // expected-note 2{{invalid explicitly-specified argument}}
 
-template <typename T> struct A {
-  template <typename> struct C {};
+template<typename T> struct A {
+  template<typename> struct C {};
   struct B : C<T> {
     //   When it is used with a template-argument-list,
     A<int> *aint;
@@ -27,7 +27,7 @@ template <typename T> struct A {
 
     //   or as the final identifier in the elaborated-type-specifier of a friend
     //   class template declaration,
-    template <typename U> friend struct A;
+    template<typename U> friend struct A;
     // it refers to the class template itself.
 
     // Otherwise, it is equivalent to the template-name followed by the
@@ -54,17 +54,14 @@ template struct A<char>; // expected-note {{instantiation of}}
 template <typename T> struct X0 {
   X0();
   ~X0();
-  X0 f(const X0 &);
+  X0 f(const X0&);
 };
 
 // Test non-type template parameters.
-template <int N1, const int &N2, const int *N3> struct X1 {
+template <int N1, const int& N2, const int* N3> struct X1 {
   X1();
   ~X1();
-  X1 f(const X1 &x1a) {
-    X1 x1b(x1a);
-    return x1b;
-  }
+  X1 f(const X1& x1a) { X1 x1b(x1a); return x1b; }
 };
 
 //   When it is used with a template-argument-list, it refers to the specified
@@ -74,8 +71,6 @@ template <int N1, const int &N2, const int *N3> struct X1 {
 
 int i = 42;
 void test() {
-  X0<int> x0;
-  (void)x0;
-  X1<42, i, &i> x1;
-  (void)x1;
+  X0<int> x0; (void)x0;
+  X1<42, i, &i> x1; (void)x1;
 }

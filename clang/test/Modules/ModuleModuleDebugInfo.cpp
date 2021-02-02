@@ -15,3 +15,4 @@ AF af; // This type is not anchored in the module.
 
 // CHECK: ![[AF]] = {{.*}}!DICompositeType(tag: DW_TAG_structure_type, name: "A<F>",
 // CHECK-SAME:                             elements:
+

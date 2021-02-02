@@ -32,40 +32,43 @@ typedef Clock::duration duration;
 typedef std::chrono::milliseconds ms;
 typedef std::chrono::nanoseconds ns;
 
-void f1() {
-  time_point t0 = Clock::now();
-  assert(m.try_lock_until(Clock::now() + ms(300)) == true);
-  time_point t1 = Clock::now();
-  assert(m.try_lock());
-  m.unlock();
-  m.unlock();
-  ns d = t1 - t0 - ms(250);
-  assert(d < ms(50)); // within 50ms
+void f1()
+{
+    time_point t0 = Clock::now();
+    assert(m.try_lock_until(Clock::now() + ms(300)) == true);
+    time_point t1 = Clock::now();
+    assert(m.try_lock());
+    m.unlock();
+    m.unlock();
+    ns d = t1 - t0 - ms(250);
+    assert(d < ms(50));  // within 50ms
 }
 
-void f2() {
-  time_point t0 = Clock::now();
-  assert(m.try_lock_until(Clock::now() + ms(250)) == false);
-  time_point t1 = Clock::now();
-  ns d = t1 - t0 - ms(250);
-  assert(d < ms(50)); // within 50ms
+void f2()
+{
+    time_point t0 = Clock::now();
+    assert(m.try_lock_until(Clock::now() + ms(250)) == false);
+    time_point t1 = Clock::now();
+    ns d = t1 - t0 - ms(250);
+    assert(d < ms(50));  // within 50ms
 }
 
-int main(int, char**) {
-  {
-    m.lock();
-    std::thread t = support::make_test_thread(f1);
-    std::this_thread::sleep_for(ms(250));
-    m.unlock();
-    t.join();
-  }
-  {
-    m.lock();
-    std::thread t = support::make_test_thread(f2);
-    std::this_thread::sleep_for(ms(300));
-    m.unlock();
-    t.join();
-  }
+int main(int, char**)
+{
+    {
+        m.lock();
+        std::thread t = support::make_test_thread(f1);
+        std::this_thread::sleep_for(ms(250));
+        m.unlock();
+        t.join();
+    }
+    {
+        m.lock();
+        std::thread t = support::make_test_thread(f2);
+        std::this_thread::sleep_for(ms(300));
+        m.unlock();
+        t.join();
+    }
 
   return 0;
 }

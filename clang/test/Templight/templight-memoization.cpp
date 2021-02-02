@@ -39,3 +39,4 @@ foo<int> x;
 // CHECK: {{^orig:[ ]+'.*templight-memoization.cpp:4:8'}}
 // CHECK: {{^poi:[ ]+'.*templight-memoization.cpp:41:10'$}}
 foo<int> y;
+

@@ -3,16 +3,14 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 // expected-no-diagnostics
 namespace std {
-class bad_alloc {};
+  class bad_alloc { };
+  
+  typedef __SIZE_TYPE__ size_t;
+}
 
-typedef __SIZE_TYPE__ size_t;
-} // namespace std
+class foo { virtual ~foo(); };
 
-class foo {
-  virtual ~foo();
-};
-
-void *operator new(std::size_t);
-void *operator new[](std::size_t);
-void operator delete(void *);
-void operator delete[](void *);
+void* operator new(std::size_t); 
+void* operator new[](std::size_t);
+void operator delete(void*);
+void operator delete[](void*);

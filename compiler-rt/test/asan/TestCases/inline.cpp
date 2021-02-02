@@ -5,12 +5,13 @@
 
 #include <stdlib.h>
 
-__attribute__((no_sanitize_address)) int f(int *p) {
+__attribute__((no_sanitize_address))
+int f(int *p) {
   return *p; // BOOOM?? Nope!
 }
 
 int main(int argc, char **argv) {
-  int *volatile x = (int *)malloc(2 * sizeof(int) + 2);
+  int * volatile x = (int*)malloc(2*sizeof(int) + 2);
   int res = f(x + 2);
   free(x);
   if (res)

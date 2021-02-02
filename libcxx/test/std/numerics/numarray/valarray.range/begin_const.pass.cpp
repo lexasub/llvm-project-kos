@@ -19,14 +19,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef int T;
-    T a[] = {1, 2, 3, 4, 5};
-    const unsigned N = sizeof(a) / sizeof(a[0]);
-    const std::valarray<T> v(a, N);
-    assert(v[0] == 1);
-  }
+int main(int, char**)
+{
+    {
+        typedef int T;
+        T a[] = {1, 2, 3, 4, 5};
+        const unsigned N = sizeof(a)/sizeof(a[0]);
+        const std::valarray<T> v(a, N);
+        assert(v[0] == 1);
+    }
 
   return 0;
 }

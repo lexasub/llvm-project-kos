@@ -24,31 +24,31 @@ void split_inline_asm_call();
 
 void test_field_lookup() {
   __asm mov eax, asdf::a_global.a3.b2
-                 split_inline_asm_call();
+  split_inline_asm_call();
 
   // FIXME: These diagnostics are crap.
 
   // expected-error@+1 {{undeclared label}}
   __asm mov eax, asdf::a_global.not_a_field.b2
-                 split_inline_asm_call();
+  split_inline_asm_call();
 
   // expected-error@+1 {{undeclared label}}
   __asm mov eax, asdf::a_global.a3.not_a_field
-                 split_inline_asm_call();
+  split_inline_asm_call();
 
   __asm mov eax, A::B::kValue
-                 split_inline_asm_call();
+  split_inline_asm_call();
 
   // expected-error@+1 {{undeclared label}}
   __asm mov eax, asdf::a_global.a3.kValue
-                 split_inline_asm_call();
+  split_inline_asm_call();
 
-  __asm mov eax, asdf ::a_global.a3.b2
-                 split_inline_asm_call();
+  __asm mov eax, asdf :: a_global.a3.b2
+  split_inline_asm_call();
 
-  __asm mov eax, asdf::a_global.a3.b2
-                 split_inline_asm_call();
+  __asm mov eax, asdf::a_global . a3 . b2
+  split_inline_asm_call();
 
   __asm mov eax, asdf::a_global.indirect_field
-                 split_inline_asm_call();
+  split_inline_asm_call();
 }

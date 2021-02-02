@@ -25,14 +25,16 @@ struct StreamTest : ::testing::Test {
     return result;
   }
 };
-} // namespace
+}
 
 namespace {
 // A StreamTest where we expect the Stream output to be binary.
 struct BinaryStreamTest : StreamTest {
-  void SetUp() override { s.GetFlags().Set(Stream::eBinary); }
+  void SetUp() override {
+    s.GetFlags().Set(Stream::eBinary);
+  }
 };
-} // namespace
+}
 
 TEST_F(StreamTest, AddressPrefix) {
   DumpAddress(s.AsRawOstream(), 0x1, 1, "foo");
@@ -448,40 +450,40 @@ const static auto hostByteOrder = lldb::eByteOrderInvalid;
 
 TEST_F(StreamTest, PutBytesAsRawHex8ToBigEndian) {
   uint32_t value = 0x12345678;
-  s.PutBytesAsRawHex8(static_cast<void *>(&value), sizeof(value), hostByteOrder,
-                      lldb::eByteOrderBig);
+  s.PutBytesAsRawHex8(static_cast<void*>(&value), sizeof(value),
+                      hostByteOrder, lldb::eByteOrderBig);
   EXPECT_EQ(8U, s.GetWrittenBytes());
   EXPECT_EQ("78563412", TakeValue());
 }
 
 TEST_F(StreamTest, PutRawBytesToBigEndian) {
   uint32_t value = 0x12345678;
-  s.PutRawBytes(static_cast<void *>(&value), sizeof(value), hostByteOrder,
-                lldb::eByteOrderBig);
+  s.PutRawBytes(static_cast<void*>(&value), sizeof(value),
+                      hostByteOrder, lldb::eByteOrderBig);
   EXPECT_EQ(4U, s.GetWrittenBytes());
   EXPECT_EQ("\x78\x56\x34\x12", TakeValue());
 }
 
 TEST_F(StreamTest, PutBytesAsRawHex8ToLittleEndian) {
   uint32_t value = 0x12345678;
-  s.PutBytesAsRawHex8(static_cast<void *>(&value), sizeof(value), hostByteOrder,
-                      lldb::eByteOrderLittle);
+  s.PutBytesAsRawHex8(static_cast<void*>(&value), sizeof(value),
+                      hostByteOrder, lldb::eByteOrderLittle);
   EXPECT_EQ(8U, s.GetWrittenBytes());
   EXPECT_EQ("12345678", TakeValue());
 }
 
 TEST_F(StreamTest, PutRawBytesToLittleEndian) {
   uint32_t value = 0x12345678;
-  s.PutRawBytes(static_cast<void *>(&value), sizeof(value), hostByteOrder,
-                lldb::eByteOrderLittle);
+  s.PutRawBytes(static_cast<void*>(&value), sizeof(value),
+                      hostByteOrder, lldb::eByteOrderLittle);
   EXPECT_EQ(4U, s.GetWrittenBytes());
   EXPECT_EQ("\x12\x34\x56\x78", TakeValue());
 }
 
 TEST_F(StreamTest, PutBytesAsRawHex8ToMixedEndian) {
   uint32_t value = 0x12345678;
-  s.PutBytesAsRawHex8(static_cast<void *>(&value), sizeof(value), hostByteOrder,
-                      lldb::eByteOrderPDP);
+  s.PutBytesAsRawHex8(static_cast<void*>(&value), sizeof(value),
+                      hostByteOrder, lldb::eByteOrderPDP);
 
   // FIXME: PDP byte order is not actually implemented but Stream just silently
   // prints the value in some random byte order...
@@ -492,8 +494,8 @@ TEST_F(StreamTest, PutBytesAsRawHex8ToMixedEndian) {
 
 TEST_F(StreamTest, PutRawBytesToMixedEndian) {
   uint32_t value = 0x12345678;
-  s.PutRawBytes(static_cast<void *>(&value), sizeof(value),
-                lldb::eByteOrderInvalid, lldb::eByteOrderPDP);
+  s.PutRawBytes(static_cast<void*>(&value), sizeof(value),
+                      lldb::eByteOrderInvalid, lldb::eByteOrderPDP);
 
   // FIXME: PDP byte order is not actually implemented but Stream just silently
   // prints the value in some random byte order...
@@ -656,8 +658,7 @@ TEST_F(BinaryStreamTest, PutSLEB128NineBytes) {
 TEST_F(BinaryStreamTest, PutSLEB128MaxValue) {
   auto bytes = s.PutSLEB128(std::numeric_limits<int64_t>::max());
   EXPECT_EQ(10U, s.GetWrittenBytes());
-  EXPECT_EQ(std::string("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\0", 10),
-            TakeValue());
+  EXPECT_EQ(std::string("\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\0", 10), TakeValue());
   EXPECT_EQ(10U, bytes);
 }
 

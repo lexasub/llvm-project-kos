@@ -38,7 +38,7 @@ struct LowerGuardIntrinsicLegacyPass : public FunctionPass {
 
   bool runOnFunction(Function &F) override;
 };
-} // namespace
+}
 
 static bool lowerGuardIntrinsic(Function &F) {
   // Check if we can cheaply rule out the possibility of not having any work to

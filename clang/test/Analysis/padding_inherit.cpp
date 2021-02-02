@@ -24,5 +24,5 @@ AnotherIntSandwich ais[100];
 
 struct Empty {};
 struct DoubleEmpty : Empty { // no-warning
-  Empty e;
+    Empty e;
 };

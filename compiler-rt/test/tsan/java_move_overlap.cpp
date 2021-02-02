@@ -15,10 +15,10 @@ jptr lockaddr2_new;
 void *Thread(void *p) {
   barrier_wait(&barrier);
   __tsan_java_mutex_lock(lockaddr1_new);
-  *(char *)varaddr1_new = 43;
+  *(char*)varaddr1_new = 43;
   __tsan_java_mutex_unlock(lockaddr1_new);
   __tsan_java_mutex_lock(lockaddr2_new);
-  *(char *)varaddr2_new = 43;
+  *(char*)varaddr2_new = 43;
   __tsan_java_mutex_unlock(lockaddr2_new);
   return 0;
 }
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   barrier_init(&barrier, 2);
   int const kHeapSize = 1024 * 1024;
   void *jheap = malloc(kHeapSize);
-  jheap = (char *)jheap + 8;
+  jheap = (char*)jheap + 8;
   __tsan_java_init((jptr)jheap, kHeapSize);
   const int kBlockSize = 64;
   int const kMove = 32;
@@ -56,10 +56,10 @@ int main(int argc, char **argv) {
   pthread_create(&th, 0, Thread, 0);
 
   __tsan_java_mutex_lock(lockaddr1_old);
-  *(char *)varaddr1_old = 43;
+  *(char*)varaddr1_old = 43;
   __tsan_java_mutex_unlock(lockaddr1_old);
   __tsan_java_mutex_lock(lockaddr2_old);
-  *(char *)varaddr2_old = 43;
+  *(char*)varaddr2_old = 43;
   __tsan_java_mutex_unlock(lockaddr2_old);
 
   __tsan_java_move(varaddr1_old, varaddr1_new, kBlockSize);

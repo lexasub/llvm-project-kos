@@ -11,11 +11,10 @@
 
 using namespace llvm;
 
-static cl::opt<bool> DisableAddiLoadHeuristic(
-    "disable-ppc-sched-addi-load",
-    cl::desc("Disable scheduling addi instruction before"
-             "load for ppc"),
-    cl::Hidden);
+static cl::opt<bool> 
+DisableAddiLoadHeuristic("disable-ppc-sched-addi-load",
+                         cl::desc("Disable scheduling addi instruction before" 
+                                  "load for ppc"), cl::Hidden);
 static cl::opt<bool>
     EnableAddiHeuristic("ppc-postra-bias-addi",
                         cl::desc("Enable scheduling addi instruction as early"
@@ -245,3 +244,4 @@ SUnit *PPCPostRASchedStrategy::pickNode(bool &IsTopNode) {
   // Custom PPC PostRA specific scheduling here.
   return PostGenericScheduler::pickNode(IsTopNode);
 }
+

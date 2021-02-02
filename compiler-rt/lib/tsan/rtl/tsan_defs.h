@@ -20,19 +20,19 @@
 
 // Setup defaults for compile definitions.
 #ifndef TSAN_NO_HISTORY
-#define TSAN_NO_HISTORY 0
+# define TSAN_NO_HISTORY 0
 #endif
 
 #ifndef TSAN_COLLECT_STATS
-#define TSAN_COLLECT_STATS 0
+# define TSAN_COLLECT_STATS 0
 #endif
 
 #ifndef TSAN_CONTAINS_UBSAN
-#if CAN_SANITIZE_UB && !SANITIZER_GO
-#define TSAN_CONTAINS_UBSAN 1
-#else
-#define TSAN_CONTAINS_UBSAN 0
-#endif
+# if CAN_SANITIZE_UB && !SANITIZER_GO
+#  define TSAN_CONTAINS_UBSAN 1
+# else
+#  define TSAN_CONTAINS_UBSAN 0
+# endif
 #endif
 
 namespace __tsan {
@@ -41,7 +41,7 @@ const int kClkBits = 42;
 const unsigned kMaxTidReuse = (1 << (64 - kClkBits)) - 1;
 
 struct ClockElem {
-  u64 epoch : kClkBits;
+  u64 epoch  : kClkBits;
   u64 reused : 64 - kClkBits;  // tid reuse count
 };
 
@@ -53,11 +53,12 @@ struct ClockBlock {
   static const uptr kBlockIdx = kTableSize - 2;
 
   union {
-    u32 table[kTableSize];
+    u32       table[kTableSize];
     ClockElem clock[kClockCount];
   };
 
-  ClockBlock() {}
+  ClockBlock() {
+  }
 };
 
 const int kTidBits = 13;
@@ -127,30 +128,30 @@ static inline void USED build_consistency() {
 #endif
 }
 
-template <typename T>
+template<typename T>
 T min(T a, T b) {
   return a < b ? a : b;
 }
 
-template <typename T>
+template<typename T>
 T max(T a, T b) {
   return a > b ? a : b;
 }
 
-template <typename T>
+template<typename T>
 T RoundUp(T p, u64 align) {
   DCHECK_EQ(align & (align - 1), 0);
   return (T)(((u64)p + align - 1) & ~(align - 1));
 }
 
-template <typename T>
+template<typename T>
 T RoundDown(T p, u64 align) {
   DCHECK_EQ(align & (align - 1), 0);
   return (T)((u64)p & ~(align - 1));
 }
 
 // Zeroizes high part, returns 'bits' lsb bits.
-template <typename T>
+template<typename T>
 T GetLsb(T v, int bits) {
   return (T)((u64)v & ((1ull << bits) - 1));
 }
@@ -172,10 +173,10 @@ class RegionAlloc;
 
 // Descriptor of user's memory block.
 struct MBlock {
-  u64 siz : 48;
-  u64 tag : 16;
-  u32 stk;
-  u16 tid;
+  u64  siz : 48;
+  u64  tag : 16;
+  u32  stk;
+  u16  tid;
 };
 
 COMPILER_CHECK(sizeof(MBlock) == 16);

@@ -26,8 +26,7 @@ class FunctionPass;
 ///
 //===----------------------------------------------------------------------===//
 template <class SubClass>
-class RegisterRegAllocBase
-    : public MachinePassRegistryNode<FunctionPass *(*)()> {
+class RegisterRegAllocBase : public MachinePassRegistryNode<FunctionPass *(*)()> {
 public:
   using FunctionPassCtor = FunctionPass *(*)();
 
@@ -61,13 +60,13 @@ public:
 class RegisterRegAlloc : public RegisterRegAllocBase<RegisterRegAlloc> {
 public:
   RegisterRegAlloc(const char *N, const char *D, FunctionPassCtor C)
-      : RegisterRegAllocBase(N, D, C) {}
+    : RegisterRegAllocBase(N, D, C) {}
 };
 
 /// RegisterRegAlloc's global Registry tracks allocator registration.
 template <class T>
 MachinePassRegistry<RegisterRegAlloc::FunctionPassCtor>
-    RegisterRegAllocBase<T>::Registry;
+RegisterRegAllocBase<T>::Registry;
 
 } // end namespace llvm
 

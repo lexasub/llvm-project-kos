@@ -152,11 +152,11 @@ void SizeofExpressionCheck::registerMatchers(MatchFinder *Finder) {
       unaryOperator(hasOperatorName("&"),
                     hasUnaryOperand(ignoringParenImpCasts(expr(
                         hasType(qualType(hasCanonicalType(recordType())))))));
-  const auto PointerToStructType =
-      type(hasUnqualifiedDesugaredType(pointerType(pointee(recordType()))));
-  const auto PointerToStructExpr = expr(ignoringParenImpCasts(
-      expr(hasType(qualType(hasCanonicalType(PointerToStructType))),
-           unless(cxxThisExpr()))));
+  const auto PointerToStructType = type(hasUnqualifiedDesugaredType(
+      pointerType(pointee(recordType()))));
+  const auto PointerToStructExpr = expr(ignoringParenImpCasts(expr(
+      hasType(qualType(hasCanonicalType(PointerToStructType))),
+      unless(cxxThisExpr()))));
 
   const auto ArrayOfPointersExpr = expr(ignoringParenImpCasts(expr(hasType(
       qualType(hasCanonicalType(arrayType(hasElementType(pointerType()))
@@ -352,7 +352,7 @@ void SizeofExpressionCheck::check(const MatchFinder::MatchResult &Result) {
 
     if ((LPtrTy == RPtrTy) && (LPtrTy == SizeofArgTy)) {
       diag(E->getBeginLoc(), "suspicious usage of 'sizeof(...)' in "
-                             "pointer arithmetic");
+                              "pointer arithmetic");
     }
   } else if (const auto *E =
                  Result.Nodes.getNodeAs<Expr>("sizeof-in-ptr-arithmetic-div")) {
@@ -362,7 +362,7 @@ void SizeofExpressionCheck::check(const MatchFinder::MatchResult &Result) {
 
     if ((LPtrTy == RPtrTy) && (LPtrTy == SizeofArgTy)) {
       diag(E->getBeginLoc(), "suspicious usage of 'sizeof(...)' in "
-                             "pointer arithmetic");
+                              "pointer arithmetic");
     }
   }
 }

@@ -51,11 +51,11 @@ static void unregister_dso_globals() {
 // Register globals
 #pragma section(".CRT$XCU", long, read)
 #pragma section(".CRT$XTX", long, read)
-extern "C" __declspec(allocate(
-    ".CRT$XCU")) void (*const __asan_dso_reg_hook)() = &register_dso_globals;
-extern "C" __declspec(allocate(".CRT$XTX")) void (
-        *const __asan_dso_unreg_hook)() = &unregister_dso_globals;
+extern "C" __declspec(allocate(".CRT$XCU"))
+void (*const __asan_dso_reg_hook)() = &register_dso_globals;
+extern "C" __declspec(allocate(".CRT$XTX"))
+void (*const __asan_dso_unreg_hook)() = &unregister_dso_globals;
 
-}  // namespace __asan
+} // namespace __asan
 
 #endif  // SANITIZER_WINDOWS

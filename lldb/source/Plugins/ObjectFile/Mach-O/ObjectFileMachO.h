@@ -179,8 +179,7 @@ protected:
   /// process' memory as an optimization.  If lldb's shared cache UUID
   /// does not match the process' shared cache UUID, this optimization
   /// should not be used.
-  void GetLLDBSharedCacheUUID(lldb::addr_t &base_addir,
-                              lldb_private::UUID &uuid);
+  void GetLLDBSharedCacheUUID(lldb::addr_t &base_addir, lldb_private::UUID &uuid);
 
   lldb_private::Section *GetMachHeaderSection();
 

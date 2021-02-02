@@ -26,7 +26,7 @@ inline llvm::Error findError() { return llvm::Error::success(); }
 inline void ignoreError() {}
 
 template <typename FirstT, typename... RestT>
-void ignoreError(Expected<FirstT> &First, Expected<RestT> &...Rest) {
+void ignoreError(Expected<FirstT> &First, Expected<RestT> &... Rest) {
   if (!First)
     llvm::consumeError(First.takeError());
   ignoreError(Rest...);
@@ -35,7 +35,7 @@ void ignoreError(Expected<FirstT> &First, Expected<RestT> &...Rest) {
 /// Scans the tuple and returns a valid \c Error if any of the values are
 /// invalid.
 template <typename FirstT, typename... RestT>
-llvm::Error findError(Expected<FirstT> &First, Expected<RestT> &...Rest) {
+llvm::Error findError(Expected<FirstT> &First, Expected<RestT> &... Rest) {
   if (!First) {
     ignoreError(Rest...);
     return First.takeError();
@@ -69,7 +69,7 @@ inline void visitRefactoringOptionsImpl(RefactoringOptionVisitor &) {}
 /// options that are used by all the requirements.
 template <typename FirstT, typename... RestT>
 void visitRefactoringOptionsImpl(RefactoringOptionVisitor &Visitor,
-                                 const FirstT &First, const RestT &...Rest) {
+                                 const FirstT &First, const RestT &... Rest) {
   struct OptionGatherer {
     RefactoringOptionVisitor &Visitor;
 
@@ -115,7 +115,7 @@ struct AreBaseOf<Base, T> : std::is_base_of<Base, T> {};
 
 template <typename RuleType, typename... RequirementTypes>
 std::unique_ptr<RefactoringActionRule>
-createRefactoringActionRule(const RequirementTypes &...Requirements) {
+createRefactoringActionRule(const RequirementTypes &... Requirements) {
   static_assert(std::is_base_of<RefactoringActionRuleBase, RuleType>::value,
                 "Expected a refactoring action rule type");
   static_assert(internal::AreBaseOf<RefactoringActionRuleRequirement,
@@ -144,7 +144,6 @@ createRefactoringActionRule(const RequirementTypes &...Requirements) {
           Visitor, Requirements,
           std::index_sequence_for<RequirementTypes...>());
     }
-
   private:
     std::tuple<RequirementTypes...> Requirements;
   };

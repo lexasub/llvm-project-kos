@@ -25,15 +25,15 @@ protected:
 auto Prot = reinterpret_cast<void (Protected::*)(char *)>(&Protected::check); // expected-error{{'check' is a protected member of 'access_control::Protected'}} expected-note@19{{declared protected here}}
 
 auto ProtStatic = reinterpret_cast<void (*)(char *)>(&Protected::checkStatic); // expected-error{{'checkStatic' is a protected member of 'access_control::Protected'}} expected-note@22{{declared protected here}}
-} // namespace access_control
+}
 
 namespace unavailable {
 // Ensure that we check that the function can be called
 void foo() __attribute__((unavailable("don't call this")));
 void foo(int) __attribute__((enable_if(false, "")));
 
-void *Ptr = reinterpret_cast<void *>(foo); // expected-error{{'foo' is unavailable: don't call this}} expected-note@-3{{explicitly marked unavailable here}}
-} // namespace unavailable
+void *Ptr = reinterpret_cast<void*>(foo); // expected-error{{'foo' is unavailable: don't call this}} expected-note@-3{{explicitly marked unavailable here}}
+}
 
 namespace template_deduction {
 void foo() __attribute__((enable_if(false, "")));
@@ -81,9 +81,9 @@ class Foo {
 
 void testAccess() {
   callMem(&Foo::bar, Foo()); // expected-error{{'bar' is a private member of 'template_deduction::Foo'}} expected-note@-8{{implicitly declared private here}}
-  call(&Foo::staticBar);     // expected-error{{'staticBar' is a private member of 'template_deduction::Foo'}} expected-note@-6{{implicitly declared private here}}
+  call(&Foo::staticBar); // expected-error{{'staticBar' is a private member of 'template_deduction::Foo'}} expected-note@-6{{implicitly declared private here}}
 }
-} // namespace template_deduction
+}
 
 namespace template_template_deduction {
 void foo() __attribute__((enable_if(false, "")));
@@ -99,49 +99,49 @@ auto Fail = call(&foo); // expected-error{{no matching function for call to 'cal
 
 auto PtrOk = &foo<int>;
 auto PtrFail = &foo; // expected-error{{variable 'PtrFail' with type 'auto' has incompatible initializer of type '<overloaded function type>'}}
-} // namespace template_template_deduction
+}
 
 namespace pointer_equality {
-using FnTy = void (*)();
+  using FnTy = void (*)();
 
-void bothEnableIf() __attribute__((enable_if(false, "")));
-void bothEnableIf() __attribute__((enable_if(true, "")));
+  void bothEnableIf() __attribute__((enable_if(false, "")));
+  void bothEnableIf() __attribute__((enable_if(true, "")));
 
-void oneEnableIf() __attribute__((enable_if(false, "")));
-void oneEnableIf();
+  void oneEnableIf() __attribute__((enable_if(false, "")));
+  void oneEnableIf();
 
-void test() {
-  FnTy Fn;
-  (void)(Fn == bothEnableIf);
-  (void)(Fn == &bothEnableIf);
-  (void)(Fn == oneEnableIf);
-  (void)(Fn == &oneEnableIf);
+  void test() {
+    FnTy Fn;
+    (void)(Fn == bothEnableIf);
+    (void)(Fn == &bothEnableIf);
+    (void)(Fn == oneEnableIf);
+    (void)(Fn == &oneEnableIf);
+  }
+
+  void unavailableEnableIf() __attribute__((enable_if(false, "")));
+  void unavailableEnableIf() __attribute__((unavailable("noooo"))); // expected-note 2{{marked unavailable here}}
+
+  void testUnavailable() {
+    FnTy Fn;
+    (void)(Fn == unavailableEnableIf); // expected-error{{is unavailable}}
+    (void)(Fn == &unavailableEnableIf); // expected-error{{is unavailable}}
+  }
+
+  class Foo {
+    static void staticAccessEnableIf(); // expected-note 2{{declared private here}}
+    void accessEnableIf(); // expected-note{{declared private here}}
+
+  public:
+    static void staticAccessEnableIf() __attribute__((enable_if(false, "")));
+    void accessEnableIf() __attribute__((enable_if(false, "")));
+  };
+
+  void testAccess() {
+    FnTy Fn;
+    (void)(Fn == Foo::staticAccessEnableIf); // expected-error{{is a private member}}
+    (void)(Fn == &Foo::staticAccessEnableIf); // expected-error{{is a private member}}
+
+    void (Foo::*MemFn)();
+    (void)(MemFn == &Foo::accessEnableIf); // expected-error{{is a private member}}
+  }
 }
-
-void unavailableEnableIf() __attribute__((enable_if(false, "")));
-void unavailableEnableIf() __attribute__((unavailable("noooo"))); // expected-note 2{{marked unavailable here}}
-
-void testUnavailable() {
-  FnTy Fn;
-  (void)(Fn == unavailableEnableIf);  // expected-error{{is unavailable}}
-  (void)(Fn == &unavailableEnableIf); // expected-error{{is unavailable}}
-}
-
-class Foo {
-  static void staticAccessEnableIf(); // expected-note 2{{declared private here}}
-  void accessEnableIf();              // expected-note{{declared private here}}
-
-public:
-  static void staticAccessEnableIf() __attribute__((enable_if(false, "")));
-  void accessEnableIf() __attribute__((enable_if(false, "")));
-};
-
-void testAccess() {
-  FnTy Fn;
-  (void)(Fn == Foo::staticAccessEnableIf);  // expected-error{{is a private member}}
-  (void)(Fn == &Foo::staticAccessEnableIf); // expected-error{{is a private member}}
-
-  void (Foo::*MemFn)();
-  (void)(MemFn == &Foo::accessEnableIf); // expected-error{{is a private member}}
-}
-} // namespace pointer_equality

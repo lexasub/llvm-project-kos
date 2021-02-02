@@ -30,15 +30,14 @@
 #include "min_allocator.h"
 #include "filesystem_test_helper.h"
 
-MultiStringType longString =
-    MKSTR("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/123456789/"
-          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnop"
-          "qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+MultiStringType longString = MKSTR("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/123456789/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
 
 // generic_string<C, T, A> forwards to string<C, T, A>. Tests for
 // string<C, T, A>() are in "path.native.op/string_alloc.pass.cpp".
 // generic_string is minimally tested here.
-int main(int, char**) {
+int main(int, char**)
+{
   using namespace fs;
   using CharT = wchar_t;
   using Traits = std::char_traits<CharT>;

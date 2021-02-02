@@ -22,14 +22,14 @@ extern void (*r4)() throw(...);
 
 // throw(X) and no spec are not compatible
 extern void (*r5)() throw(int); // expected-note {{previous declaration}}
-extern void (*r5)();            // expected-error {{exception specification in declaration does not match}}
+extern void (*r5)(); // expected-error {{exception specification in declaration does not match}}
 
 // throw(int) and no spec are not compatible
 extern void f5() throw(int); // expected-note {{previous declaration}}
-extern void f5();            // expected-error {{missing exception specification}}
+extern void f5(); // expected-error {{missing exception specification}}
 
 // Different types are not compatible.
-extern void (*r7)() throw(int);   // expected-note {{previous declaration}}
+extern void (*r7)() throw(int); // expected-note {{previous declaration}}
 extern void (*r7)() throw(float); // expected-error {{exception specification in declaration does not match}}
 
 // Top-level const doesn't matter.
@@ -40,6 +40,7 @@ extern void (*r8)() throw(const int);
 extern void (*r9)() throw(int, int);
 extern void (*r9)() throw(int, int);
 
+
 // noexcept is compatible with itself
 extern void (*r10)() noexcept;
 extern void (*r10)() noexcept;
@@ -49,7 +50,7 @@ extern void (*r11)() noexcept;
 extern void (*r11)() noexcept(true);
 
 // noexcept(false) isn't
-extern void (*r12)() noexcept;        // expected-note {{previous declaration}}
+extern void (*r12)() noexcept; // expected-note {{previous declaration}}
 extern void (*r12)() noexcept(false); // expected-error {{does not match}}
 
 // The form of the boolean expression doesn't matter.
@@ -57,7 +58,7 @@ extern void (*r13)() noexcept(1 < 2);
 extern void (*r13)() noexcept(2 > 1);
 
 // noexcept(false) is incompatible with noexcept(true)
-extern void (*r14)() noexcept(true);  // expected-note {{previous declaration}}
+extern void (*r14)() noexcept(true); // expected-note {{previous declaration}}
 extern void (*r14)() noexcept(false); // expected-error {{does not match}}
 
 // noexcept(false) is compatible with itself
@@ -69,7 +70,7 @@ extern void (*r16)() noexcept(false);
 extern void (*r16)() throw(...);
 
 // noexcept(false) is *not* compatible with no spec
-extern void (*r17)();                 // expected-note {{previous declaration}}
+extern void (*r17)(); // expected-note {{previous declaration}}
 extern void (*r17)() noexcept(false); // expected-error {{does not match}}
 
 // except for functions
@@ -86,33 +87,30 @@ extern void (*r19)() throw();
 extern void (*r19)() noexcept(true);
 
 // The other way round doesn't work.
-extern void (*r20)() throw();         // expected-note {{previous declaration}}
+extern void (*r20)() throw(); // expected-note {{previous declaration}}
 extern void (*r20)() noexcept(false); // expected-error {{does not match}}
 
-extern void (*r21)() throw(int);     // expected-note {{previous declaration}}
+extern void (*r21)() throw(int); // expected-note {{previous declaration}}
 extern void (*r21)() noexcept(true); // expected-error {{does not match}}
+
 
 // As a very special workaround, we allow operator new to match no spec
 // with a throw(bad_alloc) spec, because C++0x makes an incompatible change
 // here.
-extern "C++" {
-namespace std {
-class bad_alloc {};
-} // namespace std
-}
+extern "C++" { namespace std { class bad_alloc {}; } }
 typedef decltype(sizeof(int)) mysize_t;
-void *operator new(mysize_t) throw(std::bad_alloc);
-void *operator new(mysize_t);
-void *operator new[](mysize_t);
-void *operator new[](mysize_t) throw(std::bad_alloc);
+void* operator new(mysize_t) throw(std::bad_alloc);
+void* operator new(mysize_t);
+void* operator new[](mysize_t);
+void* operator new[](mysize_t) throw(std::bad_alloc);
 
-template <bool X> void equivalent() noexcept(X);
-template <bool X> void equivalent() noexcept(X);
+template<bool X> void equivalent() noexcept (X);
+template<bool X> void equivalent() noexcept (X);
 
-template <bool X, bool Y> void not_equivalent() noexcept(X); // expected-note {{previous}}
-template <bool X, bool Y> void not_equivalent() noexcept(Y); // expected-error {{does not match}}
+template<bool X, bool Y> void not_equivalent() noexcept (X); // expected-note {{previous}}
+template<bool X, bool Y> void not_equivalent() noexcept (Y); // expected-error {{does not match}}
 
-template <bool X> void missing() noexcept(X); // expected-note {{previous}}
+template<bool X> void missing() noexcept (X); // expected-note {{previous}}
 // FIXME: The missing exception specification that we report here doesn't make
 // sense in the context of this declaration.
-template <bool P> void missing(); // expected-error {{missing exception specification 'noexcept(X)'}}
+template<bool P> void missing(); // expected-error {{missing exception specification 'noexcept(X)'}}

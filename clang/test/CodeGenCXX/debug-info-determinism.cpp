@@ -5,7 +5,7 @@
 template <int N> struct C {
   template <int M> int f() {
     int arr[M] = {};
-    return arr[M / 2] + C<M / 2>().template f<M - 1>();
+    return arr[M/2] + C<M/2>().template f<M-1>();
   }
 };
 template <> template <> int C<0>::f<0>() { return 0; }

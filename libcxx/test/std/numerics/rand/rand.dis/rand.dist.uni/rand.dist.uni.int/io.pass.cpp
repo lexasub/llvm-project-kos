@@ -29,17 +29,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::uniform_int_distribution<> D;
-    D d1(3, 8);
-    std::ostringstream os;
-    os << d1;
-    std::istringstream is(os.str());
-    D d2;
-    is >> d2;
-    assert(d1 == d2);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::uniform_int_distribution<> D;
+        D d1(3, 8);
+        std::ostringstream os;
+        os << d1;
+        std::istringstream is(os.str());
+        D d2;
+        is >> d2;
+        assert(d1 == d2);
+    }
 
   return 0;
 }

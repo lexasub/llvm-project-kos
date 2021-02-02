@@ -22,26 +22,28 @@
 #include "test_iterators.h"
 
 template <class It>
-void test(It i, typename std::iterator_traits<It>::difference_type n, It x) {
-  std::move_iterator<It> r(i);
-  std::move_iterator<It>& rr = r -= n;
-  assert(r.base() == x);
-  assert(&rr == &r);
+void
+test(It i, typename std::iterator_traits<It>::difference_type n, It x)
+{
+    std::move_iterator<It> r(i);
+    std::move_iterator<It>& rr = r -= n;
+    assert(r.base() == x);
+    assert(&rr == &r);
 }
 
-int main(int, char**) {
-  const char* s = "1234567890";
-  test(random_access_iterator<const char*>(s + 5), 5,
-       random_access_iterator<const char*>(s));
-  test(s + 5, 5, s);
+int main(int, char**)
+{
+    const char* s = "1234567890";
+    test(random_access_iterator<const char*>(s+5), 5, random_access_iterator<const char*>(s));
+    test(s+5, 5, s);
 
 #if TEST_STD_VER > 14
-  {
-    constexpr const char* p = "123456789";
+    {
+    constexpr const char *p = "123456789";
     constexpr auto it1 = std::make_move_iterator(p);
-    constexpr auto it2 = std::make_move_iterator(p + 5) -= 5;
+    constexpr auto it2 = std::make_move_iterator(p+5) -= 5;
     static_assert(it1 == it2, "");
-  }
+    }
 #endif
 
   return 0;

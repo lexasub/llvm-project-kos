@@ -32,8 +32,8 @@
     defined(__KL__)
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("kl"),             \
+#define __DEFAULT_FN_ATTRS \
+  __attribute__((__always_inline__, __nodebug__, __target__("kl"),\
                  __min_vector_width__(128)))
 
 /// Load internal wrapping key from __intkey, __enkey_lo and __enkey_hi. __ctl
@@ -59,12 +59,10 @@
 /// IF __ctl[31:5] != 0 // Reserved bit in __ctl is set
 ///   GP (0)
 /// FI
-/// IF __ctl[0] AND (CPUID.19H.ECX[0] == 0) // NoBackup is not supported on this
-/// part
+/// IF __ctl[0] AND (CPUID.19H.ECX[0] == 0) // NoBackup is not supported on this part
 ///   GP (0)
 /// FI
-/// IF (__ctl[4:1] == 1) AND (CPUID.19H.ECX[1] == 0) // KeySource of 1 is not
-/// supported on this part
+/// IF (__ctl[4:1] == 1) AND (CPUID.19H.ECX[1] == 0) // KeySource of 1 is not supported on this part
 ///   GP (0)
 /// FI
 /// IF (__ctl[4:1] == 0) // KeySource of 0.
@@ -75,15 +73,14 @@
 ///   IWKey.KeySource := __ctl[4:1]
 ///   ZF := 0
 /// ELSE // KeySource of 1. See RDSEED definition for details of randomness
-///   IF HW_NRND_GEN.ready == 1 // Full-entropy random data from RDSEED was
-///   received
-///     IWKey.Encryption Key[127:0] := __enkey_hi[127:0] XOR
-///     HW_NRND_GEN.data[127:0] IWKey.Encryption Key[255:128] :=
-///     __enkey_lo[127:0] XOR HW_NRND_GEN.data[255:128] IWKey.Encryption
-///     Key[255:0] := __enkey_hi[127:0]:__enkey_lo[127:0] XOR
-///     HW_NRND_GEN.data[255:0] IWKey.IntegrityKey[127:0] := __intkey[127:0] XOR
-///     HW_NRND_GEN.data[383:256] IWKey.NoBackup := __ctl[0] IWKey.KeySource :=
-///     __ctl[4:1] ZF := 0
+///   IF HW_NRND_GEN.ready == 1 // Full-entropy random data from RDSEED was received
+///     IWKey.Encryption Key[127:0] := __enkey_hi[127:0] XOR HW_NRND_GEN.data[127:0]
+///     IWKey.Encryption Key[255:128] := __enkey_lo[127:0] XOR HW_NRND_GEN.data[255:128]
+///     IWKey.Encryption Key[255:0] := __enkey_hi[127:0]:__enkey_lo[127:0] XOR HW_NRND_GEN.data[255:0]
+///     IWKey.IntegrityKey[127:0] := __intkey[127:0] XOR HW_NRND_GEN.data[383:256]
+///     IWKey.NoBackup := __ctl[0]
+///     IWKey.KeySource := __ctl[4:1]
+///     ZF := 0
 ///   ELSE // Random data was not returned from RDSEED. IWKey was not loaded
 ///     ZF := 1
 ///   FI
@@ -95,11 +92,10 @@
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ void __DEFAULT_FN_ATTRS _mm_loadiwkey(unsigned int __ctl,
-                                                        __m128i __intkey,
-                                                        __m128i __enkey_lo,
-                                                        __m128i __enkey_hi) {
-  __builtin_ia32_loadiwkey(__intkey, __enkey_lo, __enkey_hi, __ctl);
+static __inline__ void __DEFAULT_FN_ATTRS
+_mm_loadiwkey (unsigned int __ctl, __m128i __intkey,
+               __m128i __enkey_lo, __m128i __enkey_hi) {
+  __builtin_ia32_loadiwkey (__intkey, __enkey_lo, __enkey_hi, __ctl);
 }
 
 /// Wrap a 128-bit AES key from __key into a key handle and output in
@@ -174,8 +170,9 @@ _mm_encodekey128_u32(unsigned int __htype, __m128i __key, void *__h) {
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ unsigned int __DEFAULT_FN_ATTRS _mm_encodekey256_u32(
-    unsigned int __htype, __m128i __key_lo, __m128i __key_hi, void *__h) {
+static __inline__ unsigned int __DEFAULT_FN_ATTRS
+_mm_encodekey256_u32(unsigned int __htype, __m128i __key_lo, __m128i __key_hi,
+                     void *__h) {
   return __builtin_ia32_encodekey256_u32(__htype, (__v2di)__key_lo,
                                          (__v2di)__key_hi, __h);
 }
@@ -197,8 +194,8 @@ static __inline__ unsigned int __DEFAULT_FN_ATTRS _mm_encodekey256_u32(
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0],
-///   IWKey) IF (Authentic == 0)
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0], IWKey)
+///   IF (Authentic == 0)
 ///     ZF := 1
 ///   ELSE
 ///     MEM[__odata+127:__odata] := AES128Encrypt (__idata[127:0], UnwrappedKey)
@@ -213,7 +210,7 @@ static __inline__ unsigned int __DEFAULT_FN_ATTRS _mm_encodekey256_u32(
 /// CF := 0
 /// \endoperation
 static __inline__ unsigned char __DEFAULT_FN_ATTRS
-_mm_aesenc128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
+_mm_aesenc128kl_u8(__m128i* __odata, __m128i __idata, const void *__h) {
   return __builtin_ia32_aesenc128kl_u8((__v2di *)__odata, (__v2di)__idata, __h);
 }
 
@@ -234,8 +231,8 @@ _mm_aesenc128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0],
-///   IWKey) IF (Authentic == 0)
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0], IWKey)
+///   IF (Authentic == 0)
 ///     ZF := 1
 ///   ELSE
 ///     MEM[__odata+127:__odata] := AES256Encrypt (__idata[127:0], UnwrappedKey)
@@ -250,7 +247,7 @@ _mm_aesenc128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// CF := 0
 /// \endoperation
 static __inline__ unsigned char __DEFAULT_FN_ATTRS
-_mm_aesenc256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
+_mm_aesenc256kl_u8(__m128i* __odata, __m128i __idata, const void *__h) {
   return __builtin_ia32_aesenc256kl_u8((__v2di *)__odata, (__v2di)__idata, __h);
 }
 
@@ -271,8 +268,8 @@ _mm_aesenc256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0],
-///   IWKey) IF (Authentic == 0)
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0], IWKey)
+///   IF (Authentic == 0)
 ///     ZF := 1
 ///   ELSE
 ///     MEM[__odata+127:__odata] := AES128Decrypt (__idata[127:0], UnwrappedKey)
@@ -287,7 +284,7 @@ _mm_aesenc256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// CF := 0
 /// \endoperation
 static __inline__ unsigned char __DEFAULT_FN_ATTRS
-_mm_aesdec128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
+_mm_aesdec128kl_u8(__m128i* __odata, __m128i __idata, const void *__h) {
   return __builtin_ia32_aesdec128kl_u8((__v2di *)__odata, (__v2di)__idata, __h);
 }
 
@@ -308,8 +305,8 @@ _mm_aesdec128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0],
-///   IWKey) IF (Authentic == 0)
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0], IWKey)
+///   IF (Authentic == 0)
 ///     ZF := 1
 ///   ELSE
 ///     MEM[__odata+127:__odata] := AES256Decrypt (__idata[127:0], UnwrappedKey)
@@ -324,21 +321,21 @@ _mm_aesdec128kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// CF := 0
 /// \endoperation
 static __inline__ unsigned char __DEFAULT_FN_ATTRS
-_mm_aesdec256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
+_mm_aesdec256kl_u8(__m128i* __odata, __m128i __idata, const void *__h) {
   return __builtin_ia32_aesdec256kl_u8((__v2di *)__odata, (__v2di)__idata, __h);
 }
 
 #undef __DEFAULT_FN_ATTRS
 
-#endif /* !(defined(_MSC_VER) || defined(__SCE__)) || __has_feature(modules)   \
+#endif /* !(defined(_MSC_VER) || defined(__SCE__)) || __has_feature(modules) \
           || defined(__KL__) */
 
 #if !(defined(_MSC_VER) || defined(__SCE__)) || __has_feature(modules) ||      \
     defined(__WIDEKL__)
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("kl,widekl"),      \
+#define __DEFAULT_FN_ATTRS \
+  __attribute__((__always_inline__, __nodebug__, __target__("kl,widekl"),\
                  __min_vector_width__(128)))
 
 /// Encrypt __idata[0] to __idata[7] using 128-bit AES key indicated by handle
@@ -358,8 +355,8 @@ _mm_aesdec256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0],
-///   IWKey) IF Authentic == 0
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0], IWKey)
+///   IF Authentic == 0
 ///     ZF := 1
 ///   ELSE
 ///     FOR i := 0 to 7
@@ -375,8 +372,8 @@ _mm_aesdec256kl_u8(__m128i *__odata, __m128i __idata, const void *__h) {
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide128kl_u8(
-    __m128i __odata[8], const __m128i __idata[8], const void *__h) {
+static __inline__ unsigned char __DEFAULT_FN_ATTRS
+_mm_aesencwide128kl_u8(__m128i __odata[8], const __m128i __idata[8], const void* __h) {
   return __builtin_ia32_aesencwide128kl_u8((__v2di *)__odata,
                                            (const __v2di *)__idata, __h);
 }
@@ -398,8 +395,8 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide128kl_u8(
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0],
-///   IWKey) IF Authentic == 0
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0], IWKey)
+///   IF Authentic == 0
 ///     ZF := 1
 ///   ELSE
 ///     FOR i := 0 to 7
@@ -415,8 +412,8 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide128kl_u8(
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide256kl_u8(
-    __m128i __odata[8], const __m128i __idata[8], const void *__h) {
+static __inline__ unsigned char __DEFAULT_FN_ATTRS
+_mm_aesencwide256kl_u8(__m128i __odata[8], const __m128i __idata[8], const void* __h) {
   return __builtin_ia32_aesencwide256kl_u8((__v2di *)__odata,
                                            (const __v2di *)__idata, __h);
 }
@@ -438,8 +435,8 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide256kl_u8(
 /// IF (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0],
-///   IWKey) IF Authentic == 0
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate384 (Handle[383:0], IWKey)
+///   IF Authentic == 0
 ///     ZF := 1
 ///   ELSE
 ///     FOR i := 0 to 7
@@ -455,8 +452,8 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesencwide256kl_u8(
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesdecwide128kl_u8(
-    __m128i __odata[8], const __m128i __idata[8], const void *__h) {
+static __inline__ unsigned char __DEFAULT_FN_ATTRS
+_mm_aesdecwide128kl_u8(__m128i __odata[8], const __m128i __idata[8], const void* __h) {
   return __builtin_ia32_aesdecwide128kl_u8((__v2di *)__odata,
                                            (const __v2di *)__idata, __h);
 }
@@ -478,8 +475,8 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesdecwide128kl_u8(
 /// If (IllegalHandle)
 ///   ZF := 1
 /// ELSE
-///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0],
-///   IWKey) IF Authentic == 0
+///   (UnwrappedKey, Authentic) := UnwrapKeyAndAuthenticate512 (Handle[511:0], IWKey)
+///   IF Authentic == 0
 ///     ZF := 1
 ///   ELSE
 ///     FOR i := 0 to 7
@@ -495,15 +492,15 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesdecwide128kl_u8(
 /// PF := 0
 /// CF := 0
 /// \endoperation
-static __inline__ unsigned char __DEFAULT_FN_ATTRS _mm_aesdecwide256kl_u8(
-    __m128i __odata[8], const __m128i __idata[8], const void *__h) {
+static __inline__ unsigned char __DEFAULT_FN_ATTRS
+_mm_aesdecwide256kl_u8(__m128i __odata[8], const __m128i __idata[8], const void* __h) {
   return __builtin_ia32_aesdecwide256kl_u8((__v2di *)__odata,
                                            (const __v2di *)__idata, __h);
 }
 
 #undef __DEFAULT_FN_ATTRS
 
-#endif /* !(defined(_MSC_VER) || defined(__SCE__)) || __has_feature(modules)   \
+#endif /* !(defined(_MSC_VER) || defined(__SCE__)) || __has_feature(modules) \
           || defined(__WIDEKL__) */
 
 #endif /* _KEYLOCKERINTRIN_H */

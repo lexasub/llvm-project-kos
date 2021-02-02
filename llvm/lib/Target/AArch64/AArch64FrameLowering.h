@@ -13,8 +13,8 @@
 #ifndef LLVM_LIB_TARGET_AARCH64_AARCH64FRAMELOWERING_H
 #define LLVM_LIB_TARGET_AARCH64_AARCH64FRAMELOWERING_H
 
-#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/Support/TypeSize.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 
 namespace llvm {
 
@@ -84,7 +84,7 @@ public:
   TargetStackID::Value getStackIDForScalableVectors() const override;
 
   void processFunctionBeforeFrameFinalized(MachineFunction &MF,
-                                           RegScavenger *RS) const override;
+                                             RegScavenger *RS) const override;
 
   void
   processFunctionBeforeFrameIndicesReplaced(MachineFunction &MF,
@@ -134,13 +134,12 @@ private:
   MCCFIInstruction
   createDefCFAExpressionFromSP(const TargetRegisterInfo &TRI,
                                const StackOffset &OffsetFromSP) const;
-  MCCFIInstruction createCfaOffset(const TargetRegisterInfo &MRI,
-                                   unsigned DwarfReg,
+  MCCFIInstruction createCfaOffset(const TargetRegisterInfo &MRI, unsigned DwarfReg,
                                    const StackOffset &OffsetFromDefCFA) const;
   bool shouldCombineCSRLocalStackBumpInEpilogue(MachineBasicBlock &MBB,
                                                 unsigned StackBumpBytes) const;
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

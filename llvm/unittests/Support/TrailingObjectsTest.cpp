@@ -43,9 +43,9 @@ public:
   template <typename... Ty>
   using FixedSizeStorage = TrailingObjects::FixedSizeStorage<Ty...>;
 
+  using TrailingObjects::totalSizeToAlloc;
   using TrailingObjects::additionalSizeToAlloc;
   using TrailingObjects::getTrailingObjects;
-  using TrailingObjects::totalSizeToAlloc;
 };
 
 // Here, there are two singular optional object types appended.  Note
@@ -99,9 +99,9 @@ public:
   template <typename... Ty>
   using FixedSizeStorage = TrailingObjects::FixedSizeStorage<Ty...>;
 
+  using TrailingObjects::totalSizeToAlloc;
   using TrailingObjects::additionalSizeToAlloc;
   using TrailingObjects::getTrailingObjects;
-  using TrailingObjects::totalSizeToAlloc;
 };
 
 TEST(TrailingObjects, OneArg) {
@@ -234,7 +234,7 @@ TEST(TrailingObjects, Realignment) {
             reinterpret_cast<long *>(llvm::alignAddr(
                 reinterpret_cast<char *>(C + 1) + 1, Align::Of<long>())));
 }
-} // namespace
+}
 
 // Test the use of TrailingObjects with a template class. This
 // previously failed to compile due to a bug in MSVC's member access

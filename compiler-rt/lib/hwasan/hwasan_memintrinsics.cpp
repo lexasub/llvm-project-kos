@@ -13,7 +13,6 @@
 //===----------------------------------------------------------------------===//
 
 #include <string.h>
-
 #include "hwasan.h"
 #include "hwasan_checks.h"
 #include "hwasan_flags.h"

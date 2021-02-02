@@ -79,7 +79,7 @@ extern cl::opt<bool> RemarksWithHotness;
 extern cl::opt<Optional<uint64_t>, false, remarks::HotnessThresholdParser>
     RemarksHotnessThreshold;
 extern cl::opt<std::string> RemarksFormat;
-} // namespace llvm
+}
 
 namespace {
 
@@ -164,14 +164,13 @@ static void promoteModule(Module &TheModule, const ModuleSummaryIndex &Index,
 namespace {
 class ThinLTODiagnosticInfo : public DiagnosticInfo {
   const Twine &Msg;
-
 public:
   ThinLTODiagnosticInfo(const Twine &DiagMsg,
                         DiagnosticSeverity Severity = DS_Error)
       : DiagnosticInfo(DK_Linker, Severity), Msg(DiagMsg) {}
   void print(DiagnosticPrinter &DP) const override { DP << Msg; }
 };
-} // namespace
+}
 
 /// Verify the module and strip broken debug info.
 static void verifyLoadedModule(Module &TheModule) {
@@ -305,9 +304,8 @@ std::unique_ptr<MemoryBuffer> codegenModule(Module &TheModule,
     raw_svector_ostream OS(OutputBuffer);
     legacy::PassManager PM;
 
-    // If the bitcode files contain ARC code and were compiled with
-    // optimization, the ObjCARCContractPass must be run, so do it
-    // unconditionally here.
+    // If the bitcode files contain ARC code and were compiled with optimization,
+    // the ObjCARCContractPass must be run, so do it unconditionally here.
     PM.add(createObjCARCContractPass());
 
     // Setup the codegen now.
@@ -946,24 +944,22 @@ void ThinLTOCodeGenerator::run() {
     ThreadPool Pool;
     int count = 0;
     for (auto &Mod : Modules) {
-      Pool.async(
-          [&](int count) {
-            LLVMContext Context;
-            Context.setDiscardValueNames(LTODiscardValueNames);
+      Pool.async([&](int count) {
+        LLVMContext Context;
+        Context.setDiscardValueNames(LTODiscardValueNames);
 
-            // Parse module now
-            auto TheModule = loadModuleFromInput(Mod.get(), Context, false,
-                                                 /*IsImporting*/ false);
+        // Parse module now
+        auto TheModule = loadModuleFromInput(Mod.get(), Context, false,
+                                             /*IsImporting*/ false);
 
-            // CodeGen
-            auto OutputBuffer = codegenModule(*TheModule, *TMBuilder.create());
-            if (SavedObjectsDirectoryPath.empty())
-              ProducedBinaries[count] = std::move(OutputBuffer);
-            else
-              ProducedBinaryFiles[count] =
-                  writeGeneratedObject(count, "", *OutputBuffer);
-          },
-          count++);
+        // CodeGen
+        auto OutputBuffer = codegenModule(*TheModule, *TMBuilder.create());
+        if (SavedObjectsDirectoryPath.empty())
+          ProducedBinaries[count] = std::move(OutputBuffer);
+        else
+          ProducedBinaryFiles[count] =
+              writeGeneratedObject(count, "", *OutputBuffer);
+      }, count++);
     }
 
     return;
@@ -982,6 +978,7 @@ void ThinLTOCodeGenerator::run() {
                          " to save optimized bitcode\n");
     WriteIndexToFile(*Index, OS);
   }
+
 
   // Prepare the module map.
   auto ModuleMap = generateModuleMap(Modules);
@@ -1079,97 +1076,91 @@ void ThinLTOCodeGenerator::run() {
     ThreadPool Pool(heavyweight_hardware_concurrency(ThreadCount));
     for (auto IndexCount : ModulesOrdering) {
       auto &Mod = Modules[IndexCount];
-      Pool.async(
-          [&](int count) {
-            auto ModuleIdentifier = Mod->getName();
-            auto &ExportList = ExportLists[ModuleIdentifier];
+      Pool.async([&](int count) {
+        auto ModuleIdentifier = Mod->getName();
+        auto &ExportList = ExportLists[ModuleIdentifier];
 
-            auto &DefinedGVSummaries =
-                ModuleToDefinedGVSummaries[ModuleIdentifier];
+        auto &DefinedGVSummaries = ModuleToDefinedGVSummaries[ModuleIdentifier];
 
-            // The module may be cached, this helps handling it.
-            ModuleCacheEntry CacheEntry(
-                CacheOptions.Path, *Index, ModuleIdentifier,
-                ImportLists[ModuleIdentifier], ExportList,
-                ResolvedODR[ModuleIdentifier], DefinedGVSummaries, OptLevel,
-                Freestanding, TMBuilder);
-            auto CacheEntryPath = CacheEntry.getEntryPath();
+        // The module may be cached, this helps handling it.
+        ModuleCacheEntry CacheEntry(CacheOptions.Path, *Index, ModuleIdentifier,
+                                    ImportLists[ModuleIdentifier], ExportList,
+                                    ResolvedODR[ModuleIdentifier],
+                                    DefinedGVSummaries, OptLevel, Freestanding,
+                                    TMBuilder);
+        auto CacheEntryPath = CacheEntry.getEntryPath();
 
-            {
-              auto ErrOrBuffer = CacheEntry.tryLoadingBuffer();
-              LLVM_DEBUG(dbgs() << "Cache " << (ErrOrBuffer ? "hit" : "miss")
-                                << " '" << CacheEntryPath << "' for buffer "
-                                << count << " " << ModuleIdentifier << "\n");
+        {
+          auto ErrOrBuffer = CacheEntry.tryLoadingBuffer();
+          LLVM_DEBUG(dbgs() << "Cache " << (ErrOrBuffer ? "hit" : "miss")
+                            << " '" << CacheEntryPath << "' for buffer "
+                            << count << " " << ModuleIdentifier << "\n");
 
-              if (ErrOrBuffer) {
-                // Cache Hit!
-                if (SavedObjectsDirectoryPath.empty())
-                  ProducedBinaries[count] = std::move(ErrOrBuffer.get());
-                else
-                  ProducedBinaryFiles[count] = writeGeneratedObject(
-                      count, CacheEntryPath, *ErrOrBuffer.get());
-                return;
-              }
+          if (ErrOrBuffer) {
+            // Cache Hit!
+            if (SavedObjectsDirectoryPath.empty())
+              ProducedBinaries[count] = std::move(ErrOrBuffer.get());
+            else
+              ProducedBinaryFiles[count] = writeGeneratedObject(
+                  count, CacheEntryPath, *ErrOrBuffer.get());
+            return;
+          }
+        }
+
+        LLVMContext Context;
+        Context.setDiscardValueNames(LTODiscardValueNames);
+        Context.enableDebugTypeODRUniquing();
+        auto DiagFileOrErr = lto::setupLLVMOptimizationRemarks(
+            Context, RemarksFilename, RemarksPasses, RemarksFormat,
+            RemarksWithHotness, RemarksHotnessThreshold, count);
+        if (!DiagFileOrErr) {
+          errs() << "Error: " << toString(DiagFileOrErr.takeError()) << "\n";
+          report_fatal_error("ThinLTO: Can't get an output file for the "
+                             "remarks");
+        }
+
+        // Parse module now
+        auto TheModule = loadModuleFromInput(Mod.get(), Context, false,
+                                             /*IsImporting*/ false);
+
+        // Save temps: original file.
+        saveTempBitcode(*TheModule, SaveTempsDir, count, ".0.original.bc");
+
+        auto &ImportList = ImportLists[ModuleIdentifier];
+        // Run the main process now, and generates a binary
+        auto OutputBuffer = ProcessThinLTOModule(
+            *TheModule, *Index, ModuleMap, *TMBuilder.create(), ImportList,
+            ExportList, GUIDPreservedSymbols,
+            ModuleToDefinedGVSummaries[ModuleIdentifier], CacheOptions,
+            DisableCodeGen, SaveTempsDir, Freestanding, OptLevel, count);
+
+        // Commit to the cache (if enabled)
+        CacheEntry.write(*OutputBuffer);
+
+        if (SavedObjectsDirectoryPath.empty()) {
+          // We need to generated a memory buffer for the linker.
+          if (!CacheEntryPath.empty()) {
+            // When cache is enabled, reload from the cache if possible.
+            // Releasing the buffer from the heap and reloading it from the
+            // cache file with mmap helps us to lower memory pressure.
+            // The freed memory can be used for the next input file.
+            // The final binary link will read from the VFS cache (hopefully!)
+            // or from disk (if the memory pressure was too high).
+            auto ReloadedBufferOrErr = CacheEntry.tryLoadingBuffer();
+            if (auto EC = ReloadedBufferOrErr.getError()) {
+              // On error, keep the preexisting buffer and print a diagnostic.
+              errs() << "remark: can't reload cached file '" << CacheEntryPath
+                     << "': " << EC.message() << "\n";
+            } else {
+              OutputBuffer = std::move(*ReloadedBufferOrErr);
             }
-
-            LLVMContext Context;
-            Context.setDiscardValueNames(LTODiscardValueNames);
-            Context.enableDebugTypeODRUniquing();
-            auto DiagFileOrErr = lto::setupLLVMOptimizationRemarks(
-                Context, RemarksFilename, RemarksPasses, RemarksFormat,
-                RemarksWithHotness, RemarksHotnessThreshold, count);
-            if (!DiagFileOrErr) {
-              errs() << "Error: " << toString(DiagFileOrErr.takeError())
-                     << "\n";
-              report_fatal_error("ThinLTO: Can't get an output file for the "
-                                 "remarks");
-            }
-
-            // Parse module now
-            auto TheModule = loadModuleFromInput(Mod.get(), Context, false,
-                                                 /*IsImporting*/ false);
-
-            // Save temps: original file.
-            saveTempBitcode(*TheModule, SaveTempsDir, count, ".0.original.bc");
-
-            auto &ImportList = ImportLists[ModuleIdentifier];
-            // Run the main process now, and generates a binary
-            auto OutputBuffer = ProcessThinLTOModule(
-                *TheModule, *Index, ModuleMap, *TMBuilder.create(), ImportList,
-                ExportList, GUIDPreservedSymbols,
-                ModuleToDefinedGVSummaries[ModuleIdentifier], CacheOptions,
-                DisableCodeGen, SaveTempsDir, Freestanding, OptLevel, count);
-
-            // Commit to the cache (if enabled)
-            CacheEntry.write(*OutputBuffer);
-
-            if (SavedObjectsDirectoryPath.empty()) {
-              // We need to generated a memory buffer for the linker.
-              if (!CacheEntryPath.empty()) {
-                // When cache is enabled, reload from the cache if possible.
-                // Releasing the buffer from the heap and reloading it from the
-                // cache file with mmap helps us to lower memory pressure.
-                // The freed memory can be used for the next input file.
-                // The final binary link will read from the VFS cache
-                // (hopefully!) or from disk (if the memory pressure was too
-                // high).
-                auto ReloadedBufferOrErr = CacheEntry.tryLoadingBuffer();
-                if (auto EC = ReloadedBufferOrErr.getError()) {
-                  // On error, keep the preexisting buffer and print a
-                  // diagnostic.
-                  errs() << "remark: can't reload cached file '"
-                         << CacheEntryPath << "': " << EC.message() << "\n";
-                } else {
-                  OutputBuffer = std::move(*ReloadedBufferOrErr);
-                }
-              }
-              ProducedBinaries[count] = std::move(OutputBuffer);
-              return;
-            }
-            ProducedBinaryFiles[count] =
-                writeGeneratedObject(count, CacheEntryPath, *OutputBuffer);
-          },
-          IndexCount);
+          }
+          ProducedBinaries[count] = std::move(OutputBuffer);
+          return;
+        }
+        ProducedBinaryFiles[count] = writeGeneratedObject(
+            count, CacheEntryPath, *OutputBuffer);
+      }, IndexCount);
     }
   }
 

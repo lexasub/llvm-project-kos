@@ -16,6 +16,6 @@ namespace llvm {
 namespace pdb {
 ArrayRef<EnumEntry<uint16_t>> getOMFSegMapDescFlagNames();
 }
-} // namespace llvm
+}
 
 #endif // LLVM_DEBUGINFO_PDB_RAW_ENUMTABLES_H

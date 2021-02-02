@@ -14,10 +14,9 @@
 #ifndef HWASAN_INTERFACE_INTERNAL_H
 #define HWASAN_INTERFACE_INTERNAL_H
 
-#include <link.h>
-
 #include "sanitizer_common/sanitizer_internal_defs.h"
 #include "sanitizer_common/sanitizer_platform_limits_posix.h"
+#include <link.h>
 
 extern "C" {
 
@@ -35,15 +34,15 @@ SANITIZER_INTERFACE_ATTRIBUTE
 void __hwasan_library_unloaded(ElfW(Addr) base, const ElfW(Phdr) * phdr,
                                ElfW(Half) phnum);
 
-using __sanitizer::sptr;
-using __sanitizer::u16;
-using __sanitizer::u32;
-using __sanitizer::u64;
-using __sanitizer::u8;
 using __sanitizer::uptr;
-using __sanitizer::uu16;
-using __sanitizer::uu32;
+using __sanitizer::sptr;
 using __sanitizer::uu64;
+using __sanitizer::uu32;
+using __sanitizer::uu16;
+using __sanitizer::u64;
+using __sanitizer::u32;
+using __sanitizer::u16;
+using __sanitizer::u8;
 
 SANITIZER_INTERFACE_ATTRIBUTE
 void __hwasan_init_frames(uptr, uptr);
@@ -125,8 +124,7 @@ SANITIZER_INTERFACE_ATTRIBUTE
 sptr __hwasan_test_shadow(const void *x, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
-    /* OPTIONAL */ const char *
-    __hwasan_default_options();
+/* OPTIONAL */ const char* __hwasan_default_options();
 
 SANITIZER_INTERFACE_ATTRIBUTE
 void __hwasan_print_shadow(const void *x, uptr size);
@@ -174,19 +172,19 @@ SANITIZER_INTERFACE_ATTRIBUTE
 int __sanitizer_posix_memalign(void **memptr, uptr alignment, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_memalign(uptr alignment, uptr size);
+void * __sanitizer_memalign(uptr alignment, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_aligned_alloc(uptr alignment, uptr size);
+void * __sanitizer_aligned_alloc(uptr alignment, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer___libc_memalign(uptr alignment, uptr size);
+void * __sanitizer___libc_memalign(uptr alignment, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_valloc(uptr size);
+void * __sanitizer_valloc(uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_pvalloc(uptr size);
+void * __sanitizer_pvalloc(uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
 void __sanitizer_free(void *ptr);
@@ -207,16 +205,16 @@ SANITIZER_INTERFACE_ATTRIBUTE
 void __sanitizer_malloc_stats(void);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_calloc(uptr nmemb, uptr size);
+void * __sanitizer_calloc(uptr nmemb, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_realloc(void *ptr, uptr size);
+void * __sanitizer_realloc(void *ptr, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_reallocarray(void *ptr, uptr nmemb, uptr size);
+void * __sanitizer_reallocarray(void *ptr, uptr nmemb, uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
-void *__sanitizer_malloc(uptr size);
+void * __sanitizer_malloc(uptr size);
 
 SANITIZER_INTERFACE_ATTRIBUTE
 void *__hwasan_memcpy(void *dst, const void *src, uptr size);

@@ -70,7 +70,8 @@ long dummy_global;
 long dummy_global2[100];
 #endif
 
-extern "C" long faulty_global = 10;
+extern "C"
+long faulty_global = 10;
 
 void check_data_symbolication() {
   char data[100];
@@ -79,8 +80,9 @@ void check_data_symbolication() {
   // CHECK-DATA: symbolized global: faulty_global
 }
 
-extern "C" void faulty_func(char *p) {
-  *p = 'x'; // BOOM
+extern "C"
+void faulty_func(char *p) {
+  *p = 'x';  // BOOM
   // CHECK: AddressSanitizer: global-buffer-overflow
   // CHECK-LI: #0 0x{{.*}} in faulty_func{{.*}} {{.*}}haswell-symbolication.cpp:[[@LINE-2]]
   // CHECK-NOLI: #0 0x{{.*}} in faulty_func{{.*}} {{.*}}haswell-symbolication

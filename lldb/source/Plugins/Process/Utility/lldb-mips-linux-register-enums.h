@@ -355,6 +355,6 @@ enum {
   ptrace_sr_mips,
   ptrace_config5_mips
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_LLDB_MIPS_LINUX_REGISTER_ENUMS_H

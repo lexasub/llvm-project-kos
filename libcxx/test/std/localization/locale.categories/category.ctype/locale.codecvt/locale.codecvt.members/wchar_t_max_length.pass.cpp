@@ -19,10 +19,11 @@
 
 typedef std::codecvt<wchar_t, char, std::mbstate_t> F;
 
-int main(int, char**) {
-  std::locale l = std::locale::classic();
-  const F& f = std::use_facet<F>(l);
-  assert(f.max_length() == 1);
+int main(int, char**)
+{
+    std::locale l = std::locale::classic();
+    const F& f = std::use_facet<F>(l);
+    assert(f.max_length() == 1);
 
   return 0;
 }

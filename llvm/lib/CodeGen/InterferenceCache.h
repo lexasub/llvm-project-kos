@@ -142,7 +142,7 @@ class LLVM_LIBRARY_VISIBILITY InterferenceCache {
 
   // Point to an entry for each physreg. The entry pointed to may not be up to
   // date, and it may have been reused for a different physreg.
-  unsigned char *PhysRegEntries = nullptr;
+  unsigned char* PhysRegEntries = nullptr;
   size_t PhysRegEntriesCount = 0;
 
   // Next round-robin entry to be picked.
@@ -157,7 +157,9 @@ class LLVM_LIBRARY_VISIBILITY InterferenceCache {
 public:
   InterferenceCache() = default;
 
-  ~InterferenceCache() { free(PhysRegEntries); }
+  ~InterferenceCache() {
+    free(PhysRegEntries);
+  }
 
   void reinitPhysRegEntries();
 
@@ -191,7 +193,9 @@ public:
     /// Cursor - Create a dangling cursor.
     Cursor() = default;
 
-    Cursor(const Cursor &O) { setEntry(O.CacheEntry); }
+    Cursor(const Cursor &O) {
+      setEntry(O.CacheEntry);
+    }
 
     Cursor &operator=(const Cursor &O) {
       setEntry(O.CacheEntry);
@@ -215,15 +219,21 @@ public:
     }
 
     /// hasInterference - Return true if the current block has any interference.
-    bool hasInterference() { return Current->First.isValid(); }
+    bool hasInterference() {
+      return Current->First.isValid();
+    }
 
     /// first - Return the starting index of the first interfering range in the
     /// current block.
-    SlotIndex first() { return Current->First; }
+    SlotIndex first() {
+      return Current->First;
+    }
 
     /// last - Return the ending index of the last interfering range in the
     /// current block.
-    SlotIndex last() { return Current->Last; }
+    SlotIndex last() {
+      return Current->Last;
+    }
   };
 };
 

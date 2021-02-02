@@ -19,7 +19,9 @@ namespace lld {
 ///
 class SharedLibraryFile : public File {
 public:
-  static bool classof(const File *f) { return f->kind() == kindSharedLibrary; }
+  static bool classof(const File *f) {
+    return f->kind() == kindSharedLibrary;
+  }
 
   /// Check if the shared library exports a symbol with the specified name.
   /// If so, return a SharedLibraryAtom which represents that exported

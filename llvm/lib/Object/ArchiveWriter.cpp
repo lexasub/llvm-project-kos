@@ -176,8 +176,7 @@ printGNUSmallMemberHeader(raw_ostream &Out, StringRef Name,
 static void
 printBSDMemberHeader(raw_ostream &Out, uint64_t Pos, StringRef Name,
                      const sys::TimePoint<std::chrono::seconds> &ModTime,
-                     unsigned UID, unsigned GID, unsigned Perms,
-                     uint64_t Size) {
+                     unsigned UID, unsigned GID, unsigned Perms, uint64_t Size) {
   uint64_t PosAfterHeader = Pos + 60 + Name.size();
   // Pad so that even 64 bit object files are aligned.
   unsigned Pad = offsetToAlignment(PosAfterHeader, Align(8));
@@ -337,8 +336,7 @@ static void writeSymbolTable(raw_ostream &Out, object::Archive::Kind Kind,
 
   uint64_t OffsetSize = is64BitKind(Kind) ? 8 : 4;
   uint32_t Pad;
-  uint64_t Size =
-      computeSymbolTableSize(Kind, NumSyms, OffsetSize, StringTable, &Pad);
+  uint64_t Size = computeSymbolTableSize(Kind, NumSyms, OffsetSize, StringTable, &Pad);
   writeSymbolTableHeader(Out, Kind, Deterministic, Size);
 
   uint64_t Pos = Out.tell() + Size;
@@ -607,12 +605,13 @@ static Error writeArchiveToStream(raw_ostream &Out,
 
     // We assume 32-bit offsets to see if 32-bit symbols are possible or not.
     uint64_t SymtabSize = computeSymbolTableSize(Kind, NumSyms, 4, SymNamesBuf);
-    auto computeSymbolTableHeaderSize = [=] {
-      SmallString<0> TmpBuf;
-      raw_svector_ostream Tmp(TmpBuf);
-      writeSymbolTableHeader(Tmp, Kind, Deterministic, SymtabSize);
-      return TmpBuf.size();
-    };
+    auto computeSymbolTableHeaderSize =
+        [=] {
+          SmallString<0> TmpBuf;
+          raw_svector_ostream Tmp(TmpBuf);
+          writeSymbolTableHeader(Tmp, Kind, Deterministic, SymtabSize);
+          return TmpBuf.size();
+        };
     LastOffset += computeSymbolTableHeaderSize() + SymtabSize;
 
     // The SYM64 format is used when an archive's member offsets are larger than

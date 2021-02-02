@@ -86,7 +86,8 @@ private:
   std::vector<std::pair<SymbolDesc, StringRef>> Objects;
 
   SymbolizableObjectFile(const object::ObjectFile *Obj,
-                         std::unique_ptr<DIContext> DICtx, bool UntagAddresses);
+                         std::unique_ptr<DIContext> DICtx,
+                         bool UntagAddresses);
 };
 
 } // end namespace symbolize

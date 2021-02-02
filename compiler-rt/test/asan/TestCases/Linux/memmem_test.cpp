@@ -9,9 +9,9 @@ int main(int argc, char **argv) {
   char a2[] = {3, 4, 5};
   void *res;
   if (argc == 1)
-    res = memmem(a1, sizeof(a1) + 1, a2, sizeof(a2)); // BOOM
+    res = memmem(a1, sizeof(a1) + 1, a2, sizeof(a2));  // BOOM
   else
-    res = memmem(a1, sizeof(a1), a2, sizeof(a2) + 1); // BOOM
+    res = memmem(a1, sizeof(a1), a2, sizeof(a2) + 1);  // BOOM
   // A1: AddressSanitizer: stack-buffer-overflow
   // A1: {{#0.*memmem}}
   // A1-NEXT: {{#1.*main}}

@@ -23,6 +23,6 @@ public:
 protected:
   static lldb::thread_result_t ThreadCreateTrampoline(lldb::thread_arg_t arg);
 };
-} // namespace lldb_private
+}
 
 #endif

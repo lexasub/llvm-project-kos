@@ -52,8 +52,9 @@ lldb::addr_t BreakpointLocation::GetLoadAddress() const {
   return m_address.GetOpcodeLoadAddress(&m_owner.GetTarget());
 }
 
-const BreakpointOptions *BreakpointLocation::GetOptionsSpecifyingKind(
-    BreakpointOptions::OptionKind kind) const {
+const BreakpointOptions *
+BreakpointLocation::GetOptionsSpecifyingKind(BreakpointOptions::OptionKind kind)
+const {
   if (m_options_up && m_options_up->IsOptionSet(kind))
     return m_options_up.get();
   else
@@ -112,7 +113,7 @@ void BreakpointLocation::SetThreadID(lldb::tid_t thread_id) {
 }
 
 lldb::tid_t BreakpointLocation::GetThreadID() {
-  const ThreadSpec *thread_spec =
+  const ThreadSpec *thread_spec = 
       GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
           ->GetThreadSpecNoCreate();
   if (thread_spec)
@@ -134,7 +135,7 @@ void BreakpointLocation::SetThreadIndex(uint32_t index) {
 }
 
 uint32_t BreakpointLocation::GetThreadIndex() const {
-  const ThreadSpec *thread_spec =
+  const ThreadSpec *thread_spec = 
       GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
           ->GetThreadSpecNoCreate();
   if (thread_spec)
@@ -156,7 +157,7 @@ void BreakpointLocation::SetThreadName(const char *thread_name) {
 }
 
 const char *BreakpointLocation::GetThreadName() const {
-  const ThreadSpec *thread_spec =
+  const ThreadSpec *thread_spec = 
       GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
           ->GetThreadSpecNoCreate();
   if (thread_spec)
@@ -178,7 +179,7 @@ void BreakpointLocation::SetQueueName(const char *queue_name) {
 }
 
 const char *BreakpointLocation::GetQueueName() const {
-  const ThreadSpec *thread_spec =
+  const ThreadSpec *thread_spec = 
       GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
           ->GetThreadSpecNoCreate();
   if (thread_spec)
@@ -373,9 +374,9 @@ BreakpointOptions *BreakpointLocation::GetLocationOptions() {
 }
 
 bool BreakpointLocation::ValidForThisThread(Thread *thread) {
-  return thread->MatchesSpec(
-      GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
-          ->GetThreadSpecNoCreate());
+  return thread
+      ->MatchesSpec(GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
+      ->GetThreadSpecNoCreate());
 }
 
 // RETURNS - true if we should stop at this breakpoint, false if we
@@ -624,12 +625,11 @@ void BreakpointLocation::Dump(Stream *s) const {
 
   bool is_resolved = IsResolved();
   bool is_hardware = is_resolved && m_bp_site_sp->IsHardware();
-  auto hardware_index =
-      is_resolved ? m_bp_site_sp->GetHardwareIndex() : LLDB_INVALID_INDEX32;
+  auto hardware_index = is_resolved ?
+      m_bp_site_sp->GetHardwareIndex() : LLDB_INVALID_INDEX32;
 
   lldb::tid_t tid = GetOptionsSpecifyingKind(BreakpointOptions::eThreadSpec)
-                        ->GetThreadSpecNoCreate()
-                        ->GetTID();
+      ->GetThreadSpecNoCreate()->GetTID();
   s->Printf("BreakpointLocation %u: tid = %4.4" PRIx64
             "  load addr = 0x%8.8" PRIx64 "  state = %s  type = %s breakpoint  "
             "hw_index = %i  hit_count = %-4u  ignore_count = %-4u",
@@ -638,8 +638,7 @@ void BreakpointLocation::Dump(Stream *s) const {
             (m_options_up ? m_options_up->IsEnabled() : m_owner.IsEnabled())
                 ? "enabled "
                 : "disabled",
-            is_hardware ? "hardware" : "software", hardware_index,
-            GetHitCount(),
+            is_hardware ? "hardware" : "software", hardware_index, GetHitCount(),
             GetOptionsSpecifyingKind(BreakpointOptions::eIgnoreCount)
                 ->GetIgnoreCount());
 }

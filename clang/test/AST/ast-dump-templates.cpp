@@ -41,29 +41,29 @@ void baz() {
 
 // CHECK1-LABEL: template <typename ...T> struct A {
 // CHECK1-NEXT:    template <T ...x[3]> struct B {
-template <typename... T> struct A {
-  template <T... x[3]> struct B {};
+template <typename ...T> struct A {
+  template <T ...x[3]> struct B {};
 };
 
 // CHECK1-LABEL: template <typename ...T> void f(T ...[3]) {
 // CHECK1-NEXT:    A<T [3]...> a;
-template <typename... T> void f(T...[3]) {
-  A<T[3]...> a;
+template <typename ...T> void f(T ...[3]) {
+  A<T [3]...> a;
 }
 
 namespace test2 {
 void func(int);
 void func(float);
-template <typename T>
+template<typename T>
 void tmpl() {
   func(T());
 }
 
 // DUMP: UnresolvedLookupExpr {{.*}} <col:3> '<overloaded function type>' lvalue (ADL) = 'func'
-} // namespace test2
+}
 
 namespace test3 {
-template <typename T> struct A {};
-template <typename T> A(T) -> A<int>;
-// CHECK1: template <typename T> A(T) -> A<int>;
-} // namespace test3
+  template<typename T> struct A {};
+  template<typename T> A(T) -> A<int>;
+  // CHECK1: template <typename T> A(T) -> A<int>;
+}

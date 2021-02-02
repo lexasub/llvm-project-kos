@@ -5,14 +5,14 @@
 int x[4], z[4];
 
 void *MemCpyThread(void *a) {
-  memcpy((int *)a, z, 16);
+  memcpy((int*)a, z, 16);
   barrier_wait(&barrier);
   return NULL;
 }
 
 void *MemSetThread(void *a) {
   barrier_wait(&barrier);
-  memset((int *)a, 0, 16);
+  memset((int*)a, 0, 16);
   return NULL;
 }
 

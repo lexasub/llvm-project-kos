@@ -21,6 +21,6 @@ namespace llvm {
 // (constant value 1 in an attempt to workaround MSVC build issue... )
 enum class NoneType { None = 1 };
 const NoneType None = NoneType::None;
-} // namespace llvm
+}
 
 #endif

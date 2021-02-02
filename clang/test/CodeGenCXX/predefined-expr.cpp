@@ -14,7 +14,7 @@
 // CHECK-DAG: private unnamed_addr constant [65 x i8] c"void functionTemplateWithUnnamedTemplateParameter(T) [T = float]\00"
 
 // CHECK-DAG: private unnamed_addr constant [60 x i8] c"void functionTemplateExplicitSpecialization(T) [T = double]\00"
-// CHECK-DAG: private unnamed_addr constant [52 x i8] c"T *functionTemplateWithCompoundTypes(T *) [T = int]\00"
+// CHECK-DAG: private unnamed_addr constant [52 x i8] c"T *functionTemplateWithCompoundTypes(T *) [T = int]\00" 
 // CHECK-DAG: private unnamed_addr constant [54 x i8] c"T functionTemplateWithTemplateReturnType() [T = char]\00"
 // CHECK-DAG: private unnamed_addr constant [57 x i8] c"void functionTemplateWithoutParameterList() [T = double]\00"
 // CHECK-DAG: private unnamed_addr constant [62 x i8] c"void functionTemplateWithTwoParams(T, U) [T = int, U = float]\00"
@@ -98,7 +98,9 @@
 // CHECK-DAG: private unnamed_addr constant [19 x i8] c"localClassFunction\00"
 // CHECK-DAG: private unnamed_addr constant [59 x i8] c"void NS::localClass(int)::LocalClass::localClassFunction()\00"
 
-int printf(const char *_Format, ...);
+
+
+int printf(const char * _Format, ...);
 
 class ClassInTopLevelNamespace {
 public:
@@ -111,20 +113,20 @@ public:
 
 namespace {
 
-class ClassInAnonymousNamespace {
-public:
-  void anonymousNamespaceFunction() {
-    printf("__func__ %s\n", __func__);
-    printf("__FUNCTION__ %s\n", __FUNCTION__);
-    printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
-  }
-};
+  class ClassInAnonymousNamespace {
+  public:
+    void anonymousNamespaceFunction() {
+      printf("__func__ %s\n", __func__);
+      printf("__FUNCTION__ %s\n", __FUNCTION__);
+      printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
+    }
+  };
 
 } // end anonymous namespace
 
 namespace NS {
 
-template <typename T>
+template<typename T>
 class ClassTemplate {
 public:
   void classTemplateFunction() {
@@ -142,7 +144,7 @@ public:
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 
-  inline void(inlineFunction)() {
+  inline void (inlineFunction)() {
     printf("__func__ %s\n", __func__);
     printf("__FUNCTION__ %s\n", __FUNCTION__);
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
@@ -154,7 +156,7 @@ public:
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 
-  void functionWithParameters(int, float *, Base *base) {
+  void functionWithParameters(int, float*, Base* base) {
     printf("__func__ %s\n", __func__);
     printf("__FUNCTION__ %s\n", __FUNCTION__);
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
@@ -199,7 +201,7 @@ public:
     return ClassTemplate<Base *>();
   }
 
-  template <typename T>
+  template<typename T>
   void functionTemplate1(T t) {
     printf("__func__ %s\n", __func__);
     printf("__FUNCTION__ %s\n", __FUNCTION__);
@@ -217,7 +219,7 @@ public:
     printf("__FUNCTION__ %s\n", __FUNCTION__);
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
-
+  
   void constVolatileFunction() const volatile {
     printf("__func__ %s\n", __func__);
     printf("__FUNCTION__ %s\n", __FUNCTION__);
@@ -324,74 +326,87 @@ extern void externFunction() {
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
-} // namespace NS
+} // end NS namespace
 
 // additional tests for __PRETTY_FUNCTION__
 template <typename T, typename U>
-void functionTemplateWithTwoParams(T, U) {
+void functionTemplateWithTwoParams(T, U)
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
 template <typename T>
-void functionTemplateWithoutParameterList() {
+void functionTemplateWithoutParameterList()
+{
   T t = T();
 
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
 template <typename T>
-T functionTemplateWithTemplateReturnType() {
+T functionTemplateWithTemplateReturnType()
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 
   return T();
 }
 
 template <typename T>
-T *functionTemplateWithCompoundTypes(T a[]) {
+T * functionTemplateWithCompoundTypes(T a[])
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 
   return 0;
 }
 
 template <typename T>
-void functionTemplateExplicitSpecialization(T t) {
+void functionTemplateExplicitSpecialization(T t)
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
 template <>
-void functionTemplateExplicitSpecialization<int>(int i) {
+void functionTemplateExplicitSpecialization<int>(int i)
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
 template <typename, typename T>
-void functionTemplateWithUnnamedTemplateParameter(T t) {
+void functionTemplateWithUnnamedTemplateParameter(T t)
+{
   printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
 }
 
 template <typename T>
-void functionTemplateWithLambda(T t) {
+void functionTemplateWithLambda(T t)
+{
   []() {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
-  }();
+  } ();
 }
 
 template <typename T>
-void functionTemplateWithCapturedStmt(T t) {
-#pragma clang __debug captured
+void functionTemplateWithCapturedStmt(T t)
+{
+  #pragma clang __debug captured
   {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 }
 
 template <typename T>
-class OuterClass {
+class OuterClass
+{
 public:
-  class MiddleClass {
+  class MiddleClass
+  {
   public:
     template <typename U>
-    class InnerClass {
+    class InnerClass
+    {
     public:
-      void memberFunction(T x, U y) const {
+      void memberFunction(T x, U y) const
+      {
         printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
       }
     };
@@ -399,35 +414,43 @@ public:
 };
 
 template <typename T, template <typename> class Param = NS::ClassTemplate>
-class ClassWithTemplateTemplateParam {
+class ClassWithTemplateTemplateParam
+{
 public:
-  static void staticMember() {
+  static void staticMember()
+  {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 };
 
 template <int Count>
-class NonTypeTemplateParam {
+class NonTypeTemplateParam
+{
 public:
-  void size() const {
+  void size() const
+  {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 };
 
 template <typename T>
-class SpecializedClassTemplate {
+class SpecializedClassTemplate
+{
 public:
   template <typename U>
-  void memberFunctionTemplate(T t, U u) const {
+  void memberFunctionTemplate(T t, U u) const
+  {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 };
 
 template <>
-class SpecializedClassTemplate<int> {
+class SpecializedClassTemplate<int>
+{
 public:
   template <typename U>
-  void memberFunctionTemplate(int i, U u) const {
+  void memberFunctionTemplate(int i, U u) const
+  {
     printf("__PRETTY_FUNCTION__ %s\n\n", __PRETTY_FUNCTION__);
   }
 };
@@ -440,14 +463,14 @@ int main() {
   topLevelNamespace.topLevelNamespaceFunction();
 
   NS::Base::staticFunction();
-
+  
   NS::Base b;
   b.inlineFunction();
   b.virtualFunction();
   b.variadicFunction(0);
   b.functionWithParameters(0, 0, 0);
   b.functionReturningClass();
-
+  
   b.withTemplateParameter1(NS::ClassTemplate<int>());
   b.withTemplateParameter2(NS::ClassTemplate<NS::Base *>());
   b.functionReturingTemplate1();
@@ -462,21 +485,21 @@ int main() {
 
   NS::Derived d;
   d.virtualFunction();
-
+  
   NS::ClassTemplate<int> t1;
   t1.classTemplateFunction();
   NS::ClassTemplate<NS::Base *> t2;
   t2.classTemplateFunction();
-
+  
   NS::Constructor c1;
   NS::Constructor c2(0);
   NS::Constructor c3((NS::Base *)0);
-
+  
   {
     NS::Destructor destructor;
   }
 
-  NS::ContainerForAnonymousRecords anonymous;
+  NS::ContainerForAnonymousRecords anonymous; 
   anonymous.anonymousClass.anonymousClassFunction();
   anonymous.anonymousStruct.anonymousStructFunction();
   anonymous.anonymousUnion.anonymousUnionFunction();
@@ -490,7 +513,7 @@ int main() {
   functionTemplateWithTwoParams(0, 0.0f);
   functionTemplateWithoutParameterList<double>();
   functionTemplateWithTemplateReturnType<char>();
-  int array[] = {1, 2, 3};
+  int array[] = { 1, 2, 3 };
   functionTemplateWithCompoundTypes(array);
   functionTemplateExplicitSpecialization(0);
   functionTemplateExplicitSpecialization(0.0);
@@ -521,7 +544,7 @@ class XXX {
   ~XXX();
 };
 
-void XXLog(const char *functionName) {}
+void XXLog(const char *functionName) { }
 
 typedef void (^notify_handler_t)(int token);
 
@@ -531,20 +554,16 @@ void notify_register_dispatch(notify_handler_t handler);
 
 void _dispatch_once(dispatch_block_t block);
 
-XXX::XXX() {
-  _dispatch_once(^{
-    notify_register_dispatch(^(int token) {
-      XXLog(__FUNCTION__);
-    });
-  });
+XXX::XXX()
+{
+   _dispatch_once(^{ notify_register_dispatch( ^(int token) { XXLog(__FUNCTION__); }); 
+   });
 }
 // CHECK: define internal {{.*}}void @___ZN3XXXC2Ev_block_invoke_
 
-XXX::~XXX() {
-  _dispatch_once(^{
-    notify_register_dispatch(^(int token) {
-      XXLog(__FUNCTION__);
-    });
-  });
+XXX::~XXX()
+{
+   _dispatch_once(^{ notify_register_dispatch( ^(int token) { XXLog(__FUNCTION__); }); 
+   });
 }
 // CHECK: define internal {{.*}}void @___ZN3XXXD2Ev_block_invoke_

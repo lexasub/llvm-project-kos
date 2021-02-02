@@ -12,21 +12,21 @@
 // RUN: %clang_cc1 -triple s390x-none-zos -fexceptions -faligned-allocation -faligned-alloc-unavailable -std=c++14 -verify -DZOS %s
 
 namespace std {
-typedef decltype(sizeof(0)) size_t;
-enum class align_val_t : std::size_t {};
-struct nothrow_t {};
-nothrow_t nothrow;
-} // namespace std
+  typedef decltype(sizeof(0)) size_t;
+  enum class align_val_t : std::size_t {};
+  struct nothrow_t {};
+  nothrow_t nothrow;
+}
 
-void *operator new(std::size_t __sz, const std::nothrow_t &) noexcept;
-void *operator new[](std::size_t __sz, const std::nothrow_t &) noexcept;
+void *operator new(std::size_t __sz, const std::nothrow_t&) noexcept;
+void *operator new[](std::size_t __sz, const std::nothrow_t&) noexcept;
 
-void *operator new(std::size_t __sz, std::align_val_t, const std::nothrow_t &) noexcept;
-void *operator new[](std::size_t __sz, std::align_val_t, const std::nothrow_t &) noexcept;
-void operator delete(void *, std::align_val_t, const std::nothrow_t &);
-void operator delete[](void *, std::align_val_t, const std::nothrow_t &);
-void operator delete(void *, std::size_t, std::align_val_t) noexcept;
-void operator delete[](void *, std::size_t, std::align_val_t) noexcept;
+void *operator new(std::size_t __sz, std::align_val_t, const std::nothrow_t&) noexcept;
+void *operator new[](std::size_t __sz, std::align_val_t, const std::nothrow_t&) noexcept;
+void operator delete(void *, std::align_val_t, const std::nothrow_t&);
+void operator delete[](void *, std::align_val_t, const std::nothrow_t&);
+void operator delete(void*, std::size_t, std::align_val_t) noexcept;
+void operator delete[](void*, std::size_t, std::align_val_t) noexcept;
 
 void *operator new(std::size_t, std::align_val_t, long long);
 

@@ -11,15 +11,15 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Analysis/CFGStmtMap.h"
+#include "llvm/ADT/DenseMap.h"
 #include "clang/AST/ParentMap.h"
 #include "clang/Analysis/CFG.h"
-#include "llvm/ADT/DenseMap.h"
+#include "clang/Analysis/CFGStmtMap.h"
 
 using namespace clang;
 
-typedef llvm::DenseMap<const Stmt *, CFGBlock *> SMap;
-static SMap *AsMap(void *m) { return (SMap *)m; }
+typedef llvm::DenseMap<const Stmt*, CFGBlock*> SMap;
+static SMap *AsMap(void *m) { return (SMap*) m; }
 
 CFGStmtMap::~CFGStmtMap() { delete AsMap(M); }
 
@@ -60,6 +60,7 @@ static void Accumulate(SMap &SM, CFGBlock *B) {
       continue;
 
     Entry = B;
+
   }
 
   // Look at the label of the block.
@@ -86,3 +87,4 @@ CFGStmtMap *CFGStmtMap::Build(CFG *C, ParentMap *PM) {
 
   return new CFGStmtMap(PM, SM);
 }
+

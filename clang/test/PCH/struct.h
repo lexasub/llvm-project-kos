@@ -17,7 +17,7 @@ struct Fun {
 
   union {
     void *ptr;
-    int *integer;
+    int  *integer;
   };
 };
 
@@ -25,7 +25,5 @@ struct Fun2;
 struct Fun2 *fun2;
 
 struct S {
-  struct Nested {
-    int x, y;
-  } nest;
+  struct Nested { int x, y; } nest;
 };

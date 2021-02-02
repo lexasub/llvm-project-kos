@@ -36,20 +36,16 @@ protected:
 } // end anonymous namespace
 
 SystemZObjectWriter::SystemZObjectWriter(uint8_t OSABI)
-    : MCELFObjectTargetWriter(/*Is64Bit_=*/true, OSABI, ELF::EM_S390,
-                              /*HasRelocationAddend_=*/true) {}
+  : MCELFObjectTargetWriter(/*Is64Bit_=*/true, OSABI, ELF::EM_S390,
+                            /*HasRelocationAddend_=*/ true) {}
 
 // Return the relocation type for an absolute value of MCFixupKind Kind.
 static unsigned getAbsoluteReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_1:
-    return ELF::R_390_8;
-  case FK_Data_2:
-    return ELF::R_390_16;
-  case FK_Data_4:
-    return ELF::R_390_32;
-  case FK_Data_8:
-    return ELF::R_390_64;
+  case FK_Data_1: return ELF::R_390_8;
+  case FK_Data_2: return ELF::R_390_16;
+  case FK_Data_4: return ELF::R_390_32;
+  case FK_Data_8: return ELF::R_390_64;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -57,20 +53,13 @@ static unsigned getAbsoluteReloc(unsigned Kind) {
 // Return the relocation type for a PC-relative value of MCFixupKind Kind.
 static unsigned getPCRelReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_2:
-    return ELF::R_390_PC16;
-  case FK_Data_4:
-    return ELF::R_390_PC32;
-  case FK_Data_8:
-    return ELF::R_390_PC64;
-  case SystemZ::FK_390_PC12DBL:
-    return ELF::R_390_PC12DBL;
-  case SystemZ::FK_390_PC16DBL:
-    return ELF::R_390_PC16DBL;
-  case SystemZ::FK_390_PC24DBL:
-    return ELF::R_390_PC24DBL;
-  case SystemZ::FK_390_PC32DBL:
-    return ELF::R_390_PC32DBL;
+  case FK_Data_2:                return ELF::R_390_PC16;
+  case FK_Data_4:                return ELF::R_390_PC32;
+  case FK_Data_8:                return ELF::R_390_PC64;
+  case SystemZ::FK_390_PC12DBL:  return ELF::R_390_PC12DBL;
+  case SystemZ::FK_390_PC16DBL:  return ELF::R_390_PC16DBL;
+  case SystemZ::FK_390_PC24DBL:  return ELF::R_390_PC24DBL;
+  case SystemZ::FK_390_PC32DBL:  return ELF::R_390_PC32DBL;
   }
   llvm_unreachable("Unsupported PC-relative address");
 }
@@ -78,10 +67,8 @@ static unsigned getPCRelReloc(unsigned Kind) {
 // Return the R_390_TLS_LE* relocation type for MCFixupKind Kind.
 static unsigned getTLSLEReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4:
-    return ELF::R_390_TLS_LE32;
-  case FK_Data_8:
-    return ELF::R_390_TLS_LE64;
+  case FK_Data_4: return ELF::R_390_TLS_LE32;
+  case FK_Data_8: return ELF::R_390_TLS_LE64;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -89,10 +76,8 @@ static unsigned getTLSLEReloc(unsigned Kind) {
 // Return the R_390_TLS_LDO* relocation type for MCFixupKind Kind.
 static unsigned getTLSLDOReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4:
-    return ELF::R_390_TLS_LDO32;
-  case FK_Data_8:
-    return ELF::R_390_TLS_LDO64;
+  case FK_Data_4: return ELF::R_390_TLS_LDO32;
+  case FK_Data_8: return ELF::R_390_TLS_LDO64;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -100,12 +85,9 @@ static unsigned getTLSLDOReloc(unsigned Kind) {
 // Return the R_390_TLS_LDM* relocation type for MCFixupKind Kind.
 static unsigned getTLSLDMReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4:
-    return ELF::R_390_TLS_LDM32;
-  case FK_Data_8:
-    return ELF::R_390_TLS_LDM64;
-  case SystemZ::FK_390_TLS_CALL:
-    return ELF::R_390_TLS_LDCALL;
+  case FK_Data_4: return ELF::R_390_TLS_LDM32;
+  case FK_Data_8: return ELF::R_390_TLS_LDM64;
+  case SystemZ::FK_390_TLS_CALL: return ELF::R_390_TLS_LDCALL;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -113,12 +95,9 @@ static unsigned getTLSLDMReloc(unsigned Kind) {
 // Return the R_390_TLS_GD* relocation type for MCFixupKind Kind.
 static unsigned getTLSGDReloc(unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4:
-    return ELF::R_390_TLS_GD32;
-  case FK_Data_8:
-    return ELF::R_390_TLS_GD64;
-  case SystemZ::FK_390_TLS_CALL:
-    return ELF::R_390_TLS_GDCALL;
+  case FK_Data_4: return ELF::R_390_TLS_GD32;
+  case FK_Data_8: return ELF::R_390_TLS_GD64;
+  case SystemZ::FK_390_TLS_CALL: return ELF::R_390_TLS_GDCALL;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -126,14 +105,10 @@ static unsigned getTLSGDReloc(unsigned Kind) {
 // Return the PLT relocation counterpart of MCFixupKind Kind.
 static unsigned getPLTReloc(unsigned Kind) {
   switch (Kind) {
-  case SystemZ::FK_390_PC12DBL:
-    return ELF::R_390_PLT12DBL;
-  case SystemZ::FK_390_PC16DBL:
-    return ELF::R_390_PLT16DBL;
-  case SystemZ::FK_390_PC24DBL:
-    return ELF::R_390_PLT24DBL;
-  case SystemZ::FK_390_PC32DBL:
-    return ELF::R_390_PLT32DBL;
+  case SystemZ::FK_390_PC12DBL: return ELF::R_390_PLT12DBL;
+  case SystemZ::FK_390_PC16DBL: return ELF::R_390_PLT16DBL;
+  case SystemZ::FK_390_PC24DBL: return ELF::R_390_PLT24DBL;
+  case SystemZ::FK_390_PC32DBL: return ELF::R_390_PLT32DBL;
   }
   llvm_unreachable("Unsupported absolute address");
 }
@@ -157,8 +132,7 @@ unsigned SystemZObjectWriter::getRelocType(MCContext &Ctx,
   case MCSymbolRefExpr::VK_INDNTPOFF:
     if (IsPCRel && Kind == SystemZ::FK_390_PC32DBL)
       return ELF::R_390_TLS_IEENT;
-    llvm_unreachable(
-        "Only PC-relative INDNTPOFF accesses are supported for now");
+    llvm_unreachable("Only PC-relative INDNTPOFF accesses are supported for now");
 
   case MCSymbolRefExpr::VK_DTPOFF:
     assert(!IsPCRel && "DTPOFF shouldn't be PC-relative");

@@ -20,27 +20,29 @@
 #include "any_helpers.h"
 #include "count_new.h"
 
-int main(int, char**) {
-  using std::any;
-  {
-    static_assert(std::is_nothrow_default_constructible<any>::value,
-                  "Must be default constructible");
-  }
-  {
-    struct TestConstexpr : public std::any {
-      constexpr TestConstexpr() : std::any() {}
-    };
+int main(int, char**)
+{
+    using std::any;
+    {
+        static_assert(
+            std::is_nothrow_default_constructible<any>::value
+          , "Must be default constructible"
+          );
+    }
+    {
+        struct TestConstexpr : public std::any {
+          constexpr TestConstexpr() : std::any() {}
+        };
 #ifdef _LIBCPP_SAFE_STATIC
-    _LIBCPP_SAFE_STATIC static std::any a;
-    ((void)a);
+        _LIBCPP_SAFE_STATIC static std::any a;
+        ((void)a);
 #endif
-  }
-  {
-    DisableAllocationGuard g;
-    ((void)g);
-    any const a;
-    assertEmpty(a);
-  }
+    }
+    {
+        DisableAllocationGuard g; ((void)g);
+        any const a;
+        assertEmpty(a);
+    }
 
   return 0;
 }

@@ -4,7 +4,7 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-linux -O1 -fno-experimental-new-pass-manager -fsanitize=cfi-vcall -fsanitize-trap=cfi-vcall -fsanitize-cfi-cross-dso -emit-llvm -o - %s | FileCheck  %s
 
 class A {
-public:
+ public:
   virtual ~A();
 };
 

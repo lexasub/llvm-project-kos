@@ -58,21 +58,21 @@ int tmain(T argc, char **argv) {
   return N;
 }
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   static int a;
 // CHECK: static int a;
 #pragma omp critical
-  a = 2;
-  // CHECK-NEXT: #pragma omp critical
-  // CHECK-NEXT: a = 2;
-  // CHECK-NEXT: ++a;
+  a=2;
+// CHECK-NEXT: #pragma omp critical
+// CHECK-NEXT: a = 2;
+// CHECK-NEXT: ++a;
   ++a;
-#pragma omp critical(the_name1) hint(23)
+#pragma omp critical  (the_name1) hint(23)
   foo();
-  // CHECK-NEXT: #pragma omp critical (the_name1) hint(23)
-  // CHECK-NEXT: foo();
-  // CHECK-NEXT: return tmain<int, 4>(a, argv);
+// CHECK-NEXT: #pragma omp critical (the_name1) hint(23)
+// CHECK-NEXT: foo();
+// CHECK-NEXT: return tmain<int, 4>(a, argv);
   return tmain<int, 4>(a, argv);
 }
 

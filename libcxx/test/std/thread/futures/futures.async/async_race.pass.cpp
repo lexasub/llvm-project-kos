@@ -31,42 +31,41 @@
 #include "test_macros.h"
 
 int f_async() {
-  typedef std::chrono::milliseconds ms;
-  std::this_thread::sleep_for(ms(200));
-  return 42;
+    typedef std::chrono::milliseconds ms;
+    std::this_thread::sleep_for(ms(200));
+    return 42;
 }
 
 bool ran = false;
 
 int f_deferred() {
-  ran = true;
-  return 42;
+    ran = true;
+    return 42;
 }
 
 void test_each() {
-  {
-    std::future<int> f = std::async(f_async);
-    int const result = f.get();
-    assert(result == 42);
-  }
-  {
-    std::future<int> f = std::async(std::launch::async, f_async);
-    int const result = f.get();
-    assert(result == 42);
-  }
-  {
-    ran = false;
-    std::future<int> f = std::async(std::launch::deferred, f_deferred);
-    assert(ran == false);
-    int const result = f.get();
-    assert(ran == true);
-    assert(result == 42);
-  }
+    {
+        std::future<int> f = std::async(f_async);
+        int const result = f.get();
+        assert(result == 42);
+    }
+    {
+        std::future<int> f = std::async(std::launch::async, f_async);
+        int const result = f.get();
+        assert(result == 42);
+    }
+    {
+        ran = false;
+        std::future<int> f = std::async(std::launch::deferred, f_deferred);
+        assert(ran == false);
+        int const result = f.get();
+        assert(ran == true);
+        assert(result == 42);
+    }
 }
 
 int main(int, char**) {
-  for (int i = 0; i < 25; ++i)
-    test_each();
+    for (int i=0; i < 25; ++i) test_each();
 
   return 0;
 }

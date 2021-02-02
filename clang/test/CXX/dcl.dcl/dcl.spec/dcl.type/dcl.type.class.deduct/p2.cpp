@@ -1,9 +1,7 @@
 // RUN: %clang_cc1 -std=c++17 -verify=expected,cxx17 %s
 // RUN: %clang_cc1 -std=c++20 -verify=expected,cxx20 %s
 
-template <typename T> struct A {
-  constexpr A(T) {}
-}; // expected-note 1+{{here}}
+template<typename T> struct A { constexpr A(T) {} }; // expected-note 1+{{here}}
 
 A a = 0;
 A b(0);
@@ -19,7 +17,7 @@ struct B {
 };
 
 void f(A a); // expected-error {{argument deduction not allowed in function prototype}}
-A f();       // expected-error {{argument deduction not allowed in function return type}}
+A f(); // expected-error {{argument deduction not allowed in function return type}}
 
-template <A a> // cxx17-error {{argument deduction not allowed in template parameter}}
+template<A a> // cxx17-error {{argument deduction not allowed in template parameter}}
 void f();

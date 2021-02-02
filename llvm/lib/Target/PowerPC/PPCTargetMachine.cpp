@@ -49,52 +49,54 @@
 
 using namespace llvm;
 
-static cl::opt<bool> EnableBranchCoalescing(
-    "enable-ppc-branch-coalesce", cl::Hidden,
-    cl::desc("enable coalescing of duplicate branches for PPC"));
-static cl::opt<bool> DisableCTRLoops("disable-ppc-ctrloops", cl::Hidden,
-                                     cl::desc("Disable CTR loops for PPC"));
 
 static cl::opt<bool>
-    DisableInstrFormPrep("disable-ppc-instr-form-prep", cl::Hidden,
-                         cl::desc("Disable PPC loop instr form prep"));
+    EnableBranchCoalescing("enable-ppc-branch-coalesce", cl::Hidden,
+                           cl::desc("enable coalescing of duplicate branches for PPC"));
+static cl::
+opt<bool> DisableCTRLoops("disable-ppc-ctrloops", cl::Hidden,
+                        cl::desc("Disable CTR loops for PPC"));
+
+static cl::
+opt<bool> DisableInstrFormPrep("disable-ppc-instr-form-prep", cl::Hidden,
+                            cl::desc("Disable PPC loop instr form prep"));
 
 static cl::opt<bool>
-    VSXFMAMutateEarly("schedule-ppc-vsx-fma-mutation-early", cl::Hidden,
-                      cl::desc("Schedule VSX FMA instruction mutation early"));
+VSXFMAMutateEarly("schedule-ppc-vsx-fma-mutation-early",
+  cl::Hidden, cl::desc("Schedule VSX FMA instruction mutation early"));
+
+static cl::
+opt<bool> DisableVSXSwapRemoval("disable-ppc-vsx-swap-removal", cl::Hidden,
+                                cl::desc("Disable VSX Swap Removal for PPC"));
+
+static cl::
+opt<bool> DisableMIPeephole("disable-ppc-peephole", cl::Hidden,
+                            cl::desc("Disable machine peepholes for PPC"));
 
 static cl::opt<bool>
-    DisableVSXSwapRemoval("disable-ppc-vsx-swap-removal", cl::Hidden,
-                          cl::desc("Disable VSX Swap Removal for PPC"));
+EnableGEPOpt("ppc-gep-opt", cl::Hidden,
+             cl::desc("Enable optimizations on complex GEPs"),
+             cl::init(true));
 
 static cl::opt<bool>
-    DisableMIPeephole("disable-ppc-peephole", cl::Hidden,
-                      cl::desc("Disable machine peepholes for PPC"));
+EnablePrefetch("enable-ppc-prefetching",
+                  cl::desc("enable software prefetching on PPC"),
+                  cl::init(false), cl::Hidden);
 
 static cl::opt<bool>
-    EnableGEPOpt("ppc-gep-opt", cl::Hidden,
-                 cl::desc("Enable optimizations on complex GEPs"),
-                 cl::init(true));
+EnableExtraTOCRegDeps("enable-ppc-extra-toc-reg-deps",
+                      cl::desc("Add extra TOC register dependencies"),
+                      cl::init(true), cl::Hidden);
 
 static cl::opt<bool>
-    EnablePrefetch("enable-ppc-prefetching",
-                   cl::desc("enable software prefetching on PPC"),
-                   cl::init(false), cl::Hidden);
-
-static cl::opt<bool>
-    EnableExtraTOCRegDeps("enable-ppc-extra-toc-reg-deps",
-                          cl::desc("Add extra TOC register dependencies"),
+EnableMachineCombinerPass("ppc-machine-combiner",
+                          cl::desc("Enable the machine combiner pass"),
                           cl::init(true), cl::Hidden);
 
 static cl::opt<bool>
-    EnableMachineCombinerPass("ppc-machine-combiner",
-                              cl::desc("Enable the machine combiner pass"),
-                              cl::init(true), cl::Hidden);
-
-static cl::opt<bool> ReduceCRLogical(
-    "ppc-reduce-cr-logicals",
-    cl::desc("Expand eligible cr-logical binary ops to branches"),
-    cl::init(true), cl::Hidden);
+  ReduceCRLogical("ppc-reduce-cr-logicals",
+                  cl::desc("Expand eligible cr-logical binary ops to branches"),
+                  cl::init(true), cl::Hidden);
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializePowerPCTarget() {
   // Register the targets
   RegisterTargetMachine<PPCTargetMachine> A(getThePPC32Target());
@@ -269,12 +271,13 @@ static CodeModel::Model getEffectivePPCCodeModel(const Triple &TT,
   return CodeModel::Medium;
 }
 
+
 static ScheduleDAGInstrs *createPPCMachineScheduler(MachineSchedContext *C) {
   const PPCSubtarget &ST = C->MF->getSubtarget<PPCSubtarget>();
   ScheduleDAGMILive *DAG =
-      new ScheduleDAGMILive(C, ST.usePPCPreRASchedStrategy()
-                                   ? std::make_unique<PPCPreRASchedStrategy>(C)
-                                   : std::make_unique<GenericScheduler>(C));
+    new ScheduleDAGMILive(C, ST.usePPCPreRASchedStrategy() ?
+                          std::make_unique<PPCPreRASchedStrategy>(C) :
+                          std::make_unique<GenericScheduler>(C));
   // add DAG Mutations here.
   DAG->addMutation(createCopyConstrainDAGMutation(DAG->TII, DAG->TRI));
   if (ST.hasStoreFusion())
@@ -285,15 +288,13 @@ static ScheduleDAGInstrs *createPPCMachineScheduler(MachineSchedContext *C) {
   return DAG;
 }
 
-static ScheduleDAGInstrs *
-createPPCPostMachineScheduler(MachineSchedContext *C) {
+static ScheduleDAGInstrs *createPPCPostMachineScheduler(
+  MachineSchedContext *C) {
   const PPCSubtarget &ST = C->MF->getSubtarget<PPCSubtarget>();
   ScheduleDAGMI *DAG =
-      new ScheduleDAGMI(C,
-                        ST.usePPCPostRASchedStrategy()
-                            ? std::make_unique<PPCPostRASchedStrategy>(C)
-                            : std::make_unique<PostGenericScheduler>(C),
-                        true);
+    new ScheduleDAGMI(C, ST.usePPCPostRASchedStrategy() ?
+                      std::make_unique<PPCPostRASchedStrategy>(C) :
+                      std::make_unique<PostGenericScheduler>(C), true);
   // add DAG Mutations here.
   if (ST.hasStoreFusion())
     DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
@@ -374,7 +375,7 @@ namespace {
 class PPCPassConfig : public TargetPassConfig {
 public:
   PPCPassConfig(PPCTargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {
+    : TargetPassConfig(TM, PM) {
     // At any optimization level above -O0 we use the Machine Scheduler and not
     // the default Post RA List Scheduler.
     if (TM.getOptLevel() != CodeGenOpt::None)
@@ -541,13 +542,14 @@ PPCTargetMachine::getTargetTransformInfo(const Function &F) {
 }
 
 static MachineSchedRegistry
-    PPCPreRASchedRegistry("ppc-prera", "Run PowerPC PreRA specific scheduler",
-                          createPPCMachineScheduler);
+PPCPreRASchedRegistry("ppc-prera",
+                      "Run PowerPC PreRA specific scheduler",
+                      createPPCMachineScheduler);
 
 static MachineSchedRegistry
-    PPCPostRASchedRegistry("ppc-postra",
-                           "Run PowerPC PostRA specific scheduler",
-                           createPPCPostMachineScheduler);
+PPCPostRASchedRegistry("ppc-postra",
+                       "Run PowerPC PostRA specific scheduler",
+                       createPPCPostMachineScheduler);
 
 // Global ISEL
 bool PPCPassConfig::addIRTranslator() {

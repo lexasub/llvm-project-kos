@@ -21,7 +21,9 @@
 int main(int, char**) {
   std::mutex m;
   m.lock();
-  { std::unique_lock<std::mutex> g(m, std::adopt_lock); }
+  {
+    std::unique_lock<std::mutex> g(m, std::adopt_lock);
+  }
 
   return 0;
 }

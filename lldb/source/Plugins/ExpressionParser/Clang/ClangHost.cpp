@@ -81,8 +81,7 @@ static bool DefaultComputeClangResourceDirectory(FileSpec &lldb_shlib_spec,
 }
 
 bool lldb_private::ComputeClangResourceDirectory(FileSpec &lldb_shlib_spec,
-                                                 FileSpec &file_spec,
-                                                 bool verify) {
+                                         FileSpec &file_spec, bool verify) {
 #if !defined(__APPLE__)
   return DefaultComputeClangResourceDirectory(lldb_shlib_spec, file_spec,
                                               verify);

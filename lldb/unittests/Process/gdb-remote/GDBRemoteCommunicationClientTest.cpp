@@ -182,11 +182,10 @@ TEST_F(GDBRemoteCommunicationClientTest, GetModulesInfo) {
       std::async(std::launch::async,
                  [&] { return client.GetModulesInfo(file_specs, triple); });
   HandlePacket(
-      server,
-      "jModulesInfo:["
-      R"({"file":"/foo/bar.so","triple":"i386-pc-linux"},)"
-      R"({"file":"/foo/baz.so","triple":"i386-pc-linux"},)"
-      R"({"file":"/foo/baw.so","triple":"i386-pc-linux"}])",
+      server, "jModulesInfo:["
+              R"({"file":"/foo/bar.so","triple":"i386-pc-linux"},)"
+              R"({"file":"/foo/baz.so","triple":"i386-pc-linux"},)"
+              R"({"file":"/foo/baw.so","triple":"i386-pc-linux"}])",
       R"([{"uuid":"404142434445464748494a4b4c4d4e4f","triple":"i386-pc-linux",)"
       R"("file_path":"/foo/bar.so","file_offset":0,"file_size":1234}]])");
 
@@ -328,8 +327,8 @@ TEST_F(GDBRemoteCommunicationClientTest, GetMemoryRegionInfo) {
     return client.GetMemoryRegionInfo(addr, region_info);
   });
 
-  HandlePacket(
-      server, "qMemoryRegionInfo:a000",
+  HandlePacket(server,
+      "qMemoryRegionInfo:a000",
       "start:a000;size:2000;permissions:rx;name:2f666f6f2f6261722e736f;");
   if (XMLDocument::XMLEnabled()) {
     // In case we have XML support, this will also do a "qXfer:memory-map".
@@ -516,7 +515,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetDataPacket) {
   std::string expected_packet1 =
       R"(jTraceBufferRead:{"buffersize":32,"offset":0,"threadid":35,)";
   std::string expected_packet2 = R"("traceid":3})";
-  HandlePacket(server, expected_packet1 + expected_packet2, "123456");
+  HandlePacket(server, expected_packet1+expected_packet2, "123456");
   ASSERT_TRUE(result.get().Success());
   ASSERT_EQ(buffer.size(), 3u);
   ASSERT_EQ(buf[0], 0x12);
@@ -528,7 +527,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetDataPacket) {
     return client.SendGetDataPacket(trace_id, thread_id, buffer2, offset);
   });
 
-  HandlePacket(server, expected_packet1 + expected_packet2, "E23");
+  HandlePacket(server, expected_packet1+expected_packet2, "E23");
   ASSERT_FALSE(result.get().Success());
   ASSERT_EQ(buffer2.size(), 0u);
 }
@@ -548,7 +547,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetMetaDataPacket) {
   std::string expected_packet1 =
       R"(jTraceMetaRead:{"buffersize":32,"offset":0,"threadid":35,)";
   std::string expected_packet2 = R"("traceid":3})";
-  HandlePacket(server, expected_packet1 + expected_packet2, "123456");
+  HandlePacket(server, expected_packet1+expected_packet2, "123456");
   ASSERT_TRUE(result.get().Success());
   ASSERT_EQ(buffer.size(), 3u);
   ASSERT_EQ(buf[0], 0x12);
@@ -560,7 +559,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetMetaDataPacket) {
     return client.SendGetMetaDataPacket(trace_id, thread_id, buffer2, offset);
   });
 
-  HandlePacket(server, expected_packet1 + expected_packet2, "E23");
+  HandlePacket(server, expected_packet1+expected_packet2, "E23");
   ASSERT_FALSE(result.get().Success());
   ASSERT_EQ(buffer2.size(), 0u);
 }
@@ -580,7 +579,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetTraceConfigPacket) {
   std::string response1 =
       R"({"buffersize":8192,"params":{"psb":1,"tracetech":"intel-pt"})";
   std::string response2 = R"(],"metabuffersize":8192,"threadid":35,"type":1}])";
-  HandlePacket(server, expected_packet, response1 + response2);
+  HandlePacket(server, expected_packet, response1+response2);
   ASSERT_TRUE(result.get().Success());
   ASSERT_EQ(options.getTraceBufferSize(), 8192u);
   ASSERT_EQ(options.getMetaDataBufferSize(), 8192u);
@@ -616,7 +615,7 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetTraceConfigPacket) {
       R"("buffersize" : 8192,"params" : {"psb" : 1,"tracetech" : "intel-pt"})";
   std::string incorrect_json2 =
       R"(],"metabuffersize" : 8192,"threadid" : 35,"type" : 1}])";
-  HandlePacket(server, expected_packet, incorrect_json1 + incorrect_json2);
+  HandlePacket(server, expected_packet, incorrect_json1+incorrect_json2);
   ASSERT_FALSE(result3.get().Success());
 
   // Wrong JSON as custom_params.
@@ -628,15 +627,15 @@ TEST_F(GDBRemoteCommunicationClientTest, SendGetTraceConfigPacket) {
       R"({"buffersize" : 8192,"params" : "psb" : 1,"tracetech" : "intel-pt"})";
   std::string incorrect_custom_params2 =
       R"(],"metabuffersize" : 8192,"threadid" : 35,"type" : 1}])";
-  HandlePacket(server, expected_packet,
-               incorrect_custom_params1 + incorrect_custom_params2);
+  HandlePacket(server, expected_packet, incorrect_custom_params1+
+      incorrect_custom_params2);
   ASSERT_FALSE(result4.get().Success());
 }
 
 TEST_F(GDBRemoteCommunicationClientTest, GetQOffsets) {
   const auto &GetQOffsets = [&](llvm::StringRef response) {
-    std::future<Optional<QOffsets>> result =
-        std::async(std::launch::async, [&] { return client.GetQOffsets(); });
+    std::future<Optional<QOffsets>> result = std::async(
+        std::launch::async, [&] { return client.GetQOffsets(); });
 
     HandlePacket(server, "qOffsets", response);
     return result.get();

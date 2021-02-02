@@ -47,9 +47,8 @@ using namespace llvm;
 
 #define DEBUG_TYPE "packets"
 
-static cl::opt<unsigned>
-    InstrLimit("dfa-instr-limit", cl::Hidden, cl::init(0),
-               cl::desc("If present, stops packetizing after N instructions"));
+static cl::opt<unsigned> InstrLimit("dfa-instr-limit", cl::Hidden,
+  cl::init(0), cl::desc("If present, stops packetizing after N instructions"));
 
 static unsigned InstrCount = 0;
 
@@ -128,7 +127,8 @@ protected:
 } // end namespace llvm
 
 DefaultVLIWScheduler::DefaultVLIWScheduler(MachineFunction &MF,
-                                           MachineLoopInfo &MLI, AAResults *AA)
+                                           MachineLoopInfo &MLI,
+                                           AAResults *AA)
     : ScheduleDAGInstrs(MF, &MLI), AA(AA) {
   CanHandleTerminators = true;
 }
@@ -298,7 +298,8 @@ bool VLIWPacketizerList::alias(const MachineMemOperand &Op1,
   return AAResult != NoAlias;
 }
 
-bool VLIWPacketizerList::alias(const MachineInstr &MI1, const MachineInstr &MI2,
+bool VLIWPacketizerList::alias(const MachineInstr &MI1,
+                               const MachineInstr &MI2,
                                bool UseTBAA) const {
   if (MI1.memoperands_empty() || MI2.memoperands_empty())
     return true;
@@ -312,6 +313,6 @@ bool VLIWPacketizerList::alias(const MachineInstr &MI1, const MachineInstr &MI2,
 
 // Add a DAG mutation object to the ordered list.
 void VLIWPacketizerList::addMutation(
-    std::unique_ptr<ScheduleDAGMutation> Mutation) {
+      std::unique_ptr<ScheduleDAGMutation> Mutation) {
   VLIWScheduler->addMutation(std::move(Mutation));
 }

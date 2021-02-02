@@ -49,7 +49,6 @@ public:
 
   std::string message() const override;
   static char ID;
-
 private:
   const std::string OptionName;
 };

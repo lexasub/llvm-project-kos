@@ -65,11 +65,9 @@ bool MipsDAGToDAGISel::runOnMachineFunction(MachineFunction &MF) {
 /// getGlobalBaseReg - Output the instructions required to put the
 /// GOT address into a register.
 SDNode *MipsDAGToDAGISel::getGlobalBaseReg() {
-  Register GlobalBaseReg =
-      MF->getInfo<MipsFunctionInfo>()->getGlobalBaseReg(*MF);
-  return CurDAG
-      ->getRegister(GlobalBaseReg,
-                    getTargetLowering()->getPointerTy(CurDAG->getDataLayout()))
+  Register GlobalBaseReg = MF->getInfo<MipsFunctionInfo>()->getGlobalBaseReg(*MF);
+  return CurDAG->getRegister(GlobalBaseReg, getTargetLowering()->getPointerTy(
+                                                CurDAG->getDataLayout()))
       .getNode();
 }
 
@@ -94,19 +92,19 @@ bool MipsDAGToDAGISel::selectIntAddr(SDValue Addr, SDValue &Base,
 }
 
 bool MipsDAGToDAGISel::selectIntAddr11MM(SDValue Addr, SDValue &Base,
-                                         SDValue &Offset) const {
+                                       SDValue &Offset) const {
   llvm_unreachable("Unimplemented function.");
   return false;
 }
 
 bool MipsDAGToDAGISel::selectIntAddr12MM(SDValue Addr, SDValue &Base,
-                                         SDValue &Offset) const {
+                                       SDValue &Offset) const {
   llvm_unreachable("Unimplemented function.");
   return false;
 }
 
 bool MipsDAGToDAGISel::selectIntAddr16MM(SDValue Addr, SDValue &Base,
-                                         SDValue &Offset) const {
+                                       SDValue &Offset) const {
   llvm_unreachable("Unimplemented function.");
   return false;
 }
@@ -280,9 +278,8 @@ void MipsDAGToDAGISel::Select(SDNode *Node) {
   if (trySelect(Node))
     return;
 
-  switch (Opcode) {
-  default:
-    break;
+  switch(Opcode) {
+  default: break;
 
   case ISD::ADD:
     if (Node->getSimpleValueType(0).isVector() &&
@@ -300,7 +297,7 @@ void MipsDAGToDAGISel::Select(SDNode *Node) {
   case ISD::STORE:
     assert((Subtarget->systemSupportsUnalignedAccess() ||
             cast<MemSDNode>(Node)->getMemoryVT().getSizeInBits() / 8 <=
-                cast<MemSDNode>(Node)->getAlignment()) &&
+            cast<MemSDNode>(Node)->getAlignment()) &&
            "Unexpected unaligned loads/stores.");
     break;
 #endif
@@ -310,10 +307,11 @@ void MipsDAGToDAGISel::Select(SDNode *Node) {
   SelectCode(Node);
 }
 
-bool MipsDAGToDAGISel::SelectInlineAsmMemoryOperand(
-    const SDValue &Op, unsigned ConstraintID, std::vector<SDValue> &OutOps) {
+bool MipsDAGToDAGISel::
+SelectInlineAsmMemoryOperand(const SDValue &Op, unsigned ConstraintID,
+                             std::vector<SDValue> &OutOps) {
   // All memory constraints can at least accept raw pointers.
-  switch (ConstraintID) {
+  switch(ConstraintID) {
   default:
     llvm_unreachable("Unexpected asm memory constraint");
   case InlineAsm::Constraint_m:

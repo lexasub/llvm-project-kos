@@ -1,20 +1,18 @@
 // RUN: %clang_cc1 %s -Wno-uninitialized -std=c++1z -fsyntax-only -verify
 
 const extern int arr[];
-constexpr auto p = arr;                 // ok
-constexpr int f(int i) { return p[i]; } // expected-note {{read of dereferenced one-past-the-end pointer}}
+constexpr auto p = arr; // ok
+constexpr int f(int i) {return p[i];} // expected-note {{read of dereferenced one-past-the-end pointer}}
 
-constexpr int arr[]{1, 2, 3};
+constexpr int arr[] {1, 2, 3};
 constexpr auto p2 = arr + 2; // ok
-constexpr int x = f(2);      // ok
-constexpr int y = f(3);      // expected-error {{constant expression}}
+constexpr int x = f(2); // ok
+constexpr int y = f(3); // expected-error {{constant expression}}
 // expected-note-re@-1 {{in call to 'f({{.*}})'}}
 
 // FIXME: consider permitting this case
-struct A {
-  int m[];
-} a;
-constexpr auto p3 = a.m;     // expected-error {{constant expression}} expected-note {{without known bound}}
+struct A {int m[];} a;
+constexpr auto p3 = a.m; // expected-error {{constant expression}} expected-note {{without known bound}}
 constexpr auto p4 = a.m + 1; // expected-error {{constant expression}} expected-note {{without known bound}}
 
 void g(int i) {

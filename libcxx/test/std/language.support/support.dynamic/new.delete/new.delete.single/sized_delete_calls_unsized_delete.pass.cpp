@@ -22,26 +22,29 @@
 int delete_called = 0;
 int delete_nothrow_called = 0;
 
-void operator delete(void* p)TEST_NOEXCEPT {
-  ++delete_called;
-  std::free(p);
+void operator delete(void* p) TEST_NOEXCEPT
+{
+    ++delete_called;
+    std::free(p);
 }
 
-void operator delete(void* p, const std::nothrow_t&)TEST_NOEXCEPT {
-  ++delete_nothrow_called;
-  std::free(p);
+void operator delete(void* p, const std::nothrow_t&) TEST_NOEXCEPT
+{
+    ++delete_nothrow_called;
+    std::free(p);
 }
 
-int main(int, char**) {
-  int* x = new int(42);
-  DoNotOptimize(x);
-  assert(0 == delete_called);
-  assert(0 == delete_nothrow_called);
+int main(int, char**)
+{
+    int *x = new int(42);
+    DoNotOptimize(x);
+    assert(0 == delete_called);
+    assert(0 == delete_nothrow_called);
 
-  delete x;
-  DoNotOptimize(x);
-  assert(1 == delete_called);
-  assert(0 == delete_nothrow_called);
+    delete x;
+    DoNotOptimize(x);
+    assert(1 == delete_called);
+    assert(0 == delete_nothrow_called);
 
   return 0;
 }

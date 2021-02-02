@@ -26,6 +26,7 @@
 // Test that this function works with threads that were not created by
 // std::thread. See https://llvm.org/PR30202
 
+
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -42,16 +43,18 @@ bool exited = false;
 typedef std::chrono::milliseconds ms;
 typedef std::chrono::high_resolution_clock Clock;
 
-void* func(void*) {
-  std::unique_lock<std::mutex> lk(mut);
-  std::notify_all_at_thread_exit(cv, std::move(lk));
-  std::this_thread::sleep_for(ms(300));
-  exited = true;
-  return nullptr;
+void* func(void*)
+{
+    std::unique_lock<std::mutex> lk(mut);
+    std::notify_all_at_thread_exit(cv, std::move(lk));
+    std::this_thread::sleep_for(ms(300));
+    exited = true;
+    return nullptr;
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     std::unique_lock<std::mutex> lk(mut);
     pthread_t id;
     int res = pthread_create(&id, 0, &func, nullptr);
@@ -61,11 +64,11 @@ int main(int, char**) {
     cv.wait(lk);
     Clock::time_point t1 = Clock::now();
     assert(exited);
-    assert(t1 - t0 > ms(250));
+    assert(t1-t0 > ms(250));
     pthread_join(id, 0);
-  }
-  exited = false;
-  {
+    }
+    exited = false;
+    {
     std::unique_lock<std::mutex> lk(mut);
     std::thread t(&func, nullptr);
     Clock::time_point t0 = Clock::now();
@@ -73,9 +76,9 @@ int main(int, char**) {
     cv.wait(lk);
     Clock::time_point t1 = Clock::now();
     assert(exited);
-    assert(t1 - t0 > ms(250));
+    assert(t1-t0 > ms(250));
     t.join();
-  }
+    }
 
   return 0;
 }

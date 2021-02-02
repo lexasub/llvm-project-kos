@@ -19,19 +19,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::shared_future<int> f;
-    assert(!f.valid());
-  }
-  {
-    std::shared_future<int&> f;
-    assert(!f.valid());
-  }
-  {
-    std::shared_future<void> f;
-    assert(!f.valid());
-  }
+int main(int, char**)
+{
+    {
+        std::shared_future<int> f;
+        assert(!f.valid());
+    }
+    {
+        std::shared_future<int&> f;
+        assert(!f.valid());
+    }
+    {
+        std::shared_future<void> f;
+        assert(!f.valid());
+    }
 
   return 0;
 }

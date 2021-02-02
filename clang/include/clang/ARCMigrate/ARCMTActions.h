@@ -34,7 +34,6 @@ public:
 
 class MigrateSourceAction : public ASTFrontendAction {
   FileRemapper Remapper;
-
 protected:
   bool BeginInvocation(CompilerInstance &CI) override;
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
@@ -45,23 +44,22 @@ class MigrateAction : public WrapperFrontendAction {
   std::string MigrateDir;
   std::string PlistOut;
   bool EmitPremigrationARCErros;
-
 protected:
   bool BeginInvocation(CompilerInstance &CI) override;
 
 public:
   MigrateAction(std::unique_ptr<FrontendAction> WrappedAction,
-                StringRef migrateDir, StringRef plistOut,
+                StringRef migrateDir,
+                StringRef plistOut,
                 bool emitPremigrationARCErrors);
 };
 
 /// Migrates to modern ObjC syntax.
 class ObjCMigrateAction : public WrapperFrontendAction {
   std::string MigrateDir;
-  unsigned ObjCMigAction;
+  unsigned    ObjCMigAction;
   FileRemapper Remapper;
   CompilerInstance *CompInst;
-
 public:
   ObjCMigrateAction(std::unique_ptr<FrontendAction> WrappedAction,
                     StringRef migrateDir, unsigned migrateAction);
@@ -72,7 +70,7 @@ protected:
   bool BeginInvocation(CompilerInstance &CI) override;
 };
 
-} // namespace arcmt
-} // namespace clang
+}
+}
 
 #endif

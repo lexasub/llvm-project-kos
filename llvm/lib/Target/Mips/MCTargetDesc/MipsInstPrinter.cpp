@@ -27,61 +27,46 @@ using namespace llvm;
 #define PRINT_ALIAS_INSTR
 #include "MipsGenAsmWriter.inc"
 
-template <unsigned R> static bool isReg(const MCInst &MI, unsigned OpNo) {
+template<unsigned R>
+static bool isReg(const MCInst &MI, unsigned OpNo) {
   assert(MI.getOperand(OpNo).isReg() && "Register operand expected.");
   return MI.getOperand(OpNo).getReg() == R;
 }
 
-const char *Mips::MipsFCCToString(Mips::CondCode CC) {
+const char* Mips::MipsFCCToString(Mips::CondCode CC) {
   switch (CC) {
   case FCOND_F:
-  case FCOND_T:
-    return "f";
+  case FCOND_T:   return "f";
   case FCOND_UN:
-  case FCOND_OR:
-    return "un";
+  case FCOND_OR:  return "un";
   case FCOND_OEQ:
-  case FCOND_UNE:
-    return "eq";
+  case FCOND_UNE: return "eq";
   case FCOND_UEQ:
-  case FCOND_ONE:
-    return "ueq";
+  case FCOND_ONE: return "ueq";
   case FCOND_OLT:
-  case FCOND_UGE:
-    return "olt";
+  case FCOND_UGE: return "olt";
   case FCOND_ULT:
-  case FCOND_OGE:
-    return "ult";
+  case FCOND_OGE: return "ult";
   case FCOND_OLE:
-  case FCOND_UGT:
-    return "ole";
+  case FCOND_UGT: return "ole";
   case FCOND_ULE:
-  case FCOND_OGT:
-    return "ule";
+  case FCOND_OGT: return "ule";
   case FCOND_SF:
-  case FCOND_ST:
-    return "sf";
+  case FCOND_ST:  return "sf";
   case FCOND_NGLE:
-  case FCOND_GLE:
-    return "ngle";
+  case FCOND_GLE: return "ngle";
   case FCOND_SEQ:
-  case FCOND_SNE:
-    return "seq";
+  case FCOND_SNE: return "seq";
   case FCOND_NGL:
-  case FCOND_GL:
-    return "ngl";
+  case FCOND_GL:  return "ngl";
   case FCOND_LT:
-  case FCOND_NLT:
-    return "lt";
+  case FCOND_NLT: return "lt";
   case FCOND_NGE:
-  case FCOND_GE:
-    return "nge";
+  case FCOND_GE:  return "nge";
   case FCOND_LE:
-  case FCOND_NLE:
-    return "le";
+  case FCOND_NLE: return "le";
   case FCOND_NGT:
-  case FCOND_GT:
-    return "ngt";
+  case FCOND_GT:  return "ngt";
   }
   llvm_unreachable("Impossible condition code!");
 }
@@ -169,8 +154,8 @@ void MipsInstPrinter::printUImm(const MCInst *MI, int opNum, raw_ostream &O) {
   printOperand(MI, opNum, O);
 }
 
-void MipsInstPrinter::printMemOperand(const MCInst *MI, int opNum,
-                                      raw_ostream &O) {
+void MipsInstPrinter::
+printMemOperand(const MCInst *MI, int opNum, raw_ostream &O) {
   // Load/Store memory operands -- imm($reg)
   // If PIC target the target is loaded as the
   // pattern lw $25,%call16($28)
@@ -190,29 +175,29 @@ void MipsInstPrinter::printMemOperand(const MCInst *MI, int opNum,
     break;
   }
 
-  printOperand(MI, opNum + 1, O);
+  printOperand(MI, opNum+1, O);
   O << "(";
   printOperand(MI, opNum, O);
   O << ")";
 }
 
-void MipsInstPrinter::printMemOperandEA(const MCInst *MI, int opNum,
-                                        raw_ostream &O) {
+void MipsInstPrinter::
+printMemOperandEA(const MCInst *MI, int opNum, raw_ostream &O) {
   // when using stack locations for not load/store instructions
   // print the same way as all normal 3 operand instructions.
   printOperand(MI, opNum, O);
   O << ", ";
-  printOperand(MI, opNum + 1, O);
+  printOperand(MI, opNum+1, O);
 }
 
-void MipsInstPrinter::printFCCOperand(const MCInst *MI, int opNum,
-                                      raw_ostream &O) {
-  const MCOperand &MO = MI->getOperand(opNum);
+void MipsInstPrinter::
+printFCCOperand(const MCInst *MI, int opNum, raw_ostream &O) {
+  const MCOperand& MO = MI->getOperand(opNum);
   O << MipsFCCToString((Mips::CondCode)MO.getImm());
 }
 
-void MipsInstPrinter::printSHFMask(const MCInst *MI, int opNum,
-                                   raw_ostream &O) {
+void MipsInstPrinter::
+printSHFMask(const MCInst *MI, int opNum, raw_ostream &O) {
   llvm_unreachable("TODO");
 }
 
@@ -277,15 +262,13 @@ bool MipsInstPrinter::printAlias(const MCInst &MI, raw_ostream &OS) {
   case Mips::OR:
     // or $r0, $r1, $zero => move $r0, $r1
     return isReg<Mips::ZERO>(MI, 2) && printAlias("move", MI, 0, 1, OS);
-  default:
-    return false;
+  default: return false;
   }
 }
 
 void MipsInstPrinter::printSaveRestore(const MCInst *MI, raw_ostream &O) {
   for (unsigned i = 0, e = MI->getNumOperands(); i != e; ++i) {
-    if (i != 0)
-      O << ", ";
+    if (i != 0) O << ", ";
     if (MI->getOperand(i).isReg())
       printRegName(O, MI->getOperand(i).getReg());
     else
@@ -293,8 +276,8 @@ void MipsInstPrinter::printSaveRestore(const MCInst *MI, raw_ostream &O) {
   }
 }
 
-void MipsInstPrinter::printRegisterList(const MCInst *MI, int opNum,
-                                        raw_ostream &O) {
+void MipsInstPrinter::
+printRegisterList(const MCInst *MI, int opNum, raw_ostream &O) {
   // - 2 because register List is always first operand of instruction and it is
   // always followed by memory operand (base + offset).
   for (int i = opNum, e = MI->getNumOperands() - 2; i != e; ++i) {

@@ -9,8 +9,8 @@
 #include "RegisterContextMinidump_ARM64.h"
 
 #include "Utility/ARM64_DWARF_Registers.h"
-#include "lldb/Utility/DataExtractor.h"
 #include "lldb/Utility/RegisterValue.h"
+#include "lldb/Utility/DataExtractor.h"
 #include "lldb/lldb-enumerations.h"
 
 // C includes
@@ -28,8 +28,8 @@ using namespace minidump;
 #define DEF_X(i)                                                               \
   {                                                                            \
     "x" #i, nullptr, 8, OFFSET(x) + i * 8, eEncodingUint, eFormatHex,          \
-        {arm64_dwarf::x##i, arm64_dwarf::x##i, INV, INV, reg_x##i}, nullptr,   \
-        nullptr, nullptr, 0                                                    \
+        {arm64_dwarf::x##i, arm64_dwarf::x##i, INV, INV, reg_x##i},            \
+        nullptr, nullptr, nullptr, 0                                           \
   }
 
 #define DEF_W(i)                                                               \
@@ -42,16 +42,14 @@ using namespace minidump;
   {                                                                            \
     "x" #i, "arg" #n, 8, OFFSET(x) + i * 8, eEncodingUint, eFormatHex,         \
         {arm64_dwarf::x##i, arm64_dwarf::x##i, LLDB_REGNUM_GENERIC_ARG1 + i,   \
-         INV, reg_x##i},                                                       \
-        nullptr, nullptr, nullptr, 0                                           \
+         INV, reg_x##i}, nullptr, nullptr, nullptr, 0                          \
   }
 
 #define DEF_V(i)                                                               \
   {                                                                            \
     "v" #i, nullptr, 16, OFFSET(v) + i * 16, eEncodingVector,                  \
-        eFormatVectorOfUInt8,                                                  \
-        {arm64_dwarf::v##i, arm64_dwarf::v##i, INV, INV, reg_v##i}, nullptr,   \
-        nullptr, nullptr, 0                                                    \
+        eFormatVectorOfUInt8, {arm64_dwarf::v##i, arm64_dwarf::v##i, INV, INV, \
+        reg_v##i}, nullptr, nullptr, nullptr, 0                                \
   }
 
 #define DEF_D(i)                                                               \

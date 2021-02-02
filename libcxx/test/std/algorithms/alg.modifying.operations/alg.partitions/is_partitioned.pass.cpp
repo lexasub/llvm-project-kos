@@ -22,24 +22,25 @@
 #include "counting_predicates.h"
 
 struct is_odd {
-  TEST_CONSTEXPR bool operator()(const int& i) const { return i & 1; }
+  TEST_CONSTEXPR bool operator()(const int &i) const { return i & 1; }
 };
 
 #if TEST_STD_VER > 17
 TEST_CONSTEXPR bool test_constexpr() {
-  int ia[] = {1, 3, 5, 2, 4, 6};
-  int ib[] = {1, 2, 3, 4, 5, 6};
-  return std::is_partitioned(std::begin(ia), std::end(ia), is_odd()) &&
-         !std::is_partitioned(std::begin(ib), std::end(ib), is_odd());
-}
+    int ia[] = {1, 3, 5, 2, 4, 6};
+    int ib[] = {1, 2, 3, 4, 5, 6};
+    return     std::is_partitioned(std::begin(ia), std::end(ia), is_odd())
+           && !std::is_partitioned(std::begin(ib), std::end(ib), is_odd());
+    }
 #endif
+
 
 int main(int, char**) {
   {
     const int ia[] = {1, 2, 3, 4, 5, 6};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(!std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                                input_iterator<const int*>(std::end(ia)),
+    assert(!std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                                input_iterator<const int *>(std::end(ia)),
                                 std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::end(ia)));
@@ -47,8 +48,8 @@ int main(int, char**) {
   {
     const int ia[] = {1, 3, 5, 2, 4, 6};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                               input_iterator<const int*>(std::end(ia)),
+    assert(std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                               input_iterator<const int *>(std::end(ia)),
                                std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::end(ia)));
@@ -56,8 +57,8 @@ int main(int, char**) {
   {
     const int ia[] = {2, 4, 6, 1, 3, 5};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(!std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                                input_iterator<const int*>(std::end(ia)),
+    assert(!std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                                input_iterator<const int *>(std::end(ia)),
                                 std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::end(ia)));
@@ -65,8 +66,8 @@ int main(int, char**) {
   {
     const int ia[] = {1, 3, 5, 2, 4, 6, 7};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(!std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                                input_iterator<const int*>(std::end(ia)),
+    assert(!std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                                input_iterator<const int *>(std::end(ia)),
                                 std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::end(ia)));
@@ -74,8 +75,8 @@ int main(int, char**) {
   {
     const int ia[] = {1, 3, 5, 2, 4, 6, 7};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                               input_iterator<const int*>(std::begin(ia)),
+    assert(std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                               input_iterator<const int *>(std::begin(ia)),
                                std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::begin(ia)));
@@ -83,15 +84,15 @@ int main(int, char**) {
   {
     const int ia[] = {1, 3, 5, 7, 9, 11, 2};
     unary_counting_predicate<is_odd, int> pred((is_odd()));
-    assert(std::is_partitioned(input_iterator<const int*>(std::begin(ia)),
-                               input_iterator<const int*>(std::end(ia)),
+    assert(std::is_partitioned(input_iterator<const int *>(std::begin(ia)),
+                               input_iterator<const int *>(std::end(ia)),
                                std::ref(pred)));
     assert(static_cast<std::ptrdiff_t>(pred.count()) <=
            std::distance(std::begin(ia), std::end(ia)));
   }
 
 #if TEST_STD_VER > 17
-  static_assert(test_constexpr());
+    static_assert(test_constexpr());
 #endif
 
   return 0;

@@ -9,23 +9,23 @@
 
 #pragma GCC system_header
 namespace std {
-using size_t = __SIZE_TYPE__;
-template <typename T> struct valarray {
-  __attribute__((internal_linkage)) valarray(size_t) {}
-  __attribute__((internal_linkage)) ~valarray() {}
-};
+  using size_t = __SIZE_TYPE__;
+  template<typename T> struct valarray {
+    __attribute__((internal_linkage)) valarray(size_t) {}
+    __attribute__((internal_linkage)) ~valarray() {}
+  };
 
-extern template valarray<size_t>::valarray(size_t);
-extern template valarray<size_t>::~valarray();
-} // namespace std
+  extern template valarray<size_t>::valarray(size_t);
+  extern template valarray<size_t>::~valarray();
+}
 
 #else
 
 #define BE_THE_HEADER
 #include "libcxx_valarray_hack.cpp"
 
-template <typename T> struct foo {
-  __attribute__((internal_linkage)) void x(){};
+template<typename T> struct foo {
+  __attribute__((internal_linkage)) void x() {};
 };
 extern template void foo<int>::x(); // expected-error {{explicit instantiation declaration of 'x' with internal linkage}}
 

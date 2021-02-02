@@ -28,6 +28,7 @@
 
 namespace coro = std::experimental;
 
+
 template <class H>
 auto has_resume_imp(H&& h, int) -> decltype(h.resume(), std::true_type{});
 template <class H>
@@ -37,6 +38,7 @@ template <class H>
 constexpr bool has_resume() {
   return decltype(has_resume_imp(std::declval<H>(), 0))::value;
 }
+
 
 template <class H>
 auto has_call_operator_imp(H&& h, int) -> decltype(h(), std::true_type{});
@@ -70,7 +72,8 @@ void do_test(coro::coroutine_handle<Promise>&& H) {
   }
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   do_test(coro::coroutine_handle<>{});
   do_test(coro::coroutine_handle<int>{});
 

@@ -46,9 +46,8 @@ class MCSectionXCOFF final : public MCSection {
       : MCSection(SV_XCOFF, Name, K, Begin), MappingClass(SMC), Type(ST),
         QualName(QualName), SymbolTableName(SymbolTableName),
         MultiSymbolsAllowed(MultiSymbolsAllowed) {
-    assert(
-        (ST == XCOFF::XTY_SD || ST == XCOFF::XTY_CM || ST == XCOFF::XTY_ER) &&
-        "Invalid or unhandled type for csect.");
+    assert((ST == XCOFF::XTY_SD || ST == XCOFF::XTY_CM || ST == XCOFF::XTY_ER) &&
+           "Invalid or unhandled type for csect.");
     assert(QualName != nullptr && "QualName is needed.");
     QualName->setRepresentedCsect(this);
     QualName->setStorageClass(XCOFF::C_HIDEXT);

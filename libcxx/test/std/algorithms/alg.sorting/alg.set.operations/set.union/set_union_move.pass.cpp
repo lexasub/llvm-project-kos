@@ -28,19 +28,21 @@
 #include "test_macros.h"
 #include "MoveOnly.h"
 
-int main(int, char**) {
-  std::vector<MoveOnly> lhs, rhs;
-  lhs.push_back(MoveOnly(2));
-  rhs.push_back(MoveOnly(2));
 
-  std::vector<MoveOnly> res;
-  std::set_union(std::make_move_iterator(lhs.begin()),
-                 std::make_move_iterator(lhs.end()),
-                 std::make_move_iterator(rhs.begin()),
-                 std::make_move_iterator(rhs.end()), std::back_inserter(res));
+int main(int, char**)
+{
+    std::vector<MoveOnly> lhs, rhs;
+    lhs.push_back(MoveOnly(2));
+    rhs.push_back(MoveOnly(2));
 
-  assert(res.size() == 1);
-  assert(res[0].get() == 2);
+    std::vector<MoveOnly> res;
+    std::set_union(std::make_move_iterator(lhs.begin()),
+                   std::make_move_iterator(lhs.end()),
+                   std::make_move_iterator(rhs.begin()),
+                   std::make_move_iterator(rhs.end()), std::back_inserter(res));
+
+    assert(res.size() == 1);
+    assert(res[0].get() == 2);
 
   return 0;
 }

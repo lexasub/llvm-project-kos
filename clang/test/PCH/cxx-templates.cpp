@@ -34,15 +34,15 @@ struct A {
 
 void test(const int (&a6)[17]) {
   int x = templ_f<int, 5>(3);
-
+  
   S<char, float>::templ();
   S<int, char>::partial();
   S<int, float>::explicit_special();
-
+  
   Dep<A>::Ty ty;
   Dep<A> a;
   a.f();
-
+  
   S3<int> s3;
   s3.m();
 
@@ -56,56 +56,57 @@ template struct S4<int>;
 S7<int[5]> s7_5;
 
 namespace ZeroLengthExplicitTemplateArgs {
-template void f<X>(X *);
+  template void f<X>(X*);
 }
 
 // This used to overwrite memory and crash.
 namespace Test1 {
-struct StringHasher {
-  template <typename T, char Converter(T)> static inline unsigned createHash(const T *, unsigned) {
-    return 0;
-  }
-};
+  struct StringHasher {
+    template<typename T, char Converter(T)> static inline unsigned createHash(const T*, unsigned) {
+      return 0;
+    }
+  };
 
-struct CaseFoldingHash {
-  static inline char foldCase(char) {
-    return 0;
-  }
+  struct CaseFoldingHash {
+    static inline char foldCase(char) {
+      return 0;
+    }
 
-  static unsigned hash(const char *data, unsigned length) {
-    return StringHasher::createHash<char, foldCase>(data, length);
-  }
-};
-} // namespace Test1
+    static unsigned hash(const char* data, unsigned length) {
+      return StringHasher::createHash<char, foldCase>(data, length);
+    }
+  };
+}
 
-template <typename D>
-Foo<D> &Foo<D>::operator=(const Foo &other) {
-  return *this;
+template< typename D >
+Foo< D >& Foo< D >::operator=( const Foo& other )
+{
+   return *this;
 }
 
 namespace TestNestedExpansion {
-struct Int {
-  Int(int);
-  friend Int operator+(Int, Int);
-};
-Int &g(Int, int, double);
-Int &test = NestedExpansion<char, char, char>().f(0, 1, 2, Int(3), 4, 5.0);
-} // namespace TestNestedExpansion
+  struct Int {
+    Int(int);
+    friend Int operator+(Int, Int);
+  };
+  Int &g(Int, int, double);
+  Int &test = NestedExpansion<char, char, char>().f(0, 1, 2, Int(3), 4, 5.0);
+}
 
 namespace rdar13135282 {
-void test() {
-  __mt_alloc<> mt = __mt_alloc<>();
+  void test() {
+    __mt_alloc<> mt = __mt_alloc<>();
+  }
 }
-} // namespace rdar13135282
 
 void CallDependentSpecializedFunc(DependentSpecializedFuncClass<int> &x) {
   DependentSpecializedFunc(x);
 }
 
 namespace cyclic_module_load {
-extern std::valarray<int> x;
-std::valarray<int> y(x);
-} // namespace cyclic_module_load
+  extern std::valarray<int> x;
+  std::valarray<int> y(x);
+}
 
 #ifndef NO_ERRORS
 // expected-error@cxx-templates.h:305 {{incomplete}}
@@ -115,18 +116,18 @@ template int local_extern::g<int[]>();
 
 namespace MemberSpecializationLocation {
 #ifndef NO_ERRORS
-// expected-note@cxx-templates.h:* {{previous}}
-template <> float A<int>::n; // expected-error {{redeclaration of 'n' with a different type}}
+  // expected-note@cxx-templates.h:* {{previous}}
+  template<> float A<int>::n; // expected-error {{redeclaration of 'n' with a different type}}
 #endif
-int k = A<int>::n;
-} // namespace MemberSpecializationLocation
+  int k = A<int>::n;
+}
 
 // https://bugs.llvm.org/show_bug.cgi?id=34728
 namespace PR34728 {
 int test() {
   // Verify with several TemplateParmDecl kinds, using PCH (incl. modules).
-  int z1 = func1(/*ignored*/ 2.718);
-  int z2 = func2(/*ignored*/ 3.142);
+  int z1 = func1(/*ignored*/2.718);
+  int z2 = func2(/*ignored*/3.142);
   int tmp3 = 30;
   Container<int> c = func3(tmp3);
   int z3 = c.item;
@@ -138,49 +139,49 @@ int test() {
 } // end namespace PR34728
 
 namespace ClassScopeExplicitSpecializations {
-// FIXME: It's unclear these warnings (and the behavior they're describing)
-// are desirable. These explicit instantiations could meaningfully
-// instantiate the explicit specializations defined in the primary template.
-template int A<3>::f<0>() const; // expected-warning {{has no effect}}
-template int A<3>::f<1>() const;
-template int A<4>::f<0>() const; // expected-warning {{has no effect}}
-template int A<4>::f<1>() const;
-// expected-note@cxx-templates.h:403 2{{here}}
+  // FIXME: It's unclear these warnings (and the behavior they're describing)
+  // are desirable. These explicit instantiations could meaningfully
+  // instantiate the explicit specializations defined in the primary template.
+  template int A<3>::f<0>() const; // expected-warning {{has no effect}}
+  template int A<3>::f<1>() const;
+  template int A<4>::f<0>() const; // expected-warning {{has no effect}}
+  template int A<4>::f<1>() const;
+  // expected-note@cxx-templates.h:403 2{{here}}
 
-static_assert(A<0>().f<0>() == 4, "");
-static_assert(A<0>().f<1>() == 5, "");
-static_assert(A<0>().f<2>() == 3, "");
-static_assert(A<1>().f<0>() == 2, "");
-static_assert(A<1>().f<1>() == 1, "");
-static_assert(A<1>().f<2>() == 1, "");
-static_assert(A<2>().f<0>() == 2, "");
-static_assert(A<2>().f<1>() == 1, "");
-static_assert(A<3>().f<0>() == 2, "");
-static_assert(A<3>().f<1>() == 1, "");
-static_assert(A<4>().f<0>() == 2, "");
-static_assert(A<4>().f<1>() == 1, "");
-} // namespace ClassScopeExplicitSpecializations
+  static_assert(A<0>().f<0>() == 4, "");
+  static_assert(A<0>().f<1>() == 5, "");
+  static_assert(A<0>().f<2>() == 3, "");
+  static_assert(A<1>().f<0>() == 2, "");
+  static_assert(A<1>().f<1>() == 1, "");
+  static_assert(A<1>().f<2>() == 1, "");
+  static_assert(A<2>().f<0>() == 2, "");
+  static_assert(A<2>().f<1>() == 1, "");
+  static_assert(A<3>().f<0>() == 2, "");
+  static_assert(A<3>().f<1>() == 1, "");
+  static_assert(A<4>().f<0>() == 2, "");
+  static_assert(A<4>().f<1>() == 1, "");
+}
 
 namespace DependentMemberExpr {
 #ifndef NO_ERRORS
-// This used to mark 'f' invalid without producing any diagnostic. That's a
-// little hard to detect, but we can make sure that constexpr evaluation
-// fails when it should.
-static_assert(A<int>().f() == 1); // expected-error {{static_assert failed}}
+  // This used to mark 'f' invalid without producing any diagnostic. That's a
+  // little hard to detect, but we can make sure that constexpr evaluation
+  // fails when it should.
+  static_assert(A<int>().f() == 1); // expected-error {{static_assert failed}}
 #endif
-} // namespace DependentMemberExpr
+}
 
 namespace DependentTemplateName {
-struct HasMember {
-  template <class T> struct Member;
-};
+  struct HasMember {
+    template <class T> struct Member;
+  };
 
-void test() {
-  getWithIdentifier<HasMember>();
+  void test() {
+    getWithIdentifier<HasMember>();
+  }
 }
-} // namespace DependentTemplateName
 
 namespace ClassTemplateCycle {
-extern T t;
-int k = M;
-} // namespace ClassTemplateCycle
+  extern T t;
+  int k = M;
+}

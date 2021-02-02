@@ -28,7 +28,9 @@ Function *Trace::getFunction() const {
   return getEntryBasicBlock()->getParent();
 }
 
-Module *Trace::getModule() const { return getFunction()->getParent(); }
+Module *Trace::getModule() const {
+  return getFunction()->getParent();
+}
 
 /// print - Write trace to output stream.
 void Trace::print(raw_ostream &O) const {
@@ -45,5 +47,7 @@ void Trace::print(raw_ostream &O) const {
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 /// dump - Debugger convenience method; writes trace to standard error
 /// output stream.
-LLVM_DUMP_METHOD void Trace::dump() const { print(dbgs()); }
+LLVM_DUMP_METHOD void Trace::dump() const {
+  print(dbgs());
+}
 #endif

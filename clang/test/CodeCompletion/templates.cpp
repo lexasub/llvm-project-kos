@@ -1,18 +1,18 @@
 namespace std {
-template <typename T>
-class allocator {
-public:
-  void in_base();
-};
-
-template <typename T, typename Alloc = std::allocator<T>>
-class vector : Alloc {
-public:
-  void foo();
-  void stop();
-};
-template <typename Alloc> class vector<bool, Alloc>;
-} // namespace std
+  template<typename T>
+  class allocator { 
+  public:
+    void in_base();
+  };
+  
+  template<typename T, typename Alloc = std::allocator<T> >
+  class vector : Alloc {
+  public:
+    void foo();
+    void stop();
+  };
+  template<typename Alloc> class vector<bool, Alloc>;
+}
 
 void f() {
   std::vector<int> v;
@@ -26,9 +26,10 @@ void f() {
   // CHECK-CC2: stop
 }
 
+
 template <typename> struct X;
-template <typename T> struct X<T *> { X(double); };
-X<int *> x(42);
+template <typename T> struct X<T*> { X(double); };
+X<int*> x(42);
 // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:32:11 %s -o - | FileCheck -check-prefix=CHECK-CONSTRUCTOR %s
 // CHECK-CONSTRUCTOR: OVERLOAD: X(<#double#>)
 // (rather than X<type-parameter-0-0 *>(<#double#>)

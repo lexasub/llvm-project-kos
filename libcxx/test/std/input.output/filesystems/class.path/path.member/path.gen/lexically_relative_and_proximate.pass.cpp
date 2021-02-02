@@ -23,6 +23,7 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
+
 int main(int, char**) {
   // clang-format off
   struct {
@@ -59,17 +60,16 @@ int main(int, char**) {
     const fs::path p(TC.input);
     const fs::path output = p.lexically_relative(TC.base);
     auto ReportErr = [&](const char* Testing, fs::path const& Output,
-                         fs::path const& Expected) {
+                                              fs::path const& Expected) {
       Failed = true;
-      std::fprintf(stderr,
-                   "TEST CASE #%d FAILED:\n"
-                   "  Testing: %s\n"
-                   "  Input: '%s'\n"
-                   "  Base: '%s'\n"
-                   "  Expected: '%s'\n"
-                   "  Output: '%s'\n",
-                   ID, Testing, TC.input.c_str(), TC.base.c_str(),
-                   Expected.string().c_str(), Output.string().c_str());
+      std::fprintf(stderr, "TEST CASE #%d FAILED:\n"
+                  "  Testing: %s\n"
+                  "  Input: '%s'\n"
+                  "  Base: '%s'\n"
+                  "  Expected: '%s'\n"
+                  "  Output: '%s'\n",
+        ID, Testing, TC.input.c_str(), TC.base.c_str(),
+        Expected.string().c_str(), Output.string().c_str());
     };
     if (!PathEq(output, TC.expect))
       ReportErr("path::lexically_relative", output, TC.expect);
@@ -77,10 +77,10 @@ int main(int, char**) {
     // [path.gen] lexically_proximate
     // Returns: If the value of lexically_relative(base) is not an empty path,
     // return it. Otherwise return *this.
-    const fs::path proximate_expected = output.native().empty() ? p : output;
+    const fs::path proximate_expected = output.native().empty() ? p
+        : output;
     if (!PathEq(proximate_expected, proximate_output))
-      ReportErr("path::lexically_proximate", proximate_output,
-                proximate_expected);
+      ReportErr("path::lexically_proximate", proximate_output, proximate_expected);
   }
   return Failed;
 }

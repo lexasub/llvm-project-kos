@@ -209,13 +209,13 @@ public:
                                         cast<ObjectFile>(B->getObject()))) {}
 
   const SymbolRef *operator->() const {
-    const BasicSymbolRef &P = basic_symbol_iterator::operator*();
-    return static_cast<const SymbolRef *>(&P);
+    const BasicSymbolRef &P = basic_symbol_iterator::operator *();
+    return static_cast<const SymbolRef*>(&P);
   }
 
   const SymbolRef &operator*() const {
-    const BasicSymbolRef &P = basic_symbol_iterator::operator*();
-    return static_cast<const SymbolRef &>(P);
+    const BasicSymbolRef &P = basic_symbol_iterator::operator *();
+    return static_cast<const SymbolRef&>(P);
   }
 };
 
@@ -243,7 +243,8 @@ protected:
   friend class SymbolRef;
 
   virtual Expected<StringRef> getSymbolName(DataRefImpl Symb) const = 0;
-  Error printSymbolName(raw_ostream &OS, DataRefImpl Symb) const override;
+  Error printSymbolName(raw_ostream &OS,
+                                  DataRefImpl Symb) const override;
   virtual Expected<uint64_t> getSymbolAddress(DataRefImpl Symb) const = 0;
   virtual uint64_t getSymbolValueImpl(DataRefImpl Symb) const = 0;
   virtual uint32_t getSymbolAlignment(DataRefImpl Symb) const;
@@ -327,7 +328,7 @@ public:
   virtual Triple::ArchType getArch() const = 0;
   virtual SubtargetFeatures getFeatures() const = 0;
   virtual Optional<StringRef> tryGetCPUName() const { return None; };
-  virtual void setARMSubArch(Triple &TheTriple) const {}
+  virtual void setARMSubArch(Triple &TheTriple) const { }
   virtual Expected<uint64_t> getStartAddress() const {
     return errorCodeToError(object_error::parse_failed);
   };
@@ -356,7 +357,9 @@ public:
     return createObjectFile(Object, llvm::file_magic::unknown);
   }
 
-  static bool classof(const Binary *v) { return v->isObject(); }
+  static bool classof(const Binary *v) {
+    return v->isObject();
+  }
 
   static Expected<std::unique_ptr<COFFObjectFile>>
   createCOFFObjectFile(MemoryBufferRef Object);
@@ -368,7 +371,8 @@ public:
   createELFObjectFile(MemoryBufferRef Object, bool InitContent = true);
 
   static Expected<std::unique_ptr<MachOObjectFile>>
-  createMachOObjectFile(MemoryBufferRef Object, uint32_t UniversalCputype = 0,
+  createMachOObjectFile(MemoryBufferRef Object,
+                        uint32_t UniversalCputype = 0,
                         uint32_t UniversalIndex = 0);
 
   static Expected<std::unique_ptr<WasmObjectFile>>
@@ -413,8 +417,10 @@ inline const ObjectFile *SymbolRef::getObject() const {
 }
 
 /// SectionRef
-inline SectionRef::SectionRef(DataRefImpl SectionP, const ObjectFile *Owner)
-    : SectionPimpl(SectionP), OwningObject(Owner) {}
+inline SectionRef::SectionRef(DataRefImpl SectionP,
+                              const ObjectFile *Owner)
+  : SectionPimpl(SectionP)
+  , OwningObject(Owner) {}
 
 inline bool SectionRef::operator==(const SectionRef &Other) const {
   return OwningObject == Other.OwningObject &&
@@ -518,12 +524,15 @@ inline DataRefImpl SectionRef::getRawDataRefImpl() const {
   return SectionPimpl;
 }
 
-inline const ObjectFile *SectionRef::getObject() const { return OwningObject; }
+inline const ObjectFile *SectionRef::getObject() const {
+  return OwningObject;
+}
 
 /// RelocationRef
 inline RelocationRef::RelocationRef(DataRefImpl RelocationP,
-                                    const ObjectFile *Owner)
-    : RelocationPimpl(RelocationP), OwningObject(Owner) {}
+                              const ObjectFile *Owner)
+  : RelocationPimpl(RelocationP)
+  , OwningObject(Owner) {}
 
 inline bool RelocationRef::operator==(const RelocationRef &Other) const {
   return RelocationPimpl == Other.RelocationPimpl;

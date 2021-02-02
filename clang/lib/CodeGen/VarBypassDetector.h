@@ -64,7 +64,7 @@ private:
   void Detect();
   void Detect(unsigned From, unsigned To);
 };
-} // namespace CodeGen
-} // namespace clang
+}
+}
 
 #endif

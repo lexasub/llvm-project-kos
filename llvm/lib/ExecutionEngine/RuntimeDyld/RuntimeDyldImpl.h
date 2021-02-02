@@ -36,8 +36,8 @@ using namespace llvm::object;
 
 namespace llvm {
 
-#define UNIMPLEMENTED_RELOC(RelType)                                           \
-  case RelType:                                                                \
+#define UNIMPLEMENTED_RELOC(RelType) \
+  case RelType: \
     return make_error<RuntimeDyldError>("Unimplemented relocation: " #RelType)
 
 /// SectionEntry - represents a section emitted into memory by the dynamic
@@ -130,8 +130,8 @@ public:
   int64_t Addend;
 
   struct SectionPair {
-    uint32_t SectionA;
-    uint32_t SectionB;
+      uint32_t SectionA;
+      uint32_t SectionB;
   };
 
   /// SymOffset - Section offset of the relocation entry's symbol (used for GOT
@@ -237,7 +237,6 @@ typedef StringMap<SymbolTableEntry> RTDyldSymbolTable;
 
 class RuntimeDyldImpl {
   friend class RuntimeDyld::LoadedObjectInfo;
-
 protected:
   static const unsigned AbsoluteSymbolSection = ~0U;
 
@@ -283,6 +282,7 @@ protected:
   // modules.  This map is indexed by symbol name.
   StringMap<RelocationList> ExternalSymbolRelocations;
 
+
   typedef std::map<RelocationValueRef, uintptr_t> StubMap;
 
   Triple::ArchType Arch;
@@ -307,7 +307,8 @@ protected:
   // the end of the list while the list is being processed.
   sys::Mutex lock;
 
-  using NotifyStubEmittedFunction = RuntimeDyld::NotifyStubEmittedFunction;
+  using NotifyStubEmittedFunction =
+    RuntimeDyld::NotifyStubEmittedFunction;
   NotifyStubEmittedFunction NotifyStubEmitted;
 
   virtual unsigned getMaxStubSize() const = 0;
@@ -368,7 +369,8 @@ protected:
   ///        used for emits, else allocateDataSection() will be used.
   /// \return SectionID.
   Expected<unsigned> emitSection(const ObjectFile &Obj,
-                                 const SectionRef &Section, bool IsCode);
+                                 const SectionRef &Section,
+                                 bool IsCode);
 
   /// Find Section in LocalSections. If the secton is not found - emit
   ///        it and store in LocalSections.
@@ -415,10 +417,10 @@ protected:
 
   // Compute an upper bound of the memory that is required to load all
   // sections
-  Error computeTotalAllocSize(const ObjectFile &Obj, uint64_t &CodeSize,
-                              uint32_t &CodeAlign, uint64_t &RODataSize,
-                              uint32_t &RODataAlign, uint64_t &RWDataSize,
-                              uint32_t &RWDataAlign);
+  Error computeTotalAllocSize(const ObjectFile &Obj,
+                              uint64_t &CodeSize, uint32_t &CodeAlign,
+                              uint64_t &RODataSize, uint32_t &RODataAlign,
+                              uint64_t &RWDataSize, uint32_t &RWDataAlign);
 
   // Compute GOT size
   unsigned computeGOTSize(const ObjectFile &Obj);
@@ -440,14 +442,15 @@ protected:
 
   // Return true if the relocation R may require allocating a stub.
   virtual bool relocationNeedsStub(const RelocationRef &R) const {
-    return true; // Conservative answer
+    return true;    // Conservative answer
   }
 
 public:
   RuntimeDyldImpl(RuntimeDyld::MemoryManager &MemMgr,
                   JITSymbolResolver &Resolver)
-      : MemMgr(MemMgr), Resolver(Resolver), ProcessAllSections(false),
-        HasError(false) {}
+    : MemMgr(MemMgr), Resolver(Resolver),
+      ProcessAllSections(false), HasError(false) {
+  }
 
   virtual ~RuntimeDyldImpl();
 
@@ -471,7 +474,7 @@ public:
                      Sections[SectionID].getStubOffset() + getMaxStubSize());
   }
 
-  uint8_t *getSymbolLocalAddress(StringRef Name) const {
+  uint8_t* getSymbolLocalAddress(StringRef Name) const {
     // FIXME: Just look up as a function for now. Overly simple of course.
     // Work in progress.
     RTDyldSymbolTable::const_iterator pos = GlobalSymbolTable.find(Name);
@@ -519,8 +522,8 @@ public:
       uint64_t SectionAddr = 0;
       if (SectionID != AbsoluteSymbolSection)
         SectionAddr = getSectionLoadAddress(SectionID);
-      Result[KV.first()] = JITEvaluatedSymbol(
-          SectionAddr + KV.second.getOffset(), KV.second.getFlags());
+      Result[KV.first()] =
+        JITEvaluatedSymbol(SectionAddr + KV.second.getOffset(), KV.second.getFlags());
     }
 
     return Result;

@@ -420,7 +420,7 @@ static StyleKind findStyleKind(
 
   if (isa<ObjCIvarDecl>(D) && NamingStyles[SK_ObjcIvar])
     return SK_ObjcIvar;
-
+  
   if (isa<TypedefDecl>(D) && NamingStyles[SK_Typedef])
     return SK_Typedef;
 
@@ -522,8 +522,7 @@ static StyleKind findStyleKind(
       return SK_ConstexprVariable;
 
     if (!Type.isNull() && Type.isConstQualified()) {
-      if (Type.getTypePtr()->isAnyPointerType() &&
-          NamingStyles[SK_ConstantPointerParameter])
+      if (Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_ConstantPointerParameter])
         return SK_ConstantPointerParameter;
 
       if (NamingStyles[SK_ConstantParameter])
@@ -536,9 +535,8 @@ static StyleKind findStyleKind(
     if (Decl->isParameterPack() && NamingStyles[SK_ParameterPack])
       return SK_ParameterPack;
 
-    if (!Type.isNull() && Type.getTypePtr()->isAnyPointerType() &&
-        NamingStyles[SK_PointerParameter])
-      return SK_PointerParameter;
+    if (!Type.isNull() && Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_PointerParameter])
+        return SK_PointerParameter;
 
     if (NamingStyles[SK_Parameter])
       return SK_Parameter;
@@ -556,8 +554,7 @@ static StyleKind findStyleKind(
       if (Decl->isStaticDataMember() && NamingStyles[SK_ClassConstant])
         return SK_ClassConstant;
 
-      if (Decl->isFileVarDecl() && Type.getTypePtr()->isAnyPointerType() &&
-          NamingStyles[SK_GlobalConstantPointer])
+      if (Decl->isFileVarDecl() && Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_GlobalConstantPointer])
         return SK_GlobalConstantPointer;
 
       if (Decl->isFileVarDecl() && NamingStyles[SK_GlobalConstant])
@@ -566,8 +563,7 @@ static StyleKind findStyleKind(
       if (Decl->isStaticLocal() && NamingStyles[SK_StaticConstant])
         return SK_StaticConstant;
 
-      if (Decl->isLocalVarDecl() && Type.getTypePtr()->isAnyPointerType() &&
-          NamingStyles[SK_LocalConstantPointer])
+      if (Decl->isLocalVarDecl() && Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_LocalConstantPointer])
         return SK_LocalConstantPointer;
 
       if (Decl->isLocalVarDecl() && NamingStyles[SK_LocalConstant])
@@ -583,8 +579,7 @@ static StyleKind findStyleKind(
     if (Decl->isStaticDataMember() && NamingStyles[SK_ClassMember])
       return SK_ClassMember;
 
-    if (Decl->isFileVarDecl() && Type.getTypePtr()->isAnyPointerType() &&
-        NamingStyles[SK_GlobalPointer])
+    if (Decl->isFileVarDecl() && Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_GlobalPointer])
       return SK_GlobalPointer;
 
     if (Decl->isFileVarDecl() && NamingStyles[SK_GlobalVariable])
@@ -592,9 +587,8 @@ static StyleKind findStyleKind(
 
     if (Decl->isStaticLocal() && NamingStyles[SK_StaticVariable])
       return SK_StaticVariable;
-
-    if (Decl->isLocalVarDecl() && Type.getTypePtr()->isAnyPointerType() &&
-        NamingStyles[SK_LocalPointer])
+ 
+    if (Decl->isLocalVarDecl() && Type.getTypePtr()->isAnyPointerType() && NamingStyles[SK_LocalPointer])
       return SK_LocalPointer;
 
     if (Decl->isLocalVarDecl() && NamingStyles[SK_LocalVariable])

@@ -42,8 +42,8 @@ struct A {
 };
 
 void f() {
-  const int &x = A().i;                // no-crash
-  const int &y = A().j[1];             // no-crash
+  const int &x = A().i; // no-crash
+  const int &y = A().j[1]; // no-crash
   const int &z = (A().j[1], A().j[0]); // no-crash
 
   clang_analyzer_eval(x == 1);
@@ -75,10 +75,7 @@ public:
   // Don't track copies in our tests.
   C(const C &c) : x(c.x), after(nullptr), before(nullptr) {}
 
-  ~C() {
-    if (after)
-      *after = this;
-  }
+  ~C() { if (after) *after = this; }
 
   operator bool() const { return x; }
 
@@ -132,17 +129,17 @@ void f4(bool coin) {
     // FIXME: Should not warn.
     clang_analyzer_eval(after == before);
 #ifdef TEMPORARIES
-    // expected-warning@-2{{The left operand of '==' is a garbage value}}
+  // expected-warning@-2{{The left operand of '==' is a garbage value}}
 #else
-    // expected-warning@-4{{UNKNOWN}}
+  // expected-warning@-4{{UNKNOWN}}
 #endif
   } else {
     // FIXME: Should be TRUE.
     clang_analyzer_eval(after == before);
 #ifdef TEMPORARIES
-    // expected-warning@-2{{FALSE}}
+  // expected-warning@-2{{FALSE}}
 #else
-    // expected-warning@-4{{UNKNOWN}}
+  // expected-warning@-4{{UNKNOWN}}
 #endif
   }
 }
@@ -278,7 +275,7 @@ void f1() {
   }
   // 0. Construct variable 'c' (copy/move elided).
   // 1. Destroy variable 'c'.
-  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 }
 
@@ -331,7 +328,7 @@ void f4() {
   }
   // 0. Construct variable 'c' (all copies/moves elided),
   // 1. Destroy variable 'c'.
-  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 }
 } // end namespace maintain_address_of_copies

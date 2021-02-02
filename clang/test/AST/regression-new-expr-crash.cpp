@@ -1,8 +1,6 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown -fsyntax-only -verify %s
 
-struct Bar {
-  int a;
-};
+struct Bar {int a;};
 const Bar arr[2] = {{1}};
 
 struct Foo {};
@@ -16,5 +14,5 @@ void foo(int a) {
 
 void Test(int N) {
   int arr[N];
-  decltype([&arr] {}) *p; // expected-error {{lambda expression in an unevaluated operand}}
+  decltype([&arr]{}) *p; // expected-error {{lambda expression in an unevaluated operand}}
 }

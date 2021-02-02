@@ -14,7 +14,7 @@
 // function using vtable.
 
 class A {
-public:
+ public:
   int x;
   virtual ~A() {
     // Should succeed
@@ -24,27 +24,27 @@ public:
 };
 
 class B : public virtual A {
-public:
+ public:
   int y;
   virtual ~B() {}
   virtual void A_Foo() {}
 };
 
 class C : public B {
-public:
+ public:
   int z;
   ~C() {}
 };
 
 class D {
-public:
+ public:
   int w;
   ~D() {}
   virtual void D_Foo() {}
 };
 
 class E : public virtual A, public virtual D {
-public:
+ public:
   int u;
   ~E() {}
   void A_Foo() {}

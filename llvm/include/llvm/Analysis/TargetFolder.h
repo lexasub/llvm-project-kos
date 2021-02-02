@@ -21,8 +21,8 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Analysis/ConstantFolding.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/IRBuilderFolder.h"
 #include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/IRBuilderFolder.h"
 
 namespace llvm {
 
@@ -33,7 +33,9 @@ class TargetFolder final : public IRBuilderFolder {
   const DataLayout &DL;
 
   /// Fold - Fold the constant using target specific information.
-  Constant *Fold(Constant *C) const { return ConstantFoldConstant(C, DL); }
+  Constant *Fold(Constant *C) const {
+    return ConstantFoldConstant(C, DL);
+  }
 
   virtual void anchor();
 
@@ -44,22 +46,22 @@ public:
   // Binary Operators
   //===--------------------------------------------------------------------===//
 
-  Constant *CreateAdd(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateAdd(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return Fold(ConstantExpr::getAdd(LHS, RHS, HasNUW, HasNSW));
   }
   Constant *CreateFAdd(Constant *LHS, Constant *RHS) const override {
     return Fold(ConstantExpr::getFAdd(LHS, RHS));
   }
-  Constant *CreateSub(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateSub(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return Fold(ConstantExpr::getSub(LHS, RHS, HasNUW, HasNSW));
   }
   Constant *CreateFSub(Constant *LHS, Constant *RHS) const override {
     return Fold(ConstantExpr::getFSub(LHS, RHS));
   }
-  Constant *CreateMul(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateMul(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return Fold(ConstantExpr::getMul(LHS, RHS, HasNUW, HasNSW));
   }
   Constant *CreateFMul(Constant *LHS, Constant *RHS) const override {
@@ -85,8 +87,8 @@ public:
   Constant *CreateFRem(Constant *LHS, Constant *RHS) const override {
     return Fold(ConstantExpr::getFRem(LHS, RHS));
   }
-  Constant *CreateShl(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateShl(Constant *LHS, Constant *RHS,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return Fold(ConstantExpr::getShl(LHS, RHS, HasNUW, HasNSW));
   }
   Constant *CreateLShr(Constant *LHS, Constant *RHS,
@@ -107,8 +109,8 @@ public:
     return Fold(ConstantExpr::getXor(LHS, RHS));
   }
 
-  Constant *CreateBinOp(Instruction::BinaryOps Opc, Constant *LHS,
-                        Constant *RHS) const override {
+  Constant *CreateBinOp(Instruction::BinaryOps Opc,
+                        Constant *LHS, Constant *RHS) const override {
     return Fold(ConstantExpr::get(Opc, LHS, RHS));
   }
 
@@ -116,8 +118,8 @@ public:
   // Unary Operators
   //===--------------------------------------------------------------------===//
 
-  Constant *CreateNeg(Constant *C, bool HasNUW = false,
-                      bool HasNSW = false) const override {
+  Constant *CreateNeg(Constant *C,
+                      bool HasNUW = false, bool HasNSW = false) const override {
     return Fold(ConstantExpr::getNeg(C, HasNUW, HasNSW));
   }
   Constant *CreateFNeg(Constant *C) const override {
@@ -151,9 +153,8 @@ public:
     return Fold(ConstantExpr::getGetElementPtr(Ty, C, IdxList));
   }
 
-  Constant *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Constant *> IdxList) const override {
+  Constant *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Constant *> IdxList) const override {
     return Fold(ConstantExpr::getInBoundsGetElementPtr(Ty, C, IdxList));
   }
   Constant *CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
@@ -163,9 +164,8 @@ public:
     // ArrayRef<Value *>.
     return Fold(ConstantExpr::getInBoundsGetElementPtr(Ty, C, Idx));
   }
-  Constant *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Value *> IdxList) const override {
+  Constant *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Value *> IdxList) const override {
     return Fold(ConstantExpr::getInBoundsGetElementPtr(Ty, C, IdxList));
   }
 
@@ -274,6 +274,6 @@ public:
   }
 };
 
-} // namespace llvm
+}
 
 #endif

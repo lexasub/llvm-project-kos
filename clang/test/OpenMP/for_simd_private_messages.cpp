@@ -117,10 +117,7 @@ int foomain(I argc, C **argv) {
 #pragma omp for simd private(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp for simd private(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                        : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                         : argv),              \
-                                                                                                                                                          allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp for simd private(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp for simd private(S1) // expected-error {{'S1' does not refer to a value}}
@@ -165,7 +162,7 @@ int foomain(I argc, C **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -173,8 +170,8 @@ using A::x;
 int main(int argc, char **argv) {
   S4 e(4);
   S5 g(5);
-  S6<float> s6(0.0), s6_0(1.0);
-  S7<S6<float>> s7(0.0), s7_0(1.0);
+  S6<float> s6(0.0) , s6_0(1.0);
+  S7<S6<float> > s7(0.0) , s7_0(1.0);
   int i;
   int &j = i;
 #pragma omp for simd private // expected-error {{expected '(' after 'private'}}
@@ -236,7 +233,8 @@ int main(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     m = k + 2;
 
-  s6 = s6_0;                  // expected-note {{in instantiation of member function 'S6<float>::operator=' requested here}}
-  s7 = s7_0;                  // expected-note {{in instantiation of member function 'S7<S6<float>>::operator=' requested here}}
+  s6 = s6_0; // expected-note {{in instantiation of member function 'S6<float>::operator=' requested here}}
+  s7 = s7_0; // expected-note {{in instantiation of member function 'S7<S6<float>>::operator=' requested here}}
   return foomain(argc, argv); // expected-note {{in instantiation of function template specialization 'foomain<int, char>' requested here}}
 }
+

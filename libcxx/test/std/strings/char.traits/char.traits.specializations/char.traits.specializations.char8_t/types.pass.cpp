@@ -23,22 +23,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
 #if defined(__cpp_lib_char8_t) && __cpp_lib_char8_t >= 201811L
-  static_assert(
-      (std::is_same<std::char_traits<char8_t>::char_type, char8_t>::value), "");
-  static_assert(
-      (std::is_same<std::char_traits<char8_t>::int_type, unsigned int>::value),
-      "");
-  static_assert((std::is_same<std::char_traits<char8_t>::off_type,
-                              std::streamoff>::value),
-                "");
-  static_assert((std::is_same<std::char_traits<char8_t>::pos_type,
-                              std::u16streampos>::value),
-                "");
-  static_assert((std::is_same<std::char_traits<char8_t>::state_type,
-                              std::mbstate_t>::value),
-                "");
+    static_assert((std::is_same<std::char_traits<char8_t>::char_type,  char8_t>::value), "");
+    static_assert((std::is_same<std::char_traits<char8_t>::int_type,   unsigned int>::value), "");
+    static_assert((std::is_same<std::char_traits<char8_t>::off_type,   std::streamoff>::value), "");
+    static_assert((std::is_same<std::char_traits<char8_t>::pos_type,   std::u16streampos>::value), "");
+    static_assert((std::is_same<std::char_traits<char8_t>::state_type, std::mbstate_t>::value), "");
 #endif
 
   return 0;

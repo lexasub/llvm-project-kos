@@ -13,16 +13,21 @@
 
 void f() {}
 
-int main(int, char**) {
-  typedef void Function();
-  try {
-    throw f; // converts to void (*)()
-    assert(false);
-  } catch (Function b) // equivalent to void (*)()
-  {
-  } catch (...) {
-    assert(false);
-  }
+int main(int, char**)
+{
+    typedef void Function();
+    try
+    {
+        throw f;     // converts to void (*)()
+        assert(false);
+    }
+    catch (Function b)  // equivalent to void (*)()
+    {
+    }
+    catch (...)
+    {
+        assert(false);
+    }
 
-  return 0;
+    return 0;
 }

@@ -7,7 +7,7 @@
 #include "thread-safety-annotations.h"
 
 class LOCKABLE Mutex {
-public:
+ public:
   void Lock() EXCLUSIVE_LOCK_FUNCTION();
   void ReaderLock() SHARED_LOCK_FUNCTION();
   void Unlock() UNLOCK_FUNCTION();
@@ -15,9 +15,9 @@ public:
   bool ReaderTryLock() SHARED_TRYLOCK_FUNCTION(true);
 
   // for negative capabilities
-  const Mutex &operator!() const { return *this; }
+  const Mutex& operator!() const { return *this; }
 
-  void AssertHeld() ASSERT_EXCLUSIVE_LOCK();
+  void AssertHeld()       ASSERT_EXCLUSIVE_LOCK();
   void AssertReaderHeld() ASSERT_SHARED_LOCK();
 };
 
@@ -42,20 +42,21 @@ public:
   }
 };
 
+
 class Foo {
   Mutex mu;
   int a GUARDED_BY(mu);
 
 public:
   void foo() {
-    mu.Lock(); // expected-warning {{acquiring mutex 'mu' requires negative capability '!mu'}}
-    baz();     // expected-warning {{cannot call function 'baz' while mutex 'mu' is held}}
+    mu.Lock();    // expected-warning {{acquiring mutex 'mu' requires negative capability '!mu'}}
+    baz();        // expected-warning {{cannot call function 'baz' while mutex 'mu' is held}}
     bar();
     mu.Unlock();
   }
 
   void bar() {
-    baz(); // expected-warning {{calling function 'baz' requires negative capability '!mu'}}
+    baz();        // expected-warning {{calling function 'baz' requires negative capability '!mu'}}
   }
 
   void baz() EXCLUSIVE_LOCKS_REQUIRED(!mu) {
@@ -66,21 +67,21 @@ public:
 
   void test() {
     Bar b;
-    b.baz(); // no warning -- in different class.
+    b.baz();     // no warning -- in different class.
   }
 
   void test2() {
-    mu.Lock(); // expected-warning {{acquiring mutex 'mu' requires negative capability '!mu'}}
+    mu.Lock();   // expected-warning {{acquiring mutex 'mu' requires negative capability '!mu'}}
     a = 0;
     mu.Unlock();
-    baz(); // no warning -- !mu in set.
+    baz();       // no warning -- !mu in set.
   }
 
   void test3() EXCLUSIVE_LOCKS_REQUIRED(!mu) {
     mu.Lock();
     a = 0;
     mu.Unlock();
-    baz(); // no warning -- !mu in set.
+    baz();       // no warning -- !mu in set.
   }
 
   void test4() {
@@ -88,7 +89,7 @@ public:
   }
 };
 
-} // end namespace SimpleTest
+}  // end namespace SimpleTest
 
 Mutex globalMutex;
 
@@ -98,14 +99,14 @@ void f() EXCLUSIVE_LOCKS_REQUIRED(!globalMutex);
 void fq() EXCLUSIVE_LOCKS_REQUIRED(!::globalMutex);
 
 namespace ns {
-Mutex globalMutex;
-void f() EXCLUSIVE_LOCKS_REQUIRED(!globalMutex);
-void fq() EXCLUSIVE_LOCKS_REQUIRED(!ns::globalMutex);
-} // namespace ns
+  Mutex globalMutex;
+  void f() EXCLUSIVE_LOCKS_REQUIRED(!globalMutex);
+  void fq() EXCLUSIVE_LOCKS_REQUIRED(!ns::globalMutex);
+}
 
 void testGlobals() EXCLUSIVE_LOCKS_REQUIRED(!ns::globalMutex) {
-  f();  // expected-warning {{calling function 'f' requires negative capability '!globalMutex'}}
-  fq(); // expected-warning {{calling function 'fq' requires negative capability '!globalMutex'}}
+  f();     // expected-warning {{calling function 'f' requires negative capability '!globalMutex'}}
+  fq();    // expected-warning {{calling function 'fq' requires negative capability '!globalMutex'}}
   ns::f();
   ns::fq();
 }
@@ -144,7 +145,7 @@ void testStaticMembers() {
   x.priv();
 }
 
-} // end namespace ScopeTest
+}  // end namespace ScopeTest
 
 namespace DoubleAttribute {
 
@@ -161,4 +162,4 @@ class TemplateClass {
 
 void test() { TemplateClass<int> TC; }
 
-} // end namespace DoubleAttribute
+}  // end namespace DoubleAttribute

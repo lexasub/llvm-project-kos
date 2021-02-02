@@ -21,20 +21,22 @@ namespace llvm {
 /// PriorityQueue - This class behaves like std::priority_queue and
 /// provides a few additional convenience functions.
 ///
-template <class T, class Sequence = std::vector<T>,
-          class Compare = std::less<typename Sequence::value_type>>
+template<class T,
+         class Sequence = std::vector<T>,
+         class Compare = std::less<typename Sequence::value_type> >
 class PriorityQueue : public std::priority_queue<T, Sequence, Compare> {
 public:
   explicit PriorityQueue(const Compare &compare = Compare(),
                          const Sequence &sequence = Sequence())
-      : std::priority_queue<T, Sequence, Compare>(compare, sequence) {}
+    : std::priority_queue<T, Sequence, Compare>(compare, sequence)
+  {}
 
-  template <class Iterator>
+  template<class Iterator>
   PriorityQueue(Iterator begin, Iterator end,
                 const Compare &compare = Compare(),
                 const Sequence &sequence = Sequence())
-      : std::priority_queue<T, Sequence, Compare>(begin, end, compare,
-                                                  sequence) {}
+    : std::priority_queue<T, Sequence, Compare>(begin, end, compare, sequence)
+  {}
 
   /// erase_one - Erase one element from the queue, regardless of its
   /// position. This operation performs a linear search to find an element
@@ -70,9 +72,11 @@ public:
 
   /// clear - Erase all elements from the queue.
   ///
-  void clear() { this->c.clear(); }
+  void clear() {
+    this->c.clear();
+  }
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

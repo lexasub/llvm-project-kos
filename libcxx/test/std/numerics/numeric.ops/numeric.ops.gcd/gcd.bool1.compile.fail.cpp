@@ -17,8 +17,10 @@
 
 #include <numeric>
 
-int main(int, char**) {
-  std::gcd(false, 4);
+
+int main(int, char**)
+{
+    std::gcd(false, 4);
 
   return 0;
 }

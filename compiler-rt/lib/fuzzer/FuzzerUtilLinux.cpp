@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+
 namespace fuzzer {
 
 int ExecuteCommand(const Command &Cmd) {
@@ -28,7 +29,7 @@ int ExecuteCommand(const Command &Cmd) {
 }
 
 void DiscardOutput(int Fd) {
-  FILE *Temp = fopen("/dev/null", "w");
+  FILE* Temp = fopen("/dev/null", "w");
   if (!Temp)
     return;
   dup2(fileno(Temp), Fd);

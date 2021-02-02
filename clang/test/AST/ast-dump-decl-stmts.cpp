@@ -35,3 +35,4 @@ void d(), e(int);
 // CHECK-NEXT: ParmVarDecl 0x{{[^ ]*}} <col:13> col:16 'int'
 int f;
 // CHECK: VarDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, col:5> col:5 f 'int'
+

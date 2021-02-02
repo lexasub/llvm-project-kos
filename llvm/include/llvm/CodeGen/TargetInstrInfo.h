@@ -63,7 +63,7 @@ class TargetSubtargetInfo;
 
 template <class T> class SmallVectorImpl;
 
-using ParamLoadedValue = std::pair<MachineOperand, DIExpression *>;
+using ParamLoadedValue = std::pair<MachineOperand, DIExpression*>;
 
 struct DestSourcePair {
   const MachineOperand *Destination;
@@ -111,9 +111,10 @@ public:
 
   /// Given a machine instruction descriptor, returns the register
   /// class constraint for OpNum, or NULL.
-  virtual const TargetRegisterClass *
-  getRegClass(const MCInstrDesc &MCID, unsigned OpNum,
-              const TargetRegisterInfo *TRI, const MachineFunction &MF) const;
+  virtual
+  const TargetRegisterClass *getRegClass(const MCInstrDesc &MCID, unsigned OpNum,
+                                         const TargetRegisterInfo *TRI,
+                                         const MachineFunction &MF) const;
 
   /// Return true if the instruction is trivially rematerializable, meaning it
   /// has no side effects and requires no operands that aren't always available.
@@ -261,7 +262,8 @@ public:
   /// bytes loaded from the stack. This must be implemented if a backend
   /// supports partial stack slot spills/loads to further disambiguate
   /// what the load does.
-  virtual unsigned isLoadFromStackSlot(const MachineInstr &MI, int &FrameIndex,
+  virtual unsigned isLoadFromStackSlot(const MachineInstr &MI,
+                                       int &FrameIndex,
                                        unsigned &MemBytes) const {
     MemBytes = 0;
     return isLoadFromStackSlot(MI, FrameIndex);
@@ -298,7 +300,8 @@ public:
   /// bytes stored to the stack. This must be implemented if a backend
   /// supports partial stack slot spills/loads to further disambiguate
   /// what the store does.
-  virtual unsigned isStoreToStackSlot(const MachineInstr &MI, int &FrameIndex,
+  virtual unsigned isStoreToStackSlot(const MachineInstr &MI,
+                                      int &FrameIndex,
                                       unsigned &MemBytes) const {
     MemBytes = 0;
     return isStoreToStackSlot(MI, FrameIndex);
@@ -465,10 +468,12 @@ public:
     RegSubRegPair(Register Reg = Register(), unsigned SubReg = 0)
         : Reg(Reg), SubReg(SubReg) {}
 
-    bool operator==(const RegSubRegPair &P) const {
+    bool operator==(const RegSubRegPair& P) const {
       return Reg == P.Reg && SubReg == P.SubReg;
     }
-    bool operator!=(const RegSubRegPair &P) const { return !(*this == P); }
+    bool operator!=(const RegSubRegPair& P) const {
+      return !(*this == P);
+    }
   };
 
   /// A pair composed of a pair of a register and a sub-register index,
@@ -1055,7 +1060,8 @@ public:
   /// If VRM is passed, the assigned physregs can be inspected by target to
   /// decide on using an opcode (note that those assignments can still change).
   MachineInstr *foldMemoryOperand(MachineInstr &MI, ArrayRef<unsigned> Ops,
-                                  int FI, LiveIntervals *LIS = nullptr,
+                                  int FI,
+                                  LiveIntervals *LIS = nullptr,
                                   VirtRegMap *VRM = nullptr) const;
 
   /// Same as the previous version except it allows folding of any load and
@@ -1161,10 +1167,12 @@ protected:
   /// take care of adding a MachineMemOperand to the newly created instruction.
   /// The instruction and any auxiliary instructions necessary will be inserted
   /// at InsertPt.
-  virtual MachineInstr *foldMemoryOperandImpl(
-      MachineFunction &MF, MachineInstr &MI, ArrayRef<unsigned> Ops,
-      MachineBasicBlock::iterator InsertPt, int FrameIndex,
-      LiveIntervals *LIS = nullptr, VirtRegMap *VRM = nullptr) const {
+  virtual MachineInstr *
+  foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
+                        ArrayRef<unsigned> Ops,
+                        MachineBasicBlock::iterator InsertPt, int FrameIndex,
+                        LiveIntervals *LIS = nullptr,
+                        VirtRegMap *VRM = nullptr) const {
     return nullptr;
   }
 
@@ -1226,7 +1234,8 @@ protected:
 public:
   /// getAddressSpaceForPseudoSourceKind - Given the kind of memory
   /// (e.g. stack) the target returns the corresponding address space.
-  virtual unsigned getAddressSpaceForPseudoSourceKind(unsigned Kind) const {
+  virtual unsigned
+  getAddressSpaceForPseudoSourceKind(unsigned Kind) const {
     return 0;
   }
 
@@ -1454,9 +1463,9 @@ public:
 
   /// Measure the specified inline asm to determine an approximation of its
   /// length.
-  virtual unsigned
-  getInlineAsmLength(const char *Str, const MCAsmInfo &MAI,
-                     const TargetSubtargetInfo *STI = nullptr) const;
+  virtual unsigned getInlineAsmLength(
+    const char *Str, const MCAsmInfo &MAI,
+    const TargetSubtargetInfo *STI = nullptr) const;
 
   /// Allocate and return a hazard recognizer to use for this target when
   /// scheduling the machine instructions before register allocation.
@@ -1743,8 +1752,9 @@ public:
   ///
   /// See also MachineInstr::mayAlias, which is implemented on top of this
   /// function.
-  virtual bool areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
-                                               const MachineInstr &MIb) const {
+  virtual bool
+  areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
+                                  const MachineInstr &MIb) const {
     assert(MIa.mayLoadOrStore() &&
            "MIa must load from or modify a memory location");
     assert(MIb.mayLoadOrStore() &&
@@ -1842,7 +1852,8 @@ public:
   virtual MachineInstr *createPHIDestinationCopy(
       MachineBasicBlock &MBB, MachineBasicBlock::iterator InsPt,
       const DebugLoc &DL, Register Src, Register Dst) const {
-    return BuildMI(MBB, InsPt, DL, get(TargetOpcode::COPY), Dst).addReg(Src);
+    return BuildMI(MBB, InsPt, DL, get(TargetOpcode::COPY), Dst)
+        .addReg(Src);
   }
 
   /// During PHI eleimination lets target to make necessary checks and
@@ -1866,8 +1877,8 @@ public:
   }
 
   /// Returns how or if \p MI should be outlined.
-  virtual outliner::InstrType getOutliningType(MachineBasicBlock::iterator &MIT,
-                                               unsigned Flags) const {
+  virtual outliner::InstrType
+  getOutliningType(MachineBasicBlock::iterator &MIT, unsigned Flags) const {
     llvm_unreachable(
         "Target didn't implement TargetInstrInfo::getOutliningType!");
   }

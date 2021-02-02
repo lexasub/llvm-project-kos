@@ -3,14 +3,14 @@
 
 // Test with pch.
 // RUN: %clang_cc1 -x c++ -std=c++11 -emit-pch -o %t %S/cxx-for-range.h
-// RUN: %clang_cc1 -x c++ -std=c++11 -include-pch %t -fsyntax-only -emit-llvm -o - %s
+// RUN: %clang_cc1 -x c++ -std=c++11 -include-pch %t -fsyntax-only -emit-llvm -o - %s 
 
 void h() {
   f();
 
   g<int>();
 
-  char a[3] = {0, 1, 2};
+  char a[3] = { 0, 1, 2 };
   for (auto w : a)
     for (auto x : S())
       for (auto y : T())

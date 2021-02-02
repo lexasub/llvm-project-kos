@@ -4,9 +4,9 @@
 #include <isl/aff.h>
 #include <isl/ast.h>
 #include <isl/ast_build.h>
+#include <isl/set.h>
 #include <isl/list.h>
 #include <isl/schedule_node.h>
-#include <isl/set.h>
 
 /* An isl_ast_build represents the context in which AST is being
  * generated.  That is, it (mostly) contains information about outer
@@ -143,197 +143,184 @@
  * for the isolate option yet.
  */
 struct isl_ast_build {
-  int ref;
+	int ref;
 
-  int outer_pos;
-  int depth;
+	int outer_pos;
+	int depth;
 
-  isl_id_list *iterators;
+	isl_id_list *iterators;
 
-  isl_set *domain;
-  isl_set *generated;
-  isl_set *pending;
-  isl_multi_aff *values;
+	isl_set *domain;
+	isl_set *generated;
+	isl_set *pending;
+	isl_multi_aff *values;
 
-  isl_pw_aff *value;
+	isl_pw_aff *value;
 
-  isl_vec *strides;
-  isl_multi_aff *offsets;
+	isl_vec *strides;
+	isl_multi_aff *offsets;
 
-  isl_multi_aff *schedule_map;
-  isl_multi_aff *internal2input;
+	isl_multi_aff *schedule_map;
+	isl_multi_aff *internal2input;
 
-  isl_union_map *options;
+	isl_union_map *options;
 
-  __isl_give isl_ast_node *(*at_each_domain)(__isl_take isl_ast_node *node,
-                                             __isl_keep isl_ast_build *build,
-                                             void *user);
-  void *at_each_domain_user;
+	__isl_give isl_ast_node *(*at_each_domain)(
+		__isl_take isl_ast_node *node,
+		__isl_keep isl_ast_build *build, void *user);
+	void *at_each_domain_user;
 
-  __isl_give isl_id *(*before_each_for)(__isl_keep isl_ast_build *context,
-                                        void *user);
-  void *before_each_for_user;
-  __isl_give isl_ast_node *(*after_each_for)(__isl_take isl_ast_node *node,
-                                             __isl_keep isl_ast_build *context,
-                                             void *user);
-  void *after_each_for_user;
+	__isl_give isl_id *(*before_each_for)(
+		__isl_keep isl_ast_build *context, void *user);
+	void *before_each_for_user;
+	__isl_give isl_ast_node *(*after_each_for)(
+		__isl_take isl_ast_node *node,
+		__isl_keep isl_ast_build *context, void *user);
+	void *after_each_for_user;
 
-  isl_stat (*before_each_mark)(__isl_keep isl_id *mark,
-                               __isl_keep isl_ast_build *build, void *user);
-  void *before_each_mark_user;
-  __isl_give isl_ast_node *(*after_each_mark)(__isl_take isl_ast_node *node,
-                                              __isl_keep isl_ast_build *context,
-                                              void *user);
-  void *after_each_mark_user;
+	isl_stat (*before_each_mark)(__isl_keep isl_id *mark,
+		__isl_keep isl_ast_build *build, void *user);
+	void *before_each_mark_user;
+	__isl_give isl_ast_node *(*after_each_mark)(
+		__isl_take isl_ast_node *node,
+		__isl_keep isl_ast_build *context, void *user);
+	void *after_each_mark_user;
 
-  __isl_give isl_ast_node *(*create_leaf)(__isl_take isl_ast_build *build,
-                                          void *user);
-  void *create_leaf_user;
+	__isl_give isl_ast_node *(*create_leaf)(
+		__isl_take isl_ast_build *build, void *user);
+	void *create_leaf_user;
 
-  isl_union_map *executed;
-  int single_valued;
+	isl_union_map *executed;
+	int single_valued;
 
-  isl_schedule_node *node;
-  int n;
-  enum isl_ast_loop_type *loop_type;
-  isl_set *isolated;
+	isl_schedule_node *node;
+	int n;
+	enum isl_ast_loop_type *loop_type;
+	isl_set *isolated;
 };
 
-__isl_give isl_ast_build *
-isl_ast_build_clear_local_info(__isl_take isl_ast_build *build);
-__isl_give isl_ast_build *
-isl_ast_build_increase_depth(__isl_take isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_clear_local_info(
+	__isl_take isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_increase_depth(
+	__isl_take isl_ast_build *build);
 int isl_ast_build_get_depth(__isl_keep isl_ast_build *build);
 isl_size isl_ast_build_dim(__isl_keep isl_ast_build *build,
-                           enum isl_dim_type type);
-__isl_give isl_space *isl_ast_build_get_space(__isl_keep isl_ast_build *build,
-                                              int internal);
-__isl_give isl_ast_build *
-isl_ast_build_align_params(__isl_take isl_ast_build *build,
-                           __isl_take isl_space *model);
-__isl_give isl_ast_build *isl_ast_build_cow(__isl_take isl_ast_build *build);
-__isl_give isl_ast_build *
-isl_ast_build_insert_dim(__isl_take isl_ast_build *build, int pos);
-__isl_give isl_ast_build *
-isl_ast_build_scale_down(__isl_take isl_ast_build *build, __isl_take isl_val *m,
-                         __isl_take isl_union_map *umap);
-__isl_give isl_ast_build *
-isl_ast_build_product(__isl_take isl_ast_build *build,
-                      __isl_take isl_space *embedding);
-__isl_give isl_ast_build *
-isl_ast_build_set_loop_bounds(__isl_take isl_ast_build *build,
-                              __isl_take isl_basic_set *bounds);
-__isl_give isl_ast_build *
-isl_ast_build_set_pending_generated(__isl_take isl_ast_build *build,
-                                    __isl_take isl_basic_set *bounds);
-__isl_give isl_ast_build *
-isl_ast_build_detect_strides(__isl_take isl_ast_build *build,
-                             __isl_take isl_set *set);
-__isl_give isl_ast_build *
-isl_ast_build_include_stride(__isl_take isl_ast_build *build);
-__isl_give isl_ast_build *
-isl_ast_build_set_executed(__isl_take isl_ast_build *build,
-                           __isl_take isl_union_map *executed);
-__isl_give isl_ast_build *
-isl_ast_build_set_single_valued(__isl_take isl_ast_build *build, int sv);
-__isl_give isl_multi_aff *
-isl_ast_build_get_internal2input(__isl_keep isl_ast_build *build);
-__isl_give isl_set *isl_ast_build_get_domain(__isl_keep isl_ast_build *build);
-__isl_give isl_set *isl_ast_build_get_pending(__isl_keep isl_ast_build *build);
-__isl_give isl_set *
-isl_ast_build_get_generated(__isl_keep isl_ast_build *build);
-__isl_give isl_ast_build *
-isl_ast_build_restrict_generated(__isl_take isl_ast_build *build,
-                                 __isl_take isl_set *set);
-__isl_give isl_ast_build *
-isl_ast_build_replace_pending_by_guard(__isl_take isl_ast_build *build,
-                                       __isl_take isl_set *guard);
+	enum isl_dim_type type);
+__isl_give isl_space *isl_ast_build_get_space(
+	__isl_keep isl_ast_build *build, int internal);
+__isl_give isl_ast_build *isl_ast_build_align_params(
+	__isl_take isl_ast_build *build, __isl_take isl_space *model);
+__isl_give isl_ast_build *isl_ast_build_cow(
+	__isl_take isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_insert_dim(
+	__isl_take isl_ast_build *build, int pos);
+__isl_give isl_ast_build *isl_ast_build_scale_down(
+	__isl_take isl_ast_build *build, __isl_take isl_val *m,
+	__isl_take isl_union_map *umap);
+__isl_give isl_ast_build *isl_ast_build_product(
+	__isl_take isl_ast_build *build, __isl_take isl_space *embedding);
+__isl_give isl_ast_build *isl_ast_build_set_loop_bounds(
+	__isl_take isl_ast_build *build, __isl_take isl_basic_set *bounds);
+__isl_give isl_ast_build *isl_ast_build_set_pending_generated(
+	__isl_take isl_ast_build *build, __isl_take isl_basic_set *bounds);
+__isl_give isl_ast_build *isl_ast_build_detect_strides(
+	__isl_take isl_ast_build *build, __isl_take isl_set *set);
+__isl_give isl_ast_build *isl_ast_build_include_stride(
+	__isl_take isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_set_executed(
+	__isl_take isl_ast_build *build,
+	__isl_take isl_union_map *executed);
+__isl_give isl_ast_build *isl_ast_build_set_single_valued(
+	__isl_take isl_ast_build *build, int sv);
+__isl_give isl_multi_aff *isl_ast_build_get_internal2input(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_set *isl_ast_build_get_domain(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_set *isl_ast_build_get_pending(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_set *isl_ast_build_get_generated(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_restrict_generated(
+	__isl_take isl_ast_build *build, __isl_take isl_set *set);
+__isl_give isl_ast_build *isl_ast_build_replace_pending_by_guard(
+	__isl_take isl_ast_build *build, __isl_take isl_set *guard);
 isl_bool isl_ast_build_need_schedule_map(__isl_keep isl_ast_build *build);
-__isl_give isl_multi_aff *
-isl_ast_build_get_schedule_map_multi_aff(__isl_keep isl_ast_build *build);
-__isl_give isl_map *
-isl_ast_build_get_schedule_map(__isl_keep isl_ast_build *build);
+__isl_give isl_multi_aff *isl_ast_build_get_schedule_map_multi_aff(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_map *isl_ast_build_get_schedule_map(
+	__isl_keep isl_ast_build *build);
 isl_bool isl_ast_build_has_affine_value(__isl_keep isl_ast_build *build,
-                                        int pos);
+	int pos);
 int isl_ast_build_has_value(__isl_keep isl_ast_build *build);
-__isl_give isl_id *
-isl_ast_build_get_iterator_id(__isl_keep isl_ast_build *build, int pos);
+__isl_give isl_id *isl_ast_build_get_iterator_id(
+	__isl_keep isl_ast_build *build, int pos);
 
 int isl_ast_build_has_schedule_node(__isl_keep isl_ast_build *build);
-__isl_give isl_schedule_node *
-isl_ast_build_get_schedule_node(__isl_keep isl_ast_build *build);
-__isl_give isl_ast_build *
-isl_ast_build_set_schedule_node(__isl_take isl_ast_build *build,
-                                __isl_take isl_schedule_node *node);
-__isl_give isl_ast_build *
-isl_ast_build_reset_schedule_node(__isl_take isl_ast_build *build);
+__isl_give isl_schedule_node *isl_ast_build_get_schedule_node(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_set_schedule_node(
+	__isl_take isl_ast_build *build,
+	__isl_take isl_schedule_node *node);
+__isl_give isl_ast_build *isl_ast_build_reset_schedule_node(
+	__isl_take isl_ast_build *build);
 
-__isl_give isl_ast_build *
-isl_ast_build_extract_isolated(__isl_take isl_ast_build *build);
+__isl_give isl_ast_build *isl_ast_build_extract_isolated(
+	__isl_take isl_ast_build *build);
 int isl_ast_build_has_isolated(__isl_keep isl_ast_build *build);
-__isl_give isl_set *isl_ast_build_get_isolated(__isl_keep isl_ast_build *build);
+__isl_give isl_set *isl_ast_build_get_isolated(
+	__isl_keep isl_ast_build *build);
 
-__isl_give isl_basic_set *
-isl_ast_build_specialize_basic_set(__isl_keep isl_ast_build *build,
-                                   __isl_take isl_basic_set *bset);
-__isl_give isl_basic_set *
-isl_ast_build_compute_gist_basic_set(__isl_keep isl_ast_build *build,
-                                     __isl_take isl_basic_set *bset);
+__isl_give isl_basic_set *isl_ast_build_specialize_basic_set(
+	__isl_keep isl_ast_build *build, __isl_take isl_basic_set *bset);
+__isl_give isl_basic_set *isl_ast_build_compute_gist_basic_set(
+	__isl_keep isl_ast_build *build, __isl_take isl_basic_set *bset);
 __isl_give isl_set *isl_ast_build_specialize(__isl_keep isl_ast_build *build,
-                                             __isl_take isl_set *set);
-__isl_give isl_set *isl_ast_build_compute_gist(__isl_keep isl_ast_build *build,
-                                               __isl_take isl_set *set);
-__isl_give isl_map *
-isl_ast_build_compute_gist_map_domain(__isl_keep isl_ast_build *build,
-                                      __isl_take isl_map *map);
-__isl_give isl_aff *
-isl_ast_build_compute_gist_aff(__isl_keep isl_ast_build *build,
-                               __isl_take isl_aff *aff);
-__isl_give isl_pw_aff *
-isl_ast_build_compute_gist_pw_aff(__isl_keep isl_ast_build *build,
-                                  __isl_take isl_pw_aff *pa);
-__isl_give isl_pw_multi_aff *
-isl_ast_build_compute_gist_pw_multi_aff(__isl_keep isl_ast_build *build,
-                                        __isl_take isl_pw_multi_aff *pma);
+	__isl_take isl_set *set);
+__isl_give isl_set *isl_ast_build_compute_gist(
+	__isl_keep isl_ast_build *build, __isl_take isl_set *set);
+__isl_give isl_map *isl_ast_build_compute_gist_map_domain(
+	__isl_keep isl_ast_build *build, __isl_take isl_map *map);
+__isl_give isl_aff *isl_ast_build_compute_gist_aff(
+	__isl_keep isl_ast_build *build, __isl_take isl_aff *aff);
+__isl_give isl_pw_aff *isl_ast_build_compute_gist_pw_aff(
+	__isl_keep isl_ast_build *build, __isl_take isl_pw_aff *pa);
+__isl_give isl_pw_multi_aff *isl_ast_build_compute_gist_pw_multi_aff(
+	__isl_keep isl_ast_build *build, __isl_take isl_pw_multi_aff *pma);
 
 __isl_give isl_union_map *isl_ast_build_substitute_values_union_map_domain(
-    __isl_keep isl_ast_build *build, __isl_take isl_union_map *umap);
+	__isl_keep isl_ast_build *build, __isl_take isl_union_map *umap);
 
 int isl_ast_build_aff_is_nonneg(__isl_keep isl_ast_build *build,
-                                __isl_keep isl_aff *aff);
+	__isl_keep isl_aff *aff);
 
 isl_bool isl_ast_build_has_stride(__isl_keep isl_ast_build *build, int pos);
 __isl_give isl_aff *isl_ast_build_get_offset(__isl_keep isl_ast_build *build,
-                                             int pos);
+	int pos);
 __isl_give isl_val *isl_ast_build_get_stride(__isl_keep isl_ast_build *build,
-                                             int pos);
-__isl_give isl_set *
-isl_ast_build_get_stride_constraint(__isl_keep isl_ast_build *build);
-__isl_give isl_multi_aff *
-isl_ast_build_get_stride_expansion(__isl_keep isl_ast_build *build);
+	int pos);
+__isl_give isl_set *isl_ast_build_get_stride_constraint(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_multi_aff *isl_ast_build_get_stride_expansion(
+	__isl_keep isl_ast_build *build);
 
 void isl_ast_build_dump(__isl_keep isl_ast_build *build);
 
-__isl_give isl_set *
-isl_ast_build_get_option_domain(__isl_keep isl_ast_build *build,
-                                enum isl_ast_loop_type type);
-__isl_give isl_map *
-isl_ast_build_get_separation_class(__isl_keep isl_ast_build *build);
-__isl_give isl_set *isl_ast_build_eliminate(__isl_keep isl_ast_build *build,
-                                            __isl_take isl_set *domain);
-__isl_give isl_set *
-isl_ast_build_eliminate_inner(__isl_keep isl_ast_build *build,
-                              __isl_take isl_set *set);
-__isl_give isl_set *
-isl_ast_build_eliminate_divs(__isl_keep isl_ast_build *build,
-                             __isl_take isl_set *set);
+__isl_give isl_set *isl_ast_build_get_option_domain(
+	__isl_keep isl_ast_build *build, enum isl_ast_loop_type type);
+__isl_give isl_map *isl_ast_build_get_separation_class(
+	__isl_keep isl_ast_build *build);
+__isl_give isl_set *isl_ast_build_eliminate(
+	__isl_keep isl_ast_build *build, __isl_take isl_set *domain);
+__isl_give isl_set *isl_ast_build_eliminate_inner(
+	__isl_keep isl_ast_build *build, __isl_take isl_set *set);
+__isl_give isl_set *isl_ast_build_eliminate_divs(
+	__isl_keep isl_ast_build *build, __isl_take isl_set *set);
 
-enum isl_ast_loop_type
-isl_ast_build_get_loop_type(__isl_keep isl_ast_build *build, int isolated);
+enum isl_ast_loop_type isl_ast_build_get_loop_type(
+	__isl_keep isl_ast_build *build, int isolated);
 
-__isl_give isl_map *
-isl_ast_build_map_to_iterator(__isl_keep isl_ast_build *build,
-                              __isl_take isl_set *set);
+__isl_give isl_map *isl_ast_build_map_to_iterator(
+	__isl_keep isl_ast_build *build, __isl_take isl_set *set);
 
 int isl_ast_build_options_involve_depth(__isl_keep isl_ast_build *build);
 

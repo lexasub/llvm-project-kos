@@ -45,31 +45,31 @@
 // CK7-32-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 673]
 
 // CK7-LABEL: implicit_maps_double{{.*}}(
-void implicit_maps_double(int a) {
+void implicit_maps_double (int a){
   double d = (double)a;
 
-// CK7-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-// CK7-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-// CK7-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-// CK7-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-// CK7-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+  // CK7-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+  // CK7-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+  // CK7-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+  // CK7-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+  // CK7-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
 
-// CK7-64-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
-// CK7-64-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
-// CK7-64-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
-// CK7-64-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
-// CK7-64-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
-// CK7-64-64-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to double*
-// CK7-64-64-DAG: store double {{.+}}, double* [[CADDR]],
+  // CK7-64-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
+  // CK7-64-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
+  // CK7-64-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
+  // CK7-64-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
+  // CK7-64-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
+  // CK7-64-64-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to double*
+  // CK7-64-64-DAG: store double {{.+}}, double* [[CADDR]],
 
-// CK7-32-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to double**
-// CK7-32-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to double**
-// CK7-32-DAG: store double* [[DECL:%[^,]+]], double** [[CBP1]]
-// CK7-32-DAG: store double* [[DECL]], double** [[CP1]]
+  // CK7-32-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to double**
+  // CK7-32-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to double**
+  // CK7-32-DAG: store double* [[DECL:%[^,]+]], double** [[CBP1]]
+  // CK7-32-DAG: store double* [[DECL]], double** [[CP1]]
 
-// CK7-64: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
-// CK7-32: call void [[KERNEL:@.+]](double* [[DECL]])
-#pragma omp target
+  // CK7-64: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
+  // CK7-32: call void [[KERNEL:@.+]](double* [[DECL]])
+  #pragma omp target
   {
     d += 1.0;
   }

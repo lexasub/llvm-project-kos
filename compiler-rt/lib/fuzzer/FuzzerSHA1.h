@@ -27,6 +27,6 @@ std::string Sha1ToString(const uint8_t Sha1[kSHA1NumBytes]);
 
 std::string Hash(const Unit &U);
 
-} // namespace fuzzer
+}  // namespace fuzzer
 
-#endif // LLVM_FUZZER_SHA1_H
+#endif  // LLVM_FUZZER_SHA1_H

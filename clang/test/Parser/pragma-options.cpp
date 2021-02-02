@@ -2,5 +2,5 @@
 // expected-no-diagnostics
 
 class C {
-#pragma options align = natural
+#pragma options align=natural
 };

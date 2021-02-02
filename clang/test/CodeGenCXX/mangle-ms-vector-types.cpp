@@ -1,49 +1,42 @@
 // RUN: %clang_cc1 -fms-extensions -fcxx-exceptions -ffreestanding -target-feature +avx -emit-llvm %s -o - -triple=i686-pc-win32 | FileCheck %s
 
+#include <xmmintrin.h>
 #include <emmintrin.h>
 #include <immintrin.h>
-#include <xmmintrin.h>
 
 void thow(int i) {
   switch (i) {
-  case 0:
-    throw __m64();
-  // CHECK: ??_R0?AT__m64@@@8
-  // CHECK: _CT??_R0?AT__m64@@@88
-  // CHECK: _CTA1?AT__m64@@
-  // CHECK: _TI1?AT__m64@@
-  case 1:
-    throw __m128();
-  // CHECK: ??_R0?AT__m128@@@8
-  // CHECK: _CT??_R0?AT__m128@@@816
-  // CHECK: _CTA1?AT__m128@@
-  // CHECK: _TI1?AT__m128@@
-  case 2:
-    throw __m128d();
-  // CHECK: ??_R0?AU__m128d@@@8
-  // CHECK: _CT??_R0?AU__m128d@@@816
-  // CHECK: _CTA1?AU__m128d@@
-  // CHECK: _TI1?AU__m128d@@
-  case 3:
-    throw __m128i();
-  // CHECK: ??_R0?AT__m128i@@@8
-  // CHECK: _CT??_R0?AT__m128i@@@816
-  // CHECK: _CTA1?AT__m128i@@
-  // CHECK: _TI1?AT__m128i@@
-  case 4:
-    throw __m256();
-  // CHECK: ??_R0?AT__m256@@@8
-  // CHECK: _CT??_R0?AT__m256@@@832
-  // CHECK: _CTA1?AT__m256@@
-  // CHECK: _TI1?AT__m256@@
-  case 5:
-    throw __m256d();
-  // CHECK: ??_R0?AU__m256d@@@8
-  // CHECK: _CT??_R0?AU__m256d@@@832
-  // CHECK: _CTA1?AU__m256d@@
-  // CHECK: _TI1?AU__m256d@@
-  case 6:
-    throw __m256i();
+    case 0: throw __m64();
+    // CHECK: ??_R0?AT__m64@@@8
+    // CHECK: _CT??_R0?AT__m64@@@88
+    // CHECK: _CTA1?AT__m64@@
+    // CHECK: _TI1?AT__m64@@
+    case 1: throw __m128();
+    // CHECK: ??_R0?AT__m128@@@8
+    // CHECK: _CT??_R0?AT__m128@@@816
+    // CHECK: _CTA1?AT__m128@@
+    // CHECK: _TI1?AT__m128@@
+    case 2: throw __m128d();
+    // CHECK: ??_R0?AU__m128d@@@8
+    // CHECK: _CT??_R0?AU__m128d@@@816
+    // CHECK: _CTA1?AU__m128d@@
+    // CHECK: _TI1?AU__m128d@@
+    case 3: throw __m128i();
+    // CHECK: ??_R0?AT__m128i@@@8
+    // CHECK: _CT??_R0?AT__m128i@@@816
+    // CHECK: _CTA1?AT__m128i@@
+    // CHECK: _TI1?AT__m128i@@
+    case 4: throw __m256();
+    // CHECK: ??_R0?AT__m256@@@8
+    // CHECK: _CT??_R0?AT__m256@@@832
+    // CHECK: _CTA1?AT__m256@@
+    // CHECK: _TI1?AT__m256@@
+    case 5: throw __m256d();
+    // CHECK: ??_R0?AU__m256d@@@8
+    // CHECK: _CT??_R0?AU__m256d@@@832
+    // CHECK: _CTA1?AU__m256d@@
+    // CHECK: _TI1?AU__m256d@@
+    case 6: throw __m256i();
     // CHECK: ??_R0?AT__m256@@@8
     // CHECK: _CT??_R0?AT__m256@@@832
     // CHECK: _CTA1?AT__m256@@

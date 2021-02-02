@@ -67,7 +67,7 @@ public:
 
 protected:
   bool UpdateValue() override;
-
+  
   void DoUpdateChildrenAddressType(ValueObject &valobj) override;
 
   CompilerType GetCompilerTypeImpl() override;
@@ -75,7 +75,7 @@ protected:
   lldb::VariableSP
       m_variable_sp;      ///< The variable that this value object is based upon
   Value m_resolved_value; ///< The value that DWARFExpression resolves this
-                          /// variable to before we patch it up
+                          ///variable to before we patch it up
 
 private:
   ValueObjectVariable(ExecutionContextScope *exe_scope,

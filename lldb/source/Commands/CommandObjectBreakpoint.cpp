@@ -444,20 +444,22 @@ public:
       case 'X':
         m_source_regex_func_names.insert(std::string(option_arg));
         break;
-
-      case 'y': {
+        
+      case 'y':
+      {
         OptionValueFileColonLine value;
         Status fcl_err = value.SetValueFromString(option_arg);
         if (!fcl_err.Success()) {
           error.SetErrorStringWithFormat(
-              "Invalid value for file:line specifier: %s", fcl_err.AsCString());
+              "Invalid value for file:line specifier: %s",
+              fcl_err.AsCString());
         } else {
           m_filenames.AppendIfUnique(value.GetFileSpec());
           m_line_num = value.GetLineNumber();
           m_column = value.GetColumnNumber();
         }
       } break;
-
+      
       default:
         llvm_unreachable("Unimplemented option");
       }
@@ -1421,9 +1423,8 @@ public:
 
   class CommandOptions : public Options {
   public:
-    CommandOptions()
-        : Options(), m_use_dummy(false), m_force(false),
-          m_delete_disabled(false) {}
+    CommandOptions() : Options(), m_use_dummy(false), m_force(false),
+      m_delete_disabled(false) {}
 
     ~CommandOptions() override = default;
 
@@ -1440,7 +1441,7 @@ public:
       case 'D':
         m_use_dummy = true;
         break;
-
+        
       case 'd':
         m_delete_disabled = true;
         break;
@@ -1472,7 +1473,7 @@ protected:
   bool DoExecute(Args &command, CommandReturnObject &result) override {
     Target &target = GetSelectedOrDummyTarget(m_options.m_use_dummy);
     result.Clear();
-
+    
     std::unique_lock<std::recursive_mutex> lock;
     target.GetBreakpointList().GetListMutex(lock);
 
@@ -1502,7 +1503,7 @@ protected:
     } else {
       // Particular breakpoint selected; disable that breakpoint.
       BreakpointIDList valid_bp_ids;
-
+      
       if (m_options.m_delete_disabled) {
         BreakpointIDList excluded_bp_ids;
 
@@ -1529,7 +1530,7 @@ protected:
             command, &target, result, &valid_bp_ids,
             BreakpointName::Permissions::PermissionKinds::deletePerm);
       }
-
+      
       if (result.Succeeded()) {
         int delete_count = 0;
         int disable_count = 0;

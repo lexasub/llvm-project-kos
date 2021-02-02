@@ -3,7 +3,7 @@
 #include "Inputs/system-header-simulator-cxx.h"
 
 namespace std {
-void *malloc(size_t);
+  void *malloc(size_t);
 }
 
 void *operator new(size_t size) { return std::malloc(size); }

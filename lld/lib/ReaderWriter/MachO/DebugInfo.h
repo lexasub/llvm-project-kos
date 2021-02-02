@@ -16,12 +16,16 @@
 #include "llvm/Support/Format.h"
 #include "llvm/Support/raw_ostream.h"
 
+
 namespace lld {
 namespace mach_o {
 
 class DebugInfo {
 public:
-  enum class Kind { Dwarf, Stabs };
+  enum class Kind {
+    Dwarf,
+    Stabs
+  };
 
   Kind kind() const { return _kind; }
 
@@ -45,7 +49,7 @@ struct TranslationUnitSource {
 class DwarfDebugInfo : public DebugInfo {
 public:
   DwarfDebugInfo(TranslationUnitSource tu)
-      : DebugInfo(Kind::Dwarf), _tu(std::move(tu)) {}
+    : DebugInfo(Kind::Dwarf), _tu(std::move(tu)) {}
 
   static inline bool classof(const DebugInfo *di) {
     return di->kind() == Kind::Dwarf;
@@ -58,39 +62,39 @@ private:
 };
 
 struct Stab {
-  Stab(const Atom *atom, uint8_t type, uint8_t other, uint16_t desc,
+  Stab(const Atom* atom, uint8_t type, uint8_t other, uint16_t desc,
        uint32_t value, StringRef str)
-      : atom(atom), type(type), other(other), desc(desc), value(value),
-        str(str) {}
+    : atom(atom), type(type), other(other), desc(desc), value(value),
+      str(str) {}
 
-  const class Atom *atom;
-  uint8_t type;
-  uint8_t other;
-  uint16_t desc;
-  uint32_t value;
-  StringRef str;
+  const class Atom*   atom;
+  uint8_t             type;
+  uint8_t             other;
+  uint16_t            desc;
+  uint32_t            value;
+  StringRef           str;
 };
 
-inline raw_ostream &operator<<(raw_ostream &os, Stab &s) {
-  os << "Stab -- atom: " << llvm::format("%p", s.atom)
-     << ", type: " << (uint32_t)s.type << ", other: " << (uint32_t)s.other
-     << ", desc: " << s.desc << ", value: " << s.value << ", str: '" << s.str
-     << "'";
+inline raw_ostream& operator<<(raw_ostream &os, Stab &s) {
+  os << "Stab -- atom: " << llvm::format("%p", s.atom) << ", type: " << (uint32_t)s.type
+     << ", other: " << (uint32_t)s.other << ", desc: " << s.desc << ", value: " << s.value
+     << ", str: '" << s.str << "'";
   return os;
 }
 
 class StabsDebugInfo : public DebugInfo {
 public:
+
   typedef std::vector<Stab> StabsList;
 
   StabsDebugInfo(StabsList stabs)
-      : DebugInfo(Kind::Stabs), _stabs(std::move(stabs)) {}
+    : DebugInfo(Kind::Stabs), _stabs(std::move(stabs)) {}
 
   static inline bool classof(const DebugInfo *di) {
     return di->kind() == Kind::Stabs;
   }
 
-  const StabsList &stabs() const { return _stabs; }
+  const StabsList& stabs() const { return _stabs; }
 
 public:
   StabsList _stabs;

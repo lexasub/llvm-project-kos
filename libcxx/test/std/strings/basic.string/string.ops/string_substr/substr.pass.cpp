@@ -19,29 +19,37 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(const S& s, typename S::size_type pos, typename S::size_type n) {
-  if (pos <= s.size()) {
-    S str = s.substr(pos, n);
-    LIBCPP_ASSERT(str.__invariants());
-    assert(pos <= s.size());
-    typename S::size_type rlen = std::min(n, s.size() - pos);
-    assert(str.size() == rlen);
-    assert(S::traits_type::compare(s.data() + pos, str.data(), rlen) == 0);
-  }
-#ifndef TEST_HAS_NO_EXCEPTIONS
-  else {
-    try {
-      S str = s.substr(pos, n);
-      assert(false);
-    } catch (std::out_of_range&) {
-      assert(pos > s.size());
+void
+test(const S& s, typename S::size_type pos, typename S::size_type n)
+{
+    if (pos <= s.size())
+    {
+        S str = s.substr(pos, n);
+        LIBCPP_ASSERT(str.__invariants());
+        assert(pos <= s.size());
+        typename S::size_type rlen = std::min(n, s.size() - pos);
+        assert(str.size() == rlen);
+        assert(S::traits_type::compare(s.data()+pos, str.data(), rlen) == 0);
     }
-  }
+#ifndef TEST_HAS_NO_EXCEPTIONS
+    else
+    {
+        try
+        {
+            S str = s.substr(pos, n);
+            assert(false);
+        }
+        catch (std::out_of_range&)
+        {
+            assert(pos > s.size());
+        }
+    }
 #endif
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S(""), 0, 0);
     test(S(""), 1, 0);
@@ -101,12 +109,10 @@ int main(int, char**) {
     test(S("ktsrmnqagdecfhijpobl"), 19, 1);
     test(S("lsaijeqhtrbgcdmpfkno"), 20, 0);
     test(S("dplqartnfgejichmoskb"), 21, 0);
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S(""), 0, 0);
     test(S(""), 1, 0);
     test(S("pniot"), 0, 0);
@@ -165,7 +171,7 @@ int main(int, char**) {
     test(S("ktsrmnqagdecfhijpobl"), 19, 1);
     test(S("lsaijeqhtrbgcdmpfkno"), 20, 0);
     test(S("dplqartnfgejichmoskb"), 21, 0);
-  }
+    }
 #endif
 
   return 0;

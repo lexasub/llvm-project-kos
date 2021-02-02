@@ -10,23 +10,30 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <stdlib.h>
-
-#include "sanitizer_common/sanitizer_common.h"
 #include "tsan_rtl.h"
 #include "tsan_symbolize.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include <stdlib.h>
 
 namespace __tsan {
 
-void InitializeInterceptors() {}
+void InitializeInterceptors() {
+}
 
-void InitializeDynamicAnnotations() {}
+void InitializeDynamicAnnotations() {
+}
 
-bool IsExpectedReport(uptr addr, uptr size) { return false; }
+bool IsExpectedReport(uptr addr, uptr size) {
+  return false;
+}
 
-void *internal_alloc(MBlockType typ, uptr sz) { return InternalAlloc(sz); }
+void *internal_alloc(MBlockType typ, uptr sz) {
+  return InternalAlloc(sz);
+}
 
-void internal_free(void *p) { InternalFree(p); }
+void internal_free(void *p) {
+  InternalFree(p);
+}
 
 // Callback into Go.
 static void (*go_runtime_cb)(uptr cmd, void *ctx);
@@ -63,7 +70,7 @@ SymbolizedStack *SymbolizeCode(uptr addr) {
     info.line = cbctx.line;
     info.column = 0;
 
-    if (cbctx.pc == addr)  // outermost (non-inlined) function
+    if (cbctx.pc == addr) // outermost (non-inlined) function
       break;
     addr = cbctx.pc;
     // Allocate a stack entry for the parent of the inlined function.
@@ -116,7 +123,7 @@ ReportLocation *SymbolizeData(uptr addr) {
 static ThreadState *main_thr;
 static bool inited;
 
-static Processor *get_cur_proc() {
+static Processor* get_cur_proc() {
   if (UNLIKELY(!inited)) {
     // Running Initialize().
     // We have not yet returned the Processor to Go, so we cannot ask it back.
@@ -128,13 +135,15 @@ static Processor *get_cur_proc() {
   return proc;
 }
 
-Processor *ThreadState::proc() { return get_cur_proc(); }
+Processor *ThreadState::proc() {
+  return get_cur_proc();
+}
 
 extern "C" {
 
 static ThreadState *AllocGoroutine() {
-  ThreadState *thr =
-      (ThreadState *)internal_alloc(MBlockThreadContex, sizeof(ThreadState));
+  ThreadState *thr = (ThreadState*)internal_alloc(MBlockThreadContex,
+      sizeof(ThreadState));
   internal_memset(thr, 0, sizeof(*thr));
   return thr;
 }
@@ -156,7 +165,9 @@ void __tsan_fini() {
   exit(res);
 }
 
-void __tsan_map_shadow(uptr addr, uptr size) { MapShadow(addr, size); }
+void __tsan_map_shadow(uptr addr, uptr size) {
+  MapShadow(addr, size);
+}
 
 void __tsan_read(ThreadState *thr, void *addr, void *pc) {
   MemoryRead(thr, (uptr)pc, (uptr)addr, kSizeLog1);
@@ -190,9 +201,13 @@ void __tsan_write_range(ThreadState *thr, void *addr, uptr size, uptr pc) {
   MemoryAccessRange(thr, (uptr)pc, (uptr)addr, size, true);
 }
 
-void __tsan_func_enter(ThreadState *thr, void *pc) { FuncEntry(thr, (uptr)pc); }
+void __tsan_func_enter(ThreadState *thr, void *pc) {
+  FuncEntry(thr, (uptr)pc);
+}
 
-void __tsan_func_exit(ThreadState *thr) { FuncExit(thr); }
+void __tsan_func_exit(ThreadState *thr) {
+  FuncExit(thr);
+}
 
 void __tsan_malloc(ThreadState *thr, uptr pc, uptr p, uptr sz) {
   CHECK(inited);
@@ -217,9 +232,13 @@ void __tsan_go_end(ThreadState *thr) {
   internal_free(thr);
 }
 
-void __tsan_proc_create(Processor **pproc) { *pproc = ProcCreate(); }
+void __tsan_proc_create(Processor **pproc) {
+  *pproc = ProcCreate();
+}
 
-void __tsan_proc_destroy(Processor *proc) { ProcDestroy(proc); }
+void __tsan_proc_destroy(Processor *proc) {
+  ProcDestroy(proc);
+}
 
 void __tsan_acquire(ThreadState *thr, void *addr) {
   Acquire(thr, 0, (uptr)addr);
@@ -237,7 +256,9 @@ void __tsan_release_merge(ThreadState *thr, void *addr) {
   Release(thr, 0, (uptr)addr);
 }
 
-void __tsan_finalizer_goroutine(ThreadState *thr) { AcquireGlobal(thr, 0); }
+void __tsan_finalizer_goroutine(ThreadState *thr) {
+  AcquireGlobal(thr, 0);
+}
 
 void __tsan_mutex_before_lock(ThreadState *thr, uptr addr, uptr write) {
   if (write)

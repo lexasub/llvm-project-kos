@@ -19,18 +19,19 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
-int main(int, char**) {
-  std::string temp = get_temp_file_name();
+int main(int, char**)
+{
+    std::string temp = get_temp_file_name();
 
-  std::fstream ofs(temp, std::ios::out | std::ios::trunc);
-  ofs << "Hello, World!\n";
-  assert(ofs.good());
-  ofs.close();
-  assert(ofs.good());
-  ofs << "Hello, World!\n";
-  assert(!ofs.good());
+    std::fstream ofs(temp, std::ios::out | std::ios::trunc);
+    ofs << "Hello, World!\n";
+    assert( ofs.good());
+    ofs.close();
+    assert( ofs.good());
+    ofs << "Hello, World!\n";
+    assert(!ofs.good());
 
-  std::remove(temp.c_str());
+    std::remove(temp.c_str());
 
   return 0;
 }

@@ -36,12 +36,13 @@ static const char heatPalette[heatSize][8] = {
     "#d24b40", "#d0473d", "#cc403a", "#ca3b37", "#c53334", "#c32e31", "#be242e",
     "#bb1b2c", "#b70d28"};
 
-uint64_t getNumOfCalls(Function &callerFunction, Function &calledFunction) {
+uint64_t
+getNumOfCalls(Function &callerFunction, Function &calledFunction) {
   uint64_t counter = 0;
   for (User *U : calledFunction.users()) {
     if (auto CI = dyn_cast<CallInst>(U)) {
       if (CI->getCaller() == (&callerFunction)) {
-        counter += 1;
+          counter += 1;
       }
     }
   }

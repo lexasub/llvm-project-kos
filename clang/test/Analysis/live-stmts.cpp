@@ -3,6 +3,7 @@
 
 int coin();
 
+
 int testThatDumperWorks(int x, int y, int z) {
   return x ? y : z;
 }
@@ -62,6 +63,7 @@ int testThatDumperWorks(int x, int y, int z) {
 // CHECK-EMPTY:
 // CHECK-EMPTY:
 
+
 void testIfBranchExpression(bool flag) {
   // No expressions should be carried over from one block to another here.
   while (flag) {
@@ -88,6 +90,7 @@ void testIfBranchExpression(bool flag) {
 // CHECK: [ B5 (live expressions at block exit) ]
 // CHECK-EMPTY:
 // CHECK-EMPTY:
+
 
 void testWhileBodyExpression(bool flag) {
   // No expressions should be carried over from one block to another here.
@@ -116,6 +119,7 @@ void testWhileBodyExpression(bool flag) {
 // CHECK-EMPTY:
 // CHECK-EMPTY:
 
+
 void testDoWhileBodyExpression(bool flag) {
   // No expressions should be carried over from one block to another here.
   while (flag) {
@@ -143,6 +147,7 @@ void testDoWhileBodyExpression(bool flag) {
 // CHECK: [ B5 (live expressions at block exit) ]
 // CHECK-EMPTY:
 // CHECK-EMPTY:
+
 
 void testForBodyExpression(bool flag) {
   // No expressions should be carried over from one block to another here.

@@ -65,11 +65,11 @@ public:
   AMDGPUSubtarget(const Triple &TT);
 
   static const AMDGPUSubtarget &get(const MachineFunction &MF);
-  static const AMDGPUSubtarget &get(const TargetMachine &TM, const Function &F);
+  static const AMDGPUSubtarget &get(const TargetMachine &TM,
+                                    const Function &F);
 
   /// \returns Default range flat work group size for a calling convention.
-  std::pair<unsigned, unsigned>
-  getDefaultFlatWorkGroupSize(CallingConv::ID CC) const;
+  std::pair<unsigned, unsigned> getDefaultFlatWorkGroupSize(CallingConv::ID CC) const;
 
   /// \returns Subtarget's default pair of minimum/maximum flat work group sizes
   /// for function \p F, or minimum/maximum flat work group sizes explicitly
@@ -102,11 +102,17 @@ public:
 
   unsigned getOccupancyWithLocalMemSize(const MachineFunction &MF) const;
 
-  bool isAmdHsaOS() const { return TargetTriple.getOS() == Triple::AMDHSA; }
+  bool isAmdHsaOS() const {
+    return TargetTriple.getOS() == Triple::AMDHSA;
+  }
 
-  bool isAmdPalOS() const { return TargetTriple.getOS() == Triple::AMDPAL; }
+  bool isAmdPalOS() const {
+    return TargetTriple.getOS() == Triple::AMDPAL;
+  }
 
-  bool isMesa3DOS() const { return TargetTriple.getOS() == Triple::Mesa3D; }
+  bool isMesa3DOS() const {
+    return TargetTriple.getOS() == Triple::Mesa3D;
+  }
 
   bool isMesaKernel(const Function &F) const;
 
@@ -114,37 +120,69 @@ public:
     return isAmdHsaOS() || isMesaKernel(F);
   }
 
-  bool isGCN() const { return TargetTriple.getArch() == Triple::amdgcn; }
+  bool isGCN() const {
+    return TargetTriple.getArch() == Triple::amdgcn;
+  }
 
-  bool has16BitInsts() const { return Has16BitInsts; }
+  bool has16BitInsts() const {
+    return Has16BitInsts;
+  }
 
-  bool hasMadMixInsts() const { return HasMadMixInsts; }
+  bool hasMadMixInsts() const {
+    return HasMadMixInsts;
+  }
 
-  bool hasMadMacF32Insts() const { return HasMadMacF32Insts || !isGCN(); }
+  bool hasMadMacF32Insts() const {
+    return HasMadMacF32Insts || !isGCN();
+  }
 
-  bool hasDsSrc2Insts() const { return HasDsSrc2Insts; }
+  bool hasDsSrc2Insts() const {
+    return HasDsSrc2Insts;
+  }
 
-  bool hasSDWA() const { return HasSDWA; }
+  bool hasSDWA() const {
+    return HasSDWA;
+  }
 
-  bool hasVOP3PInsts() const { return HasVOP3PInsts; }
+  bool hasVOP3PInsts() const {
+    return HasVOP3PInsts;
+  }
 
-  bool hasMulI24() const { return HasMulI24; }
+  bool hasMulI24() const {
+    return HasMulI24;
+  }
 
-  bool hasMulU24() const { return HasMulU24; }
+  bool hasMulU24() const {
+    return HasMulU24;
+  }
 
-  bool hasInv2PiInlineImm() const { return HasInv2PiInlineImm; }
+  bool hasInv2PiInlineImm() const {
+    return HasInv2PiInlineImm;
+  }
 
-  bool hasFminFmaxLegacy() const { return HasFminFmaxLegacy; }
+  bool hasFminFmaxLegacy() const {
+    return HasFminFmaxLegacy;
+  }
 
-  bool hasTrigReducedRange() const { return HasTrigReducedRange; }
+  bool hasTrigReducedRange() const {
+    return HasTrigReducedRange;
+  }
 
-  bool isPromoteAllocaEnabled() const { return EnablePromoteAlloca; }
+  bool isPromoteAllocaEnabled() const {
+    return EnablePromoteAlloca;
+  }
 
-  unsigned getWavefrontSize() const { return 1 << WavefrontSizeLog2; }
+  unsigned getWavefrontSize() const {
+    return 1 << WavefrontSizeLog2;
+  }
 
-  unsigned getWavefrontSizeLog2() const { return WavefrontSizeLog2; }
+  unsigned getWavefrontSizeLog2() const {
+    return WavefrontSizeLog2;
+  }
 
-  unsigned getLocalMemorySize() const { return LocalMemorySize; }
+  unsigned getLocalMemorySize() const {
+    return LocalMemorySize;
+  }
 
   Align getAlignmentForImplicitArgPtr() const {
     return isAmdHsaOS() ? Align(8) : Align(4);

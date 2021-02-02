@@ -150,6 +150,6 @@ class LoopVersioningPass : public PassInfoMixin<LoopVersioningPass> {
 public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &FAM);
 };
-} // namespace llvm
+}
 
 #endif

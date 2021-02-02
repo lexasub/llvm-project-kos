@@ -673,7 +673,8 @@ public:
     if (!L->getExitBlock())
       return fail("MultipleExitBlocks", "multiple exit blocks");
     if (!L->isLoopSimplifyForm())
-      return fail("NotLoopSimplifyForm", "loop is not in loop-simplify form");
+      return fail("NotLoopSimplifyForm",
+                  "loop is not in loop-simplify form");
     if (!L->isRotatedForm())
       return fail("NotBottomTested", "loop is not bottom tested");
 
@@ -882,9 +883,8 @@ public:
     // failed.
     if (Forced)
       Ctx.diagnose(DiagnosticInfoOptimizationFailure(
-          *F, L->getStartLoc(),
-          "loop not distributed: failed "
-          "explicitly specified loop distribution"));
+          *F, L->getStartLoc(), "loop not distributed: failed "
+                                "explicitly specified loop distribution"));
 
     return false;
   }
@@ -1085,6 +1085,4 @@ INITIALIZE_PASS_DEPENDENCY(ScalarEvolutionWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(OptimizationRemarkEmitterWrapperPass)
 INITIALIZE_PASS_END(LoopDistributeLegacy, LDIST_NAME, ldist_name, false, false)
 
-FunctionPass *llvm::createLoopDistributePass() {
-  return new LoopDistributeLegacy();
-}
+FunctionPass *llvm::createLoopDistributePass() { return new LoopDistributeLegacy(); }

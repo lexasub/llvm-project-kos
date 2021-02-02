@@ -55,7 +55,7 @@
 
 template <typename T>
 int foo(const T &t) {
-#pragma omp target parallel
+  #pragma omp target parallel
   t();
   return 0;
 }
@@ -121,13 +121,13 @@ int main(int argc, char **argv) {
   int *d = &argc;
   int a;
   auto &&L = [&]() { return argc + b + c + reinterpret_cast<long int>(d) + a; };
-#pragma omp target firstprivate(argc) map(to \
-                                          : a)
+#pragma omp target firstprivate(argc) map(to : a)
   L();
 #pragma omp target parallel
   L();
   return argc + s.foo();
 }
+
 
 // HOST-LABEL: @main
 

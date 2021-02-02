@@ -1,5 +1,4 @@
-//===- CTagsEmitter.cpp - Generate ctags-compatible index
-//------------------===//
+//===- CTagsEmitter.cpp - Generate ctags-compatible index ------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -13,8 +12,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/MemoryBuffer.h"
 #include "llvm/TableGen/Error.h"
 #include "llvm/TableGen/Record.h"
 #include <algorithm>
@@ -30,7 +29,6 @@ class Tag {
 private:
   const std::string *Id;
   SMLoc Loc;
-
 public:
   Tag(const std::string &Name, const SMLoc Location)
       : Id(&Name), Loc(Location) {}
@@ -47,7 +45,6 @@ public:
 class CTagsEmitter {
 private:
   RecordKeeper &Records;
-
 public:
   CTagsEmitter(RecordKeeper &R) : Records(R) {}
 
@@ -86,4 +83,4 @@ namespace llvm {
 
 void EmitCTags(RecordKeeper &RK, raw_ostream &OS) { CTagsEmitter(RK).run(OS); }
 
-} // namespace llvm
+} // End llvm namespace.

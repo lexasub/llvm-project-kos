@@ -5,14 +5,14 @@ struct foo {
 };
 
 namespace ns {
-struct bar {
-};
+  struct bar {
+  };
 
-struct baz {
-};
+  struct baz {
+  };
 
-int func(foo::type a, bar b, baz c);
-} // namespace ns
+  int func(foo::type a, bar b, baz c);
+}
 
 typedef ns::bar bar;
 

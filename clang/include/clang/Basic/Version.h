@@ -19,43 +19,43 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace clang {
-/// Retrieves the repository path (e.g., Subversion path) that
-/// identifies the particular Clang branch, tag, or trunk from which this
-/// Clang was built.
-std::string getClangRepositoryPath();
+  /// Retrieves the repository path (e.g., Subversion path) that
+  /// identifies the particular Clang branch, tag, or trunk from which this
+  /// Clang was built.
+  std::string getClangRepositoryPath();
 
-/// Retrieves the repository path from which LLVM was built.
-///
-/// This supports LLVM residing in a separate repository from clang.
-std::string getLLVMRepositoryPath();
+  /// Retrieves the repository path from which LLVM was built.
+  ///
+  /// This supports LLVM residing in a separate repository from clang.
+  std::string getLLVMRepositoryPath();
 
-/// Retrieves the repository revision number (or identifier) from which
-/// this Clang was built.
-std::string getClangRevision();
+  /// Retrieves the repository revision number (or identifier) from which
+  /// this Clang was built.
+  std::string getClangRevision();
 
-/// Retrieves the repository revision number (or identifier) from which
-/// LLVM was built.
-///
-/// If Clang and LLVM are in the same repository, this returns the same
-/// string as getClangRevision.
-std::string getLLVMRevision();
+  /// Retrieves the repository revision number (or identifier) from which
+  /// LLVM was built.
+  ///
+  /// If Clang and LLVM are in the same repository, this returns the same
+  /// string as getClangRevision.
+  std::string getLLVMRevision();
 
-/// Retrieves the full repository version that is an amalgamation of
-/// the information in getClangRepositoryPath() and getClangRevision().
-std::string getClangFullRepositoryVersion();
+  /// Retrieves the full repository version that is an amalgamation of
+  /// the information in getClangRepositoryPath() and getClangRevision().
+  std::string getClangFullRepositoryVersion();
 
-/// Retrieves a string representing the complete clang version,
-/// which includes the clang version number, the repository version,
-/// and the vendor tag.
-std::string getClangFullVersion();
+  /// Retrieves a string representing the complete clang version,
+  /// which includes the clang version number, the repository version,
+  /// and the vendor tag.
+  std::string getClangFullVersion();
 
-/// Like getClangFullVersion(), but with a custom tool name.
-std::string getClangToolFullVersion(llvm::StringRef ToolName);
+  /// Like getClangFullVersion(), but with a custom tool name.
+  std::string getClangToolFullVersion(llvm::StringRef ToolName);
 
-/// Retrieves a string representing the complete clang version suitable
-/// for use in the CPP __VERSION__ macro, which includes the clang version
-/// number, the repository version, and the vendor tag.
-std::string getClangFullCPPVersion();
-} // namespace clang
+  /// Retrieves a string representing the complete clang version suitable
+  /// for use in the CPP __VERSION__ macro, which includes the clang version
+  /// number, the repository version, and the vendor tag.
+  std::string getClangFullCPPVersion();
+}
 
 #endif // LLVM_CLANG_BASIC_VERSION_H

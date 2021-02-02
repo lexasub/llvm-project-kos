@@ -11,9 +11,9 @@
 #include <ctime>
 
 int main(int, char**) {
-  // asctime is not thread-safe.
-  std::time_t t = 0;
-  std::asctime(&t);
+    // asctime is not thread-safe.
+    std::time_t t = 0;
+    std::asctime(&t);
 
   return 0;
 }

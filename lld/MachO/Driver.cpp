@@ -127,8 +127,8 @@ static Optional<std::string> findFramework(StringRef name) {
 
 static TargetInfo *createTargetInfo(opt::InputArgList &args) {
   StringRef arch = args.getLastArgValue(OPT_arch, "x86_64");
-  config->arch =
-      MachO::getArchitectureFromName(args.getLastArgValue(OPT_arch, arch));
+  config->arch = MachO::getArchitectureFromName(
+      args.getLastArgValue(OPT_arch, arch));
   switch (config->arch) {
   case MachO::AK_x86_64:
   case MachO::AK_x86_64h:
@@ -351,9 +351,8 @@ static void addFramework(StringRef name, bool isWeak) {
   error("framework not found for -framework " + name);
 }
 
-// Parses LC_LINKER_OPTION contents, which can add additional command line
-// flags.
-void macho::parseLCLinkerOption(InputFile *f, unsigned argc, StringRef data) {
+// Parses LC_LINKER_OPTION contents, which can add additional command line flags.
+void macho::parseLCLinkerOption(InputFile* f, unsigned argc, StringRef data) {
   SmallVector<const char *, 4> argv;
   size_t offset = 0;
   for (unsigned i = 0; i < argc && offset < data.size(); ++i) {
@@ -659,7 +658,7 @@ static void parseClangOption(StringRef opt, const Twine &msg) {
   error(msg + ": " + StringRef(err).trim());
 }
 
-static uint32_t parseDylibVersion(const opt::ArgList &args, unsigned id) {
+static uint32_t parseDylibVersion(const opt::ArgList& args, unsigned id) {
   const opt::Arg *arg = args.getLastArg(id);
   if (!arg)
     return 0;

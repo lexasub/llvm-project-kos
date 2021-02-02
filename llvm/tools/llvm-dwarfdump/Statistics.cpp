@@ -177,7 +177,8 @@ static std::string constructDieID(DWARFDie Die,
                                   StringRef Prefix = StringRef()) {
   std::string IDStr;
   llvm::raw_string_ostream ID(IDStr);
-  ID << Prefix << Die.getName(DINameKind::LinkageName);
+  ID << Prefix
+     << Die.getName(DINameKind::LinkageName);
 
   // Prefix + Name is enough for local variables and parameters.
   if (!Prefix.empty() && !Prefix.equals("g"))

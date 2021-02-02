@@ -8,7 +8,8 @@
 
 static volatile int sink;
 
-__attribute__((noinline)) void f(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
+__attribute__((noinline))
+void f(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
   if (a == b + 1 && c == d + 2)
     sink++;
   if (a == d + 1 && c == b + 2)

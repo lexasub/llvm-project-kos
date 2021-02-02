@@ -16,3 +16,4 @@ int maxClone(int a, int b) { // expected-note{{Similar code here}}
     return a;
   return b;
 }
+

@@ -4,9 +4,7 @@
 
 // Check that we don't allow illegal uses of inline
 // (checking C++-only constructs here)
-struct c {
-  inline int a;
-}; // expected-error{{'inline' can only appear on functions}}
+struct c {inline int a;}; // expected-error{{'inline' can only appear on functions}}
 
 void localVar() {
   inline int a; // expected-error{{inline declaration of 'a' not allowed in block scope}}

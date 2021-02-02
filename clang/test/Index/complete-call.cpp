@@ -10,16 +10,16 @@ void foo_4(int, int);
 void foo_4(void *, int);
 void foo_5(int, int);
 void foo_5(int, void *);
-template <class T> void foo_6();
-template <class T> void foo_7(T);
-template <class T> void foo_8(T, T);
-template <class T> void foo_9(int, T);
-template <class T> void foo_9(void *, T);
-template <class T> void foo_10(T, int, int);
-template <class U> void foo_10(U, void *, void *);
-template <class T, class U> void foo_11(T, U);
-template <class T = int> void foo_12(T, T);
-template <class V>
+template<class T> void foo_6();
+template<class T> void foo_7(T);
+template<class T> void foo_8(T, T);
+template<class T> void foo_9(int, T);
+template<class T> void foo_9(void *, T);
+template<class T> void foo_10(T, int, int);
+template<class U> void foo_10(U, void *, void *);
+template<class T, class U> void foo_11(T, U);
+template<class T = int> void foo_12(T, T);
+template<class V>
 struct S {
   void foo_1();
   void foo_2(int);
@@ -30,16 +30,16 @@ struct S {
   void foo_4(void *, int);
   void foo_5(int, int);
   void foo_5(int, void *);
-  template <class T> void foo_6();
-  template <class T> void foo_7(T);
-  template <class T> void foo_8(T, T);
-  template <class T> void foo_9(int, T);
-  template <class T> void foo_9(void *, T);
-  template <class T> void foo_10(T, int, int);
-  template <class U> void foo_10(U, void *, void *);
-  template <class T, class U> void foo_11(T, U);
-  template <class T = int> void foo_12(T, T);
-  template <class T> void foo_13(V, T, T);
+  template<class T> void foo_6();
+  template<class T> void foo_7(T);
+  template<class T> void foo_8(T, T);
+  template<class T> void foo_9(int, T);
+  template<class T> void foo_9(void *, T);
+  template<class T> void foo_10(T, int, int);
+  template<class U> void foo_10(U, void *, void *);
+  template<class T, class U> void foo_11(T, U);
+  template<class T = int> void foo_12(T, T);
+  template<class T> void foo_13(V, T, T);
 };
 
 int main() {
@@ -84,14 +84,14 @@ int main() {
   s.foo_12(p, p);
   s.foo_13(42, 42, 42);
 
-  foo_1(42, );
-  foo_2(42, );
-  foo_6<int>(42, );
-  foo_7(42, );
-  s.foo_1(42, );
-  s.foo_2(42, );
-  s.foo_6<int>(42, );
-  s.foo_7(42, );
+  foo_1(42,);
+  foo_2(42,);
+  foo_6<int>(42,);
+  foo_7(42,);
+  s.foo_1(42,);
+  s.foo_2(42,);
+  s.foo_6<int>(42,);
+  s.foo_7(42,);
 }
 
 struct Bar {
@@ -117,14 +117,14 @@ struct BarTemplates {
   void foo_1(float) {}
   static void foo_1(int) {}
 
-  template <class T1, class T2>
+  template<class T1, class T2>
   static void foo_1(T1 a, T2 b) { a + b; }
 
-  template <class T1, class T2>
+  template<class T1, class T2>
   void foo_1(T1 a, T2 b, float c) { a + b + c; }
 
-  template <class T1, class T2>
-  static void foo_1(T2 a, int b, T1 c) { a + b + c; }
+  template<class T1, class T2>
+  static void foo_1(T2 a, int b, T1 c)  { a + b + c; }
 };
 
 void testTemplates() {
@@ -913,3 +913,4 @@ struct Bar2Template : public BarTemplates {
 // CHECK-CC65: OverloadCandidate:{ResultType void}{Text foo_1}{LeftParen (}{CurrentParameter T1 a}{Comma , }{Placeholder T2 b}{RightParen )} (1)
 // CHECK-CC65: OverloadCandidate:{ResultType void}{Text foo_1}{LeftParen (}{CurrentParameter T1 a}{Comma , }{Placeholder T2 b}{Comma , }{Placeholder float c}{RightParen )} (1)
 // CHECK-CC65: OverloadCandidate:{ResultType void}{Text foo_1}{LeftParen (}{CurrentParameter T2 a}{Comma , }{Placeholder int b}{Comma , }{Placeholder T1 c}{RightParen )} (1)
+

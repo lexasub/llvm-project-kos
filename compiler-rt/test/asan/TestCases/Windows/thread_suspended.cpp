@@ -24,3 +24,4 @@ int main() {
     return 3;
   CloseHandle(thr);
 }
+

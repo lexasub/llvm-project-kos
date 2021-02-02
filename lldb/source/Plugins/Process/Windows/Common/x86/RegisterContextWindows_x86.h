@@ -44,7 +44,7 @@ private:
   bool ReadRegisterHelper(DWORD flags_required, const char *reg_name,
                           DWORD value, RegisterValue &reg_value) const;
 };
-} // namespace lldb_private
+}
 
 #endif // defined(__i386__) || defined(_M_IX86)
 

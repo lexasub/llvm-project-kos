@@ -14,14 +14,14 @@
 #ifndef LLVM_CLANG_SEMA_TEMPLATEDEDUCTION_H
 #define LLVM_CLANG_SEMA_TEMPLATEDEDUCTION_H
 
+#include "clang/Sema/Ownership.h"
+#include "clang/Sema/SemaConcept.h"
 #include "clang/AST/ASTConcept.h"
 #include "clang/AST/DeclAccessPair.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/TemplateBase.h"
 #include "clang/Basic/PartialDiagnostic.h"
 #include "clang/Basic/SourceLocation.h"
-#include "clang/Sema/Ownership.h"
-#include "clang/Sema/SemaConcept.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallVector.h"
 #include <cassert>
@@ -76,14 +76,20 @@ public:
 
   /// Returns the location at which template argument is
   /// occurring.
-  SourceLocation getLocation() const { return Loc; }
+  SourceLocation getLocation() const {
+    return Loc;
+  }
 
   /// The depth of template parameters for which deduction is being
   /// performed.
-  unsigned getDeducedDepth() const { return DeducedDepth; }
+  unsigned getDeducedDepth() const {
+    return DeducedDepth;
+  }
 
   /// Get the number of explicitly-specified arguments.
-  unsigned getNumExplicitArgs() const { return ExplicitArgs; }
+  unsigned getNumExplicitArgs() const {
+    return ExplicitArgs;
+  }
 
   /// Take ownership of the deduced template argument list.
   TemplateArgumentList *take() {
@@ -121,10 +127,14 @@ public:
 
   /// Provide a new template argument list that contains the
   /// results of template argument deduction.
-  void reset(TemplateArgumentList *NewDeduced) { Deduced = NewDeduced; }
+  void reset(TemplateArgumentList *NewDeduced) {
+    Deduced = NewDeduced;
+  }
 
   /// Is a SFINAE diagnostic available?
-  bool hasSFINAEDiagnostic() const { return HasSFINAEDiagnostic; }
+  bool hasSFINAEDiagnostic() const {
+    return HasSFINAEDiagnostic;
+  }
 
   /// Set the diagnostic which caused the SFINAE failure.
   void addSFINAEDiagnostic(SourceLocation Loc, PartialDiagnostic PD) {
@@ -137,7 +147,8 @@ public:
   }
 
   /// Add a new diagnostic to the set of diagnostics
-  void addSuppressedDiagnostic(SourceLocation Loc, PartialDiagnostic PD) {
+  void addSuppressedDiagnostic(SourceLocation Loc,
+                               PartialDiagnostic PD) {
     if (HasSFINAEDiagnostic)
       return;
     SuppressedDiagnostics.emplace_back(Loc, std::move(PD));

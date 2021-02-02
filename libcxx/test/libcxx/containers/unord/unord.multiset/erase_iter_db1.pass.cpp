@@ -21,11 +21,11 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  int a1[] = {1, 2, 3};
-  std::unordered_multiset<int> l1(a1, a1 + 3);
-  std::unordered_multiset<int>::const_iterator i = l1.end();
-  l1.erase(i);
-  assert(false);
+    int a1[] = {1, 2, 3};
+    std::unordered_multiset<int> l1(a1, a1+3);
+    std::unordered_multiset<int>::const_iterator i = l1.end();
+    l1.erase(i);
+    assert(false);
 
-  return 0;
+    return 0;
 }

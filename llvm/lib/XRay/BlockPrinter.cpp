@@ -103,10 +103,10 @@ Error BlockPrinter::visit(CallArgRecord &R) {
 }
 
 Error BlockPrinter::visit(EndBufferRecord &R) {
-  CurrentState = State::End;
-  OS << " *** ";
-  auto E = RP.visit(R);
-  return E;
+    CurrentState = State::End;
+    OS << " *** ";
+    auto E = RP.visit(R);
+    return E;
 }
 
 } // namespace xray

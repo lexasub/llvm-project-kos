@@ -354,14 +354,15 @@ private:
   enum {
     eMachProcessFlagsNone = 0,
     eMachProcessFlagsAttached = (1 << 0),
-    eMachProcessFlagsUsingBKS =
-        (1 << 2), // only read via ProcessUsingBackBoard()
-    eMachProcessFlagsUsingFBS =
-        (1 << 3), // only read via ProcessUsingFrontBoard()
+    eMachProcessFlagsUsingBKS = (1 << 2), // only read via ProcessUsingBackBoard()
+    eMachProcessFlagsUsingFBS = (1 << 3), // only read via ProcessUsingFrontBoard()
     eMachProcessFlagsBoardCalculated = (1 << 4)
   };
 
-  enum { eMachProcessProfileNone = 0, eMachProcessProfileCancel = (1 << 0) };
+  enum {
+    eMachProcessProfileNone = 0,
+    eMachProcessProfileCancel = (1 << 0)
+  };
 
   void Clear(bool detaching = false);
   void ReplyToAllExceptions();
@@ -401,7 +402,7 @@ private:
       m_profile_data_mutex; // Multithreaded protection for profile info data
   std::vector<std::string>
       m_profile_data; // Profile data, must be protected by m_profile_data_mutex
-  PThreadEvent m_profile_events; // Used for the profile thread cancellable wait
+  PThreadEvent m_profile_events; // Used for the profile thread cancellable wait  
   DNBThreadResumeActions m_thread_actions; // The thread actions for the current
                                            // MachProcess::Resume() call
   MachException::Message::collection m_exception_messages; // A collection of

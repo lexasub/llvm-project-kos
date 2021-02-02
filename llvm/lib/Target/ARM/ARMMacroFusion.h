@@ -23,6 +23,6 @@ namespace llvm {
 /// to ARMPassConfig::createMachineScheduler() to have an effect.
 std::unique_ptr<ScheduleDAGMutation> createARMMacroFusionDAGMutation();
 
-} // namespace llvm
+} // llvm
 
 #endif

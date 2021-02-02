@@ -273,8 +273,9 @@ public:
   /// the vectorization factors in question.
   bool hasPlanWithVFs(const ArrayRef<ElementCount> VFs) const {
     return any_of(VPlans, [&](const VPlanPtr &Plan) {
-      return all_of(VFs,
-                    [&](const ElementCount &VF) { return Plan->hasVF(VF); });
+      return all_of(VFs, [&](const ElementCount &VF) {
+        return Plan->hasVF(VF);
+      });
     });
   }
 

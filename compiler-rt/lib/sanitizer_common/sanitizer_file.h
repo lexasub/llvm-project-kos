@@ -49,7 +49,11 @@ struct ReportFile {
 };
 extern ReportFile report_file;
 
-enum FileAccessMode { RdOnly, WrOnly, RdWr };
+enum FileAccessMode {
+  RdOnly,
+  WrOnly,
+  RdWr
+};
 
 // Returns kInvalidFd on error.
 fd_t OpenFile(const char *filename, FileAccessMode mode,

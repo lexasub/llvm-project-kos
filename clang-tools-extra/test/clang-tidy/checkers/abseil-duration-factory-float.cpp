@@ -28,6 +28,7 @@ void ConvertFloatTest() {
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: use the integer version of absl::Seconds [abseil-duration-factory-float]
   // CHECK-FIXES: absl::Seconds(6);
 
+
   // Ignored expressions
   d = absl::Seconds(.001);
   d = absl::Seconds(.100);
@@ -59,10 +60,10 @@ template <int N>
 void InTemplate() {
   absl::Duration d;
 
-  d = absl::Seconds(N); // 1
+  d = absl::Seconds(N);  // 1
   // ^ No replacement here.
 
-  d = absl::Minutes(1.0); // 2
+  d = absl::Minutes(1.0);  // 2
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: use the integer version of absl::Minutes [abseil-duration-factory-float]
   // CHECK-FIXES: absl::Minutes(1);  // 2
 }
@@ -83,11 +84,11 @@ void ConvertCastTest() {
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: use the integer version of absl::Minutes [abseil-duration-factory-float]
   // CHECK-FIXES: absl::Minutes(5);
 
-  d = absl::Seconds((double)5);
+  d = absl::Seconds((double) 5);
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: use the integer version of absl::Seconds [abseil-duration-factory-float]
   // CHECK-FIXES: absl::Seconds(5);
 
-  d = absl::Minutes((float)5);
+  d = absl::Minutes((float) 5);
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: use the integer version of absl::Minutes [abseil-duration-factory-float]
   // CHECK-FIXES: absl::Minutes(5);
 
@@ -101,6 +102,6 @@ void ConvertCastTest() {
 
   // This should not be flagged
   d = absl::Seconds(static_cast<int>(5.0));
-  d = absl::Seconds((int)5.0);
+  d = absl::Seconds((int) 5.0);
   d = absl::Seconds(int(5.0));
 }

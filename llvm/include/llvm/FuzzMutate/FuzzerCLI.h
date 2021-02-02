@@ -48,9 +48,8 @@ using FuzzerInitFun = int (*)(int *argc, char ***argv);
 ///
 /// Useful for testing fuzz targets without linking to libFuzzer. Finds inputs
 /// in the argument list in a libFuzzer compatible way.
-int runFuzzerOnInputs(
-    int ArgC, char *ArgV[], FuzzerTestFun TestOne,
-    FuzzerInitFun Init = [](int *, char ***) { return 0; });
+int runFuzzerOnInputs(int ArgC, char *ArgV[], FuzzerTestFun TestOne,
+                      FuzzerInitFun Init = [](int *, char ***) { return 0; });
 
 /// Fuzzer friendly interface for the llvm bitcode parser.
 ///
@@ -75,6 +74,6 @@ size_t writeModule(const Module &M, uint8_t *Dest, size_t MaxSize);
 std::unique_ptr<Module> parseAndVerify(const uint8_t *Data, size_t Size,
                                        LLVMContext &Context);
 
-} // namespace llvm
+} // end llvm namespace
 
 #endif // LLVM_FUZZMUTATE_FUZZER_CLI_H

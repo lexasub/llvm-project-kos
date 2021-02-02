@@ -19,16 +19,17 @@
 #if __has_extension(gnu_asm)
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("pconfig")))
+#define __DEFAULT_FN_ATTRS \
+  __attribute__((__always_inline__, __nodebug__,  __target__("pconfig")))
 
 static __inline unsigned int __DEFAULT_FN_ATTRS
-_pconfig_u32(unsigned int __leaf, __SIZE_TYPE__ __d[]) {
+_pconfig_u32(unsigned int __leaf, __SIZE_TYPE__ __d[])
+{
   unsigned int __result;
-  __asm__("pconfig"
-          : "=a"(__result), "=b"(__d[0]), "=c"(__d[1]), "=d"(__d[2])
-          : "a"(__leaf), "b"(__d[0]), "c"(__d[1]), "d"(__d[2])
-          : "cc");
+  __asm__ ("pconfig"
+           : "=a" (__result), "=b" (__d[0]), "=c" (__d[1]), "=d" (__d[2])
+           : "a" (__leaf), "b" (__d[0]), "c" (__d[1]), "d" (__d[2])
+           : "cc");
   return __result;
 }
 

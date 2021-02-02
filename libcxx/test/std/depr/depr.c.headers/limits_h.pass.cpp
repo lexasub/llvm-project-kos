@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-// test limits.h
+ // test limits.h
 
 #include <limits.h>
 
@@ -88,4 +88,8 @@
 #error ULLONG_MAX not defined
 #endif
 
-int main(int, char**) { return 0; }
+int main(int, char**)
+{
+
+  return 0;
+}

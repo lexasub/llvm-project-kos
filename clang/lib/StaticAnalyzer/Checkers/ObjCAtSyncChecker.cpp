@@ -11,8 +11,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/StmtObjC.h"
 #include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
+#include "clang/AST/StmtObjC.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -24,7 +24,7 @@ using namespace ento;
 
 namespace {
 class ObjCAtSyncChecker
-    : public Checker<check::PreStmt<ObjCAtSynchronizedStmt>> {
+    : public Checker< check::PreStmt<ObjCAtSynchronizedStmt> > {
   mutable std::unique_ptr<BuiltinBug> BT_null;
   mutable std::unique_ptr<BuiltinBug> BT_undef;
 

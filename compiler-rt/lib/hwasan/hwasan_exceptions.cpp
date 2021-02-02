@@ -11,10 +11,10 @@
 // HWAddressSanitizer runtime.
 //===----------------------------------------------------------------------===//
 
-#include <unwind.h>
-
 #include "hwasan_poisoning.h"
 #include "sanitizer_common/sanitizer_common.h"
+
+#include <unwind.h>
 
 using namespace __hwasan;
 using namespace __sanitizer;
@@ -53,9 +53,9 @@ __hwasan_personality_wrapper(int version, _Unwind_Action actions,
   // required by AAPCS but is a requirement for HWASAN instrumented functions.
   if ((actions & _UA_CLEANUP_PHASE) && rc == _URC_CONTINUE_UNWIND) {
 #if defined(__x86_64__)
-    uptr fp = get_gr(context, 6);  // rbp
+    uptr fp = get_gr(context, 6); // rbp
 #elif defined(__aarch64__)
-    uptr fp = get_gr(context, 29);  // x29
+    uptr fp = get_gr(context, 29); // x29
 #else
 #error Unsupported architecture
 #endif

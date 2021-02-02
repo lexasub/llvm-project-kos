@@ -1,9 +1,9 @@
-namespace gcc /* Test 1 */ { // CHECK: namespace clang /* Test 1 */ {
-int x;
+namespace gcc /* Test 1 */ {  // CHECK: namespace clang /* Test 1 */ {
+  int x;
 }
 
 void boo() {
-  gcc::x = 42; // CHECK: clang::x = 42;
+  gcc::x = 42;                // CHECK: clang::x = 42;
 }
 
 // Test 1.

@@ -18,16 +18,16 @@ struct S {};
 
 int main(int, char**) {
   using T = std::in_place_type_t<int>;
-  static_assert(std::__is_inplace_type<T>::value, "");
-  static_assert(std::__is_inplace_type<const T>::value, "");
-  static_assert(std::__is_inplace_type<const volatile T>::value, "");
-  static_assert(std::__is_inplace_type<T&>::value, "");
-  static_assert(std::__is_inplace_type<const T&>::value, "");
-  static_assert(std::__is_inplace_type<const volatile T&>::value, "");
-  static_assert(std::__is_inplace_type<T&&>::value, "");
-  static_assert(std::__is_inplace_type<const T&&>::value, "");
-  static_assert(std::__is_inplace_type<const volatile T&&>::value, "");
-  static_assert(!std::__is_inplace_type<std::in_place_index_t<0> >::value, "");
+  static_assert( std::__is_inplace_type<T>::value, "");
+  static_assert( std::__is_inplace_type<const T>::value, "");
+  static_assert( std::__is_inplace_type<const volatile T>::value, "");
+  static_assert( std::__is_inplace_type<T&>::value, "");
+  static_assert( std::__is_inplace_type<const T&>::value, "");
+  static_assert( std::__is_inplace_type<const volatile T&>::value, "");
+  static_assert( std::__is_inplace_type<T&&>::value, "");
+  static_assert( std::__is_inplace_type<const T&&>::value, "");
+  static_assert( std::__is_inplace_type<const volatile T&&>::value, "");
+  static_assert(!std::__is_inplace_type<std::in_place_index_t<0>>::value, "");
   static_assert(!std::__is_inplace_type<std::in_place_t>::value, "");
   static_assert(!std::__is_inplace_type<void>::value, "");
   static_assert(!std::__is_inplace_type<int>::value, "");

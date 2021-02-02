@@ -14,7 +14,7 @@ float test_default(float a, float b, float c) {
 float test_precise_on_pragma(float a, float b, float c) {
   float tmp = a;
   {
-#pragma float_control(precise, on)
+    #pragma float_control(precise, on)
     tmp += b;
   }
   tmp += c;
@@ -28,7 +28,7 @@ float test_precise_on_pragma(float a, float b, float c) {
 float test_reassociate_off_pragma(float a, float b, float c) {
   float tmp = a;
   {
-#pragma clang fp reassociate(off)
+    #pragma clang fp reassociate(off)
     tmp += b;
   }
   tmp += c;

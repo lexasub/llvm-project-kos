@@ -39,6 +39,6 @@ bool isAllocaPromotable(const AllocaInst *AI);
 void PromoteMemToReg(ArrayRef<AllocaInst *> Allocas, DominatorTree &DT,
                      AssumptionCache *AC = nullptr);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

@@ -17,11 +17,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::slice s;
-  assert(s.start() == 0);
-  assert(s.size() == 0);
-  assert(s.stride() == 0);
+int main(int, char**)
+{
+    std::slice s;
+    assert(s.start() == 0);
+    assert(s.size() == 0);
+    assert(s.stride() == 0);
 
   return 0;
 }

@@ -27,10 +27,10 @@
 // CHECK-BOTH: _ZTIM1AP1C = internal constant
 
 // CHECK-WITH-HIDDEN: _ZTSFN12_GLOBAL__N_11DEvE = internal constant
-// CHECK-WITH-HIDDEN: @_ZTSPK2T4 = linkonce_odr hidden constant
-// CHECK-WITH-HIDDEN: @_ZTS2T4 = linkonce_odr hidden constant
-// CHECK-WITH-HIDDEN: @_ZTI2T4 = linkonce_odr hidden constant
-// CHECK-WITH-HIDDEN: @_ZTIPK2T4 = linkonce_odr hidden constant
+// CHECK-WITH-HIDDEN: @_ZTSPK2T4 = linkonce_odr hidden constant 
+// CHECK-WITH-HIDDEN: @_ZTS2T4 = linkonce_odr hidden constant 
+// CHECK-WITH-HIDDEN: @_ZTI2T4 = linkonce_odr hidden constant 
+// CHECK-WITH-HIDDEN: @_ZTIPK2T4 = linkonce_odr hidden constant 
 // CHECK-WITH-HIDDEN: @_ZTSZ2t5vE1A = internal constant
 // CHECK-WITH-HIDDEN: @_ZTIZ2t5vE1A = internal constant
 // CHECK-WITH-HIDDEN: @_ZTSZ2t6vE1A = linkonce_odr hidden constant
@@ -74,39 +74,39 @@
 // CHECK: _ZTIN12_GLOBAL__N_11DE to
 
 // A has no key function, so its RTTI data should be linkonce_odr.
-struct A {};
+struct A { };
 
 // B has a key function defined in the translation unit, so the RTTI data should
 // be emitted in this translation unit and have external linkage.
 struct B : A {
   virtual void f();
 };
-void B::f() {}
+void B::f() { }
 
-// C is an incomplete class type, so any direct or indirect pointer types should have
+// C is an incomplete class type, so any direct or indirect pointer types should have 
 // internal linkage, as should the type info for C itself.
 struct C;
 
 void t1() {
-  (void)typeid(C *);
-  (void)typeid(C **);
+  (void)typeid(C*);
+  (void)typeid(C**);
   (void)typeid(int C::*);
   (void)typeid(int C::**);
   (void)typeid(C C::*);
-  (void)typeid(C * C::*);
+  (void)typeid(C *C::*);
   (void)typeid(C A::*);
-  (void)typeid(C * A::*);
+  (void)typeid(C* A::*);
 }
 
 namespace {
-// D is inside an anonymous namespace, so all type information related to D should have
-// internal linkage.
-struct D {};
-
-// E is also inside an anonymous namespace.
-enum E {};
-
-}; // namespace
+  // D is inside an anonymous namespace, so all type information related to D should have
+  // internal linkage.
+  struct D { };
+  
+  // E is also inside an anonymous namespace.
+  enum E { };
+  
+};
 
 // F has a key function defined in the translation unit, but it is inline so the RTTI
 // data should be emitted with linkonce_odr linkage.
@@ -114,32 +114,32 @@ struct F {
   virtual void f();
 };
 
-inline void F::f() {}
+inline void F::f() { }
 const D getD();
 
 const std::type_info &t2() {
   (void)typeid(const D);
   (void)typeid(D *);
-  (void)typeid(D(*)());
+  (void)typeid(D (*)());
   (void)typeid(void (*)(D));
-  (void)typeid(void (*)(D &));
+  (void)typeid(void (*)(D&));
   // The exception specification is not part of the RTTI descriptor, so it should not have
   // internal linkage.
-  (void)typeid(void (*)() throw(D));
-
+  (void)typeid(void (*)() throw (D));
+  
   (void)typeid(E);
-
-  return typeid(getD());
+  
+  return typeid(getD());  
 }
 
 namespace Arrays {
-struct A {
-  static const int a[10];
-};
-const std::type_info &f() {
-  return typeid(A::a);
+  struct A {
+    static const int a[10];
+  };
+  const std::type_info &f() {
+    return typeid(A::a);
+  }
 }
-} // namespace Arrays
 
 template <unsigned N> class T {
   virtual void anchor() {}
@@ -147,9 +147,9 @@ template <unsigned N> class T {
 template class T<1>;
 template <> class T<2> { virtual void anchor(); };
 void t3() {
-  (void)typeid(T<0>);
-  (void)typeid(T<1>);
-  (void)typeid(T<2>);
+  (void) typeid(T<0>);
+  (void) typeid(T<1>);
+  (void) typeid(T<2>);
 }
 
 // rdar://problem/8778973
@@ -174,7 +174,7 @@ void t6_helper() {
 
 inline void t7() {
   struct A {};
-  const void *value = &typeid(A *);
+  const void *value = &typeid(A*);
 }
 void t7_helper() {
   t7();

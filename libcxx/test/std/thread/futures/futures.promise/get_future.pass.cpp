@@ -20,35 +20,41 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::promise<double> p;
-    std::future<double> f = p.get_future();
-    p.set_value(105.5);
-    assert(f.get() == 105.5);
-  }
+int main(int, char**)
+{
+    {
+        std::promise<double> p;
+        std::future<double> f = p.get_future();
+        p.set_value(105.5);
+        assert(f.get() == 105.5);
+    }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  {
-    std::promise<double> p;
-    std::future<double> f = p.get_future();
-    try {
-      f = p.get_future();
-      assert(false);
-    } catch (const std::future_error& e) {
-      assert(e.code() ==
-             make_error_code(std::future_errc::future_already_retrieved));
+    {
+        std::promise<double> p;
+        std::future<double> f = p.get_future();
+        try
+        {
+            f = p.get_future();
+            assert(false);
+        }
+        catch (const std::future_error& e)
+        {
+            assert(e.code() ==  make_error_code(std::future_errc::future_already_retrieved));
+        }
     }
-  }
-  {
-    std::promise<double> p;
-    std::promise<double> p0 = std::move(p);
-    try {
-      std::future<double> f = p.get_future();
-      assert(false);
-    } catch (const std::future_error& e) {
-      assert(e.code() == make_error_code(std::future_errc::no_state));
+    {
+        std::promise<double> p;
+        std::promise<double> p0 = std::move(p);
+        try
+        {
+            std::future<double> f = p.get_future();
+            assert(false);
+        }
+        catch (const std::future_error& e)
+        {
+            assert(e.code() ==  make_error_code(std::future_errc::no_state));
+        }
     }
-  }
 #endif
 
   return 0;

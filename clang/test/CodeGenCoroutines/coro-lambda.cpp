@@ -17,7 +17,7 @@ template <class Promise> struct coroutine_handle : coroutine_handle<void> {
   coroutine_handle() = default;
   static coroutine_handle from_address(void *) noexcept;
 };
-} // namespace std::experimental
+}
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -38,10 +38,7 @@ struct Task {
 template <typename _AwrT> auto SyncAwait(_AwrT &&A) {
   if (!A.await_ready()) {
     auto AwaitAsync = [&]() -> Task {
-      try {
-        (void)(co_await A);
-      } catch (...) {
-      }
+      try { (void)(co_await A); } catch (...) {}
     };
     Task t = AwaitAsync();
   }

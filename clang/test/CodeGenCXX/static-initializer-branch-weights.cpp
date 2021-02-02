@@ -1,9 +1,6 @@
 // RUN: %clang_cc1 -emit-llvm -std=c++1z %s -o - -triple=x86_64-linux-gnu | FileCheck %s
 
-struct S {
-  S();
-  ~S();
-};
+struct S { S(); ~S(); };
 
 // CHECK-LABEL: define {{.*}}global_var_init
 // CHECK-NOT: br
@@ -111,10 +108,10 @@ template <typename T> struct B {
   // CHECK: call void @_ZN1SC1Ev({{.*}}* {{[^,]*}} @_ZN1BIiE26thread_local_inline_memberE)
   static thread_local inline S thread_local_inline_member;
 };
-template <typename T> S B<T>::member;
-template <typename T> thread_local S B<T>::thread_local_member;
+template<typename T> S B<T>::member;
+template<typename T> thread_local S B<T>::thread_local_member;
 
-template <typename... T> void use(T &...);
+template<typename ...T> void use(T &...);
 void use_b() {
   use(B<int>::member, B<int>::inline_member, B<int>::thread_local_member,
       B<int>::thread_local_inline_member);

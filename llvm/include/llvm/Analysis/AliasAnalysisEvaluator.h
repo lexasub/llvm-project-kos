@@ -68,6 +68,6 @@ private:
 /// Create a wrapper of the above for the legacy pass manager.
 FunctionPass *createAAEvalPass();
 
-} // namespace llvm
+}
 
 #endif

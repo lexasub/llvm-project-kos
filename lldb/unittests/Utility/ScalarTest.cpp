@@ -21,11 +21,13 @@ using llvm::APInt;
 using llvm::Failed;
 using llvm::Succeeded;
 
-template <typename T> bool checkInequality(T c1, T c2) {
+template <typename T>
+bool checkInequality(T c1, T c2) {
   return (Scalar(c1) != Scalar(c2));
 }
 
-template <typename T> bool checkEquality(T c1, T c2) {
+template <typename T>
+bool checkEquality(T c1, T c2) {
   return (Scalar(c1) == Scalar(c2));
 }
 
@@ -93,8 +95,7 @@ TEST(ScalarTest, Getters) {
   CheckConversion<double>(42.25);
   CheckConversion<long double>(42.25L);
 
-  EXPECT_EQ(APInt(128, 1) << 70,
-            Scalar(std::pow(2.0f, 70.0f)).SInt128(APInt()));
+  EXPECT_EQ(APInt(128, 1) << 70, Scalar(std::pow(2.0f, 70.0f)).SInt128(APInt()));
   EXPECT_EQ(APInt(128, -1, true) << 70,
             Scalar(-std::pow(2.0f, 70.0f)).SInt128(APInt()));
   EXPECT_EQ(APInt(128, 1) << 70,

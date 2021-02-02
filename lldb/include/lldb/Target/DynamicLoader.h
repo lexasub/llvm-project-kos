@@ -28,7 +28,7 @@ class Symbol;
 class SymbolContext;
 class SymbolContextList;
 class Thread;
-} // namespace lldb_private
+}
 
 namespace lldb_private {
 
@@ -294,9 +294,10 @@ protected:
   // Read a pointer from memory at the given addr. Return LLDB_INVALID_ADDRESS
   // if the read fails.
   lldb::addr_t ReadPointer(lldb::addr_t addr);
-
+  
   // Calls into the Process protected method LoadOperatingSystemPlugin:
   void LoadOperatingSystemPlugin(bool flush);
+
 
   // Member variables.
   Process

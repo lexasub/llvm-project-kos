@@ -11,9 +11,8 @@ void example0() {
   const double &rcd = d;
 }
 
-struct A {};
-struct B : A {
-} b;
+struct A { };
+struct B : A { } b;
 
 // CHECK-LABEL: example1
 void example1() {
@@ -24,7 +23,7 @@ void example1() {
   // CHECK: ImplicitCastExpr{{.*}}'const A' lvalue <DerivedToBase (A)>
   // CHECK-NOT: MaterializeTemporaryExpr
   // CHECK: ImplicitCastExpr{{.*}}'const B' lvalue <NoOp>
-  const A &rca = b;
+  const A& rca = b;
 }
 
 extern B f();
@@ -46,12 +45,12 @@ void example2() {
   // CHECK: MaterializeTemporaryExpr{{.*}}'const B'
   // CHECK: ImplicitCastExpr{{.*}}'const B' <NoOp>
   // CHECK: CXXMemberCallExpr{{.*}}'B'
-  const A &r = x;
+  const A& r = x;
 }
 
 // CHECK-LABEL: example3
 void example3() {
   // CHECK: VarDecl{{.*}}rcd2 'const double &'
   // CHECK: ImplicitCastExpr{{.*}} <IntegralToFloating>
-  const double &rcd2 = 2;
+  const double& rcd2 = 2;
 }

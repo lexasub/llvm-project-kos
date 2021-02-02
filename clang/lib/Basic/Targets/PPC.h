@@ -16,8 +16,8 @@
 #include "OSTargets.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Basic/TargetOptions.h"
-#include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/Triple.h"
+#include "llvm/ADT/StringSwitch.h"
 #include "llvm/Support/Compiler.h"
 
 namespace clang {
@@ -484,8 +484,8 @@ public:
   }
 };
 
-class LLVM_LIBRARY_VISIBILITY AIXPPC32TargetInfo
-    : public AIXTargetInfo<PPC32TargetInfo> {
+class LLVM_LIBRARY_VISIBILITY AIXPPC32TargetInfo :
+  public AIXTargetInfo<PPC32TargetInfo> {
 public:
   using AIXTargetInfo::AIXTargetInfo;
   BuiltinVaListKind getBuiltinVaListKind() const override {
@@ -493,8 +493,8 @@ public:
   }
 };
 
-class LLVM_LIBRARY_VISIBILITY AIXPPC64TargetInfo
-    : public AIXTargetInfo<PPC64TargetInfo> {
+class LLVM_LIBRARY_VISIBILITY AIXPPC64TargetInfo :
+  public AIXTargetInfo<PPC64TargetInfo> {
 public:
   using AIXTargetInfo::AIXTargetInfo;
 };

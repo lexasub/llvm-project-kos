@@ -2,9 +2,9 @@
 
 // CHECK: Outer5Inner{{.*}}localE6memberE = external global
 
-template <typename T> struct A {
-  virtual void f(T) {}
-  inline void g() {}
+template<typename T> struct A {
+  virtual void f(T) { }
+  inline void g() { } 
 };
 
 // Explicit instantiations have external linkage.
@@ -18,24 +18,24 @@ template void A<int>::g();
 template struct A<float>;
 
 // CHECK-LABEL: define weak_odr void @_Z1fIiEvT_
-template <typename T> void f(T) {}
+template <typename T> void f(T) { }
 template void f<int>(int);
 
 // CHECK-LABEL: define weak_odr void @_Z1gIiEvT_
-template <typename T> inline void g(T) {}
+template <typename T> inline void g(T) { }
 template void g<int>(int);
 
-template <typename T>
+template<typename T>
 struct X0 {
-  virtual ~X0() {}
+  virtual ~X0() { }
 };
 
-template <typename T>
+template<typename T>
 struct X1 : X0<T> {
   virtual void blarg();
 };
 
-template <typename T> void X1<T>::blarg() {}
+template<typename T> void X1<T>::blarg() { }
 
 extern template struct X0<char>;
 extern template struct X1<char>;
@@ -61,4 +61,4 @@ void test() {
   typedef void (Outer::*mptr)();
   mptr method = &Outer::Get<local>;
 }
-} // namespace PR14825
+}

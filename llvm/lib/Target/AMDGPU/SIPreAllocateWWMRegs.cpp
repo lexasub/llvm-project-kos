@@ -66,12 +66,12 @@ private:
 } // End anonymous namespace.
 
 INITIALIZE_PASS_BEGIN(SIPreAllocateWWMRegs, DEBUG_TYPE,
-                      "SI Pre-allocate WWM Registers", false, false)
+                "SI Pre-allocate WWM Registers", false, false)
 INITIALIZE_PASS_DEPENDENCY(LiveIntervals)
 INITIALIZE_PASS_DEPENDENCY(VirtRegMap)
 INITIALIZE_PASS_DEPENDENCY(LiveRegMatrix)
 INITIALIZE_PASS_END(SIPreAllocateWWMRegs, DEBUG_TYPE,
-                    "SI Pre-allocate WWM Registers", false, false)
+                "SI Pre-allocate WWM Registers", false, false)
 
 char SIPreAllocateWWMRegs::ID = 0;
 
@@ -155,8 +155,7 @@ void SIPreAllocateWWMRegs::rewriteRegs(MachineFunction &MF) {
 }
 
 bool SIPreAllocateWWMRegs::runOnMachineFunction(MachineFunction &MF) {
-  LLVM_DEBUG(dbgs() << "SIPreAllocateWWMRegs: function " << MF.getName()
-                    << "\n");
+  LLVM_DEBUG(dbgs() << "SIPreAllocateWWMRegs: function " << MF.getName() << "\n");
 
   const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
 
@@ -177,7 +176,7 @@ bool SIPreAllocateWWMRegs::runOnMachineFunction(MachineFunction &MF) {
   // expressions are guaranteed to never involve phi nodes, and we can only
   // escape WWM through the special WWM instruction, this means that this is a
   // perfect elimination order, so we can never do any better.
-  ReversePostOrderTraversal<MachineFunction *> RPOT(&MF);
+  ReversePostOrderTraversal<MachineFunction*> RPOT(&MF);
 
   for (MachineBasicBlock *MBB : RPOT) {
     bool InWWM = false;

@@ -2,15 +2,18 @@
 
 static int static_value = 0;
 
-int a_function_to_call() {
-  static_value++;
-  return static_value;
+int
+a_function_to_call()
+{
+    static_value++;
+    return static_value;
 }
 
-int main(int argc, char const *argv[]) {
-  printf("Hello world!\n");
-  puts("hello");
-  // Please test many expressions while stopped at this line:
+int main (int argc, char const *argv[])
+{
+    printf ("Hello world!\n");
+    puts ("hello");
+    // Please test many expressions while stopped at this line:
 #if 0
     expression 'a'        // make sure character constant makes it down (this is broken: <rdar://problem/8686536>)
     expression 2          // Test int
@@ -36,6 +39,6 @@ int main(int argc, char const *argv[]) {
     expression random() % 255l
 #endif
 
-  a_function_to_call();
-  return 0;
+    a_function_to_call();
+    return 0;
 }

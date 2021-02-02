@@ -5,20 +5,22 @@
 
 struct A {};
 
-struct B {
-  operator A &();
-};
+struct B 
+{ 
+  operator A&();
+}; 
+
 
 struct D : public B {
   operator A();
 };
 
-extern B f();
-extern D d();
+extern B f(); 
+extern D d(); 
 
 int main() {
-  const A &rca = f();
-  const A &rca2 = d();
+	const A& rca = f();
+	const A& rca2 = d();
 }
 
 // CHECK: call nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.A* @_ZN1BcvR1AEv

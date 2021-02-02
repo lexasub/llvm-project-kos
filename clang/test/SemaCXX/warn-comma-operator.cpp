@@ -12,40 +12,23 @@ int return_four() { return 5; }
 // Test builtin operators
 void test_builtin() {
   int x = 0, y = 0;
-  for (; y < 10; x++, y++) {
-  }
-  for (; y < 10; ++x, y++) {
-  }
-  for (; y < 10; x++, ++y) {
-  }
-  for (; y < 10; ++x, ++y) {
-  }
-  for (; y < 10; x--, ++y) {
-  }
-  for (; y < 10; --x, ++y) {
-  }
-  for (; y < 10; x = 5, ++y) {
-  }
-  for (; y < 10; x *= 5, ++y) {
-  }
-  for (; y < 10; x /= 5, ++y) {
-  }
-  for (; y < 10; x %= 5, ++y) {
-  }
-  for (; y < 10; x += 5, ++y) {
-  }
-  for (; y < 10; x -= 5, ++y) {
-  }
-  for (; y < 10; x <<= 5, ++y) {
-  }
-  for (; y < 10; x >>= 5, ++y) {
-  }
-  for (; y < 10; x &= 5, ++y) {
-  }
-  for (; y < 10; x |= 5, ++y) {
-  }
-  for (; y < 10; x ^= 5, ++y) {
-  }
+  for (; y < 10; x++, y++) {}
+  for (; y < 10; ++x, y++) {}
+  for (; y < 10; x++, ++y) {}
+  for (; y < 10; ++x, ++y) {}
+  for (; y < 10; x--, ++y) {}
+  for (; y < 10; --x, ++y) {}
+  for (; y < 10; x = 5, ++y) {}
+  for (; y < 10; x *= 5, ++y) {}
+  for (; y < 10; x /= 5, ++y) {}
+  for (; y < 10; x %= 5, ++y) {}
+  for (; y < 10; x += 5, ++y) {}
+  for (; y < 10; x -= 5, ++y) {}
+  for (; y < 10; x <<= 5, ++y) {}
+  for (; y < 10; x >>= 5, ++y) {}
+  for (; y < 10; x &= 5, ++y) {}
+  for (; y < 10; x |= 5, ++y) {}
+  for (; y < 10; x ^= 5, ++y) {}
 }
 
 // Test nested comma operators
@@ -54,22 +37,19 @@ void test_nested() {
   int y1, *y2 = 0, y3 = 5;
 
 #if __STDC_VERSION >= 199901L
-  for (int z1 = 5, z2 = 4, z3 = 3; x1 < 4; ++x1) {
-  }
+  for (int z1 = 5, z2 = 4, z3 = 3; x1 <4; ++x1) {}
 #endif
 }
 
 // Confusing "," for "=="
 void test_compare() {
-  if (return_four(), 5) {
-  }
+  if (return_four(), 5) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:7-[[@LINE-3]]:7}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:20-[[@LINE-4]]:20}:")"
 
-  if (return_four() == 5) {
-  }
+  if (return_four() == 5) {}
 }
 
 // Confusing "," for "+"
@@ -86,15 +66,13 @@ int test_plus() {
 // Be sure to look through parentheses
 void test_parentheses() {
   int x, y;
-  for (x = 0; return_four(), x;) {
-  }
+  for (x = 0; return_four(), x;) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:15-[[@LINE-3]]:15}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:28-[[@LINE-4]]:28}:")"
 
-  for (x = 0; (return_four()), (x);) {
-  }
+  for (x = 0; (return_four()), (x) ;) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:15-[[@LINE-3]]:15}:"static_cast<void>("
@@ -124,29 +102,25 @@ void test_conditions(int x) {
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:12-[[@LINE-3]]:12}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:25-[[@LINE-4]]:25}:")"
 
-  for (; return_four(), x;) {
-  }
+  for (; return_four(), x;) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:10-[[@LINE-3]]:10}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:23-[[@LINE-4]]:23}:")"
 
-  while (return_four(), x) {
-  }
+  while (return_four(), x) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:10-[[@LINE-3]]:10}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:23-[[@LINE-4]]:23}:")"
 
-  if (return_four(), x) {
-  }
+  if (return_four(), x) {}
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:7-[[@LINE-3]]:7}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:20-[[@LINE-4]]:20}:")"
 
-  do {
-  } while (return_four(), x);
+  do { } while (return_four(), x);
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:17-[[@LINE-3]]:17}:"static_cast<void>("
@@ -192,45 +166,28 @@ public:
 void test_overloaded_operator() {
   S2 x;
   int y;
-  for (; y < 10; x++, y++) {
-  }
-  for (; y < 10; ++x, y++) {
-  }
-  for (; y < 10; x++, ++y) {
-  }
-  for (; y < 10; ++x, ++y) {
-  }
-  for (; y < 10; x--, ++y) {
-  }
-  for (; y < 10; --x, ++y) {
-  }
-  for (; y < 10; x = 5, ++y) {
-  }
-  for (; y < 10; x *= 5, ++y) {
-  }
-  for (; y < 10; x /= 5, ++y) {
-  }
-  for (; y < 10; x %= 5, ++y) {
-  }
-  for (; y < 10; x += 5, ++y) {
-  }
-  for (; y < 10; x -= 5, ++y) {
-  }
-  for (; y < 10; x <<= 5, ++y) {
-  }
-  for (; y < 10; x >>= 5, ++y) {
-  }
-  for (; y < 10; x &= 5, ++y) {
-  }
-  for (; y < 10; x |= 5, ++y) {
-  }
-  for (; y < 10; x ^= 5, ++y) {
-  }
+  for (; y < 10; x++, y++) {}
+  for (; y < 10; ++x, y++) {}
+  for (; y < 10; x++, ++y) {}
+  for (; y < 10; ++x, ++y) {}
+  for (; y < 10; x--, ++y) {}
+  for (; y < 10; --x, ++y) {}
+  for (; y < 10; x = 5, ++y) {}
+  for (; y < 10; x *= 5, ++y) {}
+  for (; y < 10; x /= 5, ++y) {}
+  for (; y < 10; x %= 5, ++y) {}
+  for (; y < 10; x += 5, ++y) {}
+  for (; y < 10; x -= 5, ++y) {}
+  for (; y < 10; x <<= 5, ++y) {}
+  for (; y < 10; x >>= 5, ++y) {}
+  for (; y < 10; x &= 5, ++y) {}
+  for (; y < 10; x |= 5, ++y) {}
+  for (; y < 10; x ^= 5, ++y) {}
 }
 
 class Stream {
-public:
-  Stream &operator<<(int);
+ public:
+  Stream& operator<<(int);
 } cout;
 
 // Confusing "," for "<<"
@@ -248,31 +205,28 @@ void Concat(int, int);
 
 // Testing extra parentheses in function call
 void test_overloaded_function() {
-  Concat((return_four(), 5));
+  Concat((return_four() , 5));
   // expected-warning@-1{{comma operator}}
   // expected-note@-2{{cast expression to void}}
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:11-[[@LINE-3]]:11}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:24-[[@LINE-4]]:24}:")"
 
-  Concat(return_four(), 5);
+  Concat(return_four() , 5);
 }
 
 bool DoStuff();
 class S9 {
 public:
-  bool Advance();
-  bool More();
+ bool Advance();
+ bool More();
 };
 
 // Ignore comma operator in for-loop initializations and increments.
 void test_for_loop() {
   int x, y;
-  for (x = 0, y = 5; x < y; ++x) {
-  }
-  for (x = 0; x < 10; DoStuff(), ++x) {
-  }
-  for (S9 s; s.More(); s.Advance(), ++x) {
-  }
+  for (x = 0, y = 5; x < y; ++x) {}
+  for (x = 0; x < 10; DoStuff(), ++x) {}
+  for (S9 s; s.More(); s.Advance(), ++x) {}
 }
 
 // Ignore comma operator in templates.
@@ -294,11 +248,11 @@ class Foo {
 };
 
 const auto X = Foo<true_type>();
-} // namespace test_template
+}
 
 namespace test_mutex {
 class Mutex {
-public:
+ public:
   Mutex();
   ~Mutex();
 };
@@ -331,7 +285,7 @@ bool get_status() {
   // CHECK: fix-it:{{.*}}:{[[@LINE-3]]:11-[[@LINE-3]]:11}:"static_cast<void>("
   // CHECK: fix-it:{{.*}}:{[[@LINE-4]]:25-[[@LINE-4]]:25}:")"
 }
-} // namespace test_mutex
+}
 
 // PR39375 - test cast to void to silence warnings
 template <typename T>
@@ -342,4 +296,4 @@ void test_dependent_cast() {
   (void)T{}, 0;
   static_cast<void>(T{}), 0;
 }
-#endif // ifdef __cplusplus
+#endif  // ifdef __cplusplus

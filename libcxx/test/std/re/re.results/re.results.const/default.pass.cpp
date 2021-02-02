@@ -28,22 +28,25 @@ void test_implicit() {
 #endif
 
 template <class CharT>
-void test() {
-  typedef std::match_results<const CharT*> M;
-  typedef std::allocator<std::sub_match<const CharT*> > Alloc;
-  M m;
-  assert(m.size() == 0);
-  assert(!m.ready());
-  assert(m.get_allocator() == Alloc());
+void
+test()
+{
+    typedef std::match_results<const CharT*> M;
+    typedef std::allocator<std::sub_match<const CharT*> > Alloc;
+    M m;
+    assert(m.size() == 0);
+    assert(!m.ready());
+    assert(m.get_allocator() == Alloc());
 
 #if TEST_STD_VER >= 11
-  test_implicit<M>();
+    test_implicit<M>();
 #endif
 }
 
-int main(int, char**) {
-  test<char>();
-  test<wchar_t>();
+int main(int, char**)
+{
+    test<char>();
+    test<wchar_t>();
 
   return 0;
 }

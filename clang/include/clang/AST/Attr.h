@@ -19,8 +19,8 @@
 #include "clang/AST/Type.h"
 #include "clang/Basic/AttrKinds.h"
 #include "clang/Basic/AttributeCommonInfo.h"
-#include "clang/Basic/LLVM.h"
 #include "clang/Basic/LangOptions.h"
+#include "clang/Basic/LLVM.h"
 #include "clang/Basic/OpenMPKinds.h"
 #include "clang/Basic/Sanitizers.h"
 #include "clang/Basic/SourceLocation.h"
@@ -220,7 +220,7 @@ public:
   static bool classof(const Attr *A) {
     return A->getKind() >= attr::FirstParameterABIAttr &&
            A->getKind() <= attr::LastParameterABIAttr;
-  }
+   }
 };
 
 /// A single parameter index whose accessors require each use to make explicit
@@ -232,7 +232,8 @@ class ParamIdx {
   unsigned IsValid : 1;
 
   void assertComparable(const ParamIdx &I) const {
-    assert(isValid() && I.isValid() && "ParamIdx must be valid to be compared");
+    assert(isValid() && I.isValid() &&
+           "ParamIdx must be valid to be compared");
     // It's possible to compare indices from separate functions, but so far
     // it's not proven useful.  Moreover, it might be confusing because a
     // comparison on the results of getASTIndex might be inconsistent with a
@@ -355,10 +356,11 @@ struct ParsedTargetAttr {
   StringRef BranchProtection;
   bool DuplicateArchitecture = false;
   bool DuplicateTune = false;
-  bool operator==(const ParsedTargetAttr &Other) const {
+  bool operator ==(const ParsedTargetAttr &Other) const {
     return DuplicateArchitecture == Other.DuplicateArchitecture &&
            DuplicateTune == Other.DuplicateTune &&
-           Architecture == Other.Architecture && Tune == Other.Tune &&
+           Architecture == Other.Architecture &&
+           Tune == Other.Tune &&
            BranchProtection == Other.BranchProtection &&
            Features == Other.Features;
   }
@@ -368,9 +370,10 @@ struct ParsedTargetAttr {
 
 inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
                                              const Attr *At) {
-  DB.AddTaggedVal(reinterpret_cast<intptr_t>(At), DiagnosticsEngine::ak_attr);
+  DB.AddTaggedVal(reinterpret_cast<intptr_t>(At),
+                  DiagnosticsEngine::ak_attr);
   return DB;
 }
-} // end namespace clang
+}  // end namespace clang
 
 #endif

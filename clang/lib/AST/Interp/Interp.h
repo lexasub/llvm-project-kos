@@ -13,6 +13,8 @@
 #ifndef LLVM_CLANG_AST_INTERP_INTERP_H
 #define LLVM_CLANG_AST_INTERP_INTERP_H
 
+#include <limits>
+#include <vector>
 #include "Function.h"
 #include "InterpFrame.h"
 #include "InterpStack.h"
@@ -28,8 +30,6 @@
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/Support/Endian.h"
-#include <limits>
-#include <vector>
 
 namespace clang {
 namespace interp {
@@ -331,7 +331,7 @@ template <PrimType Name, class T = typename PrimConv<Name>::T>
 bool GetField(InterpState &S, CodePtr OpPC, uint32_t I) {
   const Pointer &Obj = S.Stk.peek<Pointer>();
   if (!CheckNull(S, OpPC, Obj, CSK_Field))
-    return false;
+      return false;
   if (!CheckRange(S, OpPC, Obj, CSK_Field))
     return false;
   const Pointer &Field = Obj.atField(I);
@@ -550,7 +550,7 @@ inline bool GetPtrActiveField(InterpState &S, CodePtr OpPC, uint32_t Off) {
 }
 
 inline bool GetPtrActiveThisField(InterpState &S, CodePtr OpPC, uint32_t Off) {
-  if (S.checkingPotentialConstantExpression())
+ if (S.checkingPotentialConstantExpression())
     return false;
   const Pointer &This = S.Current->getThis();
   if (!CheckThis(S, OpPC, This))
@@ -746,7 +746,8 @@ template <class T, bool Add> bool OffsetHelper(InterpState &S, CodePtr OpPC) {
     APSInt APIndex(Index.toAPSInt().extend(Bits + 2), false);
     APSInt NewIndex = Add ? (APIndex + APOffset) : (APIndex - APOffset);
     S.CCEDiag(S.Current->getSource(OpPC), diag::note_constexpr_array_index)
-        << NewIndex << /*array*/ static_cast<int>(!Ptr.inArray())
+        << NewIndex
+        << /*array*/ static_cast<int>(!Ptr.inArray())
         << static_cast<unsigned>(MaxIndex);
     return false;
   };
@@ -781,6 +782,7 @@ template <PrimType Name, class T = typename PrimConv<Name>::T>
 bool SubOffset(InterpState &S, CodePtr OpPC) {
   return OffsetHelper<T, false>(S, OpPC);
 }
+
 
 //===----------------------------------------------------------------------===//
 // Destroy

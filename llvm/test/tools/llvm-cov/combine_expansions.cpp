@@ -23,4 +23,4 @@ int main() {    // CHECK:      [[@LINE]]| 1|int main() {
   DO_SOMETHING; // CHECK-NEXT: [[@LINE]]| 1|  DO_SOMETHING;
   DO_SOMETHING; // CHECK-NEXT: [[@LINE]]| 1|  DO_SOMETHING;
   return 0;     // CHECK-NEXT: [[@LINE]]| 1|  return 0;
-} // CHECK-NEXT: [[@LINE]]| 1|}
+}               // CHECK-NEXT: [[@LINE]]| 1|}

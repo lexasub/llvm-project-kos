@@ -53,8 +53,8 @@ public:
   void view() const;
 
 private:
-  bool runOnMachineFunction(MachineFunction &) override;
-  void getAnalysisUsage(AnalysisUsage &) const override;
+  bool runOnMachineFunction(MachineFunction&) override;
+  void getAnalysisUsage(AnalysisUsage&) const override;
 };
 
 } // end namespace llvm

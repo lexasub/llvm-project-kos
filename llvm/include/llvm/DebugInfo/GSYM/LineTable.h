@@ -184,9 +184,15 @@ public:
       return llvm::None;
     return Lines.back();
   }
-  void push(const LineEntry &LE) { Lines.push_back(LE); }
-  size_t isValid() const { return !Lines.empty(); }
-  size_t size() const { return Lines.size(); }
+  void push(const LineEntry &LE) {
+    Lines.push_back(LE);
+  }
+  size_t isValid() const {
+    return !Lines.empty();
+  }
+  size_t size() const {
+    return Lines.size();
+  }
   LineEntry &get(size_t i) {
     assert(i < Lines.size());
     return Lines[i];
@@ -195,10 +201,18 @@ public:
     assert(i < Lines.size());
     return Lines[i];
   }
-  LineEntry &operator[](size_t i) { return get(i); }
-  const LineEntry &operator[](size_t i) const { return get(i); }
-  bool operator==(const LineTable &RHS) const { return Lines == RHS.Lines; }
-  bool operator!=(const LineTable &RHS) const { return Lines != RHS.Lines; }
+  LineEntry &operator[](size_t i) {
+    return get(i);
+  }
+  const LineEntry &operator[](size_t i) const {
+    return get(i);
+  }
+  bool operator==(const LineTable &RHS) const {
+    return Lines == RHS.Lines;
+  }
+  bool operator!=(const LineTable &RHS) const {
+    return Lines != RHS.Lines;
+  }
   bool operator<(const LineTable &RHS) const {
     const auto LHSSize = Lines.size();
     const auto RHSSize = RHS.Lines.size();
@@ -208,6 +222,7 @@ public:
   }
   Collection::const_iterator begin() const { return Lines.begin(); }
   Collection::const_iterator end() const { return Lines.end(); }
+
 };
 
 raw_ostream &operator<<(raw_ostream &OS, const gsym::LineTable &LT);

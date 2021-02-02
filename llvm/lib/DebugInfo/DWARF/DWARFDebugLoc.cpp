@@ -388,7 +388,7 @@ void DWARFDebugLoclists::dumpRange(uint64_t StartOffset, uint64_t Size,
                                    raw_ostream &OS, const MCRegisterInfo *MRI,
                                    const DWARFObject &Obj,
                                    DIDumpOptions DumpOpts) {
-  if (!Data.isValidOffsetForDataOfSize(StartOffset, Size)) {
+  if (!Data.isValidOffsetForDataOfSize(StartOffset, Size))  {
     OS << "Invalid dump range\n";
     return;
   }

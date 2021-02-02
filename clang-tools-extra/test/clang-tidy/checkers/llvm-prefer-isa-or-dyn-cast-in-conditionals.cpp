@@ -5,8 +5,8 @@ struct Y;
 struct Z {
   int foo();
   X *bar();
-  X *cast(Y *);
-  bool baz(Y *);
+  X *cast(Y*);
+  bool baz(Y*);
 };
 
 template <class X, class Y>
@@ -108,7 +108,7 @@ bool foo(Y *y, Z *z) {
   if (z && cast<Z>(y)->foo())
     return true;
   bool b2 = y && cast<X>(z);
-  if (z->cast(y))
+  if(z->cast(y))
     return true;
   if (z->baz(cast<Y>(z)))
     return true;

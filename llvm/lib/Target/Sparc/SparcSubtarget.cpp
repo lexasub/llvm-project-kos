@@ -23,7 +23,7 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_CTOR
 #include "SparcGenSubtargetInfo.inc"
 
-void SparcSubtarget::anchor() {}
+void SparcSubtarget::anchor() { }
 
 SparcSubtarget &SparcSubtarget::initializeSubtargetDependencies(StringRef CPU,
                                                                 StringRef FS) {
@@ -97,4 +97,6 @@ int SparcSubtarget::getAdjustedFrameSize(int frameSize) const {
   return frameSize;
 }
 
-bool SparcSubtarget::enableMachineScheduler() const { return true; }
+bool SparcSubtarget::enableMachineScheduler() const {
+  return true;
+}

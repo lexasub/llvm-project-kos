@@ -31,7 +31,7 @@ class DebugSubsectionRecordBuilder;
 namespace msf {
 class MSFBuilder;
 struct MSFLayout;
-} // namespace msf
+}
 namespace pdb {
 
 class DbiModuleDescriptorBuilder {

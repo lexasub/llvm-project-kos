@@ -22,6 +22,7 @@
 //  is a type that does not qualify as an input iterator, or if Allocator is a type
 //  that does not qualify as an allocator.
 
+
 #include <string>
 #include <iterator>
 #include <cassert>
@@ -32,32 +33,25 @@
 class NotAnItertor {};
 
 template <typename T>
-struct NotAnAllocator {
-  typedef T value_type;
-};
+struct NotAnAllocator { typedef T value_type; };
 
-int main(int, char**) {
-  { // Not an iterator at all
-    std::basic_string s1{
-        NotAnItertor{}, NotAnItertor{},
-        std::allocator<
-            char>{}}; // expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
-  }
-  { // Not an input iterator
-    const char16_t* s = u "12345678901234";
+int main(int, char**)
+{
+    { // Not an iterator at all
+    std::basic_string s1{NotAnItertor{}, NotAnItertor{}, std::allocator<char>{}}; // expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
+    }
+    { // Not an input iterator
+    const char16_t* s = u"12345678901234";
     std::basic_string<char16_t> s0;
-    std::basic_string s1{
-        std::back_insert_iterator(
-            s0), //  expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
-        std::back_insert_iterator(s0), std::allocator<char16_t>{}};
-  }
-  { // Not an allocator
+    std::basic_string s1{std::back_insert_iterator(s0), //  expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
+                         std::back_insert_iterator(s0),
+                         std::allocator<char16_t>{}};
+    }
+    { // Not an allocator
     const wchar_t* s = L"12345678901234";
-    std::basic_string s1{
-        s, s + 10,
-        NotAnAllocator<
-            wchar_t>{}}; // expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
-  }
+    std::basic_string s1{s, s+10, NotAnAllocator<wchar_t>{}}; // expected-error {{no viable constructor or deduction guide for deduction of template arguments of 'basic_string'}}
+    }
+
 
   return 0;
 }

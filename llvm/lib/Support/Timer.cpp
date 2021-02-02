@@ -38,29 +38,27 @@ static std::string &getLibSupportInfoOutputFilename() {
   return *LibSupportInfoOutputFilename;
 }
 
-static ManagedStatic<sys::SmartMutex<true>> TimerLock;
+static ManagedStatic<sys::SmartMutex<true> > TimerLock;
 
 /// Allows llvm::Timer to emit signposts when supported.
 static ManagedStatic<SignpostEmitter> Signposts;
 
 namespace {
-static cl::opt<bool> TrackSpace("track-memory",
-                                cl::desc("Enable -time-passes memory "
-                                         "tracking (this may be slow)"),
-                                cl::Hidden);
+  static cl::opt<bool>
+  TrackSpace("track-memory", cl::desc("Enable -time-passes memory "
+                                      "tracking (this may be slow)"),
+             cl::Hidden);
 
-static cl::opt<std::string, true>
-    InfoOutputFilename("info-output-file", cl::value_desc("filename"),
-                       cl::desc("File to append -stats and -timer output to"),
-                       cl::Hidden,
-                       cl::location(getLibSupportInfoOutputFilename()));
+  static cl::opt<std::string, true>
+  InfoOutputFilename("info-output-file", cl::value_desc("filename"),
+                     cl::desc("File to append -stats and -timer output to"),
+                   cl::Hidden, cl::location(getLibSupportInfoOutputFilename()));
 
-static cl::opt<bool>
-    SortTimers("sort-timers",
-               cl::desc("In the report, sort the timers in each group "
-                        "in wall clock time order"),
-               cl::init(true), cl::Hidden);
-} // namespace
+  static cl::opt<bool>
+  SortTimers("sort-timers", cl::desc("In the report, sort the timers in each group "
+                                     "in wall clock time order"),
+             cl::init(true), cl::Hidden);
+}
 
 std::unique_ptr<raw_fd_ostream> llvm::CreateInfoOutputFile() {
   const std::string &OutputFilename = getLibSupportInfoOutputFilename();
@@ -79,8 +77,8 @@ std::unique_ptr<raw_fd_ostream> llvm::CreateInfoOutputFile() {
   if (!EC)
     return Result;
 
-  errs() << "Error opening info-output-file '" << OutputFilename
-         << " for appending!\n";
+  errs() << "Error opening info-output-file '"
+    << OutputFilename << " for appending!\n";
   return std::make_unique<raw_fd_ostream>(2, false); // stderr.
 }
 
@@ -113,14 +111,12 @@ void Timer::init(StringRef TimerName, StringRef TimerDescription,
 }
 
 Timer::~Timer() {
-  if (!TG)
-    return; // Never initialized, or already cleared.
+  if (!TG) return;  // Never initialized, or already cleared.
   TG->removeTimer(*this);
 }
 
 static inline size_t getMemUsage() {
-  if (!TrackSpace)
-    return 0;
+  if (!TrackSpace) return 0;
   return sys::Process::GetMallocUsage();
 }
 
@@ -165,10 +161,10 @@ void Timer::clear() {
 }
 
 static void printVal(double Val, double Total, raw_ostream &OS) {
-  if (Total < 1e-7) // Avoid dividing by zero.
+  if (Total < 1e-7)   // Avoid dividing by zero.
     OS << "        -----     ";
   else
-    OS << format("  %7.4f (%5.1f%%)", Val, Val * 100 / Total);
+    OS << format("  %7.4f (%5.1f%%)", Val, Val*100/Total);
 }
 
 void TimeRecord::print(const TimeRecord &Total, raw_ostream &OS) const {
@@ -186,6 +182,7 @@ void TimeRecord::print(const TimeRecord &Total, raw_ostream &OS) const {
     OS << format("%9" PRId64 "  ", (int64_t)getMemUsed());
 }
 
+
 //===----------------------------------------------------------------------===//
 //   NamedRegionTimer Implementation
 //===----------------------------------------------------------------------===//
@@ -195,14 +192,11 @@ namespace {
 typedef StringMap<Timer> Name2TimerMap;
 
 class Name2PairMap {
-  StringMap<std::pair<TimerGroup *, Name2TimerMap>> Map;
-
+  StringMap<std::pair<TimerGroup*, Name2TimerMap> > Map;
 public:
   ~Name2PairMap() {
-    for (StringMap<std::pair<TimerGroup *, Name2TimerMap>>::iterator
-             I = Map.begin(),
-             E = Map.end();
-         I != E; ++I)
+    for (StringMap<std::pair<TimerGroup*, Name2TimerMap> >::iterator
+         I = Map.begin(), E = Map.end(); I != E; ++I)
       delete I->second.first;
   }
 
@@ -210,7 +204,7 @@ public:
              StringRef GroupDescription) {
     sys::SmartScopedLock<true> L(*TimerLock);
 
-    std::pair<TimerGroup *, Name2TimerMap> &GroupEntry = Map[GroupName];
+    std::pair<TimerGroup*, Name2TimerMap> &GroupEntry = Map[GroupName];
 
     if (!GroupEntry.first)
       GroupEntry.first = new TimerGroup(GroupName, GroupDescription);
@@ -222,17 +216,16 @@ public:
   }
 };
 
-} // namespace
+}
 
 static ManagedStatic<Name2PairMap> NamedGroupedTimers;
 
 NamedRegionTimer::NamedRegionTimer(StringRef Name, StringRef Description,
                                    StringRef GroupName,
                                    StringRef GroupDescription, bool Enabled)
-    : TimeRegion(!Enabled
-                     ? nullptr
-                     : &NamedGroupedTimers->get(Name, Description, GroupName,
-                                                GroupDescription)) {}
+  : TimeRegion(!Enabled ? nullptr
+                 : &NamedGroupedTimers->get(Name, Description, GroupName,
+                                            GroupDescription)) {}
 
 //===----------------------------------------------------------------------===//
 //   TimerGroup Implementation
@@ -243,8 +236,8 @@ NamedRegionTimer::NamedRegionTimer(StringRef Name, StringRef Description,
 static TimerGroup *TimerGroupList = nullptr;
 
 TimerGroup::TimerGroup(StringRef Name, StringRef Description)
-    : Name(Name.begin(), Name.end()),
-      Description(Description.begin(), Description.end()) {
+  : Name(Name.begin(), Name.end()),
+    Description(Description.begin(), Description.end()) {
   // Add the group to TimerGroupList.
   sys::SmartScopedLock<true> L(*TimerLock);
   if (TimerGroupList)
@@ -276,6 +269,7 @@ TimerGroup::~TimerGroup() {
   if (Next)
     Next->Prev = Prev;
 }
+
 
 void TimerGroup::removeTimer(Timer &T) {
   sys::SmartScopedLock<true> L(*TimerLock);
@@ -323,9 +317,8 @@ void TimerGroup::PrintQueuedTimers(raw_ostream &OS) {
   // Print out timing header.
   OS << "===" << std::string(73, '-') << "===\n";
   // Figure out how many spaces to indent TimerGroup name.
-  unsigned Padding = (80 - Description.length()) / 2;
-  if (Padding > 80)
-    Padding = 0; // Don't allow "negative" numbers
+  unsigned Padding = (80-Description.length())/2;
+  if (Padding > 80) Padding = 0;         // Don't allow "negative" numbers
   OS.indent(Padding) << Description << '\n';
   OS << "===" << std::string(73, '-') << "===\n";
 
@@ -349,8 +342,8 @@ void TimerGroup::PrintQueuedTimers(raw_ostream &OS) {
   OS << "  --- Name ---\n";
 
   // Loop through all of the timing data, printing it out.
-  for (const PrintRecord &Record :
-       make_range(TimersToPrint.rbegin(), TimersToPrint.rend())) {
+  for (const PrintRecord &Record : make_range(TimersToPrint.rbegin(),
+                                              TimersToPrint.rend())) {
     Record.Time.print(Total, OS);
     OS << Record.Description << '\n';
   }
@@ -365,8 +358,7 @@ void TimerGroup::PrintQueuedTimers(raw_ostream &OS) {
 void TimerGroup::prepareToPrintList(bool ResetTime) {
   // See if any of our timers were started, if so add them to TimersToPrint.
   for (Timer *T = FirstTimer; T; T = T->Next) {
-    if (!T->hasTriggered())
-      continue;
+    if (!T->hasTriggered()) continue;
     bool WasRunning = T->isRunning();
     if (WasRunning)
       T->stopTimer();
@@ -453,7 +445,9 @@ const char *TimerGroup::printAllJSONValues(raw_ostream &OS, const char *delim) {
   return delim;
 }
 
-void TimerGroup::ConstructTimerLists() { (void)*NamedGroupedTimers; }
+void TimerGroup::ConstructTimerLists() {
+  (void)*NamedGroupedTimers;
+}
 
 std::unique_ptr<TimerGroup> TimerGroup::aquireDefaultGroup() {
   return std::unique_ptr<TimerGroup>(DefaultTimerGroup.claim());

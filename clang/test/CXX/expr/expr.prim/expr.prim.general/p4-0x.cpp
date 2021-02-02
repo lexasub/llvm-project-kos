@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
 
 struct S {
-  S *p = this;      // ok
+  S *p = this; // ok
   decltype(this) q; // expected-error {{invalid use of 'this' outside of a non-static member function}}
 
   int arr[sizeof(this)]; // expected-error {{invalid use of 'this' outside of a non-static member function}}
@@ -11,12 +11,12 @@ struct S {
 };
 
 namespace CaptureThis {
-struct X {
-  int n = 10;
-  int m = [&] { return n + 1; }();
-  int o = [&] { return this->m + 1; }();
-  int p = [&] { return [&](int x) { return this->m + x; }(o); }();
-};
-
-X x;
-} // namespace CaptureThis
+  struct X {
+    int n = 10;
+    int m = [&]{return n + 1; }();
+    int o = [&]{return this->m + 1; }();
+    int p = [&]{return [&](int x) { return this->m + x;}(o); }();
+  };
+  
+  X x;
+}

@@ -16,16 +16,16 @@
 #ifndef HEADER
 #define HEADER
 
-struct St {
-  int a;
+struct St{
+ int a;
 };
 
-struct St1 {
-  int a;
-  static int b;
+struct St1{
+ int a;
+ static int b;
 // CHECK: static int b;
 #pragma omp threadprivate(b)
-  // CHECK-NEXT: #pragma omp threadprivate(St1::b){{$}}
+// CHECK-NEXT: #pragma omp threadprivate(St1::b){{$}}
 } d;
 
 int a, b;
@@ -41,12 +41,12 @@ int a, b;
 template <class T>
 struct ST {
   static T m;
-#pragma omp threadprivate(m)
+  #pragma omp threadprivate(m)
 };
 
 template <class T> T foo() {
   static T v;
-#pragma omp threadprivate(v)
+  #pragma omp threadprivate(v)
   v = ST<T>::m;
   return v;
 }
@@ -57,8 +57,8 @@ template <class T> T foo() {
 //CHECK-NEXT: static int v;
 //CHECK-NEXT: #pragma omp threadprivate(v)
 
-namespace ns {
-int a;
+namespace ns{
+  int a;
 }
 // CHECK: namespace ns {
 // CHECK-NEXT: int a;
@@ -66,12 +66,12 @@ int a;
 #pragma omp threadprivate(ns::a)
 // CHECK-NEXT: #pragma omp threadprivate(ns::a)
 
-int main() {
+int main () {
   static int a;
 // CHECK: static int a;
 #pragma omp threadprivate(a)
-  // CHECK-NEXT: #pragma omp threadprivate(a)
-  a = 2;
+// CHECK-NEXT: #pragma omp threadprivate(a)
+  a=2;
   return (foo<int>());
 }
 

@@ -46,7 +46,7 @@ bool IsItemExcluded(llvm::StringRef Item,
 
   return false;
 }
-} // namespace
+}
 
 using namespace llvm;
 

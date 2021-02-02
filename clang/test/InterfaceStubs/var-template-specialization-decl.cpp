@@ -9,9 +9,9 @@
 // CHECK-NEXT: - { Name: "a", Type: Object, Size: 4 }
 // CHECK-NEXT: ...
 
-template <typename T, T v> struct S9 {
-  static constexpr T value = v;
+template<typename T, T v> struct S9 {
+    static constexpr T value = v;
 };
-template <typename T> struct S0 : public S9<bool, true> {};
-template <typename T> constexpr bool CE2 = S0<T>::value;
+template<typename T> struct S0 : public S9<bool, true> { };
+template<typename T> constexpr bool CE2 = S0<T>::value;
 int a = CE2<int>;

@@ -411,7 +411,7 @@ protected:
             }
 
             internal_breakpoint = bp_loc_sp->GetBreakpoint().IsInternal();
-
+            
             // First run the precondition, but since the precondition is per
             // breakpoint, only run it once per breakpoint.
             std::pair<std::unordered_set<break_id_t>::iterator, bool> result =
@@ -474,7 +474,8 @@ protected:
             // to continue.  But failing the condition means the breakpoint was
             // effectively NOT HIT.  So these two states are different.
             bool auto_continue_says_stop = true;
-            if (bp_loc_sp->IsAutoContinue()) {
+            if (bp_loc_sp->IsAutoContinue())
+            {
               LLDB_LOGF(log,
                         "Continuing breakpoint %s as AutoContinue was set.",
                         loc_desc.GetData());
@@ -503,7 +504,7 @@ protected:
 
             if (callback_says_stop && auto_continue_says_stop)
               m_should_stop = true;
-
+                  
             // If we are going to stop for this breakpoint, then remove the
             // breakpoint.
             if (callback_says_stop && bp_loc_sp &&
@@ -541,7 +542,7 @@ protected:
         // Override should_stop decision when we have completed step plan
         // additionally to the breakpoint
         m_should_stop = true;
-
+        
         // We know we're stopping for a completed plan and we don't want to
         // show the breakpoint stop, so compute the public stop info immediately
         // here.
@@ -577,8 +578,8 @@ public:
   // performing watchpoint actions.
   class WatchpointSentry {
   public:
-    WatchpointSentry(ProcessSP p_sp, WatchpointSP w_sp)
-        : process_sp(p_sp), watchpoint_sp(w_sp) {
+    WatchpointSentry(ProcessSP p_sp, WatchpointSP w_sp) : process_sp(p_sp), 
+                     watchpoint_sp(w_sp) {
       if (process_sp && watchpoint_sp) {
         const bool notify = false;
         watchpoint_sp->TurnOnEphemeralMode();
@@ -586,7 +587,7 @@ public:
         process_sp->AddPreResumeAction(SentryPreResumeAction, this);
       }
     }
-
+    
     void DoReenable() {
       if (process_sp && watchpoint_sp) {
         bool was_disabled = watchpoint_sp->IsDisabledDuringEphemeralMode();
@@ -599,17 +600,17 @@ public:
         }
       }
     }
-
+    
     ~WatchpointSentry() {
-      DoReenable();
-      if (process_sp)
-        process_sp->ClearPreResumeAction(SentryPreResumeAction, this);
+        DoReenable();
+        if (process_sp)
+            process_sp->ClearPreResumeAction(SentryPreResumeAction, this);
     }
-
+    
     static bool SentryPreResumeAction(void *sentry_void) {
-      WatchpointSentry *sentry = (WatchpointSentry *)sentry_void;
-      sentry->DoReenable();
-      return true;
+        WatchpointSentry *sentry = (WatchpointSentry *) sentry_void;
+        sentry->DoReenable();
+        return true;
     }
 
   private:
@@ -686,13 +687,14 @@ protected:
     // course of this code.  Also by default we're going to stop, so set that
     // here.
     m_should_stop = true;
+    
 
     ThreadSP thread_sp(m_thread_wp.lock());
     if (thread_sp) {
 
       WatchpointSP wp_sp(
           thread_sp->CalculateTarget()->GetWatchpointList().FindByID(
-              GetValue()));
+              GetValue()));      
       if (wp_sp) {
         ExecutionContext exe_ctx(thread_sp->GetStackFrameAtIndex(0));
         ProcessSP process_sp = exe_ctx.GetProcessSP();
@@ -759,7 +761,7 @@ protected:
          * instruction and appends it in the description of the stop-info
          * packet. If watchpoint
          * is not set on this address by user then this do not stop.
-         */
+        */
         if (m_watch_hit_addr != LLDB_INVALID_ADDRESS) {
           WatchpointSP wp_hit_sp =
               thread_sp->CalculateTarget()->GetWatchpointList().FindByAddress(
@@ -842,20 +844,20 @@ protected:
         // If the condition says to stop, we run the callback to further decide
         // whether to stop.
         if (m_should_stop) {
-          // FIXME: For now the callbacks have to run in async mode - the
-          // first time we restart we need
-          // to get out of there.  So set it here.
-          // When we figure out how to nest watchpoint hits then this will
-          // change.
+            // FIXME: For now the callbacks have to run in async mode - the
+            // first time we restart we need
+            // to get out of there.  So set it here.
+            // When we figure out how to nest watchpoint hits then this will
+            // change.
 
           bool old_async = debugger.GetAsyncExecution();
           debugger.SetAsyncExecution(true);
-
+          
           StoppointCallbackContext context(event_ptr, exe_ctx, false);
           bool stop_requested = wp_sp->InvokeCallback(&context);
-
+          
           debugger.SetAsyncExecution(old_async);
-
+          
           // Also make sure that the callback hasn't continued the target. If
           // it did, when we'll set m_should_stop to false and get out of here.
           if (HasTargetRunSinceMe())

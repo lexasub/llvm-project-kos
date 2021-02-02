@@ -28,8 +28,8 @@ typedef PickSentinel<Node, ilist_sentinel_tracking<false>>::type
     NoTrackingSentinel;
 
 struct LocalAccess : ilist_detail::NodeAccess {
-  using NodeAccess::getNext;
   using NodeAccess::getPrev;
+  using NodeAccess::getNext;
 };
 
 TEST(IListSentinelTest, DefaultConstructor) {

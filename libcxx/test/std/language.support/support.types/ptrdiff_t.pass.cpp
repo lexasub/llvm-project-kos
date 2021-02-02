@@ -17,13 +17,14 @@
 //  2. be the same sizeof as void*.
 //  3. be a signed integral.
 
-int main(int, char**) {
-  static_assert(sizeof(std::ptrdiff_t) == sizeof(void*),
-                "sizeof(std::ptrdiff_t) == sizeof(void*)");
-  static_assert(std::is_signed<std::ptrdiff_t>::value,
-                "std::is_signed<std::ptrdiff_t>::value");
-  static_assert(std::is_integral<std::ptrdiff_t>::value,
-                "std::is_integral<std::ptrdiff_t>::value");
+int main(int, char**)
+{
+    static_assert(sizeof(std::ptrdiff_t) == sizeof(void*),
+                  "sizeof(std::ptrdiff_t) == sizeof(void*)");
+    static_assert(std::is_signed<std::ptrdiff_t>::value,
+                  "std::is_signed<std::ptrdiff_t>::value");
+    static_assert(std::is_integral<std::ptrdiff_t>::value,
+                  "std::is_integral<std::ptrdiff_t>::value");
 
   return 0;
 }

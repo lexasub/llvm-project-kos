@@ -3,11 +3,11 @@
 namespace PR15558 {
 namespace {
 class A {};
-} // namespace
+}
 
 class B {
   static A a;
   static A b;
   static const int x = sizeof(b);
 };
-} // namespace PR15558
+}

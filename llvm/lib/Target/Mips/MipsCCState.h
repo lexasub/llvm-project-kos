@@ -30,7 +30,7 @@ private:
   /// Identify lowered values that originated from f128 arguments and record
   /// this for use by RetCC_MipsN.
   void PreAnalyzeCallResultForF128(const SmallVectorImpl<ISD::InputArg> &Ins,
-                                   const Type *RetTy, const char *Func);
+                                   const Type *RetTy, const char * Func);
 
   /// Identify lowered values that originated from f128 arguments and record
   /// this for use by RetCC_MipsN.
@@ -85,10 +85,11 @@ public:
               SpecialCallingConvType SpecialCC = NoSpecialCallingConv)
       : CCState(CC, isVarArg, MF, locs, C), SpecialCallingConv(SpecialCC) {}
 
-  void AnalyzeCallOperands(const SmallVectorImpl<ISD::OutputArg> &Outs,
-                           CCAssignFn Fn,
-                           std::vector<TargetLowering::ArgListEntry> &FuncArgs,
-                           const char *Func) {
+  void
+  AnalyzeCallOperands(const SmallVectorImpl<ISD::OutputArg> &Outs,
+                      CCAssignFn Fn,
+                      std::vector<TargetLowering::ArgListEntry> &FuncArgs,
+                      const char *Func) {
     PreAnalyzeCallOperands(Outs, FuncArgs, Func);
     CCState::AnalyzeCallOperands(Outs, Fn);
     OriginalArgWasF128.clear();
@@ -116,7 +117,8 @@ public:
   }
 
   void AnalyzeCallResult(const SmallVectorImpl<ISD::InputArg> &Ins,
-                         CCAssignFn Fn, const Type *RetTy, const char *Func) {
+                         CCAssignFn Fn, const Type *RetTy,
+                         const char *Func) {
     PreAnalyzeCallResultForF128(Ins, RetTy, Func);
     PreAnalyzeCallResultForVectorFloat(Ins, RetTy);
     CCState::AnalyzeCallResult(Ins, Fn);
@@ -148,7 +150,7 @@ public:
 
   bool WasOriginalArgF128(unsigned ValNo) { return OriginalArgWasF128[ValNo]; }
   bool WasOriginalArgFloat(unsigned ValNo) {
-    return OriginalArgWasFloat[ValNo];
+      return OriginalArgWasFloat[ValNo];
   }
   bool WasOriginalArgVectorFloat(unsigned ValNo) const {
     return OriginalArgWasFloatVector[ValNo];
@@ -159,6 +161,6 @@ public:
   bool IsCallOperandFixed(unsigned ValNo) { return CallOperandIsFixed[ValNo]; }
   SpecialCallingConvType getSpecialCallingConv() { return SpecialCallingConv; }
 };
-} // namespace llvm
+}
 
 #endif

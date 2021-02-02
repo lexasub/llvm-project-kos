@@ -119,8 +119,8 @@ void SBTypeFilter::AppendExpressionPath(const char *item) {
 }
 
 lldb::SBTypeFilter &SBTypeFilter::operator=(const lldb::SBTypeFilter &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeFilter &, SBTypeFilter, operator=,
-                     (const lldb::SBTypeFilter &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBTypeFilter &,
+                     SBTypeFilter, operator=,(const lldb::SBTypeFilter &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -129,7 +129,7 @@ lldb::SBTypeFilter &SBTypeFilter::operator=(const lldb::SBTypeFilter &rhs) {
 }
 
 bool SBTypeFilter::operator==(lldb::SBTypeFilter &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeFilter, operator==, (lldb::SBTypeFilter &),
+  LLDB_RECORD_METHOD(bool, SBTypeFilter, operator==,(lldb::SBTypeFilter &),
                      rhs);
 
   if (!IsValid())
@@ -157,7 +157,7 @@ bool SBTypeFilter::IsEqualTo(lldb::SBTypeFilter &rhs) {
 }
 
 bool SBTypeFilter::operator!=(lldb::SBTypeFilter &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeFilter, operator!=, (lldb::SBTypeFilter &),
+  LLDB_RECORD_METHOD(bool, SBTypeFilter, operator!=,(lldb::SBTypeFilter &),
                      rhs);
 
   if (!IsValid())
@@ -194,7 +194,8 @@ bool SBTypeFilter::CopyOnWrite_Impl() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBTypeFilter>(Registry &R) {
+template <>
+void RegisterMethods<SBTypeFilter>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFilter, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFilter, (uint32_t));
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFilter, (const lldb::SBTypeFilter &));
@@ -205,19 +206,20 @@ template <> void RegisterMethods<SBTypeFilter>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBTypeFilter, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
   LLDB_REGISTER_METHOD(void, SBTypeFilter, Clear, ());
-  LLDB_REGISTER_METHOD(uint32_t, SBTypeFilter, GetNumberOfExpressionPaths, ());
+  LLDB_REGISTER_METHOD(uint32_t, SBTypeFilter, GetNumberOfExpressionPaths,
+                       ());
   LLDB_REGISTER_METHOD(const char *, SBTypeFilter, GetExpressionPathAtIndex,
                        (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTypeFilter, ReplaceExpressionPathAtIndex,
                        (uint32_t, const char *));
   LLDB_REGISTER_METHOD(void, SBTypeFilter, AppendExpressionPath,
                        (const char *));
-  LLDB_REGISTER_METHOD(lldb::SBTypeFilter &, SBTypeFilter, operator=,
-                       (const lldb::SBTypeFilter &));
-  LLDB_REGISTER_METHOD(bool, SBTypeFilter, operator==, (lldb::SBTypeFilter &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeFilter &,
+                       SBTypeFilter, operator=,(const lldb::SBTypeFilter &));
+  LLDB_REGISTER_METHOD(bool, SBTypeFilter, operator==,(lldb::SBTypeFilter &));
   LLDB_REGISTER_METHOD(bool, SBTypeFilter, IsEqualTo, (lldb::SBTypeFilter &));
-  LLDB_REGISTER_METHOD(bool, SBTypeFilter, operator!=, (lldb::SBTypeFilter &));
+  LLDB_REGISTER_METHOD(bool, SBTypeFilter, operator!=,(lldb::SBTypeFilter &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

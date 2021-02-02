@@ -52,7 +52,8 @@ namespace llvm {
 /// reference.
 ///
 /// T cannot be a rvalue reference.
-template <class T> class ErrorOr {
+template<class T>
+class ErrorOr {
   template <class OtherT> friend class ErrorOr;
 
   static constexpr bool isRef = std::is_reference<T>::value;
@@ -89,7 +90,9 @@ public:
     new (getStorage()) storage_type(std::forward<OtherT>(Val));
   }
 
-  ErrorOr(const ErrorOr &Other) { copyConstruct(Other); }
+  ErrorOr(const ErrorOr &Other) {
+    copyConstruct(Other);
+  }
 
   template <class OtherT>
   ErrorOr(const ErrorOr<OtherT> &Other,
@@ -105,7 +108,9 @@ public:
     copyConstruct(Other);
   }
 
-  ErrorOr(ErrorOr &&Other) { moveConstruct(std::move(Other)); }
+  ErrorOr(ErrorOr &&Other) {
+    moveConstruct(std::move(Other));
+  }
 
   template <class OtherT>
   ErrorOr(ErrorOr<OtherT> &&Other,
@@ -138,7 +143,9 @@ public:
   }
 
   /// Return false if there is an error.
-  explicit operator bool() const { return !HasError; }
+  explicit operator bool() const {
+    return !HasError;
+  }
 
   reference get() { return *getStorage(); }
   const_reference get() const { return const_cast<ErrorOr<T> *>(this)->get(); }
@@ -147,16 +154,21 @@ public:
     return HasError ? *getErrorStorage() : std::error_code();
   }
 
-  pointer operator->() { return toPointer(getStorage()); }
+  pointer operator ->() {
+    return toPointer(getStorage());
+  }
 
   const_pointer operator->() const { return toPointer(getStorage()); }
 
-  reference operator*() { return *getStorage(); }
+  reference operator *() {
+    return *getStorage();
+  }
 
   const_reference operator*() const { return *getStorage(); }
 
 private:
-  template <class OtherT> void copyConstruct(const ErrorOr<OtherT> &Other) {
+  template <class OtherT>
+  void copyConstruct(const ErrorOr<OtherT> &Other) {
     if (!Other.HasError) {
       // Get the other value.
       HasError = false;
@@ -178,7 +190,8 @@ private:
     return false;
   }
 
-  template <class OtherT> void copyAssign(const ErrorOr<OtherT> &Other) {
+  template <class OtherT>
+  void copyAssign(const ErrorOr<OtherT> &Other) {
     if (compareThisIfSameType(*this, Other))
       return;
 
@@ -186,7 +199,8 @@ private:
     new (this) ErrorOr(Other);
   }
 
-  template <class OtherT> void moveConstruct(ErrorOr<OtherT> &&Other) {
+  template <class OtherT>
+  void moveConstruct(ErrorOr<OtherT> &&Other) {
     if (!Other.HasError) {
       // Get the other value.
       HasError = false;
@@ -198,7 +212,8 @@ private:
     }
   }
 
-  template <class OtherT> void moveAssign(ErrorOr<OtherT> &&Other) {
+  template <class OtherT>
+  void moveAssign(ErrorOr<OtherT> &&Other) {
     if (compareThisIfSameType(*this, Other))
       return;
 
@@ -206,11 +221,15 @@ private:
     new (this) ErrorOr(std::move(Other));
   }
 
-  pointer toPointer(pointer Val) { return Val; }
+  pointer toPointer(pointer Val) {
+    return Val;
+  }
 
   const_pointer toPointer(const_pointer Val) const { return Val; }
 
-  pointer toPointer(wrap *Val) { return &Val->get(); }
+  pointer toPointer(wrap *Val) {
+    return &Val->get();
+  }
 
   const_pointer toPointer(const wrap *Val) const { return &Val->get(); }
 

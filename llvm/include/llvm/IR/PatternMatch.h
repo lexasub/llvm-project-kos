@@ -92,9 +92,7 @@ inline class_match<CmpInst> m_Cmp() { return class_match<CmpInst>(); }
 inline class_match<UndefValue> m_Undef() { return class_match<UndefValue>(); }
 
 /// Match an arbitrary poison constant.
-inline class_match<PoisonValue> m_Poison() {
-  return class_match<PoisonValue>();
-}
+inline class_match<PoisonValue> m_Poison() { return class_match<PoisonValue>(); }
 
 /// Match an arbitrary Constant and ignore it.
 inline class_match<Constant> m_Constant() { return class_match<Constant>(); }
@@ -180,7 +178,7 @@ struct apint_match {
   bool AllowUndef;
 
   apint_match(const APInt *&Res, bool AllowUndef)
-      : Res(Res), AllowUndef(AllowUndef) {}
+    : Res(Res), AllowUndef(AllowUndef) {}
 
   template <typename ITy> bool match(ITy *V) {
     if (auto *CI = dyn_cast<ConstantInt>(V)) {
@@ -189,8 +187,8 @@ struct apint_match {
     }
     if (V->getType()->isVectorTy())
       if (const auto *C = dyn_cast<Constant>(V))
-        if (auto *CI =
-                dyn_cast_or_null<ConstantInt>(C->getSplatValue(AllowUndef))) {
+        if (auto *CI = dyn_cast_or_null<ConstantInt>(
+                C->getSplatValue(AllowUndef))) {
           Res = &CI->getValue();
           return true;
         }
@@ -214,8 +212,8 @@ struct apfloat_match {
     }
     if (V->getType()->isVectorTy())
       if (const auto *C = dyn_cast<Constant>(V))
-        if (auto *CI =
-                dyn_cast_or_null<ConstantFP>(C->getSplatValue(AllowUndef))) {
+        if (auto *CI = dyn_cast_or_null<ConstantFP>(
+                C->getSplatValue(AllowUndef))) {
           Res = &CI->getValueAPF();
           return true;
         }
@@ -425,7 +423,9 @@ struct is_negative {
 inline cst_pred_ty<is_negative> m_Negative() {
   return cst_pred_ty<is_negative>();
 }
-inline api_pred_ty<is_negative> m_Negative(const APInt *&V) { return V; }
+inline api_pred_ty<is_negative> m_Negative(const APInt *&V) {
+  return V;
+}
 
 struct is_nonnegative {
   bool isValue(const APInt &C) { return C.isNonNegative(); }
@@ -435,7 +435,9 @@ struct is_nonnegative {
 inline cst_pred_ty<is_nonnegative> m_NonNegative() {
   return cst_pred_ty<is_nonnegative>();
 }
-inline api_pred_ty<is_nonnegative> m_NonNegative(const APInt *&V) { return V; }
+inline api_pred_ty<is_nonnegative> m_NonNegative(const APInt *&V) {
+  return V;
+}
 
 struct is_strictlypositive {
   bool isValue(const APInt &C) { return C.isStrictlyPositive(); }
@@ -464,7 +466,9 @@ struct is_one {
 };
 /// Match an integer 1 or a vector with all elements equal to 1.
 /// For vectors, this includes constants with undefined elements.
-inline cst_pred_ty<is_one> m_One() { return cst_pred_ty<is_one>(); }
+inline cst_pred_ty<is_one> m_One() {
+  return cst_pred_ty<is_one>();
+}
 
 struct is_zero_int {
   bool isValue(const APInt &C) { return C.isNullValue(); }
@@ -484,15 +488,21 @@ struct is_zero {
 };
 /// Match any null constant or a vector with all elements equal to 0.
 /// For vectors, this includes constants with undefined elements.
-inline is_zero m_Zero() { return is_zero(); }
+inline is_zero m_Zero() {
+  return is_zero();
+}
 
 struct is_power2 {
   bool isValue(const APInt &C) { return C.isPowerOf2(); }
 };
 /// Match an integer or vector power-of-2.
 /// For vectors, this includes constants with undefined elements.
-inline cst_pred_ty<is_power2> m_Power2() { return cst_pred_ty<is_power2>(); }
-inline api_pred_ty<is_power2> m_Power2(const APInt *&V) { return V; }
+inline cst_pred_ty<is_power2> m_Power2() {
+  return cst_pred_ty<is_power2>();
+}
+inline api_pred_ty<is_power2> m_Power2(const APInt *&V) {
+  return V;
+}
 
 struct is_negated_power2 {
   bool isValue(const APInt &C) { return (-C).isPowerOf2(); }
@@ -581,7 +591,9 @@ struct is_nan {
 };
 /// Match an arbitrary NaN constant. This includes quiet and signalling nans.
 /// For vectors, this includes constants with undefined elements.
-inline cstfp_pred_ty<is_nan> m_NaN() { return cstfp_pred_ty<is_nan>(); }
+inline cstfp_pred_ty<is_nan> m_NaN() {
+  return cstfp_pred_ty<is_nan>();
+}
 
 struct is_nonnan {
   bool isValue(const APFloat &C) { return !C.isNaN(); }
@@ -597,7 +609,9 @@ struct is_inf {
 };
 /// Match a positive or negative infinity FP constant.
 /// For vectors, this includes constants with undefined elements.
-inline cstfp_pred_ty<is_inf> m_Inf() { return cstfp_pred_ty<is_inf>(); }
+inline cstfp_pred_ty<is_inf> m_Inf() {
+  return cstfp_pred_ty<is_inf>();
+}
 
 struct is_noninf {
   bool isValue(const APFloat &C) { return !C.isInfinity(); }
@@ -693,9 +707,7 @@ inline bind_ty<UnaryOperator> m_UnOp(UnaryOperator *&I) { return I; }
 /// Match a binary operator, capturing it if we match.
 inline bind_ty<BinaryOperator> m_BinOp(BinaryOperator *&I) { return I; }
 /// Match a with overflow intrinsic, capturing it if we match.
-inline bind_ty<WithOverflowInst> m_WithOverflowInst(WithOverflowInst *&I) {
-  return I;
-}
+inline bind_ty<WithOverflowInst> m_WithOverflowInst(WithOverflowInst *&I) { return I; }
 
 /// Match a Constant, capturing the value if we match.
 inline bind_ty<Constant> m_Constant(Constant *&C) { return C; }
@@ -799,7 +811,8 @@ struct bind_const_intval_ty {
 
 /// Match a specified integer value or vector of all elements of that
 /// value.
-template <bool AllowUndefs> struct specific_intval {
+template <bool AllowUndefs>
+struct specific_intval {
   APInt Val;
 
   specific_intval(APInt V) : Val(std::move(V)) {}
@@ -968,8 +981,7 @@ template <typename Op_t> struct FNeg_match {
   FNeg_match(const Op_t &Op) : X(Op) {}
   template <typename OpTy> bool match(OpTy *V) {
     auto *FPMO = dyn_cast<FPMathOperator>(V);
-    if (!FPMO)
-      return false;
+    if (!FPMO) return false;
 
     if (FPMO->getOpcode() == Instruction::FNeg)
       return X.match(FPMO->getOperand(0));
@@ -993,7 +1005,9 @@ template <typename Op_t> struct FNeg_match {
 };
 
 /// Match 'fneg X' as 'fsub -0.0, X'.
-template <typename OpTy> inline FNeg_match<OpTy> m_FNeg(const OpTy &X) {
+template <typename OpTy>
+inline FNeg_match<OpTy>
+m_FNeg(const OpTy &X) {
   return FNeg_match<OpTy>(X);
 }
 
@@ -1118,32 +1132,32 @@ inline OverflowingBinaryOp_match<LHS, RHS, Instruction::Add,
                                  OverflowingBinaryOperator::NoSignedWrap>
 m_NSWAdd(const LHS &L, const RHS &R) {
   return OverflowingBinaryOp_match<LHS, RHS, Instruction::Add,
-                                   OverflowingBinaryOperator::NoSignedWrap>(L,
-                                                                            R);
+                                   OverflowingBinaryOperator::NoSignedWrap>(
+      L, R);
 }
 template <typename LHS, typename RHS>
 inline OverflowingBinaryOp_match<LHS, RHS, Instruction::Sub,
                                  OverflowingBinaryOperator::NoSignedWrap>
 m_NSWSub(const LHS &L, const RHS &R) {
   return OverflowingBinaryOp_match<LHS, RHS, Instruction::Sub,
-                                   OverflowingBinaryOperator::NoSignedWrap>(L,
-                                                                            R);
+                                   OverflowingBinaryOperator::NoSignedWrap>(
+      L, R);
 }
 template <typename LHS, typename RHS>
 inline OverflowingBinaryOp_match<LHS, RHS, Instruction::Mul,
                                  OverflowingBinaryOperator::NoSignedWrap>
 m_NSWMul(const LHS &L, const RHS &R) {
   return OverflowingBinaryOp_match<LHS, RHS, Instruction::Mul,
-                                   OverflowingBinaryOperator::NoSignedWrap>(L,
-                                                                            R);
+                                   OverflowingBinaryOperator::NoSignedWrap>(
+      L, R);
 }
 template <typename LHS, typename RHS>
 inline OverflowingBinaryOp_match<LHS, RHS, Instruction::Shl,
                                  OverflowingBinaryOperator::NoSignedWrap>
 m_NSWShl(const LHS &L, const RHS &R) {
   return OverflowingBinaryOp_match<LHS, RHS, Instruction::Shl,
-                                   OverflowingBinaryOperator::NoSignedWrap>(L,
-                                                                            R);
+                                   OverflowingBinaryOperator::NoSignedWrap>(
+      L, R);
 }
 
 template <typename LHS, typename RHS>
@@ -1317,7 +1331,7 @@ struct CmpClass_match {
         Predicate = I->getPredicate();
         return true;
       } else if (Commutable && L.match(I->getOperand(1)) &&
-                 R.match(I->getOperand(0))) {
+           R.match(I->getOperand(0))) {
         Predicate = I->getSwappedPredicate();
         return true;
       }
@@ -2012,13 +2026,15 @@ template <typename T0, typename T1> struct m_Intrinsic_Ty<T0, T1> {
 };
 template <typename T0, typename T1, typename T2>
 struct m_Intrinsic_Ty<T0, T1, T2> {
-  using Ty = match_combine_and<typename m_Intrinsic_Ty<T0, T1>::Ty,
-                               Argument_match<T2>>;
+  using Ty =
+      match_combine_and<typename m_Intrinsic_Ty<T0, T1>::Ty,
+                        Argument_match<T2>>;
 };
 template <typename T0, typename T1, typename T2, typename T3>
 struct m_Intrinsic_Ty<T0, T1, T2, T3> {
-  using Ty = match_combine_and<typename m_Intrinsic_Ty<T0, T1, T2>::Ty,
-                               Argument_match<T3>>;
+  using Ty =
+      match_combine_and<typename m_Intrinsic_Ty<T0, T1, T2>::Ty,
+                        Argument_match<T3>>;
 };
 
 template <typename T0, typename T1, typename T2, typename T3, typename T4>
@@ -2027,8 +2043,7 @@ struct m_Intrinsic_Ty<T0, T1, T2, T3, T4> {
                                Argument_match<T4>>;
 };
 
-template <typename T0, typename T1, typename T2, typename T3, typename T4,
-          typename T5>
+template <typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
 struct m_Intrinsic_Ty<T0, T1, T2, T3, T4, T5> {
   using Ty = match_combine_and<typename m_Intrinsic_Ty<T0, T1, T2, T3, T4>::Ty,
                                Argument_match<T5>>;
@@ -2372,7 +2387,8 @@ inline VScaleVal_match m_VScale(const DataLayout &DL) {
   return VScaleVal_match(DL);
 }
 
-template <typename LHS, typename RHS, unsigned Opcode> struct LogicalOp_match {
+template <typename LHS, typename RHS, unsigned Opcode>
+struct LogicalOp_match {
   LHS L;
   RHS R;
 
@@ -2410,16 +2426,16 @@ template <typename LHS, typename RHS, unsigned Opcode> struct LogicalOp_match {
 /// Matches L && R either in the form of L & R or L ? R : false.
 /// Note that the latter form is poison-blocking.
 template <typename LHS, typename RHS>
-inline LogicalOp_match<LHS, RHS, Instruction::And> m_LogicalAnd(const LHS &L,
-                                                                const RHS &R) {
+inline LogicalOp_match<LHS, RHS, Instruction::And>
+m_LogicalAnd(const LHS &L, const RHS &R) {
   return LogicalOp_match<LHS, RHS, Instruction::And>(L, R);
 }
 
 /// Matches L || R either in the form of L | R or L ? true : R.
 /// Note that the latter form is poison-blocking.
 template <typename LHS, typename RHS>
-inline LogicalOp_match<LHS, RHS, Instruction::Or> m_LogicalOr(const LHS &L,
-                                                              const RHS &R) {
+inline LogicalOp_match<LHS, RHS, Instruction::Or>
+m_LogicalOr(const LHS &L, const RHS &R) {
   return LogicalOp_match<LHS, RHS, Instruction::Or>(L, R);
 }
 

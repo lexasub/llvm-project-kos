@@ -63,7 +63,7 @@ struct SmallNonTrivialFunctor {
 };
 struct LargeTrivialFunctor {
   LargeTrivialFunctor() {
-    // Do not spend time initializing the padding.
+      // Do not spend time initializing the padding.
   }
   int padding[16];
   int operator()(const S*) const { return 0; }
@@ -71,7 +71,7 @@ struct LargeTrivialFunctor {
 struct LargeNonTrivialFunctor {
   int padding[16];
   LargeNonTrivialFunctor() {
-    // Do not spend time initializing the padding.
+      // Do not spend time initializing the padding.
   }
   LargeNonTrivialFunctor(const LargeNonTrivialFunctor&) {}
   ~LargeNonTrivialFunctor() {}
@@ -83,22 +83,22 @@ using Function = std::function<int(const S*)>;
 TEST_ALWAYS_INLINE
 inline Function MakeFunction(FunctionType type, bool opaque = false) {
   switch (type) {
-  case FunctionType::Null:
-    return nullptr;
-  case FunctionType::FunctionPointer:
-    return maybeOpaque(FunctionWithS, opaque);
-  case FunctionType::MemberFunctionPointer:
-    return maybeOpaque(&S::function, opaque);
-  case FunctionType::MemberPointer:
-    return maybeOpaque(&S::field, opaque);
-  case FunctionType::SmallTrivialFunctor:
-    return maybeOpaque(SmallTrivialFunctor{}, opaque);
-  case FunctionType::SmallNonTrivialFunctor:
-    return maybeOpaque(SmallNonTrivialFunctor{}, opaque);
-  case FunctionType::LargeTrivialFunctor:
-    return maybeOpaque(LargeTrivialFunctor{}, opaque);
-  case FunctionType::LargeNonTrivialFunctor:
-    return maybeOpaque(LargeNonTrivialFunctor{}, opaque);
+    case FunctionType::Null:
+      return nullptr;
+    case FunctionType::FunctionPointer:
+      return maybeOpaque(FunctionWithS, opaque);
+    case FunctionType::MemberFunctionPointer:
+      return maybeOpaque(&S::function, opaque);
+    case FunctionType::MemberPointer:
+      return maybeOpaque(&S::field, opaque);
+    case FunctionType::SmallTrivialFunctor:
+      return maybeOpaque(SmallTrivialFunctor{}, opaque);
+    case FunctionType::SmallNonTrivialFunctor:
+      return maybeOpaque(SmallNonTrivialFunctor{}, opaque);
+    case FunctionType::LargeTrivialFunctor:
+      return maybeOpaque(LargeTrivialFunctor{}, opaque);
+    case FunctionType::LargeNonTrivialFunctor:
+      return maybeOpaque(LargeNonTrivialFunctor{}, opaque);
   }
 }
 
@@ -125,7 +125,7 @@ struct Copy {
     auto value = MakeFunction(FunctionType());
     for (auto _ : state) {
       benchmark::DoNotOptimize(value);
-      auto copy = value; // NOLINT
+      auto copy = value;  // NOLINT
       benchmark::DoNotOptimize(copy);
     }
   }
@@ -145,7 +145,9 @@ struct Move {
     }
   }
 
-  static std::string name() { return "BM_Move" + FunctionType::name(); }
+  static std::string name() {
+    return "BM_Move" + FunctionType::name();
+  }
 };
 
 template <class Function1, class Function2>
@@ -210,7 +212,7 @@ struct InvokeInlined {
   }
 };
 
-} // namespace
+}  // namespace
 
 int main(int argc, char** argv) {
   benchmark::Initialize(&argc, argv);

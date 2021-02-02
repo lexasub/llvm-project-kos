@@ -22,4 +22,5 @@ struct __declspec(dllexport) Foo {
 
 #else
 
+
 #endif

@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -triple x86_64-apple-darwin -std=c++11 %s -o - | FileCheck %s
 
-enum class A { A1 = 1 };                 // underlying type is int by default
-enum class B : unsigned long { B1 = 1 }; // underlying type is unsigned long
+enum class A { A1=1 };                 // underlying type is int by default
+enum class B: unsigned long { B1=1 };  // underlying type is unsigned long
 enum C { C1 = 1 };
 enum D : short; // enum forward declaration
 enum Z : int;
@@ -35,18 +35,18 @@ D d;
 // CHECK-SAME:             ){{$}}
 
 namespace PR14029 {
-// Make sure this doesn't crash/assert.
-template <typename T> struct Test {
-  enum class Tag {
-    test = 0
+  // Make sure this doesn't crash/assert.
+  template <typename T> struct Test {
+    enum class Tag {
+      test = 0
+    };
+    Test() {
+      auto t = Tag::test;
+    }
+    Tag tag() const { return static_cast<Tag>(1); }
   };
-  Test() {
-    auto t = Tag::test;
-  }
-  Tag tag() const { return static_cast<Tag>(1); }
-};
-Test<int> t;
-} // namespace PR14029
+  Test<int> t;
+}
 
 namespace test2 {
 // FIXME: this should just be a declaration under -fno-standalone-debug
@@ -62,7 +62,7 @@ enum E : int;
 void func(E *) {
 }
 enum E : int { e };
-} // namespace test2
+}
 
 namespace test3 {
 // FIXME: this should just be a declaration under -fno-standalone-debug
@@ -75,7 +75,7 @@ namespace test3 {
 enum E : int { e };
 void func(E *) {
 }
-} // namespace test3
+}
 
 namespace test4 {
 // CHECK: !DICompositeType(tag: DW_TAG_enumeration_type, name: "E"
@@ -90,7 +90,7 @@ void f1(E *) {
 enum E : int { e };
 void f2(E) {
 }
-} // namespace test4
+}
 
 // CHECK: !DICompositeType(tag: DW_TAG_enumeration_type, name: "D"
 // CHECK-SAME:             line: 6
@@ -112,7 +112,7 @@ namespace test5 {
 enum E : int;
 void f1(E *) {
 }
-} // namespace test5
+}
 
 namespace test6 {
 // Ensure typedef'd enums aren't manifest by debug info generation.
@@ -121,4 +121,4 @@ namespace test6 {
 // CHECK-NOT: test6
 typedef enum {
 } E;
-} // namespace test6
+}

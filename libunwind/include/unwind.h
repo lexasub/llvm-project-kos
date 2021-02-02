@@ -15,16 +15,16 @@
 
 #include <__libunwind_config.h>
 
-#include <stddef.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #if defined(__SEH__) && !defined(__USING_SJLJ_EXCEPTIONS__) && defined(_WIN32)
-#include <ntverp.h>
 #include <windows.h>
+#include <ntverp.h>
 #endif
 
 #if defined(__APPLE__)
-#define LIBUNWIND_UNAVAIL __attribute__((unavailable))
+#define LIBUNWIND_UNAVAIL __attribute__ (( unavailable ))
 #else
 #define LIBUNWIND_UNAVAIL
 #endif
@@ -53,17 +53,17 @@ typedef enum {
   _UA_END_OF_STACK = 16 // gcc extension to C++ ABI
 } _Unwind_Action;
 
-typedef struct _Unwind_Context _Unwind_Context; // opaque
+typedef struct _Unwind_Context _Unwind_Context;   // opaque
 
 #if defined(_LIBUNWIND_ARM_EHABI)
 typedef uint32_t _Unwind_State;
 
-static const _Unwind_State _US_VIRTUAL_UNWIND_FRAME = 0;
-static const _Unwind_State _US_UNWIND_FRAME_STARTING = 1;
-static const _Unwind_State _US_UNWIND_FRAME_RESUME = 2;
-static const _Unwind_State _US_ACTION_MASK = 3;
+static const _Unwind_State _US_VIRTUAL_UNWIND_FRAME   = 0;
+static const _Unwind_State _US_UNWIND_FRAME_STARTING  = 1;
+static const _Unwind_State _US_UNWIND_FRAME_RESUME    = 2;
+static const _Unwind_State _US_ACTION_MASK            = 3;
 /* Undocumented flag for force unwinding. */
-static const _Unwind_State _US_FORCE_UNWIND = 8;
+static const _Unwind_State _US_FORCE_UNWIND           = 8;
 
 typedef uint32_t _Unwind_EHT_Header;
 
@@ -73,7 +73,7 @@ typedef struct _Unwind_Control_Block _Unwind_Exception; /* Alias */
 
 struct _Unwind_Control_Block {
   uint64_t exception_class;
-  void (*exception_cleanup)(_Unwind_Reason_Code, _Unwind_Control_Block *);
+  void (*exception_cleanup)(_Unwind_Reason_Code, _Unwind_Control_Block*);
 
   /* Unwinder cache, private fields for the unwinder's use */
   struct {
@@ -97,18 +97,19 @@ struct _Unwind_Control_Block {
 
   /* Pr cache (for pr's benefit): */
   struct {
-    uint32_t fnstart;         /* function start address */
-    _Unwind_EHT_Header *ehtp; /* pointer to EHT entry header word */
+    uint32_t fnstart; /* function start address */
+    _Unwind_EHT_Header* ehtp; /* pointer to EHT entry header word */
     uint32_t additional;
     uint32_t reserved1;
   } pr_cache;
 
-  long long int : 0; /* Enforce the 8-byte alignment */
+  long long int :0; /* Enforce the 8-byte alignment */
 } __attribute__((__aligned__(8)));
 
-typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)(
-    _Unwind_State state, _Unwind_Exception *exceptionObject,
-    struct _Unwind_Context *context);
+typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)
+      (_Unwind_State state,
+       _Unwind_Exception* exceptionObject,
+       struct _Unwind_Context* context);
 
 typedef _Unwind_Reason_Code (*_Unwind_Personality_Fn)(
     _Unwind_State state, _Unwind_Exception *exceptionObject,
@@ -120,7 +121,8 @@ typedef struct _Unwind_Exception _Unwind_Exception;
 
 struct _Unwind_Exception {
   uint64_t exception_class;
-  void (*exception_cleanup)(_Unwind_Reason_Code reason, _Unwind_Exception *exc);
+  void (*exception_cleanup)(_Unwind_Reason_Code reason,
+                            _Unwind_Exception *exc);
 #if defined(__SEH__) && !defined(__USING_SJLJ_EXCEPTIONS__)
   uintptr_t private_[6];
 #else
@@ -139,10 +141,13 @@ struct _Unwind_Exception {
   // alignment for the target"; so do we.
 } __attribute__((__aligned__));
 
-typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)(
-    int version, _Unwind_Action actions, uint64_t exceptionClass,
-    _Unwind_Exception *exceptionObject, struct _Unwind_Context *context,
-    void *stop_parameter);
+typedef _Unwind_Reason_Code (*_Unwind_Stop_Fn)
+    (int version,
+     _Unwind_Action actions,
+     uint64_t exceptionClass,
+     _Unwind_Exception* exceptionObject,
+     struct _Unwind_Context* context,
+     void* stop_parameter );
 
 typedef _Unwind_Reason_Code (*_Unwind_Personality_Fn)(
     int version, _Unwind_Action actions, uint64_t exceptionClass,
@@ -158,21 +163,21 @@ extern "C" {
 //
 #ifdef __USING_SJLJ_EXCEPTIONS__
 extern _Unwind_Reason_Code
-_Unwind_SjLj_RaiseException(_Unwind_Exception *exception_object);
+    _Unwind_SjLj_RaiseException(_Unwind_Exception *exception_object);
 extern void _Unwind_SjLj_Resume(_Unwind_Exception *exception_object);
 #else
 extern _Unwind_Reason_Code
-_Unwind_RaiseException(_Unwind_Exception *exception_object);
+    _Unwind_RaiseException(_Unwind_Exception *exception_object);
 extern void _Unwind_Resume(_Unwind_Exception *exception_object);
 #endif
 extern void _Unwind_DeleteException(_Unwind_Exception *exception_object);
 
 #if defined(_LIBUNWIND_ARM_EHABI)
 typedef enum {
-  _UVRSC_CORE = 0,  /* integer register */
-  _UVRSC_VFP = 1,   /* vfp */
+  _UVRSC_CORE = 0, /* integer register */
+  _UVRSC_VFP = 1, /* vfp */
   _UVRSC_WMMXD = 3, /* Intel WMMX data register */
-  _UVRSC_WMMXC = 4  /* Intel WMMX control register */
+  _UVRSC_WMMXC = 4 /* Intel WMMX control register */
 } _Unwind_VRS_RegClass;
 
 typedef enum {
@@ -189,7 +194,7 @@ typedef enum {
   _UVRSR_FAILED = 2
 } _Unwind_VRS_Result;
 
-extern void _Unwind_Complete(_Unwind_Exception *exception_object);
+extern void _Unwind_Complete(_Unwind_Exception* exception_object);
 
 extern _Unwind_VRS_Result
 _Unwind_VRS_Get(_Unwind_Context *context, _Unwind_VRS_RegClass regclass,
@@ -215,7 +220,7 @@ extern void _Unwind_SetGR(struct _Unwind_Context *context, int index,
 extern uintptr_t _Unwind_GetIP(struct _Unwind_Context *context);
 extern void _Unwind_SetIP(struct _Unwind_Context *, uintptr_t new_value);
 
-#else // defined(_LIBUNWIND_ARM_EHABI)
+#else  // defined(_LIBUNWIND_ARM_EHABI)
 
 #if defined(_LIBUNWIND_UNWIND_LEVEL1_EXTERNAL_LINKAGE)
 #define _LIBUNWIND_EXPORT_UNWIND_LEVEL1 extern
@@ -254,19 +259,19 @@ void _Unwind_SetIP(struct _Unwind_Context *context, uintptr_t value) {
   uintptr_t thumb_bit = _Unwind_GetGR(context, 15) & ((uintptr_t)0x1);
   _Unwind_SetGR(context, 15, value | thumb_bit);
 }
-#endif // defined(_LIBUNWIND_ARM_EHABI)
+#endif  // defined(_LIBUNWIND_ARM_EHABI)
 
 extern uintptr_t _Unwind_GetRegionStart(struct _Unwind_Context *context);
 extern uintptr_t
-_Unwind_GetLanguageSpecificData(struct _Unwind_Context *context);
+    _Unwind_GetLanguageSpecificData(struct _Unwind_Context *context);
 #ifdef __USING_SJLJ_EXCEPTIONS__
 extern _Unwind_Reason_Code
-_Unwind_SjLj_ForcedUnwind(_Unwind_Exception *exception_object,
-                          _Unwind_Stop_Fn stop, void *stop_parameter);
+    _Unwind_SjLj_ForcedUnwind(_Unwind_Exception *exception_object,
+                              _Unwind_Stop_Fn stop, void *stop_parameter);
 #else
 extern _Unwind_Reason_Code
-_Unwind_ForcedUnwind(_Unwind_Exception *exception_object, _Unwind_Stop_Fn stop,
-                     void *stop_parameter);
+    _Unwind_ForcedUnwind(_Unwind_Exception *exception_object,
+                         _Unwind_Stop_Fn stop, void *stop_parameter);
 #endif
 
 #ifdef __USING_SJLJ_EXCEPTIONS__
@@ -284,10 +289,10 @@ extern void _Unwind_SjLj_Unregister(_Unwind_FunctionContext_t fc);
 //
 #ifdef __USING_SJLJ_EXCEPTIONS__
 extern _Unwind_Reason_Code
-_Unwind_SjLj_Resume_or_Rethrow(_Unwind_Exception *exception_object);
+    _Unwind_SjLj_Resume_or_Rethrow(_Unwind_Exception *exception_object);
 #else
 extern _Unwind_Reason_Code
-_Unwind_Resume_or_Rethrow(_Unwind_Exception *exception_object);
+    _Unwind_Resume_or_Rethrow(_Unwind_Exception *exception_object);
 #endif
 
 // _Unwind_Backtrace() is a gcc extension that walks the stack and calls the
@@ -302,6 +307,7 @@ extern _Unwind_Reason_Code _Unwind_Backtrace(_Unwind_Trace_Fn, void *);
 // current frame.
 extern uintptr_t _Unwind_GetCFA(struct _Unwind_Context *);
 
+
 // _Unwind_GetIPInfo is a gcc extension that can be called from within a
 // personality handler.  Similar to _Unwind_GetIP() but also returns in
 // *ipBefore a non-zero value if the instruction pointer is at or before the
@@ -310,6 +316,7 @@ extern uintptr_t _Unwind_GetCFA(struct _Unwind_Context *);
 // end of the function containing the call instruction.
 extern uintptr_t _Unwind_GetIPInfo(struct _Unwind_Context *context,
                                    int *ipBefore);
+
 
 // __register_frame() is used with dynamically generated code to register the
 // FDE for a generated (JIT) code.  The FDE must use pc-rel addressing to point
@@ -332,6 +339,7 @@ struct dwarf_eh_bases {
 };
 extern const void *_Unwind_Find_FDE(const void *pc, struct dwarf_eh_bases *);
 
+
 // This function attempts to find the start (address of first instruction) of
 // a function given an address inside the function.  It only works if the
 // function has an FDE (DWARF unwind info).
@@ -341,25 +349,29 @@ extern void *_Unwind_FindEnclosingFunction(void *pc);
 
 // Mac OS X does not support text-rel and data-rel addressing so these functions
 // are unimplemented
-extern uintptr_t
-_Unwind_GetDataRelBase(struct _Unwind_Context *context) LIBUNWIND_UNAVAIL;
-extern uintptr_t
-_Unwind_GetTextRelBase(struct _Unwind_Context *context) LIBUNWIND_UNAVAIL;
+extern uintptr_t _Unwind_GetDataRelBase(struct _Unwind_Context *context)
+    LIBUNWIND_UNAVAIL;
+extern uintptr_t _Unwind_GetTextRelBase(struct _Unwind_Context *context)
+    LIBUNWIND_UNAVAIL;
 
 // Mac OS X 10.4 and 10.5 had implementations of these functions in
 // libgcc_s.dylib, but they never worked.
 /// These functions are no longer available on Mac OS X.
 extern void __register_frame_info_bases(const void *fde, void *ob, void *tb,
                                         void *db) LIBUNWIND_UNAVAIL;
-extern void __register_frame_info(const void *fde, void *ob) LIBUNWIND_UNAVAIL;
+extern void __register_frame_info(const void *fde, void *ob)
+    LIBUNWIND_UNAVAIL;
 extern void __register_frame_info_table_bases(const void *fde, void *ob,
-                                              void *tb,
-                                              void *db) LIBUNWIND_UNAVAIL;
-extern void __register_frame_info_table(const void *fde,
-                                        void *ob) LIBUNWIND_UNAVAIL;
-extern void __register_frame_table(const void *fde) LIBUNWIND_UNAVAIL;
-extern void *__deregister_frame_info(const void *fde) LIBUNWIND_UNAVAIL;
-extern void *__deregister_frame_info_bases(const void *fde) LIBUNWIND_UNAVAIL;
+                                              void *tb, void *db)
+    LIBUNWIND_UNAVAIL;
+extern void __register_frame_info_table(const void *fde, void *ob)
+    LIBUNWIND_UNAVAIL;
+extern void __register_frame_table(const void *fde)
+    LIBUNWIND_UNAVAIL;
+extern void *__deregister_frame_info(const void *fde)
+    LIBUNWIND_UNAVAIL;
+extern void *__deregister_frame_info_bases(const void *fde)
+    LIBUNWIND_UNAVAIL;
 
 #if defined(__SEH__) && !defined(__USING_SJLJ_EXCEPTIONS__)
 #ifndef _WIN32

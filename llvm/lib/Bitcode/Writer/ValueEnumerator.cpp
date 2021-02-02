@@ -354,7 +354,7 @@ static UseListOrderStack predictUseListOrder(const Module &M) {
   return Stack;
 }
 
-static bool isIntOrIntVectorValue(const std::pair<const Value *, unsigned> &V) {
+static bool isIntOrIntVectorValue(const std::pair<const Value*, unsigned> &V) {
   return V.first->getType()->isIntOrIntVectorTy();
 }
 
@@ -369,7 +369,7 @@ ValueEnumerator::ValueEnumerator(const Module &M,
     EnumerateValue(&GV);
 
   // Enumerate the functions.
-  for (const Function &F : M) {
+  for (const Function & F : M) {
     EnumerateValue(&F);
     EnumerateAttributes(F.getAttributes());
   }
@@ -503,7 +503,7 @@ unsigned ValueEnumerator::getValueID(const Value *V) const {
 
   ValueMapType::const_iterator I = ValueMap.find(V);
   assert(I != ValueMap.end() && "Value not in slotcalculator!");
-  return I->second - 1;
+  return I->second-1;
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -519,8 +519,8 @@ void ValueEnumerator::print(raw_ostream &OS, const ValueMapType &Map,
                             const char *Name) const {
   OS << "Map Name: " << Name << "\n";
   OS << "Size: " << Map.size() << "\n";
-  for (ValueMapType::const_iterator I = Map.begin(), E = Map.end(); I != E;
-       ++I) {
+  for (ValueMapType::const_iterator I = Map.begin(),
+         E = Map.end(); I != E; ++I) {
     const Value *V = I->first;
     if (V->hasName())
       OS << "Value: " << V->getName();
@@ -533,12 +533,13 @@ void ValueEnumerator::print(raw_ostream &OS, const ValueMapType &Map,
     for (const Use &U : V->uses()) {
       if (&U != &*V->use_begin())
         OS << ",";
-      if (U->hasName())
+      if(U->hasName())
         OS << " " << U->getName();
       else
         OS << " [null]";
+
     }
-    OS << "\n\n";
+    OS <<  "\n\n";
   }
 }
 
@@ -557,8 +558,7 @@ void ValueEnumerator::print(raw_ostream &OS, const MetadataMapType &Map,
 
 /// OptimizeConstants - Reorder constant pool for denser encoding.
 void ValueEnumerator::OptimizeConstants(unsigned CstStart, unsigned CstEnd) {
-  if (CstStart == CstEnd || CstStart + 1 == CstEnd)
-    return;
+  if (CstStart == CstEnd || CstStart+1 == CstEnd) return;
 
   if (ShouldPreserveUseListOrder)
     // Optimizing constants makes the use-list order difficult to predict.
@@ -568,13 +568,12 @@ void ValueEnumerator::OptimizeConstants(unsigned CstStart, unsigned CstEnd) {
   std::stable_sort(Values.begin() + CstStart, Values.begin() + CstEnd,
                    [this](const std::pair<const Value *, unsigned> &LHS,
                           const std::pair<const Value *, unsigned> &RHS) {
-                     // Sort by plane.
-                     if (LHS.first->getType() != RHS.first->getType())
-                       return getTypeID(LHS.first->getType()) <
-                              getTypeID(RHS.first->getType());
-                     // Then by frequency.
-                     return LHS.second > RHS.second;
-                   });
+    // Sort by plane.
+    if (LHS.first->getType() != RHS.first->getType())
+      return getTypeID(LHS.first->getType()) < getTypeID(RHS.first->getType());
+    // Then by frequency.
+    return LHS.second > RHS.second;
+  });
 
   // Ensure that integer and vector of integer constants are at the start of the
   // constant pool.  This is important so that GEP structure indices come before
@@ -584,7 +583,7 @@ void ValueEnumerator::OptimizeConstants(unsigned CstStart, unsigned CstEnd) {
 
   // Rebuild the modified portion of ValueMap.
   for (; CstStart != CstEnd; ++CstStart)
-    ValueMap[Values[CstStart].first] = CstStart + 1;
+    ValueMap[Values[CstStart].first] = CstStart+1;
 }
 
 /// EnumerateValueSymbolTable - Insert all of the values in the specified symbol
@@ -698,8 +697,7 @@ void ValueEnumerator::EnumerateMetadata(unsigned F, const Metadata *MD) {
   }
 }
 
-const MDNode *ValueEnumerator::enumerateMetadataImpl(unsigned F,
-                                                     const Metadata *MD) {
+const MDNode *ValueEnumerator::enumerateMetadataImpl(unsigned F, const Metadata *MD) {
   if (!MD)
     return nullptr;
 
@@ -854,7 +852,7 @@ void ValueEnumerator::EnumerateValue(const Value *V) {
   unsigned &ValueID = ValueMap[V];
   if (ValueID) {
     // Increment use count.
-    Values[ValueID - 1].second++;
+    Values[ValueID-1].second++;
     return;
   }
 
@@ -877,8 +875,8 @@ void ValueEnumerator::EnumerateValue(const Value *V) {
       // itself.  This makes it more likely that we can avoid forward references
       // in the reader.  We know that there can be no cycles in the constants
       // graph that don't go through a global variable.
-      for (User::const_op_iterator I = C->op_begin(), E = C->op_end(); I != E;
-           ++I)
+      for (User::const_op_iterator I = C->op_begin(), E = C->op_end();
+           I != E; ++I)
         if (!isa<BasicBlock>(*I)) // Don't enumerate BB operand to BlockAddress.
           EnumerateValue(*I);
       if (auto *CE = dyn_cast<ConstantExpr>(C))
@@ -897,6 +895,7 @@ void ValueEnumerator::EnumerateValue(const Value *V) {
   Values.push_back(std::make_pair(V, 1U));
   ValueID = Values.size();
 }
+
 
 void ValueEnumerator::EnumerateType(Type *Ty) {
   unsigned *TypeID = &TypeMap[Ty];
@@ -966,8 +965,7 @@ void ValueEnumerator::EnumerateOperandType(const Value *V) {
 }
 
 void ValueEnumerator::EnumerateAttributes(AttributeList PAL) {
-  if (PAL.isEmpty())
-    return; // null is always 0.
+  if (PAL.isEmpty()) return;  // null is always 0.
 
   // Do a lookup.
   unsigned &Entry = AttributeListMap[PAL];
@@ -1073,8 +1071,8 @@ void ValueEnumerator::purgeFunction() {
   NumMDStrings = 0;
 }
 
-static void IncorporateFunctionInfoGlobalBBIDs(
-    const Function *F, DenseMap<const BasicBlock *, unsigned> &IDMap) {
+static void IncorporateFunctionInfoGlobalBBIDs(const Function *F,
+                                 DenseMap<const BasicBlock*, unsigned> &IDMap) {
   unsigned Counter = 0;
   for (const BasicBlock &BB : *F)
     IDMap[&BB] = ++Counter;
@@ -1086,7 +1084,7 @@ static void IncorporateFunctionInfoGlobalBBIDs(
 unsigned ValueEnumerator::getGlobalBasicBlockID(const BasicBlock *BB) const {
   unsigned &Idx = GlobalBasicBlockIDs[BB];
   if (Idx != 0)
-    return Idx - 1;
+    return Idx-1;
 
   IncorporateFunctionInfoGlobalBBIDs(BB->getParent(), GlobalBasicBlockIDs);
   return getGlobalBasicBlockID(BB);

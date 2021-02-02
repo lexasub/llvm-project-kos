@@ -12,8 +12,9 @@
 #include <string_view>
 #include <cassert>
 
-int main(int, char**) {
-  std::string_view foo = "" sv; // should fail w/conversion operator not found
+int main(int, char**)
+{
+    std::string_view foo  =   ""sv;  // should fail w/conversion operator not found
 
   return 0;
 }

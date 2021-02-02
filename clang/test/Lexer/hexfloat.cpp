@@ -18,9 +18,9 @@ double h = 0x1.p2;
 // PR12717: In order to minimally diverge from the C++ standard, we do not lex
 // 'p[+-]' as part of a pp-number unless the token starts 0x and doesn't contain
 // an underscore.
-double i = 0p + 3; // expected-error {{invalid suffix 'p' on integer constant}}
-#define PREFIX(x) foo##x
-double foo0p = 1, j = PREFIX(0p + 3); // ok
+double i = 0p+3; // expected-error {{invalid suffix 'p' on integer constant}}
+#define PREFIX(x) foo ## x
+double foo0p = 1, j = PREFIX(0p+3); // ok
 double k = 0x42_amp+3;
 #if __cplusplus > 201402L
 // expected-error@-2 {{no matching literal operator for call to 'operator""_amp+3'}}

@@ -92,7 +92,7 @@ void multipleArrays() {
   }
 }
 
-} // namespace Negative
+}
 
 namespace NegativeIterator {
 
@@ -107,18 +107,18 @@ struct BadBeginEnd : T {
 
 void notBeginOrEnd() {
   BadBeginEnd Bad;
-  for (T::iterator I = Bad.notBegin(), E = Bad.end(); I != E; ++I)
+  for (T::iterator I = Bad.notBegin(), E = Bad.end();  I != E; ++I)
     int K = *I;
 
-  for (T::iterator I = Bad.begin(), E = Bad.notEnd(); I != E; ++I)
+  for (T::iterator I = Bad.begin(), E = Bad.notEnd();  I != E; ++I)
     int K = *I;
 }
 
 void badLoopShapes() {
-  for (T::iterator I = Tt.begin(), E = Tt.end(), F = E; I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end(), F = E;  I != E; ++I)
     int K = *I;
 
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E;)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E;)
     int K = *I;
 
   for (T::iterator I = Tt.begin(), E = Tt.end();; ++I)
@@ -148,72 +148,69 @@ struct ExtraConstructor : T::iterator {
 
 void badConstructor() {
   for (T::iterator I = ExtraConstructor(Tt.begin(), 0), E = Tt.end();
-       I != E; ++I)
+        I != E; ++I)
     int K = *I;
-  for (T::iterator I = ExtraConstructor(Tt.begin()), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = ExtraConstructor(Tt.begin()), E = Tt.end();  I != E; ++I)
     int K = *I;
 }
 
 void foo(S::iterator It) {}
-class Foo {
-public:
-  void bar(S::iterator It);
-};
+class Foo {public: void bar(S::iterator It); };
 Foo Fo;
 
 void iteratorUsed() {
-  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
+  for (S::iterator I = Ss.begin(), E = Ss.end();  I != E; ++I)
     foo(I);
 
-  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
+  for (S::iterator I = Ss.begin(), E = Ss.end();  I != E; ++I)
     Fo.bar(I);
 
   S::iterator Ret;
-  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
+  for (S::iterator I = Ss.begin(), E = Ss.end();  I != E; ++I)
     Ret = I;
 }
 
 void iteratorMemberUsed() {
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     I.X = *I;
 
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     int K = I.X + *I;
 
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     int K = E.X + *I;
 }
 
 void iteratorMethodCalled() {
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     I.insert(3);
 
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     if (I != I)
       int K = 3;
 }
 
 void iteratorOperatorCalled() {
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     int K = *(++I);
 
-  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
+  for (S::iterator I = Ss.begin(), E = Ss.end();  I != E; ++I)
     MutableVal K = *(++I);
 }
 
 void differentContainers() {
   T Other;
-  for (T::iterator I = Tt.begin(), E = Other.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Other.end();  I != E; ++I)
     int K = *I;
 
-  for (T::iterator I = Other.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Other.begin(), E = Tt.end();  I != E; ++I)
     int K = *I;
 
   S OtherS;
-  for (S::iterator I = Ss.begin(), E = OtherS.end(); I != E; ++I)
+  for (S::iterator I = Ss.begin(), E = OtherS.end();  I != E; ++I)
     MutableVal K = *I;
 
-  for (S::iterator I = OtherS.begin(), E = Ss.end(); I != E; ++I)
+  for (S::iterator I = OtherS.begin(), E = Ss.end();  I != E; ++I)
     MutableVal K = *I;
 }
 
@@ -230,9 +227,9 @@ struct EvilArrow : U {
 
 void differentMemberAccessTypes() {
   EvilArrow A;
-  for (EvilArrow::iterator I = A.begin(), E = A->end(); I != E; ++I)
+  for (EvilArrow::iterator I = A.begin(), E = A->end();  I != E; ++I)
     Val K = *I;
-  for (EvilArrow::iterator I = A->begin(), E = A.end(); I != E; ++I)
+  for (EvilArrow::iterator I = A->begin(), E = A.end();  I != E; ++I)
     Val K = *I;
 }
 
@@ -241,7 +238,7 @@ void f(const T &It, int);
 void g(T &It, int);
 
 void iteratorPassedToFunction() {
-  for (T::iterator I = Tt.begin(), E = Tt.end(); I != E; ++I)
+  for (T::iterator I = Tt.begin(), E = Tt.end();  I != E; ++I)
     f(I, *I);
 }
 
@@ -411,27 +408,27 @@ void f(T);
 
 void complexContainer() {
   X Xx;
-  for (S::iterator I = Xx.Ss.begin(), E = Xx.Ss.end(); I != E; ++I) {
+  for (S::iterator I = Xx.Ss.begin(), E = Xx.Ss.end();  I != E; ++I) {
     f(Xx);
     MutableVal K = *I;
   }
 
-  for (T::iterator I = Xx.Tt.begin(), E = Xx.Tt.end(); I != E; ++I) {
+  for (T::iterator I = Xx.Tt.begin(), E = Xx.Tt.end();  I != E; ++I) {
     f(Xx);
     int K = *I;
   }
 
-  for (S::iterator I = Xx.Ss.begin(), E = Xx.Ss.end(); I != E; ++I) {
+  for (S::iterator I = Xx.Ss.begin(), E = Xx.Ss.end();  I != E; ++I) {
     f(Xx.Ss);
     MutableVal K = *I;
   }
 
-  for (T::iterator I = Xx.Tt.begin(), E = Xx.Tt.end(); I != E; ++I) {
+  for (T::iterator I = Xx.Tt.begin(), E = Xx.Tt.end();  I != E; ++I) {
     f(Xx.Tt);
     int K = *I;
   }
 
-  for (S::iterator I = Xx.getS().begin(), E = Xx.getS().end(); I != E; ++I) {
+  for (S::iterator I = Xx.getS().begin(), E = Xx.getS().end();  I != E; ++I) {
     f(Xx.getS());
     MutableVal K = *I;
   }
@@ -441,7 +438,7 @@ void complexContainer() {
 
   for (S::iterator I = Exes[Index].getS().begin(),
                    E = Exes[Index].getS().end();
-       I != E; ++I) {
+        I != E; ++I) {
     Index++;
     MutableVal K = *I;
   }
@@ -460,8 +457,7 @@ int Count = 0;
 void foo();
 
 void f() {
-  for (int I = 0; I < N; ++I) {
-  }
+  for (int I = 0; I < N; ++I) {}
   for (int I = 0; I < N; ++I)
     printf("Hello world\n");
   for (int I = 0; I < N; ++I)
@@ -469,8 +465,7 @@ void f() {
   for (int I = 0; I < N; ++I)
     foo();
 
-  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I) {
-  }
+  for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I) {}
   for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
     printf("Hello world\n");
   for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
@@ -478,8 +473,7 @@ void f() {
   for (S::iterator I = Ss.begin(), E = Ss.end(); I != E; ++I)
     foo();
 
-  for (int I = 0; I < V.size(); ++I) {
-  }
+  for (int I = 0; I < V.size(); ++I) {}
   for (int I = 0; I < V.size(); ++I)
     printf("Hello world\n");
   for (int I = 0; I < V.size(); ++I)

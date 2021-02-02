@@ -20,17 +20,20 @@
 
 int f_called = 0;
 
-std::ios_base& f(std::ios_base& is) {
-  ++f_called;
-  return is;
+std::ios_base&
+f(std::ios_base& is)
+{
+    ++f_called;
+    return is;
 }
 
-int main(int, char**) {
-  {
-    std::istream is((std::streambuf*)0);
-    is >> f;
-    assert(f_called == 1);
-  }
+int main(int, char**)
+{
+    {
+        std::istream is((std::streambuf*)0);
+        is >> f;
+        assert(f_called == 1);
+    }
 
   return 0;
 }

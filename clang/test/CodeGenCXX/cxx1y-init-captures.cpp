@@ -7,7 +7,7 @@ struct S {
 };
 
 void f() {
-  (void)[s(S{})]{};
+  (void) [s(S{})] {};
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z1fv(
@@ -20,7 +20,7 @@ void f() {
 // D2 at end of file.
 
 void g() {
-  [a(1), b(2)] { return a + b; }();
+  [a(1), b(2)] { return a + b; } ();
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z1gv(
@@ -41,14 +41,12 @@ void g() {
 // CHECK-LABEL: define{{.*}} void @_Z18init_capture_dtorsv
 void init_capture_dtors() {
   // Ensure that init-captures are not treated as separate full-expressions.
-  struct HasDtor {
-    ~HasDtor() {}
-  };
+  struct HasDtor { ~HasDtor() {} };
   void some_function_call();
   void other_function_call();
   // CHECK: call {{.*}}some_function_call
   // CHECK: call {{.*}}HasDtorD
-  ([x = (HasDtor(), 0)] {}, some_function_call());
+  ([x = (HasDtor(), 0)]{}, some_function_call());
   // CHECK: call {{.*}}other_function_call
   other_function_call();
 }
@@ -109,10 +107,10 @@ int h(int a) {
       //
       // CHECK: add nsw i32
       return b + c;
-    }();
-  }();
+    } ();
+  } ();
 }
 
 // Ensure we can emit code for init-captures in global lambdas too.
-auto global_lambda = [a = 0]() mutable { return ++a; };
+auto global_lambda = [a = 0] () mutable { return ++a; };
 int get_incremented() { return global_lambda(); }

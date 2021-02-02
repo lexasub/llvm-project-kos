@@ -14,7 +14,7 @@ void derefAfterMove(std::unique_ptr<int> P) {
   std::unique_ptr<int> Q = std::move(P);
   if (Q)
     clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
-  *Q.get() = 1;                     // expected-warning {{Dereference of null pointer [core.NullDereference]}}
+  *Q.get() = 1; // expected-warning {{Dereference of null pointer [core.NullDereference]}}
   if (P)
     clang_analyzer_warnIfReached(); // no-warning
   // TODO: Report a null dereference (instead).
@@ -45,7 +45,7 @@ A *return_null() {
 void derefAfterValidCtr() {
   std::unique_ptr<A> P(new A());
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // No warning.
+  P->foo(); // No warning.
 }
 
 void derefOfUnknown(std::unique_ptr<A> P) {
@@ -55,34 +55,34 @@ void derefOfUnknown(std::unique_ptr<A> P) {
 void derefAfterDefaultCtr() {
   std::unique_ptr<A> P;
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  P->foo(); // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefAfterCtrWithNull() {
   std::unique_ptr<A> P(nullptr);
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  *P;                               // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  *P; // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefAfterCtrWithNullVariable() {
   A *InnerPtr = nullptr;
   std::unique_ptr<A> P(InnerPtr);
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  P->foo(); // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefAfterRelease() {
   std::unique_ptr<A> P(new A());
   P.release();
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  P->foo(); // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefAfterReset() {
   std::unique_ptr<A> P(new A());
   P.reset();
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  P->foo(); // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefAfterResetWithNull() {
@@ -95,7 +95,7 @@ void derefAfterResetWithNonNull() {
   std::unique_ptr<A> P;
   P.reset(new A());
   clang_analyzer_numTimesReached(); // expected-warning {{1}}
-  P->foo();                         // No warning.
+  P->foo(); // No warning.
 }
 
 void derefAfterReleaseAndResetWithNonNull() {
@@ -227,7 +227,7 @@ void derefOnSwappedNullPtr() {
   std::unique_ptr<A> PNull;
   P.swap(PNull);
   PNull->foo(); // No warning.
-  (*P).foo();   // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
+  (*P).foo(); // expected-warning {{Dereference of null smart pointer 'P' [alpha.cplusplus.SmartPtr]}}
 }
 
 void derefOnFirstStdSwappedNullPtr() {
@@ -248,10 +248,10 @@ void derefOnSwappedValidPtr() {
   std::unique_ptr<A> P(new A());
   std::unique_ptr<A> PValid(new A());
   P.swap(PValid);
-  (*P).foo();    // No warning.
+  (*P).foo(); // No warning.
   PValid->foo(); // No warning.
   std::swap(P, PValid);
-  P->foo();      // No warning.
+  P->foo(); // No warning.
   PValid->foo(); // No warning.
 }
 
@@ -289,7 +289,7 @@ void derefOnMovedToNullPtr() {
   std::unique_ptr<A> PToMove(new A());
   std::unique_ptr<A> P;
   P = std::move(PToMove); // No note.
-  P->foo();               // No warning.
+  P->foo(); // No warning.
 }
 
 void derefOnNullPtrGotMovedFromValidPtr() {

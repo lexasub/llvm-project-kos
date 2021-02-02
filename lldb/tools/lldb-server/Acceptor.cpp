@@ -53,7 +53,7 @@ const char *FindSchemeByProtocol(const Socket::SocketProtocol protocol) {
   }
   return nullptr;
 }
-} // namespace
+}
 
 Status Acceptor::Listen(int backlog) {
   return m_listener_socket_up->Listen(StringRef(m_name), backlog);

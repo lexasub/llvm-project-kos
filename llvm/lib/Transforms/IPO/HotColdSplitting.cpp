@@ -67,8 +67,8 @@
 #include "llvm/Transforms/Utils/Local.h"
 #include "llvm/Transforms/Utils/ValueMapper.h"
 #include <algorithm>
-#include <cassert>
 #include <limits>
+#include <cassert>
 #include <string>
 
 #define DEBUG_TYPE "hotcoldsplit"
@@ -752,8 +752,8 @@ bool HotColdSplittingLegacyPass::runOnModule(Module &M) {
   return HotColdSplitting(PSI, GBFI, GTTI, &GetORE, LookupAC).run(M);
 }
 
-PreservedAnalyses HotColdSplittingPass::run(Module &M,
-                                            ModuleAnalysisManager &AM) {
+PreservedAnalyses
+HotColdSplittingPass::run(Module &M, ModuleAnalysisManager &AM) {
   auto &FAM = AM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
 
   auto LookupAC = [&FAM](Function &F) -> AssumptionCache * {

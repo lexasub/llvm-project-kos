@@ -4,7 +4,7 @@
 extern "C" int printf(...);
 
 struct B {
-  B() : B1(3.14), B2(3.15), auB2(3.16) {}
+  B() : B1(3.14), B2(3.15), auB2(3.16)  {} 
   float B1;
   float B2;
   void pr() {
@@ -18,7 +18,7 @@ struct B {
 };
 
 struct M {
-  M() : M1(10), M2(11), auM1(12) {}
+  M() : M1(10), M2(11) , auM1(12) {} 
   int M1;
   int M2;
   void pr() {
@@ -30,8 +30,8 @@ struct M {
   };
 };
 
-struct N : B {
-  N() : N1(20), N2(21) {}
+struct N  : B {
+  N() : N1(20), N2(21) {} 
   int N1;
   int N2;
   void pr() {
@@ -41,7 +41,7 @@ struct N : B {
 };
 
 struct Q {
-  Q() : Q1(30), Q2(31) {}
+  Q() : Q1(30), Q2(31) {} 
   int Q1;
   int Q2;
   void pr() {
@@ -49,26 +49,26 @@ struct Q {
   }
 };
 
-struct X : M, N {
+
+struct X : M , N { 
   X() : d(0.0), d1(1.1), d2(1.2), d3(1.3) {}
   double d;
   double d1;
   double d2;
   double d3;
   void pr() {
-    printf("d = %f d1 = %f d2 = %f d3 = %f\n", d, d1, d2, d3);
-    M::pr();
-    N::pr();
-    q1.pr();
-    q2.pr();
+    printf("d = %f d1 = %f d2 = %f d3 = %f\n", d, d1,d2,d3);
+    M::pr(); N::pr();
+    q1.pr(); q2.pr();
   }
 
-  Q q1, q2;
-};
+ Q q1, q2;
+}; 
 
-X srcX;
-X dstX;
-X dstY;
+
+X srcX; 
+X dstX; 
+X dstY; 
 
 int main() {
   dstY = dstX = srcX;
@@ -76,3 +76,4 @@ int main() {
   dstX.pr();
   dstY.pr();
 }
+

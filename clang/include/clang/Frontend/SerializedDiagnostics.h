@@ -40,12 +40,19 @@ enum RecordIDs {
 ///
 /// Do not change the order of values in this enum, and please increment the
 /// serialized diagnostics version number when you add to it.
-enum Level { Ignored = 0, Note, Warning, Error, Fatal, Remark };
+enum Level {
+  Ignored = 0,
+  Note,
+  Warning,
+  Error,
+  Fatal,
+  Remark
+};
 
 /// The serialized diagnostics version number.
 enum { VersionNumber = 2 };
 
-} // namespace serialized_diags
-} // namespace clang
+} // end serialized_diags namespace
+} // end clang namespace
 
 #endif

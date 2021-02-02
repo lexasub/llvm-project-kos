@@ -18,21 +18,23 @@
 #include "min_allocator.h"
 
 template <class C>
-void test(typename C::size_type n, const typename C::value_type& x,
-          const typename C::allocator_type& a) {
-  C c(n, x, a);
-  LIBCPP_ASSERT(c.__invariants());
-  assert(a == c.get_allocator());
-  assert(c.size() == n);
-  for (typename C::const_iterator i = c.cbegin(), e = c.cend(); i != e; ++i)
-    assert(*i == x);
+void
+test(typename C::size_type n, const typename C::value_type& x,
+     const typename C::allocator_type& a)
+{
+    C c(n, x, a);
+    LIBCPP_ASSERT(c.__invariants());
+    assert(a == c.get_allocator());
+    assert(c.size() == n);
+    for (typename C::const_iterator i = c.cbegin(), e = c.cend(); i != e; ++i)
+        assert(*i == x);
 }
 
-int main(int, char**) {
-  test<std::vector<bool> >(50, true, std::allocator<bool>());
+int main(int, char**)
+{
+    test<std::vector<bool> >(50, true, std::allocator<bool>());
 #if TEST_STD_VER >= 11
-  test<std::vector<bool, min_allocator<bool> > >(50, true,
-                                                 min_allocator<bool>());
+    test<std::vector<bool, min_allocator<bool>> >(50, true, min_allocator<bool>());
 #endif
 
   return 0;

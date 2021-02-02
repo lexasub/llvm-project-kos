@@ -40,8 +40,9 @@ SBTypeEnumMember::SBTypeEnumMember(const SBTypeEnumMember &rhs)
 }
 
 SBTypeEnumMember &SBTypeEnumMember::operator=(const SBTypeEnumMember &rhs) {
-  LLDB_RECORD_METHOD(SBTypeEnumMember &, SBTypeEnumMember, operator=,
-                     (const lldb::SBTypeEnumMember &), rhs);
+  LLDB_RECORD_METHOD(
+      SBTypeEnumMember &,
+      SBTypeEnumMember, operator=,(const lldb::SBTypeEnumMember &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = clone(rhs.m_opaque_sp);
@@ -132,11 +133,12 @@ SBTypeEnumMemberList::operator bool() const {
   return (m_opaque_up != nullptr);
 }
 
-SBTypeEnumMemberList &
-SBTypeEnumMemberList::operator=(const SBTypeEnumMemberList &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeEnumMemberList &,
-                     SBTypeEnumMemberList, operator=,
-                     (const lldb::SBTypeEnumMemberList &), rhs);
+SBTypeEnumMemberList &SBTypeEnumMemberList::
+operator=(const SBTypeEnumMemberList &rhs) {
+  LLDB_RECORD_METHOD(
+      lldb::SBTypeEnumMemberList &,
+      SBTypeEnumMemberList, operator=,(const lldb::SBTypeEnumMemberList &),
+      rhs);
 
   if (this != &rhs) {
     m_opaque_up = std::make_unique<TypeEnumMemberListImpl>();
@@ -198,11 +200,14 @@ bool SBTypeEnumMember::GetDescription(
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBTypeEnumMember>(Registry &R) {
+template <>
+void RegisterMethods<SBTypeEnumMember>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeEnumMember, ());
-  LLDB_REGISTER_CONSTRUCTOR(SBTypeEnumMember, (const lldb::SBTypeEnumMember &));
-  LLDB_REGISTER_METHOD(lldb::SBTypeEnumMember &, SBTypeEnumMember, operator=,
-                       (const lldb::SBTypeEnumMember &));
+  LLDB_REGISTER_CONSTRUCTOR(SBTypeEnumMember,
+                            (const lldb::SBTypeEnumMember &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBTypeEnumMember &,
+      SBTypeEnumMember, operator=,(const lldb::SBTypeEnumMember &));
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeEnumMember, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeEnumMember, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBTypeEnumMember, GetName, ());
@@ -214,9 +219,9 @@ template <> void RegisterMethods<SBTypeEnumMember>(Registry &R) {
                             (const lldb::SBTypeEnumMemberList &));
   LLDB_REGISTER_METHOD(bool, SBTypeEnumMemberList, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeEnumMemberList, operator bool, ());
-  LLDB_REGISTER_METHOD(lldb::SBTypeEnumMemberList &,
-                       SBTypeEnumMemberList, operator=,
-                       (const lldb::SBTypeEnumMemberList &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBTypeEnumMemberList &,
+      SBTypeEnumMemberList, operator=,(const lldb::SBTypeEnumMemberList &));
   LLDB_REGISTER_METHOD(void, SBTypeEnumMemberList, Append,
                        (lldb::SBTypeEnumMember));
   LLDB_REGISTER_METHOD(lldb::SBTypeEnumMember, SBTypeEnumMemberList,
@@ -226,5 +231,5 @@ template <> void RegisterMethods<SBTypeEnumMember>(Registry &R) {
                        (lldb::SBStream &, lldb::DescriptionLevel));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

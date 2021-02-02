@@ -16,10 +16,10 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define NOGDI
+#include <windows.h>
 #include <io.h>
 #include <psapi.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "sanitizer_common.h"
 #include "sanitizer_file.h"
@@ -49,14 +49,14 @@ TRACELOGGING_DEFINE_PROVIDER(g_asan_provider, "AddressSanitizerLoggingProvider",
 // code that is called when terminating the process, the expansion of the
 // macro should not terminate the process to avoid infinite recursion.
 #if defined(__clang__)
-#define BUILTIN_UNREACHABLE() __builtin_unreachable()
+# define BUILTIN_UNREACHABLE() __builtin_unreachable()
 #elif defined(__GNUC__) && \
     (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5))
-#define BUILTIN_UNREACHABLE() __builtin_unreachable()
+# define BUILTIN_UNREACHABLE() __builtin_unreachable()
 #elif defined(_MSC_VER)
-#define BUILTIN_UNREACHABLE() __assume(0)
+# define BUILTIN_UNREACHABLE() __assume(0)
 #else
-#define BUILTIN_UNREACHABLE()
+# define BUILTIN_UNREACHABLE()
 #endif
 
 namespace __sanitizer {
@@ -82,21 +82,31 @@ uptr GetMaxUserVirtualAddress() {
   return (uptr)si.lpMaximumApplicationAddress;
 }
 
-uptr GetMaxVirtualAddress() { return GetMaxUserVirtualAddress(); }
+uptr GetMaxVirtualAddress() {
+  return GetMaxUserVirtualAddress();
+}
 
 bool FileExists(const char *filename) {
   return ::GetFileAttributesA(filename) != INVALID_FILE_ATTRIBUTES;
 }
 
-uptr internal_getpid() { return GetProcessId(GetCurrentProcess()); }
+uptr internal_getpid() {
+  return GetProcessId(GetCurrentProcess());
+}
 
-int internal_dlinfo(void *handle, int request, void *p) { UNIMPLEMENTED(); }
+int internal_dlinfo(void *handle, int request, void *p) {
+  UNIMPLEMENTED();
+}
 
 // In contrast to POSIX, on Windows GetCurrentThreadId()
 // returns a system-unique identifier.
-tid_t GetTid() { return GetCurrentThreadId(); }
+tid_t GetTid() {
+  return GetCurrentThreadId();
+}
 
-uptr GetThreadSelf() { return GetTid(); }
+uptr GetThreadSelf() {
+  return GetTid();
+}
 
 #if !SANITIZER_GO
 void GetThreadStackTopAndBottom(bool at_initialization, uptr *stack_top,
@@ -116,8 +126,8 @@ void GetThreadStackTopAndBottom(bool at_initialization, uptr *stack_top,
 void *MmapOrDie(uptr size, const char *mem_type, bool raw_report) {
   void *rv = VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (rv == 0)
-    ReportMmapFailureAndDie(size, mem_type, "allocate", GetLastError(),
-                            raw_report);
+    ReportMmapFailureAndDie(size, mem_type, "allocate",
+                            GetLastError(), raw_report);
   return rv;
 }
 
@@ -133,10 +143,9 @@ void UnmapOrDie(void *addr, uptr size) {
   // fails try MEM_DECOMMIT.
   if (VirtualFree(addr, 0, MEM_RELEASE) == 0) {
     if (VirtualFree(addr, size, MEM_DECOMMIT) == 0) {
-      Report(
-          "ERROR: %s failed to "
-          "deallocate 0x%zx (%zd) bytes at address %p (error code: %d)\n",
-          SanitizerToolName, size, size, addr, GetLastError());
+      Report("ERROR: %s failed to "
+             "deallocate 0x%zx (%zd) bytes at address %p (error code: %d)\n",
+             SanitizerToolName, size, size, addr, GetLastError());
       CHECK("unable to unmap" && 0);
     }
   }
@@ -174,7 +183,7 @@ void *MmapAlignedOrDieOnFatalError(uptr size, uptr alignment,
   // If we got it right on the first try, return. Otherwise, unmap it and go to
   // the slow path.
   if (IsAligned(mapped_addr, alignment))
-    return (void *)mapped_addr;
+    return (void*)mapped_addr;
   if (VirtualFree((void *)mapped_addr, 0, MEM_RELEASE) == 0)
     ReportMmapFailureAndDie(size, mem_type, "deallocate", GetLastError());
 
@@ -226,10 +235,9 @@ bool MmapFixedNoReserve(uptr fixed_addr, uptr size, const char *name) {
                          PAGE_READWRITE);
 #endif
   if (p == 0) {
-    Report(
-        "ERROR: %s failed to "
-        "allocate %p (%zd) bytes at %p (error code: %d)\n",
-        SanitizerToolName, size, size, fixed_addr, GetLastError());
+    Report("ERROR: %s failed to "
+           "allocate %p (%zd) bytes at %p (error code: %d)\n",
+           SanitizerToolName, size, size, fixed_addr, GetLastError());
     return false;
   }
   return true;
@@ -243,7 +251,8 @@ bool MmapFixedSuperNoReserve(uptr fixed_addr, uptr size, const char *name) {
 // Memory space mapped by 'MmapFixedOrDie' must have been reserved by
 // 'MmapFixedNoAccess'.
 void *MmapFixedOrDie(uptr fixed_addr, uptr size, const char *name) {
-  void *p = VirtualAlloc((LPVOID)fixed_addr, size, MEM_COMMIT, PAGE_READWRITE);
+  void *p = VirtualAlloc((LPVOID)fixed_addr, size,
+      MEM_COMMIT, PAGE_READWRITE);
   if (p == 0) {
     char mem_type[30];
     internal_snprintf(mem_type, sizeof(mem_type), "memory at address 0x%zx",
@@ -270,11 +279,12 @@ void ReservedAddressRange::Unmap(uptr addr, uptr size) {
   // We unmap the whole range, just null out the base.
   base_ = nullptr;
   size_ = 0;
-  UnmapOrDie(reinterpret_cast<void *>(addr), size);
+  UnmapOrDie(reinterpret_cast<void*>(addr), size);
 }
 
 void *MmapFixedOrDieOnFatalError(uptr fixed_addr, uptr size, const char *name) {
-  void *p = VirtualAlloc((LPVOID)fixed_addr, size, MEM_COMMIT, PAGE_READWRITE);
+  void *p = VirtualAlloc((LPVOID)fixed_addr, size,
+      MEM_COMMIT, PAGE_READWRITE);
   if (p == 0) {
     char mem_type[30];
     internal_snprintf(mem_type, sizeof(mem_type), "memory at address 0x%zx",
@@ -297,25 +307,24 @@ uptr ReservedAddressRange::Init(uptr size, const char *name, uptr fixed_addr) {
   return reinterpret_cast<uptr>(base_);
 }
 
+
 void *MmapFixedNoAccess(uptr fixed_addr, uptr size, const char *name) {
-  (void)name;  // unsupported
-  void *res =
-      VirtualAlloc((LPVOID)fixed_addr, size, MEM_RESERVE, PAGE_NOACCESS);
+  (void)name; // unsupported
+  void *res = VirtualAlloc((LPVOID)fixed_addr, size,
+                           MEM_RESERVE, PAGE_NOACCESS);
   if (res == 0)
-    Report(
-        "WARNING: %s failed to "
-        "mprotect %p (%zd) bytes at %p (error code: %d)\n",
-        SanitizerToolName, size, size, fixed_addr, GetLastError());
+    Report("WARNING: %s failed to "
+           "mprotect %p (%zd) bytes at %p (error code: %d)\n",
+           SanitizerToolName, size, size, fixed_addr, GetLastError());
   return res;
 }
 
 void *MmapNoAccess(uptr size) {
   void *res = VirtualAlloc(nullptr, size, MEM_RESERVE, PAGE_NOACCESS);
   if (res == 0)
-    Report(
-        "WARNING: %s failed to "
-        "mprotect %p (%zd) bytes (error code: %d)\n",
-        SanitizerToolName, size, size, GetLastError());
+    Report("WARNING: %s failed to "
+           "mprotect %p (%zd) bytes (error code: %d)\n",
+           SanitizerToolName, size, size, GetLastError());
   return res;
 }
 
@@ -361,12 +370,12 @@ uptr FindAvailableMemoryRange(uptr size, uptr alignment, uptr left_padding,
   uptr address = 0;
   while (true) {
     MEMORY_BASIC_INFORMATION info;
-    if (!::VirtualQuery((void *)address, &info, sizeof(info)))
+    if (!::VirtualQuery((void*)address, &info, sizeof(info)))
       return 0;
 
     if (info.State == MEM_FREE) {
-      uptr shadow_address =
-          RoundUpTo((uptr)info.BaseAddress + left_padding, alignment);
+      uptr shadow_address = RoundUpTo((uptr)info.BaseAddress + left_padding,
+                                      alignment);
       if (shadow_address + size < (uptr)info.BaseAddress + info.RegionSize)
         return shadow_address;
     }
@@ -427,9 +436,13 @@ const char *GetEnv(const char *name) {
   return 0;
 }
 
-const char *GetPwd() { UNIMPLEMENTED(); }
+const char *GetPwd() {
+  UNIMPLEMENTED();
+}
 
-u32 GetUid() { UNIMPLEMENTED(); }
+u32 GetUid() {
+  UNIMPLEMENTED();
+}
 
 namespace {
 struct ModuleInfo {
@@ -482,19 +495,31 @@ void DisableCoreDumperIfNecessary() {
   // Do nothing.
 }
 
-void ReExec() { UNIMPLEMENTED(); }
+void ReExec() {
+  UNIMPLEMENTED();
+}
 
 void PlatformPrepareForSandboxing(__sanitizer_sandbox_arguments *args) {}
 
-bool StackSizeIsUnlimited() { UNIMPLEMENTED(); }
+bool StackSizeIsUnlimited() {
+  UNIMPLEMENTED();
+}
 
-void SetStackSizeLimitInBytes(uptr limit) { UNIMPLEMENTED(); }
+void SetStackSizeLimitInBytes(uptr limit) {
+  UNIMPLEMENTED();
+}
 
-bool AddressSpaceIsUnlimited() { UNIMPLEMENTED(); }
+bool AddressSpaceIsUnlimited() {
+  UNIMPLEMENTED();
+}
 
-void SetAddressSpaceUnlimited() { UNIMPLEMENTED(); }
+void SetAddressSpaceUnlimited() {
+  UNIMPLEMENTED();
+}
 
-bool IsPathSeparator(const char c) { return c == '\\' || c == '/'; }
+bool IsPathSeparator(const char c) {
+  return c == '\\' || c == '/';
+}
 
 static bool IsAlpha(char c) {
   c = ToLower(c);
@@ -506,9 +531,13 @@ bool IsAbsolutePath(const char *path) {
          IsPathSeparator(path[2]);
 }
 
-void SleepForSeconds(int seconds) { Sleep(seconds * 1000); }
+void SleepForSeconds(int seconds) {
+  Sleep(seconds * 1000);
+}
 
-void SleepForMillis(int millis) { Sleep(millis); }
+void SleepForMillis(int millis) {
+  Sleep(millis);
+}
 
 u64 NanoTime() {
   static LARGE_INTEGER frequency = {};
@@ -525,7 +554,9 @@ u64 NanoTime() {
 
 u64 MonotonicNanoTime() { return NanoTime(); }
 
-void Abort() { internal__exit(3); }
+void Abort() {
+  internal__exit(3);
+}
 
 #if !SANITIZER_GO
 // Read the file to extract the ImageBase field from the PE header. If ASLR is
@@ -695,7 +726,9 @@ fd_t OpenFile(const char *filename, FileAccessMode mode, error_t *last_error) {
   return res;
 }
 
-void CloseFile(fd_t fd) { CloseHandle(fd); }
+void CloseFile(fd_t fd) {
+  CloseHandle(fd);
+}
 
 bool ReadFromFile(fd_t fd, void *buff, uptr buff_size, uptr *bytes_read,
                   error_t *error_p) {
@@ -768,7 +801,9 @@ void internal__exit(int exitcode) {
   BUILTIN_UNREACHABLE();
 }
 
-uptr internal_ftruncate(fd_t fd, uptr size) { UNIMPLEMENTED(); }
+uptr internal_ftruncate(fd_t fd, uptr size) {
+  UNIMPLEMENTED();
+}
 
 uptr GetRSS() {
   PROCESS_MEMORY_COUNTERS counters;
@@ -778,7 +813,7 @@ uptr GetRSS() {
 }
 
 void *internal_start_thread(void *(*func)(void *arg), void *arg) { return 0; }
-void internal_join_thread(void *th) {}
+void internal_join_thread(void *th) { }
 
 // ---------------------- BlockingMutex ---------------- {{{1
 
@@ -799,11 +834,16 @@ void BlockingMutex::Unlock() {
   ReleaseSRWLockExclusive((PSRWLOCK)opaque_storage_);
 }
 
-void BlockingMutex::CheckLocked() { CHECK_EQ(owner_, GetThreadSelf()); }
+void BlockingMutex::CheckLocked() {
+  CHECK_EQ(owner_, GetThreadSelf());
+}
 
-uptr GetTlsSize() { return 0; }
+uptr GetTlsSize() {
+  return 0;
+}
 
-void InitTlsSize() {}
+void InitTlsSize() {
+}
 
 void GetThreadStackAndTls(bool main, uptr *stk_addr, uptr *stk_size,
                           uptr *tls_addr, uptr *tls_size) {
@@ -1008,14 +1048,14 @@ const char *SignalContext::Describe() const {
   return "unknown exception";
 }
 
-uptr ReadBinaryName(/*out*/ char *buf, uptr buf_len) {
+uptr ReadBinaryName(/*out*/char *buf, uptr buf_len) {
   // FIXME: Actually implement this function.
   CHECK_GT(buf_len, 0);
   buf[0] = 0;
   return 0;
 }
 
-uptr ReadLongProcessName(/*out*/ char *buf, uptr buf_len) {
+uptr ReadLongProcessName(/*out*/char *buf, uptr buf_len) {
   return ReadBinaryName(buf, buf_len);
 }
 
@@ -1067,14 +1107,16 @@ bool IsProcessRunning(pid_t pid) {
 int WaitForProcess(pid_t pid) { return -1; }
 
 // FIXME implement on this platform.
-void GetMemoryProfile(fill_profile_f cb, uptr *stats, uptr stats_size) {}
+void GetMemoryProfile(fill_profile_f cb, uptr *stats, uptr stats_size) { }
 
 void CheckNoDeepBind(const char *filename, int flag) {
   // Do nothing.
 }
 
 // FIXME: implement on this platform.
-bool GetRandom(void *buffer, uptr length, bool blocking) { UNIMPLEMENTED(); }
+bool GetRandom(void *buffer, uptr length, bool blocking) {
+  UNIMPLEMENTED();
+}
 
 u32 GetNumberOfCPUs() {
   SYSTEM_INFO sysinfo = {};
@@ -1106,7 +1148,7 @@ void LogFullErrorReport(const char *buffer) {
                       TraceLoggingValue(buffer, "AsanReportContents"));
   }
 }
-#endif  // SANITIZER_WIN_TRACE
+#endif // SANITIZER_WIN_TRACE
 
 void InitializePlatformCommonFlags(CommonFlags *cf) {}
 

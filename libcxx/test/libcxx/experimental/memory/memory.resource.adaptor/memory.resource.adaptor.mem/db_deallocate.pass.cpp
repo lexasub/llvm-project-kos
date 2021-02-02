@@ -28,25 +28,26 @@ int AssertCount = 0;
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  using Alloc = NullAllocator<char>;
+int main(int, char**)
+{
+    using Alloc = NullAllocator<char>;
 
-  AllocController P;
-  ex::resource_adaptor<Alloc> r(Alloc{P});
-  ex::memory_resource& m1 = r;
+    AllocController P;
+    ex::resource_adaptor<Alloc> r(Alloc{P});
+    ex::memory_resource & m1 = r;
 
 #ifdef __STDCPP_DEFAULT_NEW_ALIGNMENT__
-  std::size_t maxSize = std::numeric_limits<std::size_t>::max() -
-                        __STDCPP_DEFAULT_NEW_ALIGNMENT__;
+    std::size_t maxSize = std::numeric_limits<std::size_t>::max()
+                            - __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 #else
-  std::size_t maxSize =
-      std::numeric_limits<std::size_t>::max() - alignof(std::max_align_t);
+    std::size_t maxSize = std::numeric_limits<std::size_t>::max()
+                            - alignof(std::max_align_t);
 #endif
 
-  m1.deallocate(nullptr, maxSize);
-  assert(AssertCount == 0);
-  m1.deallocate(nullptr, maxSize + 1);
-  assert(AssertCount >= 1);
+    m1.deallocate(nullptr, maxSize);
+    assert(AssertCount == 0);
+    m1.deallocate(nullptr, maxSize + 1);
+    assert(AssertCount >= 1);
 
   return 0;
 }

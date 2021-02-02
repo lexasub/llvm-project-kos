@@ -51,9 +51,7 @@ ConstructionContext::createMaterializedTemporaryFromLayers(
   // If the object requires destruction and is not lifetime-extended,
   // then it must have a BTE within its MTE, otherwise it shouldn't.
   // FIXME: This should be an assertion.
-  if (!BTE && !(MTE->getType()
-                    .getCanonicalType()
-                    ->getAsCXXRecordDecl()
+  if (!BTE && !(MTE->getType().getCanonicalType()->getAsCXXRecordDecl()
                     ->hasTrivialDestructor() ||
                 MTE->getStorageDuration() != SD_FullExpression)) {
     return nullptr;
@@ -85,8 +83,8 @@ ConstructionContext::createMaterializedTemporaryFromLayers(
       // In this case, skip copy elision entirely.
       return create<SimpleTemporaryObjectConstructionContext>(C, BTE, MTE);
     }
-    return create<ElidedTemporaryObjectConstructionContext>(C, BTE, MTE,
-                                                            ElidedCE, ElidedCC);
+    return create<ElidedTemporaryObjectConstructionContext>(
+        C, BTE, MTE, ElidedCE, ElidedCC);
   }
 
   // This is a normal temporary.
@@ -110,11 +108,8 @@ const ConstructionContext *ConstructionContext::createBoundTemporaryFromLayers(
   switch (ParentItem.getKind()) {
   case ConstructionContextItem::VariableKind: {
     const auto *DS = cast<DeclStmt>(ParentItem.getStmt());
-    assert(!cast<VarDecl>(DS->getSingleDecl())
-                ->getType()
-                .getCanonicalType()
-                ->getAsCXXRecordDecl()
-                ->hasTrivialDestructor());
+    assert(!cast<VarDecl>(DS->getSingleDecl())->getType().getCanonicalType()
+                            ->getAsCXXRecordDecl()->hasTrivialDestructor());
     return create<CXX17ElidedCopyVariableConstructionContext>(C, DS, BTE);
   }
   case ConstructionContextItem::NewAllocatorKind: {
@@ -123,12 +118,10 @@ const ConstructionContext *ConstructionContext::createBoundTemporaryFromLayers(
   case ConstructionContextItem::ReturnKind: {
     assert(ParentLayer->isLast());
     const auto *RS = cast<ReturnStmt>(ParentItem.getStmt());
-    assert(!RS->getRetValue()
-                ->getType()
-                .getCanonicalType()
-                ->getAsCXXRecordDecl()
-                ->hasTrivialDestructor());
-    return create<CXX17ElidedCopyReturnedValueConstructionContext>(C, RS, BTE);
+    assert(!RS->getRetValue()->getType().getCanonicalType()
+              ->getAsCXXRecordDecl()->hasTrivialDestructor());
+    return create<CXX17ElidedCopyReturnedValueConstructionContext>(C, RS,
+                                                                   BTE);
   }
 
   case ConstructionContextItem::MaterializationKind: {
@@ -158,11 +151,8 @@ const ConstructionContext *ConstructionContext::createBoundTemporaryFromLayers(
   case ConstructionContextItem::InitializerKind: {
     assert(ParentLayer->isLast());
     const auto *I = ParentItem.getCXXCtorInitializer();
-    assert(!I->getAnyMember()
-                ->getType()
-                .getCanonicalType()
-                ->getAsCXXRecordDecl()
-                ->hasTrivialDestructor());
+    assert(!I->getAnyMember()->getType().getCanonicalType()
+             ->getAsCXXRecordDecl()->hasTrivialDestructor());
     return create<CXX17ElidedCopyConstructorInitializerConstructionContext>(
         C, I, BTE);
   }
@@ -200,10 +190,8 @@ const ConstructionContext *ConstructionContext::createFromLayers(
   }
   case ConstructionContextItem::TemporaryDestructorKind: {
     const auto *BTE = cast<CXXBindTemporaryExpr>(TopItem.getStmt());
-    assert(BTE->getType()
-               .getCanonicalType()
-               ->getAsCXXRecordDecl()
-               ->hasNonTrivialDestructor());
+    assert(BTE->getType().getCanonicalType()->getAsCXXRecordDecl()
+              ->hasNonTrivialDestructor());
     return createBoundTemporaryFromLayers(C, BTE, TopLayer->getParent());
   }
   case ConstructionContextItem::ElidedDestructorKind: {

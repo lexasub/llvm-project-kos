@@ -206,7 +206,7 @@ bool AppleThreadPlanStepThroughObjCTrampoline::WillStop() { return true; }
 // This checks whether the selector has been overridden, directly calling the
 // implementation if it hasn't and calling objc_msgSend if it has.
 //
-// We need to get into the overridden implementation.  We'll do that by
+// We need to get into the overridden implementation.  We'll do that by 
 // setting a breakpoint on objc_msgSend, and doing a "step out".  If we stop
 // at objc_msgSend, we can step through to the target of the send, and see if
 // that's a place we want to stop.
@@ -215,7 +215,7 @@ bool AppleThreadPlanStepThroughObjCTrampoline::WillStop() { return true; }
 // so we might see objc_msgSend more than once.  Also, these optimized dispatch
 // functions might dispatch more than one message at a time (e.g. alloc followed
 // by init.)  So we can't give up at the first objc_msgSend.
-// That means among other things that we have to handle the "ShouldStopHere" -
+// That means among other things that we have to handle the "ShouldStopHere" - 
 // since we can't just return control to the plan that's controlling us on the
 // first step.
 
@@ -236,13 +236,14 @@ AppleThreadPlanStepThroughDirectDispatch ::
       m_dispatch_func_name(std::string(dispatch_func_name)),
       m_at_msg_send(false), m_stop_others(stop_others) {
   // Set breakpoints on the dispatch functions:
-  auto bkpt_callback =
-      [&](lldb::addr_t addr,
-          const AppleObjCTrampolineHandler ::DispatchFunction &dispatch) {
-        m_msgSend_bkpts.push_back(GetTarget().CreateBreakpoint(
-            addr, true /* internal */, false /* hard */));
-        m_msgSend_bkpts.back()->SetThreadID(GetThread().GetID());
-      };
+  auto bkpt_callback = [&] (lldb::addr_t addr, 
+                            const AppleObjCTrampolineHandler
+                                ::DispatchFunction &dispatch) {
+    m_msgSend_bkpts.push_back(GetTarget().CreateBreakpoint(addr,
+                                                           true /* internal */,
+                                                           false /* hard */));
+    m_msgSend_bkpts.back()->SetThreadID(GetThread().GetID());
+  };
   handler.ForEachDispatchFunction(bkpt_callback);
 
   // We'll set the step-out plan in the DidPush so it gets queued in the right
@@ -272,9 +273,9 @@ AppleThreadPlanStepThroughDirectDispatch ::
 
 AppleThreadPlanStepThroughDirectDispatch::
     ~AppleThreadPlanStepThroughDirectDispatch() {
-  for (BreakpointSP bkpt_sp : m_msgSend_bkpts) {
-    GetTarget().RemoveBreakpointByID(bkpt_sp->GetID());
-  }
+    for (BreakpointSP bkpt_sp : m_msgSend_bkpts) {
+      GetTarget().RemoveBreakpointByID(bkpt_sp->GetID());
+    }
 }
 
 void AppleThreadPlanStepThroughDirectDispatch::GetDescription(
@@ -288,19 +289,19 @@ void AppleThreadPlanStepThroughDirectDispatch::GetDescription(
               m_dispatch_func_name.c_str());
     bool first = true;
     for (auto bkpt_sp : m_msgSend_bkpts) {
-      if (!first) {
-        s->PutCString(", ");
-      }
-      first = false;
-      s->Printf("%d", bkpt_sp->GetID());
+        if (!first) {
+          s->PutCString(", ");
+        }
+        first = false;
+        s->Printf("%d", bkpt_sp->GetID());
     }
-    (*s) << ".";
+    (*s) << ".";  
     break;
   }
 }
 
-bool AppleThreadPlanStepThroughDirectDispatch::DoPlanExplainsStop(
-    Event *event_ptr) {
+bool 
+AppleThreadPlanStepThroughDirectDispatch::DoPlanExplainsStop(Event *event_ptr) {
   if (ThreadPlanStepOut::DoPlanExplainsStop(event_ptr))
     return true;
 
@@ -316,13 +317,13 @@ bool AppleThreadPlanStepThroughDirectDispatch::DoPlanExplainsStop(
   if (stop_reason == eStopReasonBreakpoint) {
     ProcessSP process_sp = GetThread().GetProcess();
     uint64_t break_site_id = stop_info_sp->GetValue();
-    BreakpointSiteSP site_sp =
-        process_sp->GetBreakpointSiteList().FindByID(break_site_id);
-    // Some other plan might have deleted the site's last owner before this
-    // got to us.  In which case, it wasn't our breakpoint...
+    BreakpointSiteSP site_sp 
+        = process_sp->GetBreakpointSiteList().FindByID(break_site_id);
+    // Some other plan might have deleted the site's last owner before this 
+    // got to us.  In which case, it wasn't our breakpoint...    
     if (!site_sp)
       return false;
-
+      
     for (BreakpointSP break_sp : m_msgSend_bkpts) {
       if (site_sp->IsBreakpointAtThisSite(break_sp->GetID())) {
         // If we aren't the only one with a breakpoint on this site, then we
@@ -336,15 +337,15 @@ bool AppleThreadPlanStepThroughDirectDispatch::DoPlanExplainsStop(
       }
     }
   }
-
-  // We're done here.  If one of our sub-plans explained the stop, they
+  
+  // We're done here.  If one of our sub-plans explained the stop, they 
   // would have already answered true to PlanExplainsStop, and if they were
   // done, we'll get called to figure out what to do in ShouldStop...
   return false;
 }
 
-bool AppleThreadPlanStepThroughDirectDispatch ::DoWillResume(
-    lldb::StateType resume_state, bool current_plan) {
+bool AppleThreadPlanStepThroughDirectDispatch
+         ::DoWillResume(lldb::StateType resume_state, bool current_plan) {
   ThreadPlanStepOut::DoWillResume(resume_state, current_plan);
   m_at_msg_send = false;
   return true;
@@ -352,17 +353,17 @@ bool AppleThreadPlanStepThroughDirectDispatch ::DoWillResume(
 
 bool AppleThreadPlanStepThroughDirectDispatch::ShouldStop(Event *event_ptr) {
   // If step out plan finished, that means we didn't find our way into a method
-  // implementation.  Either we went directly to the default implementation,
-  // of the overridden implementation didn't have debug info.
+  // implementation.  Either we went directly to the default implementation, 
+  // of the overridden implementation didn't have debug info.  
   // So we should mark ourselves as done.
   const bool step_out_should_stop = ThreadPlanStepOut::ShouldStop(event_ptr);
   if (step_out_should_stop) {
     SetPlanComplete(true);
     return true;
   }
-
-  // If we have a step through plan, then w're in the process of getting
-  // through an ObjC msgSend.  If we arrived at the target function, then
+  
+  // If we have a step through plan, then w're in the process of getting 
+  // through an ObjC msgSend.  If we arrived at the target function, then 
   // check whether we have debug info, and if we do, stop.
   Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_STEP));
 
@@ -390,15 +391,15 @@ bool AppleThreadPlanStepThroughDirectDispatch::ShouldStop(Event *event_ptr) {
 
   // If we hit an msgSend breakpoint, then we should queue the step through
   // plan:
-
+  
   if (m_at_msg_send) {
-    LanguageRuntime *objc_runtime =
-        GetThread().GetProcess()->GetLanguageRuntime(eLanguageTypeObjC);
-    // There's no way we could have gotten here without an ObjC language
+    LanguageRuntime *objc_runtime 
+      = GetThread().GetProcess()->GetLanguageRuntime(eLanguageTypeObjC);
+    // There's no way we could have gotten here without an ObjC language 
     // runtime.
     assert(objc_runtime);
-    m_objc_step_through_sp =
-        objc_runtime->GetStepThroughTrampolinePlan(GetThread(), m_stop_others);
+    m_objc_step_through_sp 
+      = objc_runtime->GetStepThroughTrampolinePlan(GetThread(), m_stop_others);
     // If we failed to find the target for this dispatch, just keep going and
     // let the step out complete.
     if (!m_objc_step_through_sp) {
@@ -412,7 +413,7 @@ bool AppleThreadPlanStepThroughDirectDispatch::ShouldStop(Event *event_ptr) {
     }
     return false;
   }
-  return true;
+  return true;  
 }
 
 bool AppleThreadPlanStepThroughDirectDispatch::MischiefManaged() {

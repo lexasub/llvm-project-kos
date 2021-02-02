@@ -13,8 +13,8 @@
 //
 // RUN: clang-scan-deps -compilation-database %t.cdb -j 1 | FileCheck %s
 
-#include "foodir/foodirheader.h"
 #include <foodir>
+#include "foodir/foodirheader.h"
 
 // CHECK: headerwithdirname_input.o
 // CHECK-NEXT: headerwithdirname_input.cpp

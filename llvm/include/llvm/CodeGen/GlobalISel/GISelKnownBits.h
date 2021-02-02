@@ -35,7 +35,8 @@ class GISelKnownBits : public GISelChangeObserver {
   SmallDenseMap<Register, KnownBits, 16> ComputeKnownBitsCache;
 
   void computeKnownBitsMin(Register Src0, Register Src1, KnownBits &Known,
-                           const APInt &DemandedElts, unsigned Depth = 0);
+                           const APInt &DemandedElts,
+                           unsigned Depth = 0);
 
   unsigned computeNumSignBitsMin(Register Src0, Register Src1,
                                  const APInt &DemandedElts, unsigned Depth = 0);
@@ -44,9 +45,13 @@ public:
   GISelKnownBits(MachineFunction &MF, unsigned MaxDepth = 6);
   virtual ~GISelKnownBits() = default;
 
-  const MachineFunction &getMachineFunction() const { return MF; }
+  const MachineFunction &getMachineFunction() const {
+    return MF;
+  }
 
-  const DataLayout &getDataLayout() const { return DL; }
+  const DataLayout &getDataLayout() const {
+    return DL;
+  }
 
   virtual void computeKnownBitsImpl(Register R, KnownBits &Known,
                                     const APInt &DemandedElts,
@@ -77,7 +82,8 @@ public:
   /// predicate to simplify operations downstream.
   bool signBitIsZero(Register Op);
 
-  static void computeKnownBitsForAlignment(KnownBits &Known, Align Alignment) {
+  static void computeKnownBitsForAlignment(KnownBits &Known,
+                                           Align Alignment) {
     // The low bits are known zero if the pointer is aligned.
     Known.Zero.setLowBits(Log2(Alignment));
   }

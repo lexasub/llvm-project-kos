@@ -51,16 +51,19 @@ struct SISchedulerCandidate {
 class SIScheduleDAGMI;
 class SIScheduleBlockCreator;
 
-enum SIScheduleBlockLinkKind { NoData, Data };
+enum SIScheduleBlockLinkKind {
+  NoData,
+  Data
+};
 
 class SIScheduleBlock {
   SIScheduleDAGMI *DAG;
   SIScheduleBlockCreator *BC;
 
-  std::vector<SUnit *> SUnits;
+  std::vector<SUnit*> SUnits;
   std::map<unsigned, unsigned> NodeNum2Index;
-  std::vector<SUnit *> TopReadySUs;
-  std::vector<SUnit *> ScheduledSUnits;
+  std::vector<SUnit*> TopReadySUs;
+  std::vector<SUnit*> ScheduledSUnits;
 
   /// The top of the unscheduled zone.
   IntervalPressure TopPressure;
@@ -90,14 +93,15 @@ class SIScheduleBlock {
   // Unique ID, the index of the Block in the SIScheduleDAGMI Blocks table.
   unsigned ID;
 
-  std::vector<SIScheduleBlock *> Preds; // All blocks predecessors.
+  std::vector<SIScheduleBlock*> Preds;  // All blocks predecessors.
   // All blocks successors, and the kind of link
-  std::vector<std::pair<SIScheduleBlock *, SIScheduleBlockLinkKind>> Succs;
+  std::vector<std::pair<SIScheduleBlock*, SIScheduleBlockLinkKind>> Succs;
   unsigned NumHighLatencySuccessors = 0;
 
 public:
-  SIScheduleBlock(SIScheduleDAGMI *DAG, SIScheduleBlockCreator *BC, unsigned ID)
-      : DAG(DAG), BC(BC), TopRPTracker(TopPressure), ID(ID) {}
+  SIScheduleBlock(SIScheduleDAGMI *DAG, SIScheduleBlockCreator *BC,
+                  unsigned ID):
+    DAG(DAG), BC(BC), TopRPTracker(TopPressure), ID(ID) {}
 
   ~SIScheduleBlock() = default;
 
@@ -113,14 +117,12 @@ public:
   void addPred(SIScheduleBlock *Pred);
   void addSucc(SIScheduleBlock *Succ, SIScheduleBlockLinkKind Kind);
 
-  const std::vector<SIScheduleBlock *> &getPreds() const { return Preds; }
-  ArrayRef<std::pair<SIScheduleBlock *, SIScheduleBlockLinkKind>>
-  getSuccs() const {
-    return Succs;
-  }
+  const std::vector<SIScheduleBlock*>& getPreds() const { return Preds; }
+  ArrayRef<std::pair<SIScheduleBlock*, SIScheduleBlockLinkKind>>
+    getSuccs() const { return Succs; }
 
-  unsigned Height; // Maximum topdown path length to block without outputs
-  unsigned Depth;  // Maximum bottomup path length to block without inputs
+  unsigned Height;  // Maximum topdown path length to block without outputs
+  unsigned Depth;   // Maximum bottomup path length to block without inputs
 
   unsigned getNumHighLatencySuccessors() const {
     return NumHighLatencySuccessors;
@@ -138,7 +140,7 @@ public:
   // Fast schedule with no particular requirement.
   void fastSchedule();
 
-  std::vector<SUnit *> getScheduledUnits() { return ScheduledSUnits; }
+  std::vector<SUnit*> getScheduledUnits() { return ScheduledSUnits; }
 
   // Complete schedule that will try to minimize reg pressure and
   // low latencies, and will fill liveins and liveouts.
@@ -200,14 +202,14 @@ private:
   void nodeScheduled(SUnit *SU);
   void tryCandidateTopDown(SISchedCandidate &Cand, SISchedCandidate &TryCand);
   void tryCandidateBottomUp(SISchedCandidate &Cand, SISchedCandidate &TryCand);
-  SUnit *pickNode();
+  SUnit* pickNode();
   void traceCandidate(const SISchedCandidate &Cand);
   void initRegPressure(MachineBasicBlock::iterator BeginBlock,
                        MachineBasicBlock::iterator EndBlock);
 };
 
 struct SIScheduleBlocks {
-  std::vector<SIScheduleBlock *> Blocks;
+  std::vector<SIScheduleBlock*> Blocks;
   std::vector<int> TopDownIndex2Block;
   std::vector<int> TopDownBlock2Index;
 };
@@ -222,8 +224,9 @@ class SIScheduleBlockCreator {
   SIScheduleDAGMI *DAG;
   // unique_ptr handles freeing memory for us.
   std::vector<std::unique_ptr<SIScheduleBlock>> BlockPtrs;
-  std::map<SISchedulerBlockCreatorVariant, SIScheduleBlocks> Blocks;
-  std::vector<SIScheduleBlock *> CurrentBlocks;
+  std::map<SISchedulerBlockCreatorVariant,
+           SIScheduleBlocks> Blocks;
+  std::vector<SIScheduleBlock*> CurrentBlocks;
   std::vector<int> Node2CurrentBlock;
 
   // Topological sort
@@ -233,8 +236,8 @@ class SIScheduleBlockCreator {
   std::vector<int> BottomUpIndex2Block;
 
   // 0 -> Color not given.
-  // 1 to SUnits.size() -> Reserved group (you should only add elements to
-  // them). Above -> Other groups.
+  // 1 to SUnits.size() -> Reserved group (you should only add elements to them).
+  // Above -> Other groups.
   int NextReservedID;
   int NextNonReservedID;
   std::vector<int> CurrentColoring;
@@ -244,7 +247,8 @@ class SIScheduleBlockCreator {
 public:
   SIScheduleBlockCreator(SIScheduleDAGMI *DAG);
 
-  SIScheduleBlocks getBlocks(SISchedulerBlockCreatorVariant BlockVariant);
+  SIScheduleBlocks
+  getBlocks(SISchedulerBlockCreatorVariant BlockVariant);
 
   bool isSUInBlock(SUnit *SU, unsigned ID);
 
@@ -259,22 +263,19 @@ private:
   // different colors depending on dependencies on Reserved colors.
   void colorComputeReservedDependencies();
 
-  // Give color to all non-colored SUs according to Reserved groups
-  // dependencies.
+  // Give color to all non-colored SUs according to Reserved groups dependencies.
   void colorAccordingToReservedDependencies();
 
-  // Divides Blocks having no bottom up or top down dependencies on Reserved
-  // groups. The new colors are computed according to the dependencies on the
-  // other blocks formed with colorAccordingToReservedDependencies.
+  // Divides Blocks having no bottom up or top down dependencies on Reserved groups.
+  // The new colors are computed according to the dependencies on the other blocks
+  // formed with colorAccordingToReservedDependencies.
   void colorEndsAccordingToDependencies();
 
-  // Cut groups into groups with SUs in consecutive order (except for Reserved
-  // groups).
+  // Cut groups into groups with SUs in consecutive order (except for Reserved groups).
   void colorForceConsecutiveOrderInGroup();
 
-  // Merge Constant loads that have all their users into another group to the
-  // group. (TODO: else if all their users depend on the same group, put them
-  // there)
+  // Merge Constant loads that have all their users into another group to the group.
+  // (TODO: else if all their users depend on the same group, put them there)
   void colorMergeConstantLoadsNextGroup();
 
   // Merge SUs that have all their users into another group to the group
@@ -318,7 +319,7 @@ enum SISchedulerBlockSchedulerVariant {
 class SIScheduleBlockScheduler {
   SIScheduleDAGMI *DAG;
   SISchedulerBlockSchedulerVariant Variant;
-  std::vector<SIScheduleBlock *> Blocks;
+  std::vector<SIScheduleBlock*> Blocks;
 
   std::vector<std::map<unsigned, unsigned>> LiveOutRegsNumUsages;
   std::set<unsigned> LiveRegs;
@@ -328,9 +329,9 @@ class SIScheduleBlockScheduler {
   std::vector<unsigned> LastPosHighLatencyParentScheduled;
   int LastPosWaitedHighLatency;
 
-  std::vector<SIScheduleBlock *> BlocksScheduled;
+  std::vector<SIScheduleBlock*> BlocksScheduled;
   unsigned NumBlockScheduled;
-  std::vector<SIScheduleBlock *> ReadyBlocks;
+  std::vector<SIScheduleBlock*> ReadyBlocks;
 
   unsigned VregCurrentUsage;
   unsigned SregCurrentUsage;
@@ -348,7 +349,7 @@ public:
                            SIScheduleBlocks BlocksStruct);
   ~SIScheduleBlockScheduler() = default;
 
-  std::vector<SIScheduleBlock *> getBlocks() { return BlocksScheduled; }
+  std::vector<SIScheduleBlock*> getBlocks() { return BlocksScheduled; }
 
   unsigned getVGPRUsage() { return maxVregUsage; }
   unsigned getSGPRUsage() { return maxSregUsage; }
@@ -453,13 +454,14 @@ public:
   const TargetRegisterInfo *getTRI() { return TRI; }
   ScheduleDAGTopologicalSort *GetTopo() { return &Topo; }
   SUnit &getEntrySU() { return EntrySU; }
-  SUnit &getExitSU() { return ExitSU; }
+  SUnit& getExitSU() { return ExitSU; }
 
   void restoreSULinksLeft();
 
-  template <typename _Iterator>
-  void fillVgprSgprCost(_Iterator First, _Iterator End, unsigned &VgprUsage,
-                        unsigned &SgprUsage);
+  template<typename _Iterator> void fillVgprSgprCost(_Iterator First,
+                                                     _Iterator End,
+                                                     unsigned &VgprUsage,
+                                                     unsigned &SgprUsage);
 
   std::set<unsigned> getInRegs() {
     std::set<unsigned> InRegs;

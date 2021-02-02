@@ -35,25 +35,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert(
-      (std::is_same<std::allocator<char>::size_type, std::size_t>::value), "");
-  static_assert((std::is_same<std::allocator<char>::difference_type,
-                              std::ptrdiff_t>::value),
-                "");
-  static_assert((std::is_same<std::allocator<char>::pointer, char*>::value),
-                "");
-  static_assert(
-      (std::is_same<std::allocator<char>::const_pointer, const char*>::value),
-      "");
-  static_assert((std::is_same<std::allocator<char>::reference, char&>::value),
-                "");
-  static_assert(
-      (std::is_same<std::allocator<char>::const_reference, const char&>::value),
-      "");
-  static_assert((std::is_same<std::allocator<char>::rebind<int>::other,
-                              std::allocator<int> >::value),
-                "");
+int main(int, char**)
+{
+    static_assert((std::is_same<std::allocator<char>::size_type, std::size_t>::value), "");
+    static_assert((std::is_same<std::allocator<char>::difference_type, std::ptrdiff_t>::value), "");
+    static_assert((std::is_same<std::allocator<char>::pointer, char*>::value), "");
+    static_assert((std::is_same<std::allocator<char>::const_pointer, const char*>::value), "");
+    static_assert((std::is_same<std::allocator<char>::reference, char&>::value), "");
+    static_assert((std::is_same<std::allocator<char>::const_reference, const char&>::value), "");
+    static_assert((std::is_same<std::allocator<char>::rebind<int>::other,
+                                std::allocator<int> >::value), "");
 
-  return 0;
+    return 0;
 }

@@ -17,17 +17,18 @@
 // exceptions are 8-byte aligned, which caused a segfault on those systems.
 
 struct exception {
-  exception() : x(0) {}
-  virtual ~exception() {}
-  int x;
+    exception() : x(0) { }
+    virtual ~exception() { }
+    int x;
 };
 
-struct foo : exception {};
+struct foo : exception { };
 
 int main(int, char**) {
-  try {
-    throw foo();
-  } catch (...) {
-  }
-  return 0;
+    try {
+      throw foo();
+    } catch (...) {
+
+    }
+    return 0;
 }

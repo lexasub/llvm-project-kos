@@ -13,12 +13,15 @@
 
 #include <cstdlib>
 
-int func(int i) { return abs(i); }
+int func(int i){
+    return abs(i);
+}
 
-int main() {
-  func(0);
-  func(1);
-  return 0;
+int main()
+{
+    func(0);
+    func(1);
+    return 0;
 }
 
 // DexExpectStepKind('FUNC_EXTERNAL', 2)

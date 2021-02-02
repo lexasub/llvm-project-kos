@@ -19,9 +19,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::atomic<int> v = ATOMIC_VAR_INIT(5);
-  assert(v == 5);
+int main(int, char**)
+{
+    std::atomic<int> v = ATOMIC_VAR_INIT(5);
+    assert(v == 5);
 
   return 0;
 }

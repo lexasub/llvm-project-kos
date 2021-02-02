@@ -19,28 +19,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::cauchy_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p;
-    assert(p.a() == 0);
-    assert(p.b() == 1);
-  }
-  {
-    typedef std::cauchy_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10);
-    assert(p.a() == 10);
-    assert(p.b() == 1);
-  }
-  {
-    typedef std::cauchy_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10, 5);
-    assert(p.a() == 10);
-    assert(p.b() == 5);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::cauchy_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p;
+        assert(p.a() == 0);
+        assert(p.b() == 1);
+    }
+    {
+        typedef std::cauchy_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10);
+        assert(p.a() == 10);
+        assert(p.b() == 1);
+    }
+    {
+        typedef std::cauchy_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10, 5);
+        assert(p.a() == 10);
+        assert(p.b() == 5);
+    }
 
   return 0;
 }

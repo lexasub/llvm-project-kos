@@ -14,8 +14,9 @@
 // Do not declare isdigit in ctype.h.
 #define __NO_CTYPE
 
-#include "gtest/gtest.h"
 #include "interception/interception.h"
+
+#include "gtest/gtest.h"
 
 // Too slow for debug build
 #if !SANITIZER_DEBUG

@@ -33,9 +33,10 @@ PreservedAnalyses PrintModulePass::run(Module &M, ModuleAnalysisManager &) {
     if (!Banner.empty())
       OS << Banner << "\n";
     M.print(OS, nullptr, ShouldPreserveUseListOrder);
-  } else {
+  }
+  else {
     bool BannerPrinted = false;
-    for (const auto &F : M.functions()) {
+    for(const auto &F : M.functions()) {
       if (llvm::isFunctionInPrintList(F.getName())) {
         if (!BannerPrinted && !Banner.empty()) {
           OS << Banner << "\n";
@@ -111,7 +112,7 @@ public:
   StringRef getPassName() const override { return "Print Function IR"; }
 };
 
-} // namespace
+}
 
 char PrintModulePassWrapper::ID = 0;
 INITIALIZE_PASS(PrintModulePassWrapper, "print-module",
@@ -132,7 +133,7 @@ FunctionPass *llvm::createPrintFunctionPass(llvm::raw_ostream &OS,
 }
 
 bool llvm::isIRPrintingPass(Pass *P) {
-  const char *PID = (const char *)P->getPassID();
+  const char *PID = (const char*)P->getPassID();
 
   return (PID == &PrintModulePassWrapper::ID) ||
          (PID == &PrintFunctionPassWrapper::ID);

@@ -1,7 +1,7 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include "test.h"
 
-_Atomic(int *) p;
+_Atomic(int*) p;
 
 void *thr(void *a) {
   barrier_wait(&barrier);

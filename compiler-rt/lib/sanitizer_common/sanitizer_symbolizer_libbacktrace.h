@@ -13,17 +13,17 @@
 #ifndef SANITIZER_SYMBOLIZER_LIBBACKTRACE_H
 #define SANITIZER_SYMBOLIZER_LIBBACKTRACE_H
 
-#include "sanitizer_allocator_internal.h"
-#include "sanitizer_common.h"
 #include "sanitizer_platform.h"
+#include "sanitizer_common.h"
+#include "sanitizer_allocator_internal.h"
 #include "sanitizer_symbolizer_internal.h"
 
 #ifndef SANITIZER_LIBBACKTRACE
-#define SANITIZER_LIBBACKTRACE 0
+# define SANITIZER_LIBBACKTRACE 0
 #endif
 
 #ifndef SANITIZER_CP_DEMANGLE
-#define SANITIZER_CP_DEMANGLE 0
+# define SANITIZER_CP_DEMANGLE 0
 #endif
 
 namespace __sanitizer {

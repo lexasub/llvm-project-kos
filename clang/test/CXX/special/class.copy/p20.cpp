@@ -3,20 +3,20 @@
 
 struct ConstCopy {
   ConstCopy();
-  ConstCopy &operator=(const ConstCopy &);
+  ConstCopy &operator=(const ConstCopy&);
 };
 
 struct NonConstCopy {
   NonConstCopy();
-  NonConstCopy &operator=(NonConstCopy &);
+  NonConstCopy &operator=(NonConstCopy&);
 };
 
-struct VirtualInheritsNonConstCopy : virtual NonConstCopy {
+struct VirtualInheritsNonConstCopy : virtual NonConstCopy { 
   VirtualInheritsNonConstCopy();
-  VirtualInheritsNonConstCopy &operator=(const VirtualInheritsNonConstCopy &);
+  VirtualInheritsNonConstCopy &operator=(const VirtualInheritsNonConstCopy&);
 };
 
-struct ImplicitNonConstCopy1 : NonConstCopy { // expected-note{{the implicit copy assignment operator}}
+struct ImplicitNonConstCopy1 : NonConstCopy {  // expected-note{{the implicit copy assignment operator}}
   ImplicitNonConstCopy1();
 };
 
@@ -30,7 +30,7 @@ struct ImplicitNonConstCopy3 { // expected-note{{the implicit copy assignment op
   NonConstCopy ncc_array[2][3];
 };
 
-struct ImplicitNonConstCopy4 : VirtualInheritsNonConstCopy {
+struct ImplicitNonConstCopy4 : VirtualInheritsNonConstCopy { 
   ImplicitNonConstCopy4();
 };
 

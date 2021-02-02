@@ -117,4 +117,4 @@ namespace llvm {
 ModulePass *createNameAnonGlobalPass() {
   return new NameAnonGlobalLegacyPass();
 }
-} // namespace llvm
+}

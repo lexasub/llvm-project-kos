@@ -8,7 +8,6 @@ class ClassWithNoCtor {};
 class ClassWithCtor {
 public:
   ClassWithCtor(int Val) : Val(Val) {}
-
 private:
   int Val;
 };
@@ -40,13 +39,9 @@ static ClassWithCtor G2(0);
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: static objects are disallowed; if possible, use a constexpr constructor instead [fuchsia-statically-constructed-objects]
 // CHECK-MESSAGES-NEXT:  static ClassWithCtor G2(0);
 
-struct StructWithConstexpr {
-  constexpr StructWithConstexpr(int Val) {}
-};
+struct StructWithConstexpr { constexpr StructWithConstexpr(int Val) {} };
 struct StructWithNoCtor {};
-struct StructWithCtor {
-  StructWithCtor();
-};
+struct StructWithCtor { StructWithCtor(); };
 
 StructWithNoCtor SNoCtor;
 StructWithConstexpr SConstexpr(0);
@@ -71,14 +66,13 @@ ClassWithStaticMember Z();
 
 class S {
   int Val;
-
 public:
   constexpr S(int i) : Val(100 / i) {}
   int getVal() const { return Val; }
 };
 
 static S s1(1);
-static S s2(0);
+static S s2(0); 
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: static objects are disallowed; if possible, use a constexpr constructor instead [fuchsia-statically-constructed-objects]
 // CHECK-MESSAGES-NEXT: static S s2(0);
 

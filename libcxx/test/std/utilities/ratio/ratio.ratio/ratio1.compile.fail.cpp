@@ -11,8 +11,9 @@
 #include <ratio>
 #include <cstdint>
 
-int main(int, char**) {
-  const std::intmax_t t1 = std::ratio<1, 0>::num;
+int main(int, char**)
+{
+    const std::intmax_t t1 = std::ratio<1, 0>::num;
 
   return 0;
 }

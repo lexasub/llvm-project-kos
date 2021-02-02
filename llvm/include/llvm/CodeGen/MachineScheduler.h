@@ -228,10 +228,10 @@ public:
   virtual void initialize(ScheduleDAGMI *DAG) = 0;
 
   /// Tell the strategy that MBB is about to be processed.
-  virtual void enterMBB(MachineBasicBlock *MBB){};
+  virtual void enterMBB(MachineBasicBlock *MBB) {};
 
   /// Tell the strategy that current MBB is done.
-  virtual void leaveMBB(){};
+  virtual void leaveMBB() {};
 
   /// Notify this strategy that all roots have been released (including those
   /// that depend on EntrySU or ExitSU).
@@ -325,7 +325,8 @@ public:
   /// Implement the ScheduleDAGInstrs interface for handling the next scheduling
   /// region. This covers all instructions in a block, while schedule() may only
   /// cover a subset.
-  void enterRegion(MachineBasicBlock *bb, MachineBasicBlock::iterator begin,
+  void enterRegion(MachineBasicBlock *bb,
+                   MachineBasicBlock::iterator begin,
                    MachineBasicBlock::iterator end,
                    unsigned regioninstrs) override;
 
@@ -355,7 +356,7 @@ protected:
   void postprocessDAG();
 
   /// Release ExitSU predecessors and setup scheduler queues.
-  void initQueues(ArrayRef<SUnit *> TopRoots, ArrayRef<SUnit *> BotRoots);
+  void initQueues(ArrayRef<SUnit*> TopRoots, ArrayRef<SUnit*> BotRoots);
 
   /// Update scheduler DAG and queues after scheduling an instruction.
   void updateQueues(SUnit *SU, bool IsTopNode);
@@ -369,8 +370,8 @@ protected:
   // Lesser helpers...
   bool checkSchedLimit();
 
-  void findRootsAndBiasEdges(SmallVectorImpl<SUnit *> &TopRoots,
-                             SmallVectorImpl<SUnit *> &BotRoots);
+  void findRootsAndBiasEdges(SmallVectorImpl<SUnit*> &TopRoots,
+                             SmallVectorImpl<SUnit*> &BotRoots);
 
   void releaseSucc(SUnit *SU, SDep *SuccEdge);
   void releaseSuccessors(SUnit *SU);
@@ -471,7 +472,8 @@ public:
   /// Implement the ScheduleDAGInstrs interface for handling the next scheduling
   /// region. This covers all instructions in a block, while schedule() may only
   /// cover a subset.
-  void enterRegion(MachineBasicBlock *bb, MachineBasicBlock::iterator begin,
+  void enterRegion(MachineBasicBlock *bb,
+                   MachineBasicBlock::iterator begin,
                    MachineBasicBlock::iterator end,
                    unsigned regioninstrs) override;
 
@@ -495,7 +497,7 @@ protected:
 
   /// Release ExitSU predecessors and setup scheduler queues. Re-position
   /// the Top RP tracker in case the region beginning has changed.
-  void initQueues(ArrayRef<SUnit *> TopRoots, ArrayRef<SUnit *> BotRoots);
+  void initQueues(ArrayRef<SUnit*> TopRoots, ArrayRef<SUnit*> BotRoots);
 
   /// Move an instruction and update register pressure.
   void scheduleMI(SUnit *SU, bool IsTopNode);
@@ -528,10 +530,10 @@ protected:
 class ReadyQueue {
   unsigned ID;
   std::string Name;
-  std::vector<SUnit *> Queue;
+  std::vector<SUnit*> Queue;
 
 public:
-  ReadyQueue(unsigned id, const Twine &name) : ID(id), Name(name.str()) {}
+  ReadyQueue(unsigned id, const Twine &name): ID(id), Name(name.str()) {}
 
   unsigned getID() const { return ID; }
 
@@ -546,13 +548,13 @@ public:
 
   unsigned size() const { return Queue.size(); }
 
-  using iterator = std::vector<SUnit *>::iterator;
+  using iterator = std::vector<SUnit*>::iterator;
 
   iterator begin() { return Queue.begin(); }
 
   iterator end() { return Queue.end(); }
 
-  ArrayRef<SUnit *> elements() { return Queue; }
+  ArrayRef<SUnit*> elements() { return Queue; }
 
   iterator find(SUnit *SU) { return llvm::find(Queue, SU); }
 
@@ -605,7 +607,11 @@ struct SchedRemainder {
 class SchedBoundary {
 public:
   /// SUnit::NodeQueueId: 0 (none), 1 (top), 2 (bot), 3 (both)
-  enum { TopQID = 1, BotQID = 2, LogMaxQID = 2 };
+  enum {
+    TopQID = 1,
+    BotQID = 2,
+    LogMaxQID = 2
+  };
 
   ScheduleDAGMI *DAG = nullptr;
   const TargetSchedModel *SchedModel = nullptr;
@@ -677,8 +683,8 @@ private:
 public:
   /// Pending queues extend the ready queues with the same ID and the
   /// PendingFlag set.
-  SchedBoundary(unsigned ID, const Twine &Name)
-      : Available(ID, Name + ".A"), Pending(ID << LogMaxQID, Name + ".P") {
+  SchedBoundary(unsigned ID, const Twine &Name):
+    Available(ID, Name+".A"), Pending(ID << LogMaxQID, Name+".P") {
     reset();
   }
 
@@ -689,7 +695,9 @@ public:
   void init(ScheduleDAGMI *dag, const TargetSchedModel *smodel,
             SchedRemainder *rem);
 
-  bool isTop() const { return Available.getID() == TopQID; }
+  bool isTop() const {
+    return Available.getID() == TopQID;
+  }
 
   /// Number of cycles to issue the instructions scheduled in this zone.
   unsigned getCurrCycle() const { return CurrCycle; }
@@ -748,7 +756,7 @@ public:
 
   bool checkHazard(SUnit *SU);
 
-  unsigned findMaxLatency(ArrayRef<SUnit *> ReadySUs);
+  unsigned findMaxLatency(ArrayRef<SUnit*> ReadySUs);
 
   unsigned getOtherResourceCount(unsigned &OtherCritIdx);
 
@@ -791,24 +799,9 @@ public:
   /// Represent the type of SchedCandidate found within a single queue.
   /// pickNodeBidirectional depends on these listed by decreasing priority.
   enum CandReason : uint8_t {
-    NoCand,
-    Only1,
-    PhysReg,
-    RegExcess,
-    RegCritical,
-    Stall,
-    Cluster,
-    Weak,
-    RegMax,
-    ResourceReduce,
-    ResourceDemand,
-    BotHeightReduce,
-    BotPathReduce,
-    TopDepthReduce,
-    TopPathReduce,
-    NextDefUse,
-    NodeOrder
-  };
+    NoCand, Only1, PhysReg, RegExcess, RegCritical, Stall, Cluster, Weak,
+    RegMax, ResourceReduce, ResourceDemand, BotHeightReduce, BotPathReduce,
+    TopDepthReduce, TopPathReduce, NextDefUse, NodeOrder};
 
 #ifndef NDEBUG
   static const char *getReasonStr(GenericSchedulerBase::CandReason Reason);
@@ -827,7 +820,9 @@ public:
              ReduceResIdx == RHS.ReduceResIdx &&
              DemandResIdx == RHS.DemandResIdx;
     }
-    bool operator!=(const CandPolicy &RHS) const { return !(*this == RHS); }
+    bool operator!=(const CandPolicy &RHS) const {
+      return !(*this == RHS);
+    }
   };
 
   /// Status of an instruction's critical resource consumption.
@@ -841,8 +836,8 @@ public:
     SchedResourceDelta() = default;
 
     bool operator==(const SchedResourceDelta &RHS) const {
-      return CritResources == RHS.CritResources &&
-             DemandedResources == RHS.DemandedResources;
+      return CritResources == RHS.CritResources
+        && DemandedResources == RHS.DemandedResources;
     }
     bool operator!=(const SchedResourceDelta &RHS) const {
       return !operator==(RHS);
@@ -930,11 +925,13 @@ bool tryGreater(int TryVal, int CandVal,
 bool tryLatency(GenericSchedulerBase::SchedCandidate &TryCand,
                 GenericSchedulerBase::SchedCandidate &Cand,
                 SchedBoundary &Zone);
-bool tryPressure(const PressureChange &TryP, const PressureChange &CandP,
+bool tryPressure(const PressureChange &TryP,
+                 const PressureChange &CandP,
                  GenericSchedulerBase::SchedCandidate &TryCand,
                  GenericSchedulerBase::SchedCandidate &Cand,
                  GenericSchedulerBase::CandReason Reason,
-                 const TargetRegisterInfo *TRI, const MachineFunction &MF);
+                 const TargetRegisterInfo *TRI,
+                 const MachineFunction &MF);
 unsigned getWeakLeft(const SUnit *SU, bool isTop);
 int biasPhysReg(const SUnit *SU, bool isTop);
 
@@ -942,9 +939,9 @@ int biasPhysReg(const SUnit *SU, bool isTop);
 /// the schedule.
 class GenericScheduler : public GenericSchedulerBase {
 public:
-  GenericScheduler(const MachineSchedContext *C)
-      : GenericSchedulerBase(C), Top(SchedBoundary::TopQID, "TopQ"),
-        Bot(SchedBoundary::BotQID, "BotQ") {}
+  GenericScheduler(const MachineSchedContext *C):
+    GenericSchedulerBase(C), Top(SchedBoundary::TopQID, "TopQ"),
+    Bot(SchedBoundary::BotQID, "BotQ") {}
 
   void initPolicy(MachineBasicBlock::iterator Begin,
                   MachineBasicBlock::iterator End,
@@ -1009,7 +1006,8 @@ protected:
 
   SUnit *pickNodeBidirectional(bool &IsTopNode);
 
-  void pickNodeFromQueue(SchedBoundary &Zone, const CandPolicy &ZonePolicy,
+  void pickNodeFromQueue(SchedBoundary &Zone,
+                         const CandPolicy &ZonePolicy,
                          const RegPressureTracker &RPTracker,
                          SchedCandidate &Candidate);
 
@@ -1025,11 +1023,11 @@ class PostGenericScheduler : public GenericSchedulerBase {
 protected:
   ScheduleDAGMI *DAG = nullptr;
   SchedBoundary Top;
-  SmallVector<SUnit *, 8> BotRoots;
+  SmallVector<SUnit*, 8> BotRoots;
 
 public:
-  PostGenericScheduler(const MachineSchedContext *C)
-      : GenericSchedulerBase(C), Top(SchedBoundary::TopQID, "TopQ") {}
+  PostGenericScheduler(const MachineSchedContext *C):
+    GenericSchedulerBase(C), Top(SchedBoundary::TopQID, "TopQ") {}
 
   ~PostGenericScheduler() override = default;
 
@@ -1061,7 +1059,9 @@ public:
   }
 
   // Only called for roots.
-  void releaseBottomNode(SUnit *SU) override { BotRoots.push_back(SU); }
+  void releaseBottomNode(SUnit *SU) override {
+    BotRoots.push_back(SU);
+  }
 
 protected:
   virtual void tryCandidate(SchedCandidate &Cand, SchedCandidate &TryCand);

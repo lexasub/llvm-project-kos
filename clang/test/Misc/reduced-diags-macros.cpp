@@ -17,24 +17,25 @@ NO_DEFINITION(b);
 // CHECK-NEXT: NO_DEFINITION(b);
 // CHECK-NEXT:               ^
 
-#define F(x) x + 1
-#define ADD(x, y) y + F(x)
-#define SWAP_ARGU(x, y) ADD(y, x)
 
-int p = SWAP_ARGU(3, x);
+#define F(x) x + 1
+#define ADD(x,y) y + F(x)
+#define SWAP_ARGU(x,y) ADD(y,x)
+
+int  p = SWAP_ARGU(3, x);
 
 // CHECK: {{.*}}:25:23: error: use of undeclared identifier 'x'
 // CHECK-NEXT: int  p = SWAP_ARGU(3, x);
 // CHECK-NEXT:                       ^
 
-#define APPLY(f, x, y) x f y
+#define APPLY(f,x,y) x f y
 
 struct node {
 };
 
 node ff;
 
-int r = APPLY(+, ff, 1);
+int r = APPLY(+,ff,1);
 // CHECK: {{.*}}:38:15: error: invalid operands to binary expression ('node' and 'int')
 // CHECK-NEXT: int r = APPLY(+,ff,1);
 // CHECK-NEXT:               ^ ~~ ~

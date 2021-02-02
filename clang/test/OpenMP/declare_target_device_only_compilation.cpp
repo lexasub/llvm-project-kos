@@ -10,7 +10,7 @@
 // expected-no-diagnostics
 
 #pragma omp declare target
-#pragma omp begin declare variant match(device = {kind(nohost)})
+#pragma omp begin declare variant match(device={kind(nohost)})
 int G1;
 #pragma omp end declare variant
 #pragma omp end declare target

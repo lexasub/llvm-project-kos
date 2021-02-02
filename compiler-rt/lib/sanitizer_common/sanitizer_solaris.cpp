@@ -13,21 +13,7 @@
 #include "sanitizer_platform.h"
 #if SANITIZER_SOLARIS
 
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <pthread.h>
-#include <sched.h>
-#include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <synch.h>
-#include <sys/mman.h>
-#include <sys/resource.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <thread.h>
-#include <unistd.h>
 
 #include "sanitizer_common.h"
 #include "sanitizer_flags.h"
@@ -37,27 +23,42 @@
 #include "sanitizer_platform_limits_posix.h"
 #include "sanitizer_procmaps.h"
 
+#include <fcntl.h>
+#include <pthread.h>
+#include <sched.h>
+#include <thread.h>
+#include <synch.h>
+#include <signal.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
+
 namespace __sanitizer {
 
 //#include "sanitizer_syscall_generic.inc"
 
-#define _REAL(func) _##func
+#define _REAL(func) _ ## func
 #define DECLARE__REAL(ret_type, func, ...) \
   extern "C" ret_type _REAL(func)(__VA_ARGS__)
 #define DECLARE__REAL_AND_INTERNAL(ret_type, func, ...) \
-  DECLARE__REAL(ret_type, func, __VA_ARGS__);           \
-  ret_type internal_##func(__VA_ARGS__)
+  DECLARE__REAL(ret_type, func, __VA_ARGS__); \
+  ret_type internal_ ## func(__VA_ARGS__)
 
 #if !defined(_LP64) && _FILE_OFFSET_BITS == 64
-#define _REAL64(func) _##func##64
+#define _REAL64(func) _ ## func ## 64
 #else
 #define _REAL64(func) _REAL(func)
 #endif
 #define DECLARE__REAL64(ret_type, func, ...) \
   extern "C" ret_type _REAL64(func)(__VA_ARGS__)
 #define DECLARE__REAL_AND_INTERNAL64(ret_type, func, ...) \
-  DECLARE__REAL64(ret_type, func, __VA_ARGS__);           \
-  ret_type internal_##func(__VA_ARGS__)
+  DECLARE__REAL64(ret_type, func, __VA_ARGS__); \
+  ret_type internal_ ## func(__VA_ARGS__)
 
 // ---------------------- sanitizer_libc.h
 DECLARE__REAL_AND_INTERNAL64(uptr, mmap, void *addr, uptr /*size_t*/ length,
@@ -87,7 +88,9 @@ int internal_madvise(uptr addr, uptr length, int advice) {
   return madvise((void *)addr, length, advice);
 }
 
-DECLARE__REAL_AND_INTERNAL(uptr, close, fd_t fd) { return _REAL(close)(fd); }
+DECLARE__REAL_AND_INTERNAL(uptr, close, fd_t fd) {
+  return _REAL(close)(fd);
+}
 
 extern "C" int _REAL64(open)(const char *, int, ...);
 
@@ -131,7 +134,9 @@ uptr internal_filesize(fd_t fd) {
   return (uptr)st.st_size;
 }
 
-DECLARE__REAL_AND_INTERNAL(uptr, dup, int oldfd) { return _REAL(dup)(oldfd); }
+DECLARE__REAL_AND_INTERNAL(uptr, dup, int oldfd) {
+  return _REAL(dup)(oldfd);
+}
 
 DECLARE__REAL_AND_INTERNAL(uptr, dup2, int oldfd, int newfd) {
   return _REAL(dup2)(oldfd, newfd);
@@ -151,7 +156,9 @@ DECLARE__REAL_AND_INTERNAL(uptr, rename, const char *oldpath,
   return _REAL(rename)(oldpath, newpath);
 }
 
-DECLARE__REAL_AND_INTERNAL(uptr, sched_yield, void) { return sched_yield(); }
+DECLARE__REAL_AND_INTERNAL(uptr, sched_yield, void) {
+  return sched_yield();
+}
 
 DECLARE__REAL_AND_INTERNAL(uptr, execve, const char *filename,
                            char *const argv[], char *const envp[]) {
@@ -162,7 +169,9 @@ DECLARE__REAL_AND_INTERNAL(uptr, waitpid, int pid, int *status, int options) {
   return _REAL(waitpid)(pid, status, options);
 }
 
-DECLARE__REAL_AND_INTERNAL(uptr, getpid, void) { return _REAL(getpid)(); }
+DECLARE__REAL_AND_INTERNAL(uptr, getpid, void) {
+  return _REAL(getpid)();
+}
 
 // FIXME: This might be wrong: _getdents doesn't take a struct linux_dirent *.
 DECLARE__REAL_AND_INTERNAL64(uptr, getdents, fd_t fd, struct linux_dirent *dirp,
@@ -192,7 +201,9 @@ DECLARE__REAL_AND_INTERNAL(int, fork, void) {
   return _REAL(fork)();
 }
 
-u64 NanoTime() { return gethrtime(); }
+u64 NanoTime() {
+  return gethrtime();
+}
 
 uptr internal_clock_gettime(__sanitizer_clockid_t clk_id, void *tp) {
   // FIXME: No internal variant.
@@ -220,7 +231,9 @@ void BlockingMutex::Unlock() {
   CHECK_EQ(mutex_unlock((mutex_t *)&opaque_storage_), 0);
 }
 
-void BlockingMutex::CheckLocked() { CHECK_EQ((uptr)thr_self(), owner_); }
+void BlockingMutex::CheckLocked() {
+  CHECK_EQ((uptr)thr_self(), owner_);
+}
 
 }  // namespace __sanitizer
 

@@ -2,7 +2,8 @@
 
 extern int doTest();
 
-int main() {
-  printf("%d\n", doTest()); // Set breakpoint here
-  return 0;
+int main()
+{
+    printf("%d\n", doTest()); // Set breakpoint here   
+    return 0;
 }

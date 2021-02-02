@@ -229,6 +229,7 @@ void memberFunctionPointer() {
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (auto & I : Foo)
   // CHECK-FIXES-NEXT: int R = (V.*(I.f))();
+
 }
 
 } // namespace Array
@@ -320,7 +321,7 @@ void f() {
   // CHECK-FIXES-NEXT: printf("s has value %d\n", It.X);
 
   for (U::iterator It = Uu.begin(), E = Uu.end(); It != E; ++It) {
-    Val *a = It.operator->();
+    Val* a = It.operator->();
   }
 
   U::iterator A;
@@ -362,7 +363,7 @@ void f() {
     for (PtrSet<int *>::iterator I = Val_int_ptrs.begin(),
                                  E = Val_int_ptrs.end();
          I != E; ++I) {
-      (void)*I;
+      (void) *I;
     }
     // CHECK-MESSAGES: :[[@LINE-5]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto Val_int_ptr : Val_int_ptrs)
@@ -376,7 +377,7 @@ void f() {
     for (TypedefDerefContainer<int>::iterator I = Int_ptrs.begin(),
                                               E = Int_ptrs.end();
          I != E; ++I) {
-      (void)*I;
+      (void) *I;
     }
     // CHECK-MESSAGES: :[[@LINE-5]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (int & Int_ptr : Int_ptrs)
@@ -389,7 +390,7 @@ void f() {
     for (RValueDerefContainer<int>::iterator I = Container.begin(),
                                              E = Container.end();
          I != E; ++I) {
-      (void)*I;
+      (void) *I;
     }
   }
 
@@ -466,44 +467,44 @@ public:
 
   void doLoop() {
     for (iterator I = begin(), E = end(); I != E; ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto & I : *this)
 
     for (iterator I = C::begin(), E = C::end(); I != E; ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto & I : *this)
 
     for (iterator I = begin(), E = end(); I != E; ++I) {
-      (void)*I;
+      (void) *I;
       doSomething();
     }
 
     for (iterator I = begin(); I != end(); ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto & I : *this)
 
     for (iterator I = begin(); I != end(); ++I) {
-      (void)*I;
+      (void) *I;
       doSomething();
     }
   }
 
   void doLoop() const {
     for (const_iterator I = begin(), E = end(); I != E; ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto I : *this)
 
     for (const_iterator I = C::begin(), E = C::end(); I != E; ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto I : *this)
 
     for (const_iterator I = begin(), E = end(); I != E; ++I) {
-      (void)*I;
+      (void) *I;
       doSomething();
     }
   }
@@ -520,7 +521,7 @@ public:
     // The implicit 'this' will have an Implicit cast to const C2* wrapped
     // around it. Make sure the replacement still happens.
     for (iterator I = begin(), E = end(); I != E; ++I)
-      (void)*I;
+      (void) *I;
     // CHECK-MESSAGES: :[[@LINE-2]]:5: warning: use range-based for loop instead
     // CHECK-FIXES: for (auto & I : *this)
   }
@@ -634,7 +635,7 @@ void constness() {
   // CHECK-FIXES-NEXT: Sum += I.X + 2;
 }
 
-void constRef(const dependent<int> &ConstVRef) {
+void constRef(const dependent<int>& ConstVRef) {
   int sum = 0;
   // FIXME: This does not work with size_t (probably due to the implementation
   // of dependent); make dependent work exactly like a std container type.
@@ -664,26 +665,26 @@ void noContainer() {
 
 struct NoBeginEnd {
   unsigned size() const;
-  unsigned &operator[](int);
-  const unsigned &operator[](int) const;
+  unsigned& operator[](int);
+  const unsigned& operator[](int) const;
 };
 
 struct NoConstBeginEnd {
   NoConstBeginEnd();
   unsigned size() const;
-  unsigned *begin();
-  unsigned *end();
-  unsigned &operator[](int);
-  const unsigned &operator[](int) const;
+  unsigned* begin();
+  unsigned* end();
+  unsigned& operator[](int);
+  const unsigned& operator[](int) const;
 };
 
 struct ConstBeginEnd {
   ConstBeginEnd();
   unsigned size() const;
-  unsigned *begin() const;
-  unsigned *end() const;
-  unsigned &operator[](int);
-  const unsigned &operator[](int) const;
+  unsigned* begin() const;
+  unsigned* end() const;
+  unsigned& operator[](int);
+  const unsigned& operator[](int) const;
 };
 
 // Shouldn't transform pseudo-array uses if the container doesn't provide
@@ -714,9 +715,7 @@ void NoBeginEndTest() {
 
 struct DerefByValue {
   DerefByValue();
-  struct iter {
-    unsigned operator*();
-  };
+  struct iter { unsigned operator*(); };
   unsigned size() const;
   iter begin();
   iter end();

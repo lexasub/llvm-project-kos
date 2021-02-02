@@ -20,22 +20,23 @@
 #include <string>
 #include <cassert>
 
-int main(int, char**) {
-  {
-    typedef std::tuple<double&, std::string, int> T;
-    double d = 1.5;
-    const T t(d, "high", 5);
-    assert(std::get<0>(t) == 1.5);
-    assert(std::get<1>(t) == "high");
-    assert(std::get<2>(t) == 5);
-    std::get<0>(t) = 2.5;
-    assert(std::get<0>(t) == 2.5);
-    assert(std::get<1>(t) == "high");
-    assert(std::get<2>(t) == 5);
-    assert(d == 2.5);
+int main(int, char**)
+{
+    {
+        typedef std::tuple<double&, std::string, int> T;
+        double d = 1.5;
+        const T t(d, "high", 5);
+        assert(std::get<0>(t) == 1.5);
+        assert(std::get<1>(t) == "high");
+        assert(std::get<2>(t) == 5);
+        std::get<0>(t) = 2.5;
+        assert(std::get<0>(t) == 2.5);
+        assert(std::get<1>(t) == "high");
+        assert(std::get<2>(t) == 5);
+        assert(d == 2.5);
 
-    std::get<1>(t) = "four";
-  }
+        std::get<1>(t) = "four";
+    }
 
   return 0;
 }

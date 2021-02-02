@@ -50,7 +50,7 @@ void StructPackAlignCheck::check(const MatchFinder::MatchResult &Result) {
   // Do not trigger on templated struct declarations because the packing and
   // alignment requirements are unknown.
   if (Struct->isTemplated())
-    return;
+     return;
 
   // Get sizing info for the struct.
   llvm::SmallVector<std::pair<unsigned int, unsigned int>, 10> FieldSizes;

@@ -3,12 +3,13 @@
 
 class A {
 public:
-  void foo(int a) {}
+  void foo(int a)   {}
   void foo(float a) {}
 };
 
+
 void t_fail() {
-  __asm {
+	__asm {
 		mov ecx, [eax]A.foo // expected-error {{Unable to lookup field reference!}}
-  }
+	}
 }

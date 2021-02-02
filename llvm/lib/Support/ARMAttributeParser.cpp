@@ -80,28 +80,13 @@ Error ARMAttributeParser::stringAttribute(AttrType tag) {
 }
 
 Error ARMAttributeParser::CPU_arch(AttrType tag) {
-  static const char *strings[] = {"Pre-v4",
-                                  "ARM v4",
-                                  "ARM v4T",
-                                  "ARM v5T",
-                                  "ARM v5TE",
-                                  "ARM v5TEJ",
-                                  "ARM v6",
-                                  "ARM v6KZ",
-                                  "ARM v6T2",
-                                  "ARM v6K",
-                                  "ARM v7",
-                                  "ARM v6-M",
-                                  "ARM v6S-M",
-                                  "ARM v7E-M",
-                                  "ARM v8",
-                                  nullptr,
-                                  "ARM v8-M Baseline",
-                                  "ARM v8-M Mainline",
-                                  nullptr,
-                                  nullptr,
-                                  nullptr,
-                                  "ARM v8.1-M Mainline"};
+  static const char *strings[] = {
+    "Pre-v4", "ARM v4", "ARM v4T", "ARM v5T", "ARM v5TE", "ARM v5TEJ", "ARM v6",
+    "ARM v6KZ", "ARM v6T2", "ARM v6K", "ARM v7", "ARM v6-M", "ARM v6S-M",
+    "ARM v7E-M", "ARM v8", nullptr,
+    "ARM v8-M Baseline", "ARM v8-M Mainline", nullptr, nullptr, nullptr,
+    "ARM v8.1-M Mainline"
+  };
   return parseStringAttribute("CPU_arch", tag, makeArrayRef(strings));
 }
 
@@ -110,24 +95,12 @@ Error ARMAttributeParser::CPU_arch_profile(AttrType tag) {
 
   StringRef profile;
   switch (value) {
-  default:
-    profile = "Unknown";
-    break;
-  case 'A':
-    profile = "Application";
-    break;
-  case 'R':
-    profile = "Real-time";
-    break;
-  case 'M':
-    profile = "Microcontroller";
-    break;
-  case 'S':
-    profile = "Classic";
-    break;
-  case 0:
-    profile = "None";
-    break;
+  default: profile = "Unknown"; break;
+  case 'A': profile = "Application"; break;
+  case 'R': profile = "Real-time"; break;
+  case 'M': profile = "Microcontroller"; break;
+  case 'S': profile = "Classic"; break;
+  case 0: profile = "None"; break;
   }
 
   printAttribute(tag, value, profile);
@@ -140,8 +113,7 @@ Error ARMAttributeParser::ARM_ISA_use(AttrType tag) {
 }
 
 Error ARMAttributeParser::THUMB_ISA_use(AttrType tag) {
-  static const char *strings[] = {"Not Permitted", "Thumb-1", "Thumb-2",
-                                  "Permitted"};
+  static const char *strings[] = {"Not Permitted", "Thumb-1", "Thumb-2", "Permitted"};
   return parseStringAttribute("THUMB_ISA_use", tag, makeArrayRef(strings));
 }
 
@@ -170,14 +142,9 @@ Error ARMAttributeParser::MVE_arch(AttrType tag) {
 }
 
 Error ARMAttributeParser::PCS_config(AttrType tag) {
-  static const char *strings[] = {"None",
-                                  "Bare Platform",
-                                  "Linux Application",
-                                  "Linux DSO",
-                                  "Palm OS 2004",
-                                  "Reserved (Palm OS)",
-                                  "Symbian OS 2004",
-                                  "Reserved (Symbian OS)"};
+  static const char *strings[] = {
+    "None", "Bare Platform", "Linux Application", "Linux DSO", "Palm OS 2004",
+    "Reserved (Palm OS)", "Symbian OS 2004", "Reserved (Symbian OS)"};
   return parseStringAttribute("PCS_config", tag, makeArrayRef(strings));
 }
 
@@ -298,9 +265,9 @@ Error ARMAttributeParser::ABI_WMMX_args(AttrType tag) {
 
 Error ARMAttributeParser::ABI_optimization_goals(AttrType tag) {
   static const char *strings[] = {
-      "None",          "Speed",           "Aggressive Speed",
-      "Size",          "Aggressive Size", "Debugging",
-      "Best Debugging"};
+    "None", "Speed", "Aggressive Speed", "Size", "Aggressive Size", "Debugging",
+    "Best Debugging"
+  };
   return parseStringAttribute("ABI_optimization_goals", tag,
                               makeArrayRef(strings));
 }

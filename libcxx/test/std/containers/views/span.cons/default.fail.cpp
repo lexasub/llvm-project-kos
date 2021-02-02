@@ -15,15 +15,16 @@
 //  Remarks: This constructor shall not participate in overload resolution
 //          unless Extent == 0 || Extent == dynamic_extent is true.
 
+
 #include <span>
 #include <cassert>
 #include <string>
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::span<int, 2>
-      s; // expected-error {{no matching constructor for initialization of 'std::span<int, 2>'}}
+int main(int, char**)
+{
+  std::span<int, 2> s; // expected-error {{no matching constructor for initialization of 'std::span<int, 2>'}}
 
   return 0;
 }

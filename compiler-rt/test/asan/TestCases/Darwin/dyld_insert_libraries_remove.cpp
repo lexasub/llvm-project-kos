@@ -40,6 +40,6 @@ int main() {
   // CHECK-KEEP: {{DYLD_INSERT_LIBRARIES=libclang_rt.asan_osx_dynamic.dylib:dummy-so.dylib}}
   return 0;
 }
-#else // SHARED_LIB
+#else  // SHARED_LIB
 void foo() {}
-#endif // SHARED_LIB
+#endif  // SHARED_LIB

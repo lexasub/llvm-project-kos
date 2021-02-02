@@ -18,50 +18,51 @@
 #include "test_macros.h"
 #include "archetypes.h"
 
-using std::nullopt;
-using std::nullopt_t;
 using std::optional;
+using std::nullopt_t;
+using std::nullopt;
 
-int main(int, char**) {
-  {
-    optional<int> opt;
-    static_assert(noexcept(opt = nullopt) == true, "");
-    opt = nullopt;
-    assert(static_cast<bool>(opt) == false);
-  }
-  {
-    optional<int> opt(3);
-    opt = nullopt;
-    assert(static_cast<bool>(opt) == false);
-  }
-  using TT = TestTypes::TestType;
-  TT::reset();
-  {
-    optional<TT> opt;
-    static_assert(noexcept(opt = nullopt) == true, "");
-    assert(TT::destroyed == 0);
-    opt = nullopt;
-    assert(TT::constructed == 0);
+int main(int, char**)
+{
+    {
+        optional<int> opt;
+        static_assert(noexcept(opt = nullopt) == true, "");
+        opt = nullopt;
+        assert(static_cast<bool>(opt) == false);
+    }
+    {
+        optional<int> opt(3);
+        opt = nullopt;
+        assert(static_cast<bool>(opt) == false);
+    }
+    using TT = TestTypes::TestType;
+    TT::reset();
+    {
+        optional<TT> opt;
+        static_assert(noexcept(opt = nullopt) == true, "");
+        assert(TT::destroyed == 0);
+        opt = nullopt;
+        assert(TT::constructed == 0);
+        assert(TT::alive == 0);
+        assert(TT::destroyed == 0);
+        assert(static_cast<bool>(opt) == false);
+    }
     assert(TT::alive == 0);
     assert(TT::destroyed == 0);
-    assert(static_cast<bool>(opt) == false);
-  }
-  assert(TT::alive == 0);
-  assert(TT::destroyed == 0);
-  TT::reset();
-  {
-    optional<TT> opt(42);
-    assert(TT::destroyed == 0);
-    TT::reset_constructors();
-    opt = nullopt;
-    assert(TT::constructed == 0);
+    TT::reset();
+    {
+        optional<TT> opt(42);
+        assert(TT::destroyed == 0);
+        TT::reset_constructors();
+        opt = nullopt;
+        assert(TT::constructed == 0);
+        assert(TT::alive == 0);
+        assert(TT::destroyed == 1);
+        assert(static_cast<bool>(opt) == false);
+    }
     assert(TT::alive == 0);
     assert(TT::destroyed == 1);
-    assert(static_cast<bool>(opt) == false);
-  }
-  assert(TT::alive == 0);
-  assert(TT::destroyed == 1);
-  TT::reset();
+    TT::reset();
 
   return 0;
 }

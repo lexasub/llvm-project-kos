@@ -1,8 +1,8 @@
-// RUN: %clang_cc1 -triple %itanium_abi_triple -fsyntax-only -Wbind-to-temporary-copy -verify %s
+// RUN: %clang_cc1 -triple %itanium_abi_triple -fsyntax-only -Wbind-to-temporary-copy -verify %s 
 // RUN: %clang_cc1 -triple %itanium_abi_triple -fsyntax-only -Wbind-to-temporary-copy -verify -std=c++98 %s
 // RUN: %clang_cc1 -triple %itanium_abi_triple -fsyntax-only -Wbind-to-temporary-copy -verify -std=c++11 %s
 
-class X {
+class X { 
 public:
   operator bool();
   operator int() const;
@@ -31,31 +31,35 @@ public:
   // expected-error{{conversion function cannot have any parameters}}
 
   operator bool(int a = 4, int b = 6) const; // expected-error{{conversion function cannot have any parameters}}
-
-  operator float(...) const; // expected-error{{conversion function cannot be variadic}}
-
-  operator func_type();  // expected-error{{conversion function cannot convert to a function type}}
+  
+  
+  operator float(...) const;  // expected-error{{conversion function cannot be variadic}}
+  
+  
+  operator func_type(); // expected-error{{conversion function cannot convert to a function type}}
   operator array_type(); // expected-error{{conversion function cannot convert to an array type}}
 };
 
+
 typedef int INT;
-typedef INT *INT_PTR;
+typedef INT* INT_PTR;
 
-class Z {
-  operator int();    // expected-note {{previous declaration is here}}
-  operator int **(); // expected-note {{previous declaration is here}}
-
-  operator INT();       // expected-error{{conversion function cannot be redeclared}}
-  operator INT_PTR *(); // expected-error{{conversion function cannot be redeclared}}
+class Z { 
+  operator int(); // expected-note {{previous declaration is here}}
+  operator int**(); // expected-note {{previous declaration is here}}
+  
+  operator INT();  // expected-error{{conversion function cannot be redeclared}}
+  operator INT_PTR*(); // expected-error{{conversion function cannot be redeclared}}
 };
 
-class A {};
+
+class A { };
 
 class B : public A {
 public:
-  operator A &() const;        // expected-warning{{conversion function converting 'B' to its base class 'A' will never be used}}
+  operator A&() const; // expected-warning{{conversion function converting 'B' to its base class 'A' will never be used}}
   operator const void() const; // expected-warning{{conversion function converting 'B' to 'const void' will never be used}}
-  operator const B();          // expected-warning{{conversion function converting 'B' to itself will never be used}}
+  operator const B(); // expected-warning{{conversion function converting 'B' to itself will never be used}}
 };
 
 class BaseA {};
@@ -80,7 +84,7 @@ class DerivedB : public BaseA {
 struct Flip;
 struct Flop {
   Flop();
-  Flop(const Flip &); // expected-note{{candidate constructor}}
+  Flop(const Flip&); // expected-note{{candidate constructor}}
 };
 struct Flip {
   operator Flop() const; // expected-note{{candidate function}}
@@ -92,52 +96,51 @@ struct C {
   operator const char *() const;
 };
 
-C::operator const char *() const { return 0; }
+C::operator const char*() const { return 0; }
 
-void f(const C &c) {
-  const char *v = c;
+void f(const C& c) {
+  const char* v = c;
 }
 
 // Test. Conversion in base class is visible in derived class.
-class XB {
+class XB { 
 public:
   operator int(); // expected-note {{candidate function}}
 };
 
-class Yb : public XB {
+class Yb : public XB { 
 public:
   operator char(); // expected-note {{candidate function}}
 };
 
-void f(Yb &a) {
-  if (a) {
-  }            // expected-error {{conversion from 'Yb' to 'bool' is ambiguous}}
-  int i = a;   // OK. calls XB::operator int();
-  char ch = a; // OK. calls Yb::operator char();
+void f(Yb& a) {
+  if (a) { } // expected-error {{conversion from 'Yb' to 'bool' is ambiguous}}
+  int i = a; // OK. calls XB::operator int();
+  char ch = a;  // OK. calls Yb::operator char();
 }
 
 // Test conversion + copy construction.
-class AutoPtrRef {};
+class AutoPtrRef { };
 
 class AutoPtr {
   AutoPtr(AutoPtr &); // expected-note{{declared private here}}
-
+  
 public:
   AutoPtr();
   AutoPtr(AutoPtrRef);
-
+  
   operator AutoPtrRef();
 };
 
 AutoPtr make_auto_ptr();
 
 AutoPtr test_auto_ptr(bool Cond) {
-  AutoPtr p1(make_auto_ptr());
-
+  AutoPtr p1( make_auto_ptr() );
+  
   AutoPtr p;
   if (Cond)
     return p; // expected-error{{calling a private constructor}}
-
+  
   return AutoPtr();
 }
 
@@ -146,7 +149,7 @@ struct A1 {
   ~A1();
 
 private:
-  A1(const A1 &); // expected-note 2 {{declared private here}}
+  A1(const A1&); // expected-note 2 {{declared private here}}
 };
 
 A1 f() {
@@ -160,88 +163,90 @@ A1 f() {
 }
 
 namespace source_locations {
-template <typename T>
-struct sneaky_int {
-  typedef int type;
-};
+  template<typename T>
+  struct sneaky_int {
+    typedef int type;
+  };
 
-template <typename T, typename U>
-struct A {};
+  template<typename T, typename U>
+  struct A { };
 
-template <typename T>
-struct A<T, T> : A<T, int> {};
+  template<typename T>
+  struct A<T, T> : A<T, int> { };
 
-struct E {
-  template <typename T>
-  operator A<T, typename sneaky_int<T>::type> &() const; // expected-note{{candidate function}}
-};
+  struct E {
+    template<typename T>
+    operator A<T, typename sneaky_int<T>::type>&() const; // expected-note{{candidate function}}
+  };
 
-void f() {
-  A<float, float> &af = E(); // expected-error{{no viable conversion}}
-  A<float, int> &af2 = E();
-  const A<float, int> &caf2 = E();
+  void f() {
+    A<float, float> &af = E(); // expected-error{{no viable conversion}}
+    A<float, int> &af2 = E();
+    const A<float, int> &caf2 = E();
+  }
+
+  // Check 
+  template<typename T>
+  struct E2 {
+    operator T
+    * // expected-error{{pointer to a reference}}
+    () const;
+  };
+
+  E2<int&> e2i; // expected-note{{in instantiation}}
 }
 
-// Check
-template <typename T>
-struct E2 {
-  operator T * // expected-error{{pointer to a reference}}
-      () const;
-};
-
-E2<int &> e2i; // expected-note{{in instantiation}}
-} // namespace source_locations
-
 namespace crazy_declarators {
-struct A {
-  (&operator bool())(); // expected-error {{use a typedef to declare a conversion to 'bool (&)()'}}
-  *operator int();      // expected-error {{put the complete type after 'operator'}}
-  // No suggestion of using a typedef here; that's not possible.
-  template <typename T> (&operator T())();
+  struct A {
+    (&operator bool())(); // expected-error {{use a typedef to declare a conversion to 'bool (&)()'}}
+    *operator int();  // expected-error {{put the complete type after 'operator'}}
+    // No suggestion of using a typedef here; that's not possible.
+    template<typename T> (&operator T())();
 #if __cplusplus <= 199711L
-  // expected-error-re@-2 {{cannot specify any part of a return type in the declaration of a conversion function{{$}}}}
+    // expected-error-re@-2 {{cannot specify any part of a return type in the declaration of a conversion function{{$}}}}
 #else
-  // expected-error-re@-4 {{cannot specify any part of a return type in the declaration of a conversion function; use an alias template to declare a conversion to 'T (&)()'{{$}}}}
+    // expected-error-re@-4 {{cannot specify any part of a return type in the declaration of a conversion function; use an alias template to declare a conversion to 'T (&)()'{{$}}}}
 #endif
-};
-} // namespace crazy_declarators
+
+  };
+}
 
 namespace smart_ptr {
-class Y {
-  class YRef {};
+  class Y { 
+    class YRef { };
 
-  Y(Y &);
+    Y(Y&);
 
-public:
-  Y();
-  Y(YRef);
+  public:
+    Y();
+    Y(YRef);
 
-  operator YRef(); // expected-note{{candidate function}}
-};
+    operator YRef(); // expected-note{{candidate function}}
+  };
 
-struct X { // expected-note{{candidate constructor (the implicit copy constructor) not}}
+  struct X { // expected-note{{candidate constructor (the implicit copy constructor) not}}
 #if __cplusplus >= 201103L
   // expected-note@-2 {{candidate constructor (the implicit move constructor) not}}
 #endif
 
-  explicit X(Y); // expected-note {{not a candidate}}
-};
+    explicit X(Y); // expected-note {{not a candidate}}
+  };
 
-Y make_Y();
+  Y make_Y();
 
-X f() {
-  X x = make_Y(); // expected-error{{no viable conversion from 'smart_ptr::Y' to 'smart_ptr::X'}}
-  X x2(make_Y());
-  return X(Y());
+  X f() {
+    X x = make_Y(); // expected-error{{no viable conversion from 'smart_ptr::Y' to 'smart_ptr::X'}}
+    X x2(make_Y());
+    return X(Y());
+  }
 }
-} // namespace smart_ptr
 
 struct Any {
   Any(...);
 };
 
 struct Other {
-  Other(const Other &);
+  Other(const Other &); 
   Other();
 };
 
@@ -255,211 +260,215 @@ void test_any() {
 }
 
 namespace PR7055 {
-// Make sure that we don't allow too many conversions in an
-// auto_ptr-like template. In particular, we can't create multiple
-// temporary objects when binding to a reference.
-struct auto_ptr {
-  struct auto_ptr_ref {};
+  // Make sure that we don't allow too many conversions in an
+  // auto_ptr-like template. In particular, we can't create multiple
+  // temporary objects when binding to a reference.
+  struct auto_ptr {
+    struct auto_ptr_ref { };
 
-  auto_ptr(auto_ptr &);
-  auto_ptr(auto_ptr_ref);
-  explicit auto_ptr(int *);
+    auto_ptr(auto_ptr&);
+    auto_ptr(auto_ptr_ref);
+    explicit auto_ptr(int *);
 
-  operator auto_ptr_ref();
-};
+    operator auto_ptr_ref();
+  };
 
-struct X {
-  X(auto_ptr);
-};
+  struct X {
+    X(auto_ptr);
+  };
 
-X f() {
-  X x(auto_ptr(new int));
-  return X(auto_ptr(new int));
+  X f() {
+    X x(auto_ptr(new int));
+    return X(auto_ptr(new int));
+  }
+
+  auto_ptr foo();
+
+  X e(foo());
+
+  struct Y {
+    Y(X);
+  };
+  
+  Y f2(foo());
 }
-
-auto_ptr foo();
-
-X e(foo());
-
-struct Y {
-  Y(X);
-};
-
-Y f2(foo());
-} // namespace PR7055
 
 namespace PR7934 {
-typedef unsigned char uint8;
+  typedef unsigned char uint8;
 
-struct MutablePtr {
-  MutablePtr() : ptr(0) {}
-  void *ptr;
+  struct MutablePtr {
+    MutablePtr() : ptr(0) {}
+    void *ptr;
 
-  operator void *() { return ptr; }
+    operator void*() { return ptr; }
 
-private:
-  operator uint8 *() { return reinterpret_cast<uint8 *>(ptr); }
-  operator const char *() const { return reinterpret_cast<const char *>(ptr); }
-};
+  private:
+    operator uint8*() { return reinterpret_cast<uint8*>(ptr); }
+    operator const char*() const { return reinterpret_cast<const char*>(ptr); }
+  };
 
-void fake_memcpy(const void *);
+  void fake_memcpy(const void *);
 
-void use() {
-  MutablePtr ptr;
-  fake_memcpy(ptr);
+  void use() {
+    MutablePtr ptr;
+    fake_memcpy(ptr);
+  }
 }
-} // namespace PR7934
 
 namespace rdar8018274 {
-struct X {};
-struct Y {
-  operator const struct X *() const;
-};
+  struct X { };
+  struct Y {
+    operator const struct X *() const;
+  };
 
-struct Z : Y {
-  operator struct X *();
-};
+  struct Z : Y {
+    operator struct X * ();
+  };
 
-void test() {
-  Z x;
-  (void)(x != __null);
+  void test() {
+    Z x;
+    (void) (x != __null);
+  }
+
+
+  struct Base {
+    operator int();
+  };
+
+  struct Derived1 : Base { };
+
+  struct Derived2 : Base { };
+
+  struct SuperDerived : Derived1, Derived2 { 
+    using Derived1::operator int;
+  };
+
+  struct UeberDerived : SuperDerived {
+    operator long();
+  };
+
+  void test2(UeberDerived ud) {
+    int i = ud; // expected-error{{ambiguous conversion from derived class 'rdar8018274::UeberDerived' to base class 'rdar8018274::Base'}}
+  }
+
+  struct Base2 {
+    operator int();
+  };
+
+  struct Base3 {
+    operator int();
+  };
+
+  struct Derived23 : Base2, Base3 { 
+    using Base2::operator int;
+  };
+
+  struct ExtraDerived23 : Derived23 { };
+
+  void test3(ExtraDerived23 ed) {
+    int i = ed;
+  }
 }
-
-struct Base {
-  operator int();
-};
-
-struct Derived1 : Base {};
-
-struct Derived2 : Base {};
-
-struct SuperDerived : Derived1, Derived2 {
-  using Derived1::operator int;
-};
-
-struct UeberDerived : SuperDerived {
-  operator long();
-};
-
-void test2(UeberDerived ud) {
-  int i = ud; // expected-error{{ambiguous conversion from derived class 'rdar8018274::UeberDerived' to base class 'rdar8018274::Base'}}
-}
-
-struct Base2 {
-  operator int();
-};
-
-struct Base3 {
-  operator int();
-};
-
-struct Derived23 : Base2, Base3 {
-  using Base2::operator int;
-};
-
-struct ExtraDerived23 : Derived23 {};
-
-void test3(ExtraDerived23 ed) {
-  int i = ed;
-}
-} // namespace rdar8018274
 
 namespace PR8065 {
-template <typename T> struct Iterator;
-template <typename T> struct Container;
+  template <typename T> struct Iterator;
+  template <typename T> struct Container;
 
-template <>
-struct Iterator<int> {
-  typedef Container<int> container_type;
-};
+  template<>
+  struct Iterator<int> {
+    typedef Container<int> container_type;
+  };
 
-template <typename T>
-struct Container {
-  typedef typename Iterator<T>::container_type X;
-  operator X(void) { return X(); }
-};
+  template <typename T>
+  struct Container {
+    typedef typename Iterator<T>::container_type X;
+    operator X(void) { return X(); }
+  };
 
-Container<int> test;
-} // namespace PR8065
+  Container<int> test;
+}
 
 namespace PR8034 {
-struct C {
-  operator int();
+  struct C {
+    operator int();
 
-private:
-  template <typename T> operator T();
-};
-int x = C().operator int();
-} // namespace PR8034
+  private:
+    template <typename T> operator T();
+  };
+  int x = C().operator int();
+}
 
 namespace PR9336 {
-template <class T>
-struct generic_list {
-  template <class Container>
-  operator Container() {
-    Container ar;
-    T *i;
-    ar[0] = *i;
-    return ar;
-  }
-};
+  template<class T>
+  struct generic_list
+  {
+    template<class Container>
+    operator Container()
+    { 
+      Container ar;
+      T* i;
+      ar[0]=*i;
+      return ar;
+    }
+  };
 
-template <class T>
-struct array {
-  T &operator[](int);
-  const T &operator[](int) const;
-};
+  template<class T>
+  struct array
+  {
+    T& operator[](int);
+    const T& operator[](int)const;
+  };
 
-generic_list<generic_list<int>> l;
-array<array<int>> a = l;
-} // namespace PR9336
+  generic_list<generic_list<int> > l;
+  array<array<int> > a = l;
+}
 
 namespace PR8800 {
-struct A;
-struct C {
-  operator A &();
-};
-void f() {
-  C c;
-  A &a1(c);
-  A &a2 = c;
-  A &a3 = static_cast<A &>(c);
-  A &a4 = (A &)c;
+  struct A;
+  struct C {
+    operator A&();
+  };
+  void f() {
+    C c;
+    A& a1(c);
+    A& a2 = c;
+    A& a3 = static_cast<A&>(c);
+    A& a4 = (A&)c;
+  }
 }
-} // namespace PR8800
 
 namespace PR12712 {
-struct A {};
-struct B {
-  operator A();
-  operator A() const;
-};
-struct C : B {};
+  struct A {};
+  struct B {
+    operator A();
+    operator A() const;
+  };
+  struct C : B {};
 
-A f(const C c) { return c; }
-} // namespace PR12712
+  A f(const C c) { return c; }
+}
 
 namespace PR18234 {
-struct A {
-  operator enum E { e }();        // expected-error {{'PR18234::A::E' cannot be defined in a type specifier}}
-  operator struct S { int n; }(); // expected-error {{'PR18234::A::S' cannot be defined in a type specifier}}
-                                  // expected-note@-1 {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'struct A' to 'const PR18234::A::S &' for 1st argument}}
+  struct A {
+    operator enum E { e } (); // expected-error {{'PR18234::A::E' cannot be defined in a type specifier}}
+    operator struct S { int n; } (); // expected-error {{'PR18234::A::S' cannot be defined in a type specifier}}
+    // expected-note@-1 {{candidate constructor (the implicit copy constructor) not viable: no known conversion from 'struct A' to 'const PR18234::A::S &' for 1st argument}}
 #if __cplusplus >= 201103L
   // expected-note@-3 {{candidate constructor (the implicit move constructor) not viable: no known conversion from 'struct A' to 'PR18234::A::S &&' for 1st argument}}
 #endif
-} a;
-A::S s = a; // expected-error {{no viable conversion from 'struct A' to 'A::S'}}
-A::E e = a;
-bool k1 = e == A::e; // expected-error {{no member named 'e'}}
-bool k2 = e.n == 0;
-} // namespace PR18234
+  } a;
+  A::S s = a; // expected-error {{no viable conversion from 'struct A' to 'A::S'}}
+  A::E e = a;
+  bool k1 = e == A::e; // expected-error {{no member named 'e'}}
+  bool k2 = e.n == 0;
+}
 
 namespace PR30595 {
 struct S {
-  const operator int();          // expected-error {{cannot specify any part of a return type in the declaration of a conversion function; put the complete type after 'operator'}}
-  const operator int() const;    // expected-error {{cannot specify any part of a return type}}
+  const operator int(); // expected-error {{cannot specify any part of a return type in the declaration of a conversion function; put the complete type after 'operator'}}
+  const operator int() const; // expected-error {{cannot specify any part of a return type}}
   volatile const operator int(); // expected-error {{cannot specify any part of a return type}}
 
   operator const int() const;
 };
-} // namespace PR30595
+}

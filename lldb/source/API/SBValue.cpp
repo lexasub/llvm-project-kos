@@ -230,8 +230,8 @@ SBValue::SBValue(const SBValue &rhs) {
 }
 
 SBValue &SBValue::operator=(const SBValue &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBValue &, SBValue, operator=,
-                     (const lldb::SBValue &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBValue &,
+                     SBValue, operator=,(const lldb::SBValue &), rhs);
 
   if (this != &rhs) {
     SetSP(rhs.m_opaque_sp);
@@ -1213,9 +1213,11 @@ lldb::SBValue SBValue::EvaluateExpression(const char *expr,
       (const char *, const lldb::SBExpressionOptions &, const char *), expr,
       options, name);
 
+
   if (!expr || expr[0] == '\0') {
     return LLDB_RECORD_RESULT(SBValue());
   }
+
 
   ValueLocker locker;
   lldb::ValueObjectSP value_sp(GetSP(locker));
@@ -1544,12 +1546,13 @@ lldb::SBValue SBValue::Persist() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBValue>(Registry &R) {
+template <>
+void RegisterMethods<SBValue>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBValue, ());
   LLDB_REGISTER_CONSTRUCTOR(SBValue, (const lldb::ValueObjectSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBValue, (const lldb::SBValue &));
-  LLDB_REGISTER_METHOD(lldb::SBValue &, SBValue, operator=,
-                       (const lldb::SBValue &));
+  LLDB_REGISTER_METHOD(lldb::SBValue &,
+                       SBValue, operator=,(const lldb::SBValue &));
   LLDB_REGISTER_METHOD(bool, SBValue, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBValue, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBValue, Clear, ());
@@ -1636,8 +1639,9 @@ template <> void RegisterMethods<SBValue>(Registry &R) {
                        (lldb::SBStream &, bool));
   LLDB_REGISTER_METHOD_CONST(lldb::SBValue, SBValue, EvaluateExpression,
                              (const char *));
-  LLDB_REGISTER_METHOD_CONST(lldb::SBValue, SBValue, EvaluateExpression,
-                             (const char *, const lldb::SBExpressionOptions &));
+  LLDB_REGISTER_METHOD_CONST(
+      lldb::SBValue, SBValue, EvaluateExpression,
+      (const char *, const lldb::SBExpressionOptions &));
   LLDB_REGISTER_METHOD_CONST(
       lldb::SBValue, SBValue, EvaluateExpression,
       (const char *, const lldb::SBExpressionOptions &, const char *));
@@ -1655,11 +1659,12 @@ template <> void RegisterMethods<SBValue>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBDeclaration, SBValue, GetDeclaration, ());
   LLDB_REGISTER_METHOD(lldb::SBWatchpoint, SBValue, Watch,
                        (bool, bool, bool, lldb::SBError &));
-  LLDB_REGISTER_METHOD(lldb::SBWatchpoint, SBValue, Watch, (bool, bool, bool));
+  LLDB_REGISTER_METHOD(lldb::SBWatchpoint, SBValue, Watch,
+                       (bool, bool, bool));
   LLDB_REGISTER_METHOD(lldb::SBWatchpoint, SBValue, WatchPointee,
                        (bool, bool, bool, lldb::SBError &));
   LLDB_REGISTER_METHOD(lldb::SBValue, SBValue, Persist, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

@@ -8,7 +8,7 @@
 #define GIMME_AN_L
 #include "l.h" // expected-error {{module XG does not depend on a module exporting 'l.h'}}
 
-#include "m2.h"      // expected-error {{module XG does not depend on a module exporting 'm2.h'}}
+#include "m2.h" // expected-error {{module XG does not depend on a module exporting 'm2.h'}}
 const int use_m = m; // expected-error {{undeclared identifier}}
 
 #define GIMME_AN_M

@@ -15,17 +15,22 @@
 
 #include <cassert>
 
-int main(int, char**) {
-  typedef char Array[4];
-  Array a = {'H', 'i', '!', 0};
-  try {
-    throw a; // converts to char*
-    assert(false);
-  } catch (Array& b) // can't catch char*
-  {
-    assert(false);
-  } catch (...) {
-  }
+int main(int, char**)
+{
+    typedef char Array[4];
+    Array a = {'H', 'i', '!', 0};
+    try
+    {
+        throw a;  // converts to char*
+        assert(false);
+    }
+    catch (Array& b)  // can't catch char*
+    {
+        assert(false);
+    }
+    catch (...)
+    {
+    }
 
-  return 0;
+    return 0;
 }

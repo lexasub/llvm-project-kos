@@ -21,10 +21,11 @@
 
 #include "test_macros.h"
 
-double binary_f(int i, short j) { return i - j + .75; }
+double binary_f(int i, short j) {return i - j + .75;}
 
-int main(int, char**) {
-  assert(std::ptr_fun(binary_f)(36, 27) == 9.75);
+int main(int, char**)
+{
+    assert(std::ptr_fun(binary_f)(36, 27) == 9.75);
 
   return 0;
 }

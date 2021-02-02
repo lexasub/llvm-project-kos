@@ -4,17 +4,17 @@
 // expected-no-diagnostics
 
 // Test default template arguments for function templates.
-template <typename T = int>
+template<typename T = int>
 void f0();
 
-template <typename T>
+template<typename T>
 void f0();
 
 void g0() {
   f0(); // okay!
-}
+} 
 
-template <typename T, int N = T::value>
+template<typename T, int N = T::value>
 int &f1(T);
 
 float &f1(...);
@@ -29,66 +29,66 @@ void g1() {
 }
 
 namespace PR16689 {
-template <typename T1, typename T2> class tuple {
-public:
-  template <typename = T2>
-  constexpr tuple() {}
-};
-template <class X, class... Y> struct a : public X {
-  using X::X;
-};
-auto x = a<tuple<int, int>>();
-} // namespace PR16689
+  template <typename T1, typename T2> class tuple {
+  public:
+      template <typename = T2>
+      constexpr tuple() {}
+  };
+  template <class X, class... Y> struct a : public X {
+    using X::X;
+  };
+  auto x = a<tuple<int, int> >();
+}
 
 namespace PR16975 {
-template <typename...> struct is {
-  constexpr operator bool() const { return false; }
-};
+  template <typename...> struct is {
+    constexpr operator bool() const { return false; }
+  };
 
-template <typename... Types>
-struct bar {
-  template <typename T,
-            bool = is<Types...>()>
-  bar(T);
-};
+  template <typename... Types>
+  struct bar {
+    template <typename T,
+              bool = is<Types...>()>
+    bar(T);
+  };
 
-bar<> foo{0};
+  bar<> foo{0};
 
-struct baz : public bar<> {
-  using bar::bar;
-};
+  struct baz : public bar<> {
+    using bar::bar;
+  };
 
-baz data{0};
-} // namespace PR16975
+  baz data{0};
+}
 
 // rdar://23810407
 // An IRGen failure due to a symbol collision due to a default argument
 // being instantiated twice.  Credit goes to Richard Smith for this
 // reduction to a -fsyntax-only failure.
 namespace rdar23810407 {
-// Instantiating the default argument multiple times will produce two
-// different lambda types and thus instantiate this function multiple
-// times, which will produce conflicting extern variable declarations.
-template <typename T> int f(T t) {
-  extern T rdar23810407_variable;
-  return 0;
+  // Instantiating the default argument multiple times will produce two
+  // different lambda types and thus instantiate this function multiple
+  // times, which will produce conflicting extern variable declarations.
+  template<typename T> int f(T t) {
+    extern T rdar23810407_variable;
+    return 0;
+  }
+  template<typename T> int g(int a = f([] {}));
+  void test() {
+    g<int>();
+    g<int>();
+  }
 }
-template <typename T> int g(int a = f([] {}));
-void test() {
-  g<int>();
-  g<int>();
-}
-} // namespace rdar23810407
 
 // rdar://problem/24480205
 namespace PR13986 {
-constexpr unsigned Dynamic = 0;
-template <unsigned> class A { template <unsigned = Dynamic> void m_fn1(); };
-class Test {
-  ~Test() {}
-  A<1> m_target;
-};
-} // namespace PR13986
+  constexpr unsigned Dynamic = 0;
+  template <unsigned> class A { template <unsigned = Dynamic> void m_fn1(); };
+  class Test {
+    ~Test() {}
+    A<1> m_target;
+  };
+}
 
 // rdar://problem/34167492
 // Template B is instantiated during checking if defaulted A copy constructor
@@ -101,68 +101,64 @@ class Test {
 // initializer for the field _a. But initializers are added after constexpr
 // check so we reject the code because cannot find _a initializer.
 namespace rdar34167492 {
-template <typename T> struct B { using type = bool; };
+  template <typename T> struct B { using type = bool; };
 
-template <typename T> struct S {
-  S()
-  noexcept;
+  template <typename T> struct S {
+    S() noexcept;
 
-  template <typename U, typename B<U>::type = true>
-  S(const S<U> &)
-  noexcept;
-};
+    template <typename U, typename B<U>::type = true>
+    S(const S<U>&) noexcept;
+  };
 
-class A {
-  A()
-  noexcept = default;
-  A(const A &)
-  noexcept = default;
-  S<int> _a{};
-};
-} // namespace rdar34167492
+  class A {
+    A() noexcept = default;
+    A(const A&) noexcept = default;
+    S<int> _a{};
+  };
+}
 
 namespace use_of_earlier_param {
-template <typename T> void f(T a, int = decltype(a)());
-void g() { f(0); }
-} // namespace use_of_earlier_param
+  template<typename T> void f(T a, int = decltype(a)());
+  void g() { f(0); }
+}
 
 #if __cplusplus >= 201402L
 namespace lambda {
-// Verify that a default argument in a lambda can refer to the type of a
-// previous `auto` argument without crashing.
-template <class T>
-void bar() {
-  (void)[](auto c, int x = sizeof(decltype(c))){};
-}
-void foo() {
-  bar<int>();
-}
+  // Verify that a default argument in a lambda can refer to the type of a
+  // previous `auto` argument without crashing.
+  template <class T>
+  void bar() {
+    (void) [](auto c, int x = sizeof(decltype(c))) {};
+  }
+  void foo() {
+    bar<int>();
+  }
 
 #if __cplusplus >= 202002L
-// PR46648: ensure we don't reject this by triggering default argument
-// instantiation spuriously.
-auto x = []<typename T>(T x = 123) {};
-void y() { x(nullptr); }
+  // PR46648: ensure we don't reject this by triggering default argument
+  // instantiation spuriously.
+  auto x = []<typename T>(T x = 123) {};
+  void y() { x(nullptr); }
 
-template <int A> struct X {
-  template <int B> constexpr int f() {
-    auto l = []<int C>(int n = A + B + C) { return n; };
-    return l.template operator()<3>();
+  template<int A> struct X {
+    template<int B> constexpr int f() {
+      auto l = []<int C>(int n = A + B + C) { return n; };
+      return l.template operator()<3>();
+    }
+  };
+  static_assert(X<100>().f<20>() == 123);
+
+  template<> template<int B> constexpr int X<200>::f() {
+    auto l = []<int C>(int n = 300 + B + C) { return n; };
+    return l.template operator()<1>();
   }
-};
-static_assert(X<100>().f<20>() == 123);
+  static_assert(X<200>().f<20>() == 321);
 
-template <> template <int B> constexpr int X<200>::f() {
-  auto l = []<int C>(int n = 300 + B + C) { return n; };
-  return l.template operator()<1>();
-}
-static_assert(X<200>().f<20>() == 321);
-
-template <> template <> constexpr int X<300>::f<20>() {
-  auto l = []<int C>(int n = 450 + C) { return n; };
-  return l.template operator()<6>();
-}
-static_assert(X<300>().f<20>() == 456);
+  template<> template<> constexpr int X<300>::f<20>() {
+    auto l = []<int C>(int n = 450 + C) { return n; };
+    return l.template operator()<6>();
+  }
+  static_assert(X<300>().f<20>() == 456);
 #endif
 } // namespace lambda
 #endif

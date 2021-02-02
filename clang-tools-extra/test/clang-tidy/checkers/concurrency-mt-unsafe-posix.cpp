@@ -1,9 +1,9 @@
 // RUN: %check_clang_tidy %s concurrency-mt-unsafe %t -- -config='{CheckOptions: [{key: "concurrency-mt-unsafe.FunctionSet", value: "posix"}]}'
 
-extern unsigned int sleep(unsigned int __seconds);
-extern int *gmtime(const int *__timer);
-extern int *gmtime_r(const int *__timer, char *);
-extern char *dirname(char *__path);
+extern unsigned int sleep (unsigned int __seconds);
+extern int *gmtime (const int *__timer);
+extern int *gmtime_r (const int *__timer, char*);
+extern char *dirname (char *__path);
 
 void foo() {
   sleep(2);

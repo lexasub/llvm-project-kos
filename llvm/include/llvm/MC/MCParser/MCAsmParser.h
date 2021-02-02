@@ -35,10 +35,10 @@ class SourceMgr;
 
 struct InlineAsmIdentifierInfo {
   enum IdKind {
-    IK_Invalid, // Initial state. Unexpected after a successful parsing.
-    IK_Label,   // Function/Label reference.
-    IK_EnumVal, // Value of enumeration type.
-    IK_Var      // Variable.
+    IK_Invalid,  // Initial state. Unexpected after a successful parsing.
+    IK_Label,    // Function/Label reference.
+    IK_EnumVal,  // Value of enumeration type.
+    IK_Var       // Variable.
   };
   // Represents an Enum value
   struct EnumIdentifier {
@@ -122,9 +122,9 @@ public:
 /// assembly parsers.
 class MCAsmParser {
 public:
-  using DirectiveHandler = bool (*)(MCAsmParserExtension *, StringRef, SMLoc);
+  using DirectiveHandler = bool (*)(MCAsmParserExtension*, StringRef, SMLoc);
   using ExtensionDirectiveHandler =
-      std::pair<MCAsmParserExtension *, DirectiveHandler>;
+      std::pair<MCAsmParserExtension*, DirectiveHandler>;
 
   struct MCPendingError {
     SMLoc Loc;
@@ -159,7 +159,7 @@ public:
 
   virtual MCAsmLexer &getLexer() = 0;
   const MCAsmLexer &getLexer() const {
-    return const_cast<MCAsmParser *>(this)->getLexer();
+    return const_cast<MCAsmParser*>(this)->getLexer();
   }
 
   virtual MCContext &getContext() = 0;
@@ -170,8 +170,8 @@ public:
   MCTargetAsmParser &getTargetParser() const { return *TargetParser; }
   void setTargetParser(MCTargetAsmParser &P);
 
-  virtual unsigned getAssemblerDialect() { return 0; }
-  virtual void setAssemblerDialect(unsigned i) {}
+  virtual unsigned getAssemblerDialect() { return 0;}
+  virtual void setAssemblerDialect(unsigned i) { }
 
   bool getShowParsedOperands() const { return ShowParsedOperands; }
   void setShowParsedOperands(bool Value) { ShowParsedOperands = Value; }

@@ -19,15 +19,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::poisson_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p0(.7);
-    param_type p;
-    p = p0;
-    assert(p.mean() == .7);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::poisson_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p0(.7);
+        param_type p;
+        p = p0;
+        assert(p.mean() == .7);
+    }
 
   return 0;
 }

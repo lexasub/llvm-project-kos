@@ -5,7 +5,7 @@
 
 void *Thread2(void *a) {
   barrier_wait(&barrier);
-  *(int *)a = 43;
+  *(int*)a = 43;
   return 0;
 }
 

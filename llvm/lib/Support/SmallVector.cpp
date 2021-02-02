@@ -25,7 +25,7 @@ struct Struct16B {
 struct Struct32B {
   alignas(32) void *X;
 };
-} // namespace
+}
 static_assert(sizeof(SmallVector<void *, 0>) ==
                   sizeof(unsigned) * 2 + sizeof(void *),
               "wasted space in SmallVector size 0");

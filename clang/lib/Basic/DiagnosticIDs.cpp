@@ -69,7 +69,7 @@ const StaticDiagInfoDescriptionStringTable StaticDiagInfoDescriptions = {
 #include "clang/Basic/DiagnosticSemaKinds.inc"
 #include "clang/Basic/DiagnosticAnalysisKinds.inc"
 #include "clang/Basic/DiagnosticRefactoringKinds.inc"
-// clang-format on
+  // clang-format on
 #undef DIAG
 };
 
@@ -94,17 +94,17 @@ const uint32_t StaticDiagInfoDescriptionOffsets[] = {
 #include "clang/Basic/DiagnosticSemaKinds.inc"
 #include "clang/Basic/DiagnosticAnalysisKinds.inc"
 #include "clang/Basic/DiagnosticRefactoringKinds.inc"
-// clang-format on
+  // clang-format on
 #undef DIAG
 };
 
 // Diagnostic classes.
 enum {
-  CLASS_NOTE = 0x01,
-  CLASS_REMARK = 0x02,
-  CLASS_WARNING = 0x03,
-  CLASS_EXTENSION = 0x04,
-  CLASS_ERROR = 0x05
+  CLASS_NOTE       = 0x01,
+  CLASS_REMARK     = 0x02,
+  CLASS_WARNING    = 0x03,
+  CLASS_EXTENSION  = 0x04,
+  CLASS_ERROR      = 0x05
 };
 
 struct StaticDiagInfoRec {
@@ -121,13 +121,14 @@ struct StaticDiagInfoRec {
 
   uint16_t DescriptionLen;
 
-  unsigned getOptionGroupIndex() const { return OptionGroupIndex; }
+  unsigned getOptionGroupIndex() const {
+    return OptionGroupIndex;
+  }
 
   StringRef getDescription() const {
     size_t MyIndex = this - &StaticDiagInfo[0];
     uint32_t StringOffset = StaticDiagInfoDescriptionOffsets[MyIndex];
-    const char *Table =
-        reinterpret_cast<const char *>(&StaticDiagInfoDescriptions);
+    const char* Table = reinterpret_cast<const char*>(&StaticDiagInfoDescriptions);
     return StringRef(&Table[StringOffset], DescriptionLen);
   }
 
@@ -168,10 +169,18 @@ VALIDATE_DIAG_SIZE(REFACTORING)
 
 const StaticDiagInfoRec StaticDiagInfo[] = {
 #define DIAG(ENUM, CLASS, DEFAULT_SEVERITY, DESC, GROUP, SFINAE, NOWERROR,     \
-             SHOWINSYSHEADER, DEFERRABLE, CATEGORY)                            \
-  {diag::ENUM, DEFAULT_SEVERITY,        CLASS,      DiagnosticIDs::SFINAE,     \
-   NOWERROR,   SHOWINSYSHEADER,         DEFERRABLE, CATEGORY,                  \
-   GROUP,      STR_SIZE(DESC, uint16_t)},
+             SHOWINSYSHEADER, DEFERRABLE, CATEGORY)                         \
+  {                                                                            \
+      diag::ENUM,                                                              \
+      DEFAULT_SEVERITY,                                                        \
+      CLASS,                                                                   \
+      DiagnosticIDs::SFINAE,                                                   \
+      NOWERROR,                                                                \
+      SHOWINSYSHEADER,                                                         \
+	  DEFERRABLE,                                                          \
+      CATEGORY,                                                                \
+      GROUP,                                                                   \
+      STR_SIZE(DESC, uint16_t)},
 // clang-format off
 #include "clang/Basic/DiagnosticCommonKinds.inc"
 #include "clang/Basic/DiagnosticDriverKinds.inc"
@@ -185,7 +194,7 @@ const StaticDiagInfoRec StaticDiagInfo[] = {
 #include "clang/Basic/DiagnosticSemaKinds.inc"
 #include "clang/Basic/DiagnosticAnalysisKinds.inc"
 #include "clang/Basic/DiagnosticRefactoringKinds.inc"
-// clang-format on
+  // clang-format on
 #undef DIAG
 };
 
@@ -211,22 +220,22 @@ static const StaticDiagInfoRec *GetDiagInfo(unsigned DiagID) {
   // memory at all.
   unsigned Offset = 0;
   unsigned ID = DiagID - DIAG_START_COMMON - 1;
-#define CATEGORY(NAME, PREV)                                                   \
-  if (DiagID > DIAG_START_##NAME) {                                            \
-    Offset += NUM_BUILTIN_##PREV##_DIAGNOSTICS - DIAG_START_##PREV - 1;        \
-    ID -= DIAG_START_##NAME - DIAG_START_##PREV;                               \
+#define CATEGORY(NAME, PREV) \
+  if (DiagID > DIAG_START_##NAME) { \
+    Offset += NUM_BUILTIN_##PREV##_DIAGNOSTICS - DIAG_START_##PREV - 1; \
+    ID -= DIAG_START_##NAME - DIAG_START_##PREV; \
   }
-  CATEGORY(DRIVER, COMMON)
-  CATEGORY(FRONTEND, DRIVER)
-  CATEGORY(SERIALIZATION, FRONTEND)
-  CATEGORY(LEX, SERIALIZATION)
-  CATEGORY(PARSE, LEX)
-  CATEGORY(AST, PARSE)
-  CATEGORY(COMMENT, AST)
-  CATEGORY(CROSSTU, COMMENT)
-  CATEGORY(SEMA, CROSSTU)
-  CATEGORY(ANALYSIS, SEMA)
-  CATEGORY(REFACTORING, ANALYSIS)
+CATEGORY(DRIVER, COMMON)
+CATEGORY(FRONTEND, DRIVER)
+CATEGORY(SERIALIZATION, FRONTEND)
+CATEGORY(LEX, SERIALIZATION)
+CATEGORY(PARSE, LEX)
+CATEGORY(AST, PARSE)
+CATEGORY(COMMENT, AST)
+CATEGORY(CROSSTU, COMMENT)
+CATEGORY(SEMA, CROSSTU)
+CATEGORY(ANALYSIS, SEMA)
+CATEGORY(REFACTORING, ANALYSIS)
 #undef CATEGORY
 
   // Avoid out of bounds reads.
@@ -270,14 +279,16 @@ unsigned DiagnosticIDs::getCategoryNumberForDiag(unsigned DiagID) {
 }
 
 namespace {
-// The diagnostic category names.
-struct StaticDiagCategoryRec {
-  const char *NameStr;
-  uint8_t NameLen;
+  // The diagnostic category names.
+  struct StaticDiagCategoryRec {
+    const char *NameStr;
+    uint8_t NameLen;
 
-  StringRef getName() const { return StringRef(NameStr, NameLen); }
-};
-} // namespace
+    StringRef getName() const {
+      return StringRef(NameStr, NameLen);
+    }
+  };
+}
 
 // Unfortunately, the split between DiagnosticIDs and Diagnostic is not
 // particularly clean, but for now we just implement this method here so we can
@@ -296,10 +307,11 @@ DiagnosticsEngine::DiagState::getOrAddMapping(diag::kind Diag) {
 
 static const StaticDiagCategoryRec CategoryNameTable[] = {
 #define GET_CATEGORY_TABLE
-#define CATEGORY(X, ENUM) {X, STR_SIZE(X, uint8_t)},
+#define CATEGORY(X, ENUM) { X, STR_SIZE(X, uint8_t) },
 #include "clang/Basic/DiagnosticGroups.inc"
 #undef GET_CATEGORY_TABLE
-    {nullptr, 0}};
+  { nullptr, 0 }
+};
 
 /// getNumberOfCategories - Return the number of categories
 unsigned DiagnosticIDs::getNumberOfCategories() {
@@ -311,9 +323,11 @@ unsigned DiagnosticIDs::getNumberOfCategories() {
 /// invalid.
 StringRef DiagnosticIDs::getCategoryNameFromID(unsigned CategoryID) {
   if (CategoryID >= getNumberOfCategories())
-    return StringRef();
+   return StringRef();
   return CategoryNameTable[CategoryID].getName();
 }
+
+
 
 DiagnosticIDs::SFINAEResponse
 DiagnosticIDs::getDiagnosticSFINAEResponse(unsigned DiagID) {
@@ -341,46 +355,47 @@ static unsigned getBuiltinDiagClass(unsigned DiagID) {
 //===----------------------------------------------------------------------===//
 
 namespace clang {
-namespace diag {
-class CustomDiagInfo {
-  typedef std::pair<DiagnosticIDs::Level, std::string> DiagDesc;
-  std::vector<DiagDesc> DiagInfo;
-  std::map<DiagDesc, unsigned> DiagIDs;
+  namespace diag {
+    class CustomDiagInfo {
+      typedef std::pair<DiagnosticIDs::Level, std::string> DiagDesc;
+      std::vector<DiagDesc> DiagInfo;
+      std::map<DiagDesc, unsigned> DiagIDs;
+    public:
 
-public:
-  /// getDescription - Return the description of the specified custom
-  /// diagnostic.
-  StringRef getDescription(unsigned DiagID) const {
-    assert(DiagID - DIAG_UPPER_LIMIT < DiagInfo.size() &&
-           "Invalid diagnostic ID");
-    return DiagInfo[DiagID - DIAG_UPPER_LIMIT].second;
-  }
+      /// getDescription - Return the description of the specified custom
+      /// diagnostic.
+      StringRef getDescription(unsigned DiagID) const {
+        assert(DiagID - DIAG_UPPER_LIMIT < DiagInfo.size() &&
+               "Invalid diagnostic ID");
+        return DiagInfo[DiagID-DIAG_UPPER_LIMIT].second;
+      }
 
-  /// getLevel - Return the level of the specified custom diagnostic.
-  DiagnosticIDs::Level getLevel(unsigned DiagID) const {
-    assert(DiagID - DIAG_UPPER_LIMIT < DiagInfo.size() &&
-           "Invalid diagnostic ID");
-    return DiagInfo[DiagID - DIAG_UPPER_LIMIT].first;
-  }
+      /// getLevel - Return the level of the specified custom diagnostic.
+      DiagnosticIDs::Level getLevel(unsigned DiagID) const {
+        assert(DiagID - DIAG_UPPER_LIMIT < DiagInfo.size() &&
+               "Invalid diagnostic ID");
+        return DiagInfo[DiagID-DIAG_UPPER_LIMIT].first;
+      }
 
-  unsigned getOrCreateDiagID(DiagnosticIDs::Level L, StringRef Message,
-                             DiagnosticIDs &Diags) {
-    DiagDesc D(L, std::string(Message));
-    // Check to see if it already exists.
-    std::map<DiagDesc, unsigned>::iterator I = DiagIDs.lower_bound(D);
-    if (I != DiagIDs.end() && I->first == D)
-      return I->second;
+      unsigned getOrCreateDiagID(DiagnosticIDs::Level L, StringRef Message,
+                                 DiagnosticIDs &Diags) {
+        DiagDesc D(L, std::string(Message));
+        // Check to see if it already exists.
+        std::map<DiagDesc, unsigned>::iterator I = DiagIDs.lower_bound(D);
+        if (I != DiagIDs.end() && I->first == D)
+          return I->second;
 
-    // If not, assign a new ID.
-    unsigned ID = DiagInfo.size() + DIAG_UPPER_LIMIT;
-    DiagIDs.insert(std::make_pair(D, ID));
-    DiagInfo.push_back(D);
-    return ID;
-  }
-};
+        // If not, assign a new ID.
+        unsigned ID = DiagInfo.size()+DIAG_UPPER_LIMIT;
+        DiagIDs.insert(std::make_pair(D, ID));
+        DiagInfo.push_back(D);
+        return ID;
+      }
+    };
 
-} // namespace diag
-} // namespace clang
+  } // end diag namespace
+} // end clang namespace
+
 
 //===----------------------------------------------------------------------===//
 // Common Diagnostic implementation
@@ -402,6 +417,7 @@ unsigned DiagnosticIDs::getCustomDiagID(Level L, StringRef FormatString) {
   return CustomDiagInfo->getOrCreateDiagID(L, FormatString, *this);
 }
 
+
 /// isBuiltinWarningOrExtension - Return true if the unmapped diagnostic
 /// level of the specified diagnostic ID is a Warning or Extension.
 /// This only works on builtin diagnostics, not custom ones, and is not legal to
@@ -415,7 +431,7 @@ bool DiagnosticIDs::isBuiltinWarningOrExtension(unsigned DiagID) {
 /// Note.
 bool DiagnosticIDs::isBuiltinNote(unsigned DiagID) {
   return DiagID < diag::DIAG_UPPER_LIMIT &&
-         getBuiltinDiagClass(DiagID) == CLASS_NOTE;
+    getBuiltinDiagClass(DiagID) == CLASS_NOTE;
 }
 
 /// isBuiltinExtensionDiag - Determine whether the given built-in diagnostic
@@ -424,7 +440,7 @@ bool DiagnosticIDs::isBuiltinNote(unsigned DiagID) {
 /// which case -pedantic enables it) or treated as a warning/error by default.
 ///
 bool DiagnosticIDs::isBuiltinExtensionDiag(unsigned DiagID,
-                                           bool &EnabledByDefault) {
+                                        bool &EnabledByDefault) {
   if (DiagID >= diag::DIAG_UPPER_LIMIT ||
       getBuiltinDiagClass(DiagID) != CLASS_EXTENSION)
     return false;
@@ -479,8 +495,7 @@ DiagnosticIDs::getDiagnosticLevel(unsigned DiagID, SourceLocation Loc,
   }
 
   unsigned DiagClass = getBuiltinDiagClass(DiagID);
-  if (DiagClass == CLASS_NOTE)
-    return DiagnosticIDs::Note;
+  if (DiagClass == CLASS_NOTE) return DiagnosticIDs::Note;
   return toLevel(getDiagnosticSeverity(DiagID, Loc, Diag));
 }
 
@@ -579,18 +594,18 @@ DiagnosticIDs::getDiagnosticSeverity(unsigned DiagID, SourceLocation Loc,
 #undef GET_DIAG_ARRAYS
 
 namespace {
-struct WarningOption {
-  uint16_t NameOffset;
-  uint16_t Members;
-  uint16_t SubGroups;
+  struct WarningOption {
+    uint16_t NameOffset;
+    uint16_t Members;
+    uint16_t SubGroups;
 
-  // String is stored with a pascal-style length byte.
-  StringRef getName() const {
-    return StringRef(DiagGroupNames + NameOffset + 1,
-                     DiagGroupNames[NameOffset]);
-  }
-};
-} // namespace
+    // String is stored with a pascal-style length byte.
+    StringRef getName() const {
+      return StringRef(DiagGroupNames + NameOffset + 1,
+                       DiagGroupNames[NameOffset]);
+    }
+  };
+}
 
 // Second the table of options, sorted by name for fast binary lookup.
 static const WarningOption OptionTable[] = {
@@ -644,15 +659,15 @@ static bool getDiagnosticsInGroup(diag::Flavor Flavor,
   // Add the members of the subgroups.
   const int16_t *SubGroups = DiagSubGroups + Group->SubGroups;
   for (; *SubGroups != (int16_t)-1; ++SubGroups)
-    NotFound &=
-        getDiagnosticsInGroup(Flavor, &OptionTable[(short)*SubGroups], Diags);
+    NotFound &= getDiagnosticsInGroup(Flavor, &OptionTable[(short)*SubGroups],
+                                      Diags);
 
   return NotFound;
 }
 
-bool DiagnosticIDs::getDiagnosticsInGroup(
-    diag::Flavor Flavor, StringRef Group,
-    SmallVectorImpl<diag::kind> &Diags) const {
+bool
+DiagnosticIDs::getDiagnosticsInGroup(diag::Flavor Flavor, StringRef Group,
+                                     SmallVectorImpl<diag::kind> &Diags) const {
   auto Found = llvm::partition_point(
       OptionTable, [=](const WarningOption &O) { return O.getName() < Group; });
   if (Found == std::end(OptionTable) || Found->getName() != Group)
@@ -708,8 +723,8 @@ bool DiagnosticIDs::ProcessDiag(DiagnosticsEngine &Diag) const {
 
   // Figure out the diagnostic level of this message.
   unsigned DiagID = Info.getID();
-  DiagnosticIDs::Level DiagLevel =
-      getDiagnosticLevel(DiagID, Info.getLocation(), Diag);
+  DiagnosticIDs::Level DiagLevel
+    = getDiagnosticLevel(DiagID, Info.getLocation(), Diag);
 
   // Update counts for DiagnosticErrorTrap even if a fatal error occurred
   // or diagnostics are suppressed.
@@ -784,8 +799,7 @@ bool DiagnosticIDs::ProcessDiag(DiagnosticsEngine &Diag) const {
 
 void DiagnosticIDs::EmitDiag(DiagnosticsEngine &Diag, Level DiagLevel) const {
   Diagnostic Info(&Diag);
-  assert(DiagLevel != DiagnosticIDs::Ignored &&
-         "Cannot emit ignored diagnostics!");
+  assert(DiagLevel != DiagnosticIDs::Ignored && "Cannot emit ignored diagnostics!");
 
   Diag.Client->HandleDiagnostic((DiagnosticsEngine::Level)DiagLevel, Info);
   if (Diag.Client->IncludeInDiagnosticCounts()) {

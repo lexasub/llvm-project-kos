@@ -11,27 +11,26 @@
 // UNSUPPORTED: ios
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
-__attribute__((noinline)) char *pretend_to_do_something(char *x) {
-  __asm__ __volatile__(""
-                       :
-                       : "r"(x)
-                       : "memory");
+__attribute__((noinline))
+char *pretend_to_do_something(char *x) {
+  __asm__ __volatile__("" : : "r" (x) : "memory");
   return x;
 }
 
-__attribute__((noinline)) char *LeakStack() {
+__attribute__((noinline))
+char *LeakStack() {
   char x[1024];
   memset(x, 0, sizeof(x));
   return pretend_to_do_something(x);
 }
 
-template <size_t kFrameSize>
-__attribute__((noinline)) void RecursiveFunctionWithStackFrame(int depth) {
-  if (depth <= 0)
-    return;
+template<size_t kFrameSize>
+__attribute__((noinline))
+void RecursiveFunctionWithStackFrame(int depth) {
+  if (depth <= 0) return;
   char x[kFrameSize];
   x[0] = depth;
   pretend_to_do_something(x);
@@ -46,7 +45,7 @@ int main(int argc, char **argv) {
 #endif
 
   int n_iter = argc >= 2 ? atoi(argv[1]) : 1000;
-  int depth = argc >= 3 ? atoi(argv[2]) : 500;
+  int depth  = argc >= 3 ? atoi(argv[2]) : 500;
   for (int i = 0; i < n_iter; i++) {
     RecursiveFunctionWithStackFrame<10>(depth);
     RecursiveFunctionWithStackFrame<100>(depth);

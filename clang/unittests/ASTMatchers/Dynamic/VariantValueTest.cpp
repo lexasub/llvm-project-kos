@@ -1,5 +1,4 @@
-//===- unittest/ASTMatchers/Dynamic/VariantValueTest.cpp - VariantValue unit
-//tests -===//
+//===- unittest/ASTMatchers/Dynamic/VariantValueTest.cpp - VariantValue unit tests -===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -7,8 +6,8 @@
 //
 //===-----------------------------------------------------------------------------===//
 
-#include "clang/ASTMatchers/Dynamic/VariantValue.h"
 #include "../ASTMatchersTest.h"
+#include "clang/ASTMatchers/Dynamic/VariantValue.h"
 #include "gtest/gtest.h"
 
 namespace clang {

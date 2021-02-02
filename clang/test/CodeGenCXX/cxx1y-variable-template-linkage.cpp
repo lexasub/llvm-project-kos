@@ -27,41 +27,42 @@ int mode;
 
 // CHECK-DAG: define internal nonnull align 4 dereferenceable(4) i32* @_ZL3foov(
 static const int &foo() {
-  struct Foo {};
+   struct Foo { };
 
-  switch (mode) {
-  case 0:
-    // CHECK-DAG: @_Z1xIiE
-    return x<int>;
-  case 1:
-    // CHECK-DAG: @_Z1xIZL3foovE3FooE
-    return x<Foo>;
-  case 2:
-    // CHECK-DAG: @_ZL1yIiE
-    return y<int>;
-  case 3:
-    // CHECK-DAG: @_ZL1yIZL3foovE3FooE
-    return y<Foo>;
-  case 4:
-    // CHECK-DAG: @_Z1zIiE
-    return z<int>;
-  case 5:
-    // CHECK-DAG: @_Z1zIZL3foovE3FooE
-    return z<Foo>;
-  case 6:
-    // CHECK-DAG: @_Z1tIiE
-    return t<int>;
-  case 7:
-    // CHECK-DAG: @_Z1tIKiE
-    return t<const int>;
-  }
+   switch (mode) {
+   case 0:
+     // CHECK-DAG: @_Z1xIiE
+     return x<int>;
+   case 1:
+     // CHECK-DAG: @_Z1xIZL3foovE3FooE
+     return x<Foo>;
+   case 2:
+     // CHECK-DAG: @_ZL1yIiE
+     return y<int>;
+   case 3:
+     // CHECK-DAG: @_ZL1yIZL3foovE3FooE
+     return y<Foo>;
+   case 4:
+     // CHECK-DAG: @_Z1zIiE
+     return z<int>;
+   case 5:
+     // CHECK-DAG: @_Z1zIZL3foovE3FooE
+     return z<Foo>;
+   case 6:
+     // CHECK-DAG: @_Z1tIiE
+     return t<int>;
+   case 7:
+     // CHECK-DAG: @_Z1tIKiE
+     return t<const int>;
+   }
 }
+
 
 #if !__has_feature(cxx_exceptions) // File A
 // CHECKA-DAG: define{{.*}} nonnull align 4 dereferenceable(4) i32* @_Z3barv(
 const int &bar() {
-  // CHECKA-DAG: call nonnull align 4 dereferenceable(4) i32* @_ZL3foov()
-  return foo();
+	// CHECKA-DAG: call nonnull align 4 dereferenceable(4) i32* @_ZL3foov()
+	return foo();
 }
 
 #else // File B
@@ -70,9 +71,10 @@ const int &bar() {
 const int &bar();
 
 int main() {
-  // CHECKB-DAG: call nonnull align 4 dereferenceable(4) i32* @_Z3barv()
-  // CHECKB-DAG: call nonnull align 4 dereferenceable(4) i32* @_ZL3foov()
-  &bar() == &foo() ? throw 0 : (void)0; // Should not throw exception at runtime.
+	// CHECKB-DAG: call nonnull align 4 dereferenceable(4) i32* @_Z3barv()
+	// CHECKB-DAG: call nonnull align 4 dereferenceable(4) i32* @_ZL3foov()
+	&bar() == &foo() ? throw 0 : (void)0; // Should not throw exception at runtime.
 }
 
 #endif // end of Files A and B
+

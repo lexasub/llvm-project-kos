@@ -21,3 +21,4 @@ int main() {
 // CHECK:   Ignore was enabled at:
 // CHECK:     #0 AnnotateIgnoreReadsBegin
 // CHECK:     #1 Thread
+

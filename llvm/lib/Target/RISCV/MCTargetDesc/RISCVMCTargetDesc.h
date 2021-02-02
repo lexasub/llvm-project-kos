@@ -38,7 +38,7 @@ MCAsmBackend *createRISCVAsmBackend(const Target &T, const MCSubtargetInfo &STI,
 
 std::unique_ptr<MCObjectTargetWriter> createRISCVELFObjectWriter(uint8_t OSABI,
                                                                  bool Is64Bit);
-} // namespace llvm
+}
 
 // Defines symbolic names for RISC-V registers.
 #define GET_REGINFO_ENUM

@@ -24,6 +24,7 @@ public:
   C() { foo(4); }
 };
 
+
 A C::a = A();
 
 // CHECK: @llvm.global_ctors = appending global [3 x { i32, void ()*, i8* }]
@@ -46,6 +47,6 @@ A C::a = A();
 // CHECK-NEXT: ret void
 
 C c;
-A1 a1 __attribute__((init_priority(300)));
-A a __attribute__((init_priority(300)));
-B b __attribute__((init_priority(200)));
+A1 a1 __attribute__((init_priority (300)));
+A a __attribute__((init_priority (300)));
+B b __attribute__((init_priority (200)));

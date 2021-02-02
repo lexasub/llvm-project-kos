@@ -54,7 +54,7 @@ class FlagParser;
 class ThreadRegistry;
 class ThreadContextBase;
 struct DTLS;
-}  // namespace __sanitizer
+}
 
 namespace __lsan {
 
@@ -66,7 +66,7 @@ enum ChunkTag {
   kIgnored = 3
 };
 
-const u32 kInvalidTid = (u32)-1;
+const u32 kInvalidTid = (u32) -1;
 
 struct Flags {
 #define LSAN_FLAG(Type, Name, DefaultValue, Description) Type Name;
@@ -74,7 +74,9 @@ struct Flags {
 #undef LSAN_FLAG
 
   void SetDefaults();
-  uptr pointer_alignment() const { return use_unaligned ? 1 : sizeof(uptr); }
+  uptr pointer_alignment() const {
+    return use_unaligned ? 1 : sizeof(uptr);
+  }
 };
 
 extern Flags lsan_flags;
@@ -142,14 +144,15 @@ struct CheckForLeaksParam {
 InternalMmapVector<RootRegion> const *GetRootRegions();
 void ScanRootRegion(Frontier *frontier, RootRegion const &region,
                     uptr region_begin, uptr region_end, bool is_readable);
-void ForEachExtraStackRangeCb(uptr begin, uptr end, void *arg);
+void ForEachExtraStackRangeCb(uptr begin, uptr end, void* arg);
 void GetAdditionalThreadContextPtrs(ThreadContextBase *tctx, void *ptrs);
 // Run stoptheworld while holding any platform-specific locks, as well as the
 // allocator and thread registry locks.
 void LockStuffAndStopTheWorld(StopTheWorldCallback callback,
-                              CheckForLeaksParam *argument);
+                              CheckForLeaksParam* argument);
 
-void ScanRangeForPointers(uptr begin, uptr end, Frontier *frontier,
+void ScanRangeForPointers(uptr begin, uptr end,
+                          Frontier *frontier,
                           const char *region_type, ChunkTag tag);
 void ScanGlobalRange(uptr begin, uptr end, Frontier *frontier);
 
@@ -263,7 +266,6 @@ class LsanMetadata {
   void set_tag(ChunkTag value);
   uptr requested_size() const;
   u32 stack_trace_id() const;
-
  private:
   void *metadata_;
 };
@@ -271,14 +273,14 @@ class LsanMetadata {
 }  // namespace __lsan
 
 extern "C" {
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE const char *
-__lsan_default_options();
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
+const char *__lsan_default_options();
 
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE int
-__lsan_is_turned_off();
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
+int __lsan_is_turned_off();
 
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE const char *
-__lsan_default_suppressions();
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
+const char *__lsan_default_suppressions();
 }  // extern "C"
 
 #endif  // LSAN_COMMON_H

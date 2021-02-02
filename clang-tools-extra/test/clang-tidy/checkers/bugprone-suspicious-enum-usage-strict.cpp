@@ -18,7 +18,7 @@ enum X {
   Z = 4,
   ZZ = 3
   // CHECK-NOTES: :[[@LINE-1]]:3: warning: enum type seems like a bitmask (contains mostly power-of-2 literals), but this literal is not a power-of-2 [bugprone-suspicious-enum-usage]
-  // CHECK-NOTES: :70:13: note: used here as a bitmask
+// CHECK-NOTES: :70:13: note: used here as a bitmask
 };
 // CHECK-NOTES: :[[@LINE+2]]:1: warning: enum type seems like a bitmask (contains mostly power-of-2 literals) but some literals are not power-of-2
 // CHECK-NOTES: :73:8: note: used here as a bitmask
@@ -71,7 +71,7 @@ int trigger() {
   unsigned p = R;
   PP pp = Q;
   p |= pp;
-
+  
   enum X x = Z;
   p = x | Z;
   return 0;

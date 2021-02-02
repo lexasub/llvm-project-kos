@@ -14,20 +14,21 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD
 
-#include <elf.h>
-#include <link.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <unwind.h>
-
 #include "msan.h"
 #include "msan_report.h"
 #include "msan_thread.h"
+
+#include <elf.h>
+#include <link.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <unwind.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_procmaps.h"
 
@@ -166,7 +167,9 @@ static void MsanAtExit(void) {
   }
 }
 
-void InstallAtExitHandler() { atexit(MsanAtExit); }
+void InstallAtExitHandler() {
+  atexit(MsanAtExit);
+}
 
 // ---------------------- TSD ---------------- {{{1
 
@@ -224,9 +227,11 @@ void MsanTSDInit(void (*destructor)(void *tsd)) {
   CHECK_EQ(0, pthread_key_create(&tsd_key, destructor));
 }
 
-static THREADLOCAL MsanThread *msan_current_thread;
+static THREADLOCAL MsanThread* msan_current_thread;
 
-MsanThread *GetCurrentThread() { return msan_current_thread; }
+MsanThread *GetCurrentThread() {
+  return msan_current_thread;
+}
 
 void SetCurrentThread(MsanThread *t) {
   // Make sure we do not reset the current MsanThread.
@@ -238,7 +243,7 @@ void SetCurrentThread(MsanThread *t) {
 }
 
 void MsanTSDDtor(void *tsd) {
-  MsanThread *t = (MsanThread *)tsd;
+  MsanThread *t = (MsanThread*)tsd;
   if (t->destructor_iterations_ > 1) {
     t->destructor_iterations_--;
     CHECK_EQ(0, pthread_setspecific(tsd_key, tsd));
@@ -251,6 +256,6 @@ void MsanTSDDtor(void *tsd) {
 }
 #endif
 
-}  // namespace __msan
+} // namespace __msan
 
-#endif  // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD
+#endif // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD

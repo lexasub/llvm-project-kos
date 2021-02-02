@@ -16,7 +16,7 @@
 
 void foo() {
 #pragma clang __debug captured
-  {}
+{ }
 }
 
 // CHECK: ---

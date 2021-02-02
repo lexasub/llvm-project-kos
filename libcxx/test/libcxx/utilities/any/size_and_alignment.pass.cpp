@@ -16,10 +16,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using std::any;
-  static_assert(sizeof(any) == sizeof(void*) * 4, "");
-  static_assert(alignof(any) == alignof(void*), "");
+int main(int, char**)
+{
+    using std::any;
+    static_assert(sizeof(any) == sizeof(void*)*4, "");
+    static_assert(alignof(any) == alignof(void*), "");
 
   return 0;
 }

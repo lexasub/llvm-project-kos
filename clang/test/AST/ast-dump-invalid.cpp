@@ -5,7 +5,7 @@ template <class T>
 void f(T i, T j) {
   return T (i, j;
 }
-} // namespace TestInvalidRParenOnCXXUnresolvedConstructExpr
+}
 
 // CHECK: NamespaceDecl {{.*}} <{{.*}}> {{.*}} TestInvalidRParenOnCXXUnresolvedConstructExpr
 // CHECK-NEXT: `-FunctionTemplateDecl
@@ -19,6 +19,7 @@ void f(T i, T j) {
 // CHECK-NEXT:           |-DeclRefExpr {{.*}} <col:13> 'T' lvalue ParmVar {{.*}} 'i' 'T'
 // CHECK-NEXT:           `-DeclRefExpr {{.*}} <col:16> 'T' lvalue ParmVar {{.*}} 'j' 'T'
 
+
 namespace TestInvalidIf {
 int g(int i) {
   if (invalid_condition)
@@ -26,7 +27,7 @@ int g(int i) {
   else
     return i;
 }
-} // namespace TestInvalidIf
+}
 // CHECK: NamespaceDecl {{.*}} <{{.*}}> {{.*}} TestInvalidIf
 // CHECK-NEXT: `-FunctionDecl
 // CHECK-NEXT:   |-ParmVarDecl
@@ -41,10 +42,11 @@ int g(int i) {
 
 namespace TestInvalidFunctionDecl {
 struct Str {
-  double foo1(double, invalid_type);
+   double foo1(double, invalid_type);
 };
-double Str::foo1(double, invalid_type) { return 45; }
-} // namespace TestInvalidFunctionDecl
+double Str::foo1(double, invalid_type)
+{ return 45; }
+}
 // CHECK: NamespaceDecl {{.*}} <{{.*}}> {{.*}} TestInvalidFunctionDecl
 // CHECK-NEXT: |-CXXRecordDecl {{.*}} <line:44:1, line:46:1> line:44:8 struct Str definition
 // CHECK:      | |-CXXRecordDecl {{.*}} <col:1, col:8> col:8 implicit struct Str

@@ -14,11 +14,11 @@
 #ifndef DFSAN_H
 #define DFSAN_H
 
-#include "dfsan_platform.h"
 #include "sanitizer_common/sanitizer_internal_defs.h"
+#include "dfsan_platform.h"
 
-using __sanitizer::u16;
 using __sanitizer::uptr;
+using __sanitizer::u16;
 
 // Copy declarations from public sanitizer/dfsan_interface.h header here.
 typedef u16 dfsan_label;
@@ -47,7 +47,7 @@ namespace __dfsan {
 void InitializeInterceptors();
 
 inline dfsan_label *shadow_for(void *ptr) {
-  return (dfsan_label *)((((uptr)ptr) & ShadowMask()) << 1);
+  return (dfsan_label *) ((((uptr) ptr) & ShadowMask()) << 1);
 }
 
 inline const dfsan_label *shadow_for(const void *ptr) {
@@ -63,7 +63,9 @@ struct Flags {
 };
 
 extern Flags flags_data;
-inline Flags &flags() { return flags_data; }
+inline Flags &flags() {
+  return flags_data;
+}
 
 }  // namespace __dfsan
 

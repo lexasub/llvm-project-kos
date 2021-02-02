@@ -3,11 +3,11 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
 
 namespace std {
-template <typename T> class vector {}; // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
-#if __cplusplus >= 201103L             // C++11 or later
-// expected-note@-2 {{candidate function (the implicit move assignment operator) not viable}}
+  template<typename T> class vector { }; // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
+#if __cplusplus >= 201103L // C++11 or later
+  // expected-note@-2 {{candidate function (the implicit move assignment operator) not viable}}
 #endif
-} // namespace std
+}
 
 typedef int INT;
 typedef float Real;

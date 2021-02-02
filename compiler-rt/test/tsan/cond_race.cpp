@@ -12,7 +12,7 @@ struct Ctx {
 };
 
 void *thr(void *p) {
-  Ctx *c = (Ctx *)p;
+  Ctx *c = (Ctx*)p;
   pthread_mutex_lock(&c->m);
   c->done = true;
   pthread_mutex_unlock(&c->m);

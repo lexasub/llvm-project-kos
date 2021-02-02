@@ -1004,10 +1004,12 @@ X86TTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
         unsigned ShiftAmount = MaskC->getValue().countTrailingZeros();
         Value *Input = II.getArgOperand(0);
         Value *Masked = IC.Builder.CreateAnd(Input, II.getArgOperand(1));
-        Value *Shifted = IC.Builder.CreateLShr(
-            Masked, ConstantInt::get(II.getType(), ShiftAmount));
+        Value *Shifted = IC.Builder.CreateLShr(Masked,
+                                               ConstantInt::get(II.getType(),
+                                                                ShiftAmount));
         return IC.replaceInstUsesWith(II, Shifted);
       }
+
 
       if (auto *SrcC = dyn_cast<ConstantInt>(II.getArgOperand(0))) {
         uint64_t Src = SrcC->getZExtValue();
@@ -1046,8 +1048,9 @@ X86TTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
         // position.  Replace with the straight forward IR.
         unsigned ShiftAmount = MaskC->getValue().countTrailingZeros();
         Value *Input = II.getArgOperand(0);
-        Value *Shifted = IC.Builder.CreateShl(
-            Input, ConstantInt::get(II.getType(), ShiftAmount));
+        Value *Shifted = IC.Builder.CreateShl(Input,
+                                              ConstantInt::get(II.getType(),
+                                                               ShiftAmount));
         Value *Masked = IC.Builder.CreateAnd(Shifted, II.getArgOperand(1));
         return IC.replaceInstUsesWith(II, Masked);
       }

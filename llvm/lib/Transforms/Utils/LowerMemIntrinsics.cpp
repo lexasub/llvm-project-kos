@@ -169,8 +169,9 @@ void llvm::createMemCpyLoopUnknownSize(Instruction *InsertBefore,
   Type *Int8Type = Type::getInt8Ty(Ctx);
   bool LoopOpIsInt8 = LoopOpType == Int8Type;
   ConstantInt *CILoopOpSize = ConstantInt::get(ILengthType, LoopOpSize);
-  Value *RuntimeLoopCount =
-      LoopOpIsInt8 ? CopyLen : PLBuilder.CreateUDiv(CopyLen, CILoopOpSize);
+  Value *RuntimeLoopCount = LoopOpIsInt8 ?
+                            CopyLen :
+                            PLBuilder.CreateUDiv(CopyLen, CILoopOpSize);
   BasicBlock *LoopBB =
       BasicBlock::Create(Ctx, "loop-memcpy-expansion", ParentFunc, PostLoopBB);
   IRBuilder<> LoopBuilder(LoopBB);
@@ -192,13 +193,14 @@ void llvm::createMemCpyLoopUnknownSize(Instruction *InsertBefore,
   LoopIndex->addIncoming(NewIndex, LoopBB);
 
   if (!LoopOpIsInt8) {
-    // Add in the
-    Value *RuntimeResidual = PLBuilder.CreateURem(CopyLen, CILoopOpSize);
-    Value *RuntimeBytesCopied = PLBuilder.CreateSub(CopyLen, RuntimeResidual);
+   // Add in the
+   Value *RuntimeResidual = PLBuilder.CreateURem(CopyLen, CILoopOpSize);
+   Value *RuntimeBytesCopied = PLBuilder.CreateSub(CopyLen, RuntimeResidual);
 
     // Loop body for the residual copy.
-    BasicBlock *ResLoopBB = BasicBlock::Create(
-        Ctx, "loop-memcpy-residual", PreLoopBB->getParent(), PostLoopBB);
+    BasicBlock *ResLoopBB = BasicBlock::Create(Ctx, "loop-memcpy-residual",
+                                               PreLoopBB->getParent(),
+                                               PostLoopBB);
     // Residual loop header.
     BasicBlock *ResHeaderBB = BasicBlock::Create(
         Ctx, "loop-memcpy-residual-header", PreLoopBB->getParent(), nullptr);
@@ -303,10 +305,11 @@ static void createMemMoveLoop(Instruction *InsertBefore, Value *SrcAddr,
   // SplitBlockAndInsertIfThenElse conveniently creates the basic if-then-else
   // structure. Its block terminators (unconditional branches) are replaced by
   // the appropriate conditional branches when the loop is built.
-  ICmpInst *PtrCompare = new ICmpInst(InsertBefore, ICmpInst::ICMP_ULT, SrcAddr,
-                                      DstAddr, "compare_src_dst");
+  ICmpInst *PtrCompare = new ICmpInst(InsertBefore, ICmpInst::ICMP_ULT,
+                                      SrcAddr, DstAddr, "compare_src_dst");
   Instruction *ThenTerm, *ElseTerm;
-  SplitBlockAndInsertIfThenElse(PtrCompare, InsertBefore, &ThenTerm, &ElseTerm);
+  SplitBlockAndInsertIfThenElse(PtrCompare, InsertBefore, &ThenTerm,
+                                &ElseTerm);
 
   // Each part of the function consists of two blocks:
   //   copy_backwards:        used to skip the loop when n == 0
@@ -331,8 +334,8 @@ static void createMemMoveLoop(Instruction *InsertBefore, Value *SrcAddr,
                    ConstantInt::get(TypeOfCopyLen, 0), "compare_n_to_0");
 
   // Copying backwards.
-  BasicBlock *LoopBB = BasicBlock::Create(
-      F->getContext(), "copy_backwards_loop", F, CopyForwardBB);
+  BasicBlock *LoopBB =
+    BasicBlock::Create(F->getContext(), "copy_backwards_loop", F, CopyForwardBB);
   IRBuilder<> LoopBuilder(LoopBB);
   PHINode *LoopPhi = LoopBuilder.CreatePHI(TypeOfCopyLen, 0);
   Value *IndexPtr = LoopBuilder.CreateSub(
@@ -353,7 +356,7 @@ static void createMemMoveLoop(Instruction *InsertBefore, Value *SrcAddr,
 
   // Copying forward.
   BasicBlock *FwdLoopBB =
-      BasicBlock::Create(F->getContext(), "copy_forward_loop", F, ExitBB);
+    BasicBlock::Create(F->getContext(), "copy_forward_loop", F, ExitBB);
   IRBuilder<> FwdLoopBuilder(FwdLoopBB);
   PHINode *FwdCopyPhi = FwdLoopBuilder.CreatePHI(TypeOfCopyLen, 0, "index_ptr");
   Value *SrcGEP = FwdLoopBuilder.CreateInBoundsGEP(EltTy, SrcAddr, FwdCopyPhi);
@@ -379,9 +382,10 @@ static void createMemSetLoop(Instruction *InsertBefore, Value *DstAddr,
   BasicBlock *OrigBB = InsertBefore->getParent();
   Function *F = OrigBB->getParent();
   const DataLayout &DL = F->getParent()->getDataLayout();
-  BasicBlock *NewBB = OrigBB->splitBasicBlock(InsertBefore, "split");
-  BasicBlock *LoopBB =
-      BasicBlock::Create(F->getContext(), "loadstoreloop", F, NewBB);
+  BasicBlock *NewBB =
+      OrigBB->splitBasicBlock(InsertBefore, "split");
+  BasicBlock *LoopBB
+    = BasicBlock::Create(F->getContext(), "loadstoreloop", F, NewBB);
 
   IRBuilder<> Builder(OrigBB->getTerminator());
 

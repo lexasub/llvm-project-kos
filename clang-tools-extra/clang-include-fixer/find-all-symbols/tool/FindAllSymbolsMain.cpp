@@ -124,8 +124,8 @@ bool Merge(llvm::StringRef MergeDir, llvm::StringRef OutputFile) {
   return true;
 }
 
-} // namespace find_all_symbols
 } // namespace clang
+} // namespace find_all_symbols
 
 int main(int argc, const char **argv) {
   auto ExpectedParser =

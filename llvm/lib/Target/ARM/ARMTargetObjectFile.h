@@ -16,7 +16,8 @@ namespace llvm {
 
 class ARMElfTargetObjectFile : public TargetLoweringObjectFileELF {
 public:
-  ARMElfTargetObjectFile() : TargetLoweringObjectFileELF() {
+  ARMElfTargetObjectFile()
+      : TargetLoweringObjectFileELF() {
     PLTRelativeVariantKind = MCSymbolRefExpr::VK_ARM_PREL31;
   }
 

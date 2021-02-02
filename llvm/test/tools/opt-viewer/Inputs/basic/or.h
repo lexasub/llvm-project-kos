@@ -12,7 +12,5 @@ void TestH(int *res, int *c, int *d, int *p, int n) {
 
   foo();
 
-  foo();
-  bar();
-  foo();
+  foo(); bar(); foo();
 }

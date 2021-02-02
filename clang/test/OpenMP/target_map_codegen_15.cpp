@@ -38,17 +38,17 @@
 // - OMP_MAP_PRIVATE_VAL + OMP_MAP_TARGET_PARAM | OMP_MAP_IMPLICIT = 800
 // CK16-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 800]
 
-template <int y>
+template<int y>
 int foo(int d) {
   int res = d;
-#pragma omp target
+  #pragma omp target
   {
     res += y;
   }
   return res;
 }
 // CK16-LABEL: implicit_maps_templated_function{{.*}}(
-void implicit_maps_templated_function(int a) {
+void implicit_maps_templated_function (int a){
   int i = a;
 
   // CK16: define {{.*}}i32 @{{.+}}foo{{.+}}(i32 {{[^,]+}})

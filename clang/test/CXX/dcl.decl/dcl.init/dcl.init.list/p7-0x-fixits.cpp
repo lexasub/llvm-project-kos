@@ -7,25 +7,19 @@ typedef short int16_t;
 
 void fixits() {
   int x = 999;
-  struct {
-    char c;
-  } c2 = {x};
+  struct {char c;} c2 = {x};
   // CHECK: warning:{{.*}} cannot be narrowed
   // CHECK: fix-it:{{.*}}:26}:"static_cast<char>("
   // CHECK: fix-it:{{.*}}:27}:")"
-  struct {
-    int16_t i;
-  } i16 = {70000};
+  struct {int16_t i;} i16 = {70000};
   // CHECK: warning:{{.*}} cannot be narrowed
   // CHECK: fix-it:{{.*}}:30}:"static_cast<int16_t>("
   // CHECK: fix-it:{{.*}}:35}:")"
 }
 
-template <typename T>
+template<typename T>
 void maybe_shrink_int(T t) {
-  struct {
-    T t;
-  } t2 = {700};
+  struct {T t;} t2 = {700};
 }
 
 void test_template() {

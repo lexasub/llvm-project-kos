@@ -44,8 +44,8 @@ class ByteCodeStmtGen : public ByteCodeExprGen<Emitter> {
   using CaseMap = llvm::DenseMap<const SwitchCase *, LabelTy>;
 
 public:
-  template <typename... Tys>
-  ByteCodeStmtGen(Tys &&...Args)
+  template<typename... Tys>
+  ByteCodeStmtGen(Tys&&... Args)
       : ByteCodeExprGen<Emitter>(std::forward<Tys>(Args)...) {}
 
 protected:

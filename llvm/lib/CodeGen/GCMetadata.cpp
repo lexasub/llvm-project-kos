@@ -119,8 +119,7 @@ bool Printer::runOnFunction(Function &F) {
   for (GCFunctionInfo::iterator PI = FD->begin(), PE = FD->end(); PI != PE;
        ++PI) {
 
-    OS << "\t" << PI->Label->getName() << ": "
-       << "post-call"
+    OS << "\t" << PI->Label->getName() << ": " << "post-call"
        << ", live = {";
 
     for (GCFunctionInfo::live_iterator RI = FD->live_begin(PI),
@@ -151,7 +150,7 @@ GCStrategy *GCModuleInfo::getGCStrategy(const StringRef Name) {
   if (NMI != GCStrategyMap.end())
     return NMI->getValue();
 
-  for (auto &Entry : GCRegistry::entries()) {
+  for (auto& Entry : GCRegistry::entries()) {
     if (Name == Entry.getName()) {
       std::unique_ptr<GCStrategy> S = Entry.instantiate();
       S->Name = std::string(Name);
@@ -166,9 +165,8 @@ GCStrategy *GCModuleInfo::getGCStrategy(const StringRef Name) {
     // be the builtin GCs if nothing else.  The most likely scenario here is
     // that we got here without running the initializers used by the Registry
     // itself and it's registration mechanism.
-    const std::string error =
-        ("unsupported GC: " + Name).str() +
-        " (did you remember to link and initialize the CodeGen library?)";
+    const std::string error = ("unsupported GC: " + Name).str() +
+      " (did you remember to link and initialize the CodeGen library?)";
     report_fatal_error(error);
   } else
     report_fatal_error(std::string("unsupported GC: ") + Name);

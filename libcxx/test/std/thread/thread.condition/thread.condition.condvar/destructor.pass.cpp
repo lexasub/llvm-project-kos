@@ -29,31 +29,34 @@ typedef std::unique_lock<std::mutex> Lock;
 bool f_ready = false;
 bool g_ready = false;
 
-void f() {
-  Lock lk(m);
-  f_ready = true;
-  cv->notify_one();
-  delete cv;
+void f()
+{
+    Lock lk(m);
+    f_ready = true;
+    cv->notify_one();
+    delete cv;
 }
 
-void g() {
-  Lock lk(m);
-  g_ready = true;
-  cv->notify_one();
-  while (!f_ready)
-    cv->wait(lk);
+void g()
+{
+    Lock lk(m);
+    g_ready = true;
+    cv->notify_one();
+    while (!f_ready)
+        cv->wait(lk);
 }
 
-int main(int, char**) {
-  cv = new std::condition_variable;
-  std::thread th2 = support::make_test_thread(g);
-  Lock lk(m);
-  while (!g_ready)
-    cv->wait(lk);
-  lk.unlock();
-  std::thread th1 = support::make_test_thread(f);
-  th1.join();
-  th2.join();
+int main(int, char**)
+{
+    cv = new std::condition_variable;
+    std::thread th2 = support::make_test_thread(g);
+    Lock lk(m);
+    while (!g_ready)
+        cv->wait(lk);
+    lk.unlock();
+    std::thread th1 = support::make_test_thread(f);
+    th1.join();
+    th2.join();
 
   return 0;
 }

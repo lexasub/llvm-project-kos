@@ -35,7 +35,7 @@ int main(int, char**) {
               op));
       LIBCPP_ASSERT(false);
       assert(b);
-    } catch (const std::regex_error& e) {
+    } catch (const std::regex_error &e) {
       assert(e.code() == std::regex_constants::error_complexity);
     }
   }

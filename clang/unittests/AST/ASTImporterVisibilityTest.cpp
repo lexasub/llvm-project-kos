@@ -105,8 +105,8 @@ using ImportVisibilityChainParams = ::testing::WithParamInterface<
 // intend to mimic gtest's type-parameters via the PatternFactory template
 // parameter. We manually instantiate the different tests with the each types.
 template <typename PatternFactory>
-class ImportVisibilityChain : public ASTImporterTestBase,
-                              public ImportVisibilityChainParams {
+class ImportVisibilityChain
+    : public ASTImporterTestBase, public ImportVisibilityChainParams {
 protected:
   using DeclTy = typename PatternFactory::DeclTy;
   std::vector<std::string> getExtraArgs() const override {
@@ -148,11 +148,17 @@ using ImportClassTemplatesVisibilityChain =
     ImportVisibilityChain<GetClassTemplPattern>;
 
 // Value-parameterized test for functions.
-TEST_P(ImportFunctionsVisibilityChain, ImportChain) { TypedTest_ImportChain(); }
+TEST_P(ImportFunctionsVisibilityChain, ImportChain) {
+  TypedTest_ImportChain();
+}
 // Value-parameterized test for variables.
-TEST_P(ImportVariablesVisibilityChain, ImportChain) { TypedTest_ImportChain(); }
+TEST_P(ImportVariablesVisibilityChain, ImportChain) {
+  TypedTest_ImportChain();
+}
 // Value-parameterized test for classes.
-TEST_P(ImportClassesVisibilityChain, ImportChain) { TypedTest_ImportChain(); }
+TEST_P(ImportClassesVisibilityChain, ImportChain) {
+  TypedTest_ImportChain();
+}
 // Value-parameterized test for scoped enums.
 TEST_P(ImportScopedEnumsVisibilityChain, ImportChain) {
   TypedTest_ImportChain();
@@ -172,9 +178,9 @@ TEST_P(ImportClassTemplatesVisibilityChain, ImportChain) {
 
 // Automatic instantiation of the value-parameterized tests.
 INSTANTIATE_TEST_CASE_P(ParameterizedTests, ImportFunctionsVisibilityChain,
-                        ::testing::Combine(DefaultTestValuesForRunOptions,
-                                           ::testing::Values(ExternF, StaticF,
-                                                             AnonF)), );
+                        ::testing::Combine(
+                           DefaultTestValuesForRunOptions,
+                           ::testing::Values(ExternF, StaticF, AnonF)), );
 INSTANTIATE_TEST_CASE_P(
     ParameterizedTests, ImportVariablesVisibilityChain,
     ::testing::Combine(
@@ -187,14 +193,16 @@ INSTANTIATE_TEST_CASE_P(
         // provided but they must have the same linkage.  See also the test
         // ImportVariableChainInC which test for this special C Lang case.
         ::testing::Values(ExternV, AnonV)), );
-INSTANTIATE_TEST_CASE_P(ParameterizedTests, ImportClassesVisibilityChain,
-                        ::testing::Combine(DefaultTestValuesForRunOptions,
-                                           ::testing::Values(ExternC,
-                                                             AnonC)), );
-INSTANTIATE_TEST_CASE_P(ParameterizedTests, ImportScopedEnumsVisibilityChain,
-                        ::testing::Combine(DefaultTestValuesForRunOptions,
-                                           ::testing::Values(ExternEC,
-                                                             AnonEC)), );
+INSTANTIATE_TEST_CASE_P(
+    ParameterizedTests, ImportClassesVisibilityChain,
+    ::testing::Combine(
+        DefaultTestValuesForRunOptions,
+        ::testing::Values(ExternC, AnonC)), );
+INSTANTIATE_TEST_CASE_P(
+    ParameterizedTests, ImportScopedEnumsVisibilityChain,
+    ::testing::Combine(
+        DefaultTestValuesForRunOptions,
+        ::testing::Values(ExternEC, AnonEC)), );
 INSTANTIATE_TEST_CASE_P(ParameterizedTests,
                         ImportFunctionTemplatesVisibilityChain,
                         ::testing::Combine(DefaultTestValuesForRunOptions,
@@ -220,8 +228,9 @@ using ImportVisibilityParams = ::testing::WithParamInterface<std::tuple<
     std::vector<std::string>, std::tuple<const char *, const char *, bool>>>;
 
 template <typename PatternFactory>
-class ImportVisibility : public ASTImporterTestBase,
-                         public ImportVisibilityParams {
+class ImportVisibility
+    : public ASTImporterTestBase,
+      public ImportVisibilityParams {
 protected:
   using DeclTy = typename PatternFactory::DeclTy;
   std::vector<std::string> getExtraArgs() const override {
@@ -326,26 +335,36 @@ using ImportVariableTemplatesVisibility = ImportVisibility<GetVarTemplPattern>;
 using ImportClassTemplatesVisibility = ImportVisibility<GetClassTemplPattern>;
 
 // FunctionDecl.
-TEST_P(ImportFunctionsVisibility, ImportAfter) { TypedTest_ImportAfter(); }
+TEST_P(ImportFunctionsVisibility, ImportAfter) {
+  TypedTest_ImportAfter();
+}
 TEST_P(ImportFunctionsVisibility, ImportAfterImport) {
   TypedTest_ImportAfterImport();
 }
 // VarDecl.
-TEST_P(ImportVariablesVisibility, ImportAfter) { TypedTest_ImportAfter(); }
+TEST_P(ImportVariablesVisibility, ImportAfter) {
+  TypedTest_ImportAfter();
+}
 TEST_P(ImportVariablesVisibility, ImportAfterImport) {
   TypedTest_ImportAfterImport();
 }
 // CXXRecordDecl.
-TEST_P(ImportClassesVisibility, ImportAfter) { TypedTest_ImportAfter(); }
+TEST_P(ImportClassesVisibility, ImportAfter) {
+  TypedTest_ImportAfter();
+}
 TEST_P(ImportClassesVisibility, ImportAfterImport) {
   TypedTest_ImportAfterImport();
 }
 // EnumDecl.
-TEST_P(ImportEnumsVisibility, ImportAfter) { TypedTest_ImportAfterWithMerge(); }
+TEST_P(ImportEnumsVisibility, ImportAfter) {
+  TypedTest_ImportAfterWithMerge();
+}
 TEST_P(ImportEnumsVisibility, ImportAfterImport) {
   TypedTest_ImportAfterImportWithMerge();
 }
-TEST_P(ImportScopedEnumsVisibility, ImportAfter) { TypedTest_ImportAfter(); }
+TEST_P(ImportScopedEnumsVisibility, ImportAfter) {
+  TypedTest_ImportAfter();
+}
 TEST_P(ImportScopedEnumsVisibility, ImportAfterImport) {
   TypedTest_ImportAfterImport();
 }
@@ -494,10 +513,9 @@ INSTANTIATE_TEST_CASE_P(
     ParameterizedTests, ImportClassTemplatesVisibility,
     ::testing::Combine(
         DefaultTestValuesForRunOptions,
-        ::testing::Values(
-            std::make_tuple(ExternCT, ExternCT, ExpectLinkedDeclChain),
-            std::make_tuple(ExternCT, AnonCT, ExpectUnlinkedDeclChain),
-            std::make_tuple(AnonCT, ExternCT, ExpectUnlinkedDeclChain),
-            std::make_tuple(AnonCT, AnonCT, ExpectUnlinkedDeclChain))), );
+        ::testing::Values(std::make_tuple(ExternCT, ExternCT, ExpectLinkedDeclChain),
+                          std::make_tuple(ExternCT, AnonCT, ExpectUnlinkedDeclChain),
+                          std::make_tuple(AnonCT, ExternCT, ExpectUnlinkedDeclChain),
+                          std::make_tuple(AnonCT, AnonCT, ExpectUnlinkedDeclChain))), );
 } // end namespace ast_matchers
 } // end namespace clang

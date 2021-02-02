@@ -8,26 +8,26 @@
 // FIXME: Doesn't work with DLLs
 // XFAIL: win32-dynamic-asan
 
+#include <stdlib.h>
 #include <io.h>
 #include <sanitizer/allocator_interface.h>
-#include <stdlib.h>
 
 static void *glob_ptr;
 
 extern "C" {
 void __sanitizer_free_hook(const volatile void *ptr) {
   if (ptr == glob_ptr) {
-    *(int *)ptr = 0;
+    *(int*)ptr = 0;
     write(1, "FreeHook\n", sizeof("FreeHook\n"));
   }
 }
 }
 
 int main() {
-  int *x = (int *)malloc(100);
+  int *x = (int*)malloc(100);
   x[0] = 42;
   glob_ptr = x;
-  int *y = (int *)realloc(x, 200);
+  int *y = (int*)realloc(x, 200);
   // Verify that free hook was called and didn't spoil the memory.
   if (y[0] != 42) {
     _exit(1);

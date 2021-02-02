@@ -49,7 +49,7 @@ void RNBContext::PushEnvironmentIfNeeded(const char *arg) {
     return;
   std::string arg_key = GetEnvironmentKey(arg);
 
-  for (const std::string &entry : m_env_vec) {
+  for (const std::string &entry: m_env_vec) {
     if (arg_key == GetEnvironmentKey(entry))
       return;
   }
@@ -179,9 +179,8 @@ void *RNBContext::ThreadFunctionProcessStatus(void *arg) {
                      __FUNCTION__, pid_status_event);
 
     if (pid_status_event == 0) {
-      DNBLogThreadedIf(LOG_RNB_PROC,
-                       "RNBContext::%s (pid=%4.4x) got ZERO back "
-                       "from DNBProcessWaitForEvent....",
+      DNBLogThreadedIf(LOG_RNB_PROC, "RNBContext::%s (pid=%4.4x) got ZERO back "
+                                     "from DNBProcessWaitForEvent....",
                        __FUNCTION__, pid);
       //    done = true;
     } else {

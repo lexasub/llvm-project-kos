@@ -1,9 +1,9 @@
 #ifndef ISL_PRINTER_PRIVATE_H
 #define ISL_PRINTER_PRIVATE_H
 
-#include <isl/id_to_id.h>
 #include <isl/printer.h>
 #include <isl_yaml.h>
+#include <isl/id_to_id.h>
 
 struct isl_printer_ops;
 
@@ -24,29 +24,29 @@ struct isl_printer_ops;
  * if there are no notes yet.
  */
 struct isl_printer {
-  struct isl_ctx *ctx;
-  struct isl_printer_ops *ops;
-  FILE *file;
-  int buf_n;
-  int buf_size;
-  char *buf;
-  int indent;
-  int output_format;
-  int dump;
-  char *indent_prefix;
-  char *prefix;
-  char *suffix;
-  int width;
+	struct isl_ctx	*ctx;
+	struct isl_printer_ops *ops;
+	FILE        	*file;
+	int		buf_n;
+	int		buf_size;
+	char		*buf;
+	int		indent;
+	int		output_format;
+	int		dump;
+	char		*indent_prefix;
+	char		*prefix;
+	char		*suffix;
+	int		width;
 
-  int yaml_style;
-  int yaml_depth;
-  int yaml_size;
-  enum isl_yaml_state *yaml_state;
+	int			yaml_style;
+	int			yaml_depth;
+	int			yaml_size;
+	enum isl_yaml_state	*yaml_state;
 
-  isl_id_to_id *notes;
+	isl_id_to_id	*notes;
 };
 
 __isl_give isl_printer *isl_printer_set_dump(__isl_take isl_printer *p,
-                                             int dump);
+	int dump);
 
 #endif

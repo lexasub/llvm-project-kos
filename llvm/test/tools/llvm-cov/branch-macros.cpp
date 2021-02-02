@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 
+
 bool func(int a, int b) {
   bool c = COND1 && COND2; // CHECK: |  |  |  Branch ([[@LINE-12]]:15): [True: 1, False: 2]
                            // CHECK: |  |  |  Branch ([[@LINE-12]]:15): [True: 0, False: 1]
@@ -24,26 +25,26 @@ bool func(int a, int b) {
   bool g = MACRO3;         // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-20]]:15): [True: 1, False: 2]
                            // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-20]]:15): [True: 0, False: 1]
   return c && d && e && f && g;
-  // CHECK: |  Branch ([[@LINE-1]]:10): [True: 0, False: 3]
-  // CHECK: |  Branch ([[@LINE-2]]:15): [True: 0, False: 0]
-  // CHECK: |  Branch ([[@LINE-3]]:20): [True: 0, False: 0]
-  // CHECK: |  Branch ([[@LINE-4]]:25): [True: 0, False: 0]
-  // CHECK: |  Branch ([[@LINE-5]]:30): [True: 0, False: 0]
+                           // CHECK: |  Branch ([[@LINE-1]]:10): [True: 0, False: 3]
+                           // CHECK: |  Branch ([[@LINE-2]]:15): [True: 0, False: 0]
+                           // CHECK: |  Branch ([[@LINE-3]]:20): [True: 0, False: 0]
+                           // CHECK: |  Branch ([[@LINE-4]]:25): [True: 0, False: 0]
+                           // CHECK: |  Branch ([[@LINE-5]]:30): [True: 0, False: 0]
 }
 
+
 bool func2(int a, int b) {
-  bool h = MACRO3 || COND4; // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-32]]:15): [True: 1, False: 2]
-                            // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-32]]:15): [True: 0, False: 1]
-                            // CHECK: |  |  |  |  |  |  |  Branch ([[@LINE-34]]:15): [True: 1, False: 2]
-                            // CHECK: |  |  |  |  |  |  |  Branch ([[@LINE-34]]:15): [True: 0, False: 1]
-                            // CHECK: |  |  |  Branch ([[@LINE-33]]:15): [True: 1, False: 2]
+    bool h = MACRO3 || COND4;  // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-32]]:15): [True: 1, False: 2]
+                               // CHECK: |  |  |  |  |  |  |  |  |  |  |  Branch ([[@LINE-32]]:15): [True: 0, False: 1]
+                               // CHECK: |  |  |  |  |  |  |  Branch ([[@LINE-34]]:15): [True: 1, False: 2]
+                               // CHECK: |  |  |  |  |  |  |  Branch ([[@LINE-34]]:15): [True: 0, False: 1]
+                               // CHECK: |  |  |  Branch ([[@LINE-33]]:15): [True: 1, False: 2]
   return h;
 }
 
-extern "C" {
-extern void __llvm_profile_write_file(void);
-}
-int main(int argc, char *argv[]) {
+extern "C" { extern void __llvm_profile_write_file(void); }
+int main(int argc, char *argv[])
+{
   func(atoi(argv[1]), atoi(argv[2]));
   func2(atoi(argv[1]), atoi(argv[2]));
   __llvm_profile_write_file();

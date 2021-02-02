@@ -78,11 +78,11 @@ private:
 
   LinkingContext &_ctx;
   SymbolTable _symbolTable;
-  std::vector<OwningAtomPtr<Atom>> _atoms;
-  std::set<const Atom *> _deadStripRoots;
-  llvm::DenseSet<const Atom *> _liveAtoms;
-  llvm::DenseSet<const Atom *> _deadAtoms;
-  std::unique_ptr<MergedFile> _result;
+  std::vector<OwningAtomPtr<Atom>>     _atoms;
+  std::set<const Atom *>        _deadStripRoots;
+  llvm::DenseSet<const Atom *>  _liveAtoms;
+  llvm::DenseSet<const Atom *>  _deadAtoms;
+  std::unique_ptr<MergedFile>   _result;
   std::unordered_multimap<const Atom *, const Atom *> _reverseRef;
 
   // --start-group and --end-group

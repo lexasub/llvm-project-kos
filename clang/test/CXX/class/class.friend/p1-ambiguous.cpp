@@ -10,7 +10,7 @@
 class foo;
 
 extern "C" {
-int c_func(foo *a);
+  int c_func(foo *a);
 };
 int cpp_func(foo *a);
 
@@ -19,7 +19,6 @@ public:
   friend int c_func(foo *a);
   friend int cpp_func(foo *a);
   int caller();
-
 private:
   int x;
 };
@@ -33,7 +32,7 @@ int cpp_func(foo *a) {
 }
 
 int foo::caller() {
-  c_func(this);
-  cpp_func(this);
-  return 0;
+    c_func(this);
+    cpp_func(this);
+    return 0;
 }

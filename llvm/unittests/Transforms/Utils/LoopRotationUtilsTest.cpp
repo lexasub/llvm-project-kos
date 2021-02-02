@@ -31,13 +31,13 @@ static std::unique_ptr<Module> parseIR(LLVMContext &C, const char *IR) {
 
 /// This test contains multi-deopt-exits pattern that might allow loop rotation
 /// to trigger multiple times if multiple rotations are enabled.
-/// At least one rotation should be performed, no matter what loop rotation
-/// settings are.
+/// At least one rotation should be performed, no matter what loop rotation settings are.
 TEST(LoopRotate, MultiDeoptExit) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M = parseIR(C,
-                                      R"(
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    R"(
 declare i32 @llvm.experimental.deoptimize.i32(...)
 
 define i32 @test(i32 * nonnull %a, i64 %x) {
@@ -70,7 +70,8 @@ return:
 deopt.exit:
   %deopt.val = call i32(...) @llvm.experimental.deoptimize.i32() [ "deopt"(i32 %val.a.idx) ]
   ret i32 %deopt.val
-})");
+})"
+    );
 
   auto *F = M->getFunction("test");
   DominatorTree DT(*F);
@@ -84,8 +85,10 @@ deopt.exit:
 
   Loop *L = *LI.begin();
 
-  bool ret =
-      LoopRotation(L, &LI, &TTI, &AC, &DT, &SE, nullptr, SQ, true, -1, false);
+  bool ret = LoopRotation(L, &LI, &TTI,
+                          &AC, &DT,
+                          &SE, nullptr,
+                          SQ, true, -1, false);
   EXPECT_TRUE(ret);
 }
 
@@ -97,8 +100,9 @@ deopt.exit:
 TEST(LoopRotate, MultiDeoptExit_Nondup) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M = parseIR(C,
-                                      R"(
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    R"(
 ; Rotation should be done once, attempted twice.
 ; Second time fails due to non-duplicatable header.
 
@@ -137,7 +141,8 @@ return:
 deopt.exit:
   %deopt.val = call i32(...) @llvm.experimental.deoptimize.i32() [ "deopt"(i32 %val.a.idx) ]
   ret i32 %deopt.val
-})");
+})"
+    );
 
   auto *F = M->getFunction("test_nondup");
   DominatorTree DT(*F);
@@ -151,9 +156,11 @@ deopt.exit:
 
   Loop *L = *LI.begin();
 
-  bool ret =
-      LoopRotation(L, &LI, &TTI, &AC, &DT, &SE, nullptr, SQ, true, -1, false);
-  /// LoopRotation should properly report "true" as we still perform the first
-  /// rotation so we do change the IR.
+  bool ret = LoopRotation(L, &LI, &TTI,
+                          &AC, &DT,
+                          &SE, nullptr,
+                          SQ, true, -1, false);
+  /// LoopRotation should properly report "true" as we still perform the first rotation
+  /// so we do change the IR.
   EXPECT_TRUE(ret);
 }

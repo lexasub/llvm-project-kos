@@ -48,8 +48,10 @@ static cl::opt<bool> EnableTermFolding("enable-loop-simplifycfg-term-folding",
 
 STATISTIC(NumTerminatorsFolded,
           "Number of terminators folded to unconditional branches");
-STATISTIC(NumLoopBlocksDeleted, "Number of loop blocks deleted");
-STATISTIC(NumLoopExitsDeleted, "Number of loop exiting edges deleted");
+STATISTIC(NumLoopBlocksDeleted,
+          "Number of loop blocks deleted");
+STATISTIC(NumLoopExitsDeleted,
+          "Number of loop exiting edges deleted");
 
 /// If \p BB is a switch or a conditional branch, but only one of its successors
 /// can be reached from this block in runtime, return this successor. Otherwise,
@@ -93,8 +95,8 @@ static void removeBlockFromLoops(BasicBlock *BB, Loop *FirstLoop,
 
 /// Find innermost loop that contains at least one block from \p BBs and
 /// contains the header of loop \p L.
-static Loop *getInnermostLoopFor(SmallPtrSetImpl<BasicBlock *> &BBs, Loop &L,
-                                 LoopInfo &LI) {
+static Loop *getInnermostLoopFor(SmallPtrSetImpl<BasicBlock *> &BBs,
+                                 Loop &L, LoopInfo &LI) {
   Loop *Innermost = nullptr;
   for (BasicBlock *BB : BBs) {
     Loop *BBL = LI.getLoopFor(BB);
@@ -162,7 +164,7 @@ private:
       dbgs() << " not";
     dbgs() << " be destroyed\n";
     auto PrintOutVector = [&](const char *Message,
-                              const SmallVectorImpl<BasicBlock *> &S) {
+                           const SmallVectorImpl<BasicBlock *> &S) {
       dbgs() << Message << "\n";
       for (const BasicBlock *BB : S)
         dbgs() << "\t" << BB->getName() << "\n";
@@ -467,7 +469,7 @@ private:
       LI.removeBlock(BB);
     }
 
-    DetatchDeadBlocks(DeadLoopBlocks, &DTUpdates, /*KeepOneInputPHIs*/ true);
+    DetatchDeadBlocks(DeadLoopBlocks, &DTUpdates, /*KeepOneInputPHIs*/true);
     DTU.applyUpdates(DTUpdates);
     DTUpdates.clear();
     for (auto *BB : DeadLoopBlocks)
@@ -528,7 +530,8 @@ private:
 
 public:
   ConstantTerminatorFoldingImpl(Loop &L, LoopInfo &LI, DominatorTree &DT,
-                                ScalarEvolution &SE, MemorySSAUpdater *MSSAU)
+                                ScalarEvolution &SE,
+                                MemorySSAUpdater *MSSAU)
       : L(L), LI(LI), DT(DT), SE(SE), MSSAU(MSSAU), DFS(&L),
         DTU(DT, DomTreeUpdater::UpdateStrategy::Eager) {}
   bool run() {
@@ -571,8 +574,7 @@ public:
         L.getNumBlocks()) {
       LLVM_DEBUG(
           dbgs() << "Give up constant terminator folding in loop "
-                 << Header->getName()
-                 << ": we don't currently"
+                 << Header->getName() << ": we don't currently"
                     " support blocks that are not dead, but will stop "
                     "being a part of the loop after constant-folding.\n");
       return false;
@@ -591,8 +593,7 @@ public:
 
     if (!DeadLoopBlocks.empty()) {
       LLVM_DEBUG(dbgs() << "Deleting " << DeadLoopBlocks.size()
-                        << " dead blocks in loop " << Header->getName()
-                        << "\n");
+                    << " dead blocks in loop " << Header->getName() << "\n");
       deleteDeadLoopBlocks();
     } else {
       // If we didn't do updates inside deleteDeadLoopBlocks, do them here.
@@ -604,8 +605,7 @@ public:
       MSSAU->getMemorySSA()->verifyMemorySSA();
 
 #ifndef NDEBUG
-      // Make sure that we have preserved all data structures after the
-      // transform.
+    // Make sure that we have preserved all data structures after the transform.
 #if defined(EXPENSIVE_CHECKS)
     assert(DT.verify(DominatorTree::VerificationLevel::Full) &&
            "DT broken after transform!");
@@ -620,7 +620,9 @@ public:
     return true;
   }
 
-  bool foldingBreaksCurrentLoop() const { return DeleteCurrentLoop; }
+  bool foldingBreaksCurrentLoop() const {
+    return DeleteCurrentLoop;
+  }
 };
 } // namespace
 

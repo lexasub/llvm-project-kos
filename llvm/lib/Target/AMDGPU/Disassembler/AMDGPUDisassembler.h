@@ -49,15 +49,15 @@ public:
                               ArrayRef<uint8_t> Bytes, uint64_t Address,
                               raw_ostream &CS) const override;
 
-  const char *getRegClassName(unsigned RegClassID) const;
+  const char* getRegClassName(unsigned RegClassID) const;
 
   MCOperand createRegOperand(unsigned int RegId) const;
   MCOperand createRegOperand(unsigned RegClassID, unsigned Val) const;
   MCOperand createSRegOperand(unsigned SRegClassID, unsigned Val) const;
 
-  MCOperand errOperand(unsigned V, const Twine &ErrMsg) const;
+  MCOperand errOperand(unsigned V, const Twine& ErrMsg) const;
 
-  DecodeStatus tryDecodeInst(const uint8_t *Table, MCInst &MI, uint64_t Inst,
+  DecodeStatus tryDecodeInst(const uint8_t* Table, MCInst &MI, uint64_t Inst,
                              uint64_t Address) const;
 
   Optional<DecodeStatus> onSymbolStart(SymbolInfoTy &Symbol, uint64_t &Size,
@@ -177,13 +177,15 @@ private:
 public:
   AMDGPUSymbolizer(MCContext &Ctx, std::unique_ptr<MCRelocationInfo> &&RelInfo,
                    void *disInfo)
-      : MCSymbolizer(Ctx, std::move(RelInfo)), DisInfo(disInfo) {}
+                   : MCSymbolizer(Ctx, std::move(RelInfo)), DisInfo(disInfo) {}
 
   bool tryAddingSymbolicOperand(MCInst &Inst, raw_ostream &cStream,
-                                int64_t Value, uint64_t Address, bool IsBranch,
-                                uint64_t Offset, uint64_t InstSize) override;
+                                int64_t Value, uint64_t Address,
+                                bool IsBranch, uint64_t Offset,
+                                uint64_t InstSize) override;
 
-  void tryAddingPcLoadReferenceComment(raw_ostream &cStream, int64_t Value,
+  void tryAddingPcLoadReferenceComment(raw_ostream &cStream,
+                                       int64_t Value,
                                        uint64_t Address) override;
 };
 

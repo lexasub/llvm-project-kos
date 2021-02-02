@@ -42,3 +42,4 @@ internal::BindableMatcher<Stmt> gtestExpect(GtestCmp Cmp, StatementMatcher Left,
 } // namespace clang
 
 #endif // LLVM_CLANG_ASTMATCHERS_GTESTMATCHERS_H
+

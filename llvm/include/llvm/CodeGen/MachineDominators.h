@@ -27,8 +27,8 @@
 namespace llvm {
 
 template <>
-inline void
-DominatorTreeBase<MachineBasicBlock, false>::addRoot(MachineBasicBlock *MBB) {
+inline void DominatorTreeBase<MachineBasicBlock, false>::addRoot(
+    MachineBasicBlock *MBB) {
   this->Roots.push_back(MBB);
 }
 
@@ -85,8 +85,7 @@ public:
   }
 
   DomTreeT &getBase() {
-    if (!DT)
-      DT.reset(new DomTreeT());
+    if (!DT) DT.reset(new DomTreeT());
     applySplitCriticalEdges();
     return *DT;
   }
@@ -123,13 +122,12 @@ public:
   bool dominates(const MachineInstr *A, const MachineInstr *B) const {
     applySplitCriticalEdges();
     const MachineBasicBlock *BBA = A->getParent(), *BBB = B->getParent();
-    if (BBA != BBB)
-      return DT->dominates(BBA, BBB);
+    if (BBA != BBB) return DT->dominates(BBA, BBB);
 
     // Loop through the basic block until we find A or B.
     MachineBasicBlock::const_iterator I = BBA->begin();
     for (; &*I != A && &*I != B; ++I)
-      /*empty*/;
+      /*empty*/ ;
 
     return &*I == A;
   }
@@ -201,7 +199,7 @@ public:
 
   /// splitBlock - BB is split and now it has one successor. Update dominator
   /// tree to reflect this change.
-  void splitBlock(MachineBasicBlock *NewBB) {
+  void splitBlock(MachineBasicBlock* NewBB) {
     applySplitCriticalEdges();
     DT->splitBlock(NewBB);
   }
@@ -217,7 +215,7 @@ public:
 
   void verifyAnalysis() const override;
 
-  void print(raw_ostream &OS, const Module *) const override;
+  void print(raw_ostream &OS, const Module*) const override;
 
   /// Record that the critical edge (FromBB, ToBB) has been
   /// split with NewBB.
@@ -232,8 +230,8 @@ public:
   /// interface between two edges splitting. In other words, they have to
   /// pack the splitting of critical edges as much as possible.
   void recordSplitCriticalEdge(MachineBasicBlock *FromBB,
-                               MachineBasicBlock *ToBB,
-                               MachineBasicBlock *NewBB) {
+                              MachineBasicBlock *ToBB,
+                              MachineBasicBlock *NewBB) {
     bool Inserted = NewBBs.insert(NewBB).second;
     (void)Inserted;
     assert(Inserted &&
@@ -271,9 +269,8 @@ struct GraphTraits<const MachineDomTreeNode *>
                                            MachineDomTreeNode::const_iterator> {
 };
 
-template <>
-struct GraphTraits<MachineDominatorTree *>
-    : public GraphTraits<MachineDomTreeNode *> {
+template <> struct GraphTraits<MachineDominatorTree*>
+  : public GraphTraits<MachineDomTreeNode *> {
   static NodeRef getEntryNode(MachineDominatorTree *DT) {
     return DT->getRootNode();
   }

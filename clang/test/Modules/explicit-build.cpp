@@ -78,24 +78,24 @@
 // RUN:            -verify %s -DHAVE_A -DHAVE_B
 
 #if HAVE_A
-#include "a.h"
-static_assert(a == 1, "");
+  #include "a.h"
+  static_assert(a == 1, "");
 #else
-const int use_a = a; // expected-error {{undeclared identifier}}
+  const int use_a = a; // expected-error {{undeclared identifier}}
 #endif
 
 #if HAVE_B
-#include "b.h"
-static_assert(b == 2, "");
+  #include "b.h"
+  static_assert(b == 2, "");
 #else
-const int use_b = b; // expected-error {{undeclared identifier}}
+  const int use_b = b; // expected-error {{undeclared identifier}}
 #endif
 
 #if HAVE_C
-#include "c.h"
-static_assert(c == 3, "");
+  #include "c.h"
+  static_assert(c == 3, "");
 #else
-const int use_c = c; // expected-error {{undeclared identifier}}
+  const int use_c = c; // expected-error {{undeclared identifier}}
 #endif
 
 #if HAVE_A && HAVE_B && HAVE_C

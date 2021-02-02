@@ -16,7 +16,7 @@ struct B : A {
 // expected-error@-4 {{deleted function '~B' cannot override a non-deleted function}}
 // expected-note@-5  {{virtual destructor requires an unambiguous, accessible 'operator delete'}}
 #endif
-  B() {}
+  B() { }
 #if __cplusplus <= 199711L
 // expected-note@-2 {{implicit destructor for 'B' first required here}}
 #endif
@@ -25,7 +25,7 @@ struct B : A {
 #if __cplusplus <= 199711L
 // expected-note@-2 {{'operator delete' declared here}}
 #endif
-};
+}; 
 
 struct C : A {
 #if __cplusplus <= 199711L
@@ -38,10 +38,10 @@ struct C : A {
 #if __cplusplus <= 199711L
 // expected-note@-2 {{'operator delete' declared here}}
 #endif
-};
+}; 
 
 void f() {
-  (void)new B;
+  (void)new B; 
   (void)new C;
 #if __cplusplus <= 199711L
 // expected-note@-2 {{implicit destructor for 'C' first required here}}
@@ -52,9 +52,9 @@ void f() {
 // first virtual member function of a nested class has an inline body.
 struct Outer {
   struct Inner {
-    virtual void f() {}
+    virtual void f() { }
     void g();
   };
 };
 
-void Outer::Inner::g() {}
+void Outer::Inner::g() { }

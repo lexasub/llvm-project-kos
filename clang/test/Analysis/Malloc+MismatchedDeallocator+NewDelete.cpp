@@ -80,19 +80,19 @@ static int *globalPtr;
 void changePointee(int *p);
 
 void testMismatchedChangePtrThroughCall() {
-  int *p = (int *)malloc(sizeof(int) * 4);
+  int *p = (int*)malloc(sizeof(int)*4);
   changePtr(&p);
   delete p; // no-warning the value of the pointer might have changed
 }
 
 void testMismatchedChangePointeeThroughCall() {
-  int *p = (int *)malloc(sizeof(int) * 4);
+  int *p = (int*)malloc(sizeof(int)*4);
   changePointee(p);
   delete p; // expected-warning{{Memory allocated by malloc() should be deallocated by free(), not 'delete'}}
 }
 
 void testShouldReportDoubleFreeNotMismatched() {
-  int *p = (int *)malloc(sizeof(int) * 4);
+  int *p = (int*)malloc(sizeof(int)*4);
   globalPtr = p;
   free(p);
   delete globalPtr; // expected-warning {{Attempt to free released memory}}

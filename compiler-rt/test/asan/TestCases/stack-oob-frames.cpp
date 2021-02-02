@@ -6,10 +6,7 @@
 
 #define NOINLINE __attribute__((noinline))
 inline void break_optimization(void *arg) {
-  __asm__ __volatile__(""
-                       :
-                       : "r"(arg)
-                       : "memory");
+  __asm__ __volatile__("" : : "r" (arg) : "memory");
 }
 
 NOINLINE static void Frame0(int frame, char *a, char *b, char *c) {
@@ -17,39 +14,27 @@ NOINLINE static void Frame0(int frame, char *a, char *b, char *c) {
   char *d = s;
   break_optimization(&d);
   switch (frame) {
-  case 3:
-    a[5]++;
-    break;
-  case 2:
-    b[5]++;
-    break;
-  case 1:
-    c[5]++;
-    break;
-  case 0:
-    d[5]++;
-    break;
+    case 3: a[5]++; break;
+    case 2: b[5]++; break;
+    case 1: c[5]++; break;
+    case 0: d[5]++; break;
   }
 }
 NOINLINE static void Frame1(int frame, char *a, char *b) {
-  char c[4] = {0};
-  Frame0(frame, a, b, c);
+  char c[4] = {0}; Frame0(frame, a, b, c);
   break_optimization(0);
 }
 NOINLINE static void Frame2(int frame, char *a) {
-  char b[4] = {0};
-  Frame1(frame, a, b);
+  char b[4] = {0}; Frame1(frame, a, b);
   break_optimization(0);
 }
 NOINLINE static void Frame3(int frame) {
-  char a[4] = {0};
-  Frame2(frame, a);
+  char a[4] = {0}; Frame2(frame, a);
   break_optimization(0);
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2)
-    return 1;
+  if (argc != 2) return 1;
   Frame3(argv[1][0] - '0');
 }
 

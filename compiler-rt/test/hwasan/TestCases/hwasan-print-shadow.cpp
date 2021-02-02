@@ -3,9 +3,9 @@
 // REQUIRES: stable-runtime
 
 #include <assert.h>
-#include <sanitizer/hwasan_interface.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <sanitizer/hwasan_interface.h>
 
 int main() {
   char *p = (char *)mmap(nullptr, 4096, PROT_READ | PROT_WRITE,

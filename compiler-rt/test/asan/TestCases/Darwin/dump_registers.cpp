@@ -17,7 +17,7 @@ int main() {
   fprintf(stderr, sizeof(uintptr_t) == 8 ? "p = 0x%016lx\n" : "p = 0x%08lx\n", (uintptr_t)ptr);
   // CHECK: p = [[ADDR:0x[0-9]+]]
 
-  char c = *ptr; // BOOM
+  char c = *ptr;  // BOOM
   // CHECK: ERROR: AddressSanitizer: {{SEGV|BUS}}
   // CHECK: Register values:
   // CHECK: [[ADDR]]

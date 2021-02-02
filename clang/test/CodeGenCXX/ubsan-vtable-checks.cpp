@@ -18,7 +18,7 @@ U::~U() {}
 
 // ITANIUM: define{{.*}} i32 @_Z5get_vP1T
 // MSABI: define dso_local i32 @"?get_v
-int get_v(T *t) {
+int get_v(T* t) {
   // First, we check that vtable is not loaded before a type check.
   // CHECK-NULL-NOT: load {{.*}} (%struct.T*{{.*}})**, {{.*}} (%struct.T*{{.*}})***
   // CHECK-NULL: [[UBSAN_CMP_RES:%[0-9]+]] = icmp ne %struct.T* %{{[_a-z0-9]+}}, null
@@ -43,12 +43,12 @@ void delete_it(T *t) {
 
 // ITANIUM: define{{.*}} %struct.U* @_Z7dyncastP1T
 // MSABI: define dso_local %struct.U* @"?dyncast
-U *dyncast(T *t) {
+U* dyncast(T *t) {
   // First, we check that dynamic_cast is not called before a type check.
   // CHECK-VPTR-NOT: call i8* @__{{dynamic_cast|RTDynamicCast}}
   // CHECK-VPTR: br i1 {{.*}} label %{{.*}}
   // CHECK-VPTR: call void @__ubsan_handle_dynamic_type_cache_miss_abort
   // Second, we check that dynamic_cast is actually called once the type check is done.
   // CHECK-VPTR: call i8* @__{{dynamic_cast|RTDynamicCast}}
-  return dynamic_cast<U *>(t);
+  return dynamic_cast<U*>(t);
 }

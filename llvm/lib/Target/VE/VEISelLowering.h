@@ -45,7 +45,7 @@ enum NodeType : unsigned {
 #define ADD_VVP_OP(VVP_NAME, ...) VVP_NAME,
 #include "VVPNodes.def"
 };
-} // namespace VEISD
+}
 
 class VETargetLowering : public TargetLowering {
   const VESubtarget *Subtarget;

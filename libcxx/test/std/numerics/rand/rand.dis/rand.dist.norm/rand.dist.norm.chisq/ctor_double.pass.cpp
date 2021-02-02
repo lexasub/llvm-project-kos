@@ -34,20 +34,21 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**) {
-  {
-    typedef std::chi_squared_distribution<> D;
-    D d;
-    assert(d.n() == 1);
-  }
-  {
-    typedef std::chi_squared_distribution<> D;
-    D d(14.5);
-    assert(d.n() == 14.5);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::chi_squared_distribution<> D;
+        D d;
+        assert(d.n() == 1);
+    }
+    {
+        typedef std::chi_squared_distribution<> D;
+        D d(14.5);
+        assert(d.n() == 14.5);
+    }
 
-  test_implicit<float>();
-  test_implicit<double>();
+    test_implicit<float>();
+    test_implicit<double>();
 
-  return 0;
+    return 0;
 }

@@ -26,14 +26,8 @@ void reset() {
   dtor_called = 0;
 }
 struct Noisy {
-  Noisy() {
-    ++alive;
-    ++ctor_called;
-  }
-  ~Noisy() {
-    --alive;
-    ++dtor_called;
-  }
+  Noisy() { ++alive; ++ctor_called; }
+  ~Noisy() { --alive; ++dtor_called; }
 #if TEST_STD_VER > 14
   Noisy(Noisy const&) = delete;
 #else
@@ -50,9 +44,9 @@ struct Bug {
 };
 struct coro2 {
   struct promise_type {
-    suspend_never initial_suspend() { return {}; }
+    suspend_never initial_suspend() { return{}; }
     suspend_never final_suspend() noexcept { return {}; }
-    coro2 get_return_object() { return {}; }
+    coro2 get_return_object() { return{}; }
     void return_void() {}
     Bug yield_value(int) { return {}; }
     void unhandled_exception() {}
@@ -85,6 +79,7 @@ coro2 b() {
   assert(ctor_called == 1);
   assert(dtor_called == 1);
   assert(alive == 0);
+
 }
 
 coro2 c() {

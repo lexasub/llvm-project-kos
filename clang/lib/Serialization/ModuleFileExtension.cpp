@@ -9,12 +9,12 @@
 #include "llvm/ADT/Hashing.h"
 using namespace clang;
 
-ModuleFileExtension::~ModuleFileExtension() {}
+ModuleFileExtension::~ModuleFileExtension() { }
 
 llvm::hash_code ModuleFileExtension::hashExtension(llvm::hash_code Code) const {
   return Code;
 }
 
-ModuleFileExtensionWriter::~ModuleFileExtensionWriter() {}
+ModuleFileExtensionWriter::~ModuleFileExtensionWriter() { }
 
-ModuleFileExtensionReader::~ModuleFileExtensionReader() {}
+ModuleFileExtensionReader::~ModuleFileExtensionReader() { }

@@ -2,14 +2,14 @@
 //
 // UNSUPPORTED: linux, solaris
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <cstdio>
 #include <inttypes.h>
 
 void print_buf(unsigned char *buf, size_t buflen) {
   printf("buf '");
-  for (auto i = 0; i < buflen; i++)
+  for (auto i = 0; i < buflen; i ++)
     printf("%" PRIx8, buf[i]);
   printf("'\n");
 }

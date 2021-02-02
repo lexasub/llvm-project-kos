@@ -24,10 +24,10 @@ public:
 int main() {
   xpto array[2][3][4];
   for (int h = 0; h < 2; h++)
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 4; j++)
-        printf("array[%d][%d][%d] = {%d, %f}\n",
-               h, i, j, array[h][i][j].i, array[h][i][j].f);
+   for (int i = 0; i < 3; i++)
+    for (int j = 0; j < 4; j++)
+       printf("array[%d][%d][%d] = {%d, %f}\n", 
+              h, i, j, array[h][i][j].i, array[h][i][j].f);
 }
 
 // CHECK: call void @_ZN4xptoC1Ev

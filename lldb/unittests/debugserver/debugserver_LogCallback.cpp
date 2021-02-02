@@ -10,8 +10,8 @@
 // debugserver Common library. It is for logging only, so it is left
 // unimplemented here.
 
-#include <stdarg.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 void FileLogCallback(void *baton, uint32_t flags, const char *format,
                      va_list args) {}

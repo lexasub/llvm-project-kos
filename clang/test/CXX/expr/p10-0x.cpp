@@ -5,10 +5,10 @@ struct S {
   volatile int a;
 } g2;
 
-volatile int &refcall();
+volatile int& refcall();
 
 // CHECK: define{{.*}} void @_Z2f1PViPV1S
-void f1(volatile int *x, volatile S *s) {
+void f1(volatile int *x, volatile S* s) {
   // We should perform the load in these cases.
   // CHECK: load volatile i32, i32*
   (*x);

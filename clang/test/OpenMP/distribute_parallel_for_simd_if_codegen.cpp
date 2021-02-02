@@ -49,8 +49,7 @@ void gtid_test() {
 // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
 // CHECK: call void [[OFFLOADING_FUN_1:@.+]](
 #pragma omp distribute parallel for simd
-  for (int i = 0; i < 100; i++) {
-  }
+  for(int i = 0 ; i < 100; i++) {}
   // CHECK: define internal void [[OFFLOADING_FUN_0]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}}* [[OMP_TEAMS_OUTLINED_0:@.+]] to {{.+}})
   // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_0]](
@@ -64,45 +63,44 @@ void gtid_test() {
   // CHECK: ret
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for simd if (parallel \
-                                             : false)
-  for (int i = 0; i < 100; i++) {
-    // CHECK: define internal void [[OFFLOADING_FUN_1]](
-    // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}}* [[OMP_TEAMS_OUTLINED_1:@.+]] to {{.+}})
-    // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_1]](
-    // CHECK: call void @__kmpc_for_static_init_4(
-    // CHECK: call void @__kmpc_serialized_parallel(
-    // CHECK: call void [[OMP_OUTLINED_1:@.+]](
-    // CHECK: call void @__kmpc_end_serialized_parallel(
-    // CHECK: call void @__kmpc_for_static_fini(
-    // CHECK: define{{.+}} void [[OMP_OUTLINED_1]](
-    // CHECK: call void @__kmpc_for_static_init_4(
-    // CHECK: call void @{{.+}}gtid_test
-    // CHECK: call void @__kmpc_for_static_fini(
-    // CHECK: ret
+#pragma omp distribute parallel for simd if (parallel: false)
+  for(int i = 0 ; i < 100; i++) {
+  // CHECK: define internal void [[OFFLOADING_FUN_1]](
+  // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}}* [[OMP_TEAMS_OUTLINED_1:@.+]] to {{.+}})
+  // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_1]](
+  // CHECK: call void @__kmpc_for_static_init_4(
+  // CHECK: call void @__kmpc_serialized_parallel(
+  // CHECK: call void [[OMP_OUTLINED_1:@.+]](
+  // CHECK: call void @__kmpc_end_serialized_parallel(
+  // CHECK: call void @__kmpc_for_static_fini(
+  // CHECK: define{{.+}} void [[OMP_OUTLINED_1]](
+  // CHECK: call void @__kmpc_for_static_init_4(
+  // CHECK: call void @{{.+}}gtid_test
+  // CHECK: call void @__kmpc_for_static_fini(
+  // CHECK: ret
     gtid_test();
   }
 }
+
 
 template <typename T>
 int tmain(T Arg) {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for simd if (true)
-  for (int i = 0; i < 100; i++) {
+  for(int i = 0 ; i < 100; i++) {
     fn1();
   }
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for simd if (false)
-  for (int i = 0; i < 100; i++) {
+  for(int i = 0 ; i < 100; i++) {
     fn2();
   }
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for simd if (parallel \
-                                             : Arg)
-  for (int i = 0; i < 100; i++) {
+#pragma omp distribute parallel for simd if (parallel: Arg)
+  for(int i = 0 ; i < 100; i++) {
     fn3();
   }
   return 0;
@@ -120,7 +118,7 @@ int main() {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for simd if (true)
-  for (int i = 0; i < 100; i++) {
+  for(int i = 0 ; i < 100; i++) {
     // CHECK: define internal void [[OFFLOADING_FUN_0]](
     // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}}* [[OMP_TEAMS_OUTLINED_0:@.+]] to {{.+}})
     // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_0]](
@@ -139,7 +137,7 @@ int main() {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for simd if (false)
-  for (int i = 0; i < 100; i++) {
+  for(int i = 0 ; i < 100; i++) {
     // CHECK: define internal void [[OFFLOADING_FUN_1]](
     // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}}* [[OMP_TEAMS_OUTLINED_1:@.+]] to {{.+}})
     // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_1]](
@@ -160,7 +158,7 @@ int main() {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for simd if (Arg)
-  for (int i = 0; i < 100; i++) {
+  for(int i = 0 ; i < 100; i++) {
     // CHECK: define internal void [[OFFLOADING_FUN_2]](
     // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}}* [[OMP_TEAMS_OUTLINED_2:@.+]] to {{.+}})
     // CHECK: define{{.+}} void [[OMP_TEAMS_OUTLINED_2]](

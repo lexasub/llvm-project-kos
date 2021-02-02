@@ -36,8 +36,9 @@ private:
   void EmitProgramInfoR600(const MachineFunction &MF);
 };
 
-AsmPrinter *createR600AsmPrinterPass(TargetMachine &TM,
-                                     std::unique_ptr<MCStreamer> &&Streamer);
+AsmPrinter *
+createR600AsmPrinterPass(TargetMachine &TM,
+                         std::unique_ptr<MCStreamer> &&Streamer);
 
 } // namespace llvm
 

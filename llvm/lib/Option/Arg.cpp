@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Option/Arg.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Config/llvm-config.h"
+#include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Option/Option.h"
 #include "llvm/Support/Compiler.h"
@@ -44,7 +44,7 @@ Arg::~Arg() {
   }
 }
 
-void Arg::print(raw_ostream &O) const {
+void Arg::print(raw_ostream& O) const {
   O << "<";
 
   O << " Opt:";
@@ -54,8 +54,7 @@ void Arg::print(raw_ostream &O) const {
 
   O << " Values: [";
   for (unsigned i = 0, e = Values.size(); i != e; ++i) {
-    if (i)
-      O << ", ";
+    if (i) O << ", ";
     O << "'" << Values[i] << "'";
   }
 
@@ -75,8 +74,8 @@ std::string Arg::getAsString(const ArgList &Args) const {
 
   ArgStringList ASL;
   render(Args, ASL);
-  for (ArgStringList::iterator it = ASL.begin(), ie = ASL.end(); it != ie;
-       ++it) {
+  for (ArgStringList::iterator
+         it = ASL.begin(), ie = ASL.end(); it != ie; ++it) {
     if (it != ASL.begin())
       OS << ' ';
     OS << *it;
@@ -105,17 +104,16 @@ void Arg::render(const ArgList &Args, ArgStringList &Output) const {
     raw_svector_ostream OS(Res);
     OS << getSpelling();
     for (unsigned i = 0, e = getNumValues(); i != e; ++i) {
-      if (i)
-        OS << ',';
+      if (i) OS << ',';
       OS << getValue(i);
     }
     Output.push_back(Args.MakeArgString(OS.str()));
     break;
   }
 
-  case Option::RenderJoinedStyle:
-    Output.push_back(
-        Args.GetOrMakeJoinedArgString(getIndex(), getSpelling(), getValue(0)));
+ case Option::RenderJoinedStyle:
+    Output.push_back(Args.GetOrMakeJoinedArgString(
+                       getIndex(), getSpelling(), getValue(0)));
     Output.append(Values.begin() + 1, Values.end());
     break;
 

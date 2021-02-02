@@ -25,13 +25,13 @@ TEST(MCDisassembler, XCOFFSymbolPriorityTest) {
   EXPECT_TRUE(SIT1 < SIT2);
   EXPECT_FALSE(SIT2 < SIT1);
 
-  // Test that symbols with a StorageMappingClass have higher priority than
-  // those without.
+  // Test that symbols with a StorageMappingClass have higher priority than those
+  // without.
   EXPECT_TRUE(SIT2 < SIT5);
   EXPECT_FALSE(SIT5 < SIT2);
 
-  // Test that symbols with a TC0 StorageMappingClass have lower priority than
-  // those with some other StorageMappingClass.
+  // Test that symbols with a TC0 StorageMappingClass have lower priority than those
+  // with some other StorageMappingClass.
   EXPECT_TRUE(SIT5 < SIT6);
   EXPECT_FALSE(SIT6 < SIT5);
 

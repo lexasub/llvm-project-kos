@@ -33,7 +33,6 @@ public:
     /// Unknown execution mode (orphaned directive).
     EM_Unknown,
   };
-
 private:
   /// Parallel outlined function work for workers to execute.
   llvm::SmallVector<llvm::Function *, 16> Work;
@@ -382,17 +381,14 @@ public:
   void functionFinished(CodeGenFunction &CGF) override;
 
   /// Choose a default value for the dist_schedule clause.
-  void
-  getDefaultDistScheduleAndChunk(CodeGenFunction &CGF,
-                                 const OMPLoopDirective &S,
-                                 OpenMPDistScheduleClauseKind &ScheduleKind,
-                                 llvm::Value *&Chunk) const override;
+  void getDefaultDistScheduleAndChunk(CodeGenFunction &CGF,
+      const OMPLoopDirective &S, OpenMPDistScheduleClauseKind &ScheduleKind,
+      llvm::Value *&Chunk) const override;
 
   /// Choose a default value for the schedule clause.
   void getDefaultScheduleAndChunk(CodeGenFunction &CGF,
-                                  const OMPLoopDirective &S,
-                                  OpenMPScheduleClauseKind &ScheduleKind,
-                                  const Expr *&ChunkExpr) const override;
+      const OMPLoopDirective &S, OpenMPScheduleClauseKind &ScheduleKind,
+      const Expr *&ChunkExpr) const override;
 
   /// Adjust some parameters for the target-based directives, like addresses of
   /// the variables captured by reference in lambdas.
@@ -438,9 +434,8 @@ private:
   /// and controls the parameters which are passed to this function.
   /// The wrapper ensures that the outlined function is called
   /// with the correct arguments when data is shared.
-  llvm::Function *
-  createParallelDataSharingWrapper(llvm::Function *OutlinedParallelFn,
-                                   const OMPExecutableDirective &D);
+  llvm::Function *createParallelDataSharingWrapper(
+      llvm::Function *OutlinedParallelFn, const OMPExecutableDirective &D);
 
   /// The data for the single globalized variable.
   struct MappedVarData {
@@ -463,7 +458,7 @@ private:
     DeclToAddrMapTy LocalVarData;
     llvm::Optional<DeclToAddrMapTy> SecondaryLocalVarData = llvm::None;
     EscapedParamsTy EscapedParameters;
-    llvm::SmallVector<const ValueDecl *, 4> EscapedVariableLengthDecls;
+    llvm::SmallVector<const ValueDecl*, 4> EscapedVariableLengthDecls;
     llvm::SmallVector<llvm::Value *, 4> EscapedVariableLengthDeclsAddrs;
     const RecordDecl *GlobalRecord = nullptr;
     llvm::Optional<const RecordDecl *> SecondaryGlobalRecord = llvm::None;
@@ -503,7 +498,7 @@ private:
       TeamAndReductions;
 };
 
-} // namespace CodeGen
-} // namespace clang
+} // CodeGen namespace.
+} // clang namespace.
 
 #endif // LLVM_CLANG_LIB_CODEGEN_CGOPENMPRUNTIMEGPU_H

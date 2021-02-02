@@ -170,15 +170,16 @@ public:
     return ColdCountThreshold ? ColdCountThreshold.getValue() : 0;
   }
 
-private:
-  template <bool isHot>
-  bool isFunctionHotOrColdInCallGraphNthPercentile(
-      int PercentileCutoff, const Function *F, BlockFrequencyInfo &BFI) const;
-  template <bool isHot>
-  bool isHotOrColdCountNthPercentile(int PercentileCutoff, uint64_t C) const;
-  template <bool isHot>
-  bool isHotOrColdBlockNthPercentile(int PercentileCutoff, const BasicBlock *BB,
-                                     BlockFrequencyInfo *BFI) const;
+ private:
+   template <bool isHot>
+   bool isFunctionHotOrColdInCallGraphNthPercentile(
+       int PercentileCutoff, const Function *F, BlockFrequencyInfo &BFI) const;
+   template <bool isHot>
+   bool isHotOrColdCountNthPercentile(int PercentileCutoff, uint64_t C) const;
+   template <bool isHot>
+   bool isHotOrColdBlockNthPercentile(int PercentileCutoff,
+                                      const BasicBlock *BB,
+                                      BlockFrequencyInfo *BFI) const;
 };
 
 /// An analysis pass based on legacy pass manager to deliver ProfileSummaryInfo.

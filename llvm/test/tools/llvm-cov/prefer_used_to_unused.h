@@ -16,9 +16,9 @@ inline int sampleFunc(int A) { // CHECK:      [[@LINE]]| 1|inline int sampleFunc
   if (A > 0)                   // CHECK-NEXT: [[@LINE]]| 1|  if (A > 0)
     return A;                  // CHECK-NEXT: [[@LINE]]| 1|    return A;
   return 0;                    // CHECK-NEXT: [[@LINE]]| 0|  return 0;
-} // CHECK-NEXT: [[@LINE]]| 0|}
+}                              // CHECK-NEXT: [[@LINE]]| 0|}
 
 // The hash for this function is zero in both cases, either it is used in the translation unit or not.
 inline int simpleFunc(int A) { // CHECK:      [[@LINE]]| 1|inline int simpleFunc(int A) {
   return A;                    // CHECK-NEXT: [[@LINE]]| 1|  return A;
-} // CHECK-NEXT: [[@LINE]]| 1|}
+}                              // CHECK-NEXT: [[@LINE]]| 1|}

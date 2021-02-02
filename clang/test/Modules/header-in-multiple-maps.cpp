@@ -5,4 +5,5 @@
 // expected-no-diagnostics
 
 #include "a.h"
+#include "a.h"
 A *p;

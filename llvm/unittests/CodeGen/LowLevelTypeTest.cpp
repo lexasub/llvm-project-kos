@@ -188,8 +188,8 @@ TEST(LowLevelTypeTest, Pointer) {
   LLVMContext C;
   DataLayout DL("p64:64:64-p127:512:512:512-p16777215:65528:8");
 
-  for (unsigned AS :
-       {0U, 1U, 127U, 0xffffU, static_cast<unsigned>(maxUIntN(23)),
+  for (unsigned AS : {0U, 1U, 127U, 0xffffU,
+        static_cast<unsigned>(maxUIntN(23)),
         static_cast<unsigned>(maxUIntN(24))}) {
     for (unsigned NumElts : {2, 3, 4, 256, 65535}) {
       const LLT Ty = LLT::pointer(AS, DL.getPointerSizeInBits(AS));
@@ -252,9 +252,10 @@ TEST(LowLevelTypeTest, Divide) {
   EXPECT_EQ(LLT::vector(2, 32), LLT::vector(4, 32).divide(2));
 
   // Test vector of pointers
-  EXPECT_EQ(LLT::pointer(1, 64), LLT::vector(4, LLT::pointer(1, 64)).divide(4));
+  EXPECT_EQ(LLT::pointer(1, 64),
+            LLT::vector(4, LLT::pointer(1, 64)).divide(4));
   EXPECT_EQ(LLT::vector(2, LLT::pointer(1, 64)),
             LLT::vector(4, LLT::pointer(1, 64)).divide(2));
 }
 
-} // namespace
+}

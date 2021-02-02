@@ -22,20 +22,23 @@
 #include "test_macros.h"
 #include "../A.h"
 
-void test() {
-  {
+void
+test()
+{
+    {
     A* p = new A(1);
     std::auto_ptr<A> ap(p);
     A* p2 = ap.release();
     assert(p2 == p);
     assert(ap.get() == 0);
     delete p;
-  }
-  assert(A::count == 0);
+    }
+    assert(A::count == 0);
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 
   return 0;
 }

@@ -6,7 +6,7 @@
 const int __declspec(selectany) test1 = 0; // expected-error {{'selectany' can only be applied to data items with external linkage}}
 
 extern const int test2;
-const int test2 = 42;                         // expected-note {{previous definition is here}}
+const int test2 = 42; // expected-note {{previous definition is here}}
 extern __declspec(selectany) const int test2; // expected-warning {{attribute declaration must precede definition}}
 
 extern const int test3;

@@ -8,7 +8,7 @@ public:
   template <class U, size_t N>
   array_view(U (&arr)[N]);
 };
-} // namespace gsl
+}
 
 void pointerfun(int *p);
 void arrayfun(int p[]);
@@ -29,9 +29,9 @@ void f() {
   gsl::array_view<int> av(a);
   arrayviewfun(av); // OK
 
-  int i = a[0];       // OK
-  int j = a[(1 + 2)]; // OK
-  pointerfun(&a[0]);  // OK
+  int i = a[0];      // OK
+  int j = a[(1 + 2)];// OK
+  pointerfun(&a[0]); // OK
 
   for (auto &e : a) // OK, iteration internally decays array to pointer
     e = 1;
@@ -41,11 +41,11 @@ const char *g() {
   return "clang"; // OK, decay string literal to pointer
 }
 const char *g2() {
-  return ("clang"); // OK, ParenExpr hides the literal-pointer decay
+    return ("clang"); // OK, ParenExpr hides the literal-pointer decay
 }
 
 void f2(void *const *);
 void bug25362() {
   void *a[2];
-  f2(static_cast<void *const *>(a)); // OK, explicit cast
+  f2(static_cast<void *const*>(a)); // OK, explicit cast
 }

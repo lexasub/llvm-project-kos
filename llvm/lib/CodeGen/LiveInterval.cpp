@@ -120,7 +120,8 @@ public:
   VNInfo *extendInBlock(SlotIndex StartIdx, SlotIndex Use) {
     if (segments().empty())
       return nullptr;
-    iterator I = impl().findInsertPos(Segment(Use.getPrevSlot(), Use, nullptr));
+    iterator I =
+      impl().findInsertPos(Segment(Use.getPrevSlot(), Use, nullptr));
     if (I == segments().begin())
       return nullptr;
     --I;
@@ -131,19 +132,17 @@ public:
     return I->valno;
   }
 
-  std::pair<VNInfo *, bool> extendInBlock(ArrayRef<SlotIndex> Undefs,
-                                          SlotIndex StartIdx, SlotIndex Use) {
+  std::pair<VNInfo*,bool> extendInBlock(ArrayRef<SlotIndex> Undefs,
+      SlotIndex StartIdx, SlotIndex Use) {
     if (segments().empty())
       return std::make_pair(nullptr, false);
     SlotIndex BeforeUse = Use.getPrevSlot();
     iterator I = impl().findInsertPos(Segment(BeforeUse, Use, nullptr));
     if (I == segments().begin())
-      return std::make_pair(nullptr,
-                            LR->isUndefIn(Undefs, StartIdx, BeforeUse));
+      return std::make_pair(nullptr, LR->isUndefIn(Undefs, StartIdx, BeforeUse));
     --I;
     if (I->end <= StartIdx)
-      return std::make_pair(nullptr,
-                            LR->isUndefIn(Undefs, StartIdx, BeforeUse));
+      return std::make_pair(nullptr, LR->isUndefIn(Undefs, StartIdx, BeforeUse));
     if (I->end < Use) {
       if (LR->isUndefIn(Undefs, I->end, BeforeUse))
         return std::make_pair(nullptr, true);
@@ -402,7 +401,7 @@ VNInfo *LiveRange::createDeadDef(VNInfo *VNI) {
 // A->overlaps(C) should return false since we want to be able to join
 // A and C.
 //
-bool LiveRange::overlapsFrom(const LiveRange &other,
+bool LiveRange::overlapsFrom(const LiveRange& other,
                              const_iterator StartPos) const {
   assert(!empty() && "empty range");
   const_iterator i = begin();
@@ -415,22 +414,19 @@ bool LiveRange::overlapsFrom(const LiveRange &other,
 
   if (i->start < j->start) {
     i = std::upper_bound(i, ie, j->start);
-    if (i != begin())
-      --i;
+    if (i != begin()) --i;
   } else if (j->start < i->start) {
     ++StartPos;
     if (StartPos != other.end() && StartPos->start <= i->start) {
       assert(StartPos < other.end() && i < end());
       j = std::upper_bound(j, je, i->start);
-      if (j != other.begin())
-        --j;
+      if (j != other.begin()) --j;
     }
   } else {
     return true;
   }
 
-  if (j == je)
-    return false;
+  if (j == je) return false;
 
   while (i != ie) {
     if (i->start > j->start) {
@@ -521,7 +517,7 @@ bool LiveRange::covers(const LiveRange &Other) const {
 /// (and any other deleted values neighboring it), otherwise mark it as ~1U so
 /// it can be nuked later.
 void LiveRange::markValNoForDeletion(VNInfo *ValNo) {
-  if (ValNo->id == getNumValNums() - 1) {
+  if (ValNo->id == getNumValNums()-1) {
     do {
       valnos.pop_back();
     } while (!valnos.empty() && valnos.back()->isUnused());
@@ -533,7 +529,7 @@ void LiveRange::markValNoForDeletion(VNInfo *ValNo) {
 /// RenumberValues - Renumber all values in order of appearance and delete the
 /// remaining unused values.
 void LiveRange::RenumberValues() {
-  SmallPtrSet<VNInfo *, 8> Seen;
+  SmallPtrSet<VNInfo*, 8> Seen;
   valnos.clear();
   for (const Segment &S : segments) {
     VNInfo *VNI = S.valno;
@@ -565,9 +561,8 @@ void LiveRange::append(const Segment S) {
   segments.push_back(S);
 }
 
-std::pair<VNInfo *, bool> LiveRange::extendInBlock(ArrayRef<SlotIndex> Undefs,
-                                                   SlotIndex StartIdx,
-                                                   SlotIndex Kill) {
+std::pair<VNInfo*,bool> LiveRange::extendInBlock(ArrayRef<SlotIndex> Undefs,
+    SlotIndex StartIdx, SlotIndex Kill) {
   // Use the segment set, if it is available.
   if (segmentSet != nullptr)
     return CalcLiveRangeUtilSet(this).extendInBlock(Undefs, StartIdx, Kill);
@@ -590,8 +585,8 @@ void LiveRange::removeSegment(SlotIndex Start, SlotIndex End,
   // Find the Segment containing this span.
   iterator I = find(Start);
   assert(I != end() && "Segment is not in range!");
-  assert(I->containsInterval(Start, End) &&
-         "Segment is not entirely in range!");
+  assert(I->containsInterval(Start, End)
+         && "Segment is not entirely in range!");
 
   // If the span we are removing is at the start of the Segment, adjust it.
   VNInfo *ValNo = I->valno;
@@ -611,7 +606,7 @@ void LiveRange::removeSegment(SlotIndex Start, SlotIndex End,
         }
       }
 
-      segments.erase(I); // Removed the whole Segment.
+      segments.erase(I);  // Removed the whole Segment.
     } else
       I->start = End;
     return;
@@ -626,7 +621,7 @@ void LiveRange::removeSegment(SlotIndex Start, SlotIndex End,
 
   // Otherwise, we are splitting the Segment into two pieces.
   SlotIndex OldEnd = I->end;
-  I->end = Start; // Trim the old segment.
+  I->end = Start;   // Trim the old segment.
 
   // Insert the new one.
   segments.insert(std::next(I), Segment(End, OldEnd, ValNo));
@@ -635,16 +630,16 @@ void LiveRange::removeSegment(SlotIndex Start, SlotIndex End,
 /// removeValNo - Remove all the segments defined by the specified value#.
 /// Also remove the value# from value# list.
 void LiveRange::removeValNo(VNInfo *ValNo) {
-  if (empty())
-    return;
-  segments.erase(
-      remove_if(*this, [ValNo](const Segment &S) { return S.valno == ValNo; }),
-      end());
+  if (empty()) return;
+  segments.erase(remove_if(*this, [ValNo](const Segment &S) {
+    return S.valno == ValNo;
+  }), end());
   // Now that ValNo is dead, remove it.
   markValNoForDeletion(ValNo);
 }
 
-void LiveRange::join(LiveRange &Other, const int *LHSValNoAssignments,
+void LiveRange::join(LiveRange &Other,
+                     const int *LHSValNoAssignments,
                      const int *RHSValNoAssignments,
                      SmallVectorImpl<VNInfo *> &NewVNInfo) {
   verify();
@@ -670,7 +665,7 @@ void LiveRange::join(LiveRange &Other, const int *LHSValNoAssignments,
     iterator OutIt = begin();
     OutIt->valno = NewVNInfo[LHSValNoAssignments[OutIt->valno->id]];
     for (iterator I = std::next(OutIt), E = end(); I != E; ++I) {
-      VNInfo *nextValNo = NewVNInfo[LHSValNoAssignments[I->valno->id]];
+      VNInfo* nextValNo = NewVNInfo[LHSValNoAssignments[I->valno->id]];
       assert(nextValNo && "Huh?");
 
       // If this live range has the same value # as its immediate predecessor,
@@ -710,11 +705,11 @@ void LiveRange::join(LiveRange &Other, const int *LHSValNoAssignments,
         valnos.push_back(VNI);
       else
         valnos[NumValNos] = VNI;
-      VNI->id = NumValNos++; // Renumber val#.
+      VNI->id = NumValNos++;  // Renumber val#.
     }
   }
   if (NumNewVals < NumVals)
-    valnos.resize(NumNewVals); // shrinkify
+    valnos.resize(NumNewVals);  // shrinkify
 
   // Okay, now insert the RHS live segments into the LHS.
   LiveRangeUpdater Updater(this);
@@ -726,7 +721,8 @@ void LiveRange::join(LiveRange &Other, const int *LHSValNoAssignments,
 /// value number.  The segments in RHS are allowed to overlap with segments in
 /// the current range, but only if the overlapping segments have the
 /// specified value number.
-void LiveRange::MergeSegmentsInAsValue(const LiveRange &RHS, VNInfo *LHSValNo) {
+void LiveRange::MergeSegmentsInAsValue(const LiveRange &RHS,
+                                       VNInfo *LHSValNo) {
   LiveRangeUpdater Updater(this);
   for (const Segment &S : RHS.segments)
     Updater.add(S.start, S.end, LHSValNo);
@@ -738,7 +734,8 @@ void LiveRange::MergeSegmentsInAsValue(const LiveRange &RHS, VNInfo *LHSValNo) {
 /// current range, it will replace the value numbers of the overlaped
 /// segments with the specified value number.
 void LiveRange::MergeValueInAsValue(const LiveRange &RHS,
-                                    const VNInfo *RHSValNo, VNInfo *LHSValNo) {
+                                    const VNInfo *RHSValNo,
+                                    VNInfo *LHSValNo) {
   LiveRangeUpdater Updater(this);
   for (const Segment &S : RHS.segments)
     if (S.valno == RHSValNo)
@@ -764,21 +761,20 @@ VNInfo *LiveRange::MergeValueNumberInto(VNInfo *V1, VNInfo *V2) {
   }
 
   // Merge V1 segments into V2.
-  for (iterator I = begin(); I != end();) {
+  for (iterator I = begin(); I != end(); ) {
     iterator S = I++;
-    if (S->valno != V1)
-      continue; // Not a V1 Segment.
+    if (S->valno != V1) continue;  // Not a V1 Segment.
 
     // Okay, we found a V1 live range.  If it had a previous, touching, V2 live
     // range, extend it.
     if (S != begin()) {
-      iterator Prev = S - 1;
+      iterator Prev = S-1;
       if (Prev->valno == V2 && Prev->end == S->start) {
         Prev->end = S->end;
 
         // Erase this live-range.
         segments.erase(S);
-        I = Prev + 1;
+        I = Prev+1;
         S = Prev;
       }
     }
@@ -794,7 +790,7 @@ VNInfo *LiveRange::MergeValueNumberInto(VNInfo *V1, VNInfo *V2) {
       if (I->start == S->end && I->valno == V2) {
         S->end = I->end;
         segments.erase(I);
-        I = S + 1;
+        I = S+1;
       }
     }
   }
@@ -832,7 +828,7 @@ bool LiveRange::isLiveAtIndexes(ArrayRef<SlotIndex> Slots) const {
     return false;
 
   // Look for each slot in the live range.
-  for (; SlotI != SlotE; ++SlotI) {
+  for ( ; SlotI != SlotE; ++SlotI) {
     // Go to the next segment that ends after the current slot.
     // The slot may be within a hole in the range.
     SegmentI = advanceTo(SegmentI, *SlotI);
@@ -1001,7 +997,7 @@ void LiveInterval::computeSubRangeUndefs(SmallVectorImpl<SlotIndex> &Undefs,
   }
 }
 
-raw_ostream &llvm::operator<<(raw_ostream &OS, const LiveRange::Segment &S) {
+raw_ostream& llvm::operator<<(raw_ostream& OS, const LiveRange::Segment &S) {
   return OS << '[' << S.start << ',' << S.end << ':' << S.valno->id << ')';
 }
 
@@ -1028,8 +1024,7 @@ void LiveRange::print(raw_ostream &OS) const {
     for (const_vni_iterator i = vni_begin(), e = vni_end(); i != e;
          ++i, ++vnum) {
       const VNInfo *vni = *i;
-      if (vnum)
-        OS << ' ';
+      if (vnum) OS << ' ';
       OS << vnum << '@';
       if (vni->isUnused()) {
         OS << 'x';
@@ -1044,7 +1039,7 @@ void LiveRange::print(raw_ostream &OS) const {
 
 void LiveInterval::SubRange::print(raw_ostream &OS) const {
   OS << " L" << PrintLaneMask(LaneMask) << ' '
-     << static_cast<const LiveRange &>(*this);
+     << static_cast<const LiveRange&>(*this);
 }
 
 void LiveInterval::print(raw_ostream &OS) const {
@@ -1057,13 +1052,17 @@ void LiveInterval::print(raw_ostream &OS) const {
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-LLVM_DUMP_METHOD void LiveRange::dump() const { dbgs() << *this << '\n'; }
+LLVM_DUMP_METHOD void LiveRange::dump() const {
+  dbgs() << *this << '\n';
+}
 
 LLVM_DUMP_METHOD void LiveInterval::SubRange::dump() const {
   dbgs() << *this << '\n';
 }
 
-LLVM_DUMP_METHOD void LiveInterval::dump() const { dbgs() << *this << '\n'; }
+LLVM_DUMP_METHOD void LiveInterval::dump() const {
+  dbgs() << *this << '\n';
+}
 #endif
 
 #ifndef NDEBUG
@@ -1147,7 +1146,8 @@ void LiveRangeUpdater::print(raw_ostream &OS) const {
   }
   assert(LR && "Can't have null LR in dirty updater.");
   OS << " updater with gap = " << (ReadI - WriteI)
-     << ", last start = " << LastStart << ":\n  Area 1:";
+     << ", last start = " << LastStart
+     << ":\n  Area 1:";
   for (const auto &S : make_range(LR->begin(), WriteI))
     OS << ' ' << S;
   OS << "\n  Spills:";
@@ -1159,7 +1159,9 @@ void LiveRangeUpdater::print(raw_ostream &OS) const {
   OS << '\n';
 }
 
-LLVM_DUMP_METHOD void LiveRangeUpdater::dump() const { print(errs()); }
+LLVM_DUMP_METHOD void LiveRangeUpdater::dump() const {
+  print(errs());
+}
 #endif
 
 // Determine if A and B should be coalesced.
@@ -1335,8 +1337,7 @@ unsigned ConnectedVNInfoEqClasses::Classify(const LiveRange &LR) {
       assert(MBB && "Phi-def has no defining MBB");
       // Connect to values live out of predecessors.
       for (MachineBasicBlock::const_pred_iterator PI = MBB->pred_begin(),
-                                                  PE = MBB->pred_end();
-           PI != PE; ++PI)
+           PE = MBB->pred_end(); PI != PE; ++PI)
         if (const VNInfo *PVNI = LR.getVNInfoBefore(LIS.getMBBEndIdx(*PI)))
           EqClass.join(VNI->id, PVNI->id);
     } else {
@@ -1389,7 +1390,7 @@ void ConnectedVNInfoEqClasses::Distribute(LiveInterval &LI, LiveInterval *LIV[],
   if (LI.hasSubRanges()) {
     unsigned NumComponents = EqClass.getNumClasses();
     SmallVector<unsigned, 8> VNIMapping;
-    SmallVector<LiveInterval::SubRange *, 8> SubRanges;
+    SmallVector<LiveInterval::SubRange*, 8> SubRanges;
     BumpPtrAllocator &Allocator = LIS.getVNInfoAllocator();
     for (LiveInterval::SubRange &SR : LI.subranges()) {
       // Create new subranges in the split intervals and construct a mapping
@@ -1398,7 +1399,7 @@ void ConnectedVNInfoEqClasses::Distribute(LiveInterval &LI, LiveInterval *LIV[],
       VNIMapping.clear();
       VNIMapping.reserve(NumValNos);
       SubRanges.clear();
-      SubRanges.resize(NumComponents - 1, nullptr);
+      SubRanges.resize(NumComponents-1, nullptr);
       for (unsigned I = 0; I < NumValNos; ++I) {
         const VNInfo &VNI = *SR.valnos[I];
         unsigned ComponentNum;
@@ -1406,12 +1407,12 @@ void ConnectedVNInfoEqClasses::Distribute(LiveInterval &LI, LiveInterval *LIV[],
           ComponentNum = 0;
         } else {
           const VNInfo *MainRangeVNI = LI.getVNInfoAt(VNI.def);
-          assert(MainRangeVNI != nullptr &&
-                 "SubRange def must have corresponding main range def");
+          assert(MainRangeVNI != nullptr
+                 && "SubRange def must have corresponding main range def");
           ComponentNum = getEqClass(MainRangeVNI);
-          if (ComponentNum > 0 && SubRanges[ComponentNum - 1] == nullptr) {
-            SubRanges[ComponentNum - 1] =
-                LIV[ComponentNum - 1]->createSubRange(Allocator, SR.LaneMask);
+          if (ComponentNum > 0 && SubRanges[ComponentNum-1] == nullptr) {
+            SubRanges[ComponentNum-1]
+              = LIV[ComponentNum-1]->createSubRange(Allocator, SR.LaneMask);
           }
         }
         VNIMapping.push_back(ComponentNum);

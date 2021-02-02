@@ -23,18 +23,17 @@ using namespace lldb;
 using namespace lldb_private;
 using namespace lldb_private::postfix;
 
-static uint32_t ResolveLLDBRegisterNum(llvm::StringRef reg_name,
-                                       llvm::Triple::ArchType arch_type) {
+static uint32_t ResolveLLDBRegisterNum(llvm::StringRef reg_name, llvm::Triple::ArchType arch_type) {
   // lookup register name to get lldb register number
   llvm::codeview::CPUType cpu_type;
   switch (arch_type) {
-  case llvm::Triple::ArchType::aarch64:
-    cpu_type = llvm::codeview::CPUType::ARM64;
-    break;
+    case llvm::Triple::ArchType::aarch64:
+      cpu_type = llvm::codeview::CPUType::ARM64;
+      break;
 
-  default:
-    cpu_type = llvm::codeview::CPUType::X64;
-    break;
+    default:
+      cpu_type = llvm::codeview::CPUType::X64;
+      break;
   }
 
   llvm::ArrayRef<llvm::EnumEntry<uint16_t>> register_names =
@@ -53,9 +52,9 @@ static uint32_t ResolveLLDBRegisterNum(llvm::StringRef reg_name,
 }
 
 static Node *ResolveFPOProgram(llvm::StringRef program,
-                               llvm::StringRef register_name,
-                               llvm::Triple::ArchType arch_type,
-                               llvm::BumpPtrAllocator &alloc) {
+                             llvm::StringRef register_name,
+                             llvm::Triple::ArchType arch_type,
+                             llvm::BumpPtrAllocator &alloc) {
   std::vector<std::pair<llvm::StringRef, Node *>> parsed =
       postfix::ParseFPOProgram(program, alloc);
 

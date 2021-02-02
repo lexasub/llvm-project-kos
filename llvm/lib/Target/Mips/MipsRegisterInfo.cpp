@@ -63,8 +63,9 @@ MipsRegisterInfo::getPointerRegClass(const MachineFunction &MF,
   llvm_unreachable("Unknown pointer kind");
 }
 
-unsigned MipsRegisterInfo::getRegPressureLimit(const TargetRegisterClass *RC,
-                                               MachineFunction &MF) const {
+unsigned
+MipsRegisterInfo::getRegPressureLimit(const TargetRegisterClass *RC,
+                                      MachineFunction &MF) const {
   switch (RC->getID()) {
   default:
     return 0;
@@ -145,12 +146,15 @@ const uint32_t *MipsRegisterInfo::getMips16RetHelperMask() {
   return CSR_Mips16RetHelper_RegMask;
 }
 
-BitVector MipsRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
-  static const MCPhysReg ReservedGPR32[] = {Mips::ZERO, Mips::K0, Mips::K1,
-                                            Mips::SP};
+BitVector MipsRegisterInfo::
+getReservedRegs(const MachineFunction &MF) const {
+  static const MCPhysReg ReservedGPR32[] = {
+    Mips::ZERO, Mips::K0, Mips::K1, Mips::SP
+  };
 
-  static const MCPhysReg ReservedGPR64[] = {Mips::ZERO_64, Mips::K0_64,
-                                            Mips::K1_64, Mips::SP_64};
+  static const MCPhysReg ReservedGPR64[] = {
+    Mips::ZERO_64, Mips::K0_64, Mips::K1_64, Mips::SP_64
+  };
 
   BitVector Reserved(getNumRegs());
   const MipsSubtarget &Subtarget = MF.getSubtarget<MipsSubtarget>();
@@ -160,9 +164,9 @@ BitVector MipsRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
 
   // Reserve registers for the NaCl sandbox.
   if (Subtarget.isTargetNaCl()) {
-    Reserved.set(Mips::T6); // Reserved for control flow mask.
-    Reserved.set(Mips::T7); // Reserved for memory access mask.
-    Reserved.set(Mips::T8); // Reserved for thread pointer.
+    Reserved.set(Mips::T6);   // Reserved for control flow mask.
+    Reserved.set(Mips::T7);   // Reserved for memory access mask.
+    Reserved.set(Mips::T8);   // Reserved for thread pointer.
   }
 
   for (unsigned I = 0; I < array_lengthof(ReservedGPR64); ++I)
@@ -194,7 +198,8 @@ BitVector MipsRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
       // Reserve the base register if we need to both realign the stack and
       // allocate variable-sized objects at runtime. This should test the
       // same conditions as MipsFrameLowering::hasBP().
-      if (needsStackRealignment(MF) && MF.getFrameInfo().hasVarSizedObjects()) {
+      if (needsStackRealignment(MF) &&
+          MF.getFrameInfo().hasVarSizedObjects()) {
         Reserved.set(Mips::S7);
         Reserved.set(Mips::S7_64);
       }
@@ -235,17 +240,17 @@ BitVector MipsRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   return Reserved;
 }
 
-bool MipsRegisterInfo::requiresRegisterScavenging(
-    const MachineFunction &MF) const {
+bool
+MipsRegisterInfo::requiresRegisterScavenging(const MachineFunction &MF) const {
   return true;
 }
 
 // FrameIndex represent objects inside a abstract stack.
 // We must replace FrameIndex with an stack/frame pointer
 // direct reference.
-void MipsRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
-                                           int SPAdj, unsigned FIOperandNum,
-                                           RegScavenger *RS) const {
+void MipsRegisterInfo::
+eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
+                    unsigned FIOperandNum, RegScavenger *RS) const {
   MachineInstr &MI = *II;
   MachineFunction &MF = *MI.getParent()->getParent();
 
@@ -267,7 +272,8 @@ void MipsRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   eliminateFI(MI, FIOperandNum, FrameIndex, stackSize, spOffset);
 }
 
-Register MipsRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
+Register MipsRegisterInfo::
+getFrameRegister(const MachineFunction &MF) const {
   const MipsSubtarget &Subtarget = MF.getSubtarget<MipsSubtarget>();
   const TargetFrameLowering *TFI = Subtarget.getFrameLowering();
   bool IsN64 =
@@ -276,8 +282,8 @@ Register MipsRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
   if (Subtarget.inMips16Mode())
     return TFI->hasFP(MF) ? Mips::S0 : Mips::SP;
   else
-    return TFI->hasFP(MF) ? (IsN64 ? Mips::FP_64 : Mips::FP)
-                          : (IsN64 ? Mips::SP_64 : Mips::SP);
+    return TFI->hasFP(MF) ? (IsN64 ? Mips::FP_64 : Mips::FP) :
+                            (IsN64 ? Mips::SP_64 : Mips::SP);
 }
 
 bool MipsRegisterInfo::canRealignStack(const MachineFunction &MF) const {

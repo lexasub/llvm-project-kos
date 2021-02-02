@@ -1,15 +1,13 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-linux-gnu -debug-info-kind=limited -S -emit-llvm -std=c++11 -o - %s | FileCheck --check-prefix LINUX %s
 // RUN: %clang_cc1 -triple x86_64-windows-msvc -debug-info-kind=limited -gcodeview -S -emit-llvm -std=c++11 -o - %s | FileCheck --check-prefix MSVC %s
 
-int main(int argc, char *argv[], char *arge[]) {
+int main(int argc, char* argv[], char* arge[]) {
   //
   // In CodeView, the LF_MFUNCTION entry for "bar()" refers to the forward
   // reference of the unnamed struct. Visual Studio requires a unique
   // identifier to match the LF_STRUCTURE forward reference to the definition.
   //
-  struct {
-    void bar() {}
-  } one;
+  struct { void bar() {} } one;
   //
   // LINUX:      !{{[0-9]+}} = !DILocalVariable(name: "one"
   // LINUX-SAME:     type: [[TYPE_OF_ONE:![0-9]+]]
@@ -29,13 +27,12 @@ int main(int argc, char *argv[], char *arge[]) {
   // MSVC-SAME:      identifier: ".?AU<unnamed-type-one>@?1??main@@9@"
   // MSVC-SAME:      )
 
+
   // In CodeView, the LF_POINTER entry for "ptr2unnamed" refers to the forward
   // reference of the unnamed struct. Visual Studio requires a unique
   // identifier to match the LF_STRUCTURE forward reference to the definition.
   //
-  struct {
-    int bar;
-  } two = {42};
+  struct { int bar; } two = { 42 };
   int decltype(two)::*ptr2unnamed = &decltype(two)::bar;
   //
   // LINUX:      !{{[0-9]+}} = !DILocalVariable(name: "two"
@@ -56,14 +53,12 @@ int main(int argc, char *argv[], char *arge[]) {
   // MSVC-SAME:      identifier: ".?AU<unnamed-type-two>@?2??main@@9@"
   // MSVC-SAME:      )
 
+
   // In DWARF, named structures which are not externally visibile do not
   // require an identifier.  In CodeView, named structures are given an
   // identifier.
   //
-  struct named {
-    int bar;
-    int named::*p2mem;
-  } three = {42, &named::bar};
+  struct named { int bar; int named::* p2mem; } three = { 42, &named::bar };
   //
   // LINUX:      !{{[0-9]+}} = !DILocalVariable(name: "three"
   // LINUX-SAME:     type: [[TYPE_OF_THREE:![0-9]+]]
@@ -82,6 +77,7 @@ int main(int argc, char *argv[], char *arge[]) {
   // MSVC-SAME:      name: "named"
   // MSVC-SAME:      identifier: ".?AUnamed@?1??main@@9@"
   // MSVC-SAME:      )
+
 
   // In CodeView, the LF_MFUNCTION entry for the lambda "operator()" routine
   // refers to the forward reference of the unnamed LF_CLASS for the lambda.

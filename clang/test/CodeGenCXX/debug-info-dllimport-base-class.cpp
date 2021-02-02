@@ -20,6 +20,7 @@
 // CHECK-NOT:              DIFlagFwdDecl
 // CHECK-SAME:             ){{$}}
 
+
 struct ImportedAfterCompletion;
 ImportedAfterCompletion *force_fwd_decl;
 struct __declspec(dllimport) ImportedAfterCompletion {

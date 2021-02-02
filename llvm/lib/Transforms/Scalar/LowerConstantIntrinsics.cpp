@@ -102,7 +102,7 @@ static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo *TLI,
 
   ReversePostOrderTraversal<Function *> RPOT(&F);
   for (BasicBlock *BB : RPOT) {
-    for (Instruction &I : *BB) {
+    for (Instruction &I: *BB) {
       IntrinsicInst *II = dyn_cast<IntrinsicInst>(&I);
       if (!II)
         continue;
@@ -116,7 +116,7 @@ static bool lowerConstantIntrinsics(Function &F, const TargetLibraryInfo *TLI,
       }
     }
   }
-  for (WeakTrackingVH &VH : Worklist) {
+  for (WeakTrackingVH &VH: Worklist) {
     // Items on the worklist can be mutated by earlier recursive replaces.
     // This can remove the intrinsic as dead (VH == null), but also replace
     // the intrinsic in place.

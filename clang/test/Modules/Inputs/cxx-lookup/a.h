@@ -1,4 +1,2 @@
 // a
-namespace llvm {
-class GlobalValue;
-}
+namespace llvm { class GlobalValue; }

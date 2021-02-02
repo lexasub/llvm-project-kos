@@ -205,12 +205,14 @@ bool ByteCodeExprGen<Emitter>::VisitBinaryOperator(const BinaryOperator *BO) {
   return this->bail(BO);
 }
 
-template <class Emitter> bool ByteCodeExprGen<Emitter>::discard(const Expr *E) {
+template <class Emitter>
+bool ByteCodeExprGen<Emitter>::discard(const Expr *E) {
   OptionScope<Emitter> Scope(this, /*discardResult=*/true);
   return this->Visit(E);
 }
 
-template <class Emitter> bool ByteCodeExprGen<Emitter>::visit(const Expr *E) {
+template <class Emitter>
+bool ByteCodeExprGen<Emitter>::visit(const Expr *E) {
   OptionScope<Emitter> Scope(this, /*discardResult=*/false);
   return this->Visit(E);
 }
@@ -459,8 +461,8 @@ ByteCodeExprGen<Emitter>::allocateLocal(DeclTy &&Src, bool IsExtended) {
 }
 
 template <class Emitter>
-bool ByteCodeExprGen<Emitter>::visitInitializer(const Expr *Init,
-                                                InitFnRef InitFn) {
+bool ByteCodeExprGen<Emitter>::visitInitializer(
+    const Expr *Init, InitFnRef InitFn) {
   OptionScope<Emitter> Scope(this, InitFn);
   return this->Visit(Init);
 }
@@ -562,7 +564,8 @@ bool ByteCodeExprGen<Emitter>::visitDecl(const VarDecl *VD) {
   return this->bail(VD);
 }
 
-template <class Emitter> void ByteCodeExprGen<Emitter>::emitCleanup() {
+template <class Emitter>
+void ByteCodeExprGen<Emitter>::emitCleanup() {
   for (VariableScope<Emitter> *C = VarScope; C; C = C->getParent())
     C->emitDestruction();
 }

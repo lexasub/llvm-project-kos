@@ -549,8 +549,8 @@ public:
               const clang::ObjCObjectPointerType *OPT) override {
     for (auto &Source : Sources) {
       if (clang::TypoCorrection C =
-              Source->CorrectTypo(Typo, LookupKind, S, SS, CCC, MemberContext,
-                                  EnteringContext, OPT))
+              Source->CorrectTypo(Typo, LookupKind, S, SS, CCC,
+                                      MemberContext, EnteringContext, OPT))
         return C;
     }
     return clang::TypoCorrection();

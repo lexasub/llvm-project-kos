@@ -102,16 +102,17 @@
 // Check target registration is registered as a Ctor.
 // CHECK: appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 0, void ()* @.omp_offloading.requires_reg, i8* null }]
 
-template <typename tx>
+
+template<typename tx>
 tx ftemplate(int n) {
   tx a = 0;
 
-#pragma omp target parallel num_threads(tx(20))
+  #pragma omp target parallel num_threads(tx(20))
   {
   }
 
   short b = 1;
-#pragma omp target parallel num_threads(b)
+  #pragma omp target parallel num_threads(b)
   {
     a += b;
   }
@@ -119,31 +120,32 @@ tx ftemplate(int n) {
   return a;
 }
 
-static int fstatic(int n) {
+static
+int fstatic(int n) {
 
-#pragma omp target parallel num_threads(n)
+  #pragma omp target parallel num_threads(n)
   {
   }
 
-#pragma omp target parallel num_threads(32 + n)
+  #pragma omp target parallel num_threads(32+n)
   {
   }
 
-  return n + 1;
+  return n+1;
 }
 
 struct S1 {
   double a;
 
-  int r1(int n) {
+  int r1(int n){
     int b = 1;
 
-#pragma omp target parallel num_threads(n - b)
+    #pragma omp target parallel num_threads(n-b)
     {
       this->a = (double)b + 1.5;
     }
 
-#pragma omp target parallel num_threads(1024)
+    #pragma omp target parallel num_threads(1024)
     {
       this->a = 2.5;
     }
@@ -153,7 +155,7 @@ struct S1 {
 };
 
 // CHECK: define {{.*}}@{{.*}}bar{{.*}}
-int bar(int n) {
+int bar(int n){
   int a = 0;
 
   S1 S;
@@ -168,6 +170,8 @@ int bar(int n) {
 
   return a;
 }
+
+
 
 //
 // CHECK: define {{.*}}[[FS1]]([[S1]]* {{[^,]*}} {{%.+}}, i32 {{[^%]*}}[[PARM:%.+]])
@@ -205,6 +209,11 @@ int bar(int n) {
 // CHECK:       br label {{%?}}[[END]]
 // CHECK:       [[END]]
 //
+
+
+
+
+
 
 //
 // CHECK: define {{.*}}[[FSTATIC]](i32 {{[^%]*}}[[PARM:%.+]])
@@ -250,6 +259,11 @@ int bar(int n) {
 // CHECK:       [[END]]
 //
 
+
+
+
+
+
 //
 // CHECK: define {{.*}}[[FTEMPLATE]]
 //
@@ -285,6 +299,11 @@ int bar(int n) {
 // CHECK:       [[END]]
 //
 
+
+
+
+
+
 // Check that the offloading functions are emitted and that the parallel function
 // is appropriately guarded.
 
@@ -298,11 +317,19 @@ int bar(int n) {
 //
 //
 
+
 // CHECK:       define internal void [[HVT2]]([[S1]]* {{%.+}})
 // CHECK:       call void @__kmpc_push_num_threads(%struct.ident_t* {{[^,]+}}, i32 {{[^,]+}}, i32 1024)
 // CHECK:       call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* [[DEF_LOC]], i32 1,
 //
 //
+
+
+
+
+
+
+
 
 // CHECK:       define internal void [[HVT3]](i[[SZ]] [[PARM:%.+]])
 // CHECK-DAG:   store i[[SZ]] [[PARM]], i[[SZ]]* [[CAPE_ADDR:%.+]], align
@@ -323,11 +350,16 @@ int bar(int n) {
 //
 //
 
+
+
+
+
 // CHECK:       define internal void [[HVT5]](
 // CHECK:       call void @__kmpc_push_num_threads(%struct.ident_t* {{[^,]+}}, i32 {{[^,]+}}, i32 20)
 // CHECK:       call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* [[DEF_LOC]], i32 0,
 //
 //
+
 
 // CHECK:       define internal void [[HVT6]](i[[SZ]] [[PARM1:%.+]], i[[SZ]] [[PARM2:%.+]], i[[SZ]] [[PARM3:%.+]])
 // CHECK-DAG:   store i[[SZ]] [[PARM3]], i[[SZ]]* [[CAPE_ADDR:%.+]], align
@@ -338,5 +370,7 @@ int bar(int n) {
 // CHECK:       call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(%struct.ident_t* [[DEF_LOC]], i32 2,
 //
 //
+
+
 
 #endif

@@ -79,9 +79,9 @@ public:
   /// ".." and a filename "../file.h" this would be "../../file.h".
   Optional<FileEntryRef> LookupFile(StringRef Filename, FileManager &FM) const;
 
-  using HeaderMapImpl::dump;
-  using HeaderMapImpl::getFileName;
   using HeaderMapImpl::lookupFilename;
+  using HeaderMapImpl::getFileName;
+  using HeaderMapImpl::dump;
 };
 
 } // end namespace clang.

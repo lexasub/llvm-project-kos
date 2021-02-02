@@ -64,7 +64,6 @@ class BasicFileAnalysisTest : public ::testing::Test {
 public:
   BasicFileAnalysisTest(StringRef Trip)
       : SuccessfullyInitialised(false), Analysis(Trip) {}
-
 protected:
   void SetUp() override {
     IgnoreDWARFFlag = true;
@@ -72,8 +71,9 @@ protected:
     if (auto Err = Analysis.initialiseDisassemblyMembers()) {
       handleAllErrors(std::move(Err), [&](const UnsupportedDisassembly &E) {
         SuccessfullyInitialised = false;
-        outs() << "Note: CFIVerifyTests are disabled due to lack of support "
-                  "on this build.\n";
+        outs()
+            << "Note: CFIVerifyTests are disabled due to lack of support "
+               "on this build.\n";
       });
     }
   }
@@ -657,8 +657,7 @@ TEST_F(BasicX86FileAnalysisTest, CFIProtectionGoodAndBadPaths) {
             Analysis.validateCFIProtection(Result));
 }
 
-TEST_F(BasicX86FileAnalysisTest,
-       CFIProtectionWithUnconditionalJumpInFallthrough) {
+TEST_F(BasicX86FileAnalysisTest, CFIProtectionWithUnconditionalJumpInFallthrough) {
   if (!SuccessfullyInitialised)
     return;
   Analysis.parseSectionContents(

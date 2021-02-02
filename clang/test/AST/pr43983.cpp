@@ -7,9 +7,7 @@
 // RUN: | sed -e "s/ <undeserialized declarations>//" -e "s/ imported//" \
 // RUN: | FileCheck %s
 
-struct B {
-  _Alignas(64) struct { int b; };
-};
+struct B { _Alignas(64) struct { int b; };   };
 
 // CHECK:  | `-AlignedAttr {{.*}} <col:12> _Alignas
 // CHECK-NEXT:  |   `-ConstantExpr {{.*}} <col:21> 'int'

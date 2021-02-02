@@ -5,6 +5,7 @@ struct Foo {
   Foo() = delete;
 };
 
+
 // RUN: c-index-test -test-print-type --std=c++11 %s | FileCheck %s
 // CHECK: FunctionDecl=foo:1:6 (unavailable) [type=void ()] [typekind=FunctionProto] [resulttype=void] [resulttypekind=Void] [isPOD=0]
 // CHECK: StructDecl=Foo:3:8 (Definition) [type=Foo] [typekind=Record] [isPOD=1]

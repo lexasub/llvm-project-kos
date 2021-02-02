@@ -18,15 +18,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::piecewise_linear_distribution<> D;
-    double b[] = {10, 14, 16, 17};
-    double p[] = {25, 62.5, 12.5, 0};
-    const size_t Np = sizeof(p) / sizeof(p[0]);
-    D d(b, b + Np, p);
-    assert(d.min() == 10);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::piecewise_linear_distribution<> D;
+        double b[] = {10, 14, 16, 17};
+        double p[] = {25, 62.5, 12.5, 0};
+        const size_t Np = sizeof(p) / sizeof(p[0]);
+        D d(b, b+Np, p);
+        assert(d.min() == 10);
+    }
 
   return 0;
 }

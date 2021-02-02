@@ -9,8 +9,7 @@
 //  - One for each of the n evaluations of the compound-statement in the 'for' body
 //  - One for the 'return' statemnet
 constexpr bool steps(int n) {
-  for (int k = 0; k != n; ++k) {
-  }
+  for (int k = 0; k != n; ++k) {}
   return true; // expected-note {{step limit}}
 }
 

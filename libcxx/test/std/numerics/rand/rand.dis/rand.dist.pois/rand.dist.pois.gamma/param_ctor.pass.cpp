@@ -19,28 +19,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::gamma_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p;
-    assert(p.alpha() == 1);
-    assert(p.beta() == 1);
-  }
-  {
-    typedef std::gamma_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10);
-    assert(p.alpha() == 10);
-    assert(p.beta() == 1);
-  }
-  {
-    typedef std::gamma_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10, 5);
-    assert(p.alpha() == 10);
-    assert(p.beta() == 5);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::gamma_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p;
+        assert(p.alpha() == 1);
+        assert(p.beta() == 1);
+    }
+    {
+        typedef std::gamma_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10);
+        assert(p.alpha() == 10);
+        assert(p.beta() == 1);
+    }
+    {
+        typedef std::gamma_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10, 5);
+        assert(p.alpha() == 10);
+        assert(p.beta() == 5);
+    }
 
   return 0;
 }

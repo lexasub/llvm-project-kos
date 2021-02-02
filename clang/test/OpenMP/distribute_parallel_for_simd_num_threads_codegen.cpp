@@ -50,11 +50,7 @@ void foo();
 struct S {
   intptr_t a, b, c;
   S(intptr_t a) : a(a) {}
-  operator char() {
-    extern void mayThrow();
-    mayThrow();
-    return a;
-  }
+  operator char() {  extern void mayThrow(); mayThrow(); return a; }
   ~S() {}
 };
 

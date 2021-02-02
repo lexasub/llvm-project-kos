@@ -18,7 +18,7 @@ class ASTContext;
 namespace comments {
 class FullComment;
 class HTMLTagComment;
-} // namespace comments
+}
 
 namespace index {
 class CommentToXMLConverter {
@@ -43,3 +43,4 @@ public:
 } // namespace clang
 
 #endif // LLVM_CLANG_INDEX_COMMENTTOXML_H
+

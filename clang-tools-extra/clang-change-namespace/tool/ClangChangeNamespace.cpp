@@ -65,8 +65,8 @@ cl::opt<bool> Inplace("i", cl::desc("Inplace edit <file>s, if specified."),
 
 cl::opt<bool>
     DumpYAML("dump_result",
-             cl::desc("Dump new file contents in YAML, if specified."),
-             cl::cat(ChangeNamespaceCategory));
+         cl::desc("Dump new file contents in YAML, if specified."),
+         cl::cat(ChangeNamespaceCategory));
 
 cl::opt<std::string> Style("style",
                            cl::desc("The style name used for reformatting."),

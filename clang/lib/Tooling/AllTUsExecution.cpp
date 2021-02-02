@@ -100,7 +100,7 @@ llvm::Error AllTUsToolExecutor::execute(
 
   std::vector<std::string> Files;
   llvm::Regex RegexFilter(Filter);
-  for (const auto &File : Compilations.getAllFiles()) {
+  for (const auto& File : Compilations.getAllFiles()) {
     if (RegexFilter.match(File))
       Files.push_back(File);
   }
@@ -164,7 +164,7 @@ public:
           "[AllTUsToolExecutorPlugin] Please provide a directory/file path in "
           "the compilation database.");
     return std::make_unique<AllTUsToolExecutor>(std::move(OptionsParser),
-                                                ExecutorConcurrency);
+                                                 ExecutorConcurrency);
   }
 };
 

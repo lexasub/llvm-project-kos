@@ -44,7 +44,8 @@ std::pair<RawComment::CommentKind, bool> getCommentKind(StringRef Comment,
 
     // Comment lexer does not understand escapes in comment markers, so pretend
     // that this is not a comment.
-    if (Comment[1] != '*' || Comment[Comment.size() - 2] != '*' ||
+    if (Comment[1] != '*' ||
+        Comment[Comment.size() - 2] != '*' ||
         Comment[Comment.size() - 1] != '/')
       return std::make_pair(RawComment::RCK_Invalid, false);
 
@@ -106,9 +107,10 @@ static bool isOrdinaryKind(RawComment::CommentKind K) {
 }
 
 RawComment::RawComment(const SourceManager &SourceMgr, SourceRange SR,
-                       const CommentOptions &CommentOpts, bool Merged)
-    : Range(SR), RawTextValid(false), BriefTextValid(false), IsAttached(false),
-      IsTrailingComment(false), IsAlmostTrailingComment(false) {
+                       const CommentOptions &CommentOpts, bool Merged) :
+    Range(SR), RawTextValid(false), BriefTextValid(false),
+    IsAttached(false), IsTrailingComment(false),
+    IsAlmostTrailingComment(false) {
   // Extract raw comment text, if possible.
   if (SR.getBegin() == SR.getEnd() || getRawText(SourceMgr).empty()) {
     Kind = RCK_Invalid;
@@ -138,8 +140,8 @@ RawComment::RawComment(const SourceManager &SourceMgr, SourceRange SR,
     Kind = K.first;
     IsTrailingComment |= K.second;
 
-    IsAlmostTrailingComment =
-        RawText.startswith("//<") || RawText.startswith("/*<");
+    IsAlmostTrailingComment = RawText.startswith("//<") ||
+                                 RawText.startswith("/*<");
   } else {
     Kind = RCK_Merged;
     IsTrailingComment =
@@ -165,8 +167,8 @@ StringRef RawComment::getRawTextSlow(const SourceManager &SourceMgr) const {
   assert(BeginFileID == EndFileID);
 
   bool Invalid = false;
-  const char *BufferStart =
-      SourceMgr.getBufferData(BeginFileID, &Invalid).data();
+  const char *BufferStart = SourceMgr.getBufferData(BeginFileID,
+                                                    &Invalid).data();
   if (Invalid)
     return StringRef();
 
@@ -183,7 +185,8 @@ const char *RawComment::extractBriefText(const ASTContext &Context) const {
   llvm::BumpPtrAllocator Allocator;
 
   comments::Lexer L(Allocator, Context.getDiagnostics(),
-                    Context.getCommentCommandTraits(), Range.getBegin(),
+                    Context.getCommentCommandTraits(),
+                    Range.getBegin(),
                     RawText.begin(), RawText.end());
   comments::BriefParser P(L, Context.getCommentCommandTraits());
 
@@ -205,10 +208,11 @@ comments::FullComment *RawComment::parse(const ASTContext &Context,
 
   comments::Lexer L(Context.getAllocator(), Context.getDiagnostics(),
                     Context.getCommentCommandTraits(),
-                    getSourceRange().getBegin(), RawText.begin(),
-                    RawText.end());
+                    getSourceRange().getBegin(),
+                    RawText.begin(), RawText.end());
   comments::Sema S(Context.getAllocator(), Context.getSourceManager(),
-                   Context.getDiagnostics(), Context.getCommentCommandTraits(),
+                   Context.getDiagnostics(),
+                   Context.getCommentCommandTraits(),
                    PP);
   S.setDecl(D);
   comments::Parser P(L, S, Context.getAllocator(), Context.getSourceManager(),
@@ -218,8 +222,8 @@ comments::FullComment *RawComment::parse(const ASTContext &Context,
   return P.parseFullComment();
 }
 
-static bool onlyWhitespaceBetween(SourceManager &SM, SourceLocation Loc1,
-                                  SourceLocation Loc2,
+static bool onlyWhitespaceBetween(SourceManager &SM,
+                                  SourceLocation Loc1, SourceLocation Loc2,
                                   unsigned MaxNewlinesAllowed) {
   std::pair<FileID, unsigned> Loc1Info = SM.getDecomposedLoc(Loc1);
   std::pair<FileID, unsigned> Loc2Info = SM.getDecomposedLoc(Loc2);

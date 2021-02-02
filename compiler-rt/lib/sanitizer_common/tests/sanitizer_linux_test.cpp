@@ -13,17 +13,18 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_LINUX
 
+#include "sanitizer_common/sanitizer_linux.h"
+
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_file.h"
+#include "gtest/gtest.h"
+
 #include <pthread.h>
 #include <sched.h>
 #include <stdlib.h>
 
 #include <algorithm>
 #include <vector>
-
-#include "gtest/gtest.h"
-#include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_file.h"
-#include "sanitizer_common/sanitizer_linux.h"
 
 namespace __sanitizer {
 
@@ -108,8 +109,9 @@ void *TidReporterThread(void *argument) {
 void ThreadListerTest::SpawnTidReporter(pthread_t *pthread_id, tid_t *tid) {
   pthread_mutex_lock(&thread_arg.tid_reported_mutex);
   thread_arg.reported_tid = -1;
-  ASSERT_EQ(0,
-            pthread_create(pthread_id, NULL, TidReporterThread, &thread_arg));
+  ASSERT_EQ(0, pthread_create(pthread_id, NULL,
+                              TidReporterThread,
+                              &thread_arg));
   while (thread_arg.reported_tid == (tid_t)(-1))
     pthread_cond_wait(&thread_arg.tid_reported_cond,
                       &thread_arg.tid_reported_mutex);
@@ -127,8 +129,8 @@ static std::vector<tid_t> ReadTidsToVector(ThreadLister *thread_lister) {
 static bool Includes(std::vector<tid_t> first, std::vector<tid_t> second) {
   std::sort(first.begin(), first.end());
   std::sort(second.begin(), second.end());
-  return std::includes(first.begin(), first.end(), second.begin(),
-                       second.end());
+  return std::includes(first.begin(), first.end(),
+                       second.begin(), second.end());
 }
 
 static bool HasElement(const std::vector<tid_t> &vector, tid_t element) {
@@ -225,22 +227,22 @@ TEST(SanitizerCommon, LibraryNameIs) {
   EXPECT_FALSE(LibraryNameIs("", ""));
 
   char full_name[256];
-  const char *paths[] = {"", "/", "/path/to/"};
-  const char *suffixes[] = {"", "-linux", ".1.2", "-linux.1.2"};
-  const char *base_names[] = {"lib", "lib.0", "lib-i386"};
-  const char *wrong_names[] = {"", "lib.9", "lib-x86_64"};
+  const char *paths[] = { "", "/", "/path/to/" };
+  const char *suffixes[] = { "", "-linux", ".1.2", "-linux.1.2" };
+  const char *base_names[] = { "lib", "lib.0", "lib-i386" };
+  const char *wrong_names[] = { "", "lib.9", "lib-x86_64" };
   for (uptr i = 0; i < ARRAY_SIZE(paths); i++)
     for (uptr j = 0; j < ARRAY_SIZE(suffixes); j++) {
       for (uptr k = 0; k < ARRAY_SIZE(base_names); k++) {
         internal_snprintf(full_name, ARRAY_SIZE(full_name), "%s%s%s.so",
                           paths[i], base_names[k], suffixes[j]);
         EXPECT_TRUE(LibraryNameIs(full_name, base_names[k]))
-            << "Full name " << full_name << " doesn't match base name "
-            << base_names[k];
+            << "Full name " << full_name
+            << " doesn't match base name " << base_names[k];
         for (uptr m = 0; m < ARRAY_SIZE(wrong_names); m++)
           EXPECT_FALSE(LibraryNameIs(full_name, wrong_names[m]))
-              << "Full name " << full_name << " matches base name "
-              << wrong_names[m];
+            << "Full name " << full_name
+            << " matches base name " << wrong_names[m];
       }
     }
 }

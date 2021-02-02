@@ -32,13 +32,13 @@ struct basic_string_view {
 
 typedef basic_string_view<char> string_view;
 typedef basic_string_view<wchar_t> wstring_view;
-} // namespace std
+}  // namespace std
 
 namespace llvm {
 struct StringRef {
   int find(const char *) const;
 };
-} // namespace llvm
+}  // namespace llvm
 
 struct NotStringRef {
   int find(const char *);
@@ -113,6 +113,7 @@ void StringFind() {
   nsr.find("x");
 }
 
+
 template <typename T>
 int FindTemplateDependant(T value) {
   return value.find("A");
@@ -129,7 +130,7 @@ int FindStr() {
 }
 
 #define STR_MACRO(str) str.find("A")
-#define POS_MACRO(pos) std::string().find("A", pos)
+#define POS_MACRO(pos) std::string().find("A",pos)
 
 int Macros() {
   return STR_MACRO(std::string()) + POS_MACRO(1);

@@ -6,11 +6,11 @@
 #include "a.h"
 
 #ifdef LOCAL_VISIBILITY
-#ifndef MACRO
-#error should still be defined, undef does not override define
-#endif
+# ifndef MACRO
+#  error should still be defined, undef does not override define
+# endif
 #else
-#ifdef MACRO
-#error should have been undefined!
-#endif
+# ifdef MACRO
+#  error should have been undefined!
+# endif
 #endif

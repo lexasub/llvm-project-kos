@@ -15,7 +15,7 @@
 /// http://www.codesourcery.com/public/cxx-abi/
 
 namespace Test1 {
-
+  
 // This is from http://www.codesourcery.com/public/cxx-abi/cxx-vtable-ex.html
 
 // CHECK-1:      Vtable for 'Test1::A' (5 entries).
@@ -26,9 +26,9 @@ namespace Test1 {
 // CHECK-1-NEXT:    3 | void Test1::A::g()
 // CHECK-1-NEXT:    4 | void Test1::A::h()
 struct A {
-  virtual void f();
-  virtual void g();
-  virtual void h();
+  virtual void f ();
+  virtual void g ();
+  virtual void h ();
   int ia;
 };
 void A::f() {}
@@ -51,9 +51,9 @@ void A::f() {}
 // CHECK-2-NEXT:   11 | void Test1::A::g()
 // CHECK-2-NEXT:   12 | void Test1::B::h()
 // CHECK-2-NEXT:        [this adjustment: 0 non-virtual, -40 vcall offset offset]
-struct B : public virtual A {
-  void f();
-  void h();
+struct B: public virtual A {
+  void f ();
+  void h ();
   int ib;
 };
 void B::f() {}
@@ -76,9 +76,9 @@ void B::f() {}
 // CHECK-3-NEXT:        [this adjustment: 0 non-virtual, -32 vcall offset offset]
 // CHECK-3-NEXT:   12 | void Test1::C::h()
 // CHECK-3-NEXT:        [this adjustment: 0 non-virtual, -40 vcall offset offset]
-struct C : public virtual A {
-  void g();
-  void h();
+struct C: public virtual A {
+  void g ();
+  void h ();
   int ic;
 };
 void C::g() {}
@@ -110,11 +110,11 @@ void C::g() {}
 // CHECK-4-NEXT:        [this adjustment: 0 non-virtual, -32 vcall offset offset]
 // CHECK-4-NEXT:   17 | void Test1::D::h()
 // CHECK-4-NEXT:        [this adjustment: 0 non-virtual, -40 vcall offset offset]
-struct D : public B, public C {
-  void h();
+struct D: public B, public C {
+  void h ();
   int id;
 };
-void D::h() {}
+void D::h() { }
 
 struct X {
   int ix;
@@ -161,25 +161,19 @@ struct X {
 struct E : X, D {
   int ie;
   void f();
-  void h();
+  void h ();
 };
-void E::f() {}
+void E::f() { } 
 
-} // namespace Test1
+}
 
 namespace Test2 {
 
 // From http://www.codesourcery.com/public/cxx-abi/abi.html#class-types.
 
-struct A {
-  virtual void f();
-};
-struct B : virtual public A {
-  int i;
-};
-struct C : virtual public A {
-  int j;
-};
+struct A { virtual void f(); };
+struct B : virtual public A { int i; };
+struct C : virtual public A { int j; };
 
 // CHECK-6:      Vtable for 'Test2::D' (11 entries).
 // CHECK-6-NEXT:    0 | vbase_offset (0)
@@ -200,9 +194,9 @@ struct C : virtual public A {
 struct D : public B, public C {
   virtual void d();
 };
-void D::d() {}
+void D::d() { } 
 
-} // namespace Test2
+}
 
 namespace Test3 {
 
@@ -256,7 +250,7 @@ struct C : virtual V1, virtual V2 {
   int c;
   virtual void f();
 };
-void C::f() {}
+void C::f() { }
 
 struct B {
   int b;
@@ -323,6 +317,6 @@ struct D : B, C {
   int d;
   virtual void g();
 };
-void D::g() {}
+void D::g() { }
 
-} // namespace Test3
+}

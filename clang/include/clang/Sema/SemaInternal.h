@@ -88,11 +88,13 @@ class TypoCorrectionConsumer : public VisibleDeclConsumer {
   typedef std::map<unsigned, TypoResultsMap> TypoEditDistanceMap;
 
 public:
-  TypoCorrectionConsumer(Sema &SemaRef, const DeclarationNameInfo &TypoName,
-                         Sema::LookupNameKind LookupKind, Scope *S,
-                         CXXScopeSpec *SS,
+  TypoCorrectionConsumer(Sema &SemaRef,
+                         const DeclarationNameInfo &TypoName,
+                         Sema::LookupNameKind LookupKind,
+                         Scope *S, CXXScopeSpec *SS,
                          std::unique_ptr<CorrectionCandidateCallback> CCC,
-                         DeclContext *MemberContext, bool EnteringContext)
+                         DeclContext *MemberContext,
+                         bool EnteringContext)
       : Typo(TypoName.getName().getAsIdentifierInfo()), CurrentTCIndex(0),
         SavedTCIndex(0), SemaRef(SemaRef), S(S),
         SS(SS ? std::make_unique<CXXScopeSpec>(*SS) : nullptr),
@@ -152,7 +154,7 @@ public:
   const TypoCorrection &getCurrentCorrection() {
     return CurrentTCIndex < ValidatedCorrections.size()
                ? ValidatedCorrections[CurrentTCIndex]
-               : ValidatedCorrections[0]; // The empty correction.
+               : ValidatedCorrections[0];  // The empty correction.
   }
 
   /// Return the next typo correction like getNextCorrection, but keep
@@ -174,7 +176,9 @@ public:
   /// Reset the consumer's position in the stream of viable corrections
   /// (i.e. getNextCorrection() will return each of the previously returned
   /// corrections in order before returning any new corrections).
-  void resetCorrectionStream() { CurrentTCIndex = 0; }
+  void resetCorrectionStream() {
+    CurrentTCIndex = 0;
+  }
 
   /// Return whether the end of the stream of corrections has been
   /// reached.
@@ -185,17 +189,19 @@ public:
 
   /// Save the current position in the correction stream (overwriting any
   /// previously saved position).
-  void saveCurrentPosition() { SavedTCIndex = CurrentTCIndex; }
+  void saveCurrentPosition() {
+    SavedTCIndex = CurrentTCIndex;
+  }
 
   /// Restore the saved position in the correction stream.
-  void restoreSavedPosition() { CurrentTCIndex = SavedTCIndex; }
+  void restoreSavedPosition() {
+    CurrentTCIndex = SavedTCIndex;
+  }
 
   ASTContext &getContext() const { return SemaRef.Context; }
   const LookupResult &getLookupResult() const { return Result; }
 
-  bool isAddressOfOperand() const {
-    return CorrectionValidator->IsAddressOfOperand;
-  }
+  bool isAddressOfOperand() const { return CorrectionValidator->IsAddressOfOperand; }
   const CXXScopeSpec *getSS() const { return SS.get(); }
   Scope *getScope() const { return S; }
   CorrectionCandidateCallback *getCorrectionValidator() const {
@@ -205,19 +211,19 @@ public:
 private:
   class NamespaceSpecifierSet {
     struct SpecifierInfo {
-      DeclContext *DeclCtx;
-      NestedNameSpecifier *NameSpecifier;
+      DeclContext* DeclCtx;
+      NestedNameSpecifier* NameSpecifier;
       unsigned EditDistance;
     };
 
-    typedef SmallVector<DeclContext *, 4> DeclContextList;
+    typedef SmallVector<DeclContext*, 4> DeclContextList;
     typedef SmallVector<SpecifierInfo, 16> SpecifierInfoList;
 
     ASTContext &Context;
     DeclContextList CurContextChain;
     std::string CurNameSpecifier;
-    SmallVector<const IdentifierInfo *, 4> CurContextIdentifiers;
-    SmallVector<const IdentifierInfo *, 4> CurNameSpecifierIdentifiers;
+    SmallVector<const IdentifierInfo*, 4> CurContextIdentifiers;
+    SmallVector<const IdentifierInfo*, 4> CurNameSpecifierIdentifiers;
 
     std::map<unsigned, SpecifierInfoList> DistanceMap;
 
@@ -228,7 +234,7 @@ private:
     unsigned buildNestedNameSpecifier(DeclContextList &DeclChain,
                                       NestedNameSpecifier *&NNS);
 
-  public:
+   public:
     NamespaceSpecifierSet(ASTContext &Context, DeclContext *CurContext,
                           CXXScopeSpec *CurScopeSpec);
 
@@ -318,8 +324,8 @@ inline Sema::TypoExprState::TypoExprState(TypoExprState &&other) noexcept {
   *this = std::move(other);
 }
 
-inline Sema::TypoExprState &
-Sema::TypoExprState::operator=(Sema::TypoExprState &&other) noexcept {
+inline Sema::TypoExprState &Sema::TypoExprState::
+operator=(Sema::TypoExprState &&other) noexcept {
   Consumer = std::move(other.Consumer);
   DiagHandler = std::move(other.DiagHandler);
   RecoveryHandler = std::move(other.RecoveryHandler);

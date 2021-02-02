@@ -16,16 +16,12 @@
 // }
 
 struct A {
-  A(unsigned cnt) : data_(cnt) {}
-  ~A() { assert(data_ == __cxxabiv1::__cxa_uncaught_exceptions()); }
-  unsigned data_;
+    A(unsigned cnt) : data_(cnt) {}
+    ~A() { assert( data_ == __cxxabiv1::__cxa_uncaught_exceptions()); }
+    unsigned data_;
 };
 
-int main() {
-  try {
-    A a(1);
-    throw 3;
-    assert(false);
-  } catch (int) {
-  }
+int main () {
+    try { A a(1); throw 3; assert(false); }
+    catch (int) {}
 }

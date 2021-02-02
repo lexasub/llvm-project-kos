@@ -27,14 +27,15 @@
 
 std::shared_timed_mutex m;
 
-int main(int, char**) {
-  std::shared_lock<std::shared_timed_mutex> lk0;
-  assert(lk0.mutex() == nullptr);
-  std::shared_lock<std::shared_timed_mutex> lk1(m);
-  assert(lk1.mutex() == &m);
-  lk1.unlock();
-  assert(lk1.mutex() == &m);
-  static_assert(noexcept(lk0.mutex()), "mutex() must be noexcept");
+int main(int, char**)
+{
+    std::shared_lock<std::shared_timed_mutex> lk0;
+    assert(lk0.mutex() == nullptr);
+    std::shared_lock<std::shared_timed_mutex> lk1(m);
+    assert(lk1.mutex() == &m);
+    lk1.unlock();
+    assert(lk1.mutex() == &m);
+    static_assert(noexcept(lk0.mutex()), "mutex() must be noexcept");
 
   return 0;
 }

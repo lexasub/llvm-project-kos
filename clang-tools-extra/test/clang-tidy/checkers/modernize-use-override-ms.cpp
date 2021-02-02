@@ -22,3 +22,4 @@ class EXPORT InheritedDerived : public InheritedBase {
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using 'override' or (rarely) 'final' instead of 'virtual' [modernize-use-override]
   // CHECK-FIXES: {{^}}  void a() override;
 };
+

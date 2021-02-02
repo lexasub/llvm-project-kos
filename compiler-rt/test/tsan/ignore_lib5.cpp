@@ -23,23 +23,23 @@
 
 #ifndef LIB
 
-#include "test.h"
 #include <dlfcn.h>
+#include <sys/mman.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 #include <libgen.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
-#include <sys/mman.h>
+#include "test.h"
 
 #ifndef MAP_32BIT
-#define MAP_32BIT 0
+# define MAP_32BIT 0
 #endif
 
 #ifdef __APPLE__
-#define TSAN_MAP_ANON MAP_ANON
+# define TSAN_MAP_ANON MAP_ANON
 #else
-#define TSAN_MAP_ANON MAP_ANONYMOUS
+# define TSAN_MAP_ANON MAP_ANONYMOUS
 #endif
 
 void *thr(void *arg) {
@@ -48,8 +48,8 @@ void *thr(void *arg) {
   for (int i = 0; i < 10000; i++) {
     if (i == 5000)
       barrier_wait(&barrier);
-    mmap(0, 4096, PROT_READ, TSAN_MAP_ANON | MAP_PRIVATE | MAP_32BIT, -1, 0);
-    mmap(0, 4096, PROT_WRITE, TSAN_MAP_ANON | MAP_PRIVATE | MAP_32BIT, -1, 0);
+    mmap(0, 4096, PROT_READ, TSAN_MAP_ANON | MAP_PRIVATE | MAP_32BIT, -1 , 0);
+    mmap(0, 4096, PROT_WRITE, TSAN_MAP_ANON | MAP_PRIVATE | MAP_32BIT, -1 , 0);
   }
   return 0;
 }
@@ -63,18 +63,18 @@ int main(int argc, char **argv) {
   void *h = dlopen(lib.c_str(), RTLD_GLOBAL | RTLD_NOW);
   if (h == 0)
     exit(printf("failed to load the library (%d)\n", errno));
-  void (*f)() = (void (*)())dlsym(h, "libfunc");
+  void (*f)() = (void(*)())dlsym(h, "libfunc");
   if (f == 0)
     exit(printf("failed to find the func (%d)\n", errno));
   pthread_join(th, 0);
   f();
 }
 
-#else // #ifdef LIB
+#else  // #ifdef LIB
 
 #include "ignore_lib_lib.h"
 
-#endif // #ifdef LIB
+#endif  // #ifdef LIB
 
 // CHECK-NOSUPP: WARNING: ThreadSanitizer: data race
 // CHECK-NOSUPP: OK

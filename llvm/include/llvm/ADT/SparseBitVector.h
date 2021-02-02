@@ -55,13 +55,13 @@ private:
 
   SparseBitVectorElement() {
     ElementIndex = ~0U;
-    memset(&Bits[0], 0, sizeof(BitWord) * BITWORDS_PER_ELEMENT);
+    memset(&Bits[0], 0, sizeof (BitWord) * BITWORDS_PER_ELEMENT);
   }
 
 public:
   explicit SparseBitVectorElement(unsigned Idx) {
     ElementIndex = Idx;
-    memset(&Bits[0], 0, sizeof(BitWord) * BITWORDS_PER_ELEMENT);
+    memset(&Bits[0], 0, sizeof (BitWord) * BITWORDS_PER_ELEMENT);
   }
 
   // Comparison.
@@ -84,7 +84,9 @@ public:
     return Bits[Idx];
   }
 
-  unsigned index() const { return ElementIndex; }
+  unsigned index() const {
+    return ElementIndex;
+  }
 
   bool empty() const {
     for (unsigned i = 0; i < BITWORDS_PER_ELEMENT; ++i)
@@ -149,8 +151,8 @@ public:
     unsigned WordPos = Curr / BITWORD_SIZE;
     unsigned BitPos = Curr % BITWORD_SIZE;
     BitWord Copy = Bits[WordPos];
-    assert(WordPos <= BITWORDS_PER_ELEMENT &&
-           "Word Position outside of element");
+    assert(WordPos <= BITWORDS_PER_ELEMENT
+           && "Word Position outside of element");
 
     // Mask off previous bits.
     Copy &= ~0UL << BitPos;
@@ -159,7 +161,7 @@ public:
       return WordPos * BITWORD_SIZE + countTrailingZeros(Copy);
 
     // Check subsequent words.
-    for (unsigned i = WordPos + 1; i < BITWORDS_PER_ELEMENT; ++i)
+    for (unsigned i = WordPos+1; i < BITWORDS_PER_ELEMENT; ++i)
       if (Bits[i] != 0)
         return i * BITWORD_SIZE + countTrailingZeros(Bits[i]);
     return -1;
@@ -189,7 +191,8 @@ public:
 
   // Intersect this Element with RHS and return true if this one changed.
   // BecameZero is set to true if this element became all-zero bits.
-  bool intersectWith(const SparseBitVectorElement &RHS, bool &BecameZero) {
+  bool intersectWith(const SparseBitVectorElement &RHS,
+                     bool &BecameZero) {
     bool changed = false;
     bool allzero = true;
 
@@ -248,11 +251,14 @@ public:
   }
 };
 
-template <unsigned ElementSize = 128> class SparseBitVector {
+template <unsigned ElementSize = 128>
+class SparseBitVector {
   using ElementList = std::list<SparseBitVectorElement<ElementSize>>;
   using ElementListIter = typename ElementList::iterator;
   using ElementListConstIter = typename ElementList::const_iterator;
-  enum { BITWORD_SIZE = SparseBitVectorElement<ElementSize>::BITWORD_SIZE };
+  enum {
+    BITWORD_SIZE = SparseBitVectorElement<ElementSize>::BITWORD_SIZE
+  };
 
   ElementList Elements;
   // Pointer to our current Element. This has no visible effect on the external
@@ -289,10 +295,12 @@ template <unsigned ElementSize = 128> class SparseBitVector {
     if (CurrElementIter->index() == ElementIndex) {
       return ElementIter;
     } else if (CurrElementIter->index() > ElementIndex) {
-      while (ElementIter != Begin && ElementIter->index() > ElementIndex)
+      while (ElementIter != Begin
+             && ElementIter->index() > ElementIndex)
         --ElementIter;
     } else {
-      while (ElementIter != End && ElementIter->index() < ElementIndex)
+      while (ElementIter != End &&
+             ElementIter->index() < ElementIndex)
         ++ElementIter;
     }
     CurrElementIter = ElementIter;
@@ -354,7 +362,7 @@ template <unsigned ElementSize = 128> class SparseBitVector {
 
       // See if we ran out of Bits in this word.
       if (!Bits) {
-        int NextSetBitNumber = Iter->find_next(BitNumber % ElementSize);
+        int NextSetBitNumber = Iter->find_next(BitNumber % ElementSize) ;
         // If we ran out of set bits in this element, move to next element.
         if (NextSetBitNumber == -1 || (BitNumber % ElementSize == 0)) {
           ++Iter;
@@ -386,8 +394,7 @@ template <unsigned ElementSize = 128> class SparseBitVector {
     SparseBitVectorIterator() = default;
 
     SparseBitVectorIterator(const SparseBitVector<ElementSize> *RHS,
-                            bool end = false)
-        : BitVector(RHS) {
+                            bool end = false):BitVector(RHS) {
       Iter = BitVector->Elements.begin();
       BitNumber = 0;
       Bits = 0;
@@ -397,7 +404,7 @@ template <unsigned ElementSize = 128> class SparseBitVector {
     }
 
     // Preincrement.
-    inline SparseBitVectorIterator &operator++() {
+    inline SparseBitVectorIterator& operator++() {
       ++BitNumber;
       Bits >>= 1;
       AdvanceToNextNonZero();
@@ -412,7 +419,9 @@ template <unsigned ElementSize = 128> class SparseBitVector {
     }
 
     // Return the current set bit number.
-    unsigned operator*() const { return BitNumber; }
+    unsigned operator*() const {
+      return BitNumber;
+    }
 
     bool operator==(const SparseBitVectorIterator &RHS) const {
       // If they are both at the end, ignore the rest of the fields.
@@ -439,10 +448,12 @@ public:
       : Elements(std::move(RHS.Elements)), CurrElementIter(Elements.begin()) {}
 
   // Clear.
-  void clear() { Elements.clear(); }
+  void clear() {
+    Elements.clear();
+  }
 
   // Assignment
-  SparseBitVector &operator=(const SparseBitVector &RHS) {
+  SparseBitVector& operator=(const SparseBitVector& RHS) {
     if (this == &RHS)
       return *this;
 
@@ -466,7 +477,8 @@ public:
 
     // If we can't find an element that is supposed to contain this bit, there
     // is nothing more to do.
-    if (ElementIter == Elements.end() || ElementIter->index() != ElementIndex)
+    if (ElementIter == Elements.end() ||
+        ElementIter->index() != ElementIndex)
       return false;
     return ElementIter->test(Idx % ElementSize);
   }
@@ -480,7 +492,8 @@ public:
 
     // If we can't find an element that is supposed to contain this bit, there
     // is nothing more to do.
-    if (ElementIter == Elements.end() || ElementIter->index() != ElementIndex)
+    if (ElementIter == Elements.end() ||
+        ElementIter->index() != ElementIndex)
       return;
     ElementIter->reset(Idx % ElementSize);
 
@@ -524,7 +537,9 @@ public:
     return false;
   }
 
-  bool operator!=(const SparseBitVector &RHS) const { return !(*this == RHS); }
+  bool operator!=(const SparseBitVector &RHS) const {
+    return !(*this == RHS);
+  }
 
   bool operator==(const SparseBitVector &RHS) const {
     ElementListConstIter Iter1 = Elements.begin();
@@ -670,7 +685,8 @@ public:
   //  Three argument version of intersectWithComplement.
   //  Result of RHS1 & ~RHS2 is stored into this bitmap.
   void intersectWithComplement(const SparseBitVector<ElementSize> &RHS1,
-                               const SparseBitVector<ElementSize> &RHS2) {
+                               const SparseBitVector<ElementSize> &RHS2)
+  {
     if (this == &RHS1) {
       intersectWithComplement(RHS2);
       return;
@@ -776,46 +792,53 @@ public:
   }
 
   // Return true if the SparseBitVector is empty
-  bool empty() const { return Elements.empty(); }
+  bool empty() const {
+    return Elements.empty();
+  }
 
   unsigned count() const {
     unsigned BitCount = 0;
-    for (ElementListConstIter Iter = Elements.begin(); Iter != Elements.end();
+    for (ElementListConstIter Iter = Elements.begin();
+         Iter != Elements.end();
          ++Iter)
       BitCount += Iter->count();
 
     return BitCount;
   }
 
-  iterator begin() const { return iterator(this); }
+  iterator begin() const {
+    return iterator(this);
+  }
 
-  iterator end() const { return iterator(this, true); }
+  iterator end() const {
+    return iterator(this, true);
+  }
 };
 
 // Convenience functions to allow Or and And without dereferencing in the user
 // code.
 
 template <unsigned ElementSize>
-inline bool operator|=(SparseBitVector<ElementSize> &LHS,
-                       const SparseBitVector<ElementSize> *RHS) {
+inline bool operator |=(SparseBitVector<ElementSize> &LHS,
+                        const SparseBitVector<ElementSize> *RHS) {
   return LHS |= *RHS;
 }
 
 template <unsigned ElementSize>
-inline bool operator|=(SparseBitVector<ElementSize> *LHS,
-                       const SparseBitVector<ElementSize> &RHS) {
+inline bool operator |=(SparseBitVector<ElementSize> *LHS,
+                        const SparseBitVector<ElementSize> &RHS) {
   return LHS->operator|=(RHS);
 }
 
 template <unsigned ElementSize>
-inline bool operator&=(SparseBitVector<ElementSize> *LHS,
-                       const SparseBitVector<ElementSize> &RHS) {
+inline bool operator &=(SparseBitVector<ElementSize> *LHS,
+                        const SparseBitVector<ElementSize> &RHS) {
   return LHS->operator&=(RHS);
 }
 
 template <unsigned ElementSize>
-inline bool operator&=(SparseBitVector<ElementSize> &LHS,
-                       const SparseBitVector<ElementSize> *RHS) {
+inline bool operator &=(SparseBitVector<ElementSize> &LHS,
+                        const SparseBitVector<ElementSize> *RHS) {
   return LHS &= *RHS;
 }
 
@@ -854,7 +877,7 @@ void dump(const SparseBitVector<ElementSize> &LHS, raw_ostream &out) {
   out << "[";
 
   typename SparseBitVector<ElementSize>::iterator bi = LHS.begin(),
-                                                  be = LHS.end();
+    be = LHS.end();
   if (bi != be) {
     out << *bi;
     for (++bi; bi != be; ++bi) {

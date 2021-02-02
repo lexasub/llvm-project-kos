@@ -261,7 +261,8 @@ void ProfileSummary::printDetailedSummary(raw_ostream &OS) {
   OS << "Detailed summary:\n";
   for (const auto &Entry : DetailedSummary) {
     OS << Entry.NumCounts << " blocks with count >= " << Entry.MinCount
-       << " account for " << format("%0.6g", (float)Entry.Cutoff / Scale * 100)
+       << " account for "
+       << format("%0.6g", (float)Entry.Cutoff / Scale * 100)
        << " percentage of the total counts.\n";
   }
 }

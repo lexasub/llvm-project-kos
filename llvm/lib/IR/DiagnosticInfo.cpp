@@ -75,7 +75,7 @@ void DiagnosticInfoResourceLimit::print(DiagnosticPrinter &DP) const {
   if (getResourceLimit() != 0)
     DP << " of " << getResourceLimit();
 
-  DP << " exceeded (" << getResourceSize() << ") in " << getFunction();
+  DP << " exceeded (" <<  getResourceSize() << ") in " << getFunction();
 }
 
 void DiagnosticInfoDebugMetadataVersion::print(DiagnosticPrinter &DP) const {
@@ -167,7 +167,8 @@ DiagnosticInfoOptimizationBase::Argument::Argument(StringRef Key,
   if (auto *F = dyn_cast<Function>(V)) {
     if (DISubprogram *SP = F->getSubprogram())
       Loc = SP;
-  } else if (auto *I = dyn_cast<Instruction>(V))
+  }
+  else if (auto *I = dyn_cast<Instruction>(V))
     Loc = I->getDebugLoc();
 
   // Only include names that correspond to user variables.  FIXME: We should use
@@ -231,8 +232,7 @@ DiagnosticInfoOptimizationBase::Argument::Argument(StringRef Key, DebugLoc Loc)
     : Key(std::string(Key)), Loc(Loc) {
   if (Loc) {
     Val = (Loc->getFilename() + ":" + Twine(Loc.getLine()) + ":" +
-           Twine(Loc.getCol()))
-              .str();
+           Twine(Loc.getCol())).str();
   } else {
     Val = "<UNKNOWN LOCATION>";
   }

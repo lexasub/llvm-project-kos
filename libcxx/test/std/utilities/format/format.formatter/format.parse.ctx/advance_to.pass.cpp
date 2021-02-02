@@ -49,11 +49,11 @@ constexpr bool test() {
   test("abc");
   test(L"abc");
 #ifndef _LIBCPP_NO_HAS_CHAR8_T
-  test(u8 "abc");
+  test(u8"abc");
 #endif
 #ifndef _LIBCPP_HAS_NO_UNICODE_CHARS
-  test(u "abc");
-  test(U "abc");
+  test(u"abc");
+  test(U"abc");
 #endif
 
   return true;

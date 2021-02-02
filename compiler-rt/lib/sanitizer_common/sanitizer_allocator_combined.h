@@ -46,10 +46,9 @@ class CombinedAllocator {
     if (size == 0)
       size = 1;
     if (size + alignment < size) {
-      Report(
-          "WARNING: %s: CombinedAllocator allocation overflow: "
-          "0x%zx bytes with 0x%zx alignment requested\n",
-          SanitizerToolName, size, alignment);
+      Report("WARNING: %s: CombinedAllocator allocation overflow: "
+             "0x%zx bytes with 0x%zx alignment requested\n",
+             SanitizerToolName, size, alignment);
       return nullptr;
     }
     uptr original_size = size;
@@ -75,17 +74,20 @@ class CombinedAllocator {
     return res;
   }
 
-  s32 ReleaseToOSIntervalMs() const { return primary_.ReleaseToOSIntervalMs(); }
+  s32 ReleaseToOSIntervalMs() const {
+    return primary_.ReleaseToOSIntervalMs();
+  }
 
   void SetReleaseToOSIntervalMs(s32 release_to_os_interval_ms) {
     primary_.SetReleaseToOSIntervalMs(release_to_os_interval_ms);
   }
 
-  void ForceReleaseToOS() { primary_.ForceReleaseToOS(); }
+  void ForceReleaseToOS() {
+    primary_.ForceReleaseToOS();
+  }
 
   void Deallocate(AllocatorCache *cache, void *p) {
-    if (!p)
-      return;
+    if (!p) return;
     if (primary_.PointerIsMine(p))
       cache->Deallocate(&primary_, primary_.GetSizeClass(p), p);
     else
@@ -116,7 +118,9 @@ class CombinedAllocator {
     return secondary_.PointerIsMine(p);
   }
 
-  bool FromPrimary(void *p) { return primary_.PointerIsMine(p); }
+  bool FromPrimary(void *p) {
+    return primary_.PointerIsMine(p);
+  }
 
   void *GetMetaData(const void *p) {
     if (primary_.PointerIsMine(p))
@@ -150,15 +154,21 @@ class CombinedAllocator {
 
   void TestOnlyUnmap() { primary_.TestOnlyUnmap(); }
 
-  void InitCache(AllocatorCache *cache) { cache->Init(&stats_); }
+  void InitCache(AllocatorCache *cache) {
+    cache->Init(&stats_);
+  }
 
   void DestroyCache(AllocatorCache *cache) {
     cache->Destroy(&primary_, &stats_);
   }
 
-  void SwallowCache(AllocatorCache *cache) { cache->Drain(&primary_); }
+  void SwallowCache(AllocatorCache *cache) {
+    cache->Drain(&primary_);
+  }
 
-  void GetStats(AllocatorStatCounters s) const { stats_.Get(s); }
+  void GetStats(AllocatorStatCounters s) const {
+    stats_.Get(s);
+  }
 
   void PrintStats() {
     primary_.PrintStats();

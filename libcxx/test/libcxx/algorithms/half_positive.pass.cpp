@@ -22,35 +22,35 @@
 namespace {
 
 template <class IntType, class UnderlyingType = IntType>
-TEST_CONSTEXPR bool
-test(IntType max_v = IntType(std::numeric_limits<UnderlyingType>::max())) {
-  return std::__half_positive(max_v) == max_v / 2;
+TEST_CONSTEXPR bool test(IntType max_v = IntType(std::numeric_limits<UnderlyingType>::max())) {
+    return std::__half_positive(max_v) == max_v / 2;
 }
 
-} // namespace
+}  // namespace
 
-int main(int, char**) {
-  {
-    assert(test<char>());
-    assert(test<int>());
-    assert(test<long>());
-    assert((test<UserDefinedIntegral<int>, int>()));
-    assert(test<size_t>());
+int main(int, char**)
+{
+    {
+        assert(test<char>());
+        assert(test<int>());
+        assert(test<long>());
+        assert((test<UserDefinedIntegral<int>, int>()));
+        assert(test<size_t>());
 #if !defined(_LIBCPP_HAS_NO_INT128)
-    assert(test<__int128_t>());
-#endif // !defined(_LIBCPP_HAS_NO_INT128)
-  }
+        assert(test<__int128_t>());
+#endif  // !defined(_LIBCPP_HAS_NO_INT128)
+    }
 
 #if TEST_STD_VER >= 11
-  {
-    static_assert(test<char>(), "");
-    static_assert(test<int>(), "");
-    static_assert(test<long>(), "");
-    static_assert(test<size_t>(), "");
+    {
+        static_assert(test<char>(), "");
+        static_assert(test<int>(), "");
+        static_assert(test<long>(), "");
+        static_assert(test<size_t>(), "");
 #if !defined(_LIBCPP_HAS_NO_INT128)
-    static_assert(test<__int128_t>(), "");
-#endif // !defined(_LIBCPP_HAS_NO_INT128)
-  }
+        static_assert(test<__int128_t>(), "");
+#endif  // !defined(_LIBCPP_HAS_NO_INT128)
+    }
 #endif // TEST_STD_VER >= 11
 
   return 0;

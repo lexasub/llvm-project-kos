@@ -12,5 +12,6 @@ void testImport() {
   static_assert(sizeof(TestUnresolvedTypenameAndValueDecls::Derived<double>::NewUnresolvedUsingType) == sizeof(double));
 }
 
+
 // CHECK: namespace2.cpp:16:17: warning: external variable 'z' declared with incompatible types in different translation units ('double' vs. 'float')
 // CHECK: namespace1.cpp:16:16: note: declared here with type 'float'

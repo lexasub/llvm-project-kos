@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 struct DirectInitOnly {
-  explicit DirectInitOnly(DirectInitOnly &);
+  explicit DirectInitOnly(DirectInitOnly&);
 };
 
 void direct_init_capture(DirectInitOnly &dio) {

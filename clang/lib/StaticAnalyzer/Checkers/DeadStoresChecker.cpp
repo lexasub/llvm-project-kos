@@ -11,13 +11,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Lex/Lexer.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/ParentMap.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Analysis/Analyses/LiveVariables.h"
-#include "clang/Lex/Lexer.h"
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/AnalysisManager.h"
@@ -58,7 +58,8 @@ public:
     return true;
   }
 
-  EHCodeVisitor(llvm::DenseSet<const VarDecl *> &S) : inEH(false), S(S) {}
+  EHCodeVisitor(llvm::DenseSet<const VarDecl *> &S) :
+  inEH(false), S(S) {}
 };
 
 // FIXME: Eventually migrate into its own file, and have it managed by
@@ -66,10 +67,9 @@ public:
 class ReachableCode {
   const CFG &cfg;
   llvm::BitVector reachable;
-
 public:
   ReachableCode(const CFG &cfg)
-      : cfg(cfg), reachable(cfg.getNumBlockIDs(), false) {}
+    : cfg(cfg), reachable(cfg.getNumBlockIDs(), false) {}
 
   void computeReachableBlocks();
 
@@ -77,13 +77,13 @@ public:
     return reachable[block->getBlockID()];
   }
 };
-} // namespace
+}
 
 void ReachableCode::computeReachableBlocks() {
   if (!cfg.getNumBlockIDs())
     return;
 
-  SmallVector<const CFGBlock *, 10> worklist;
+  SmallVector<const CFGBlock*, 10> worklist;
   worklist.push_back(&cfg.getEntry());
 
   while (!worklist.empty()) {
@@ -93,8 +93,7 @@ void ReachableCode::computeReachableBlocks() {
       continue;
     isReachable = true;
     for (CFGBlock::const_succ_iterator i = block->succ_begin(),
-                                       e = block->succ_end();
-         i != e; ++i)
+                                       e = block->succ_end(); i != e; ++i)
       if (const CFGBlock *succ = *i)
         worklist.push_back(succ);
   }
@@ -103,7 +102,8 @@ void ReachableCode::computeReachableBlocks() {
 static const Expr *
 LookThroughTransitiveAssignmentsAndCommaOperators(const Expr *Ex) {
   while (Ex) {
-    const BinaryOperator *BO = dyn_cast<BinaryOperator>(Ex->IgnoreParenCasts());
+    const BinaryOperator *BO =
+      dyn_cast<BinaryOperator>(Ex->IgnoreParenCasts());
     if (!BO)
       break;
     if (BO->getOpcode() == BO_Assign) {
@@ -132,11 +132,11 @@ public:
 class DeadStoreObs : public LiveVariables::Observer {
   const CFG &cfg;
   ASTContext &Ctx;
-  BugReporter &BR;
+  BugReporter& BR;
   const DeadStoresChecker *Checker;
-  AnalysisDeclContext *AC;
-  ParentMap &Parents;
-  llvm::SmallPtrSet<const VarDecl *, 20> Escaped;
+  AnalysisDeclContext* AC;
+  ParentMap& Parents;
+  llvm::SmallPtrSet<const VarDecl*, 20> Escaped;
   std::unique_ptr<ReachableCode> reachableCode;
   const CFGBlock *currentBlock;
   std::unique_ptr<llvm::DenseSet<const VarDecl *>> InEH;
@@ -191,8 +191,8 @@ public:
     return false;
   }
 
-  void Report(const VarDecl *V, DeadStoreKind dsk, PathDiagnosticLocation L,
-              SourceRange R) {
+  void Report(const VarDecl *V, DeadStoreKind dsk,
+              PathDiagnosticLocation L, SourceRange R) {
     if (Escaped.count(V))
       return;
 
@@ -216,49 +216,48 @@ public:
     SmallVector<FixItHint, 1> Fixits;
 
     switch (dsk) {
-    case DeadInit: {
-      BugType = "Dead initialization";
-      os << "Value stored to '" << *V
-         << "' during its initialization is never read";
+      case DeadInit: {
+        BugType = "Dead initialization";
+        os << "Value stored to '" << *V
+           << "' during its initialization is never read";
 
-      ASTContext &ACtx = V->getASTContext();
-      if (Checker->ShowFixIts) {
-        if (V->getInit()->HasSideEffects(ACtx,
-                                         /*IncludePossibleEffects=*/true)) {
-          break;
+        ASTContext &ACtx = V->getASTContext();
+        if (Checker->ShowFixIts) {
+          if (V->getInit()->HasSideEffects(ACtx,
+                                           /*IncludePossibleEffects=*/true)) {
+            break;
+          }
+          SourceManager &SM = ACtx.getSourceManager();
+          const LangOptions &LO = ACtx.getLangOpts();
+          SourceLocation L1 =
+              Lexer::findNextToken(
+                  V->getTypeSourceInfo()->getTypeLoc().getEndLoc(),
+                  SM, LO)->getEndLoc();
+          SourceLocation L2 =
+              Lexer::getLocForEndOfToken(V->getInit()->getEndLoc(), 1, SM, LO);
+          Fixits.push_back(FixItHint::CreateRemoval({L1, L2}));
         }
-        SourceManager &SM = ACtx.getSourceManager();
-        const LangOptions &LO = ACtx.getLangOpts();
-        SourceLocation L1 =
-            Lexer::findNextToken(
-                V->getTypeSourceInfo()->getTypeLoc().getEndLoc(), SM, LO)
-                ->getEndLoc();
-        SourceLocation L2 =
-            Lexer::getLocForEndOfToken(V->getInit()->getEndLoc(), 1, SM, LO);
-        Fixits.push_back(FixItHint::CreateRemoval({L1, L2}));
+        break;
       }
-      break;
-    }
 
-    case DeadIncrement:
-      BugType = "Dead increment";
-      LLVM_FALLTHROUGH;
-    case Standard:
-      if (!BugType)
-        BugType = "Dead assignment";
-      os << "Value stored to '" << *V << "' is never read";
-      break;
+      case DeadIncrement:
+        BugType = "Dead increment";
+        LLVM_FALLTHROUGH;
+      case Standard:
+        if (!BugType) BugType = "Dead assignment";
+        os << "Value stored to '" << *V << "' is never read";
+        break;
 
-    // eg.: f((x = foo()))
-    case Enclosing:
-      if (!Checker->WarnForDeadNestedAssignments)
-        return;
-      BugType = "Dead nested assignment";
-      os << "Although the value stored to '" << *V
-         << "' is used in the enclosing expression, the value is never "
-            "actually read from '"
-         << *V << "'";
-      break;
+      // eg.: f((x = foo()))
+      case Enclosing:
+        if (!Checker->WarnForDeadNestedAssignments)
+          return;
+        BugType = "Dead nested assignment";
+        os << "Although the value stored to '" << *V
+           << "' is used in the enclosing expression, the value is never "
+              "actually read from '"
+           << *V << "'";
+        break;
     }
 
     BR.EmitBasicReport(AC->getDecl(), Checker, BugType, "Dead store", os.str(),
@@ -281,23 +280,23 @@ public:
           VD->hasAttr<ObjCPreciseLifetimeAttr>())) {
 
       PathDiagnosticLocation ExLoc =
-          PathDiagnosticLocation::createBegin(Ex, BR.getSourceManager(), AC);
+        PathDiagnosticLocation::createBegin(Ex, BR.getSourceManager(), AC);
       Report(VD, dsk, ExLoc, Val->getSourceRange());
     }
   }
 
   void CheckDeclRef(const DeclRefExpr *DR, const Expr *Val, DeadStoreKind dsk,
-                    const LiveVariables::LivenessValues &Live) {
+                    const LiveVariables::LivenessValues& Live) {
     if (const VarDecl *VD = dyn_cast<VarDecl>(DR->getDecl()))
       CheckVarDecl(VD, DR, Val, dsk, Live);
   }
 
-  bool isIncrement(VarDecl *VD, const BinaryOperator *B) {
+  bool isIncrement(VarDecl *VD, const BinaryOperator* B) {
     if (B->isCompoundAssignmentOp())
       return true;
 
     const Expr *RHS = B->getRHS()->IgnoreParenCasts();
-    const BinaryOperator *BRHS = dyn_cast<BinaryOperator>(RHS);
+    const BinaryOperator* BRHS = dyn_cast<BinaryOperator>(RHS);
 
     if (!BRHS)
       return false;
@@ -326,16 +325,15 @@ public:
 
     // Only cover dead stores from regular assignments.  ++/-- dead stores
     // have never flagged a real bug.
-    if (const BinaryOperator *B = dyn_cast<BinaryOperator>(S)) {
-      if (!B->isAssignmentOp())
-        return; // Skip non-assignments.
+    if (const BinaryOperator* B = dyn_cast<BinaryOperator>(S)) {
+      if (!B->isAssignmentOp()) return; // Skip non-assignments.
 
       if (DeclRefExpr *DR = dyn_cast<DeclRefExpr>(B->getLHS()))
         if (VarDecl *VD = dyn_cast<VarDecl>(DR->getDecl())) {
           // Special case: check for assigning null to a pointer.
           //  This is a common form of defensive programming.
           const Expr *RHS =
-              LookThroughTransitiveAssignmentsAndCommaOperators(B->getRHS());
+            LookThroughTransitiveAssignmentsAndCommaOperators(B->getRHS());
           RHS = RHS->IgnoreParenCasts();
 
           QualType T = VD->getType();
@@ -353,14 +351,14 @@ public:
               return;
 
           // Otherwise, issue a warning.
-          DeadStoreKind dsk =
-              Parents.isConsumedExpr(B)
-                  ? Enclosing
-                  : (isIncrement(VD, B) ? DeadIncrement : Standard);
+          DeadStoreKind dsk = Parents.isConsumedExpr(B)
+                              ? Enclosing
+                              : (isIncrement(VD,B) ? DeadIncrement : Standard);
 
           CheckVarDecl(VD, DR, B->getRHS(), dsk, Live);
         }
-    } else if (const UnaryOperator *U = dyn_cast<UnaryOperator>(S)) {
+    }
+    else if (const UnaryOperator* U = dyn_cast<UnaryOperator>(S)) {
       if (!U->isIncrementOp() || U->isPrefix())
         return;
 
@@ -372,7 +370,8 @@ public:
 
       if (const DeclRefExpr *DR = dyn_cast<DeclRefExpr>(Ex))
         CheckDeclRef(DR, U, DeadIncrement, Live);
-    } else if (const DeclStmt *DS = dyn_cast<DeclStmt>(S))
+    }
+    else if (const DeclStmt *DS = dyn_cast<DeclStmt>(S))
       // Iterate through the decls.  Warn if any initializers are complex
       // expressions that are not live (never used).
       for (const auto *DI : DS->decls()) {
@@ -403,7 +402,8 @@ public:
             // A dead initialization is a variable that is dead after it
             // is initialized.  We don't flag warnings for those variables
             // marked 'unused' or 'objc_precise_lifetime'.
-            if (!isLive(Live, V) && !V->hasAttr<UnusedAttr>() &&
+            if (!isLive(Live, V) &&
+                !V->hasAttr<UnusedAttr>() &&
                 !V->hasAttr<ObjCPreciseLifetimeAttr>()) {
               // Special case: check for initializations with constants.
               //
@@ -416,7 +416,7 @@ public:
                 return;
 
               if (const DeclRefExpr *DRE =
-                      dyn_cast<DeclRefExpr>(E->IgnoreParenCasts()))
+                  dyn_cast<DeclRefExpr>(E->IgnoreParenCasts()))
                 if (const VarDecl *VD = dyn_cast<VarDecl>(DRE->getDecl())) {
                   // Special case: check for initialization from constant
                   //  variables.
@@ -437,7 +437,7 @@ public:
                 }
 
               PathDiagnosticLocation Loc =
-                  PathDiagnosticLocation::create(V, BR.getSourceManager());
+                PathDiagnosticLocation::create(V, BR.getSourceManager());
               Report(V, DeadInit, Loc, E->getSourceRange());
             }
           }
@@ -455,7 +455,7 @@ public:
 namespace {
 class FindEscaped {
 public:
-  llvm::SmallPtrSet<const VarDecl *, 20> Escaped;
+  llvm::SmallPtrSet<const VarDecl*, 20> Escaped;
 
   void operator()(const Stmt *S) {
     // Check for '&'. Any VarDecl whose address has been taken we treat as
@@ -479,7 +479,7 @@ public:
   }
 
   // Treat local variables captured by reference in C++ lambdas as escaped.
-  void findLambdaReferenceCaptures(const LambdaExpr *LE) {
+  void findLambdaReferenceCaptures(const LambdaExpr *LE)  {
     const CXXRecordDecl *LambdaClass = LE->getLambdaClass();
     llvm::DenseMap<const VarDecl *, FieldDecl *> CaptureFields;
     FieldDecl *ThisCaptureField;
@@ -501,6 +501,7 @@ public:
   }
 };
 } // end anonymous namespace
+
 
 //===----------------------------------------------------------------------===//
 // DeadStoresChecker
@@ -535,7 +536,8 @@ void ento::registerDeadStoresChecker(CheckerManager &Mgr) {
   const AnalyzerOptions &AnOpts = Mgr.getAnalyzerOptions();
   Chk->WarnForDeadNestedAssignments =
       AnOpts.getCheckerBooleanOption(Chk, "WarnForDeadNestedAssignments");
-  Chk->ShowFixIts = AnOpts.getCheckerBooleanOption(Chk, "ShowFixIts");
+  Chk->ShowFixIts =
+      AnOpts.getCheckerBooleanOption(Chk, "ShowFixIts");
 }
 
 bool ento::shouldRegisterDeadStoresChecker(const CheckerManager &mgr) {

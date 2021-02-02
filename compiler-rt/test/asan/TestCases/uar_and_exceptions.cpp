@@ -7,15 +7,15 @@
 volatile char *g;
 
 #ifndef FRAME_SIZE
-#define FRAME_SIZE 100
+# define FRAME_SIZE 100
 #endif
 
 #ifndef NUM_ITER
-#define NUM_ITER 4000
+# define NUM_ITER 4000
 #endif
 
 #ifndef DO_THROW
-#define DO_THROW 1
+# define DO_THROW 1
 #endif
 
 void Func(int depth) {
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < NUM_ITER; i++) {
     try {
       Func(argc * 100);
-    } catch (...) {
+    } catch(...) {
     }
     if ((i % (NUM_ITER / 10)) == 0)
       fprintf(stderr, "done [%d]\n", i);

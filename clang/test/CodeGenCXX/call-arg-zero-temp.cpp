@@ -4,13 +4,10 @@
 // RUN: %clang_cc1 -triple i386-apple-darwin -S %s -o %t-32.s
 // RUN: FileCheck -check-prefix CHECK-LP32 --input-file=%t-32.s %s
 
+
 extern "C" int printf(...);
 
-struct obj {
-  int a;
-  float b;
-  double d;
-};
+struct obj{ int a; float b; double d; };
 
 void foo(obj o) {
   printf("%d  %f  %f\n", o.a, o.b, o.d);

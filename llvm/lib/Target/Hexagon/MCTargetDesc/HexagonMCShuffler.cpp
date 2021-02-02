@@ -128,9 +128,10 @@ bool llvm::HexagonMCShuffle(MCContext &Context, bool Fatal,
   return MCS.reshuffleTo(MCB);
 }
 
-bool llvm::HexagonMCShuffle(MCContext &Context, MCInstrInfo const &MCII,
-                            MCSubtargetInfo const &STI, MCInst &MCB,
-                            SmallVector<DuplexCandidate, 8> possibleDuplexes) {
+bool
+llvm::HexagonMCShuffle(MCContext &Context, MCInstrInfo const &MCII,
+                       MCSubtargetInfo const &STI, MCInst &MCB,
+                       SmallVector<DuplexCandidate, 8> possibleDuplexes) {
   if (DisableShuffle)
     return false;
 
@@ -155,9 +156,8 @@ bool llvm::HexagonMCShuffle(MCContext &Context, MCInstrInfo const &MCII,
     DuplexCandidate duplexToTry = possibleDuplexes.pop_back_val();
     MCInst Attempt(MCB);
     HexagonMCInstrInfo::replaceDuplex(Context, Attempt, duplexToTry);
-    HexagonMCShuffler MCS(Context, false, MCII, STI,
-                          Attempt); // copy packet to the shuffler
-    if (MCS.size() == 1) {          // case of one duplex
+    HexagonMCShuffler MCS(Context, false, MCII, STI, Attempt); // copy packet to the shuffler
+    if (MCS.size() == 1) {                     // case of one duplex
       // copy the created duplex in the shuffler to the bundle
       MCS.copyTo(MCB);
       return false;

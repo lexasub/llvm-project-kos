@@ -5,14 +5,14 @@
 
 // This testcase checks that allocas and VLAs inside loop are correctly unpoisoned.
 
-#include "sanitizer/asan_interface.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "sanitizer/asan_interface.h"
 
 // MSVC provides _alloca instead of alloca.
 #if defined(_MSC_VER) && !defined(alloca)
-#define alloca _alloca
+# define alloca _alloca
 #endif
 
 #if defined(__sun__) && defined(__svr4__)

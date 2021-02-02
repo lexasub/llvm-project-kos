@@ -29,25 +29,25 @@
 #include "test_macros.h"
 
 struct S {
-  constexpr S() : v_(0) {}
-  S(int v) : v_(v) {}
-  constexpr S(const S& rhs) : v_(rhs.v_) {} // not trivially moveable
-  constexpr S(S&& rhs) : v_(rhs.v_) {}      // not trivially moveable
-  int v_;
-};
+    constexpr S()   : v_(0) {}
+    S(int v)        : v_(v) {}
+    constexpr S(const S  &rhs) : v_(rhs.v_) {} // not trivially moveable
+    constexpr S(      S &&rhs) : v_(rhs.v_) {} // not trivially moveable
+    int v_;
+    };
 
-constexpr bool
-test() // expected-error {{constexpr function never produces a constant expression}}
+
+constexpr bool test() // expected-error {{constexpr function never produces a constant expression}}
 {
-  std::optional<S> o1{3};
-  std::optional<S> o2 = std::move(o1);
-  return o2.has_value(); // return -something-
+    std::optional<S> o1{3};
+    std::optional<S> o2 = std::move(o1);
+    return o2.has_value();  // return -something-
 }
 
-int main(int, char**) {
-  static_assert(!std::is_trivially_move_constructible_v<S>, "");
-  static_assert(
-      test(),
-      ""); // expected-error {{static_assert expression is not an integral constant expression}}
-  return 0;
+
+int main(int, char**)
+{
+    static_assert (!std::is_trivially_move_constructible_v<S>, "" );
+    static_assert (test(), "");  // expected-error {{static_assert expression is not an integral constant expression}}
+    return 0;
 }

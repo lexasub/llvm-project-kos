@@ -9,9 +9,7 @@ void test_scalar() {
 
 void test_scalar2() {
   // CHECK-LABEL: define{{.*}} void @_Z12test_scalar2v
-  struct S {
-    int m;
-  };
+  struct S {int m;};
   __builtin_bit_cast(int, S{42});
 
   // CHECK: load i32, i32* {{.*}}, align 4, !tbaa ![[MAY_ALIAS_TBAA]]

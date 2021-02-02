@@ -519,8 +519,8 @@ ClassDescriptorV2::iVarsStorage::iVarsStorage()
 
 size_t ClassDescriptorV2::iVarsStorage::size() { return m_ivars.size(); }
 
-ClassDescriptorV2::iVarDescriptor &
-ClassDescriptorV2::iVarsStorage::operator[](size_t idx) {
+ClassDescriptorV2::iVarDescriptor &ClassDescriptorV2::iVarsStorage::
+operator[](size_t idx) {
   return m_ivars[idx];
 }
 
@@ -537,41 +537,41 @@ void ClassDescriptorV2::iVarsStorage::fill(AppleObjCRuntimeV2 &runtime,
   Process *process(runtime.GetProcess());
   if (!encoding_to_type_sp)
     return;
-  descriptor.Describe(
-      nullptr, nullptr, nullptr,
-      [this, process, encoding_to_type_sp,
-       log](const char *name, const char *type, lldb::addr_t offset_ptr,
-            uint64_t size) -> bool {
-        const bool for_expression = false;
-        const bool stop_loop = false;
-        LLDB_LOGV(log,
-                  "name = {0}, encoding = {1}, offset_ptr = {2:x}, size = {3}",
-                  name, type, offset_ptr, size);
-        CompilerType ivar_type =
-            encoding_to_type_sp->RealizeType(type, for_expression);
-        if (ivar_type) {
-          LLDB_LOGV(log,
-                    "name = {0}, encoding = {1}, offset_ptr = {2:x}, size = "
-                    "{3}, type_size = {4}",
-                    name, type, offset_ptr, size,
-                    ivar_type.GetByteSize(nullptr).getValueOr(0));
-          Scalar offset_scalar;
-          Status error;
-          const int offset_ptr_size = 4;
-          const bool is_signed = false;
-          size_t read = process->ReadScalarIntegerFromMemory(
-              offset_ptr, offset_ptr_size, is_signed, offset_scalar, error);
-          if (error.Success() && 4 == read) {
-            LLDB_LOGV(log, "offset_ptr = {0:x} --> {1}", offset_ptr,
-                      offset_scalar.SInt());
-            m_ivars.push_back(
-                {ConstString(name), ivar_type, size, offset_scalar.SInt()});
-          } else
-            LLDB_LOGV(log, "offset_ptr = {0:x} --> read fail, read = %{1}",
-                      offset_ptr, read);
-        }
-        return stop_loop;
-      });
+  descriptor.Describe(nullptr, nullptr, nullptr, [this, process,
+                                                  encoding_to_type_sp,
+                                                  log](const char *name,
+                                                       const char *type,
+                                                       lldb::addr_t offset_ptr,
+                                                       uint64_t size) -> bool {
+    const bool for_expression = false;
+    const bool stop_loop = false;
+    LLDB_LOGV(log, "name = {0}, encoding = {1}, offset_ptr = {2:x}, size = {3}",
+              name, type, offset_ptr, size);
+    CompilerType ivar_type =
+        encoding_to_type_sp->RealizeType(type, for_expression);
+    if (ivar_type) {
+      LLDB_LOGV(log,
+                "name = {0}, encoding = {1}, offset_ptr = {2:x}, size = "
+                "{3}, type_size = {4}",
+                name, type, offset_ptr, size,
+                ivar_type.GetByteSize(nullptr).getValueOr(0));
+      Scalar offset_scalar;
+      Status error;
+      const int offset_ptr_size = 4;
+      const bool is_signed = false;
+      size_t read = process->ReadScalarIntegerFromMemory(
+          offset_ptr, offset_ptr_size, is_signed, offset_scalar, error);
+      if (error.Success() && 4 == read) {
+        LLDB_LOGV(log, "offset_ptr = {0:x} --> {1}", offset_ptr,
+                  offset_scalar.SInt());
+        m_ivars.push_back(
+            {ConstString(name), ivar_type, size, offset_scalar.SInt()});
+      } else
+        LLDB_LOGV(log, "offset_ptr = {0:x} --> read fail, read = %{1}",
+                  offset_ptr, read);
+    }
+    return stop_loop;
+  });
 }
 
 void ClassDescriptorV2::GetIVarInformation() {

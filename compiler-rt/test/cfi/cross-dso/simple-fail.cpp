@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     // Test cast. BOOM.
     // CFI-DIAG-CAST: runtime error: control flow integrity check for type 'A' failed during cast to unrelated type
     // CFI-DIAG-CAST-NEXT: note: vtable is of type '{{(struct )?}}B'
-    a = (A *)p;
+    a = (A*)p;
   } else {
     // Invisible to CFI. Test virtual call later.
     memcpy(&a, &p, sizeof(a));

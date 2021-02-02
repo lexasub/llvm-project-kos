@@ -18,13 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::student_t_distribution<> D;
-    D d(5);
-    D::result_type m = d.max();
-    assert(m == INFINITY);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::student_t_distribution<> D;
+        D d(5);
+        D::result_type m = d.max();
+        assert(m == INFINITY);
+    }
 
   return 0;
 }

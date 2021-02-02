@@ -31,18 +31,17 @@ Error DWARFListTableHeader::extract(DWARFDataExtractor Data,
       HeaderData.Length + dwarf::getUnitLengthFieldByteSize(Format);
   if (FullLength < getHeaderSize(Format))
     return createStringError(errc::invalid_argument,
-                             "%s table at offset 0x%" PRIx64
-                             " has too small length (0x%" PRIx64
-                             ") to contain a complete header",
-                             SectionName.data(), HeaderOffset, FullLength);
+                       "%s table at offset 0x%" PRIx64
+                       " has too small length (0x%" PRIx64
+                       ") to contain a complete header",
+                       SectionName.data(), HeaderOffset, FullLength);
   assert(FullLength == length() && "Inconsistent calculation of length.");
   uint64_t End = HeaderOffset + FullLength;
   if (!Data.isValidOffsetForDataOfSize(HeaderOffset, FullLength))
-    return createStringError(
-        errc::invalid_argument,
-        "section is not large enough to contain a %s table "
-        "of length 0x%" PRIx64 " at offset 0x%" PRIx64,
-        SectionName.data(), FullLength, HeaderOffset);
+    return createStringError(errc::invalid_argument,
+                       "section is not large enough to contain a %s table "
+                       "of length 0x%" PRIx64 " at offset 0x%" PRIx64,
+                       SectionName.data(), FullLength, HeaderOffset);
 
   HeaderData.Version = Data.getU16(OffsetPtr);
   HeaderData.AddrSize = Data.getU8(OffsetPtr);
@@ -52,25 +51,22 @@ Error DWARFListTableHeader::extract(DWARFDataExtractor Data,
   // Perform basic validation of the remaining header fields.
   if (HeaderData.Version != 5)
     return createStringError(errc::invalid_argument,
-                             "unrecognised %s table version %" PRIu16
-                             " in table at offset 0x%" PRIx64,
-                             SectionName.data(), HeaderData.Version,
-                             HeaderOffset);
+                       "unrecognised %s table version %" PRIu16
+                       " in table at offset 0x%" PRIx64,
+                       SectionName.data(), HeaderData.Version, HeaderOffset);
   if (HeaderData.AddrSize != 4 && HeaderData.AddrSize != 8)
-    return createStringError(
-        errc::not_supported,
-        "%s table at offset 0x%" PRIx64 " has unsupported address size %" PRIu8,
-        SectionName.data(), HeaderOffset, HeaderData.AddrSize);
+    return createStringError(errc::not_supported,
+                       "%s table at offset 0x%" PRIx64
+                       " has unsupported address size %" PRIu8,
+                       SectionName.data(), HeaderOffset, HeaderData.AddrSize);
   if (HeaderData.SegSize != 0)
     return createStringError(errc::not_supported,
-                             "%s table at offset 0x%" PRIx64
-                             " has unsupported segment selector size %" PRIu8,
-                             SectionName.data(), HeaderOffset,
-                             HeaderData.SegSize);
+                       "%s table at offset 0x%" PRIx64
+                       " has unsupported segment selector size %" PRIu8,
+                       SectionName.data(), HeaderOffset, HeaderData.SegSize);
   if (End < HeaderOffset + getHeaderSize(Format) +
                 HeaderData.OffsetEntryCount * OffsetByteSize)
-    return createStringError(
-        errc::invalid_argument,
+    return createStringError(errc::invalid_argument,
         "%s table at offset 0x%" PRIx64 " has more offset entries (%" PRIu32
         ") than there is space for",
         SectionName.data(), HeaderOffset, HeaderData.OffsetEntryCount);

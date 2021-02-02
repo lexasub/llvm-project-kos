@@ -6,15 +6,15 @@
 extern "C" int printf(const char *fmt, ...);
 
 struct B0 {
-  int a;
-  B0() : a(0xf00000B0) {}
-  virtual void f() { printf("B0"); }
+	int a;
+	B0() : a(0xf00000B0) {}
+	virtual void f() { printf("B0"); }
 };
 
 struct __declspec(align(16)) B1 {
-  int a;
-  B1() : a(0xf00000B1) {}
-  virtual void f() { printf("B1"); }
+	int a;
+	B1() : a(0xf00000B1) {}
+	virtual void f() { printf("B1"); }
 };
 
 struct __declspec(align(16)) Align16 {};
@@ -23,10 +23,10 @@ struct VAlign16 : virtual Align16 {};
 struct VAlign32 : virtual Align32 {};
 
 struct A : virtual B0, virtual B1 {
-  int a;
-  A() : a(0xf000000A) {}
-  virtual void f() { printf("A"); }
-  virtual void g() { printf("A"); }
+	int a;
+	A() : a(0xf000000A) {}
+	virtual void f() { printf("A"); }
+	virtual void g() { printf("A"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -65,10 +65,10 @@ struct A : virtual B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=16]
 
 struct C : virtual B0, virtual B1, VAlign32 {
-  int a;
-  C() : a(0xf000000C) {}
-  virtual void f() { printf("C"); }
-  virtual void g() { printf("C"); }
+	int a;
+	C() : a(0xf000000C) {}
+	virtual void f() { printf("C"); }
+	virtual void g() { printf("C"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -110,11 +110,11 @@ struct C : virtual B0, virtual B1, VAlign32 {
 // CHECK-X64-NEXT:      | [sizeof=128, align=32
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
-struct __declspec(align(32)) D : virtual B0, virtual B1 {
-  int a;
-  D() : a(0xf000000D) {}
-  virtual void f() { printf("D"); }
-  virtual void g() { printf("D"); }
+struct __declspec(align(32)) D : virtual B0, virtual B1  {
+	int a;
+	D() : a(0xf000000D) {}
+	virtual void f() { printf("D"); }
+	virtual void g() { printf("D"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -149,12 +149,12 @@ struct __declspec(align(32)) D : virtual B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=32]
 
 struct AT {
-  virtual ~AT() {}
+	virtual ~AT(){}
 };
 struct CT : virtual AT {
-  virtual ~CT();
+	virtual ~CT();
 };
-CT::~CT() {}
+CT::~CT(){}
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -174,17 +174,17 @@ CT::~CT() {}
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
 struct XA {
-  XA() { printf("XA"); }
-  long long ll;
+	XA() { printf("XA"); }
+	long long ll;
 };
 struct XB : XA {
-  XB() { printf("XB"); }
-  virtual void foo() {}
-  int b;
+	XB() { printf("XB"); }
+	virtual void foo() {}
+	int b;
 };
 struct XC : virtual XB {
-  XC() { printf("XC"); }
-  virtual void foo() {}
+	XC() { printf("XC"); }
+	virtual void foo() {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -216,19 +216,9 @@ struct XC : virtual XB {
 
 namespace pragma_test1 {
 // No overrides means no vtordisps by default.
-struct A {
-  virtual ~A();
-  virtual void foo();
-  int a;
-};
-struct B : virtual A {
-  virtual ~B();
-  virtual void bar();
-  int b;
-};
-struct C : virtual B {
-  int c;
-};
+struct A { virtual ~A(); virtual void foo(); int a; };
+struct B : virtual A { virtual ~B(); virtual void bar(); int b; };
+struct C : virtual B { int c; };
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -247,23 +237,13 @@ struct C : virtual B {
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
-} // namespace pragma_test1
+}
 
 namespace pragma_test2 {
-struct A {
-  virtual ~A();
-  virtual void foo();
-  int a;
-};
-#pragma vtordisp(push, 2)
-struct B : virtual A {
-  virtual ~B();
-  virtual void bar();
-  int b;
-};
-struct C : virtual B {
-  int c;
-};
+struct A { virtual ~A(); virtual void foo(); int a; };
+#pragma vtordisp(push,2)
+struct B : virtual A { virtual ~B(); virtual void bar(); int b; };
+struct C : virtual B { int c; };
 #pragma vtordisp(pop)
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -286,23 +266,13 @@ struct C : virtual B {
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
-} // namespace pragma_test2
+}
 
 namespace pragma_test3 {
-struct A {
-  virtual ~A();
-  virtual void foo();
-  int a;
-};
-#pragma vtordisp(push, 2)
-struct B : virtual A {
-  virtual ~B();
-  virtual void foo();
-  int b;
-};
-struct C : virtual B {
-  int c;
-};
+struct A { virtual ~A(); virtual void foo(); int a; };
+#pragma vtordisp(push,2)
+struct B : virtual A { virtual ~B(); virtual void foo(); int b; };
+struct C : virtual B { int c; };
 #pragma vtordisp(pop)
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -323,7 +293,7 @@ struct C : virtual B {
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
-} // namespace pragma_test3
+}
 
 namespace pragma_test4 {
 struct A {
@@ -334,7 +304,7 @@ struct A {
 
 // Make sure the pragma applies to class template decls before they've been
 // instantiated.
-#pragma vtordisp(push, 2)
+#pragma vtordisp(push,2)
 template <typename T>
 struct B : virtual A {
   B();
@@ -344,9 +314,7 @@ struct B : virtual A {
 };
 #pragma vtordisp(pop)
 
-struct C : virtual B<int> {
-  int c;
-};
+struct C : virtual B<int> { int c; };
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -368,17 +336,17 @@ struct C : virtual B<int> {
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
 // CHECK-X64: *** Dumping AST Record Layout
-} // namespace pragma_test4
+}
 
 struct GA {
-  virtual void fun() {}
+	virtual void fun() {}
 };
-struct GB : public GA {};
-struct GC : public virtual GA {
-  virtual void fun() {}
-  GC() {}
+struct GB: public GA {};
+struct GC: public virtual GA {
+	virtual void fun() {}
+	GC() {}
 };
-struct GD : public virtual GC, public virtual GB {};
+struct GD: public virtual GC, public virtual GB {};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -473,16 +441,17 @@ struct __declspec(dllexport) IB : virtual IA {
 // CHECK-X64-NEXT:      | [sizeof=16, align=8
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
-int a[sizeof(A) +
-      sizeof(C) +
-      sizeof(D) +
-      sizeof(CT) +
-      sizeof(XC) +
-      sizeof(pragma_test1::C) +
-      sizeof(pragma_test2::C) +
-      sizeof(pragma_test3::C) +
-      sizeof(pragma_test4::C) +
-      sizeof(GD) +
-      sizeof(HC) +
-      sizeof(IB) +
-      0];
+int a[
+sizeof(A)+
+sizeof(C)+
+sizeof(D)+
+sizeof(CT)+
+sizeof(XC)+
+sizeof(pragma_test1::C)+
+sizeof(pragma_test2::C)+
+sizeof(pragma_test3::C)+
+sizeof(pragma_test4::C)+
+sizeof(GD)+
+sizeof(HC)+
+sizeof(IB)+
+0];

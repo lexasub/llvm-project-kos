@@ -7,7 +7,8 @@ using namespace WebAssembly;
 
 namespace llvm {
 namespace WebAssembly {
-template <> bool ConcreteSortRegion<MachineLoop>::isLoop() const {
+template <>
+bool ConcreteSortRegion<MachineLoop>::isLoop() const {
   return true;
 }
 } // end namespace WebAssembly

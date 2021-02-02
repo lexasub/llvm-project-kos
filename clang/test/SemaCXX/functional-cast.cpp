@@ -11,7 +11,7 @@ struct InitViaConstructor {
   InitViaConstructor(int i = 7);
 };
 
-struct NoValueInit {         // expected-note 2 {{candidate constructor (the implicit copy constructor)}} expected-note 2 {{candidate constructor (the implicit move constructor)}}
+struct NoValueInit { // expected-note 2 {{candidate constructor (the implicit copy constructor)}} expected-note 2 {{candidate constructor (the implicit move constructor)}}
   NoValueInit(int i, int j); // expected-note 2 {{candidate constructor}}
 };
 
@@ -21,12 +21,13 @@ void test_cxx_functional_value_init() {
   (void)NoValueInit(); // expected-error{{no matching constructor for initialization}}
 }
 
-void test_cxx_function_cast_multi() {
+void test_cxx_function_cast_multi() { 
   (void)NoValueInit(0, 0);
   (void)NoValueInit(0, 0, 0); // expected-error{{no matching constructor for initialization}}
-  (void)int(1, 2);            // expected-error{{excess elements in scalar initializer}}
+  (void)int(1, 2); // expected-error{{excess elements in scalar initializer}}
   (void)int({}, 2);           // expected-error{{excess elements in scalar initializer}}
 }
+
 
 // ------------------ everything else --------------------
 
@@ -50,7 +51,8 @@ typedef int iar[100];
 typedef iar &iarr;
 typedef int (*f)(int);
 
-void t_cc() {
+void t_cc()
+{
   ccvpcvpp var = 0;
   // Cast away deep consts and volatiles.
   char ***var2 = cppp(var);
@@ -58,7 +60,7 @@ void t_cc() {
   // Const reference to reference.
   char ***&var4 = cpppr(var3);
   // Drop reference. Intentionally without qualifier change.
-  char ***var5 = cppp(var4);
+  char *** var5 = cppp(var4);
   const int ar[100] = {0};
   // Array decay. Intentionally without qualifier change.
   typedef int *intp;
@@ -67,15 +69,15 @@ void t_cc() {
   // Don't misidentify fn** as a function pointer.
   typedef f *fp_t;
   f *fpp = fp_t(&fp);
-  int const A::*const A::*icapcap = 0;
-  typedef int A::*A::*iapap_t;
+  int const A::* const A::*icapcap = 0;
+  typedef int A::* A::*iapap_t;
   iapap_t iapap = iapap_t(icapcap);
 }
 
 // ----------- static_cast -------------
 
-struct B : public A {};          // Single public base.
-struct C1 : public virtual B {}; // Single virtual base.
+struct B : public A {};             // Single public base.
+struct C1 : public virtual B {};    // Single virtual base.
 struct C2 : public virtual B {};
 struct D : public C1, public C2 {}; // Diamond
 struct E : private A {};            // Single private base.
@@ -84,25 +86,17 @@ struct G1 : public B {};
 struct G2 : public B {};
 struct H : public G1, public G2 {}; // Ambiguous path to B.
 
-enum Enum { En1,
-            En2 };
-enum Onom { On1,
-            On2 };
+enum Enum { En1, En2 };
+enum Onom { On1, On2 };
 
-struct Co1 {
-  operator int();
-};
-struct Co2 {
-  Co2(int);
-};
-struct Co3 {};
-struct Co4 {
-  Co4(Co3);
-  operator Co3();
-};
+struct Co1 { operator int(); };
+struct Co2 { Co2(int); };
+struct Co3 { };
+struct Co4 { Co4(Co3); operator Co3(); };
 
 // Explicit implicits
-void t_529_2() {
+void t_529_2()
+{
   int i = 1;
   (void)float(i);
   double d = 1.0;
@@ -126,26 +120,26 @@ void t_529_2() {
 
   typedef void *voidp;
   (void)voidp(0);
-  (void)voidp((int *)0);
+  (void)voidp((int*)0);
   typedef volatile const void *vcvoidp;
-  (void)vcvoidp((const int *)0);
+  (void)vcvoidp((const int*)0);
   typedef A *Ap;
-  (void)Ap((B *)0);
+  (void)Ap((B*)0);
   typedef A &Ar;
-  (void)Ar(*((B *)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
+  (void)Ar(*((B*)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
   typedef const B *cBp;
-  (void)cBp((C1 *)0);
+  (void)cBp((C1*)0);
   typedef B &Br;
-  (void)Br(*((C1 *)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
-  (void)Ap((D *)0);
+  (void)Br(*((C1*)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
+  (void)Ap((D*)0);
   typedef const A &cAr;
-  (void)cAr(*((D *)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
+  (void)cAr(*((D*)0)); // expected-warning {{binding dereferenced null pointer to reference has undefined behavior}}
   typedef int B::*Bmp;
   (void)Bmp((int A::*)0);
   typedef void (B::*Bmfp)();
   (void)Bmfp((void (A::*)())0);
-  (void)Ap((E *)0);            // functional-style cast ignores access control
-  (void)voidp((const int *)0); // const_cast appended
+  (void)Ap((E*)0); // functional-style cast ignores access control
+  (void)voidp((const int*)0); // const_cast appended
 
   (void)int(Co1());
   (void)Co2(1);
@@ -156,68 +150,73 @@ void t_529_2() {
 }
 
 // Anything to void
-void t_529_4() {
+void t_529_4()
+{
   void(1);
   (void(t_529_4));
 }
 
 // Static downcasts
-void t_529_5_8() {
+void t_529_5_8()
+{
   typedef B *Bp;
-  (void)Bp((A *)0);
+  (void)Bp((A*)0);
   typedef B &Br;
-  (void)Br(*((A *)0));
+  (void)Br(*((A*)0));
   typedef const G1 *cG1p;
-  (void)cG1p((A *)0);
+  (void)cG1p((A*)0);
   typedef const G1 &cG1r;
-  (void)cG1r(*((A *)0));
-  (void)Bp((const A *)0);    // const_cast appended
-  (void)Br(*((const A *)0)); // const_cast appended
+  (void)cG1r(*((A*)0));
+  (void)Bp((const A*)0); // const_cast appended
+  (void)Br(*((const A*)0)); // const_cast appended
   typedef E *Ep;
-  (void)Ep((A *)0); // access control ignored
+  (void)Ep((A*)0); // access control ignored
   typedef E &Er;
-  (void)Er(*((A *)0)); // access control ignored
+  (void)Er(*((A*)0)); // access control ignored
 
   // Bad code below
 
   typedef C1 *C1p;
-  (void)C1p((A *)0); // expected-error {{cannot cast 'A *' to 'C1p' (aka 'C1 *') via virtual base 'B'}}
+  (void)C1p((A*)0); // expected-error {{cannot cast 'A *' to 'C1p' (aka 'C1 *') via virtual base 'B'}}
   typedef C1 &C1r;
-  (void)C1r(*((A *)0)); // expected-error {{cannot cast 'A' to 'C1r' (aka 'C1 &') via virtual base 'B'}}
+  (void)C1r(*((A*)0)); // expected-error {{cannot cast 'A' to 'C1r' (aka 'C1 &') via virtual base 'B'}}
   typedef D *Dp;
-  (void)Dp((A *)0); // expected-error {{cannot cast 'A *' to 'Dp' (aka 'D *') via virtual base 'B'}}
+  (void)Dp((A*)0); // expected-error {{cannot cast 'A *' to 'Dp' (aka 'D *') via virtual base 'B'}}
   typedef D &Dr;
-  (void)Dr(*((A *)0)); // expected-error {{cannot cast 'A' to 'Dr' (aka 'D &') via virtual base 'B'}}
+  (void)Dr(*((A*)0)); // expected-error {{cannot cast 'A' to 'Dr' (aka 'D &') via virtual base 'B'}}
   typedef H *Hp;
-  (void)Hp((A *)0); // expected-error {{ambiguous cast from base 'A' to derived 'H':\n    struct A -> struct B -> struct G1 -> struct H\n    struct A -> struct B -> struct G2 -> struct H}}
+  (void)Hp((A*)0); // expected-error {{ambiguous cast from base 'A' to derived 'H':\n    struct A -> struct B -> struct G1 -> struct H\n    struct A -> struct B -> struct G2 -> struct H}}
   typedef H &Hr;
-  (void)Hr(*((A *)0)); // expected-error {{ambiguous cast from base 'A' to derived 'H':\n    struct A -> struct B -> struct G1 -> struct H\n    struct A -> struct B -> struct G2 -> struct H}}
+  (void)Hr(*((A*)0)); // expected-error {{ambiguous cast from base 'A' to derived 'H':\n    struct A -> struct B -> struct G1 -> struct H\n    struct A -> struct B -> struct G2 -> struct H}}
 
   // TODO: Test DR427. This requires user-defined conversions, though.
 }
 
 // Enum conversions
-void t_529_7() {
+void t_529_7()
+{
   (void)Enum(1);
   (void)Enum(1.0);
   (void)Onom(En1);
 
   // Bad code below
 
-  (void)Enum((int *)0); // expected-error {{functional-style cast from 'int *' to 'Enum' is not allowed}}
+  (void)Enum((int*)0); // expected-error {{functional-style cast from 'int *' to 'Enum' is not allowed}}
 }
 
 // Void pointer to object pointer
-void t_529_10() {
+void t_529_10()
+{
   typedef int *intp;
-  (void)intp((void *)0);
+  (void)intp((void*)0);
   typedef const A *cAp;
-  (void)cAp((void *)0);
-  (void)intp((const void *)0); // const_cast appended
+  (void)cAp((void*)0);
+  (void)intp((const void*)0); // const_cast appended
 }
 
 // Member pointer upcast.
-void t_529_9() {
+void t_529_9()
+{
   typedef int A::*Amp;
   (void)Amp((int B::*)0);
 
@@ -229,13 +228,12 @@ void t_529_9() {
 // -------- reinterpret_cast -----------
 
 enum test { testval = 1 };
-struct structure {
-  int m;
-};
+struct structure { int m; };
 typedef void (*fnptr)();
 
 // Test conversion between pointer and integral types, as in p3 and p4.
-void integral_conversion() {
+void integral_conversion()
+{
   typedef void *voidp;
   void *vp = voidp(testval);
   long l = long(vp);
@@ -246,7 +244,8 @@ void integral_conversion() {
   (void)long(fnp);
 }
 
-void pointer_conversion() {
+void pointer_conversion()
+{
   int *p1 = 0;
   typedef float *floatp;
   float *p2 = floatp(p1);
@@ -259,13 +258,14 @@ void pointer_conversion() {
   (void)fnptrp(deep);
 }
 
-void constness() {
+void constness()
+{
   int ***const ipppc = 0;
   typedef int const *icp_t;
   int const *icp = icp_t(ipppc);
   typedef int *intp;
   (void)intp(icp); // const_cast appended
-  typedef int const *const **intcpcpp;
+  typedef int const *const ** intcpcpp;
   intcpcpp icpcpp = intcpcpp(ipppc); // const_cast appended
   int *ip = intp(icpcpp);
   (void)icp_t(ip);
@@ -273,7 +273,8 @@ void constness() {
   (void)intcpcpcp(ipppc);
 }
 
-void fnptrs() {
+void fnptrs()
+{
   typedef int (*fnptr2)(int);
   fnptr fp = 0;
   (void)fnptr2(fp);
@@ -282,7 +283,8 @@ void fnptrs() {
   (void)fnptr(vp);
 }
 
-void refs() {
+void refs()
+{
   long l = 0;
   typedef char &charr;
   char &c = charr(l);
@@ -291,7 +293,8 @@ void refs() {
   (void)intr(&c); // expected-error {{functional-style cast from rvalue to reference type 'intr' (aka 'int &')}}
 }
 
-void memptrs() {
+void memptrs()
+{
   const int structure::*psi = 0;
   typedef const float structure::*structurecfmp;
   (void)structurecfmp(psi);
@@ -304,14 +307,15 @@ void memptrs() {
 
   typedef void (structure::*structurevmfp)();
   (void)structurevmfp(psi); // expected-error-re {{functional-style cast from 'const int structure::*' to 'structurevmfp' (aka 'void (structure::*)(){{( __attribute__\(\(thiscall\)\))?}}') is not allowed}}
-  (void)structureimp(psf);  // expected-error-re {{functional-style cast from 'void (structure::*)(){{( __attribute__\(\(thiscall\)\))?}}' to 'structureimp' (aka 'int structure::*') is not allowed}}
+  (void)structureimp(psf); // expected-error-re {{functional-style cast from 'void (structure::*)(){{( __attribute__\(\(thiscall\)\))?}}' to 'structureimp' (aka 'int structure::*') is not allowed}}
 }
 
 // ---------------- misc ------------------
 
-void crash_on_invalid_1() {
+void crash_on_invalid_1()
+{
   typedef itn Typo; // expected-error {{unknown type name 'itn'}}
-  (void)Typo(1);    // used to crash
+  (void)Typo(1); // used to crash
 
   typedef int &int_ref;
   (void)int_ref(); // expected-error {{reference to type 'int' requires an initializer}}

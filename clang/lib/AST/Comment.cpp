@@ -34,11 +34,10 @@ static_assert(std::is_trivially_destructible<DeclInfo>::value,
 
 const char *Comment::getCommentKindName() const {
   switch (getCommentKind()) {
-  case NoCommentKind:
-    return "NoCommentKind";
+  case NoCommentKind: return "NoCommentKind";
 #define ABSTRACT_COMMENT(COMMENT)
-#define COMMENT(CLASS, PARENT)                                                 \
-  case CLASS##Kind:                                                            \
+#define COMMENT(CLASS, PARENT) \
+  case CLASS##Kind: \
     return #CLASS;
 #include "clang/AST/CommentNodes.inc"
 #undef COMMENT
@@ -57,19 +56,19 @@ good implements_child_begin_end(Comment::child_iterator (T::*)() const) {
 }
 
 LLVM_ATTRIBUTE_UNUSED
-static inline bad
-implements_child_begin_end(Comment::child_iterator (Comment::*)() const) {
+static inline bad implements_child_begin_end(
+                      Comment::child_iterator (Comment::*)() const) {
   return bad();
 }
 
-#define ASSERT_IMPLEMENTS_child_begin(function)                                \
-  (void)good(implements_child_begin_end(function))
+#define ASSERT_IMPLEMENTS_child_begin(function) \
+  (void) good(implements_child_begin_end(function))
 
 LLVM_ATTRIBUTE_UNUSED
 static inline void CheckCommentASTNodes() {
 #define ABSTRACT_COMMENT(COMMENT)
-#define COMMENT(CLASS, PARENT)                                                 \
-  ASSERT_IMPLEMENTS_child_begin(&CLASS::child_begin);                          \
+#define COMMENT(CLASS, PARENT) \
+  ASSERT_IMPLEMENTS_child_begin(&CLASS::child_begin); \
   ASSERT_IMPLEMENTS_child_begin(&CLASS::child_end);
 #include "clang/AST/CommentNodes.inc"
 #undef COMMENT
@@ -82,11 +81,10 @@ static inline void CheckCommentASTNodes() {
 
 Comment::child_iterator Comment::child_begin() const {
   switch (getCommentKind()) {
-  case NoCommentKind:
-    llvm_unreachable("comment without a kind");
+  case NoCommentKind: llvm_unreachable("comment without a kind");
 #define ABSTRACT_COMMENT(COMMENT)
-#define COMMENT(CLASS, PARENT)                                                 \
-  case CLASS##Kind:                                                            \
+#define COMMENT(CLASS, PARENT) \
+  case CLASS##Kind: \
     return static_cast<const CLASS *>(this)->child_begin();
 #include "clang/AST/CommentNodes.inc"
 #undef COMMENT
@@ -97,11 +95,10 @@ Comment::child_iterator Comment::child_begin() const {
 
 Comment::child_iterator Comment::child_end() const {
   switch (getCommentKind()) {
-  case NoCommentKind:
-    llvm_unreachable("comment without a kind");
+  case NoCommentKind: llvm_unreachable("comment without a kind");
 #define ABSTRACT_COMMENT(COMMENT)
-#define COMMENT(CLASS, PARENT)                                                 \
-  case CLASS##Kind:                                                            \
+#define COMMENT(CLASS, PARENT) \
+  case CLASS##Kind: \
     return static_cast<const CLASS *>(this)->child_end();
 #include "clang/AST/CommentNodes.inc"
 #undef COMMENT
@@ -111,8 +108,8 @@ Comment::child_iterator Comment::child_end() const {
 }
 
 bool TextComment::isWhitespaceNoCache() const {
-  for (StringRef::const_iterator I = Text.begin(), E = Text.end(); I != E;
-       ++I) {
+  for (StringRef::const_iterator I = Text.begin(), E = Text.end();
+       I != E; ++I) {
     if (!clang::isWhitespace(*I))
       return false;
   }
@@ -240,7 +237,8 @@ void DeclInfo::fill() {
     unsigned NumLists = FD->getNumTemplateParameterLists();
     if (NumLists != 0) {
       TemplateKind = TemplateSpecialization;
-      TemplateParameters = FD->getTemplateParameterList(NumLists - 1);
+      TemplateParameters =
+          FD->getTemplateParameterList(NumLists - 1);
     }
 
     if (K == Decl::CXXMethod || K == Decl::CXXConstructor ||
@@ -393,3 +391,4 @@ StringRef TParamCommandComment::getParamName(const FullComment *FC) const {
 
 } // end namespace comments
 } // end namespace clang
+

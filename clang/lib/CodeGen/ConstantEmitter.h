@@ -44,17 +44,18 @@ private:
   /// Used for generating appropriate placeholders.
   LangAS DestAddressSpace;
 
-  llvm::SmallVector<std::pair<llvm::Constant *, llvm::GlobalVariable *>, 4>
-      PlaceholderAddresses;
+  llvm::SmallVector<std::pair<llvm::Constant *, llvm::GlobalVariable*>, 4>
+    PlaceholderAddresses;
 
 public:
   ConstantEmitter(CodeGenModule &CGM, CodeGenFunction *CGF = nullptr)
-      : CGM(CGM), CGF(CGF) {}
+    : CGM(CGM), CGF(CGF) {}
 
   /// Initialize this emission in the context of the given function.
   /// Use this if the expression might contain contextual references like
   /// block addresses or PredefinedExprs.
-  ConstantEmitter(CodeGenFunction &CGF) : CGM(CGF.CGM), CGF(&CGF) {}
+  ConstantEmitter(CodeGenFunction &CGF)
+    : CGM(CGF.CGM), CGF(&CGF) {}
 
   ConstantEmitter(const ConstantEmitter &other) = delete;
   ConstantEmitter &operator=(const ConstantEmitter &other) = delete;
@@ -62,7 +63,9 @@ public:
   ~ConstantEmitter();
 
   /// Is the current emission context abstract?
-  bool isAbstract() const { return Abstract; }
+  bool isAbstract() const {
+    return Abstract;
+  }
 
   /// Try to emit the initiaizer of the given declaration as an abstract
   /// constant.  If this succeeds, the emission must be finalized.
@@ -166,14 +169,14 @@ private:
     size_t OldPlaceholdersSize;
   };
   AbstractState pushAbstract() {
-    AbstractState saved = {Abstract, PlaceholderAddresses.size()};
+    AbstractState saved = { Abstract, PlaceholderAddresses.size() };
     Abstract = true;
     return saved;
   }
   llvm::Constant *validateAndPopAbstract(llvm::Constant *C, AbstractState save);
 };
 
-} // namespace CodeGen
-} // namespace clang
+}
+}
 
 #endif

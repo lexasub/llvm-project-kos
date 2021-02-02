@@ -6,12 +6,12 @@
 
 struct E {
   E();
-  E(E &&);
+  E(E&&);
 };
 
 struct F {
   F();
-  F(F &&);
+  F(F&&);
 };
 
 struct G {
@@ -27,17 +27,18 @@ struct H : G {
 void f() {
   H s;
   // CHECK: call void @_ZN1HC1EOS_
-  H t(static_cast<H &&>(s));
+  H t(static_cast<H&&>(s));
 }
+
 
 // assign
 
 struct A {
-  A &operator=(A &&);
+  A &operator =(A&&);
 };
 
 struct B {
-  B &operator=(B &&);
+  B &operator =(B&&);
 };
 
 struct C {
@@ -70,7 +71,7 @@ void h() {
 }
 
 // PR10860
-struct Empty {};
+struct Empty { };
 struct VirtualWithEmptyBase : Empty {
   virtual void f();
 };
@@ -78,7 +79,7 @@ struct VirtualWithEmptyBase : Empty {
 // CHECK: define void @_Z25move_VirtualWithEmptyBaseR20VirtualWithEmptyBaseS0_
 void move_VirtualWithEmptyBase(VirtualWithEmptyBase &x, VirtualWithEmptyBase &y) {
   // CHECK: call {{.*}} @_ZN20VirtualWithEmptyBaseaSEOS_
-  x = static_cast<VirtualWithEmptyBase &&>(y);
+  x = static_cast<VirtualWithEmptyBase&&>(y);
   // CHECK-NEXT: ret void
 }
 

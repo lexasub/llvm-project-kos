@@ -65,7 +65,8 @@ public:
 
     void ResetDeclMap(ExecutionContext &exe_ctx,
                       Materializer::PersistentVariableDelegate &result_delegate,
-                      bool keep_result_in_memory, ValueObject *ctx_obj);
+                      bool keep_result_in_memory,
+                      ValueObject *ctx_obj);
 
     /// Return the object that the parser should allow to access ASTs. May be
     /// NULL if the ASTs do not need to be transformed.
@@ -81,11 +82,10 @@ public:
   private:
     Target &m_target;
     std::unique_ptr<ClangExpressionDeclMap> m_expr_decl_map_up;
-    std::unique_ptr<ASTStructExtractor>
-        m_struct_extractor_up; ///< The class
-                               /// that generates
-                               /// the argument
-                               /// struct layout.
+    std::unique_ptr<ASTStructExtractor> m_struct_extractor_up; ///< The class
+                                                               ///that generates
+                                                               ///the argument
+                                                               ///struct layout.
     std::unique_ptr<ASTResultSynthesizer> m_result_synthesizer_up;
     bool m_top_level;
   };
@@ -161,7 +161,8 @@ public:
                     Materializer::PersistentVariableDelegate &result_delegate,
                     bool keep_result_in_memory) {
     m_type_system_helper.ResetDeclMap(exe_ctx, result_delegate,
-                                      keep_result_in_memory, m_ctx_obj);
+                                      keep_result_in_memory,
+                                      m_ctx_obj);
   }
 
   lldb::ExpressionVariableSP
@@ -179,8 +180,8 @@ private:
   /// \see ClangUserExpression::Parse
   bool TryParse(DiagnosticManager &diagnostic_manager,
                 ExecutionContextScope *exe_scope, ExecutionContext &exe_ctx,
-                lldb_private::ExecutionPolicy execution_policy,
-                bool keep_result_in_memory, bool generate_debug_info);
+                lldb_private::ExecutionPolicy execution_policy, bool keep_result_in_memory,
+                bool generate_debug_info);
 
   void SetupCppModuleImports(ExecutionContext &exe_ctx);
 
@@ -198,7 +199,7 @@ private:
   /// Defines how the current expression should be wrapped.
   ClangExpressionSourceCode::WrapKind GetWrapKind() const;
   bool SetupPersistentState(DiagnosticManager &diagnostic_manager,
-                            ExecutionContext &exe_ctx);
+                                   ExecutionContext &exe_ctx);
   bool PrepareForParsing(DiagnosticManager &diagnostic_manager,
                          ExecutionContext &exe_ctx, bool for_completion);
 

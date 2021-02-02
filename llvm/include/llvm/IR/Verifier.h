@@ -40,7 +40,7 @@ class TBAAVerifier {
   VerifierSupport *Diagnostic = nullptr;
 
   /// Helper to diagnose a failure
-  template <typename... Tys> void CheckFailed(Tys &&...Args);
+  template <typename... Tys> void CheckFailed(Tys &&... Args);
 
   /// Cache of TBAA base nodes that have already been visited.  This cachce maps
   /// a node that has been visited to a pair (IsInvalid, BitWidth) where
@@ -61,8 +61,9 @@ class TBAAVerifier {
   /// @{
   MDNode *getFieldNodeFromTBAABaseNode(Instruction &I, const MDNode *BaseNode,
                                        APInt &Offset, bool IsNewFormat);
-  TBAAVerifier::TBAABaseNodeSummary
-  verifyTBAABaseNode(Instruction &I, const MDNode *BaseNode, bool IsNewFormat);
+  TBAAVerifier::TBAABaseNodeSummary verifyTBAABaseNode(Instruction &I,
+                                                       const MDNode *BaseNode,
+                                                       bool IsNewFormat);
   TBAABaseNodeSummary verifyTBAABaseNodeImpl(Instruction &I,
                                              const MDNode *BaseNode,
                                              bool IsNewFormat);

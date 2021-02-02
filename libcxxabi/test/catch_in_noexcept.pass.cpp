@@ -17,20 +17,22 @@ struct A {};
 
 // Despite being marked as noexcept, this function must have an EHT entry that
 // is not 'cantunwind', so that the unwinder can correctly deal with the throw.
-void f1() noexcept {
-  try {
-    A a;
-    throw a;
+void f1() noexcept
+{
+    try {
+        A a;
+        throw a;
+        assert(false);
+    } catch (...) {
+        assert(true);
+        return;
+    }
     assert(false);
-  } catch (...) {
-    assert(true);
-    return;
-  }
-  assert(false);
 }
 
-int main(int, char**) {
-  f1();
+int main(int, char**)
+{
+    f1();
 
-  return 0;
+    return 0;
 }

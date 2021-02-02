@@ -16,7 +16,7 @@ void foo() {
 #pragma omp assumes no_openmp_routines
 
 namespace inner {
-#pragma omp assumes no_openmp
+  #pragma omp assumes no_openmp
 } // namespace inner
 
 #pragma omp begin assumes ext_range_bar_only

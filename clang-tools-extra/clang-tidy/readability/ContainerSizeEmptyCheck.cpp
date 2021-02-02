@@ -162,7 +162,7 @@ void ContainerSizeEmptyCheck::registerMatchers(MatchFinder *Finder) {
 
   // Empty constructor matcher.
   const auto DefaultConstructor = cxxConstructExpr(
-      hasDeclaration(cxxConstructorDecl(isDefaultConstructor())));
+          hasDeclaration(cxxConstructorDecl(isDefaultConstructor())));
   // Comparison to empty string or empty constructor.
   const auto WrongComparend = anyOf(
       ignoringImpCasts(stringLiteral(hasSize(0))),

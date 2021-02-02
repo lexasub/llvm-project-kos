@@ -2,8 +2,7 @@
 // FIXME: Fix the checker to work in C++17 mode.
 
 namespace std {
-template <typename T>
-struct vec_iterator {
+template <typename T> struct vec_iterator {
   T ptr;
   vec_iterator operator++(int);
 
@@ -11,9 +10,8 @@ struct vec_iterator {
   vec_iterator(const vec_iterator<X> &); // Omit enable_if<...>.
 };
 
-template <typename T>
-struct vector {
-  typedef vec_iterator<T *> iterator;
+template <typename T> struct vector {
+  typedef vec_iterator<T*> iterator;
 
   iterator begin();
   iterator end();
@@ -22,10 +20,9 @@ struct vector {
   void erase(iterator, iterator);
 };
 
-template <typename T>
-struct vector_with_const_iterator {
-  typedef vec_iterator<T *> iterator;
-  typedef vec_iterator<const T *> const_iterator;
+template <typename T> struct vector_with_const_iterator {
+  typedef vec_iterator<T*> iterator;
+  typedef vec_iterator<const T*> const_iterator;
 
   iterator begin();
   iterator end();
@@ -40,11 +37,9 @@ FwIt remove(FwIt begin, FwIt end, const T &val);
 template <typename FwIt, typename Func>
 FwIt remove_if(FwIt begin, FwIt end, Func f);
 
-template <typename FwIt>
-FwIt unique(FwIt begin, FwIt end);
+template <typename FwIt> FwIt unique(FwIt begin, FwIt end);
 
-template <typename T>
-struct unique_ptr {};
+template <typename T> struct unique_ptr {};
 } // namespace std
 
 struct custom_iter {};
@@ -54,8 +49,7 @@ struct custom_container {
   custom_iter end();
 };
 
-template <typename T>
-void g() {
+template <typename T> void g() {
   T t;
   t.erase(std::remove(t.begin(), t.end(), 10));
   // CHECK-FIXES: {{^  }}t.erase(std::remove(t.begin(), t.end(), 10));{{$}}

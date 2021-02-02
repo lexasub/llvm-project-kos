@@ -107,7 +107,6 @@ class MergedLoadStoreMotion {
   const int MagicCompileTimeControl = 250;
 
   const bool SplitFooterBB;
-
 public:
   MergedLoadStoreMotion(bool SplitFooterBB) : SplitFooterBB(SplitFooterBB) {}
   bool run(Function &F, AliasAnalysis &AA);
@@ -160,6 +159,7 @@ bool MergedLoadStoreMotion::isDiamondHead(BasicBlock *BB) {
     return false;
   return true;
 }
+
 
 ///
 /// True when instruction is a sink barrier for a store
@@ -352,7 +352,7 @@ bool MergedLoadStoreMotion::run(Function &F, AliasAnalysis &AA) {
 
   // Merge unconditional branches, allowing PRE to catch more
   // optimization opportunities.
-  // This loop doesn't care about newly inserted/split blocks
+  // This loop doesn't care about newly inserted/split blocks 
   // since they never will be diamond heads.
   for (BasicBlock &BB : make_early_inc_range(F))
     // Hoist equivalent loads and sink stores
@@ -365,7 +365,6 @@ bool MergedLoadStoreMotion::run(Function &F, AliasAnalysis &AA) {
 namespace {
 class MergedLoadStoreMotionLegacyPass : public FunctionPass {
   const bool SplitFooterBB;
-
 public:
   static char ID; // Pass identification, replacement for typeid
   MergedLoadStoreMotionLegacyPass(bool SplitFooterBB = false)
@@ -409,8 +408,8 @@ INITIALIZE_PASS_DEPENDENCY(AAResultsWrapperPass)
 INITIALIZE_PASS_END(MergedLoadStoreMotionLegacyPass, "mldst-motion",
                     "MergedLoadStoreMotion", false, false)
 
-PreservedAnalyses MergedLoadStoreMotionPass::run(Function &F,
-                                                 FunctionAnalysisManager &AM) {
+PreservedAnalyses
+MergedLoadStoreMotionPass::run(Function &F, FunctionAnalysisManager &AM) {
   MergedLoadStoreMotion Impl(Options.SplitFooterBB);
   auto &AA = AM.getResult<AAManager>(F);
   if (!Impl.run(F, AA))

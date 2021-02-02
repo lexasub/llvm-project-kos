@@ -15,6 +15,6 @@ _Thread_local int a; // expected-error {{thread-local declaration of 'a' with st
 thread_local int b; // expected-error {{thread-local declaration of 'b' with dynamic initialization follows declaration with static initialization}}
 // expected-note@8 {{previous declaration is here}}
 thread_local int c; // expected-error {{thread-local declaration of 'c' follows non-thread-local declaration}}
-                    // expected-note@9 {{previous declaration is here}}
+// expected-note@9 {{previous declaration is here}}
 
 #endif

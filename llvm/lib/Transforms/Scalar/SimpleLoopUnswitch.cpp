@@ -1,5 +1,4 @@
-///===- SimpleLoopUnswitch.cpp - Hoist loop-invariant control flow
-///---------===//
+///===- SimpleLoopUnswitch.cpp - Hoist loop-invariant control flow ---------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -192,8 +191,8 @@ static void buildPartialUnswitchConditionalBranch(BasicBlock &BB,
                                                   BasicBlock &NormalSucc) {
   IRBuilder<> IRB(&BB);
 
-  Value *Cond =
-      Direction ? IRB.CreateOr(Invariants) : IRB.CreateAnd(Invariants);
+  Value *Cond = Direction ? IRB.CreateOr(Invariants) :
+    IRB.CreateAnd(Invariants);
   IRB.CreateCondBr(Cond, Direction ? &UnswitchedSucc : &NormalSucc,
                    Direction ? &NormalSucc : &UnswitchedSucc);
 }
@@ -664,8 +663,7 @@ static bool unswitchTrivialSwitch(Loop &L, SwitchInst &SI, DominatorTree &DT,
   // the switch.
   SmallVector<std::tuple<ConstantInt *, BasicBlock *,
                          SwitchInstProfUpdateWrapper::CaseWeightOpt>,
-              4>
-      ExitCases;
+              4> ExitCases;
   ExitCases.reserve(ExitCaseIndices.size());
   SwitchInstProfUpdateWrapper SIW(SI);
   // We walk the case indices backwards so that we remove the last case first
@@ -2192,8 +2190,9 @@ static void unswitchNontrivialInvariants(
       assert(NewSI->getDefaultDest() == RetainedSuccBB &&
              "Not retaining default successor!");
       for (auto &Case : NewSI->cases())
-        Case.getCaseSuccessor()->removePredecessor(ParentBB,
-                                                   /*KeepOneInputPHIs*/ true);
+        Case.getCaseSuccessor()->removePredecessor(
+            ParentBB,
+            /*KeepOneInputPHIs*/ true);
 
       // We need to use the set to populate domtree updates as even when there
       // are multiple cases pointing at the same successor we only want to
@@ -2457,7 +2456,7 @@ turnGuardIntoBranch(IntrinsicInst *GI, Loop &L,
   BasicBlock *CheckBB = GI->getParent();
 
   if (MSSAU && VerifyMemorySSA)
-    MSSAU->getMemorySSA()->verifyMemorySSA();
+     MSSAU->getMemorySSA()->verifyMemorySSA();
 
   // Remove all CheckBB's successors from DomTree. A block can be seen among
   // successors more than once, but for DomTree it should be added only once.
@@ -2650,7 +2649,7 @@ unswitchBestCondition(Loop &L, DominatorTree &DT, LoopInfo &LI,
 
     Instruction &CondI = *cast<Instruction>(BI->getCondition());
     if (CondI.getOpcode() != Instruction::And &&
-        CondI.getOpcode() != Instruction::Or)
+      CondI.getOpcode() != Instruction::Or)
       continue;
 
     TinyPtrVector<Value *> Invariants =
@@ -2709,8 +2708,8 @@ unswitchBestCondition(Loop &L, DominatorTree &DT, LoopInfo &LI,
   // regions.
   TargetTransformInfo::TargetCostKind CostKind =
       L.getHeader()->getParent()->hasMinSize()
-          ? TargetTransformInfo::TCK_CodeSize
-          : TargetTransformInfo::TCK_SizeAndLatency;
+      ? TargetTransformInfo::TCK_CodeSize
+      : TargetTransformInfo::TCK_SizeAndLatency;
   int LoopCost = 0;
   for (auto *BB : L.blocks()) {
     int Cost = 0;
@@ -2850,8 +2849,9 @@ unswitchBestCondition(Loop &L, DominatorTree &DT, LoopInfo &LI,
     BestUnswitchTI = turnGuardIntoBranch(cast<IntrinsicInst>(BestUnswitchTI), L,
                                          ExitBlocks, DT, LI, MSSAU);
 
-  LLVM_DEBUG(dbgs() << "  Unswitching non-trivial (cost = " << BestUnswitchCost
-                    << ") terminator: " << *BestUnswitchTI << "\n");
+  LLVM_DEBUG(dbgs() << "  Unswitching non-trivial (cost = "
+                    << BestUnswitchCost << ") terminator: " << *BestUnswitchTI
+                    << "\n");
   unswitchNontrivialInvariants(L, *BestUnswitchTI, BestUnswitchInvariants,
                                ExitBlocks, DT, LI, AC, UnswitchCB, SE, MSSAU);
   return true;
@@ -2914,8 +2914,8 @@ static bool unswitchLoop(Loop &L, DominatorTree &DT, LoopInfo &LI,
   // internally, and if any of the new loops are simplified enough to contain
   // trivial unswitching we want to prefer those.
 
-  // Try to unswitch the best invariant condition. We prefer this full unswitch
-  // to a partial unswitch when possible below the threshold.
+  // Try to unswitch the best invariant condition. We prefer this full unswitch to
+  // a partial unswitch when possible below the threshold.
   if (unswitchBestCondition(L, DT, LI, AC, TTI, UnswitchCB, SE, MSSAU))
     return true;
 

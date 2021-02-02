@@ -56,7 +56,9 @@ const MCExpr *ConstantPool::addEntry(const MCExpr *Value, MCContext &Context,
 
 bool ConstantPool::empty() { return Entries.empty(); }
 
-void ConstantPool::clearCache() { CachedEntries.clear(); }
+void ConstantPool::clearCache() {
+  CachedEntries.clear();
+}
 
 //
 // AssemblerConstantPools implementation

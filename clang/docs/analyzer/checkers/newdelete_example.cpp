@@ -34,7 +34,8 @@ void test() {
 
 void test() {
   int *p = new int[1];
-  delete[](++p);
-  // warn: argument to 'delete[]' is offset by 4 bytes
-  // from the start of memory allocated by 'new[]'
+  delete[] (++p);
+    // warn: argument to 'delete[]' is offset by 4 bytes
+    // from the start of memory allocated by 'new[]'
 }
+

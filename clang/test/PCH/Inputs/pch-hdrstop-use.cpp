@@ -7,6 +7,7 @@ int pch();
 //expected-no-diagnostics
 //CHECK-NOT: FunctionDecl{{.*}}other
 //CHECK: FunctionDecl{{.*}}main
-int main() {
-  return pch() - 42 * 42 + bar() - 42 + through1(0) + through2(33);
+int main()
+{
+  return pch() - 42*42 + bar() - 42 + through1(0) + through2(33);
 }

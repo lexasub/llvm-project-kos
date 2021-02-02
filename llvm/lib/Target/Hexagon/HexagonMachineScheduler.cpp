@@ -44,27 +44,25 @@ using namespace llvm;
 
 #define DEBUG_TYPE "machine-scheduler"
 
-static cl::opt<bool> IgnoreBBRegPressure("ignore-bb-reg-pressure", cl::Hidden,
-                                         cl::ZeroOrMore, cl::init(false));
+static cl::opt<bool> IgnoreBBRegPressure("ignore-bb-reg-pressure",
+    cl::Hidden, cl::ZeroOrMore, cl::init(false));
 
-static cl::opt<bool> UseNewerCandidate("use-newer-candidate", cl::Hidden,
-                                       cl::ZeroOrMore, cl::init(true));
+static cl::opt<bool> UseNewerCandidate("use-newer-candidate",
+    cl::Hidden, cl::ZeroOrMore, cl::init(true));
 
 static cl::opt<unsigned> SchedDebugVerboseLevel("misched-verbose-level",
-                                                cl::Hidden, cl::ZeroOrMore,
-                                                cl::init(1));
+    cl::Hidden, cl::ZeroOrMore, cl::init(1));
 
 // Check if the scheduler should penalize instructions that are available to
 // early due to a zero-latency dependence.
 static cl::opt<bool> CheckEarlyAvail("check-early-avail", cl::Hidden,
-                                     cl::ZeroOrMore, cl::init(true));
+    cl::ZeroOrMore, cl::init(true));
 
 // This value is used to determine if a register class is a high pressure set.
 // We compute the maximum number of registers needed and divided by the total
 // available. Then, we compare the result to this value.
 static cl::opt<float> RPThreshold("hexagon-reg-pressure", cl::Hidden,
-                                  cl::init(0.75f),
-                                  cl::desc("High register pressure threhold."));
+    cl::init(0.75f), cl::desc("High register pressure threhold."));
 
 /// Return true if there is a dependence between SUd and SUu.
 static bool hasDependence(const SUnit *SUd, const SUnit *SUu,
@@ -203,7 +201,7 @@ void VLIWMachineScheduler::schedule() {
   // Postprocess the DAG to add platform-specific artificial dependencies.
   postprocessDAG();
 
-  SmallVector<SUnit *, 8> TopRoots, BotRoots;
+  SmallVector<SUnit*, 8> TopRoots, BotRoots;
   findRootsAndBiasEdges(TopRoots, BotRoots);
 
   // Initialize the strategy before modifying the DAG.
@@ -228,8 +226,7 @@ void VLIWMachineScheduler::schedule() {
     LLVM_DEBUG(
         dbgs() << "** VLIWMachineScheduler::schedule picking next node\n");
     SUnit *SU = SchedImpl->pickNode(IsTopNode);
-    if (!SU)
-      break;
+    if (!SU) break;
 
     if (!checkSchedLimit())
       break;
@@ -254,7 +251,7 @@ void VLIWMachineScheduler::schedule() {
 }
 
 void ConvergingVLIWScheduler::initialize(ScheduleDAGMI *dag) {
-  DAG = static_cast<VLIWMachineScheduler *>(dag);
+  DAG = static_cast<VLIWMachineScheduler*>(dag);
   SchedModel = DAG->getSchedModel();
 
   Top.init(DAG, SchedModel);
@@ -276,12 +273,12 @@ void ConvergingVLIWScheduler::initialize(ScheduleDAGMI *dag) {
   Bot.ResourceModel = new VLIWResourceModel(STI, DAG->getSchedModel());
 
   const std::vector<unsigned> &MaxPressure =
-      DAG->getRegPressure().MaxSetPressure;
+    DAG->getRegPressure().MaxSetPressure;
   HighPressureSets.assign(MaxPressure.size(), 0);
   for (unsigned i = 0, e = MaxPressure.size(); i < e; ++i) {
     unsigned Limit = DAG->getRegClassInfo()->getRegPressureSetLimit(i);
     HighPressureSets[i] =
-        ((float)MaxPressure[i] > ((float)Limit * RPThreshold));
+      ((float) MaxPressure[i] > ((float) Limit * RPThreshold));
   }
 
   assert((!ForceTopDown || !ForceBottomUp) &&
@@ -310,8 +307,8 @@ void ConvergingVLIWScheduler::releaseBottomNode(SUnit *SU) {
 
   assert(SU->getInstr() && "Scheduled SUnit must have instr");
 
-  for (SUnit::succ_iterator I = SU->Succs.begin(), E = SU->Succs.end(); I != E;
-       ++I) {
+  for (SUnit::succ_iterator I = SU->Succs.begin(), E = SU->Succs.end();
+       I != E; ++I) {
     unsigned SuccReadyCycle = I->getSUnit()->BotReadyCycle;
     unsigned MinLatency = I->getLatency();
 #ifndef NDEBUG
@@ -347,8 +344,8 @@ bool ConvergingVLIWScheduler::VLIWSchedBoundary::checkHazard(SUnit *SU) {
   return false;
 }
 
-void ConvergingVLIWScheduler::VLIWSchedBoundary::releaseNode(
-    SUnit *SU, unsigned ReadyCycle) {
+void ConvergingVLIWScheduler::VLIWSchedBoundary::releaseNode(SUnit *SU,
+                                                     unsigned ReadyCycle) {
   if (ReadyCycle < MinReadyCycle)
     MinReadyCycle = ReadyCycle;
 
@@ -411,7 +408,8 @@ void ConvergingVLIWScheduler::VLIWSchedBoundary::bumpNode(SUnit *SU) {
   if (startNewCycle) {
     LLVM_DEBUG(dbgs() << "*** Max instrs at cycle " << CurrCycle << '\n');
     bumpCycle();
-  } else
+  }
+  else
     LLVM_DEBUG(dbgs() << "*** IssueCount " << IssueCount << " at cycle "
                       << CurrCycle << '\n');
 }
@@ -426,7 +424,7 @@ void ConvergingVLIWScheduler::VLIWSchedBoundary::releasePending() {
   // Check to see if any of the pending instructions are ready to issue.  If
   // so, add them to the available queue.
   for (unsigned i = 0, e = Pending.size(); i != e; ++i) {
-    SUnit *SU = *(Pending.begin() + i);
+    SUnit *SU = *(Pending.begin()+i);
     unsigned ReadyCycle = isTop() ? SU->TopReadyCycle : SU->BotReadyCycle;
 
     if (ReadyCycle < MinReadyCycle)
@@ -439,9 +437,8 @@ void ConvergingVLIWScheduler::VLIWSchedBoundary::releasePending() {
       continue;
 
     Available.push(SU);
-    Pending.remove(Pending.begin() + i);
-    --i;
-    --e;
+    Pending.remove(Pending.begin()+i);
+    --i; --e;
   }
   CheckPending = false;
 }
@@ -468,13 +465,12 @@ SUnit *ConvergingVLIWScheduler::VLIWSchedBoundary::pickOnlyChoice() {
       return true;
     if (Available.size() == 1 && Pending.size() > 0)
       return !ResourceModel->isResourceAvailable(*Available.begin(), isTop()) ||
-             getWeakLeft(*Available.begin(), isTop()) != 0;
+        getWeakLeft(*Available.begin(), isTop()) != 0;
     return false;
   };
   for (unsigned i = 0; AdvanceCycle(); ++i) {
     assert(i <= (HazardRec->getMaxLookAhead() + MaxMinLatency) &&
-           "permanent hazard");
-    (void)i;
+           "permanent hazard"); (void)i;
     ResourceModel->reserveResources(nullptr, isTop());
     bumpCycle();
     releasePending();
@@ -486,8 +482,7 @@ SUnit *ConvergingVLIWScheduler::VLIWSchedBoundary::pickOnlyChoice() {
 
 #ifndef NDEBUG
 void ConvergingVLIWScheduler::traceCandidate(const char *Label,
-                                             const ReadyQueue &Q, SUnit *SU,
-                                             int Cost, PressureChange P) {
+      const ReadyQueue &Q, SUnit *SU, int Cost, PressureChange P) {
   dbgs() << Label << " " << Q.getName() << " ";
   if (P.isValid())
     dbgs() << DAG->TRI->getRegPressureSetName(P.getPSet()) << ":"
@@ -500,8 +495,8 @@ void ConvergingVLIWScheduler::traceCandidate(const char *Label,
 
 // Very detailed queue dump, to be used with higher verbosity levels.
 void ConvergingVLIWScheduler::readyQueueVerboseDump(
-    const RegPressureTracker &RPTracker, SchedCandidate &Candidate,
-    ReadyQueue &Q) {
+      const RegPressureTracker &RPTracker, SchedCandidate &Candidate,
+      ReadyQueue &Q) {
   RegPressureTracker &TempTracker = const_cast<RegPressureTracker &>(RPTracker);
 
   dbgs() << ">>> " << Q.getName() << "\n";
@@ -669,12 +664,12 @@ int ConvergingVLIWScheduler::SchedulingCost(ReadyQueue &Q, SUnit *SU,
   // Factor in reg pressure as a heuristic.
   if (!IgnoreBBRegPressure) {
     // Decrease priority by the amount that register pressure exceeds the limit.
-    ResCount -= (Delta.Excess.getUnitInc() * PriorityOne);
+    ResCount -= (Delta.Excess.getUnitInc()*PriorityOne);
     // Decrease priority if register pressure exceeds the limit.
-    ResCount -= (Delta.CriticalMax.getUnitInc() * PriorityOne);
+    ResCount -= (Delta.CriticalMax.getUnitInc()*PriorityOne);
     // Decrease priority slightly if register pressure would increase over the
     // current maximum.
-    ResCount -= (Delta.CurrentMax.getUnitInc() * PriorityTwo);
+    ResCount -= (Delta.CurrentMax.getUnitInc()*PriorityTwo);
     // If there are register pressure issues, then we remove the value added for
     // the instruction being available. The rationale is that we really don't
     // want to schedule an instruction that causes a spill.
@@ -766,17 +761,16 @@ int ConvergingVLIWScheduler::SchedulingCost(ReadyQueue &Q, SUnit *SU,
 /// TODO: getMaxPressureDelta results can be mostly cached for each SUnit during
 /// DAG building. To adjust for the current scheduling location we need to
 /// maintain the number of vreg uses remaining to be top-scheduled.
-ConvergingVLIWScheduler::CandResult
-ConvergingVLIWScheduler::pickNodeFromQueue(VLIWSchedBoundary &Zone,
-                                           const RegPressureTracker &RPTracker,
-                                           SchedCandidate &Candidate) {
+ConvergingVLIWScheduler::CandResult ConvergingVLIWScheduler::
+pickNodeFromQueue(VLIWSchedBoundary &Zone, const RegPressureTracker &RPTracker,
+                  SchedCandidate &Candidate) {
   ReadyQueue &Q = Zone.Available;
   LLVM_DEBUG(if (SchedDebugVerboseLevel > 1)
                  readyQueueVerboseDump(RPTracker, Candidate, Q);
              else Q.dump(););
 
   // getMaxPressureDelta temporarily modifies the tracker.
-  RegPressureTracker &TempTracker = const_cast<RegPressureTracker &>(RPTracker);
+  RegPressureTracker &TempTracker = const_cast<RegPressureTracker&>(RPTracker);
 
   // BestSU remains NULL if no top candidates beat the best existing candidate.
   CandResult FoundCandidate = NoCand;
@@ -801,8 +795,8 @@ ConvergingVLIWScheduler::pickNodeFromQueue(VLIWSchedBoundary &Zone,
     // Choose node order for negative cost candidates. There is no good
     // candidate in this case.
     if (CurrentCost < 0 && Candidate.SCost < 0) {
-      if ((Q.getID() == TopQID && (*I)->NodeNum < Candidate.SU->NodeNum) ||
-          (Q.getID() == BotQID && (*I)->NodeNum > Candidate.SU->NodeNum)) {
+      if ((Q.getID() == TopQID && (*I)->NodeNum < Candidate.SU->NodeNum)
+          || (Q.getID() == BotQID && (*I)->NodeNum > Candidate.SU->NodeNum)) {
         LLVM_DEBUG(traceCandidate("NCAND", Q, *I, CurrentCost));
         Candidate.SU = *I;
         Candidate.RPDelta = RPDelta;
@@ -862,8 +856,8 @@ ConvergingVLIWScheduler::pickNodeFromQueue(VLIWSchedBoundary &Zone,
     // To avoid scheduling indeterminism, we need a tie breaker
     // for the case when cost is identical for two nodes.
     if (UseNewerCandidate && CurrentCost == Candidate.SCost) {
-      if ((Q.getID() == TopQID && (*I)->NodeNum < Candidate.SU->NodeNum) ||
-          (Q.getID() == BotQID && (*I)->NodeNum > Candidate.SU->NodeNum)) {
+      if ((Q.getID() == TopQID && (*I)->NodeNum < Candidate.SU->NodeNum)
+          || (Q.getID() == BotQID && (*I)->NodeNum > Candidate.SU->NodeNum)) {
         LLVM_DEBUG(traceCandidate("TCAND", Q, *I, CurrentCost));
         Candidate.SU = *I;
         Candidate.RPDelta = RPDelta;
@@ -897,8 +891,8 @@ SUnit *ConvergingVLIWScheduler::pickNodeBidrectional(bool &IsTopNode) {
   }
   SchedCandidate BotCand;
   // Prefer bottom scheduling when heuristics are silent.
-  CandResult BotResult =
-      pickNodeFromQueue(Bot, DAG->getBotRPTracker(), BotCand);
+  CandResult BotResult = pickNodeFromQueue(Bot,
+                                           DAG->getBotRPTracker(), BotCand);
   assert(BotResult != NoCand && "failed to find the first candidate");
 
   // If either Q has a single candidate that provides the least increase in
@@ -915,8 +909,8 @@ SUnit *ConvergingVLIWScheduler::pickNodeBidrectional(bool &IsTopNode) {
   }
   // Check if the top Q has a better candidate.
   SchedCandidate TopCand;
-  CandResult TopResult =
-      pickNodeFromQueue(Top, DAG->getTopRPTracker(), TopCand);
+  CandResult TopResult = pickNodeFromQueue(Top,
+                                           DAG->getTopRPTracker(), TopCand);
   assert(TopResult != NoCand && "failed to find the first candidate");
 
   if (TopResult == SingleExcess || TopResult == SingleCritical) {
@@ -960,7 +954,7 @@ SUnit *ConvergingVLIWScheduler::pickNode(bool &IsTopNode) {
     if (!SU) {
       SchedCandidate TopCand;
       CandResult TopResult =
-          pickNodeFromQueue(Top, DAG->getTopRPTracker(), TopCand);
+        pickNodeFromQueue(Top, DAG->getTopRPTracker(), TopCand);
       assert(TopResult != NoCand && "failed to find the first candidate");
       (void)TopResult;
       SU = TopCand.SU;
@@ -971,7 +965,7 @@ SUnit *ConvergingVLIWScheduler::pickNode(bool &IsTopNode) {
     if (!SU) {
       SchedCandidate BotCand;
       CandResult BotResult =
-          pickNodeFromQueue(Bot, DAG->getBotRPTracker(), BotCand);
+        pickNodeFromQueue(Bot, DAG->getBotRPTracker(), BotCand);
       assert(BotResult != NoCand && "failed to find the first candidate");
       (void)BotResult;
       SU = BotCand.SU;

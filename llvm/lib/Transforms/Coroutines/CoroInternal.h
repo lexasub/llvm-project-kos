@@ -100,7 +100,7 @@ struct LLVM_LIBRARY_VISIBILITY Shape {
   SmallVector<AnyCoroEndInst *, 4> CoroEnds;
   SmallVector<CoroSizeInst *, 2> CoroSizes;
   SmallVector<AnyCoroSuspendInst *, 4> CoroSuspends;
-  SmallVector<CallInst *, 2> SwiftErrorOps;
+  SmallVector<CallInst*, 2> SwiftErrorOps;
 
   // Field indexes for special fields in the switch lowering.
   struct SwitchFieldIndex {
@@ -168,7 +168,8 @@ struct LLVM_LIBRARY_VISIBILITY Shape {
   }
 
   AnyCoroIdRetconInst *getRetconCoroId() const {
-    assert(ABI == coro::ABI::Retcon || ABI == coro::ABI::RetconOnce);
+    assert(ABI == coro::ABI::Retcon ||
+           ABI == coro::ABI::RetconOnce);
     return cast<AnyCoroIdRetconInst>(CoroBegin->getId());
   }
 
@@ -193,8 +194,8 @@ struct LLVM_LIBRARY_VISIBILITY Shape {
 
   PointerType *getSwitchResumePointerType() const {
     assert(ABI == coro::ABI::Switch);
-    assert(FrameTy && "frame type not assigned");
-    return cast<PointerType>(FrameTy->getElementType(SwitchFieldIndex::Resume));
+  assert(FrameTy && "frame type not assigned");
+  return cast<PointerType>(FrameTy->getElementType(SwitchFieldIndex::Resume));
   }
 
   FunctionType *getResumeFunctionType() const {
@@ -213,20 +214,22 @@ struct LLVM_LIBRARY_VISIBILITY Shape {
     llvm_unreachable("Unknown coro::ABI enum");
   }
 
-  ArrayRef<Type *> getRetconResultTypes() const {
-    assert(ABI == coro::ABI::Retcon || ABI == coro::ABI::RetconOnce);
+  ArrayRef<Type*> getRetconResultTypes() const {
+    assert(ABI == coro::ABI::Retcon ||
+           ABI == coro::ABI::RetconOnce);
     auto FTy = CoroBegin->getFunction()->getFunctionType();
 
     // The safety of all this is checked by checkWFRetconPrototype.
     if (auto STy = dyn_cast<StructType>(FTy->getReturnType())) {
       return STy->elements().slice(1);
     } else {
-      return ArrayRef<Type *>();
+      return ArrayRef<Type*>();
     }
   }
 
-  ArrayRef<Type *> getRetconResumeTypes() const {
-    assert(ABI == coro::ABI::Retcon || ABI == coro::ABI::RetconOnce);
+  ArrayRef<Type*> getRetconResumeTypes() const {
+    assert(ABI == coro::ABI::Retcon ||
+           ABI == coro::ABI::RetconOnce);
 
     // The safety of all this is checked by checkWFRetconPrototype.
     auto FTy = RetconLowering.ResumePrototype->getFunctionType();

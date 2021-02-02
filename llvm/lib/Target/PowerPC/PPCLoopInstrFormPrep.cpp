@@ -81,40 +81,40 @@
 
 using namespace llvm;
 
-static cl::opt<unsigned> MaxVarsPrep(
-    "ppc-formprep-max-vars", cl::Hidden, cl::init(24),
-    cl::desc("Potential common base number threshold per function for PPC loop "
-             "prep"));
+static cl::opt<unsigned> MaxVarsPrep("ppc-formprep-max-vars",
+                                 cl::Hidden, cl::init(24),
+  cl::desc("Potential common base number threshold per function for PPC loop "
+           "prep"));
 
-static cl::opt<bool> PreferUpdateForm(
-    "ppc-formprep-prefer-update", cl::init(true), cl::Hidden,
-    cl::desc("prefer update form when ds form is also a update form"));
+static cl::opt<bool> PreferUpdateForm("ppc-formprep-prefer-update",
+                                 cl::init(true), cl::Hidden,
+  cl::desc("prefer update form when ds form is also a update form"));
 
 // Sum of following 3 per loop thresholds for all loops can not be larger
 // than MaxVarsPrep.
 // now the thresholds for each kind prep are exterimental values on Power9.
-static cl::opt<unsigned> MaxVarsUpdateForm(
-    "ppc-preinc-prep-max-vars", cl::Hidden, cl::init(3),
-    cl::desc("Potential PHI threshold per loop for PPC loop prep of update "
-             "form"));
+static cl::opt<unsigned> MaxVarsUpdateForm("ppc-preinc-prep-max-vars",
+                                 cl::Hidden, cl::init(3),
+  cl::desc("Potential PHI threshold per loop for PPC loop prep of update "
+           "form"));
 
-static cl::opt<unsigned> MaxVarsDSForm(
-    "ppc-dsprep-max-vars", cl::Hidden, cl::init(3),
-    cl::desc("Potential PHI threshold per loop for PPC loop prep of DS form"));
+static cl::opt<unsigned> MaxVarsDSForm("ppc-dsprep-max-vars",
+                                 cl::Hidden, cl::init(3),
+  cl::desc("Potential PHI threshold per loop for PPC loop prep of DS form"));
 
-static cl::opt<unsigned> MaxVarsDQForm(
-    "ppc-dqprep-max-vars", cl::Hidden, cl::init(8),
-    cl::desc("Potential PHI threshold per loop for PPC loop prep of DQ form"));
+static cl::opt<unsigned> MaxVarsDQForm("ppc-dqprep-max-vars",
+                                 cl::Hidden, cl::init(8),
+  cl::desc("Potential PHI threshold per loop for PPC loop prep of DQ form"));
+
 
 // If would not be profitable if the common base has only one load/store, ISEL
 // should already be able to choose best load/store form based on offset for
 // single load/store. Set minimal profitable value default to 2 and make it as
 // an option.
-static cl::opt<unsigned> DispFormPrepMinThreshold(
-    "ppc-dispprep-min-threshold", cl::Hidden, cl::init(2),
-    cl::desc(
-        "Minimal common base load/store instructions triggering DS/DQ form "
-        "preparation"));
+static cl::opt<unsigned> DispFormPrepMinThreshold("ppc-dispprep-min-threshold",
+                                    cl::Hidden, cl::init(2),
+  cl::desc("Minimal common base load/store instructions triggering DS/DQ form "
+           "preparation"));
 
 STATISTIC(PHINodeAlreadyExistsUpdate, "PHI node already in pre-increment form");
 STATISTIC(PHINodeAlreadyExistsDS, "PHI node already in DS form");
@@ -124,108 +124,114 @@ STATISTIC(DQFormChainRewritten, "Num of DQ form chain rewritten");
 STATISTIC(UpdFormChainRewritten, "Num of update form chain rewritten");
 
 namespace {
-struct BucketElement {
-  BucketElement(const SCEVConstant *O, Instruction *I) : Offset(O), Instr(I) {}
-  BucketElement(Instruction *I) : Offset(nullptr), Instr(I) {}
+  struct BucketElement {
+    BucketElement(const SCEVConstant *O, Instruction *I) : Offset(O), Instr(I) {}
+    BucketElement(Instruction *I) : Offset(nullptr), Instr(I) {}
 
-  const SCEVConstant *Offset;
-  Instruction *Instr;
-};
+    const SCEVConstant *Offset;
+    Instruction *Instr;
+  };
 
-struct Bucket {
-  Bucket(const SCEV *B, Instruction *I)
-      : BaseSCEV(B), Elements(1, BucketElement(I)) {}
+  struct Bucket {
+    Bucket(const SCEV *B, Instruction *I) : BaseSCEV(B),
+                                            Elements(1, BucketElement(I)) {}
 
-  const SCEV *BaseSCEV;
-  SmallVector<BucketElement, 16> Elements;
-};
+    const SCEV *BaseSCEV;
+    SmallVector<BucketElement, 16> Elements;
+  };
 
-// "UpdateForm" is not a real PPC instruction form, it stands for dform
-// load/store with update like ldu/stdu, or Prefetch intrinsic.
-// For DS form instructions, their displacements must be multiple of 4.
-// For DQ form instructions, their displacements must be multiple of 16.
-enum InstrForm { UpdateForm = 1, DSForm = 4, DQForm = 16 };
+  // "UpdateForm" is not a real PPC instruction form, it stands for dform
+  // load/store with update like ldu/stdu, or Prefetch intrinsic.
+  // For DS form instructions, their displacements must be multiple of 4.
+  // For DQ form instructions, their displacements must be multiple of 16.
+  enum InstrForm { UpdateForm = 1, DSForm = 4, DQForm = 16 };
 
-class PPCLoopInstrFormPrep : public FunctionPass {
-public:
-  static char ID; // Pass ID, replacement for typeid
+  class PPCLoopInstrFormPrep : public FunctionPass {
+  public:
+    static char ID; // Pass ID, replacement for typeid
 
-  PPCLoopInstrFormPrep() : FunctionPass(ID) {
-    initializePPCLoopInstrFormPrepPass(*PassRegistry::getPassRegistry());
-  }
+    PPCLoopInstrFormPrep() : FunctionPass(ID) {
+      initializePPCLoopInstrFormPrepPass(*PassRegistry::getPassRegistry());
+    }
 
-  PPCLoopInstrFormPrep(PPCTargetMachine &TM) : FunctionPass(ID), TM(&TM) {
-    initializePPCLoopInstrFormPrepPass(*PassRegistry::getPassRegistry());
-  }
+    PPCLoopInstrFormPrep(PPCTargetMachine &TM) : FunctionPass(ID), TM(&TM) {
+      initializePPCLoopInstrFormPrepPass(*PassRegistry::getPassRegistry());
+    }
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addPreserved<DominatorTreeWrapperPass>();
-    AU.addRequired<LoopInfoWrapperPass>();
-    AU.addPreserved<LoopInfoWrapperPass>();
-    AU.addRequired<ScalarEvolutionWrapperPass>();
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.addPreserved<DominatorTreeWrapperPass>();
+      AU.addRequired<LoopInfoWrapperPass>();
+      AU.addPreserved<LoopInfoWrapperPass>();
+      AU.addRequired<ScalarEvolutionWrapperPass>();
+    }
 
-  bool runOnFunction(Function &F) override;
+    bool runOnFunction(Function &F) override;
 
-private:
-  PPCTargetMachine *TM = nullptr;
-  const PPCSubtarget *ST;
-  DominatorTree *DT;
-  LoopInfo *LI;
-  ScalarEvolution *SE;
-  bool PreserveLCSSA;
+  private:
+    PPCTargetMachine *TM = nullptr;
+    const PPCSubtarget *ST; 
+    DominatorTree *DT;
+    LoopInfo *LI;
+    ScalarEvolution *SE;
+    bool PreserveLCSSA;
 
-  /// Successful preparation number for Update/DS/DQ form in all inner most
-  /// loops. One successful preparation will put one common base out of loop,
-  /// this may leads to register presure like LICM does.
-  /// Make sure total preparation number can be controlled by option.
-  unsigned SuccPrepCount;
+    /// Successful preparation number for Update/DS/DQ form in all inner most
+    /// loops. One successful preparation will put one common base out of loop,
+    /// this may leads to register presure like LICM does.
+    /// Make sure total preparation number can be controlled by option.
+    unsigned SuccPrepCount;
 
-  bool runOnLoop(Loop *L);
+    bool runOnLoop(Loop *L);
 
-  /// Check if required PHI node is already exist in Loop \p L.
-  bool alreadyPrepared(Loop *L, Instruction *MemI, const SCEV *BasePtrStartSCEV,
-                       const SCEVConstant *BasePtrIncSCEV, InstrForm Form);
+    /// Check if required PHI node is already exist in Loop \p L.
+    bool alreadyPrepared(Loop *L, Instruction* MemI,
+                         const SCEV *BasePtrStartSCEV,
+                         const SCEVConstant *BasePtrIncSCEV,
+                         InstrForm Form);
 
-  /// Collect condition matched(\p isValidCandidate() returns true)
-  /// candidates in Loop \p L.
-  SmallVector<Bucket, 16> collectCandidates(
-      Loop *L,
-      std::function<bool(const Instruction *, const Value *)> isValidCandidate,
-      unsigned MaxCandidateNum);
+    /// Collect condition matched(\p isValidCandidate() returns true)
+    /// candidates in Loop \p L.
+    SmallVector<Bucket, 16>
+    collectCandidates(Loop *L,
+                      std::function<bool(const Instruction *, const Value *)>
+                          isValidCandidate,
+                      unsigned MaxCandidateNum);
 
-  /// Add a candidate to candidates \p Buckets.
-  void addOneCandidate(Instruction *MemI, const SCEV *LSCEV,
-                       SmallVector<Bucket, 16> &Buckets,
-                       unsigned MaxCandidateNum);
+    /// Add a candidate to candidates \p Buckets.
+    void addOneCandidate(Instruction *MemI, const SCEV *LSCEV,
+                         SmallVector<Bucket, 16> &Buckets,
+                         unsigned MaxCandidateNum);
 
-  /// Prepare all candidates in \p Buckets for update form.
-  bool updateFormPrep(Loop *L, SmallVector<Bucket, 16> &Buckets);
+    /// Prepare all candidates in \p Buckets for update form.
+    bool updateFormPrep(Loop *L, SmallVector<Bucket, 16> &Buckets);
 
-  /// Prepare all candidates in \p Buckets for displacement form, now for
-  /// ds/dq.
-  bool dispFormPrep(Loop *L, SmallVector<Bucket, 16> &Buckets, InstrForm Form);
+    /// Prepare all candidates in \p Buckets for displacement form, now for
+    /// ds/dq.
+    bool dispFormPrep(Loop *L, SmallVector<Bucket, 16> &Buckets,
+                      InstrForm Form);
 
-  /// Prepare for one chain \p BucketChain, find the best base element and
-  /// update all other elements in \p BucketChain accordingly.
-  /// \p Form is used to find the best base element.
-  /// If success, best base element must be stored as the first element of
-  /// \p BucketChain.
-  /// Return false if no base element found, otherwise return true.
-  bool prepareBaseForDispFormChain(Bucket &BucketChain, InstrForm Form);
+    /// Prepare for one chain \p BucketChain, find the best base element and
+    /// update all other elements in \p BucketChain accordingly.
+    /// \p Form is used to find the best base element.
+    /// If success, best base element must be stored as the first element of
+    /// \p BucketChain.
+    /// Return false if no base element found, otherwise return true.
+    bool prepareBaseForDispFormChain(Bucket &BucketChain,
+                                     InstrForm Form);
 
-  /// Prepare for one chain \p BucketChain, find the best base element and
-  /// update all other elements in \p BucketChain accordingly.
-  /// If success, best base element must be stored as the first element of
-  /// \p BucketChain.
-  /// Return false if no base element found, otherwise return true.
-  bool prepareBaseForUpdateFormChain(Bucket &BucketChain);
+    /// Prepare for one chain \p BucketChain, find the best base element and
+    /// update all other elements in \p BucketChain accordingly.
+    /// If success, best base element must be stored as the first element of
+    /// \p BucketChain.
+    /// Return false if no base element found, otherwise return true.
+    bool prepareBaseForUpdateFormChain(Bucket &BucketChain);
 
-  /// Rewrite load/store instructions in \p BucketChain according to
-  /// preparation.
-  bool rewriteLoadStores(Loop *L, Bucket &BucketChain,
-                         SmallSet<BasicBlock *, 16> &BBChanged, InstrForm Form);
-};
+    /// Rewrite load/store instructions in \p BucketChain according to
+    /// preparation.
+    bool rewriteLoadStores(Loop *L, Bucket &BucketChain,
+                           SmallSet<BasicBlock *, 16> &BBChanged,
+                           InstrForm Form);
+  };
 
 } // end anonymous namespace
 
@@ -236,8 +242,8 @@ INITIALIZE_PASS_DEPENDENCY(LoopInfoWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(ScalarEvolutionWrapperPass)
 INITIALIZE_PASS_END(PPCLoopInstrFormPrep, DEBUG_TYPE, name, false, false)
 
-static constexpr StringRef PHINodeNameSuffix = ".phi";
-static constexpr StringRef CastNodeNameSuffix = ".cast";
+static constexpr StringRef PHINodeNameSuffix    = ".phi";
+static constexpr StringRef CastNodeNameSuffix   = ".cast";
 static constexpr StringRef GEPNodeIncNameSuffix = ".inc";
 static constexpr StringRef GEPNodeOffNameSuffix = ".off";
 
@@ -260,7 +266,7 @@ static std::string getInstrName(const Value *I, StringRef Suffix) {
   if (I->hasName())
     return (I->getName() + Suffix).str();
   else
-    return "";
+    return ""; 
 }
 
 static Value *GetPointerOperand(Value *MemI) {
@@ -301,8 +307,8 @@ bool PPCLoopInstrFormPrep::runOnFunction(Function &F) {
 }
 
 void PPCLoopInstrFormPrep::addOneCandidate(Instruction *MemI, const SCEV *LSCEV,
-                                           SmallVector<Bucket, 16> &Buckets,
-                                           unsigned MaxCandidateNum) {
+                                        SmallVector<Bucket, 16> &Buckets,
+                                        unsigned MaxCandidateNum) {
   assert((MemI && GetPointerOperand(MemI)) &&
          "Candidate should be a memory instruction.");
   assert(LSCEV && "Invalid SCEV for Ptr value.");
@@ -347,10 +353,8 @@ SmallVector<Bucket, 16> PPCLoopInstrFormPrep::collectCandidates(
         } else if (IMemI->getIntrinsicID() == Intrinsic::ppc_vsx_stxvp) {
           MemI = IMemI;
           PtrValue = IMemI->getArgOperand(1);
-        } else
-          continue;
-      } else
-        continue;
+        } else continue;
+      } else continue;
 
       unsigned PtrAddrSpace = PtrValue->getType()->getPointerAddressSpace();
       if (PtrAddrSpace)
@@ -371,7 +375,7 @@ SmallVector<Bucket, 16> PPCLoopInstrFormPrep::collectCandidates(
 }
 
 bool PPCLoopInstrFormPrep::prepareBaseForDispFormChain(Bucket &BucketChain,
-                                                       InstrForm Form) {
+                                                    InstrForm Form) {
   // RemainderOffsetInfo details:
   // key:            value of (Offset urem DispConstraint). For DSForm, it can
   //                 be [0, 4).
@@ -400,13 +404,13 @@ bool PPCLoopInstrFormPrep::prepareBaseForDispFormChain(Bucket &BucketChain,
   // contains following load/stores with different remainders:
   // 1: 10 load/store whose remainder is 1;
   // 2: 9 load/store whose remainder is 2;
-  // 3: 1 for remainder 3 and 0 for remainder 0;
+  // 3: 1 for remainder 3 and 0 for remainder 0; 
   // Now we will choose the first load/store whose remainder is 1 as base and
   // adjust all other load/stores according to new base, so we will get 10 DS
   // form and 10 X form.
   // But we should be more clever, for this case we could use two bases, one for
-  // remainder 1 and the other for remainder 2, thus we could get 19 DS form and
-  // 1 X form.
+  // remainder 1 and the other for remainder 2, thus we could get 19 DS form and 1
+  // X form.
   unsigned MaxCountRemainder = 0;
   for (unsigned j = 0; j < (unsigned)Form; j++)
     if ((RemainderOffsetInfo.find(j) != RemainderOffsetInfo.end()) &&
@@ -485,9 +489,9 @@ bool PPCLoopInstrFormPrep::prepareBaseForUpdateFormChain(Bucket &BucketChain) {
   return true;
 }
 
-bool PPCLoopInstrFormPrep::rewriteLoadStores(
-    Loop *L, Bucket &BucketChain, SmallSet<BasicBlock *, 16> &BBChanged,
-    InstrForm Form) {
+bool PPCLoopInstrFormPrep::rewriteLoadStores(Loop *L, Bucket &BucketChain,
+                                          SmallSet<BasicBlock *, 16> &BBChanged,
+                                          InstrForm Form) {
   bool MadeChange = false;
   const SCEVAddRecExpr *BasePtrSCEV =
       cast<SCEVAddRecExpr>(BucketChain.BaseSCEV);
@@ -505,15 +509,14 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
   assert(BasePtr && "No pointer operand");
 
   Type *I8Ty = Type::getInt8Ty(MemI->getParent()->getContext());
-  Type *I8PtrTy =
-      Type::getInt8PtrTy(MemI->getParent()->getContext(),
-                         BasePtr->getType()->getPointerAddressSpace());
+  Type *I8PtrTy = Type::getInt8PtrTy(MemI->getParent()->getContext(),
+    BasePtr->getType()->getPointerAddressSpace());
 
   if (!SE->isLoopInvariant(BasePtrSCEV->getStart(), L))
     return MadeChange;
 
   const SCEVConstant *BasePtrIncSCEV =
-      dyn_cast<SCEVConstant>(BasePtrSCEV->getStepRecurrence(*SE));
+    dyn_cast<SCEVConstant>(BasePtrSCEV->getStepRecurrence(*SE));
   if (!BasePtrIncSCEV)
     return MadeChange;
 
@@ -541,9 +544,10 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
   unsigned HeaderLoopPredCount = pred_size(Header);
   BasicBlock *LoopPredecessor = L->getLoopPredecessor();
 
-  PHINode *NewPHI = PHINode::Create(I8PtrTy, HeaderLoopPredCount,
-                                    getInstrName(MemI, PHINodeNameSuffix),
-                                    Header->getFirstNonPHI());
+  PHINode *NewPHI =
+      PHINode::Create(I8PtrTy, HeaderLoopPredCount,
+                      getInstrName(MemI, PHINodeNameSuffix),
+                      Header->getFirstNonPHI());
 
   SCEVExpander SCEVE(*SE, Header->getModule()->getDataLayout(), "pistart");
   Value *BasePtrStart = SCEVE.expandCodeFor(BasePtrStartSCEV, I8PtrTy,
@@ -562,9 +566,9 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
   Instruction *NewBasePtr = nullptr;
   if (CanPreInc) {
     Instruction *InsPoint = &*Header->getFirstInsertionPt();
-    PtrInc = GetElementPtrInst::Create(I8Ty, NewPHI, BasePtrIncSCEV->getValue(),
-                                       getInstrName(MemI, GEPNodeIncNameSuffix),
-                                       InsPoint);
+    PtrInc = GetElementPtrInst::Create(
+        I8Ty, NewPHI, BasePtrIncSCEV->getValue(),
+        getInstrName(MemI, GEPNodeIncNameSuffix), InsPoint);
     cast<GetElementPtrInst>(PtrInc)->setIsInBounds(IsPtrInBounds(BasePtr));
     for (auto PI : predecessors(Header)) {
       if (PI == LoopPredecessor)
@@ -573,9 +577,9 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
       NewPHI->addIncoming(PtrInc, PI);
     }
     if (PtrInc->getType() != BasePtr->getType())
-      NewBasePtr =
-          new BitCastInst(PtrInc, BasePtr->getType(),
-                          getInstrName(PtrInc, CastNodeNameSuffix), InsPoint);
+      NewBasePtr = new BitCastInst(
+          PtrInc, BasePtr->getType(),
+          getInstrName(PtrInc, CastNodeNameSuffix), InsPoint);
     else
       NewBasePtr = PtrInc;
   } else {
@@ -599,9 +603,10 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
     }
     PtrInc = NewPHI;
     if (NewPHI->getType() != BasePtr->getType())
-      NewBasePtr = new BitCastInst(NewPHI, BasePtr->getType(),
-                                   getInstrName(NewPHI, CastNodeNameSuffix),
-                                   &*Header->getFirstInsertionPt());
+      NewBasePtr =
+          new BitCastInst(NewPHI, BasePtr->getType(),
+                          getInstrName(NewPHI, CastNodeNameSuffix),
+                          &*Header->getFirstInsertionPt());
     else
       NewBasePtr = NewPHI;
   }
@@ -621,8 +626,7 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
   NewPtrs.insert(NewBasePtr);
 
   for (auto I = std::next(BucketChain.Elements.begin()),
-            IE = BucketChain.Elements.end();
-       I != IE; ++I) {
+       IE = BucketChain.Elements.end(); I != IE; ++I) {
     Value *Ptr = GetPointerOperand(I->Instr);
     assert(Ptr && "No pointer operand");
     if (NewPtrs.count(Ptr))
@@ -656,7 +660,7 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
     Instruction *ReplNewPtr;
     if (Ptr->getType() != RealNewPtr->getType()) {
       ReplNewPtr = new BitCastInst(RealNewPtr, Ptr->getType(),
-                                   getInstrName(Ptr, CastNodeNameSuffix));
+        getInstrName(Ptr, CastNodeNameSuffix));
       ReplNewPtr->insertAfter(RealNewPtr);
     } else
       ReplNewPtr = RealNewPtr;
@@ -669,7 +673,7 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
 
   MadeChange = true;
 
-  SuccPrepCount++;
+  SuccPrepCount++;  
 
   if (Form == DSForm && !CanPreInc)
     DSFormChainRewritten++;
@@ -682,7 +686,7 @@ bool PPCLoopInstrFormPrep::rewriteLoadStores(
 }
 
 bool PPCLoopInstrFormPrep::updateFormPrep(Loop *L,
-                                          SmallVector<Bucket, 16> &Buckets) {
+                                       SmallVector<Bucket, 16> &Buckets) {
   bool MadeChange = false;
   if (Buckets.empty())
     return MadeChange;
@@ -700,9 +704,8 @@ bool PPCLoopInstrFormPrep::updateFormPrep(Loop *L,
   return MadeChange;
 }
 
-bool PPCLoopInstrFormPrep::dispFormPrep(Loop *L,
-                                        SmallVector<Bucket, 16> &Buckets,
-                                        InstrForm Form) {
+bool PPCLoopInstrFormPrep::dispFormPrep(Loop *L, SmallVector<Bucket, 16> &Buckets,
+                                     InstrForm Form) {
   bool MadeChange = false;
 
   if (Buckets.empty())
@@ -727,10 +730,10 @@ bool PPCLoopInstrFormPrep::dispFormPrep(Loop *L,
 // This function will check to see if that PHI already exists and will return
 // true if it found an existing PHI with the matched start and increment as the
 // one we wanted to create.
-bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction *MemI,
-                                           const SCEV *BasePtrStartSCEV,
-                                           const SCEVConstant *BasePtrIncSCEV,
-                                           InstrForm Form) {
+bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction* MemI,
+                                        const SCEV *BasePtrStartSCEV,
+                                        const SCEVConstant *BasePtrIncSCEV,
+                                        InstrForm Form) {
   BasicBlock *BB = MemI->getParent();
   if (!BB)
     return false;
@@ -743,7 +746,7 @@ bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction *MemI,
 
   // Run through the PHIs and see if we have some that looks like a preparation
   iterator_range<BasicBlock::phi_iterator> PHIIter = BB->phis();
-  for (auto &CurrentPHI : PHIIter) {
+  for (auto & CurrentPHI : PHIIter) {
     PHINode *CurrentPHINode = dyn_cast<PHINode>(&CurrentPHI);
     if (!CurrentPHINode)
       continue;
@@ -758,7 +761,7 @@ bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction *MemI,
       continue;
 
     const SCEVConstant *PHIBasePtrIncSCEV =
-        dyn_cast<SCEVConstant>(PHIBasePtrSCEV->getStepRecurrence(*SE));
+      dyn_cast<SCEVConstant>(PHIBasePtrSCEV->getStepRecurrence(*SE));
     if (!PHIBasePtrIncSCEV)
       continue;
 
@@ -774,7 +777,7 @@ bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction *MemI,
               PHIBasePtrSCEV->getStart() == BasePtrStartSCEV) {
             ++PHINodeAlreadyExistsUpdate;
             return true;
-          }
+          } 
           if (Form == DSForm || Form == DQForm) {
             const SCEVConstant *Diff = dyn_cast<SCEVConstant>(
                 SE->getMinusSCEV(PHIBasePtrSCEV->getStart(), BasePtrStartSCEV));
@@ -785,7 +788,7 @@ bool PPCLoopInstrFormPrep::alreadyPrepared(Loop *L, Instruction *MemI,
                 ++PHINodeAlreadyExistsDQ;
               return true;
             }
-          }
+          } 
         }
       }
     }
@@ -822,8 +825,8 @@ bool PPCLoopInstrFormPrep::runOnLoop(Loop *L) {
   }
   // Check if a load/store has update form. This lambda is used by function
   // collectCandidates which can collect candidates for types defined by lambda.
-  auto isUpdateFormCandidate = [&](const Instruction *I,
-                                   const Value *PtrValue) {
+  auto isUpdateFormCandidate = [&] (const Instruction *I,
+                                    const Value *PtrValue) {
     assert((PtrValue && I) && "Invalid parameter!");
     // There are no update forms for Altivec vector load/stores.
     if (ST && ST->hasAltivec() &&
@@ -853,9 +856,9 @@ bool PPCLoopInstrFormPrep::runOnLoop(Loop *L) {
     }
     return true;
   };
-
+  
   // Check if a load/store has DS form.
-  auto isDSFormCandidate = [](const Instruction *I, const Value *PtrValue) {
+  auto isDSFormCandidate = [] (const Instruction *I, const Value *PtrValue) {
     assert((PtrValue && I) && "Invalid parameter!");
     if (isa<IntrinsicInst>(I))
       return false;
@@ -869,7 +872,7 @@ bool PPCLoopInstrFormPrep::runOnLoop(Loop *L) {
   };
 
   // Check if a load/store has DQ form.
-  auto isDQFormCandidate = [&](const Instruction *I, const Value *PtrValue) {
+  auto isDQFormCandidate = [&] (const Instruction *I, const Value *PtrValue) {
     assert((PtrValue && I) && "Invalid parameter!");
     // Check if it is a P10 lxvp/stxvp intrinsic.
     auto *II = dyn_cast<IntrinsicInst>(I);

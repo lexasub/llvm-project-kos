@@ -305,8 +305,8 @@ protected:
   // queried it is recomputed using @DI.
   const DependenceInfo DI;
 
-  // A special node in the graph that has an edge to every connected component
-  // of the graph, to ensure all nodes are reachable in a graph walk.
+  // A special node in the graph that has an edge to every connected component of
+  // the graph, to ensure all nodes are reachable in a graph walk.
   NodeType *Root = nullptr;
 };
 

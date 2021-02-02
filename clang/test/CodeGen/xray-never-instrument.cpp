@@ -21,3 +21,4 @@ void baz() {}
 // CHECK: define{{.*}} void @_Z3bazv() #[[NEVERATTR:[0-9]+]] {
 // CHECK: attributes #[[NEVERATTR]] = {{.*}} "function-instrument"="xray-never" {{.*}}
 // CHECK: attributes #[[ALWAYSATTR]] = {{.*}} "function-instrument"="xray-always" {{.*}}
+

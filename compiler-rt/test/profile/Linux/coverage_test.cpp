@@ -20,15 +20,16 @@
 void foo(bool cond) { // CHECK:  [[@LINE]]| 1|void foo(
   if (cond) {         // CHECK:  [[@LINE]]| 1| if (cond) {
   }                   // CHECK:  [[@LINE]]| 0|  }
-} // CHECK:  [[@LINE]]| 1|}
-void bar() { // CHECK:  [[@LINE]]| 1|void bar() {
-} // CHECK:  [[@LINE]]| 1|}
-void func() { // CHECK:  [[@LINE]]| 0|void func(
-} // CHECK:  [[@LINE]]| 0|}
-int main() {  // CHECK:  [[@LINE]]| 1|int main(
-  foo(false); // CHECK:  [[@LINE]]| 1| foo(
-  bar();      // CHECK:  [[@LINE]]| 1|  bar(
-  return 0;   // CHECK:  [[@LINE]]| 1| return
-} // CHECK:  [[@LINE]]| 1|}
+}                     // CHECK:  [[@LINE]]| 1|}
+void bar() {          // CHECK:  [[@LINE]]| 1|void bar() {
+}                     // CHECK:  [[@LINE]]| 1|}
+void func() {         // CHECK:  [[@LINE]]| 0|void func(
+}                     // CHECK:  [[@LINE]]| 0|}
+int main() {          // CHECK:  [[@LINE]]| 1|int main(
+  foo(false);         // CHECK:  [[@LINE]]| 1| foo(
+  bar();              // CHECK:  [[@LINE]]| 1|  bar(
+  return 0;           // CHECK:  [[@LINE]]| 1| return
+}                     // CHECK:  [[@LINE]]| 1|}
 
 // COVMAP: __llvm_covmap {{.*}}
+

@@ -20,10 +20,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert((std::is_same<std::chrono::duration<int, std::ratio<1> >,
-                              std::chrono::duration<int> >::value),
-                "");
+int main(int, char**)
+{
+    static_assert((std::is_same<std::chrono::duration<int, std::ratio<1> >,
+                   std::chrono::duration<int> >::value), "");
 
   return 0;
 }

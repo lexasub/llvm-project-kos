@@ -51,9 +51,8 @@ typedef __SIZE_TYPE__ size_t;
 #if defined(__need_STDDEF_H_misc)
 /* ISO9899:2011 7.20 (C11 Annex K): Define rsize_t if __STDC_WANT_LIB_EXT1__ is
  * enabled. */
-#if (defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1 &&         \
-     !defined(_RSIZE_T)) ||                                                    \
-    __has_feature(modules)
+#if (defined(__STDC_WANT_LIB_EXT1__) && __STDC_WANT_LIB_EXT1__ >= 1 && \
+     !defined(_RSIZE_T)) || __has_feature(modules)
 /* Always define rsize_t when modules are available. */
 #if !__has_feature(modules)
 #define _RSIZE_T
@@ -81,19 +80,17 @@ typedef __WCHAR_TYPE__ wchar_t;
 #if defined(__need_NULL)
 #undef NULL
 #ifdef __cplusplus
-#if !defined(__MINGW32__) && !defined(_MSC_VER)
-#define NULL __null
+#  if !defined(__MINGW32__) && !defined(_MSC_VER)
+#    define NULL __null
+#  else
+#    define NULL 0
+#  endif
 #else
-#define NULL 0
-#endif
-#else
-#define NULL ((void *)0)
+#  define NULL ((void*)0)
 #endif
 #ifdef __cplusplus
 #if defined(_MSC_EXTENSIONS) && defined(_NATIVE_NULLPTR_SUPPORTED)
-namespace std {
-typedef decltype(nullptr) nullptr_t;
-}
+namespace std { typedef decltype(nullptr) nullptr_t; }
 using ::std::nullptr_t;
 #endif
 #endif
@@ -106,7 +103,7 @@ using ::std::nullptr_t;
 #endif
 #define offsetof(t, d) __builtin_offsetof(t, d)
 #undef __need_STDDEF_H_misc
-#endif /* defined(__need_STDDEF_H_misc) */
+#endif  /* defined(__need_STDDEF_H_misc) */
 
 /* Some C libraries expect to see a wint_t here. Others (notably MinGW) will use
 __WINT_TYPE__ directly; accommodate both by requiring __need_wint_t */

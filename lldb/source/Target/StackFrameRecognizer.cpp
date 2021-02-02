@@ -18,7 +18,9 @@ using namespace lldb_private;
 
 class ScriptedRecognizedStackFrame : public RecognizedStackFrame {
 public:
-  ScriptedRecognizedStackFrame(ValueObjectListSP args) { m_arguments = args; }
+  ScriptedRecognizedStackFrame(ValueObjectListSP args) {
+    m_arguments = args;
+  }
 };
 
 ScriptedStackFrameRecognizer::ScriptedStackFrameRecognizer(

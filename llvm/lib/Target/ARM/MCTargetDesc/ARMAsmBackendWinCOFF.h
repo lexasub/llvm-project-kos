@@ -23,6 +23,6 @@ public:
     return createARMWinCOFFObjectWriter(/*Is64Bit=*/false);
   }
 };
-} // namespace
+}
 
 #endif

@@ -146,6 +146,6 @@ protected:
   DiagnosticList m_diagnostics;
   std::string m_fixed_expression;
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_EXPRESSION_DIAGNOSTICMANAGER_H

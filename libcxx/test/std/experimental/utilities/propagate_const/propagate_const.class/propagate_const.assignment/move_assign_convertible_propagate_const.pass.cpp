@@ -27,9 +27,9 @@ int main(int, char**) {
   PX px2(2);
   PY py1(1);
 
-  py1 = std::move(px2);
+  py1=std::move(px2);
 
-  assert(*py1 == 2);
+  assert(*py1==2);
 
   return 0;
 }

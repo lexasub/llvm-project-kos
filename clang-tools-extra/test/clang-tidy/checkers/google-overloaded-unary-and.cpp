@@ -2,13 +2,13 @@
 
 struct Foo {
   void *operator&();
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: do not overload unary operator&, it is dangerous. [google-runtime-operator]
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: do not overload unary operator&, it is dangerous. [google-runtime-operator]
 };
 
 template <typename T>
 struct TFoo {
   T *operator&();
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: do not overload unary operator&
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: do not overload unary operator&
 };
 
 TFoo<int> tfoo;

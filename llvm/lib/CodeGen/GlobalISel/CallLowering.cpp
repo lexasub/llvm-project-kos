@@ -11,10 +11,10 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "llvm/CodeGen/GlobalISel/CallLowering.h"
 #include "llvm/CodeGen/Analysis.h"
-#include "llvm/CodeGen/GlobalISel/MachineIRBuilder.h"
+#include "llvm/CodeGen/GlobalISel/CallLowering.h"
 #include "llvm/CodeGen/GlobalISel/Utils.h"
+#include "llvm/CodeGen/GlobalISel/MachineIRBuilder.h"
 #include "llvm/CodeGen/MachineOperand.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/TargetLowering.h"
@@ -332,8 +332,8 @@ bool CallLowering::handleAssignments(CCState &CCInfo,
         }
         Args[i].Regs.push_back(Unmerge.getReg(PartIdx));
         Args[i].Flags.push_back(Flags);
-        if (Handler.assignArg(i, NewVT, NewVT, CCValAssign::Full, Args[i],
-                              Args[i].Flags[PartIdx], CCInfo))
+        if (Handler.assignArg(i, NewVT, NewVT, CCValAssign::Full,
+                              Args[i], Args[i].Flags[PartIdx], CCInfo))
           return false;
       }
     }
@@ -374,19 +374,21 @@ bool CallLowering::handleAssignments(CCState &CCInfo,
         // Don't currently support loading/storing a type that needs to be split
         // to the stack. Should be easy, just not implemented yet.
         if (NumArgRegs > 1) {
-          LLVM_DEBUG(dbgs() << "Load/store a split arg to/from the stack not "
-                               "implemented yet\n");
+          LLVM_DEBUG(
+            dbgs()
+            << "Load/store a split arg to/from the stack not implemented yet\n");
           return false;
         }
 
         // FIXME: Use correct address space for pointer size
         EVT LocVT = VA.getValVT();
-        unsigned MemSize =
-            LocVT == MVT::iPTR ? DL.getPointerSize() : LocVT.getStoreSize();
+        unsigned MemSize = LocVT == MVT::iPTR ? DL.getPointerSize()
+                                              : LocVT.getStoreSize();
         unsigned Offset = VA.getLocMemOffset();
         MachinePointerInfo MPO;
         Register StackAddr = Handler.getStackAddress(MemSize, Offset, MPO);
-        Handler.assignValueToAddress(Args[i], StackAddr, MemSize, MPO, VA);
+        Handler.assignValueToAddress(Args[i], StackAddr,
+                                     MemSize, MPO, VA);
         continue;
       }
 
@@ -406,7 +408,8 @@ bool CallLowering::handleAssignments(CCState &CCInfo,
 
       // This ArgLoc covers multiple pieces, so we need to split it.
       const LLT VATy(VAVT.getSimpleVT());
-      Register NewReg = MIRBuilder.getMRI()->createGenericVirtualRegister(VATy);
+      Register NewReg =
+        MIRBuilder.getMRI()->createGenericVirtualRegister(VATy);
       Handler.assignValueToReg(NewReg, VA.getLocReg(), VA);
       // If it's a vector type, we either need to truncate the elements
       // or do an unmerge to get the lower block of elements.
@@ -733,8 +736,7 @@ Register CallLowering::ValueHandler::extendRegister(Register ValReg,
   }
 
   switch (VA.getLocInfo()) {
-  default:
-    break;
+  default: break;
   case CCValAssign::Full:
   case CCValAssign::BCvt:
     // FIXME: bitconverting between vector types may or may not be a

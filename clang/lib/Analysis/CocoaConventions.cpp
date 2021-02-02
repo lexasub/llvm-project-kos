@@ -21,7 +21,8 @@
 using namespace clang;
 using namespace ento;
 
-bool cocoa::isRefType(QualType RetTy, StringRef Prefix, StringRef Name) {
+bool cocoa::isRefType(QualType RetTy, StringRef Prefix,
+                      StringRef Name) {
   // Recursively walk the typedef stack, allowing typedefs of reference types.
   while (const TypedefType *TD = RetTy->getAs<TypedefType>()) {
     StringRef TDName = TD->getDecl()->getIdentifier()->getName();
@@ -37,7 +38,7 @@ bool cocoa::isRefType(QualType RetTy, StringRef Prefix, StringRef Name) {
     return false;
 
   // Is the type void*?
-  const PointerType *PT = RetTy->castAs<PointerType>();
+  const PointerType* PT = RetTy->castAs<PointerType>();
   if (!PT || !PT->getPointeeType().getUnqualifiedType()->isVoidType())
     return false;
 
@@ -48,8 +49,9 @@ bool cocoa::isRefType(QualType RetTy, StringRef Prefix, StringRef Name) {
 /// Returns true when the passed-in type is a CF-style reference-counted
 /// type from the DiskArbitration framework.
 static bool isDiskArbitrationAPIRefType(QualType T) {
-  return cocoa::isRefType(T, "DADisk") || cocoa::isRefType(T, "DADissenter") ||
-         cocoa::isRefType(T, "DASessionRef");
+  return cocoa::isRefType(T, "DADisk") ||
+      cocoa::isRefType(T, "DADissenter") ||
+      cocoa::isRefType(T, "DASessionRef");
 }
 
 bool coreFoundation::isCFObjectRef(QualType T) {
@@ -58,6 +60,7 @@ bool coreFoundation::isCFObjectRef(QualType T) {
          cocoa::isRefType(T, "CM") || // Core Media.
          isDiskArbitrationAPIRefType(T);
 }
+
 
 bool cocoa::isCocoaObjectRef(QualType Ty) {
   if (!Ty->isObjCObjectPointerType())
@@ -84,7 +87,7 @@ bool cocoa::isCocoaObjectRef(QualType Ty) {
   if (!ID->hasDefinition())
     return true;
 
-  for (; ID; ID = ID->getSuperClass())
+  for ( ; ID ; ID = ID->getSuperClass())
     if (ID->getIdentifier()->getName() == "NSObject")
       return true;
 
@@ -95,8 +98,7 @@ bool coreFoundation::followsCreateRule(const FunctionDecl *fn) {
   // For now, *just* base this on the function name, not on anything else.
 
   const IdentifierInfo *ident = fn->getIdentifier();
-  if (!ident)
-    return false;
+  if (!ident) return false;
   StringRef functionName = ident->getName();
 
   StringRef::iterator it = functionName.begin();
@@ -105,7 +107,7 @@ bool coreFoundation::followsCreateRule(const FunctionDecl *fn) {
 
   while (true) {
     // Scan for the start of 'create' or 'copy'.
-    for (; it != endI; ++it) {
+    for ( ; it != endI ; ++it) {
       // Search for the first character.  It can either be 'C' or 'c'.
       char ch = *it;
       if (ch == 'C' || ch == 'c') {
@@ -127,7 +129,8 @@ bool coreFoundation::followsCreateRule(const FunctionDecl *fn) {
     StringRef suffix = functionName.substr(it - start);
     if (suffix.startswith("reate")) {
       it += 5;
-    } else if (suffix.startswith("opy")) {
+    }
+    else if (suffix.startswith("opy")) {
       it += 3;
     } else {
       // Keep scanning.

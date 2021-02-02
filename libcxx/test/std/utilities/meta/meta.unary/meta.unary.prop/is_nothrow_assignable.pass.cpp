@@ -14,43 +14,50 @@
 #include "test_macros.h"
 
 template <class T, class U>
-void test_is_nothrow_assignable() {
-  static_assert((std::is_nothrow_assignable<T, U>::value), "");
+void test_is_nothrow_assignable()
+{
+    static_assert(( std::is_nothrow_assignable<T, U>::value), "");
 #if TEST_STD_VER > 14
-  static_assert((std::is_nothrow_assignable_v<T, U>), "");
+    static_assert(( std::is_nothrow_assignable_v<T, U>), "");
 #endif
 }
 
 template <class T, class U>
-void test_is_not_nothrow_assignable() {
-  static_assert((!std::is_nothrow_assignable<T, U>::value), "");
+void test_is_not_nothrow_assignable()
+{
+    static_assert((!std::is_nothrow_assignable<T, U>::value), "");
 #if TEST_STD_VER > 14
-  static_assert((!std::is_nothrow_assignable_v<T, U>), "");
+    static_assert((!std::is_nothrow_assignable_v<T, U>), "");
 #endif
 }
 
-struct A {};
-
-struct B {
-  void operator=(A);
+struct A
+{
 };
 
-struct C {
-  void operator=(C&); // not const
+struct B
+{
+    void operator=(A);
 };
 
-int main(int, char**) {
-  test_is_nothrow_assignable<int&, int&>();
-  test_is_nothrow_assignable<int&, int>();
+struct C
+{
+    void operator=(C&);  // not const
+};
+
+int main(int, char**)
+{
+    test_is_nothrow_assignable<int&, int&> ();
+    test_is_nothrow_assignable<int&, int> ();
 #if TEST_STD_VER >= 11
-  test_is_nothrow_assignable<int&, double>();
+    test_is_nothrow_assignable<int&, double> ();
 #endif
 
-  test_is_not_nothrow_assignable<int, int&>();
-  test_is_not_nothrow_assignable<int, int>();
-  test_is_not_nothrow_assignable<B, A>();
-  test_is_not_nothrow_assignable<A, B>();
-  test_is_not_nothrow_assignable<C, C&>();
+    test_is_not_nothrow_assignable<int, int&> ();
+    test_is_not_nothrow_assignable<int, int> ();
+    test_is_not_nothrow_assignable<B, A> ();
+    test_is_not_nothrow_assignable<A, B> ();
+    test_is_not_nothrow_assignable<C, C&> ();
 
   return 0;
 }

@@ -21,23 +21,13 @@ struct S2 {
 };
 
 namespace vars {
-constexpr int f() { return 0; }
-struct X {
-  constexpr X() {}
-};
-namespace v1 {
-const int DND = 0;
+  constexpr int f() { return 0; }
+  struct X { constexpr X() {} };
+  namespace v1 { const int DND = 0; }
+  namespace v2 { constexpr int DND = f(); }
+  namespace v3 { static X DND; }
+  namespace v4 { constexpr X DND = {}; }
 }
-namespace v2 {
-constexpr int DND = f();
-}
-namespace v3 {
-static X DND;
-}
-namespace v4 {
-constexpr X DND = {};
-}
-} // namespace vars
 
 #elif !defined(HEADER2)
 #define HEADER2
@@ -50,7 +40,7 @@ S2 *s2;
 
 // Using the headers.
 
-void test(S1 *, S2 *) {
+void test(S1*, S2*) {
 }
 
 #endif

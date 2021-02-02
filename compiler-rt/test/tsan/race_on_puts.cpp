@@ -27,3 +27,4 @@ int main() {
 
 // CHECK: WARNING: ThreadSanitizer: data race
 // CHECK: DONE
+

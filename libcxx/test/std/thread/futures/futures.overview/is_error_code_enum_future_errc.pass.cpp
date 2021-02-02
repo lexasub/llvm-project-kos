@@ -15,10 +15,11 @@
 #include <future>
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert(std::is_error_code_enum<std::future_errc>::value, "");
+int main(int, char**)
+{
+    static_assert(std::is_error_code_enum  <std::future_errc>::value, "");
 #if TEST_STD_VER > 14
-  static_assert(std::is_error_code_enum_v<std::future_errc>, "");
+    static_assert(std::is_error_code_enum_v<std::future_errc>, "");
 #endif
 
   return 0;

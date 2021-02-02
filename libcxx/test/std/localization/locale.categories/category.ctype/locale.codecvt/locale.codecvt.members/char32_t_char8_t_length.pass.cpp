@@ -17,7 +17,7 @@
 // XFAIL: with_system_cxx_lib=macosx10.12
 // XFAIL: with_system_cxx_lib=macosx10.11
 // XFAIL: with_system_cxx_lib=macosx10.10
-// XFAIL: with_system_cxx_lib=macosx10.9
+// XFAIL: with_system_cxx_lib=macosx10.9 
 
 // <locale>
 
@@ -32,7 +32,7 @@ int main(int, char**) {
   using F = std::codecvt<char32_t, char8_t, std::mbstate_t>;
   const F& f = std::use_facet<F>(std::locale::classic());
   std::mbstate_t mbs = {};
-  const char8_t from[] = u8 "some text";
+  const char8_t from[] = u8"some text";
   assert(f.length(mbs, from, from + 10, 0) == 0);
   assert(f.length(mbs, from, from + 10, 8) == 8);
   assert(f.length(mbs, from, from + 10, 9) == 9);

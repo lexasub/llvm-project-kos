@@ -58,7 +58,7 @@ struct SemaphorePipe {
 #ifndef NDEBUG
     ssize_t Result =
 #endif
-        llvm::sys::RetryAfterSignal(-1, write, FDWrite, "A", 1);
+    llvm::sys::RetryAfterSignal(-1, write, FDWrite, "A", 1);
     assert(Result != -1);
   }
   ~SemaphorePipe() {
@@ -320,8 +320,7 @@ DirectoryWatcherLinux::DirectoryWatcherLinux(
 
 } // namespace
 
-llvm::Expected<std::unique_ptr<DirectoryWatcher>>
-clang::DirectoryWatcher::create(
+llvm::Expected<std::unique_ptr<DirectoryWatcher>> clang::DirectoryWatcher::create(
     StringRef Path,
     std::function<void(llvm::ArrayRef<DirectoryWatcher::Event>, bool)> Receiver,
     bool WaitForInitialSync) {
@@ -337,12 +336,12 @@ clang::DirectoryWatcher::create(
 
   const int InotifyWD = inotify_add_watch(
       InotifyFD, Path.str().c_str(),
-      IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY | IN_MOVED_FROM |
-          IN_MOVE_SELF | IN_MOVED_TO | IN_ONLYDIR | IN_IGNORED
+      IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY |
+      IN_MOVED_FROM | IN_MOVE_SELF | IN_MOVED_TO | IN_ONLYDIR | IN_IGNORED
 #ifdef IN_EXCL_UNLINK
-          | IN_EXCL_UNLINK
+      | IN_EXCL_UNLINK
 #endif
-  );
+      );
   if (InotifyWD == -1)
     return llvm::make_error<llvm::StringError>(
         std::string("inotify_add_watch() error: ") + strerror(errno),

@@ -28,12 +28,12 @@
 #include "sanitizer_common/sanitizer_allocator_internal.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "xray/xray_records.h"
+#include "xray_recursion_guard.h"
 #include "xray_basic_flags.h"
 #include "xray_basic_logging.h"
 #include "xray_defs.h"
 #include "xray_flags.h"
 #include "xray_interface_internal.h"
-#include "xray_recursion_guard.h"
 #include "xray_tsc.h"
 #include "xray_utils.h"
 
@@ -85,17 +85,15 @@ static atomic_uint64_t TicksPerSec{0};
 static atomic_uint64_t CycleFrequency{NanosecondsPerSecond};
 
 static LogWriter *getLog() XRAY_NEVER_INSTRUMENT {
-  LogWriter *LW = LogWriter::Open();
+  LogWriter* LW = LogWriter::Open();
   if (LW == nullptr)
     return LW;
 
   static pthread_once_t DetectOnce = PTHREAD_ONCE_INIT;
-  pthread_once(
-      &DetectOnce, +[] {
-        if (atomic_load(&UseRealTSC, memory_order_acquire))
-          atomic_store(&CycleFrequency, getTSCFrequency(),
-                       memory_order_release);
-      });
+  pthread_once(&DetectOnce, +[] {
+    if (atomic_load(&UseRealTSC, memory_order_acquire))
+      atomic_store(&CycleFrequency, getTSCFrequency(), memory_order_release);
+  });
 
   // Since we're here, we get to write the header. We set it up so that the
   // header will only be written once, at the start, and let the threads
@@ -119,8 +117,7 @@ static LogWriter *getLog() XRAY_NEVER_INSTRUMENT {
 static LogWriter *getGlobalLog() XRAY_NEVER_INSTRUMENT {
   static pthread_once_t OnceInit = PTHREAD_ONCE_INIT;
   static LogWriter *LW = nullptr;
-  pthread_once(
-      &OnceInit, +[] { LW = getLog(); });
+  pthread_once(&OnceInit, +[] { LW = getLog(); });
   return LW;
 }
 
@@ -239,8 +236,8 @@ void InMemoryRawLog(int32_t FuncId, XRayEntryType Type,
   R.RecordType = RecordTypes::NORMAL;
   R.CPU = CPU;
   R.TSC = TSC;
-  R.TId = GetTid();
-  R.PId = internal_getpid();
+  R.TId = GetTid(); 
+  R.PId = internal_getpid(); 
   R.Type = Type;
   R.FuncId = FuncId;
   auto FirstEntry = reinterpret_cast<XRayRecord *>(TLD.InMemoryBuffer);
@@ -258,7 +255,8 @@ template <class RDTSC>
 void InMemoryRawLogWithArg(int32_t FuncId, XRayEntryType Type, uint64_t Arg1,
                            RDTSC ReadTSC) XRAY_NEVER_INSTRUMENT {
   auto &TLD = getThreadLocalData();
-  auto FirstEntry = reinterpret_cast<XRayArgPayload *>(TLD.InMemoryBuffer);
+  auto FirstEntry =
+      reinterpret_cast<XRayArgPayload *>(TLD.InMemoryBuffer);
   const auto &BuffLen = TLD.BufferSize;
   LogWriter *LW = getGlobalLog();
   if (LW == nullptr)
@@ -286,8 +284,8 @@ void InMemoryRawLogWithArg(int32_t FuncId, XRayEntryType Type, uint64_t Arg1,
   XRayArgPayload R;
   R.RecordType = RecordTypes::ARG_PAYLOAD;
   R.FuncId = FuncId;
-  R.TId = GetTid();
-  R.PId = internal_getpid();
+  R.TId = GetTid(); 
+  R.PId = internal_getpid(); 
   R.Arg = Arg1;
   internal_memcpy(FirstEntry + TLD.BufferOffset, &R, sizeof(R));
   if (++TLD.BufferOffset == BuffLen) {
@@ -361,7 +359,7 @@ static void TLDDestructor(void *P) XRAY_NEVER_INSTRUMENT {
     SpinMutexLock L(&LogMutex);
     TLD.LogWriter->WriteAll(reinterpret_cast<char *>(TLD.InMemoryBuffer),
                             reinterpret_cast<char *>(TLD.InMemoryBuffer) +
-                                (sizeof(XRayRecord) * TLD.BufferOffset));
+                            (sizeof(XRayRecord) * TLD.BufferOffset));
   }
 
   // Because this thread's exit could be the last one trying to write to
@@ -383,21 +381,18 @@ XRayLogInitStatus basicLoggingInit(UNUSED size_t BufferSize,
   }
 
   static pthread_once_t OnceInit = PTHREAD_ONCE_INIT;
-  pthread_once(
-      &OnceInit, +[] {
-        pthread_key_create(&PThreadKey, TLDDestructor);
-        atomic_store(&UseRealTSC, probeRequiredCPUFeatures(),
-                     memory_order_release);
-        // Initialize the global TicksPerSec value.
-        atomic_store(&TicksPerSec,
-                     probeRequiredCPUFeatures() ? getTSCFrequency()
-                                                : NanosecondsPerSecond,
-                     memory_order_release);
-        if (!atomic_load(&UseRealTSC, memory_order_relaxed) && Verbosity())
-          Report("WARNING: Required CPU features missing for XRay "
-                 "instrumentation, "
-                 "using emulation instead.\n");
-      });
+  pthread_once(&OnceInit, +[] {
+    pthread_key_create(&PThreadKey, TLDDestructor);
+    atomic_store(&UseRealTSC, probeRequiredCPUFeatures(), memory_order_release);
+    // Initialize the global TicksPerSec value.
+    atomic_store(&TicksPerSec,
+                 probeRequiredCPUFeatures() ? getTSCFrequency()
+                                            : NanosecondsPerSecond,
+                 memory_order_release);
+    if (!atomic_load(&UseRealTSC, memory_order_relaxed) && Verbosity())
+      Report("WARNING: Required CPU features missing for XRay instrumentation, "
+             "using emulation instead.\n");
+  });
 
   FlagParser P;
   BasicFlags F;
@@ -506,12 +501,11 @@ bool basicLogDynamicInitializer() XRAY_NEVER_INSTRUMENT {
     // the cleanup even without calling the finalization routines, we're
     // registering a program exit function that will do the cleanup.
     static pthread_once_t DynamicOnce = PTHREAD_ONCE_INIT;
-    pthread_once(
-        &DynamicOnce, +[] {
-          static void *FakeTLD = nullptr;
-          FakeTLD = &getThreadLocalData();
-          Atexit(+[] { TLDDestructor(FakeTLD); });
-        });
+    pthread_once(&DynamicOnce, +[] {
+      static void *FakeTLD = nullptr;
+      FakeTLD = &getThreadLocalData();
+      Atexit(+[] { TLDDestructor(FakeTLD); });
+    });
   }
   return true;
 }

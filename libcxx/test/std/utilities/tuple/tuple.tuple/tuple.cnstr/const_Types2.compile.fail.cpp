@@ -18,8 +18,11 @@
 #include <string>
 #include <cassert>
 
-int main(int, char**) {
-  { std::tuple<int, char*, std::string, double&> t(2, nullptr, "text"); }
+int main(int, char**)
+{
+    {
+        std::tuple<int, char*, std::string, double&> t(2, nullptr, "text");
+    }
 
   return 0;
 }

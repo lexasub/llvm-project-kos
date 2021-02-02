@@ -21,16 +21,16 @@ struct Base2 {
 struct Base3 {
   double x;
 };
-struct D1 : Base1 { // non-homogeneous aggregate
+struct D1 : Base1 {  // non-homogeneous aggregate
   double y, z;
 };
-struct D2 : Base2 { // homogeneous aggregate
+struct D2 : Base2 {  // homogeneous aggregate
   double y, z;
 };
-struct D3 : Base1, Base2 { // non-homogeneous aggregate
+struct D3 : Base1, Base2 {  // non-homogeneous aggregate
   double y, z;
 };
-struct D4 : Base2, Base3 { // homogeneous aggregate
+struct D4 : Base2, Base3 {  // homogeneous aggregate
   double y, z;
 };
 
@@ -82,16 +82,10 @@ void call_D5(D5 *p) {
 // ARM64: load [3 x double], [3 x double]*
 // ARM64: call %struct.D5 @_Z7func_D52D5([3 x double] %{{.*}})
 
-struct Empty {};
-struct Float1 {
-  float x;
-};
-struct Float2 {
-  float y;
-};
-struct HVAWithEmptyBase : Float1, Empty, Float2 {
-  float z;
-};
+struct Empty { };
+struct Float1 { float x; };
+struct Float2 { float y; };
+struct HVAWithEmptyBase : Float1, Empty, Float2 { float z; };
 
 // PPC: define{{.*}} void @_Z15with_empty_base16HVAWithEmptyBase([3 x float] %a.coerce)
 // ARM64: define{{.*}} void @_Z15with_empty_base16HVAWithEmptyBase([3 x float] %a.coerce)

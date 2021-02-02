@@ -71,16 +71,15 @@ public:
                    const llvm::opt::ArgList &Args);
   ~HexagonToolChain() override;
 
-  void
-  addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
-                        llvm::opt::ArgStringList &CC1Args,
-                        Action::OffloadKind DeviceOffloadKind) const override;
+  void addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
+                             llvm::opt::ArgStringList &CC1Args,
+                             Action::OffloadKind DeviceOffloadKind) const override;
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                             llvm::opt::ArgStringList &CC1Args) const override;
-  void
-  addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
-                           llvm::opt::ArgStringList &CC1Args) const override;
+  void addLibStdCxxIncludePaths(
+      const llvm::opt::ArgList &DriverArgs,
+      llvm::opt::ArgStringList &CC1Args) const override;
 
   void addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
                              llvm::opt::ArgStringList &CC1Args) const override;
@@ -95,20 +94,22 @@ public:
                            llvm::opt::ArgStringList &CmdArgs) const override;
 
   StringRef GetGCCLibAndIncVersion() const { return GCCLibAndIncVersion.Text; }
-  bool IsIntegratedAssemblerDefault() const override { return true; }
+  bool IsIntegratedAssemblerDefault() const override {
+    return true;
+  }
 
-  std::string
-  getHexagonTargetDir(const std::string &InstalledDir,
-                      const SmallVectorImpl<std::string> &PrefixDirs) const;
+  std::string getHexagonTargetDir(
+      const std::string &InstalledDir,
+      const SmallVectorImpl<std::string> &PrefixDirs) const;
   void getHexagonLibraryPaths(const llvm::opt::ArgList &Args,
-                              ToolChain::path_list &LibPaths) const;
+      ToolChain::path_list &LibPaths) const;
 
   static bool isAutoHVXEnabled(const llvm::opt::ArgList &Args);
   static const StringRef GetDefaultCPU();
   static const StringRef GetTargetCPUVersion(const llvm::opt::ArgList &Args);
 
-  static Optional<unsigned>
-  getSmallDataThreshold(const llvm::opt::ArgList &Args);
+  static Optional<unsigned> getSmallDataThreshold(
+      const llvm::opt::ArgList &Args);
 };
 
 } // end namespace toolchains

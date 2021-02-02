@@ -37,6 +37,6 @@ public:
         : thread_name(name ? name : ""), thread_fptr(fptr), thread_arg(arg) {}
   };
 };
-} // namespace lldb_private
+}
 
 #endif

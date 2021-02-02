@@ -26,28 +26,27 @@ const char *SecondaryAllocatorName = "LargeMmapAllocator";
 
 // ThreadSanitizer for Go uses libc malloc/free.
 #if defined(SANITIZER_USE_MALLOC)
-#if SANITIZER_LINUX && !SANITIZER_ANDROID
+# if SANITIZER_LINUX && !SANITIZER_ANDROID
 extern "C" void *__libc_malloc(uptr size);
-#if !SANITIZER_GO
+#  if !SANITIZER_GO
 extern "C" void *__libc_memalign(uptr alignment, uptr size);
-#endif
+#  endif
 extern "C" void *__libc_realloc(void *ptr, uptr size);
 extern "C" void __libc_free(void *ptr);
-#else
-#include <stdlib.h>
-#define __libc_malloc malloc
-#if !SANITIZER_GO
+# else
+#  include <stdlib.h>
+#  define __libc_malloc malloc
+#  if !SANITIZER_GO
 static void *__libc_memalign(uptr alignment, uptr size) {
   void *p;
   uptr error = posix_memalign(&p, alignment, size);
-  if (error)
-    return nullptr;
+  if (error) return nullptr;
   return p;
 }
-#endif
-#define __libc_realloc realloc
-#define __libc_free free
-#endif
+#  endif
+#  define __libc_realloc realloc
+#  define __libc_free free
+# endif
 
 static void *RawInternalAlloc(uptr size, InternalAllocatorCache *cache,
                               uptr alignment) {
@@ -79,7 +78,9 @@ static void RawInternalFree(void *ptr, InternalAllocatorCache *cache) {
   __libc_free(ptr);
 }
 
-InternalAllocator *internal_allocator() { return 0; }
+InternalAllocator *internal_allocator() {
+  return 0;
+}
 
 #else  // SANITIZER_GO || defined(SANITIZER_USE_MALLOC)
 
@@ -106,8 +107,7 @@ InternalAllocator *internal_allocator() {
 
 static void *RawInternalAlloc(uptr size, InternalAllocatorCache *cache,
                               uptr alignment) {
-  if (alignment == 0)
-    alignment = 8;
+  if (alignment == 0) alignment = 8;
   if (cache == 0) {
     SpinMutexLock l(&internal_allocator_cache_mu);
     return internal_allocator()->Allocate(&internal_allocator_cache, size,
@@ -147,10 +147,8 @@ struct BlockHeader {
 
 static void NORETURN ReportInternalAllocatorOutOfMemory(uptr requested_size) {
   SetAllocatorOutOfMemory();
-  Report(
-      "FATAL: %s: internal allocator is out of memory trying to allocate "
-      "0x%zx bytes\n",
-      SanitizerToolName, requested_size);
+  Report("FATAL: %s: internal allocator is out of memory trying to allocate "
+         "0x%zx bytes\n", SanitizerToolName, requested_size);
   Die();
 }
 
@@ -193,10 +191,9 @@ void *InternalReallocArray(void *addr, uptr count, uptr size,
 
 void *InternalCalloc(uptr count, uptr size, InternalAllocatorCache *cache) {
   if (UNLIKELY(CheckForCallocOverflow(count, size))) {
-    Report(
-        "FATAL: %s: calloc parameters overflow: count * size (%zd * %zd) "
-        "cannot be represented in type size_t\n",
-        SanitizerToolName, count, size);
+    Report("FATAL: %s: calloc parameters overflow: count * size (%zd * %zd) "
+           "cannot be represented in type size_t\n", SanitizerToolName, count,
+           size);
     Die();
   }
   void *p = InternalAlloc(count * size, cache);
@@ -224,10 +221,12 @@ void *LowLevelAllocator::Allocate(uptr size) {
   size = RoundUpTo(size, low_level_alloc_min_alignment);
   if (allocated_end_ - allocated_current_ < (sptr)size) {
     uptr size_to_allocate = RoundUpTo(size, GetPageSizeCached());
-    allocated_current_ = (char *)MmapOrDie(size_to_allocate, __func__);
+    allocated_current_ =
+        (char*)MmapOrDie(size_to_allocate, __func__);
     allocated_end_ = allocated_current_ + size_to_allocate;
     if (low_level_alloc_callback) {
-      low_level_alloc_callback((uptr)allocated_current_, size_to_allocate);
+      low_level_alloc_callback((uptr)allocated_current_,
+                               size_to_allocate);
     }
   }
   CHECK(allocated_end_ - allocated_current_ >= (sptr)size);
@@ -268,9 +267,8 @@ void SetAllocatorMayReturnNull(bool may_return_null) {
 }
 
 void PrintHintAllocatorCannotReturnNull() {
-  Report(
-      "HINT: if you don't care about these errors you may set "
-      "allocator_may_return_null=1\n");
+  Report("HINT: if you don't care about these errors you may set "
+         "allocator_may_return_null=1\n");
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer

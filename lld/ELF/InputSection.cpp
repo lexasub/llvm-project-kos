@@ -300,7 +300,8 @@ std::string InputSectionBase::getLocation(uint64_t offset) {
 
   // We don't have file for synthetic sections.
   if (getFile<ELFT>() == nullptr)
-    return (config->outputFile + ":(" + secAndOffset + ")").str();
+    return (config->outputFile + ":(" + secAndOffset + ")")
+        .str();
 
   // First check if we can get desired values from debugging information.
   if (Optional<DILineInfo> info = getFile<ELFT>()->getDILineInfo(this, offset))
@@ -838,8 +839,7 @@ uint64_t InputSectionBase::getRelocTargetVA(const InputFile *file, RelType type,
   case R_TLSGD_GOT:
     return in.got->getGlobalDynOffset(sym) + a;
   case R_TLSGD_GOTPLT:
-    return in.got->getVA() + in.got->getGlobalDynOffset(sym) + a -
-           in.gotPlt->getVA();
+    return in.got->getVA() + in.got->getGlobalDynOffset(sym) + a - in.gotPlt->getVA();
   case R_TLSGD_PC:
     return in.got->getGlobalDynAddr(sym) + a - p;
   case R_TLSLD_GOTPLT:
@@ -1198,8 +1198,7 @@ void InputSectionBase::adjustSplitStackFunctionPrologues(uint8_t *buf,
     // conservative.
     if (Defined *d = dyn_cast<Defined>(rel.sym))
       if (InputSection *isec = cast_or_null<InputSection>(d->section))
-        if (!isec || !isec->getFile<ELFT>() ||
-            isec->getFile<ELFT>()->splitStack)
+        if (!isec || !isec->getFile<ELFT>() || isec->getFile<ELFT>()->splitStack)
           continue;
 
     if (enclosingPrologueAttempted(rel.offset, prologues))
@@ -1415,8 +1414,7 @@ SectionPiece *MergeInputSection::getSectionPiece(uint64_t offset) {
     fatal(toString(this) + ": offset is outside the section");
 
   // If Offset is not at beginning of a section piece, it is not in the map.
-  // In that case we need to  do a binary search of the original section piece
-  // vector.
+  // In that case we need to  do a binary search of the original section piece vector.
   auto it = partition_point(
       pieces, [=](SectionPiece p) { return p.inputOff <= offset; });
   return &it[-1];
@@ -1429,7 +1427,7 @@ uint64_t MergeInputSection::getParentOffset(uint64_t offset) const {
   // If Offset is not at beginning of a section piece, it is not in the map.
   // In that case we need to search from the original section piece vector.
   const SectionPiece &piece =
-      *(const_cast<MergeInputSection *>(this)->getSectionPiece(offset));
+      *(const_cast<MergeInputSection *>(this)->getSectionPiece (offset));
   uint64_t addend = offset - piece.inputOff;
   return piece.outputOff + addend;
 }

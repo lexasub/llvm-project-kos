@@ -422,8 +422,9 @@ bool IRForTarget::RewriteObjCConstString(llvm::GlobalVariable *ns_str,
         "CFStringCreateWithBytes");
 
     bool missing_weak = false;
-    CFStringCreateWithBytes_addr = m_execution_unit.FindSymbol(
-        g_CFStringCreateWithBytes_str, missing_weak);
+    CFStringCreateWithBytes_addr =
+        m_execution_unit.FindSymbol(g_CFStringCreateWithBytes_str, 
+                                    missing_weak);
     if (CFStringCreateWithBytes_addr == LLDB_INVALID_ADDRESS || missing_weak) {
       LLDB_LOG(log, "Couldn't find CFStringCreateWithBytes in the target");
 
@@ -484,62 +485,57 @@ bool IRForTarget::RewriteObjCConstString(llvm::GlobalVariable *ns_str,
   Constant *alloc_arg = Constant::getNullValue(i8_ptr_ty);
   Constant *bytes_arg = cstr ? ConstantExpr::getBitCast(cstr, i8_ptr_ty)
                              : Constant::getNullValue(i8_ptr_ty);
-  Constant *numBytes_arg =
-      ConstantInt::get(m_intptr_ty,
-                       cstr ? (string_array->getNumElements() - 1) *
-                                  string_array->getElementByteSize()
-                            : 0,
-                       false);
-  int encoding_flags = 0;
-  switch (cstr ? string_array->getElementByteSize() : 1) {
-  case 1:
-    encoding_flags = 0x08000100; /* 0x08000100 is kCFStringEncodingUTF8 */
-    break;
-  case 2:
-    encoding_flags = 0x0100; /* 0x0100 is kCFStringEncodingUTF16 */
-    break;
-  case 4:
-    encoding_flags = 0x0c000100; /* 0x0c000100 is kCFStringEncodingUTF32 */
-    break;
-  default:
-    encoding_flags = 0x0600; /* fall back to 0x0600, kCFStringEncodingASCII */
-    LLDB_LOG(log,
-             "Encountered an Objective-C constant string with unusual "
-             "element size {0}",
-             string_array->getElementByteSize());
-  }
-  Constant *encoding_arg = ConstantInt::get(i32_ty, encoding_flags, false);
-  Constant *isExternal_arg =
-      ConstantInt::get(i8_ty, 0x0, false); /* 0x0 is false */
+  Constant *numBytes_arg = ConstantInt::get(
+      m_intptr_ty, cstr ? (string_array->getNumElements() - 1) * string_array->getElementByteSize() : 0, false);
+ int encoding_flags = 0;
+ switch (cstr ? string_array->getElementByteSize() : 1) {
+ case 1:
+   encoding_flags = 0x08000100; /* 0x08000100 is kCFStringEncodingUTF8 */
+   break;
+ case 2:
+   encoding_flags = 0x0100; /* 0x0100 is kCFStringEncodingUTF16 */
+   break;
+ case 4:
+   encoding_flags = 0x0c000100; /* 0x0c000100 is kCFStringEncodingUTF32 */
+   break;
+ default:
+   encoding_flags = 0x0600; /* fall back to 0x0600, kCFStringEncodingASCII */
+   LLDB_LOG(log, "Encountered an Objective-C constant string with unusual "
+                 "element size {0}",
+            string_array->getElementByteSize());
+ }
+ Constant *encoding_arg = ConstantInt::get(i32_ty, encoding_flags, false);
+ Constant *isExternal_arg =
+     ConstantInt::get(i8_ty, 0x0, false); /* 0x0 is false */
 
-  Value *argument_array[5];
+ Value *argument_array[5];
 
-  argument_array[0] = alloc_arg;
-  argument_array[1] = bytes_arg;
-  argument_array[2] = numBytes_arg;
-  argument_array[3] = encoding_arg;
-  argument_array[4] = isExternal_arg;
+ argument_array[0] = alloc_arg;
+ argument_array[1] = bytes_arg;
+ argument_array[2] = numBytes_arg;
+ argument_array[3] = encoding_arg;
+ argument_array[4] = isExternal_arg;
 
-  ArrayRef<Value *> CFSCWB_arguments(argument_array, 5);
+ ArrayRef<Value *> CFSCWB_arguments(argument_array, 5);
 
-  FunctionValueCache CFSCWB_Caller(
-      [this, &CFSCWB_arguments](llvm::Function *function) -> llvm::Value * {
-        return CallInst::Create(
-            m_CFStringCreateWithBytes, CFSCWB_arguments,
-            "CFStringCreateWithBytes",
-            llvm::cast<Instruction>(
-                m_entry_instruction_finder.GetValue(function)));
-      });
+ FunctionValueCache CFSCWB_Caller(
+     [this, &CFSCWB_arguments](llvm::Function *function) -> llvm::Value * {
+       return CallInst::Create(
+           m_CFStringCreateWithBytes, CFSCWB_arguments,
+           "CFStringCreateWithBytes",
+           llvm::cast<Instruction>(
+               m_entry_instruction_finder.GetValue(function)));
+     });
 
-  if (!UnfoldConstant(ns_str, nullptr, CFSCWB_Caller,
-                      m_entry_instruction_finder, m_error_stream)) {
-    LLDB_LOG(log, "Couldn't replace the NSString with the result of the call");
+ if (!UnfoldConstant(ns_str, nullptr, CFSCWB_Caller, m_entry_instruction_finder,
+                     m_error_stream)) {
+   LLDB_LOG(log, "Couldn't replace the NSString with the result of the call");
 
-    m_error_stream.Printf("error [IRForTarget internal]: Couldn't replace an "
-                          "Objective-C constant string with a dynamic "
-                          "string\n");
+   m_error_stream.Printf("error [IRForTarget internal]: Couldn't replace an "
+                         "Objective-C constant string with a dynamic "
+                         "string\n");
 
-    return false;
+   return false;
   }
 
   ns_str->eraseFromParent();
@@ -833,8 +829,8 @@ bool IRForTarget::RewriteObjCSelector(Instruction *selector_load) {
 
     bool missing_weak = false;
     static lldb_private::ConstString g_sel_registerName_str("sel_registerName");
-    sel_registerName_addr =
-        m_execution_unit.FindSymbol(g_sel_registerName_str, missing_weak);
+    sel_registerName_addr = m_execution_unit.FindSymbol(g_sel_registerName_str,
+                                                        missing_weak);
     if (sel_registerName_addr == LLDB_INVALID_ADDRESS || missing_weak)
       return false;
 
@@ -946,7 +942,8 @@ bool IRForTarget::RewriteObjCClassReference(Instruction *class_load) {
   GlobalVariable *_objc_class_references_ =
       dyn_cast<GlobalVariable>(load->getPointerOperand());
 
-  if (!_objc_class_references_ || !_objc_class_references_->hasInitializer())
+  if (!_objc_class_references_ ||
+      !_objc_class_references_->hasInitializer())
     return false;
 
   Constant *ocr_initializer = _objc_class_references_->getInitializer();
@@ -991,8 +988,8 @@ bool IRForTarget::RewriteObjCClassReference(Instruction *class_load) {
 
     bool missing_weak = false;
     static lldb_private::ConstString g_objc_getClass_str("objc_getClass");
-    objc_getClass_addr =
-        m_execution_unit.FindSymbol(g_objc_getClass_str, missing_weak);
+    objc_getClass_addr = m_execution_unit.FindSymbol(g_objc_getClass_str,
+                                                     missing_weak);
     if (objc_getClass_addr == LLDB_INVALID_ADDRESS || missing_weak)
       return false;
 
@@ -1569,9 +1566,8 @@ bool IRForTarget::UnfoldConstant(Constant *old_constant,
 
                 return new BitCastInst(
                     value_maker.GetValue(function), constant_expr->getType(),
-                    "",
-                    llvm::cast<Instruction>(
-                        entry_instruction_finder.GetValue(function)));
+                    "", llvm::cast<Instruction>(
+                            entry_instruction_finder.GetValue(function)));
               });
 
           if (!UnfoldConstant(constant_expr, llvm_function, bit_cast_maker,

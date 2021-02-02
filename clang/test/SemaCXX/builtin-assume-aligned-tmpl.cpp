@@ -1,8 +1,8 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
-template <int z>
+template<int z>
 int test9(int *a) {
-  a = (int *)__builtin_assume_aligned(a, z + 1); // expected-error {{requested alignment is not a power of 2}}
+  a = (int *) __builtin_assume_aligned(a, z + 1); // expected-error {{requested alignment is not a power of 2}}
   return a[0];
 }
 
@@ -10,9 +10,9 @@ void test9i(int *a) {
   test9<42>(a); // expected-note {{in instantiation of function template specialization 'test9<42>' requested here}}
 }
 
-template <typename T>
+template<typename T>
 int test10(int *a, T z) {
-  a = (int *)__builtin_assume_aligned(a, z + 1); // expected-error {{must be a constant integer}}
+  a = (int *) __builtin_assume_aligned(a, z + 1); // expected-error {{must be a constant integer}}
   return a[0];
 }
 
@@ -35,13 +35,13 @@ void test20() {
 }
 
 // expected-error@+1 {{invalid application of 'sizeof' to a function type}}
-template <typename T> __attribute__((assume_aligned(sizeof(int(T()))))) T *f();
+template<typename T> __attribute__((assume_aligned(sizeof(int(T()))))) T *f();
 void test21() {
   void *p = f<void>(); // expected-note {{in instantiation of function template specialization 'f<void>' requested here}}
 }
 
 // expected-error@+1 {{functional-style cast from 'void' to 'int' is not allowed}}
-template <typename T> __attribute__((assume_aligned(sizeof((int(T())))))) T *g();
+template<typename T> __attribute__((assume_aligned(sizeof((int(T())))))) T *g();
 void test23() {
   void *p = g<void>(); // expected-note {{in instantiation of function template specialization 'g<void>' requested here}}
 }
@@ -84,3 +84,4 @@ void test24() {
   atest5<s2>();
   atest5<s3>(); // expected-note {{in instantiation of function template specialization 'atest5<s3>' requested here}}
 }
+

@@ -57,6 +57,7 @@ public:
   virtual void AdjustBreakpointAddress(const Symbol &func,
                                        Address &addr) const {}
 
+
   /// Get \a load_addr as a callable code load address for this target
   ///
   /// Take \a load_addr and potentially add any address bits that are
@@ -67,8 +68,7 @@ public:
   /// that doesn't have code in it, LLDB_INVALID_ADDRESS will be
   /// returned.
   virtual lldb::addr_t GetCallableLoadAddress(
-      lldb::addr_t addr,
-      AddressClass addr_class = AddressClass::eInvalid) const {
+      lldb::addr_t addr, AddressClass addr_class = AddressClass::eInvalid) const {
     return addr;
   }
 
@@ -83,9 +83,8 @@ public:
   /// that doesn't have code in it, LLDB_INVALID_ADDRESS will be
   /// returned.
 
-  virtual lldb::addr_t
-  GetOpcodeLoadAddress(lldb::addr_t addr,
-                       AddressClass addr_class = AddressClass::eInvalid) const {
+  virtual lldb::addr_t GetOpcodeLoadAddress(
+      lldb::addr_t addr, AddressClass addr_class = AddressClass::eInvalid) const {
     return addr;
   }
 

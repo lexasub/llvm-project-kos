@@ -25,8 +25,8 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/MathExtras.h"
-#include "llvm/Support/TypeSize.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/TypeSize.h"
 #include <cassert>
 #include <utility>
 
@@ -38,32 +38,19 @@ using namespace llvm;
 
 Type *Type::getPrimitiveType(LLVMContext &C, TypeID IDNumber) {
   switch (IDNumber) {
-  case VoidTyID:
-    return getVoidTy(C);
-  case HalfTyID:
-    return getHalfTy(C);
-  case BFloatTyID:
-    return getBFloatTy(C);
-  case FloatTyID:
-    return getFloatTy(C);
-  case DoubleTyID:
-    return getDoubleTy(C);
-  case X86_FP80TyID:
-    return getX86_FP80Ty(C);
-  case FP128TyID:
-    return getFP128Ty(C);
-  case PPC_FP128TyID:
-    return getPPC_FP128Ty(C);
-  case LabelTyID:
-    return getLabelTy(C);
-  case MetadataTyID:
-    return getMetadataTy(C);
-  case X86_MMXTyID:
-    return getX86_MMXTy(C);
-  case X86_AMXTyID:
-    return getX86_AMXTy(C);
-  case TokenTyID:
-    return getTokenTy(C);
+  case VoidTyID      : return getVoidTy(C);
+  case HalfTyID      : return getHalfTy(C);
+  case BFloatTyID    : return getBFloatTy(C);
+  case FloatTyID     : return getFloatTy(C);
+  case DoubleTyID    : return getDoubleTy(C);
+  case X86_FP80TyID  : return getX86_FP80Ty(C);
+  case FP128TyID     : return getFP128Ty(C);
+  case PPC_FP128TyID : return getPPC_FP128Ty(C);
+  case LabelTyID     : return getLabelTy(C);
+  case MetadataTyID  : return getMetadataTy(C);
+  case X86_MMXTyID   : return getX86_MMXTy(C);
+  case X86_AMXTyID   : return getX86_AMXTy(C);
+  case TokenTyID     : return getTokenTy(C);
   default:
     return nullptr;
   }
@@ -112,7 +99,7 @@ bool Type::canLosslesslyBitCastTo(Type *Ty) const {
       return PTy->getAddressSpace() == OtherPTy->getAddressSpace();
     return false;
   }
-  return false; // Other types have no identity values
+  return false;  // Other types have no identity values
 }
 
 bool Type::isEmptyTy() const {
@@ -134,24 +121,15 @@ bool Type::isEmptyTy() const {
 
 TypeSize Type::getPrimitiveSizeInBits() const {
   switch (getTypeID()) {
-  case Type::HalfTyID:
-    return TypeSize::Fixed(16);
-  case Type::BFloatTyID:
-    return TypeSize::Fixed(16);
-  case Type::FloatTyID:
-    return TypeSize::Fixed(32);
-  case Type::DoubleTyID:
-    return TypeSize::Fixed(64);
-  case Type::X86_FP80TyID:
-    return TypeSize::Fixed(80);
-  case Type::FP128TyID:
-    return TypeSize::Fixed(128);
-  case Type::PPC_FP128TyID:
-    return TypeSize::Fixed(128);
-  case Type::X86_MMXTyID:
-    return TypeSize::Fixed(64);
-  case Type::X86_AMXTyID:
-    return TypeSize::Fixed(8192);
+  case Type::HalfTyID: return TypeSize::Fixed(16);
+  case Type::BFloatTyID: return TypeSize::Fixed(16);
+  case Type::FloatTyID: return TypeSize::Fixed(32);
+  case Type::DoubleTyID: return TypeSize::Fixed(64);
+  case Type::X86_FP80TyID: return TypeSize::Fixed(80);
+  case Type::FP128TyID: return TypeSize::Fixed(128);
+  case Type::PPC_FP128TyID: return TypeSize::Fixed(128);
+  case Type::X86_MMXTyID: return TypeSize::Fixed(64);
+  case Type::X86_AMXTyID: return TypeSize::Fixed(8192);
   case Type::IntegerTyID:
     return TypeSize::Fixed(cast<IntegerType>(this)->getBitWidth());
   case Type::FixedVectorTyID:
@@ -162,8 +140,7 @@ TypeSize Type::getPrimitiveSizeInBits() const {
     assert(!ETS.isScalable() && "Vector type should have fixed-width elements");
     return {ETS.getFixedSize() * EC.getKnownMinValue(), EC.isScalable()};
   }
-  default:
-    return TypeSize::Fixed(0);
+  default: return TypeSize::Fixed(0);
   }
 }
 
@@ -176,23 +153,17 @@ int Type::getFPMantissaWidth() const {
   if (auto *VTy = dyn_cast<VectorType>(this))
     return VTy->getElementType()->getFPMantissaWidth();
   assert(isFloatingPointTy() && "Not a floating point type!");
-  if (getTypeID() == HalfTyID)
-    return 11;
-  if (getTypeID() == BFloatTyID)
-    return 8;
-  if (getTypeID() == FloatTyID)
-    return 24;
-  if (getTypeID() == DoubleTyID)
-    return 53;
-  if (getTypeID() == X86_FP80TyID)
-    return 64;
-  if (getTypeID() == FP128TyID)
-    return 113;
+  if (getTypeID() == HalfTyID) return 11;
+  if (getTypeID() == BFloatTyID) return 8;
+  if (getTypeID() == FloatTyID) return 24;
+  if (getTypeID() == DoubleTyID) return 53;
+  if (getTypeID() == X86_FP80TyID) return 64;
+  if (getTypeID() == FP128TyID) return 113;
   assert(getTypeID() == PPC_FP128TyID && "unknown fp type");
   return -1;
 }
 
-bool Type::isSizedDerivedType(SmallPtrSetImpl<Type *> *Visited) const {
+bool Type::isSizedDerivedType(SmallPtrSetImpl<Type*> *Visited) const {
   if (auto *ATy = dyn_cast<ArrayType>(this))
     return ATy->getElementType()->isSized(Visited);
 
@@ -301,18 +272,12 @@ IntegerType *IntegerType::get(LLVMContext &C, unsigned NumBits) {
 
   // Check for the built-in integer types
   switch (NumBits) {
-  case 1:
-    return cast<IntegerType>(Type::getInt1Ty(C));
-  case 8:
-    return cast<IntegerType>(Type::getInt8Ty(C));
-  case 16:
-    return cast<IntegerType>(Type::getInt16Ty(C));
-  case 32:
-    return cast<IntegerType>(Type::getInt32Ty(C));
-  case 64:
-    return cast<IntegerType>(Type::getInt64Ty(C));
-  case 128:
-    return cast<IntegerType>(Type::getInt128Ty(C));
+  case   1: return cast<IntegerType>(Type::getInt1Ty(C));
+  case   8: return cast<IntegerType>(Type::getInt8Ty(C));
+  case  16: return cast<IntegerType>(Type::getInt16Ty(C));
+  case  32: return cast<IntegerType>(Type::getInt32Ty(C));
+  case  64: return cast<IntegerType>(Type::getInt64Ty(C));
+  case 128: return cast<IntegerType>(Type::getInt128Ty(C));
   default:
     break;
   }
@@ -333,10 +298,10 @@ APInt IntegerType::getMask() const {
 //                       FunctionType Implementation
 //===----------------------------------------------------------------------===//
 
-FunctionType::FunctionType(Type *Result, ArrayRef<Type *> Params,
+FunctionType::FunctionType(Type *Result, ArrayRef<Type*> Params,
                            bool IsVarArgs)
-    : Type(Result->getContext(), FunctionTyID) {
-  Type **SubTys = reinterpret_cast<Type **>(this + 1);
+  : Type(Result->getContext(), FunctionTyID) {
+  Type **SubTys = reinterpret_cast<Type**>(this+1);
   assert(isValidReturnType(Result) && "invalid return type for function");
   setSubclassData(IsVarArgs);
 
@@ -345,7 +310,7 @@ FunctionType::FunctionType(Type *Result, ArrayRef<Type *> Params,
   for (unsigned i = 0, e = Params.size(); i != e; ++i) {
     assert(isValidArgumentType(Params[i]) &&
            "Not a valid type for function argument!");
-    SubTys[i + 1] = Params[i];
+    SubTys[i+1] = Params[i];
   }
 
   ContainedTys = SubTys;
@@ -353,8 +318,8 @@ FunctionType::FunctionType(Type *Result, ArrayRef<Type *> Params,
 }
 
 // This is the factory function for the FunctionType class.
-FunctionType *FunctionType::get(Type *ReturnType, ArrayRef<Type *> Params,
-                                bool isVarArg) {
+FunctionType *FunctionType::get(Type *ReturnType,
+                                ArrayRef<Type*> Params, bool isVarArg) {
   LLVMContextImpl *pImpl = ReturnType->getContext().pImpl;
   const FunctionTypeKeyInfo::KeyTy Key(ReturnType, Params, isVarArg);
   FunctionType *FT;
@@ -385,7 +350,7 @@ FunctionType *FunctionType::get(Type *Result, bool isVarArg) {
 
 bool FunctionType::isValidReturnType(Type *RetTy) {
   return !RetTy->isFunctionTy() && !RetTy->isLabelTy() &&
-         !RetTy->isMetadataTy();
+  !RetTy->isMetadataTy();
 }
 
 bool FunctionType::isValidArgumentType(Type *ArgTy) {
@@ -398,7 +363,7 @@ bool FunctionType::isValidArgumentType(Type *ArgTy) {
 
 // Primitive Constructors.
 
-StructType *StructType::get(LLVMContext &Context, ArrayRef<Type *> ETypes,
+StructType *StructType::get(LLVMContext &Context, ArrayRef<Type*> ETypes,
                             bool isPacked) {
   LLVMContextImpl *pImpl = Context.pImpl;
   const AnonStructTypeKeyInfo::KeyTy Key(ETypes, isPacked);
@@ -414,7 +379,7 @@ StructType *StructType::get(LLVMContext &Context, ArrayRef<Type *> ETypes,
     // The struct type was not found. Allocate one and update AnonStructTypes
     // in-place.
     ST = new (Context.pImpl->Alloc) StructType(Context);
-    ST->setSubclassData(SCDB_IsLiteral); // Literal struct.
+    ST->setSubclassData(SCDB_IsLiteral);  // Literal struct.
     ST->setBody(ETypes, isPacked);
     *Insertion.first = ST;
   } else {
@@ -437,7 +402,7 @@ bool StructType::containsScalableVectorType() const {
   return false;
 }
 
-void StructType::setBody(ArrayRef<Type *> Elements, bool isPacked) {
+void StructType::setBody(ArrayRef<Type*> Elements, bool isPacked) {
   assert(isOpaque() && "Struct body already set!");
 
   setSubclassData(getSubclassData() | SCDB_HasBody);
@@ -455,8 +420,7 @@ void StructType::setBody(ArrayRef<Type *> Elements, bool isPacked) {
 }
 
 void StructType::setName(StringRef Name) {
-  if (Name == getName())
-    return;
+  if (Name == getName()) return;
 
   StringMap<StructType *> &SymbolTable = getContext().pImpl->NamedStructTypes;
 
@@ -517,15 +481,14 @@ StructType *StructType::get(LLVMContext &Context, bool isPacked) {
   return get(Context, None, isPacked);
 }
 
-StructType *StructType::create(LLVMContext &Context, ArrayRef<Type *> Elements,
+StructType *StructType::create(LLVMContext &Context, ArrayRef<Type*> Elements,
                                StringRef Name, bool isPacked) {
   StructType *ST = create(Context, Name);
   ST->setBody(Elements, isPacked);
   return ST;
 }
 
-StructType *StructType::create(LLVMContext &Context,
-                               ArrayRef<Type *> Elements) {
+StructType *StructType::create(LLVMContext &Context, ArrayRef<Type*> Elements) {
   return create(Context, Elements, StringRef());
 }
 
@@ -533,26 +496,26 @@ StructType *StructType::create(LLVMContext &Context) {
   return create(Context, StringRef());
 }
 
-StructType *StructType::create(ArrayRef<Type *> Elements, StringRef Name,
+StructType *StructType::create(ArrayRef<Type*> Elements, StringRef Name,
                                bool isPacked) {
   assert(!Elements.empty() &&
          "This method may not be invoked with an empty list");
   return create(Elements[0]->getContext(), Elements, Name, isPacked);
 }
 
-StructType *StructType::create(ArrayRef<Type *> Elements) {
+StructType *StructType::create(ArrayRef<Type*> Elements) {
   assert(!Elements.empty() &&
          "This method may not be invoked with an empty list");
   return create(Elements[0]->getContext(), Elements, StringRef());
 }
 
-bool StructType::isSized(SmallPtrSetImpl<Type *> *Visited) const {
+bool StructType::isSized(SmallPtrSetImpl<Type*> *Visited) const {
   if ((getSubclassData() & SCDB_IsSized) != 0)
     return true;
   if (isOpaque())
     return false;
 
-  if (Visited && !Visited->insert(const_cast<StructType *>(this)).second)
+  if (Visited && !Visited->insert(const_cast<StructType*>(this)).second)
     return false;
 
   // Okay, our struct is sized if all of the elements are, but if one of the
@@ -570,17 +533,16 @@ bool StructType::isSized(SmallPtrSetImpl<Type *> *Visited) const {
   // Here we cheat a bit and cast away const-ness. The goal is to memoize when
   // we find a sized type, as types can only move from opaque to sized, not the
   // other way.
-  const_cast<StructType *>(this)->setSubclassData(getSubclassData() |
-                                                  SCDB_IsSized);
+  const_cast<StructType*>(this)->setSubclassData(
+    getSubclassData() | SCDB_IsSized);
   return true;
 }
 
 StringRef StructType::getName() const {
   assert(!isLiteral() && "Literal structs never have names");
-  if (!SymbolTableEntry)
-    return StringRef();
+  if (!SymbolTableEntry) return StringRef();
 
-  return ((StringMapEntry<StructType *> *)SymbolTableEntry)->getKey();
+  return ((StringMapEntry<StructType*> *)SymbolTableEntry)->getKey();
 }
 
 bool StructType::isValidElementType(Type *ElemTy) {
@@ -590,8 +552,7 @@ bool StructType::isValidElementType(Type *ElemTy) {
 }
 
 bool StructType::isLayoutIdentical(StructType *Other) const {
-  if (this == Other)
-    return true;
+  if (this == Other) return true;
 
   if (isPacked() != Other->isPacked())
     return false;
@@ -639,7 +600,7 @@ ArrayType *ArrayType::get(Type *ElementType, uint64_t NumElements) {
 
   LLVMContextImpl *pImpl = ElementType->getContext().pImpl;
   ArrayType *&Entry =
-      pImpl->ArrayTypes[std::make_pair(ElementType, NumElements)];
+    pImpl->ArrayTypes[std::make_pair(ElementType, NumElements)];
 
   if (!Entry)
     Entry = new (pImpl->Alloc) ArrayType(ElementType, NumElements);
@@ -729,10 +690,8 @@ PointerType *PointerType::get(Type *EltTy, unsigned AddressSpace) {
   LLVMContextImpl *CImpl = EltTy->getContext().pImpl;
 
   // Since AddressSpace #0 is the common case, we special case it.
-  PointerType *&Entry =
-      AddressSpace == 0
-          ? CImpl->PointerTypes[EltTy]
-          : CImpl->ASPointerTypes[std::make_pair(EltTy, AddressSpace)];
+  PointerType *&Entry = AddressSpace == 0 ? CImpl->PointerTypes[EltTy]
+     : CImpl->ASPointerTypes[std::make_pair(EltTy, AddressSpace)];
 
   if (!Entry)
     Entry = new (CImpl->Alloc) PointerType(EltTy, AddressSpace);
@@ -740,14 +699,14 @@ PointerType *PointerType::get(Type *EltTy, unsigned AddressSpace) {
 }
 
 PointerType::PointerType(Type *E, unsigned AddrSpace)
-    : Type(E->getContext(), PointerTyID), PointeeTy(E) {
+  : Type(E->getContext(), PointerTyID), PointeeTy(E) {
   ContainedTys = &PointeeTy;
   NumContainedTys = 1;
   setSubclassData(AddrSpace);
 }
 
 PointerType *Type::getPointerTo(unsigned addrs) const {
-  return PointerType::get(const_cast<Type *>(this), addrs);
+  return PointerType::get(const_cast<Type*>(this), addrs);
 }
 
 bool PointerType::isValidElementType(Type *ElemTy) {

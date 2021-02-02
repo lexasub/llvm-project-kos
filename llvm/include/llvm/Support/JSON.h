@@ -115,11 +115,11 @@ public:
   void clear() { M.clear(); }
   std::pair<iterator, bool> insert(KV E);
   template <typename... Ts>
-  std::pair<iterator, bool> try_emplace(const ObjectKey &K, Ts &&...Args) {
+  std::pair<iterator, bool> try_emplace(const ObjectKey &K, Ts &&... Args) {
     return M.try_emplace(K, std::forward<Ts>(Args)...);
   }
   template <typename... Ts>
-  std::pair<iterator, bool> try_emplace(ObjectKey &&K, Ts &&...Args) {
+  std::pair<iterator, bool> try_emplace(ObjectKey &&K, Ts &&... Args) {
     return M.try_emplace(std::move(K), std::forward<Ts>(Args)...);
   }
   bool erase(StringRef K);
@@ -189,17 +189,19 @@ public:
   void clear() { V.clear(); }
   void push_back(const Value &E) { V.push_back(E); }
   void push_back(Value &&E) { V.push_back(std::move(E)); }
-  template <typename... Args> void emplace_back(Args &&...A) {
+  template <typename... Args> void emplace_back(Args &&... A) {
     V.emplace_back(std::forward<Args>(A)...);
   }
   void pop_back() { V.pop_back(); }
   // FIXME: insert() takes const_iterator since C++11, old libstdc++ disagrees.
   iterator insert(iterator P, const Value &E) { return V.insert(P, E); }
-  iterator insert(iterator P, Value &&E) { return V.insert(P, std::move(E)); }
+  iterator insert(iterator P, Value &&E) {
+    return V.insert(P, std::move(E));
+  }
   template <typename It> iterator insert(iterator P, It A, It Z) {
     return V.insert(P, A, Z);
   }
-  template <typename... Args> iterator emplace(const_iterator P, Args &&...A) {
+  template <typename... Args> iterator emplace(const_iterator P, Args &&... A) {
     return V.emplace(P, std::forward<Args>(A)...);
   }
 
@@ -453,7 +455,7 @@ private:
   friend class Array;
   friend class Object;
 
-  template <typename T, typename... U> void create(U &&...V) {
+  template <typename T, typename... U> void create(U &&... V) {
     new (reinterpret_cast<T *>(&Union)) T(std::forward<U>(V)...);
   }
   template <typename T> T &as() const {
@@ -558,7 +560,9 @@ inline Object::Object(std::initializer_list<KV> Properties) {
 inline std::pair<Object::iterator, bool> Object::insert(KV E) {
   return try_emplace(std::move(E.K), std::move(E.V));
 }
-inline bool Object::erase(StringRef K) { return M.erase(ObjectKey(K)); }
+inline bool Object::erase(StringRef K) {
+  return M.erase(ObjectKey(K));
+}
 
 /// A "cursor" marking a position within a Value.
 /// The Value is a tree, and this is the path from the root to the current node.
@@ -880,7 +884,7 @@ Expected<T> parse(const llvm::StringRef &JSON, const char *RootName = "") {
 /// an array, and so on.
 /// With asserts disabled, this is undefined behavior.
 class OStream {
-public:
+ public:
   using Block = llvm::function_ref<void()>;
   // If IndentSize is nonzero, output is pretty-printed.
   explicit OStream(llvm::raw_ostream &OS, unsigned IndentSize = 0)
@@ -934,7 +938,7 @@ public:
   // Valid only within an object (any number of times).
 
   /// Emit an attribute whose value is self-contained (number, vector<int> etc).
-  void attribute(llvm::StringRef Key, const Value &Contents) {
+  void attribute(llvm::StringRef Key, const Value& Contents) {
     attributeImpl(Key, [&] { value(Contents); });
   }
   /// Emit an attribute whose value is an array with elements from the Block.

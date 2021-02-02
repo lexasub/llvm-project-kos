@@ -8,8 +8,8 @@
 #ifndef LLVM_CLANG_FRONTEND_TESTMODULEFILEEXTENSION_H
 #define LLVM_CLANG_FRONTEND_TESTMODULEFILEEXTENSION_H
 
-#include "clang/Basic/LLVM.h"
 #include "clang/Serialization/ModuleFileExtension.h"
+#include "clang/Basic/LLVM.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Bitstream/BitstreamReader.h"
 #include <string>
@@ -26,7 +26,7 @@ class TestModuleFileExtension : public ModuleFileExtension {
 
   class Writer : public ModuleFileExtensionWriter {
   public:
-    Writer(ModuleFileExtension *Ext) : ModuleFileExtensionWriter(Ext) {}
+    Writer(ModuleFileExtension *Ext) : ModuleFileExtensionWriter(Ext) { }
     ~Writer() override;
 
     void writeExtensionContents(Sema &SemaRef,
@@ -43,11 +43,14 @@ class TestModuleFileExtension : public ModuleFileExtension {
   };
 
 public:
-  TestModuleFileExtension(StringRef BlockName, unsigned MajorVersion,
-                          unsigned MinorVersion, bool Hashed,
+  TestModuleFileExtension(StringRef BlockName,
+                          unsigned MajorVersion,
+                          unsigned MinorVersion,
+                          bool Hashed,
                           StringRef UserInfo)
-      : BlockName(BlockName), MajorVersion(MajorVersion),
-        MinorVersion(MinorVersion), Hashed(Hashed), UserInfo(UserInfo) {}
+    : BlockName(BlockName),
+      MajorVersion(MajorVersion), MinorVersion(MinorVersion),
+      Hashed(Hashed), UserInfo(UserInfo) { }
   ~TestModuleFileExtension() override;
 
   ModuleFileExtensionMetadata getExtensionMetadata() const override;

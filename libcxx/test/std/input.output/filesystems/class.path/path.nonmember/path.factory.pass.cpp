@@ -25,7 +25,9 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-int main(int, char**) {
+
+int main(int, char**)
+{
   using namespace fs;
   const char* In1 = "abcd/efg";
   const std::string In2(In1);
@@ -49,7 +51,7 @@ int main(int, char**) {
   }
 #if TEST_STD_VER > 17 && defined(__cpp_char8_t) && defined(_LIBCPP_VERSION) && \
     !defined(_LIBCPP_HAS_NO_LOCALIZATION)
-  const char8_t* u8In1 = u8 "abcd/efg";
+  const char8_t* u8In1 = u8"abcd/efg";
   const std::u8string u8In2(u8In1);
   const auto u8In3 = u8In2.begin();
   const auto u8In3End = u8In2.end();

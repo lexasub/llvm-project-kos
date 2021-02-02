@@ -24,9 +24,9 @@
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/CodeGen/RegisterUsageInfo.h"
-#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 
 using namespace llvm;
 
@@ -139,7 +139,7 @@ bool RegUsageInfoCollector::runOnMachineFunction(MachineFunction &MF) {
   computeCalleeSavedRegs(SavedRegs, MF);
 
   const BitVector &UsedPhysRegsMask = MRI->getUsedPhysRegsMask();
-  auto SetRegAsDefined = [&RegMask](unsigned Reg) {
+  auto SetRegAsDefined = [&RegMask] (unsigned Reg) {
     RegMask[Reg / 32] &= ~(1u << Reg % 32);
   };
 
@@ -179,21 +179,21 @@ bool RegUsageInfoCollector::runOnMachineFunction(MachineFunction &MF) {
   }
 
   LLVM_DEBUG(
-      for (unsigned PReg = 1, PRegE = TRI->getNumRegs(); PReg < PRegE; ++PReg) {
-        if (MachineOperand::clobbersPhysReg(&(RegMask[0]), PReg))
-          dbgs() << printReg(PReg, TRI) << " ";
-      }
+    for (unsigned PReg = 1, PRegE = TRI->getNumRegs(); PReg < PRegE; ++PReg) {
+      if (MachineOperand::clobbersPhysReg(&(RegMask[0]), PReg))
+        dbgs() << printReg(PReg, TRI) << " ";
+    }
 
-          dbgs()
-          << " \n----------------------------------------\n";);
+    dbgs() << " \n----------------------------------------\n";
+  );
 
   PRUI.storeUpdateRegUsageInfo(F, RegMask);
 
   return false;
 }
 
-void RegUsageInfoCollector::computeCalleeSavedRegs(BitVector &SavedRegs,
-                                                   MachineFunction &MF) {
+void RegUsageInfoCollector::
+computeCalleeSavedRegs(BitVector &SavedRegs, MachineFunction &MF) {
   const TargetFrameLowering &TFI = *MF.getSubtarget().getFrameLowering();
   const TargetRegisterInfo &TRI = *MF.getSubtarget().getRegisterInfo();
 

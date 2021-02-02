@@ -115,8 +115,8 @@ private:
            llvm::DenseMap<unsigned, ParamDescriptor> &&Params);
 
   /// Sets the code of a function.
-  void setCode(unsigned NewFrameSize, std::vector<char> &&NewCode,
-               SourceMap &&NewSrcMap, llvm::SmallVector<Scope, 2> &&NewScopes) {
+  void setCode(unsigned NewFrameSize, std::vector<char> &&NewCode, SourceMap &&NewSrcMap,
+               llvm::SmallVector<Scope, 2> &&NewScopes) {
     FrameSize = NewFrameSize;
     Code = std::move(NewCode);
     SrcMap = std::move(NewSrcMap);

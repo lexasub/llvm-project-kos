@@ -12,16 +12,16 @@
 
 #include "ubsan_platform.h"
 #if CAN_SANITIZE_UB
+#include "ubsan_diag.h"
+#include "ubsan_init.h"
+#include "ubsan_flags.h"
+#include "ubsan_monitor.h"
 #include "sanitizer_common/sanitizer_placement_new.h"
 #include "sanitizer_common/sanitizer_report_decorator.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
 #include "sanitizer_common/sanitizer_stacktrace_printer.h"
 #include "sanitizer_common/sanitizer_suppressions.h"
 #include "sanitizer_common/sanitizer_symbolizer.h"
-#include "ubsan_diag.h"
-#include "ubsan_flags.h"
-#include "ubsan_init.h"
-#include "ubsan_monitor.h"
 #include <stdio.h>
 
 using namespace __ubsan;
@@ -32,8 +32,8 @@ using namespace __ubsan;
 // Windows.
 // TODO(yln): This is a temporary workaround. GetStackTrace functions will be
 // removed in the future.
-void ubsan_GetStackTrace(BufferedStackTrace *stack, uptr max_depth, uptr pc,
-                         uptr bp, void *context, bool fast) {
+void ubsan_GetStackTrace(BufferedStackTrace *stack, uptr max_depth,
+                         uptr pc, uptr bp, void *context, bool fast) {
   uptr top = 0;
   uptr bottom = 0;
   if (StackTrace::WillUseFastUnwind(fast)) {
@@ -51,7 +51,7 @@ static void MaybePrintStackTrace(uptr pc, uptr bp) {
 
   BufferedStackTrace stack;
   ubsan_GetStackTrace(&stack, kStackTraceMax, pc, bp, nullptr,
-                      common_flags()->fast_unwind_on_fatal);
+                common_flags()->fast_unwind_on_fatal);
   stack.Print();
 }
 
@@ -90,7 +90,7 @@ static void MaybeReportErrorSummary(Location Loc, ErrorType Type) {
       AI.file = internal_strdup(SLoc.getFilename());
       AI.line = SLoc.getLine();
       AI.column = SLoc.getColumn();
-      AI.function = internal_strdup(""); // Avoid printing ?? as function name.
+      AI.function = internal_strdup("");  // Avoid printing ?? as function name.
       ReportErrorSummary(ErrorKind, AI, GetSanititizerToolName());
       AI.Clear();
       return;
@@ -105,12 +105,12 @@ static void MaybeReportErrorSummary(Location Loc, ErrorType Type) {
 
 namespace {
 class Decorator : public SanitizerCommonDecorator {
-public:
+ public:
   Decorator() : SanitizerCommonDecorator() {}
   const char *Highlight() const { return Green(); }
   const char *Note() const { return Black(); }
 };
-} // namespace
+}
 
 SymbolizedStack *__ubsan::getSymbolizedLocation(uptr PC) {
   InitAsStandaloneIfNecessary();
@@ -236,8 +236,9 @@ static Range *upperBound(MemoryLocation Loc, Range *Ranges,
   Range *Best = 0;
   for (unsigned I = 0; I != NumRanges; ++I)
     if (Ranges[I].getEnd().getMemoryLocation() > Loc &&
-        (!Best || Best->getStart().getMemoryLocation() >
-                      Ranges[I].getStart().getMemoryLocation()))
+        (!Best ||
+         Best->getStart().getMemoryLocation() >
+         Ranges[I].getStart().getMemoryLocation()))
       Best = &Ranges[I];
   return Best;
 }
@@ -279,7 +280,7 @@ static void PrintMemorySnippet(const Decorator &Decor, MemoryLocation Loc,
   // Emit data.
   InternalScopedString Buffer(1024);
   for (uptr P = Min; P != Max; ++P) {
-    unsigned char C = *reinterpret_cast<const unsigned char *>(P);
+    unsigned char C = *reinterpret_cast<const unsigned char*>(P);
     Buffer.append("%s%02x", (P % 8 == 0) ? "  " : " ", C);
   }
   Buffer.append("\n");
@@ -439,4 +440,4 @@ bool __ubsan::IsPCSuppressed(ErrorType ET, uptr PC, const char *Filename) {
          suppression_ctx->Match(AI.file, SuppType, &s);
 }
 
-#endif // CAN_SANITIZE_UB
+#endif  // CAN_SANITIZE_UB

@@ -15,12 +15,10 @@
 #include <memory>
 #include "test_macros.h"
 
-int main(int, char**) {
-  typedef std::allocator<void>::pointer
-      AP; // expected-warning {{'allocator<void>' is deprecated}}
-  typedef std::allocator<void>::const_pointer
-      ACP; // expected-warning {{'allocator<void>' is deprecated}}
-  typedef std::allocator<void>::rebind<int>::other
-      ARO; // expected-warning {{'allocator<void>' is deprecated}}
-  return 0;
+int main(int, char**)
+{
+    typedef std::allocator<void>::pointer AP;             // expected-warning {{'allocator<void>' is deprecated}}
+    typedef std::allocator<void>::const_pointer ACP;      // expected-warning {{'allocator<void>' is deprecated}}
+    typedef std::allocator<void>::rebind<int>::other ARO; // expected-warning {{'allocator<void>' is deprecated}}
+    return 0;
 }

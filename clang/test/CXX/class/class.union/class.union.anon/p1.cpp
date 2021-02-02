@@ -1,9 +1,9 @@
 // RUN: %clang_cc1 -verify %s
 
 struct X {
-  int a;         // expected-note {{previous}}
-  void b();      // expected-note {{previous}}
-  struct c;      // expected-note {{previous}}
+  int a; // expected-note {{previous}}
+  void b(); // expected-note {{previous}}
+  struct c; // expected-note {{previous}}
   typedef int d; // expected-note {{previous}}
 
   union {
@@ -17,8 +17,8 @@ struct X {
     int h; // expected-note {{previous}}
   };
 
-  int e;         // expected-error {{duplicate member}}
-  void f();      // expected-error {{redefinition}}
-  struct g;      // expected-error {{redefinition}}
+  int e; // expected-error {{duplicate member}}
+  void f(); // expected-error {{redefinition}}
+  struct g; // expected-error {{redefinition}}
   typedef int h; // expected-error {{redefinition}}
 };

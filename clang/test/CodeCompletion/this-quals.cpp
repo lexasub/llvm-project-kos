@@ -17,3 +17,5 @@ class foo {
     // CHECK-CC2: const_func
   };
 };
+
+

@@ -67,7 +67,7 @@ char &llvm::AMDGPUOpenCLEnqueuedBlockLoweringID =
 INITIALIZE_PASS(AMDGPUOpenCLEnqueuedBlockLowering, DEBUG_TYPE,
                 "Lower OpenCL enqueued blocks", false, false)
 
-ModulePass *llvm::createAMDGPUOpenCLEnqueuedBlockLoweringPass() {
+ModulePass* llvm::createAMDGPUOpenCLEnqueuedBlockLoweringPass() {
   return new AMDGPUOpenCLEnqueuedBlockLowering();
 }
 

@@ -24,5 +24,5 @@
 // RUN:   | FileCheck -check-prefix=CHECK-TEST3 %s
 // CHECK-TEST3: error: use of undeclared identifier 'through2'
 
-#include "Inputs/pch-through2.h"
 #include "Inputs/pch-through1.h"
+#include "Inputs/pch-through2.h"

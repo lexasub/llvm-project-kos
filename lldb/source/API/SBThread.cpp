@@ -76,8 +76,8 @@ SBThread::SBThread(const SBThread &rhs) : m_opaque_sp() {
 // Assignment operator
 
 const lldb::SBThread &SBThread::operator=(const SBThread &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBThread &, SBThread, operator=,
-                     (const lldb::SBThread &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBThread &,
+                     SBThread, operator=,(const lldb::SBThread &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = clone(rhs.m_opaque_sp);
@@ -578,6 +578,7 @@ void SBThread::StepInto(const char *target_name, uint32_t end_line,
                      (const char *, uint32_t, lldb::SBError &, lldb::RunMode),
                      target_name, end_line, error, stop_other_threads);
 
+
   std::unique_lock<std::recursive_mutex> lock;
   ExecutionContext exe_ctx(m_opaque_sp.get(), lock);
 
@@ -603,8 +604,10 @@ void SBThread::StepInto(const char *target_name, uint32_t end_line,
         return;
     }
 
-    const LazyBool step_out_avoids_code_without_debug_info = eLazyBoolCalculate;
-    const LazyBool step_in_avoids_code_without_debug_info = eLazyBoolCalculate;
+    const LazyBool step_out_avoids_code_without_debug_info =
+        eLazyBoolCalculate;
+    const LazyBool step_in_avoids_code_without_debug_info =
+        eLazyBoolCalculate;
     new_plan_sp = thread->QueueThreadPlanForStepInRange(
         abort_other_plans, range, sc, target_name, stop_other_threads,
         new_plan_status, step_in_avoids_code_without_debug_info,
@@ -666,6 +669,7 @@ void SBThread::StepOutOfFrame(SBFrame &sb_frame) {
 void SBThread::StepOutOfFrame(SBFrame &sb_frame, SBError &error) {
   LLDB_RECORD_METHOD(void, SBThread, StepOutOfFrame,
                      (lldb::SBFrame &, lldb::SBError &), sb_frame, error);
+
 
   std::unique_lock<std::recursive_mutex> lock;
   ExecutionContext exe_ctx(m_opaque_sp.get(), lock);
@@ -895,7 +899,7 @@ SBError SBThread::StepUsingScriptedThreadPlan(const char *script_class_name) {
 }
 
 SBError SBThread::StepUsingScriptedThreadPlan(const char *script_class_name,
-                                              bool resume_immediately) {
+                                            bool resume_immediately) {
   LLDB_RECORD_METHOD(lldb::SBError, SBThread, StepUsingScriptedThreadPlan,
                      (const char *, bool), script_class_name,
                      resume_immediately);
@@ -1199,7 +1203,7 @@ SBThread SBThread::GetThreadFromEvent(const SBEvent &event) {
 }
 
 bool SBThread::operator==(const SBThread &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBThread, operator==, (const lldb::SBThread &),
+  LLDB_RECORD_METHOD_CONST(bool, SBThread, operator==,(const lldb::SBThread &),
                            rhs);
 
   return m_opaque_sp->GetThreadSP().get() ==
@@ -1207,7 +1211,7 @@ bool SBThread::operator==(const SBThread &rhs) const {
 }
 
 bool SBThread::operator!=(const SBThread &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBThread, operator!=, (const lldb::SBThread &),
+  LLDB_RECORD_METHOD_CONST(bool, SBThread, operator!=,(const lldb::SBThread &),
                            rhs);
 
   return m_opaque_sp->GetThreadSP().get() !=
@@ -1248,8 +1252,9 @@ bool SBThread::GetDescription(SBStream &description, bool stop_format) const {
   ExecutionContext exe_ctx(m_opaque_sp.get(), lock);
 
   if (exe_ctx.HasThreadScope()) {
-    exe_ctx.GetThreadPtr()->DumpUsingSettingsFormat(
-        strm, LLDB_INVALID_THREAD_ID, stop_format);
+    exe_ctx.GetThreadPtr()->DumpUsingSettingsFormat(strm,
+                                                    LLDB_INVALID_THREAD_ID,
+                                                    stop_format);
     // strm.Printf("SBThread: tid = 0x%4.4" PRIx64,
     // exe_ctx.GetThreadPtr()->GetID());
   } else
@@ -1334,7 +1339,9 @@ bool SBThread::SafeToCallFunctions() {
   return true;
 }
 
-lldb_private::Thread *SBThread::operator->() { return get(); }
+lldb_private::Thread *SBThread::operator->() {
+  return get();
+}
 
 lldb_private::Thread *SBThread::get() {
   return m_opaque_sp->GetThreadSP().get();
@@ -1343,14 +1350,15 @@ lldb_private::Thread *SBThread::get() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBThread>(Registry &R) {
+template <>
+void RegisterMethods<SBThread>(Registry &R) {
   LLDB_REGISTER_STATIC_METHOD(const char *, SBThread, GetBroadcasterClassName,
                               ());
   LLDB_REGISTER_CONSTRUCTOR(SBThread, ());
   LLDB_REGISTER_CONSTRUCTOR(SBThread, (const lldb::ThreadSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBThread, (const lldb::SBThread &));
-  LLDB_REGISTER_METHOD(const lldb::SBThread &, SBThread, operator=,
-                       (const lldb::SBThread &));
+  LLDB_REGISTER_METHOD(const lldb::SBThread &,
+                       SBThread, operator=,(const lldb::SBThread &));
   LLDB_REGISTER_METHOD_CONST(lldb::SBQueue, SBThread, GetQueue, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBThread, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBThread, operator bool, ());
@@ -1376,7 +1384,8 @@ template <> void RegisterMethods<SBThread>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBThread, StepOver,
                        (lldb::RunMode, lldb::SBError &));
   LLDB_REGISTER_METHOD(void, SBThread, StepInto, (lldb::RunMode));
-  LLDB_REGISTER_METHOD(void, SBThread, StepInto, (const char *, lldb::RunMode));
+  LLDB_REGISTER_METHOD(void, SBThread, StepInto,
+                       (const char *, lldb::RunMode));
   LLDB_REGISTER_METHOD(
       void, SBThread, StepInto,
       (const char *, uint32_t, lldb::SBError &, lldb::RunMode));
@@ -1403,7 +1412,8 @@ template <> void RegisterMethods<SBThread>(Registry &R) {
                        (lldb::SBFileSpec &, uint32_t));
   LLDB_REGISTER_METHOD(lldb::SBError, SBThread, ReturnFromFrame,
                        (lldb::SBFrame &, lldb::SBValue &));
-  LLDB_REGISTER_METHOD(lldb::SBError, SBThread, UnwindInnermostExpression, ());
+  LLDB_REGISTER_METHOD(lldb::SBError, SBThread, UnwindInnermostExpression,
+                       ());
   LLDB_REGISTER_METHOD(bool, SBThread, Suspend, ());
   LLDB_REGISTER_METHOD(bool, SBThread, Suspend, (lldb::SBError &));
   LLDB_REGISTER_METHOD(bool, SBThread, Resume, ());
@@ -1421,10 +1431,10 @@ template <> void RegisterMethods<SBThread>(Registry &R) {
                               (const lldb::SBEvent &));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBThread, SBThread, GetThreadFromEvent,
                               (const lldb::SBEvent &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBThread, operator==,
-                             (const lldb::SBThread &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBThread, operator!=,
-                             (const lldb::SBThread &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBThread, operator==,(const lldb::SBThread &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBThread, operator!=,(const lldb::SBThread &));
   LLDB_REGISTER_METHOD_CONST(bool, SBThread, GetStatus, (lldb::SBStream &));
   LLDB_REGISTER_METHOD_CONST(bool, SBThread, GetDescription,
                              (lldb::SBStream &));
@@ -1441,5 +1451,5 @@ template <> void RegisterMethods<SBThread>(Registry &R) {
   LLDB_REGISTER_CHAR_PTR_METHOD(size_t, SBThread, GetStopDescription);
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

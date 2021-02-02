@@ -34,38 +34,51 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  assert(std::ios_base::boolalpha);
-  assert(std::ios_base::dec);
-  assert(std::ios_base::fixed);
-  assert(std::ios_base::hex);
-  assert(std::ios_base::internal);
-  assert(std::ios_base::left);
-  assert(std::ios_base::oct);
-  assert(std::ios_base::right);
-  assert(std::ios_base::scientific);
-  assert(std::ios_base::showbase);
-  assert(std::ios_base::showpoint);
-  assert(std::ios_base::showpos);
-  assert(std::ios_base::skipws);
-  assert(std::ios_base::unitbuf);
-  assert(std::ios_base::uppercase);
+int main(int, char**)
+{
+    assert(std::ios_base::boolalpha);
+    assert(std::ios_base::dec);
+    assert(std::ios_base::fixed);
+    assert(std::ios_base::hex);
+    assert(std::ios_base::internal);
+    assert(std::ios_base::left);
+    assert(std::ios_base::oct);
+    assert(std::ios_base::right);
+    assert(std::ios_base::scientific);
+    assert(std::ios_base::showbase);
+    assert(std::ios_base::showpoint);
+    assert(std::ios_base::showpos);
+    assert(std::ios_base::skipws);
+    assert(std::ios_base::unitbuf);
+    assert(std::ios_base::uppercase);
 
-  assert((std::ios_base::boolalpha & std::ios_base::dec & std::ios_base::fixed &
-          std::ios_base::hex & std::ios_base::internal & std::ios_base::left &
-          std::ios_base::oct & std::ios_base::right &
-          std::ios_base::scientific & std::ios_base::showbase &
-          std::ios_base::showpoint & std::ios_base::showpos &
-          std::ios_base::skipws & std::ios_base::unitbuf &
-          std::ios_base::uppercase) == 0);
+    assert
+    (
+        ( std::ios_base::boolalpha
+        & std::ios_base::dec
+        & std::ios_base::fixed
+        & std::ios_base::hex
+        & std::ios_base::internal
+        & std::ios_base::left
+        & std::ios_base::oct
+        & std::ios_base::right
+        & std::ios_base::scientific
+        & std::ios_base::showbase
+        & std::ios_base::showpoint
+        & std::ios_base::showpos
+        & std::ios_base::skipws
+        & std::ios_base::unitbuf
+        & std::ios_base::uppercase) == 0
+    );
 
-  assert(
-      std::ios_base::adjustfield ==
-      (std::ios_base::left | std::ios_base::right | std::ios_base::internal));
-  assert(std::ios_base::basefield ==
-         (std::ios_base::dec | std::ios_base::oct | std::ios_base::hex));
-  assert(std::ios_base::floatfield ==
-         (std::ios_base::scientific | std::ios_base::fixed));
+    assert(std::ios_base::adjustfield == (std::ios_base::left
+                                        | std::ios_base::right
+                                        | std::ios_base::internal));
+    assert(std::ios_base::basefield == (std::ios_base::dec
+                                      | std::ios_base::oct
+                                      | std::ios_base::hex));
+    assert(std::ios_base::floatfield == (std::ios_base::scientific
+                                       | std::ios_base::fixed));
 
   return 0;
 }

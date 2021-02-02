@@ -81,15 +81,17 @@ void WriteModuleReport(StatModule **smodp) {
 
 } // namespace
 
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE unsigned
-__sanitizer_stats_register(StatModule **mod) {
+extern "C"
+SANITIZER_INTERFACE_ATTRIBUTE
+unsigned __sanitizer_stats_register(StatModule **mod) {
   SpinMutexLock l(&modules_mutex);
   modules.push_back(mod);
   return modules.size() - 1;
 }
 
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE void
-__sanitizer_stats_unregister(unsigned index) {
+extern "C"
+SANITIZER_INTERFACE_ATTRIBUTE
+void __sanitizer_stats_unregister(unsigned index) {
   SpinMutexLock l(&modules_mutex);
   WriteModuleReport(modules[index]);
   modules[index] = 0;
@@ -111,7 +113,9 @@ void WriteFullReport() {
 }
 
 #if SANITIZER_POSIX
-void USR2Handler(int sig) { WriteFullReport(); }
+void USR2Handler(int sig) {
+  WriteFullReport();
+}
 #endif
 
 struct WriteReportOnExitOrSignal {
@@ -124,7 +128,9 @@ struct WriteReportOnExitOrSignal {
 #endif
   }
 
-  ~WriteReportOnExitOrSignal() { WriteFullReport(); }
+  ~WriteReportOnExitOrSignal() {
+    WriteFullReport();
+  }
 } wr;
 
 } // namespace

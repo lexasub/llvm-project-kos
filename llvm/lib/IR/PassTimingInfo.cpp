@@ -62,8 +62,7 @@ public:
 
 private:
   StringMap<unsigned> PassIDCountMap; ///< Map that counts instances of passes
-  DenseMap<PassInstanceID, std::unique_ptr<Timer>>
-      TimingData; ///< timers for pass instances
+  DenseMap<PassInstanceID, std::unique_ptr<Timer>> TimingData; ///< timers for pass instances
   TimerGroup TG;
 
 public:
@@ -142,8 +141,7 @@ Timer *PassTimingInfo::getPassTimer(Pass *P, PassInstanceID Pass) {
     StringRef PassArgument;
     if (const PassInfo *PI = Pass::lookupPassInfo(P->getPassID()))
       PassArgument = PI->getPassArgument();
-    T.reset(
-        newPassTimer(PassArgument.empty() ? PassName : PassArgument, PassName));
+    T.reset(newPassTimer(PassArgument.empty() ? PassName : PassArgument, PassName));
   }
   return T.get();
 }
@@ -201,7 +199,9 @@ TimePassesHandler::TimePassesHandler(bool Enabled, bool PerRun)
 TimePassesHandler::TimePassesHandler()
     : TimePassesHandler(TimePassesIsEnabled, TimePassesPerRun) {}
 
-void TimePassesHandler::setOutStream(raw_ostream &Out) { OutStream = &Out; }
+void TimePassesHandler::setOutStream(raw_ostream &Out) {
+  OutStream = &Out;
+}
 
 void TimePassesHandler::print() {
   if (!Enabled)
@@ -214,23 +214,21 @@ LLVM_DUMP_METHOD void TimePassesHandler::dump() const {
          << ":\n\tRunning:\n";
   for (auto &I : TimingData) {
     StringRef PassID = I.getKey();
-    const TimerVector &MyTimers = I.getValue();
+    const TimerVector& MyTimers = I.getValue();
     for (unsigned idx = 0; idx < MyTimers.size(); idx++) {
-      const Timer *MyTimer = MyTimers[idx].get();
+      const Timer* MyTimer = MyTimers[idx].get();
       if (MyTimer && MyTimer->isRunning())
-        dbgs() << "\tTimer " << MyTimer << " for pass " << PassID << "(" << idx
-               << ")\n";
+        dbgs() << "\tTimer " << MyTimer << " for pass " << PassID << "(" << idx << ")\n";
     }
   }
   dbgs() << "\tTriggered:\n";
   for (auto &I : TimingData) {
     StringRef PassID = I.getKey();
-    const TimerVector &MyTimers = I.getValue();
+    const TimerVector& MyTimers = I.getValue();
     for (unsigned idx = 0; idx < MyTimers.size(); idx++) {
-      const Timer *MyTimer = MyTimers[idx].get();
+      const Timer* MyTimer = MyTimers[idx].get();
       if (MyTimer && MyTimer->hasTriggered() && !MyTimer->isRunning())
-        dbgs() << "\tTimer " << MyTimer << " for pass " << PassID << "(" << idx
-               << ")\n";
+        dbgs() << "\tTimer " << MyTimer << " for pass " << PassID << "(" << idx << ")\n";
     }
   }
 }

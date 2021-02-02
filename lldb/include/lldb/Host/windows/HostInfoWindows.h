@@ -43,6 +43,6 @@ public:
 private:
   static FileSpec m_program_filespec;
 };
-} // namespace lldb_private
+}
 
 #endif

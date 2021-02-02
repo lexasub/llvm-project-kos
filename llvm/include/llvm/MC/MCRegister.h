@@ -24,7 +24,7 @@ class MCRegister {
   unsigned Reg;
 
 public:
-  constexpr MCRegister(unsigned Val = 0) : Reg(Val) {}
+  constexpr MCRegister(unsigned Val = 0): Reg(Val) {}
 
   // Register numbers can represent physical registers, virtual registers, and
   // sometimes stack slots. The unsigned values are divided into these ranges:
@@ -57,7 +57,9 @@ public:
     return FirstPhysicalReg <= Reg && Reg < FirstStackSlot;
   }
 
-  constexpr operator unsigned() const { return Reg; }
+  constexpr operator unsigned() const {
+    return Reg;
+  }
 
   /// Check the provided unsigned value is a valid MCRegister.
   static MCRegister from(unsigned Val) {
@@ -65,7 +67,9 @@ public:
     return MCRegister(Val);
   }
 
-  unsigned id() const { return Reg; }
+  unsigned id() const {
+    return Reg;
+  }
 
   bool isValid() const { return Reg != NoRegister; }
 
@@ -87,7 +91,7 @@ public:
 };
 
 // Provide DenseMapInfo for MCRegister
-template <> struct DenseMapInfo<MCRegister> {
+template<> struct DenseMapInfo<MCRegister> {
   static inline unsigned getEmptyKey() {
     return DenseMapInfo<unsigned>::getEmptyKey();
   }
@@ -105,6 +109,6 @@ template <> struct DenseMapInfo<MCRegister> {
 inline hash_code hash_value(const MCRegister &Reg) {
   return hash_value(Reg.id());
 }
-} // namespace llvm
+}
 
 #endif // ifndef LLVM_MC_REGISTER_H

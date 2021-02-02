@@ -38,7 +38,7 @@ void test() {
   int *x = 0; // expected-note-re{{{{^}}'x' initialized to a null pointer value{{$}}}}
   flag = 1;
 
-  foo();    // TODO: Add nodes here about flag's value being invalidated.
+  foo(); // TODO: Add nodes here about flag's value being invalidated.
   if (flag) // expected-note-re   {{{{^}}Assuming 'flag' is 0{{$}}}}
             // expected-note-re@-1{{{{^}}Taking false branch{{$}}}}
     x = new int;
@@ -105,9 +105,9 @@ void test() {
   foo(); // tracking-note-re{{{{^}}Calling 'foo'{{$}}}}
          // tracking-note-re@-1{{{{^}}Returning from 'foo'{{$}}}}
 
-  if (bar)    // expected-note-re   {{{{^}}Assuming 'bar' is not equal to 0{{$}}}}
-              // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
-              // debug-note-re@-2{{{{^}}Tracking condition 'bar'{{$}}}}
+  if (bar) // expected-note-re   {{{{^}}Assuming 'bar' is not equal to 0{{$}}}}
+           // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
+           // debug-note-re@-2{{{{^}}Tracking condition 'bar'{{$}}}}
     if (flag) // expected-note-re   {{{{^}}Assuming 'flag' is not equal to 0{{$}}}}
               // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
               // debug-note-re@-2{{{{^}}Tracking condition 'flag'{{$}}}}
@@ -156,7 +156,7 @@ void test() {
             // expected-note@-1{{Dereference of null pointer}}
 }
 
-} // namespace conversion_to_bool
+} // end of namespace variable_declaration_in_condition
 
 namespace note_from_different_but_not_nested_stackframe {
 
@@ -193,7 +193,7 @@ int *conjurePointer() {
   int *i;
   storeValue(&i); // tracking-note-re{{{{^}}Calling 'storeValue'{{$}}}}
                   // tracking-note-re@-1{{{{^}}Returning from 'storeValue'{{$}}}}
-  return i;       // tracking-note-re{{{{^}}Returning pointer (loaded from 'i'), which participates in a condition later{{$}}}}
+  return i; // tracking-note-re{{{{^}}Returning pointer (loaded from 'i'), which participates in a condition later{{$}}}}
 }
 
 void f(int *ptr) {
@@ -336,11 +336,11 @@ int getInt();
 void f() {
   int flag = getInt();
   int *x = 0; // expected-note-re{{{{^}}'x' initialized to a null pointer value{{$}}}}
-  if (flag)   // expected-note-re{{{{^}}Assuming 'flag' is not equal to 0{{$}}}}
-              // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
-              // debug-note-re@-2{{{{^}}Tracking condition 'flag'{{$}}}}
-    *x = 5;   // expected-warning{{Dereference of null pointer}}
-              // expected-note@-1{{Dereference of null pointer}}
+  if (flag) // expected-note-re{{{{^}}Assuming 'flag' is not equal to 0{{$}}}}
+            // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
+            // debug-note-re@-2{{{{^}}Tracking condition 'flag'{{$}}}}
+    *x = 5; // expected-warning{{Dereference of null pointer}}
+            // expected-note@-1{{Dereference of null pointer}}
 }
 } // end of namespace tracked_condition_is_only_initialized
 
@@ -353,11 +353,11 @@ void f(int y) {
   flag = y;
 
   int *x = 0; // expected-note-re{{{{^}}'x' initialized to a null pointer value{{$}}}}
-  if (flag)   // expected-note-re{{{{^}}'flag' is 1{{$}}}}
-              // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
-              // debug-note-re@-2{{{{^}}Tracking condition 'flag'{{$}}}}
-    *x = 5;   // expected-warning{{Dereference of null pointer}}
-              // expected-note@-1{{Dereference of null pointer}}
+  if (flag) // expected-note-re{{{{^}}'flag' is 1{{$}}}}
+            // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
+            // debug-note-re@-2{{{{^}}Tracking condition 'flag'{{$}}}}
+    *x = 5; // expected-warning{{Dereference of null pointer}}
+            // expected-note@-1{{Dereference of null pointer}}
 }
 } // end of namespace tracked_condition_written_in_same_stackframe
 
@@ -541,7 +541,7 @@ void f(bool flag) {
   int *x = 0; // expected-note-re{{{{^}}'x' initialized to a null pointer value{{$}}}}
 
   check(flag); // tracking-note-re{{{{^}}Calling 'check'{{$}}}}
-               // tracking-note-re@-1{{{{^}}Returning from 'check'{{$}}}}
+                // tracking-note-re@-1{{{{^}}Returning from 'check'{{$}}}}
 
   if (flag) // expected-note-re{{{{^}}'flag' is true{{$}}}}
             // expected-note-re@-1{{{{^}}Taking true branch{{$}}}}
@@ -607,12 +607,10 @@ namespace dont_crash_on_nonlogical_binary_operator {
 
 void f6(int x) {
   int a[20];
-  if (x == 25) {
-  } // expected-note{{Assuming 'x' is equal to 25}}
-    // expected-note@-1{{Taking true branch}}
-  if (a[x] == 123) {
-  } // expected-warning{{The left operand of '==' is a garbage value due to array index out of bounds}}
-    // expected-note@-1{{The left operand of '==' is a garbage value due to array index out of bounds}}
+  if (x == 25) {} // expected-note{{Assuming 'x' is equal to 25}}
+                  // expected-note@-1{{Taking true branch}}
+  if (a[x] == 123) {} // expected-warning{{The left operand of '==' is a garbage value due to array index out of bounds}}
+                      // expected-note@-1{{The left operand of '==' is a garbage value due to array index out of bounds}}
 }
 
 } // end of namespace dont_crash_on_nonlogical_binary_operator

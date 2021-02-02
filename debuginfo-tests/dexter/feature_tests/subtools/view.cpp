@@ -12,7 +12,7 @@
 // RUN: rm -rf %t
 
 int main() {
-  int a = 0;
-  return 0; // DexLabel('ret')
+    int a = 0;
+    return 0; //DexLabel('ret')
 }
 // DexExpectWatchValue('a', '0', on_line='ret')

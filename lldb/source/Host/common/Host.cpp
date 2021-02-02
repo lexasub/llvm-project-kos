@@ -690,7 +690,7 @@ void llvm::format_provider<WaitStatus>::format(const WaitStatus &WS,
 
   assert(Options.empty());
   const char *desc;
-  switch (WS.type) {
+  switch(WS.type) {
   case WaitStatus::Exit:
     desc = "Exited with status";
     break;

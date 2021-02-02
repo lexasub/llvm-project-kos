@@ -61,11 +61,11 @@ static cl::opt<bool> UseShortPointersOpt(
 
 namespace llvm {
 
-void initializeNVVMIntrRangePass(PassRegistry &);
-void initializeNVVMReflectPass(PassRegistry &);
-void initializeGenericToNVVMPass(PassRegistry &);
+void initializeNVVMIntrRangePass(PassRegistry&);
+void initializeNVVMReflectPass(PassRegistry&);
+void initializeGenericToNVVMPass(PassRegistry&);
 void initializeNVPTXAllocaHoistingPass(PassRegistry &);
-void initializeNVPTXAssignValidGlobalNamesPass(PassRegistry &);
+void initializeNVPTXAssignValidGlobalNamesPass(PassRegistry&);
 void initializeNVPTXLowerAggrCopiesPass(PassRegistry &);
 void initializeNVPTXLowerArgsPass(PassRegistry &);
 void initializeNVPTXLowerAllocaPass(PassRegistry &);
@@ -199,11 +199,11 @@ TargetPassConfig *NVPTXTargetMachine::createPassConfig(PassManagerBase &PM) {
 
 void NVPTXTargetMachine::adjustPassManager(PassManagerBuilder &Builder) {
   Builder.addExtension(
-      PassManagerBuilder::EP_EarlyAsPossible,
-      [&](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
-        PM.add(createNVVMReflectPass(Subtarget.getSmVersion()));
-        PM.add(createNVVMIntrRangePass(Subtarget.getSmVersion()));
-      });
+    PassManagerBuilder::EP_EarlyAsPossible,
+    [&](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
+      PM.add(createNVVMReflectPass(Subtarget.getSmVersion()));
+      PM.add(createNVVMIntrRangePass(Subtarget.getSmVersion()));
+    });
 }
 
 void NVPTXTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB,
@@ -377,10 +377,11 @@ void NVPTXPassConfig::addOptimizedRegAlloc() {
   if (addPass(&MachineSchedulerID))
     printAndVerify("After Machine Scheduling");
 
+
   addPass(&StackSlotColoringID);
 
   // FIXME: Needs physical registers
-  // addPass(&MachineLICMID);
+  //addPass(&MachineLICMID);
 
   printAndVerify("After StackSlotColoring");
 }

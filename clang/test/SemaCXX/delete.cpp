@@ -18,24 +18,25 @@ struct S {
   S();
   S(int);
   ~S() {
-    delete a;   // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+    delete a; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
     delete b;   // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
     delete[] c; // expected-warning {{'delete[]' applied to a pointer that was allocated with 'new'; did you mean 'delete'?}}
   }
   void f();
 };
 
-void S::f() {
+void S::f()
+{
   delete a; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
   delete b; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
 }
 
 S::S()
-    : b(new int[1]), c(new int) {} // expected-note3 {{allocated with 'new[]' here}}
+: b(new int[1]), c(new int) {} // expected-note3 {{allocated with 'new[]' here}}
 // expected-note@-1 {{allocated with 'new' here}}
 
 S::S(int i)
-    : b(new int[i]), c(new int) {} // expected-note3 {{allocated with 'new[]' here}}
+: b(new int[i]), c(new int) {} // expected-note3 {{allocated with 'new[]' here}}
 // expected-note@-1 {{allocated with 'new' here}}
 
 struct S2 : S {
@@ -46,9 +47,9 @@ struct S2 : S {
 int *S::d = new int[42]; // expected-note {{allocated with 'new[]' here}}
 void f(S *s) {
   int *a = new int[1]; // expected-note {{allocated with 'new[]' here}}
-  delete a;            // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
-  delete s->a;         // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
-  delete s->b;         // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+  delete a; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+  delete s->a; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+  delete s->b; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
   delete s->c;
   delete s->d;
   delete S::d; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
@@ -77,9 +78,11 @@ struct CantProve_MissingCtorDefinition {
 };
 
 CantProve_MissingCtorDefinition::CantProve_MissingCtorDefinition()
-    : p(new int) {}
+  : p(new int)
+{ }
 
-CantProve_MissingCtorDefinition::~CantProve_MissingCtorDefinition() {
+CantProve_MissingCtorDefinition::~CantProve_MissingCtorDefinition()
+{
   delete[] p;
 }
 
@@ -87,20 +90,20 @@ struct base {};
 struct derived : base {};
 struct InitList {
   base *p, *p2 = nullptr, *p3{nullptr}, *p4;
-  InitList(unsigned c) : p(new derived[c]), p4(nullptr) {}           // expected-note {{allocated with 'new[]' here}}
+  InitList(unsigned c) : p(new derived[c]), p4(nullptr) {}  // expected-note {{allocated with 'new[]' here}}
   InitList(unsigned c, unsigned) : p{new derived[c]}, p4{nullptr} {} // expected-note {{allocated with 'new[]' here}}
   ~InitList() {
     delete p; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
-    delete[] p;
+    delete [] p;
     delete p2;
-    delete[] p3;
+    delete [] p3;
     delete p4;
   }
 };
-} // namespace MemberCheck
+}
 
 namespace NonMemberCheck {
-#define DELETE_ARRAY(x) delete[](x)
+#define DELETE_ARRAY(x) delete[] (x)
 #define DELETE(x) delete (x)
 void f() {
   int *a = new int(5); // expected-note2 {{allocated with 'new' here}}
@@ -109,17 +112,17 @@ void f() {
   delete b;
   int *c{new int};    // expected-note {{allocated with 'new' here}}
   int *d{new int[1]}; // expected-note2 {{allocated with 'new[]' here}}
-  delete[] c;         // expected-warning {{'delete[]' applied to a pointer that was allocated with 'new'; did you mean 'delete'?}}
+  delete  [    ] c;   // expected-warning {{'delete[]' applied to a pointer that was allocated with 'new'; did you mean 'delete'?}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:9-[[@LINE-1]]:17}:""
-  delete d; // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+  delete d;           // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:9-[[@LINE-1]]:9}:"[]"
-  DELETE_ARRAY(a); // expected-warning {{'delete[]' applied to a pointer that was allocated with 'new'; did you mean 'delete'?}}
-  DELETE(d);       // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
+  DELETE_ARRAY(a);    // expected-warning {{'delete[]' applied to a pointer that was allocated with 'new'; did you mean 'delete'?}}
+  DELETE(d);          // expected-warning {{'delete' applied to a pointer that was allocated with 'new[]'; did you mean 'delete[]'?}}
 }
-} // namespace NonMemberCheck
+}
 
 namespace MissingInitializer {
-template <typename T>
+template<typename T>
 struct Base {
   struct S {
     const T *p1 = nullptr;
@@ -131,13 +134,13 @@ void null_init(Base<double>::S s) {
   delete s.p1;
   delete s.p2;
 }
-} // namespace MissingInitializer
+}
 
 #ifndef WITH_PCH
 pch_test::X::X()
-    : a(new int[1]) // expected-note{{allocated with 'new[]' here}}
-{}
+  : a(new int[1])  // expected-note{{allocated with 'new[]' here}}
+{ }
 pch_test::X::X(int i)
-    : a(new int[i]) // expected-note{{allocated with 'new[]' here}}
-{}
+  : a(new int[i])  // expected-note{{allocated with 'new[]' here}}
+{ }
 #endif

@@ -32,30 +32,32 @@
 #include "test_macros.h"
 #include "../test_func.h"
 
-class test : public std::binder2nd<test_func> {
-  typedef std::binder2nd<test_func> base;
-
+class test
+    : public std::binder2nd<test_func>
+{
+    typedef std::binder2nd<test_func> base;
 public:
-  test() : std::binder2nd<test_func>(test_func(3), 4.5) {}
+    test() : std::binder2nd<test_func>(test_func(3), 4.5) {}
 
-  void do_test() {
-    static_assert(
-        (std::is_base_of<std::unary_function<test_func::first_argument_type,
+    void do_test()
+    {
+        static_assert((std::is_base_of<
+                         std::unary_function<test_func::first_argument_type,
                                              test_func::result_type>,
-                         test>::value),
-        "");
-    assert(op.id() == 3);
-    assert(value == 4.5);
+                         test>::value), "");
+        assert(op.id() == 3);
+        assert(value == 4.5);
 
-    int i = 5;
-    assert((*this)(i) == 22.5);
-    assert((*this)(5) == 0.5);
-  }
+        int i = 5;
+        assert((*this)(i) == 22.5);
+        assert((*this)(5) == 0.5);
+    }
 };
 
-int main(int, char**) {
-  test t;
-  t.do_test();
+int main(int, char**)
+{
+    test t;
+    t.do_test();
 
   return 0;
 }

@@ -4,55 +4,55 @@
 
 // PR4806
 namespace test0 {
-class Box {
-public:
-  int i;
-  volatile int j;
-};
+  class Box {
+  public:
+    int i;
+    volatile int j;
+  };
 
-void doit() {
-  // pointer to volatile has side effect (thus no warning)
-  Box *box = new Box;
-  box->i; // expected-warning {{expression result unused}}
-  box->j;
+  void doit() {
+    // pointer to volatile has side effect (thus no warning)
+    Box* box = new Box;
+    box->i; // expected-warning {{expression result unused}}
+    box->j;
 #if __cplusplus <= 199711L
-  // expected-warning@-2 {{expression result unused}}
+    // expected-warning@-2 {{expression result unused}}
 #endif
+  }
 }
-} // namespace test0
 
 namespace test1 {
 struct Foo {
   int i;
-  bool operator==(const Foo &rhs) {
+  bool operator==(const Foo& rhs) {
     return i == rhs.i;
   }
 };
 
 #define NOP(x) (x)
 void b(Foo f1, Foo f2) {
-  NOP(f1 == f2); // expected-warning {{expression result unused}}
+  NOP(f1 == f2);  // expected-warning {{expression result unused}}
 }
 #undef NOP
-} // namespace test1
+}
 
 namespace test2 {
-extern "C++" {
-namespace std {
-template <typename T> struct basic_string {
-  struct X {};
-  void method() const {
-    X *x;
-    &x[0]; // expected-warning {{expression result unused}}
+  extern "C++" {
+    namespace std {
+      template<typename T> struct basic_string {
+        struct X {};
+        void method() const {
+         X* x;
+         &x[0];  // expected-warning {{expression result unused}}
+        }
+      };
+      typedef basic_string<char> string;
+      void func(const std::string& str) {
+        str.method();  // expected-note {{in instantiation of member function}}
+      }
+    }
   }
-};
-typedef basic_string<char> string;
-void func(const std::string &str) {
-  str.method(); // expected-note {{in instantiation of member function}}
 }
-} // namespace std
-}
-} // namespace test2
 
 namespace test3 {
 struct Used {
@@ -71,27 +71,23 @@ void f() {
   Used();
   Used(1);
   Used(1, 1);
-  Unused();                // expected-warning {{expression result unused}}
-  Unused(1);               // expected-warning {{expression result unused}}
-  Unused(1, 1);            // expected-warning {{expression result unused}}
+  Unused();     // expected-warning {{expression result unused}}
+  Unused(1);    // expected-warning {{expression result unused}}
+  Unused(1, 1); // expected-warning {{expression result unused}}
 #if __cplusplus >= 201103L // C++11 or later
   Used({});
   Unused({}); // expected-warning {{expression result unused}}
 #endif
 }
-} // namespace test3
+}
 
 namespace std {
-struct type_info {};
-} // namespace std
+  struct type_info {};
+}
 
 namespace test4 {
-struct Good {
-  Good &f();
-};
-struct Bad {
-  virtual Bad &f();
-};
+struct Good { Good &f(); };
+struct Bad { virtual Bad& f(); };
 
 void f() {
   int i = 0;
@@ -108,10 +104,10 @@ void f() {
   // A dereference of a volatile pointer is a side effecting operation, however
   // since it is idiomatic code, and the alternatives induce higher maintenance
   // costs, it is allowed.
-  int *volatile x;
+  int * volatile x;
   (void)sizeof(*x); // Ok
 }
-} // namespace test4
+}
 
 static volatile char var1 = 'a';
 volatile char var2 = 'a';

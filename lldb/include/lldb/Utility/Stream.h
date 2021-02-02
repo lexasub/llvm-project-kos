@@ -306,7 +306,7 @@ public:
 
   size_t PrintfVarArg(const char *format, va_list args);
 
-  template <typename... Args> void Format(const char *format, Args &&...args) {
+  template <typename... Args> void Format(const char *format, Args &&... args) {
     PutCString(llvm::formatv(format, std::forward<Args>(args)...).str());
   }
 
@@ -354,15 +354,17 @@ public:
   size_t PutULEB128(uint64_t uval);
 
   /// Returns a raw_ostream that forwards the data to this Stream object.
-  llvm::raw_ostream &AsRawOstream() { return m_forwarder; }
+  llvm::raw_ostream &AsRawOstream() {
+    return m_forwarder;
+  }
 
 protected:
   // Member variables
   Flags m_flags;        ///< Dump flags.
   uint32_t m_addr_size; ///< Size of an address in bytes.
   lldb::ByteOrder
-      m_byte_order;        ///< Byte order to use when encoding scalar types.
-  unsigned m_indent_level; ///< Indention level.
+      m_byte_order;   ///< Byte order to use when encoding scalar types.
+  unsigned m_indent_level;         ///< Indention level.
   std::size_t m_bytes_written = 0; ///< Number of bytes written so far.
 
   void _PutHex8(uint8_t uvalue, bool add_prefix);
@@ -397,7 +399,9 @@ protected:
       m_target.Write(Ptr, Size);
     }
 
-    uint64_t current_pos() const override { return m_target.GetWrittenBytes(); }
+    uint64_t current_pos() const override {
+      return m_target.GetWrittenBytes();
+    }
 
   public:
     RawOstreamForward(Stream &target, bool colors = false)

@@ -158,7 +158,8 @@ bool ObjCLanguageRuntime::ClassDescriptor::IsPointerValid(
     return false;
 }
 
-ObjCLanguageRuntime::ObjCISA ObjCLanguageRuntime::GetISA(ConstString name) {
+ObjCLanguageRuntime::ObjCISA
+ObjCLanguageRuntime::GetISA(ConstString name) {
   ISAToDescriptorIterator pos = GetDescriptorIterator(name);
   if (pos != m_isa_to_descriptor.end())
     return pos->first;
@@ -222,7 +223,8 @@ ObjCLanguageRuntime::GetParentClass(ObjCLanguageRuntime::ObjCISA isa) {
 }
 
 ObjCLanguageRuntime::ClassDescriptorSP
-ObjCLanguageRuntime::GetClassDescriptorFromClassName(ConstString class_name) {
+ObjCLanguageRuntime::GetClassDescriptorFromClassName(
+    ConstString class_name) {
   ISAToDescriptorIterator pos = GetDescriptorIterator(class_name);
   if (pos != m_isa_to_descriptor.end())
     return pos->second;

@@ -28,8 +28,8 @@ class B;
 struct C {
   // Do not fail on incompletely-defined classes.
   decltype(reinterpret_cast<C *>(0)) foo;
-  decltype(reinterpret_cast<A *>((C *)0)) bar;
-  decltype(reinterpret_cast<C *>((A *)0)) baz;
+  decltype(reinterpret_cast<A *>((C *) 0)) bar;
+  decltype(reinterpret_cast<C *>((A *) 0)) baz;
 };
 
 void reinterpret_not_defined_class(B *b, C *c) {
@@ -44,57 +44,49 @@ void reinterpret_not_defined_class(B *b, C *c) {
 // Do not fail on erroneous classes with fields of incompletely-defined types.
 // Base class is malformed.
 namespace BaseMalformed {
-struct A; // expected-note {{forward declaration of 'BaseMalformed::A'}}
-struct B {
-  A a; // expected-error {{field has incomplete type 'BaseMalformed::A'}}
-};
-struct C : public B {
-} c;
-B *b = reinterpret_cast<B *>(&c);
-} // namespace BaseMalformed
+  struct A; // expected-note {{forward declaration of 'BaseMalformed::A'}}
+  struct B {
+    A a; // expected-error {{field has incomplete type 'BaseMalformed::A'}}
+  };
+  struct C : public B {} c;
+  B *b = reinterpret_cast<B *>(&c);
+} // end anonymous namespace
 
 // Child class is malformed.
 namespace ChildMalformed {
-struct A; // expected-note {{forward declaration of 'ChildMalformed::A'}}
-struct B {};
-struct C : public B {
-  A a; // expected-error {{field has incomplete type 'ChildMalformed::A'}}
-} c;
-B *b = reinterpret_cast<B *>(&c);
-} // namespace ChildMalformed
+  struct A; // expected-note {{forward declaration of 'ChildMalformed::A'}}
+  struct B {};
+  struct C : public B {
+    A a; // expected-error {{field has incomplete type 'ChildMalformed::A'}}
+  } c;
+  B *b = reinterpret_cast<B *>(&c);
+} // end anonymous namespace
 
 // Base class outside upcast base-chain is malformed.
 namespace BaseBaseMalformed {
-struct A; // expected-note {{forward declaration of 'BaseBaseMalformed::A'}}
-struct Y {};
-struct X {
-  A a;
-}; // expected-error {{field has incomplete type 'BaseBaseMalformed::A'}}
-struct B : Y, X {};
-struct C : B {
-} c;
-B *p = reinterpret_cast<B *>(&c);
-} // namespace BaseBaseMalformed
+  struct A; // expected-note {{forward declaration of 'BaseBaseMalformed::A'}}
+  struct Y {};
+  struct X { A a; }; // expected-error {{field has incomplete type 'BaseBaseMalformed::A'}}
+  struct B : Y, X {};
+  struct C : B {} c;
+  B *p = reinterpret_cast<B*>(&c);
+}
 
 namespace InheritanceMalformed {
-struct A;        // expected-note {{forward declaration of 'InheritanceMalformed::A'}}
-struct B : A {}; // expected-error {{base class has incomplete type}}
-struct C : B {
-} c;
-B *p = reinterpret_cast<B *>(&c);
-} // namespace InheritanceMalformed
+  struct A; // expected-note {{forward declaration of 'InheritanceMalformed::A'}}
+  struct B : A {}; // expected-error {{base class has incomplete type}}
+  struct C : B {} c;
+  B *p = reinterpret_cast<B*>(&c);
+}
 
 // Virtual base class outside upcast base-chain is malformed.
-namespace VBaseMalformed {
-struct A; // expected-note {{forward declaration of 'VBaseMalformed::A'}}
-struct X {
-  A a;
-}; // expected-error {{field has incomplete type 'VBaseMalformed::A'}}
-struct B : public virtual X {};
-struct C : B {
-} c;
-B *p = reinterpret_cast<B *>(&c);
-} // namespace VBaseMalformed
+namespace VBaseMalformed{
+  struct A; // expected-note {{forward declaration of 'VBaseMalformed::A'}}
+  struct X { A a; };  // expected-error {{field has incomplete type 'VBaseMalformed::A'}}
+  struct B : public virtual X {};
+  struct C : B {} c;
+  B *p = reinterpret_cast<B*>(&c);
+}
 
 void reinterpret_not_updowncast(A *pa, const A *pca, A &a, const A &ca) {
   (void)*reinterpret_cast<C *>(pa);
@@ -272,7 +264,7 @@ class H : public E, public A {
 class I : virtual public F {
 };
 
-typedef const F *K;
+typedef const F * K;
 typedef volatile K L;
 
 void different_subobject_downcast(E *e, F *f, A *a) {
@@ -291,6 +283,7 @@ void different_subobject_downcast(E *e, F *f, A *a) {
   // expected-note@+1 {{use 'static_cast' to adjust the pointer correctly while downcasting}}
   (void)reinterpret_cast<I *>(e);
   // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:9-[[@LINE-1]]:25}:"static_cast"
+
 
   (void)reinterpret_cast<G *>(f);
   // expected-warning@+2 {{'reinterpret_cast' to class 'I *' from its virtual base 'F *' behaves differently from 'static_cast'}}

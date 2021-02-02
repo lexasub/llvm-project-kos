@@ -87,13 +87,11 @@ int
 main()
 {
 
-    test<float64_t>(
-        -666.0, 8.5, 0.33, [](const float64_t& x) { return x * x <= 1024; },
-        [](size_t j) { return ((j + 1) % 7 & 2) != 0 ? 8.5 : float64_t(j % 32 + j); });
+    test<float64_t>(-666.0, 8.5, 0.33, [](const float64_t& x) { return x * x <= 1024; },
+                    [](size_t j) { return ((j + 1) % 7 & 2) != 0 ? 8.5 : float64_t(j % 32 + j); });
 
-    test<int32_t>(
-        -666, 42, 99, [](const int32_t& x) { return x != 42; },
-        [](size_t j) { return ((j + 1) % 5 & 2) != 0 ? 42 : -1 - int32_t(j); });
+    test<int32_t>(-666, 42, 99, [](const int32_t& x) { return x != 42; },
+                  [](size_t j) { return ((j + 1) % 5 & 2) != 0 ? 42 : -1 - int32_t(j); });
 
 #if !_PSTL_ICC_17_TEST_MAC_RELEASE_32_BROKEN
     test<Number>(Number(42, OddTag()), Number(2001, OddTag()), Number(2017, OddTag()), IsMultiple(3, OddTag()),

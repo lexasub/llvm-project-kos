@@ -41,8 +41,9 @@ static cl::alias MinLengthShort("n", cl::desc(""), cl::aliasopt(MinLength));
 
 static cl::opt<bool>
     AllSections("all",
-                cl::desc("Check all sections, not just the data section"));
-static cl::alias AllSectionsShort("a", cl::desc(""), cl::aliasopt(AllSections));
+                  cl::desc("Check all sections, not just the data section"));
+static cl::alias AllSectionsShort("a", cl::desc(""),
+                                    cl::aliasopt(AllSections));
 
 enum radix { none, octal, hexadecimal, decimal };
 static cl::opt<radix>

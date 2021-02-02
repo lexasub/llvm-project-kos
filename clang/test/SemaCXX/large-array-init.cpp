@@ -2,13 +2,9 @@
 // RUN:     FileCheck %s
 // REQUIRES: asserts
 
-struct S {
-  int i;
-};
+struct S { int i; };
 
-static struct S arr[100000000] = {{0}};
+static struct S arr[100000000] = {{ 0 }};
 // CHECK: The number of elements to initialize: 1.
 
-struct S *foo() {
-  return arr;
-}
+struct S *foo() { return arr; }

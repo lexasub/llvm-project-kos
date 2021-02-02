@@ -33,4 +33,4 @@ TEST(PostOrderIteratorTest, Compiles) {
   auto PIExt = po_ext_end(NullBB, Ext);
   PIExt.insertEdge(Optional<BasicBlock *>(), NullBB);
 }
-} // namespace
+}

@@ -12,8 +12,8 @@
 // XFAIL: windows-msvc
 
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <algorithm>
 #include <vector>

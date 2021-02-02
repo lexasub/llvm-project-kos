@@ -6,7 +6,8 @@
 
 namespace llvm {
 
-template <class T = void *> bool shouldReverseIterate() {
+template<class T = void *>
+bool shouldReverseIterate() {
 #if LLVM_ENABLE_REVERSE_ITERATION
   return detail::IsPointerLike<T>::value;
 #else
@@ -14,5 +15,5 @@ template <class T = void *> bool shouldReverseIterate() {
 #endif
 }
 
-} // namespace llvm
+}
 #endif

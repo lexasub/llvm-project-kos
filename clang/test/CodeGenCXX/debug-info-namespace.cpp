@@ -8,16 +8,16 @@ namespace A {
 namespace B {
 extern int i;
 int f1() { return 0; }
-void f1(int) {}
+void f1(int) { }
 struct foo;
-struct bar {};
+struct bar { };
 typedef bar baz;
 extern int var_decl;
 void func_decl(void);
 extern int var_fwd;
 void func_fwd(void);
-} // namespace B
-} // namespace A
+}
+}
 namespace A {
 using namespace B;
 }
@@ -31,17 +31,17 @@ int func(bool b) {
     return i;
   }
   using namespace A;
-  using B::bar;
-  using B::baz;
-  using B::f1;
   using B::foo;
+  using B::bar;
+  using B::f1;
   using B::i;
+  using B::baz;
   namespace X = A;
   namespace Y = X;
-  using B::func_decl;
-  using B::func_fwd;
   using B::var_decl;
+  using B::func_decl;
   using B::var_fwd;
+  using B::func_fwd;
   return i + X::B::i + Y::B::i;
 }
 
@@ -53,7 +53,7 @@ int var_fwd = i;
 inline namespace I {
 int var_i;
 }
-} // namespace A
+}
 namespace {
 int anonymous;
 }
@@ -62,7 +62,7 @@ void B::func_fwd() {
 }
 
 namespace C {
-void c();
+  void c();
 }
 void C::c() {}
 

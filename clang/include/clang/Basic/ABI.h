@@ -31,10 +31,10 @@ enum CXXCtorType {
 
 /// C++ destructor types.
 enum CXXDtorType {
-  Dtor_Deleting, ///< Deleting dtor
-  Dtor_Complete, ///< Complete object dtor
-  Dtor_Base,     ///< Base object dtor
-  Dtor_Comdat    ///< The COMDAT used for dtors
+    Dtor_Deleting, ///< Deleting dtor
+    Dtor_Complete, ///< Complete object dtor
+    Dtor_Base,     ///< Base object dtor
+    Dtor_Comdat    ///< The COMDAT used for dtors
 };
 
 /// A return adjustment.
@@ -63,7 +63,9 @@ struct ReturnAdjustment {
       uint32_t VBIndex;
     } Microsoft;
 
-    VirtualAdjustment() { memset(this, 0, sizeof(*this)); }
+    VirtualAdjustment() {
+      memset(this, 0, sizeof(*this));
+    }
 
     bool Equals(const VirtualAdjustment &Other) const {
       return memcmp(this, &Other, sizeof(Other)) == 0;
@@ -88,8 +90,7 @@ struct ReturnAdjustment {
     return LHS.NonVirtual == RHS.NonVirtual && LHS.Virtual.Equals(RHS.Virtual);
   }
 
-  friend bool operator!=(const ReturnAdjustment &LHS,
-                         const ReturnAdjustment &RHS) {
+  friend bool operator!=(const ReturnAdjustment &LHS, const ReturnAdjustment &RHS) {
     return !(LHS == RHS);
   }
 
@@ -130,7 +131,9 @@ struct ThisAdjustment {
       int32_t VBOffsetOffset;
     } Microsoft;
 
-    VirtualAdjustment() { memset(this, 0, sizeof(*this)); }
+    VirtualAdjustment() {
+      memset(this, 0, sizeof(*this));
+    }
 
     bool Equals(const VirtualAdjustment &Other) const {
       return memcmp(this, &Other, sizeof(Other)) == 0;
@@ -146,11 +149,12 @@ struct ThisAdjustment {
     }
   } Virtual;
 
-  ThisAdjustment() : NonVirtual(0) {}
+  ThisAdjustment() : NonVirtual(0) { }
 
   bool isEmpty() const { return !NonVirtual && Virtual.isEmpty(); }
 
-  friend bool operator==(const ThisAdjustment &LHS, const ThisAdjustment &RHS) {
+  friend bool operator==(const ThisAdjustment &LHS,
+                         const ThisAdjustment &RHS) {
     return LHS.NonVirtual == RHS.NonVirtual && LHS.Virtual.Equals(RHS.Virtual);
   }
 
@@ -158,7 +162,8 @@ struct ThisAdjustment {
     return !(LHS == RHS);
   }
 
-  friend bool operator<(const ThisAdjustment &LHS, const ThisAdjustment &RHS) {
+  friend bool operator<(const ThisAdjustment &LHS,
+                        const ThisAdjustment &RHS) {
     if (LHS.NonVirtual < RHS.NonVirtual)
       return true;
 
@@ -184,7 +189,7 @@ struct ThunkInfo {
   /// an ABI-specific comparator.
   const CXXMethodDecl *Method;
 
-  ThunkInfo() : Method(nullptr) {}
+  ThunkInfo() : Method(nullptr) { }
 
   ThunkInfo(const ThisAdjustment &This, const ReturnAdjustment &Return,
             const CXXMethodDecl *Method = nullptr)

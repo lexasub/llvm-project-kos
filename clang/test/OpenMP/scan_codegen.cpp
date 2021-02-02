@@ -25,8 +25,7 @@ void baz() {
   // CHECK: [[CNT_VAL:%.+]] = load i32, i32* [[OMP_CNT]],
   // CHECK: [[CMP:%.+]] = icmp slt i32 [[CNT_VAL]], 10
   // CHECK: br i1 [[CMP]], label %[[OMP_BODY:.+]], label %[[OMP_END:.+]]
-#pragma omp simd reduction(inscan, + \
-                           : a)
+#pragma omp simd reduction(inscan, + : a)
   for (int i = 0; i < 10; ++i) {
     // CHECK: [[OMP_BODY]]:
 
@@ -94,8 +93,8 @@ struct S {
   int a;
   S() {}
   ~S() {}
-  S &operator+(const S &);
-  S &operator=(const S &);
+  S& operator+(const S&);
+  S& operator=(const S&);
 };
 
 // CHECK-LABEL: xyz
@@ -119,8 +118,7 @@ void xyz() {
   // CHECK: [[CNT_VAL:%.+]] = load i32, i32* [[OMP_CNT]],
   // CHECK: [[CMP:%.+]] = icmp slt i32 [[CNT_VAL]], 10
   // CHECK: br i1 [[CMP]], label %[[OMP_BODY:.+]], label %[[OMP_END:.+]]
-#pragma omp simd reduction(inscan, + \
-                           : s)
+#pragma omp simd reduction(inscan, + : s)
   for (int i = 0; i < 10; ++i) {
     // CHECK: [[OMP_BODY]]:
 

@@ -1,3 +1,9 @@
-static int Static() { return 1; }
+static int Static()
+{
+  return 1;
+}
 
-int CallStaticB() { return Static(); }
+int CallStaticB()
+{
+  return Static();
+}

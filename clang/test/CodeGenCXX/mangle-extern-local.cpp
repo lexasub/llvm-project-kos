@@ -26,18 +26,13 @@ int f2() {
 struct S {
   static int f3() {
     extern int var3, func3();
-    struct LC {
-      int localfunc() {
-        extern int var4;
-        return var4;
-      }
-    };
+    struct LC { int localfunc() { extern int var4; return var4; } };
     LC localobj;
     return var3 + func3() + localobj.localfunc();
   }
 };
 
-int anchorf3() { return S::f3(); }
+int anchorf3() { return S::f3(); } 
 
 extern "C" {
 int f4() {
@@ -46,4 +41,5 @@ int f4() {
 }
 }
 
-} // namespace N
+}
+

@@ -33,40 +33,44 @@
 #include "test_macros.h"
 
 template <class T>
-void test(const T&) {}
+void test(const T &) {}
 
-int main(int, char**) {
-  assert(std::ctype_base::space);
-  assert(std::ctype_base::print);
-  assert(std::ctype_base::cntrl);
-  assert(std::ctype_base::upper);
-  assert(std::ctype_base::lower);
-  assert(std::ctype_base::alpha);
-  assert(std::ctype_base::digit);
-  assert(std::ctype_base::punct);
-  assert(std::ctype_base::xdigit);
-  assert((std::ctype_base::space & std::ctype_base::print &
-          std::ctype_base::cntrl & std::ctype_base::upper &
-          std::ctype_base::lower & std::ctype_base::alpha &
-          std::ctype_base::digit & std::ctype_base::punct &
-          std::ctype_base::xdigit) == 0);
-  assert(std::ctype_base::alnum ==
-         (std::ctype_base::alpha | std::ctype_base::digit));
-  assert(std::ctype_base::graph ==
-         (std::ctype_base::alnum | std::ctype_base::punct));
+int main(int, char**)
+{
+    assert(std::ctype_base::space);
+    assert(std::ctype_base::print);
+    assert(std::ctype_base::cntrl);
+    assert(std::ctype_base::upper);
+    assert(std::ctype_base::lower);
+    assert(std::ctype_base::alpha);
+    assert(std::ctype_base::digit);
+    assert(std::ctype_base::punct);
+    assert(std::ctype_base::xdigit);
+    assert(
+      ( std::ctype_base::space
+      & std::ctype_base::print
+      & std::ctype_base::cntrl
+      & std::ctype_base::upper
+      & std::ctype_base::lower
+      & std::ctype_base::alpha
+      & std::ctype_base::digit
+      & std::ctype_base::punct
+      & std::ctype_base::xdigit) == 0);
+    assert(std::ctype_base::alnum == (std::ctype_base::alpha | std::ctype_base::digit));
+    assert(std::ctype_base::graph == (std::ctype_base::alnum | std::ctype_base::punct));
 
-  test(std::ctype_base::space);
-  test(std::ctype_base::print);
-  test(std::ctype_base::cntrl);
-  test(std::ctype_base::upper);
-  test(std::ctype_base::lower);
-  test(std::ctype_base::alpha);
-  test(std::ctype_base::digit);
-  test(std::ctype_base::punct);
-  test(std::ctype_base::xdigit);
-  test(std::ctype_base::blank);
-  test(std::ctype_base::alnum);
-  test(std::ctype_base::graph);
+    test(std::ctype_base::space);
+    test(std::ctype_base::print);
+    test(std::ctype_base::cntrl);
+    test(std::ctype_base::upper);
+    test(std::ctype_base::lower);
+    test(std::ctype_base::alpha);
+    test(std::ctype_base::digit);
+    test(std::ctype_base::punct);
+    test(std::ctype_base::xdigit);
+    test(std::ctype_base::blank);
+    test(std::ctype_base::alnum);
+    test(std::ctype_base::graph);
 
   return 0;
 }

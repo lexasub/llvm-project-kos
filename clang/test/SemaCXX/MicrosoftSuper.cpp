@@ -2,14 +2,14 @@
 
 struct Errors {
   using __super::foo; // expected-error {{'__super' cannot be used with a using declaration}}
-  __super::XXX x;     // expected-error {{invalid use of '__super', Errors has no base classes}} expected-error {{expected}}
+  __super::XXX x; // expected-error {{invalid use of '__super', Errors has no base classes}} expected-error {{expected}}
 
   void foo() {
     // expected-note@+4 {{replace parentheses with an initializer to declare a variable}}
     // expected-warning@+3 {{empty parentheses interpreted as a function declaration}}
     // expected-error@+2 {{C++ requires a type specifier for all declarations}}
     // expected-error@+1 {{use of '__super' inside a lambda is unsupported}}
-    auto lambda = [] { __super::foo(); };
+    auto lambda = []{ __super::foo(); };
   }
 };
 
@@ -149,12 +149,10 @@ void instantiate() {
 }
 
 namespace {
-struct B {
-  int a;
-};
+struct B { int a; };
 template <class C>
 struct A : B {
   // Don't crash on dependent_type_var '->' '__super'
   void f() { int a = this->__super::a; }
 };
-} // namespace
+}

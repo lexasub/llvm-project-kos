@@ -11,12 +11,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Frontend/FrontendPluginRegistry.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Attr.h"
-#include "clang/Frontend/FrontendPluginRegistry.h"
-#include "clang/Lex/LexDiagnostic.h"
 #include "clang/Lex/Preprocessor.h"
+#include "clang/Lex/LexDiagnostic.h"
 using namespace clang;
 
 namespace {
@@ -57,7 +57,7 @@ public:
 
 class PragmaAnnotateHandler : public PragmaHandler {
 public:
-  PragmaAnnotateHandler() : PragmaHandler("enable_annotate") {}
+  PragmaAnnotateHandler() : PragmaHandler("enable_annotate") { }
 
   void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
                     Token &PragmaTok) override {
@@ -70,8 +70,8 @@ public:
     if (HandledDecl) {
       DiagnosticsEngine &D = PP.getDiagnostics();
       unsigned ID = D.getCustomDiagID(
-          DiagnosticsEngine::Error,
-          "#pragma enable_annotate not allowed after declarations");
+        DiagnosticsEngine::Error,
+        "#pragma enable_annotate not allowed after declarations");
       D.Report(PragmaTok.getLocation(), ID);
     }
 
@@ -79,10 +79,10 @@ public:
   }
 };
 
-} // namespace
+}
 
 static FrontendPluginRegistry::Add<AnnotateFunctionsAction>
-    X("annotate-fns", "annotate functions");
+X("annotate-fns", "annotate functions");
 
-static PragmaHandlerRegistry::Add<PragmaAnnotateHandler> Y("enable_annotate",
-                                                           "enable annotation");
+static PragmaHandlerRegistry::Add<PragmaAnnotateHandler>
+Y("enable_annotate","enable annotation");

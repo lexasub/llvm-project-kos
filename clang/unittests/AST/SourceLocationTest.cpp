@@ -167,7 +167,7 @@ TEST(MemberExpr, ImplicitMemberRange) {
 class MemberExprArrowLocVerifier : public RangeVerifier<MemberExpr> {
 protected:
   SourceRange getRange(const MemberExpr &Node) override {
-    return Node.getOperatorLoc();
+     return Node.getOperatorLoc();
   }
 };
 
@@ -199,7 +199,8 @@ TEST(MemberExpr, ImplicitArrowRange) {
 TEST(VarDecl, VMTypeFixedVarDeclRange) {
   RangeVerifier<VarDecl> Verifier;
   Verifier.expectRange(1, 1, 1, 23);
-  EXPECT_TRUE(Verifier.match("int a[(int)(void*)1234];", varDecl(), Lang_C89));
+  EXPECT_TRUE(Verifier.match("int a[(int)(void*)1234];",
+                             varDecl(), Lang_C89));
 }
 
 TEST(TypeLoc, IntRange) {
@@ -313,37 +314,34 @@ TEST(CXXConstructorDecl, DeletedCtorLocRange) {
 TEST(CompoundLiteralExpr, CompoundVectorLiteralRange) {
   RangeVerifier<CompoundLiteralExpr> Verifier;
   Verifier.expectRange(2, 11, 2, 22);
-  EXPECT_TRUE(
-      Verifier.match("typedef int int2 __attribute__((ext_vector_type(2)));\n"
-                     "int2 i2 = (int2){1, 2};",
-                     compoundLiteralExpr()));
+  EXPECT_TRUE(Verifier.match(
+                  "typedef int int2 __attribute__((ext_vector_type(2)));\n"
+                  "int2 i2 = (int2){1, 2};", compoundLiteralExpr()));
 }
 
 TEST(CompoundLiteralExpr, ParensCompoundVectorLiteralRange) {
   RangeVerifier<CompoundLiteralExpr> Verifier;
   Verifier.expectRange(2, 20, 2, 31);
-  EXPECT_TRUE(
-      Verifier.match("typedef int int2 __attribute__((ext_vector_type(2)));\n"
-                     "constant int2 i2 = (int2)(1, 2);",
-                     compoundLiteralExpr(), Lang_OpenCL));
+  EXPECT_TRUE(Verifier.match(
+                  "typedef int int2 __attribute__((ext_vector_type(2)));\n"
+                  "constant int2 i2 = (int2)(1, 2);", 
+                  compoundLiteralExpr(), Lang_OpenCL));
 }
 
 TEST(InitListExpr, VectorLiteralListBraceRange) {
   RangeVerifier<InitListExpr> Verifier;
   Verifier.expectRange(2, 17, 2, 22);
-  EXPECT_TRUE(
-      Verifier.match("typedef int int2 __attribute__((ext_vector_type(2)));\n"
-                     "int2 i2 = (int2){1, 2};",
-                     initListExpr()));
+  EXPECT_TRUE(Verifier.match(
+                  "typedef int int2 __attribute__((ext_vector_type(2)));\n"
+                  "int2 i2 = (int2){1, 2};", initListExpr()));
 }
 
 TEST(InitListExpr, VectorLiteralInitListParens) {
   RangeVerifier<InitListExpr> Verifier;
   Verifier.expectRange(2, 26, 2, 31);
-  EXPECT_TRUE(
-      Verifier.match("typedef int int2 __attribute__((ext_vector_type(2)));\n"
-                     "constant int2 i2 = (int2)(1, 2);",
-                     initListExpr(), Lang_OpenCL));
+  EXPECT_TRUE(Verifier.match(
+                  "typedef int int2 __attribute__((ext_vector_type(2)));\n"
+                  "constant int2 i2 = (int2)(1, 2);", initListExpr(), Lang_OpenCL));
 }
 
 class TemplateAngleBracketLocRangeVerifier : public RangeVerifier<TypeLoc> {
@@ -359,10 +357,10 @@ protected:
 TEST(TemplateSpecializationTypeLoc, AngleBracketLocations) {
   TemplateAngleBracketLocRangeVerifier Verifier;
   Verifier.expectRange(2, 8, 2, 10);
-  EXPECT_TRUE(
-      Verifier.match("template<typename T> struct A {}; struct B{}; void f(\n"
-                     "const A<B>&);",
-                     loc(templateSpecializationType())));
+  EXPECT_TRUE(Verifier.match(
+      "template<typename T> struct A {}; struct B{}; void f(\n"
+      "const A<B>&);",
+      loc(templateSpecializationType())));
 }
 
 TEST(CXXNewExpr, TypeParenRange) {
@@ -384,37 +382,41 @@ protected:
 TEST(UnaryTransformTypeLoc, ParensRange) {
   UnaryTransformTypeLocParensRangeVerifier Verifier;
   Verifier.expectRange(3, 26, 3, 28);
-  EXPECT_TRUE(Verifier.match("template <typename T>\n"
-                             "struct S {\n"
-                             "typedef __underlying_type(T) type;\n"
-                             "};",
-                             loc(unaryTransformType())));
+  EXPECT_TRUE(Verifier.match(
+      "template <typename T>\n"
+      "struct S {\n"
+      "typedef __underlying_type(T) type;\n"
+      "};",
+      loc(unaryTransformType())));
 }
 
 TEST(CXXFunctionalCastExpr, SourceRange) {
   RangeVerifier<CXXFunctionalCastExpr> Verifier;
   Verifier.expectRange(2, 10, 2, 14);
-  EXPECT_TRUE(Verifier.match("int foo() {\n"
-                             "  return int{};\n"
-                             "}",
-                             cxxFunctionalCastExpr(), Lang_CXX11));
+  EXPECT_TRUE(Verifier.match(
+      "int foo() {\n"
+      "  return int{};\n"
+      "}",
+      cxxFunctionalCastExpr(), Lang_CXX11));
 }
 
 TEST(CXXConstructExpr, SourceRange) {
   RangeVerifier<CXXConstructExpr> Verifier;
   Verifier.expectRange(3, 14, 3, 19);
-  EXPECT_TRUE(Verifier.match("struct A { A(int, int); };\n"
-                             "void f(A a);\n"
-                             "void g() { f({0, 0}); }",
-                             cxxConstructExpr(), Lang_CXX11));
+  EXPECT_TRUE(Verifier.match(
+      "struct A { A(int, int); };\n"
+      "void f(A a);\n"
+      "void g() { f({0, 0}); }",
+      cxxConstructExpr(), Lang_CXX11));
 }
 
 TEST(CXXTemporaryObjectExpr, SourceRange) {
   RangeVerifier<CXXTemporaryObjectExpr> Verifier;
   Verifier.expectRange(2, 6, 2, 12);
-  EXPECT_TRUE(Verifier.match("struct A { A(int, int); };\n"
-                             "A a( A{0, 0} );",
-                             cxxTemporaryObjectExpr(), Lang_CXX11));
+  EXPECT_TRUE(Verifier.match(
+      "struct A { A(int, int); };\n"
+      "A a( A{0, 0} );",
+      cxxTemporaryObjectExpr(), Lang_CXX11));
 }
 
 TEST(CXXUnresolvedConstructExpr, SourceRange) {
@@ -422,29 +424,32 @@ TEST(CXXUnresolvedConstructExpr, SourceRange) {
   Verifier.expectRange(3, 10, 3, 12);
   std::vector<std::string> Args;
   Args.push_back("-fno-delayed-template-parsing");
-  EXPECT_TRUE(Verifier.match("template <typename U>\n"
-                             "U foo() {\n"
-                             "  return U{};\n"
-                             "}",
-                             cxxUnresolvedConstructExpr(), Args, Lang_CXX11));
+  EXPECT_TRUE(Verifier.match(
+      "template <typename U>\n"
+      "U foo() {\n"
+      "  return U{};\n"
+      "}",
+      cxxUnresolvedConstructExpr(), Args, Lang_CXX11));
 }
 
 TEST(UsingDecl, SourceRange) {
   RangeVerifier<UsingDecl> Verifier;
   Verifier.expectRange(2, 22, 2, 25);
-  EXPECT_TRUE(Verifier.match("class B { protected: int i; };\n"
-                             "class D : public B { B::i; };",
-                             usingDecl()));
+  EXPECT_TRUE(Verifier.match(
+      "class B { protected: int i; };\n"
+      "class D : public B { B::i; };",
+      usingDecl()));
 }
 
 TEST(UnresolvedUsingValueDecl, SourceRange) {
   RangeVerifier<UnresolvedUsingValueDecl> Verifier;
   Verifier.expectRange(3, 3, 3, 6);
-  EXPECT_TRUE(Verifier.match("template <typename B>\n"
-                             "class D : public B {\n"
-                             "  B::i;\n"
-                             "};",
-                             unresolvedUsingValueDecl()));
+  EXPECT_TRUE(Verifier.match(
+      "template <typename B>\n"
+      "class D : public B {\n"
+      "  B::i;\n"
+      "};",
+      unresolvedUsingValueDecl()));
 }
 
 TEST(FriendDecl, FriendNonMemberFunctionLocation) {
@@ -684,7 +689,9 @@ TEST(ObjCMessageExpr, ParenExprRange) {
 TEST(FunctionDecl, FunctionDeclWithThrowSpecification) {
   RangeVerifier<FunctionDecl> Verifier;
   Verifier.expectRange(1, 1, 1, 16);
-  EXPECT_TRUE(Verifier.match("void f() throw();\n", functionDecl()));
+  EXPECT_TRUE(Verifier.match(
+      "void f() throw();\n",
+      functionDecl()));
 }
 
 TEST(FunctionDecl, FunctionDeclWithNoExceptSpecification) {
@@ -803,10 +810,11 @@ TEST(FunctionDeclParameters, FunctionDeclWithParamAttribute) {
 TEST(CXXMethodDecl, CXXMethodDeclWithThrowSpecification) {
   RangeVerifier<FunctionDecl> Verifier;
   Verifier.expectRange(2, 1, 2, 16);
-  EXPECT_TRUE(Verifier.match("class A {\n"
-                             "void f() throw();\n"
-                             "};\n",
-                             functionDecl()));
+  EXPECT_TRUE(Verifier.match(
+      "class A {\n"
+      "void f() throw();\n"
+      "};\n",
+      functionDecl()));
 }
 
 TEST(CXXMethodDecl, CXXMethodDeclWithNoExceptSpecification) {
@@ -821,7 +829,8 @@ TEST(CXXMethodDecl, CXXMethodDeclWithNoExceptSpecification) {
 class ExceptionSpecRangeVerifier : public RangeVerifier<TypeLoc> {
 protected:
   SourceRange getRange(const TypeLoc &Node) override {
-    auto T = Node.getUnqualifiedLoc().castAs<FunctionProtoTypeLoc>();
+    auto T =
+      Node.getUnqualifiedLoc().castAs<FunctionProtoTypeLoc>();
     assert(!T.isNull());
     return T.getExceptionSpecRange();
   }

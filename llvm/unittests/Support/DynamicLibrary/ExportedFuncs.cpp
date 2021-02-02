@@ -12,6 +12,4 @@
 #define PIPSQUEAK_TESTA_RETURN "ProcessCall"
 #endif
 
-extern "C" PIPSQUEAK_EXPORT const char *TestA() {
-  return PIPSQUEAK_TESTA_RETURN;
-}
+extern "C" PIPSQUEAK_EXPORT const char *TestA() { return PIPSQUEAK_TESTA_RETURN; }

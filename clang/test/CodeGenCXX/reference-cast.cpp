@@ -7,22 +7,22 @@ extern int i;
 const int &lvalue_noop_cast() {
   if (i == 0)
     // CHECK: store i32 17, i32*
-    return (const int &)17;
+    return (const int&)17;
   else if (i == 1)
     // CHECK: store i32 17, i32*
-    return static_cast<const int &>(17);
-  // CHECK: store i32 17, i32*
+    return static_cast<const int&>(17);
+    // CHECK: store i32 17, i32*
   return 17;
 }
 
-// CHECK-LABEL: define{{.*}} nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) i16* @_Z20lvalue_integral_castv()
+// CHECK-LABEL: define{{.*}} nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) i16* @_Z20lvalue_integral_castv() 
 const short &lvalue_integral_cast() {
   if (i == 0)
     // CHECK: store i16 17, i16*
-    return (const short &)17;
+    return (const short&)17;
   else if (i == 1)
     // CHECK: store i16 17, i16*
-    return static_cast<const short &>(17);
+    return static_cast<const short&>(17);
   // CHECK: store i16 17, i16*
   return 17;
 }
@@ -31,10 +31,10 @@ const short &lvalue_integral_cast() {
 const short &lvalue_floating_integral_cast() {
   if (i == 0)
     // CHECK: store i16 17, i16*
-    return (const short &)17.5;
+    return (const short&)17.5;
   else if (i == 1)
     // CHECK: store i16 17, i16*
-    return static_cast<const short &>(17.5);
+    return static_cast<const short&>(17.5);
   // CHECK: store i16 17, i16*
   return 17.5;
 }
@@ -43,10 +43,10 @@ const short &lvalue_floating_integral_cast() {
 const float &lvalue_integral_floating_cast() {
   if (i == 0)
     // CHECK: store float 1.700000e+{{0*}}1, float*
-    return (const float &)17;
+    return (const float&)17;
   else if (i == 1)
     // CHECK: store float 1.700000e+{{0*}}1, float*
-    return static_cast<const float &>(17);
+    return static_cast<const float&>(17);
   // CHECK: store float 1.700000e+{{0*}}1, float*
   return 17;
 }
@@ -55,10 +55,10 @@ const float &lvalue_integral_floating_cast() {
 const float &lvalue_floating_cast() {
   if (i == 0)
     // CHECK: store float 1.700000e+{{0*}}1, float*
-    return (const float &)17.0;
+    return (const float&)17.0;
   else if (i == 1)
     // CHECK: store float 1.700000e+{{0*}}1, float*
-    return static_cast<const float &>(17.0);
+    return static_cast<const float&>(17.0);
   // CHECK: store float 1.700000e+{{0*}}1, float*
   return 17.0;
 }
@@ -70,11 +70,11 @@ const bool &lvalue_integer_bool_cast() {
   if (i == 0)
     // CHECK: call i32 @_Z7get_intv()
     // CHECK: store i8
-    return (const bool &)get_int();
+    return (const bool&)get_int();
   else if (i == 1)
     // CHECK: call i32 @_Z7get_intv()
     // CHECK: store i8
-    return static_cast<const bool &>(get_int());
+    return static_cast<const bool&>(get_int());
   // CHECK: call i32 @_Z7get_intv()
   // CHECK: store i8
   return get_int();
@@ -88,19 +88,19 @@ const bool &lvalue_floating_bool_cast() {
     // CHECK: call float @_Z9get_floatv()
     // CHECK: fcmp une float
     // CHECK: store i8
-    return (const bool &)get_float();
+    return (const bool&)get_float();
   else if (i == 1)
     // CHECK: call float @_Z9get_floatv()
     // CHECK: fcmp une float
     // CHECK: store i8
-    return static_cast<const bool &>(get_float());
+    return static_cast<const bool&>(get_float());
   // CHECK: call float @_Z9get_floatv()
   // CHECK: fcmp une float
   // CHECK: store i8
   return get_float();
 }
 
-struct X {};
+struct X { };
 typedef int X::*pm;
 typedef int (X::*pmf)(int);
 
@@ -113,12 +113,12 @@ const bool &lvalue_ptrmem_to_bool_cast() {
     // CHECK: call i64 @_Z26get_pointer_to_member_datav()
     // CHECK: store i8
     // CHECK: store i8*
-    return (const bool &)get_pointer_to_member_data();
+    return (const bool&)get_pointer_to_member_data();
   else if (i == 1)
     // CHECK: call i64 @_Z26get_pointer_to_member_datav()
     // CHECK: store i8
     // CHECK: store i8*
-    return static_cast<const bool &>(get_pointer_to_member_data());
+    return static_cast<const bool&>(get_pointer_to_member_data());
   // CHECK: call i64 @_Z26get_pointer_to_member_datav()
   // CHECK: store i8
   // CHECK: store i8*
@@ -131,12 +131,12 @@ const bool &lvalue_ptrmem_to_bool_cast2() {
     // CHECK: {{call.*_Z30get_pointer_to_member_functionv}}
     // CHECK: store i8
     // CHECK: store i8*
-    return (const bool &)get_pointer_to_member_function();
+    return (const bool&)get_pointer_to_member_function();
   else if (i == 1)
     // CHECK: {{call.*_Z30get_pointer_to_member_functionv}}
     // CHECK: store i8
     // CHECK: store i8*
-    return static_cast<const bool &>(get_pointer_to_member_function());
+    return static_cast<const bool&>(get_pointer_to_member_function());
   // CHECK: {{call.*_Z30get_pointer_to_member_functionv}}
   // CHECK: store i8
   // CHECK: store i8*
@@ -153,14 +153,14 @@ const _Complex float &f1() {
     // CHECK: fptrunc
     // CHECK: store float
     // CHECK: store float
-    return (const _Complex float &)get_complex_double();
+    return (const _Complex float&)get_complex_double();
   else if (i == 1)
     // CHECK: {{call.*_Z18get_complex_doublev}}
     // CHECK: fptrunc
     // CHECK: fptrunc
     // CHECK: store float
     // CHECK: store float
-    return static_cast<const _Complex float &>(get_complex_double());
+    return static_cast<const _Complex float&>(get_complex_double());
   // CHECK: {{call.*_Z18get_complex_doublev}}
   // CHECK: fptrunc
   // CHECK: fptrunc
@@ -183,14 +183,14 @@ unsigned pr10592(const int &v) {
 }
 
 namespace PR10650 {
-struct Helper {
-  unsigned long long id();
-};
-unsigned long long test(Helper *obj) {
-  return static_cast<const unsigned long long &>(obj->id());
+  struct Helper {
+    unsigned long long id();
+  };
+  unsigned long long test(Helper *obj) {
+    return static_cast<const unsigned long long&>(obj->id());
+  }
+  // CHECK-LABEL: define{{.*}} i64 @_ZN7PR106504testEPNS_6HelperE
+  // CHECK: store i64
 }
-// CHECK-LABEL: define{{.*}} i64 @_ZN7PR106504testEPNS_6HelperE
-// CHECK: store i64
-} // namespace PR10650
 
 // CHECK: attributes [[NUW]] = { noinline nounwind{{.*}} }

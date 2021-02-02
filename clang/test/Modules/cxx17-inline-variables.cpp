@@ -11,6 +11,7 @@ ak<bool, true> instantiate_class_definition;
 #pragma clang module end /* a */
 #pragma clang module endbuild
 
+
 #pragma clang module build o
 module o {}
 #pragma clang module contents
@@ -21,6 +22,7 @@ inline int instantiate_var_definition() { return ak<bool, true>::value; }
 
 #pragma clang module end
 #pragma clang module endbuild
+
 
 #pragma clang module import o
 #pragma clang module import a

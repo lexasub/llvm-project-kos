@@ -31,17 +31,15 @@ static cl::opt<unsigned> DefaultMaxBBsToExplore(
 /// (compared to computing dominators and loop info) analysis.
 ///
 /// The output is added to Result, as pairs of <from,to> edge info.
-void llvm::FindFunctionBackedges(
-    const Function &F,
-    SmallVectorImpl<std::pair<const BasicBlock *, const BasicBlock *>>
-        &Result) {
+void llvm::FindFunctionBackedges(const Function &F,
+     SmallVectorImpl<std::pair<const BasicBlock*,const BasicBlock*> > &Result) {
   const BasicBlock *BB = &F.getEntryBlock();
   if (succ_empty(BB))
     return;
 
-  SmallPtrSet<const BasicBlock *, 8> Visited;
+  SmallPtrSet<const BasicBlock*, 8> Visited;
   SmallVector<std::pair<const BasicBlock *, const_succ_iterator>, 8> VisitStack;
-  SmallPtrSet<const BasicBlock *, 8> InStack;
+  SmallPtrSet<const BasicBlock*, 8> InStack;
 
   Visited.insert(BB);
   VisitStack.push_back(std::make_pair(BB, succ_begin(BB)));
@@ -79,12 +77,12 @@ void llvm::FindFunctionBackedges(
 /// successors.  It is an error to call this with a block that is not a
 /// successor.
 unsigned llvm::GetSuccessorNumber(const BasicBlock *BB,
-                                  const BasicBlock *Succ) {
+    const BasicBlock *Succ) {
   const Instruction *Term = BB->getTerminator();
 #ifndef NDEBUG
   unsigned e = Term->getNumSuccessors();
 #endif
-  for (unsigned i = 0;; ++i) {
+  for (unsigned i = 0; ; ++i) {
     assert(i != e && "Didn't find edge?");
     if (Term->getSuccessor(i) == Succ)
       return i;
@@ -103,8 +101,7 @@ bool llvm::isCriticalEdge(const Instruction *TI, unsigned SuccNum,
 bool llvm::isCriticalEdge(const Instruction *TI, const BasicBlock *Dest,
                           bool AllowIdenticalEdges) {
   assert(TI->isTerminator() && "Must be a terminator to have successors!");
-  if (TI->getNumSuccessors() == 1)
-    return false;
+  if (TI->getNumSuccessors() == 1) return false;
 
   assert(is_contained(predecessors(Dest), TI->getParent()) &&
          "No edge between TI's block and Dest.");
@@ -114,7 +111,7 @@ bool llvm::isCriticalEdge(const Instruction *TI, const BasicBlock *Dest,
   // If there is more than one predecessor, this is a critical edge...
   assert(I != E && "No preds, but we have an edge to the block?");
   const BasicBlock *FirstPred = *I;
-  ++I; // Skip one edge due to the incoming arc from TI.
+  ++I;        // Skip one edge due to the incoming arc from TI.
   if (!AllowIdenticalEdges)
     return I != E;
 
@@ -165,7 +162,7 @@ bool llvm::isPotentiallyReachableFromMany(
   const Loop *StopLoop = LI ? getOutermostLoop(LI, StopBB) : nullptr;
 
   unsigned Limit = DefaultMaxBBsToExplore;
-  SmallPtrSet<const BasicBlock *, 32> Visited;
+  SmallPtrSet<const BasicBlock*, 32> Visited;
   do {
     BasicBlock *BB = Worklist.pop_back_val();
     if (!Visited.insert(BB).second)
@@ -216,8 +213,8 @@ bool llvm::isPotentiallyReachable(const BasicBlock *A, const BasicBlock *B,
   assert(A->getParent() == B->getParent() &&
          "This analysis is function-local!");
 
-  SmallVector<BasicBlock *, 32> Worklist;
-  Worklist.push_back(const_cast<BasicBlock *>(A));
+  SmallVector<BasicBlock*, 32> Worklist;
+  Worklist.push_back(const_cast<BasicBlock*>(A));
 
   return isPotentiallyReachableFromMany(Worklist, const_cast<BasicBlock *>(B),
                                         nullptr, DT, LI);
@@ -230,7 +227,7 @@ bool llvm::isPotentiallyReachable(
   assert(A->getParent()->getParent() == B->getParent()->getParent() &&
          "This analysis is function-local!");
 
-  SmallVector<BasicBlock *, 32> Worklist;
+  SmallVector<BasicBlock*, 32> Worklist;
 
   if (A->getParent() == B->getParent()) {
     // The same block case is special because it's the only time we're looking
@@ -265,7 +262,7 @@ bool llvm::isPotentiallyReachable(
       return false;
     }
   } else {
-    Worklist.push_back(const_cast<BasicBlock *>(A->getParent()));
+    Worklist.push_back(const_cast<BasicBlock*>(A->getParent()));
   }
 
   if (DT) {

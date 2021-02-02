@@ -1,4 +1,7 @@
-int d_init() { return 123; }
+int d_init()
+{
+    return 123;
+}
 
 int d_global = d_init();
 

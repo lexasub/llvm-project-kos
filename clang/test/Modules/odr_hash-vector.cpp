@@ -83,10 +83,12 @@ Invalid3 i3;
 
 Valid v;
 #endif
-} // namespace Vector
+}  // namespace Vector
+
+
 
 namespace ExtVector {
-} // namespace ExtVector
+}  // namespace ExtVector
 #if defined(FIRST)
 struct Invalid {
   using f = __attribute__((ext_vector_type(4))) float;
@@ -109,7 +111,8 @@ Invalid i;
 Valid v;
 #endif
 
-} // namespace Types
+}  // namespace Types
+
 
 // Keep macros contained to one file.
 #ifdef FIRST

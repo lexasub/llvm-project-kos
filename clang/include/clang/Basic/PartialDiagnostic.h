@@ -39,7 +39,6 @@ private:
 
   /// The diagnostic ID.
   mutable unsigned DiagID = 0;
-
 public:
   struct NullDiagnostic {};
 
@@ -151,12 +150,11 @@ public:
 
     // Add all arguments.
     for (unsigned i = 0, e = DiagStorage->NumDiagArgs; i != e; ++i) {
-      if ((DiagnosticsEngine::ArgumentKind)DiagStorage->DiagArgumentsKind[i] ==
-          DiagnosticsEngine::ak_std_string)
+      if ((DiagnosticsEngine::ArgumentKind)DiagStorage->DiagArgumentsKind[i]
+            == DiagnosticsEngine::ak_std_string)
         DB.AddString(DiagStorage->DiagArgumentsStr[i]);
       else
-        DB.AddTaggedVal(
-            DiagStorage->DiagArgumentsVal[i],
+        DB.AddTaggedVal(DiagStorage->DiagArgumentsVal[i],
             (DiagnosticsEngine::ArgumentKind)DiagStorage->DiagArgumentsKind[i]);
     }
 
@@ -193,9 +191,8 @@ public:
   StringRef getStringArg(unsigned I) {
     assert(DiagStorage && "No diagnostic storage?");
     assert(I < DiagStorage->NumDiagArgs && "Not enough diagnostic args");
-    assert(DiagStorage->DiagArgumentsKind[I] ==
-               DiagnosticsEngine::ak_std_string &&
-           "Not a string arg");
+    assert(DiagStorage->DiagArgumentsKind[I]
+             == DiagnosticsEngine::ak_std_string && "Not a string arg");
     return DiagStorage->DiagArgumentsStr[I];
   }
 };

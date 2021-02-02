@@ -88,7 +88,9 @@ public:
   }
   const MCSymbol *getLinkedToSymbol() const { return LinkedToSym; }
 
-  static bool classof(const MCSection *S) { return S->getVariant() == SV_ELF; }
+  static bool classof(const MCSection *S) {
+    return S->getVariant() == SV_ELF;
+  }
 };
 
 } // end namespace llvm

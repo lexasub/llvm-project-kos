@@ -212,10 +212,8 @@ Status Debugger::SetPropertyValue(const ExecutionContext *exe_ctx,
       // use-color changed. Ping the prompt so it can reset the ansi terminal
       // codes.
       SetPrompt(GetPrompt());
-    } else if (property_path ==
-               g_debugger_properties[ePropertyUseSourceCache].name) {
-      // use-source-cache changed. Wipe out the cache contents if it was
-      // disabled.
+    } else if (property_path == g_debugger_properties[ePropertyUseSourceCache].name) {
+      // use-source-cache changed. Wipe out the cache contents if it was disabled.
       if (!GetUseSourceCache()) {
         m_source_file_cache.Clear();
       }

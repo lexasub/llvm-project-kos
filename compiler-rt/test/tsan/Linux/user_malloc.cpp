@@ -23,12 +23,13 @@ extern "C" void free(void *p) {
 #else
 
 int main() {
-  volatile char *p = (char *)malloc(10);
+  volatile char *p = (char*)malloc(10);
   p[0] = 0;
-  free((void *)p);
+  free((void*)p);
 }
 
 #endif
 
 // CHECK: user malloc
 // CHECK-NOT: ThreadSanitizer
+

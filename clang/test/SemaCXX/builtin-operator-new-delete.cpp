@@ -15,55 +15,54 @@
 
 typedef __SIZE_TYPE__ size_t;
 namespace std {
-struct nothrow_t {};
+  struct nothrow_t {};
 #if __cplusplus >= 201103L
 enum class align_val_t : size_t {};
 #else
-enum align_val_t {
-// We can't force an underlying type when targeting windows.
-#ifndef _WIN32
-  __zero = 0,
-  __max = (size_t)-1
+  enum align_val_t {
+  // We can't force an underlying type when targeting windows.
+# ifndef _WIN32
+    __zero = 0, __max = (size_t)-1
+# endif
+  };
 #endif
-};
-#endif
-} // namespace std
+}
 std::nothrow_t nothrow;
 
-void *operator new(size_t);   // expected-note 1+ {{candidate function}}
+void *operator new(size_t); // expected-note 1+ {{candidate function}}
 void operator delete(void *); // expected-note 1+ {{candidate function}}
 
 // Declare the reserved placement operators.
-void *operator new(size_t, void *) throw();   // expected-note 1+ {{candidate function}}
-void operator delete(void *, void *) throw(); // expected-note 1+ {{candidate function}}
-void *operator new[](size_t, void *) throw();
-void operator delete[](void *, void *) throw();
+void *operator new(size_t, void*) throw(); // expected-note 1+ {{candidate function}}
+void operator delete(void *, void *)throw(); // expected-note 1+ {{candidate function}}
+void *operator new[](size_t, void*) throw();
+void operator delete[](void*, void*) throw();
 
 // Declare the replaceable global allocation operators.
 void *operator new(size_t, const std::nothrow_t &) throw(); // expected-note 1+ {{candidate function}}
 void *operator new[](size_t, const std::nothrow_t &) throw();
-void operator delete(void *, const std::nothrow_t &) throw(); // expected-note 1+ {{candidate function}}
+void operator delete(void *, const std::nothrow_t &)throw(); // expected-note 1+ {{candidate function}}
 void operator delete[](void *, const std::nothrow_t &) throw();
 
 // aligned allocation and deallocation functions.
-void *operator new(size_t count, std::align_val_t al); // expected-note 1+ {{candidate function}}
-void operator delete(void *, std::align_val_t);        // expected-note 1+ {{candidate}}
+void* operator new  ( size_t count, std::align_val_t al); // expected-note 1+ {{candidate function}}
+void operator delete(void *, std::align_val_t); // expected-note 1+ {{candidate}}
 #ifndef __cpp_aligned_new
 // expected-note@-3 1+ {{non-usual 'operator new' declared here}}
 // expected-note@-3 1+ {{non-usual 'operator delete' declared here}}
 #endif
 void *operator new[](size_t count, std::align_val_t al);
-void operator delete[](void *, std::align_val_t);
+void operator delete[](void*, std::align_val_t);
 
 void operator delete(void *, size_t); // expected-note 1+ {{candidate}}
 #ifndef __cpp_sized_deallocation
 // expected-note@-2 1+ {{non-usual 'operator delete' declared here}}
 #endif
-void operator delete[](void *, size_t);
+void operator delete[](void*, size_t);
 
 // Declare some other placemenet operators.
-void *operator new(size_t, void *, bool) throw(); // expected-note 1+ {{candidate function}}
-void *operator new[](size_t, void *, bool) throw();
+void *operator new(size_t, void*, bool) throw(); // expected-note 1+ {{candidate function}}
+void *operator new[](size_t, void*, bool) throw();
 
 void *NP = 0;
 
@@ -79,8 +78,8 @@ void test_arg_types() {
   __builtin_operator_new(NP, std::align_val_t(0)); // expected-error {{no matching function for call to 'operator new'}}
 }
 void test_return_type() {
-  int w = __builtin_operator_new(42);    // expected-error {{cannot initialize a variable of type 'int' with an rvalue of type 'void *'}}
-  int y = __builtin_operator_delete(NP); // expected-error {{cannot initialize a variable of type 'int' with an rvalue of type 'void'}}
+  int w = __builtin_operator_new(42);        // expected-error {{cannot initialize a variable of type 'int' with an rvalue of type 'void *'}}
+  int y = __builtin_operator_delete(NP);     // expected-error {{cannot initialize a variable of type 'int' with an rvalue of type 'void'}}
 }
 
 void test_aligned_new() {
@@ -104,7 +103,7 @@ void test_sized_delete() {
 #endif
 }
 
-void *operator new(size_t, bool); // expected-note 1+ {{candidate}}
+void *operator new(size_t, bool);   // expected-note 1+ {{candidate}}
 // expected-note@-1 {{non-usual 'operator new' declared here}}
 void operator delete(void *, bool); // expected-note 1+ {{candidate}}
 // expected-note@-1 {{non-usual 'operator delete' declared here}}
@@ -148,7 +147,7 @@ void test_dependent_call(Tp new_arg, Up delete_arg, RetT) {
   RetT ret = __builtin_operator_new(new_arg);
   __builtin_operator_delete(delete_arg);
 }
-template void test_dependent_call(int, int *, void *);
+template void test_dependent_call(int, int*, void*);
 
 void test_const_attribute() {
   __builtin_operator_new(42); // expected-warning {{ignoring return value of function declared with const attribute}}

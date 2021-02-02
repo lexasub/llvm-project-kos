@@ -57,6 +57,7 @@ int h() {
 }
 } // namespace guard
 
+
 // STATIC-DAG: @_ZN5test23barIiE1xE = available_externally dso_local constant i32
 // STATIC-DAG: define available_externally dso_local void @_ZN5test23barIcEC1Ev(
 // NOPLT-DAG: @_ZN5test23barIiE1xE = available_externally dso_local constant i32

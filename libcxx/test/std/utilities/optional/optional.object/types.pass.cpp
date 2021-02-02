@@ -24,15 +24,18 @@
 using std::optional;
 
 template <class Opt, class T>
-void test() {
-  static_assert(std::is_same<typename Opt::value_type, T>::value, "");
+void
+test()
+{
+    static_assert(std::is_same<typename Opt::value_type, T>::value, "");
 }
 
-int main(int, char**) {
-  test<optional<int>, int>();
-  test<optional<const int>, const int>();
-  test<optional<double>, double>();
-  test<optional<const double>, const double>();
+int main(int, char**)
+{
+    test<optional<int>, int>();
+    test<optional<const int>, const int>();
+    test<optional<double>, double>();
+    test<optional<const double>, const double>();
 
   return 0;
 }

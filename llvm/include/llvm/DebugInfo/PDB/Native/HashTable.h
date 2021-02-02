@@ -40,7 +40,8 @@ class HashTableIterator
                                   const std::pair<uint32_t, ValueT>> {
   friend HashTable<ValueT>;
 
-  HashTableIterator(const HashTable<ValueT> &Map, uint32_t Index, bool IsEnd)
+  HashTableIterator(const HashTable<ValueT> &Map, uint32_t Index,
+                    bool IsEnd)
       : Map(&Map), Index(Index), IsEnd(IsEnd) {}
 
 public:
@@ -98,7 +99,8 @@ private:
   bool IsEnd;
 };
 
-template <typename ValueT> class HashTable {
+template <typename ValueT>
+class HashTable {
   struct Header {
     support::ulittle32_t Size;
     support::ulittle32_t Capacity;
@@ -111,7 +113,9 @@ public:
   friend const_iterator;
 
   HashTable() { Buckets.resize(8); }
-  explicit HashTable(uint32_t Capacity) { Buckets.resize(Capacity); }
+  explicit HashTable(uint32_t Capacity) {
+    Buckets.resize(Capacity);
+  }
 
   Error load(BinaryStreamReader &Stream) {
     const Header *H;
@@ -297,7 +301,8 @@ private:
 
   static uint32_t maxLoad(uint32_t capacity) { return capacity * 2 / 3 + 1; }
 
-  template <typename TraitsT> void grow(TraitsT &Traits) {
+  template <typename TraitsT>
+  void grow(TraitsT &Traits) {
     uint32_t S = size();
     uint32_t MaxLoad = maxLoad(capacity());
     if (S < maxLoad(capacity()))

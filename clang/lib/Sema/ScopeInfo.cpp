@@ -92,7 +92,7 @@ FunctionScopeInfo::WeakObjectProfileTy::getBaseInfo(const Expr *E) {
   case Stmt::PseudoObjectExprClass: {
     const PseudoObjectExpr *POE = cast<PseudoObjectExpr>(E);
     const ObjCPropertyRefExpr *BaseProp =
-        dyn_cast<ObjCPropertyRefExpr>(POE->getSyntacticForm());
+      dyn_cast<ObjCPropertyRefExpr>(POE->getSyntacticForm());
     if (BaseProp) {
       D = getBestPropertyDecl(BaseProp);
 
@@ -114,7 +114,7 @@ FunctionScopeInfo::WeakObjectProfileTy::getBaseInfo(const Expr *E) {
 }
 
 FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
-    const ObjCPropertyRefExpr *PropE)
+                                          const ObjCPropertyRefExpr *PropE)
     : Base(nullptr, true), Property(getBestPropertyDecl(PropE)) {
 
   if (PropE->isObjectReceiver()) {
@@ -128,8 +128,8 @@ FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
   }
 }
 
-FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
-    const Expr *BaseE, const ObjCPropertyDecl *Prop)
+FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(const Expr *BaseE,
+                                                const ObjCPropertyDecl *Prop)
     : Base(nullptr, true), Property(Prop) {
   if (BaseE)
     Base = getBaseInfo(BaseE);
@@ -137,20 +137,21 @@ FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
 }
 
 FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
-    const DeclRefExpr *DRE)
-    : Base(nullptr, true), Property(DRE->getDecl()) {
+                                                      const DeclRefExpr *DRE)
+  : Base(nullptr, true), Property(DRE->getDecl()) {
   assert(isa<VarDecl>(Property));
 }
 
 FunctionScopeInfo::WeakObjectProfileTy::WeakObjectProfileTy(
-    const ObjCIvarRefExpr *IvarE)
-    : Base(getBaseInfo(IvarE->getBase())), Property(IvarE->getDecl()) {}
+                                                  const ObjCIvarRefExpr *IvarE)
+  : Base(getBaseInfo(IvarE->getBase())), Property(IvarE->getDecl()) {
+}
 
 void FunctionScopeInfo::recordUseOfWeak(const ObjCMessageExpr *Msg,
                                         const ObjCPropertyDecl *Prop) {
   assert(Msg && Prop);
   WeakUseVector &Uses =
-      WeakObjectUses[WeakObjectProfileTy(Msg->getInstanceReceiver(), Prop)];
+    WeakObjectUses[WeakObjectProfileTy(Msg->getInstanceReceiver(), Prop)];
   Uses.push_back(WeakUseTy(Msg, Msg->getNumArgs() == 0));
 }
 
@@ -169,7 +170,7 @@ void FunctionScopeInfo::markSafeWeakUse(const Expr *E) {
   }
 
   if (const BinaryConditionalOperator *Cond =
-          dyn_cast<BinaryConditionalOperator>(E)) {
+        dyn_cast<BinaryConditionalOperator>(E)) {
     markSafeWeakUse(Cond->getCommon());
     markSafeWeakUse(Cond->getFalseExpr());
     return;
@@ -181,12 +182,13 @@ void FunctionScopeInfo::markSafeWeakUse(const Expr *E) {
     if (!RefExpr->isObjectReceiver())
       return;
     if (isa<OpaqueValueExpr>(RefExpr->getBase()))
-      Uses = WeakObjectUses.find(WeakObjectProfileTy(RefExpr));
+     Uses = WeakObjectUses.find(WeakObjectProfileTy(RefExpr));
     else {
       markSafeWeakUse(RefExpr->getBase());
       return;
     }
-  } else if (const ObjCIvarRefExpr *IvarE = dyn_cast<ObjCIvarRefExpr>(E))
+  }
+  else if (const ObjCIvarRefExpr *IvarE = dyn_cast<ObjCIvarRefExpr>(E))
     Uses = WeakObjectUses.find(WeakObjectProfileTy(IvarE));
   else if (const DeclRefExpr *DRE = dyn_cast<DeclRefExpr>(E)) {
     if (isa<VarDecl>(DRE->getDecl()))
@@ -194,11 +196,13 @@ void FunctionScopeInfo::markSafeWeakUse(const Expr *E) {
   } else if (const ObjCMessageExpr *MsgE = dyn_cast<ObjCMessageExpr>(E)) {
     if (const ObjCMethodDecl *MD = MsgE->getMethodDecl()) {
       if (const ObjCPropertyDecl *Prop = MD->findPropertyDecl()) {
-        Uses = WeakObjectUses.find(
-            WeakObjectProfileTy(MsgE->getInstanceReceiver(), Prop));
+        Uses =
+          WeakObjectUses.find(WeakObjectProfileTy(MsgE->getInstanceReceiver(),
+                                                  Prop));
       }
     }
-  } else
+  }
+  else
     return;
 
   if (Uses == WeakObjectUses.end())
@@ -242,6 +246,6 @@ void LambdaScopeInfo::visitPotentialCaptures(
   }
 }
 
-FunctionScopeInfo::~FunctionScopeInfo() {}
-BlockScopeInfo::~BlockScopeInfo() {}
-CapturedRegionScopeInfo::~CapturedRegionScopeInfo() {}
+FunctionScopeInfo::~FunctionScopeInfo() { }
+BlockScopeInfo::~BlockScopeInfo() { }
+CapturedRegionScopeInfo::~CapturedRegionScopeInfo() { }

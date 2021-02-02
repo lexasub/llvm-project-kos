@@ -43,8 +43,7 @@ size_t ABISysV_arm64::GetRedZoneSize() const { return 128; }
 // Static Functions
 
 ABISP
-ABISysV_arm64::CreateInstance(lldb::ProcessSP process_sp,
-                              const ArchSpec &arch) {
+ABISysV_arm64::CreateInstance(lldb::ProcessSP process_sp, const ArchSpec &arch) {
   const llvm::Triple::ArchType arch_type = arch.GetTriple().getArch();
   const llvm::Triple::VendorType vendor_type = arch.GetTriple().getVendor();
 

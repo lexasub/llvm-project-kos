@@ -11,14 +11,14 @@
 export module A;
 #elif IMPLEMENTATION
 module A; // #module-decl
-#ifdef BUILT_AS_INTERFACE
-    // expected-error@-2 {{missing 'export' specifier in module declaration while building module interface}}
-#define INTERFACE
-#endif
+ #ifdef BUILT_AS_INTERFACE
+  // expected-error@-2 {{missing 'export' specifier in module declaration while building module interface}}
+  #define INTERFACE
+ #endif
 #else
-#ifdef BUILT_AS_INTERFACE
-// expected-error@1 {{missing 'export module' declaration in module interface unit}}
-#endif
+ #ifdef BUILT_AS_INTERFACE
+  // expected-error@1 {{missing 'export module' declaration in module interface unit}}
+ #endif
 #endif
 
 #ifndef INTERFACE

@@ -55,10 +55,10 @@ struct SpecialFuncs {
   ~SpecialFuncs();
 
   int method_() { return 11; }
-#pragma omp declare variant(SpecialFuncs::method_) \
+#pragma omp declare variant(SpecialFuncs::method_)                             \
     match(implementation = {vendor(llvm)})
   int method() { return 12; }
-#pragma omp declare variant(SpecialFuncs::method_) \
+#pragma omp declare variant(SpecialFuncs::method_)                             \
     match(implementation = {vendor(llvm)})
   int Method();
 } s;
@@ -71,10 +71,10 @@ struct SpecSpecialFuncs {
   ~SpecSpecialFuncs();
 
   int method_();
-#pragma omp declare variant(SpecSpecialFuncs::method_) \
+#pragma omp declare variant(SpecSpecialFuncs::method_)                         \
     match(implementation = {vendor(llvm)})
   int method() { return 14; }
-#pragma omp declare variant(SpecSpecialFuncs::method_) \
+#pragma omp declare variant(SpecSpecialFuncs::method_)                         \
     match(implementation = {vendor(llvm)})
   int Method();
 } s1;
@@ -91,20 +91,16 @@ int prio() { return 17; }
 int prio1() { return 18; }
 
 #pragma omp declare variant(prio) match(implementation = {vendor(llvm)})
-#pragma omp declare variant(prio1) match(implementation = {vendor(score(1) \
-                                                                  : llvm)})
+#pragma omp declare variant(prio1) match(implementation = {vendor(score(1): llvm)})
 int prio_() { return 19; }
 
 static int prio2() { return 20; }
 static int prio3() { return 21; }
 static int prio4() { return 22; }
 
-#pragma omp declare variant(prio4) match(implementation = {vendor(score(3) \
-                                                                  : llvm)})
-#pragma omp declare variant(prio2) match(implementation = {vendor(score(5) \
-                                                                  : llvm)})
-#pragma omp declare variant(prio3) match(implementation = {vendor(score(1) \
-                                                                  : llvm)})
+#pragma omp declare variant(prio4) match(implementation = {vendor(score(3): llvm)})
+#pragma omp declare variant(prio2) match(implementation = {vendor(score(5): llvm)})
+#pragma omp declare variant(prio3) match(implementation = {vendor(score(1): llvm)})
 static int prio1_() { return 23; }
 
 int int_fn() { return prio1_(); }

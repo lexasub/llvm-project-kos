@@ -3,8 +3,8 @@
 // REQUIRES: !android
 
 #include <assert.h>
-#include <sanitizer/msan_interface.h>
 #include <strings.h>
+#include <sanitizer/msan_interface.h>
 
 int main(int argc, char *argv[]) {
   char buf[100];

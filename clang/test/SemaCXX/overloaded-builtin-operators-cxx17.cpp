@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -fsyntax-only -fshow-overloads=best -verify -triple x86_64-linux-gnu -std=c++17 %s
 
 struct BoolRef {
-  operator bool &();
+  operator bool&();
 };
 
 void foo(BoolRef br) {

@@ -57,7 +57,6 @@ TEST_F(HostInfoTest, GetXcodeSDK) {
   // These are expected to fall back to an available version.
   EXPECT_FALSE(HostInfo::GetXcodeSDKPath(XcodeSDK("MacOSX9999.sdk")).empty());
   // This is expected to fail.
-  EXPECT_TRUE(
-      HostInfo::GetXcodeSDKPath(XcodeSDK("CeciNestPasUnOS.sdk")).empty());
+  EXPECT_TRUE(HostInfo::GetXcodeSDKPath(XcodeSDK("CeciNestPasUnOS.sdk")).empty());
 }
 #endif

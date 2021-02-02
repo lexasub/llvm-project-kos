@@ -48,8 +48,8 @@ SBEvent::SBEvent(const SBEvent &rhs)
 }
 
 const SBEvent &SBEvent::operator=(const SBEvent &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBEvent &, SBEvent, operator=,
-                     (const lldb::SBEvent &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBEvent &,
+                     SBEvent, operator=,(const lldb::SBEvent &), rhs);
 
   if (this != &rhs) {
     m_event_sp = rhs.m_event_sp;
@@ -75,10 +75,12 @@ const char *SBEvent::GetDataFlavor() {
 uint32_t SBEvent::GetType() const {
   LLDB_RECORD_METHOD_CONST_NO_ARGS(uint32_t, SBEvent, GetType);
 
+
   const Event *lldb_event = get();
   uint32_t event_type = 0;
   if (lldb_event)
     event_type = lldb_event->GetType();
+
 
   return event_type;
 }
@@ -121,6 +123,7 @@ bool SBEvent::BroadcasterMatchesRef(const SBBroadcaster &broadcaster) {
   bool success = false;
   if (lldb_event)
     success = lldb_event->BroadcasterIs(broadcaster.get());
+
 
   return success;
 }
@@ -207,17 +210,19 @@ bool SBEvent::GetDescription(SBStream &description) const {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBEvent>(Registry &R) {
+template <>
+void RegisterMethods<SBEvent>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBEvent, ());
   LLDB_REGISTER_CONSTRUCTOR(SBEvent, (uint32_t, const char *, uint32_t));
   LLDB_REGISTER_CONSTRUCTOR(SBEvent, (lldb::EventSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBEvent, (lldb_private::Event *));
   LLDB_REGISTER_CONSTRUCTOR(SBEvent, (const lldb::SBEvent &));
-  LLDB_REGISTER_METHOD(const lldb::SBEvent &, SBEvent, operator=,
-                       (const lldb::SBEvent &));
+  LLDB_REGISTER_METHOD(const lldb::SBEvent &,
+                       SBEvent, operator=,(const lldb::SBEvent &));
   LLDB_REGISTER_METHOD(const char *, SBEvent, GetDataFlavor, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBEvent, GetType, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBBroadcaster, SBEvent, GetBroadcaster, ());
+  LLDB_REGISTER_METHOD_CONST(lldb::SBBroadcaster, SBEvent, GetBroadcaster,
+                             ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBEvent, GetBroadcasterClass, ());
   LLDB_REGISTER_METHOD(bool, SBEvent, BroadcasterMatchesPtr,
                        (const lldb::SBBroadcaster *));
@@ -229,8 +234,9 @@ template <> void RegisterMethods<SBEvent>(Registry &R) {
   LLDB_REGISTER_STATIC_METHOD(const char *, SBEvent, GetCStringFromEvent,
                               (const lldb::SBEvent &));
   LLDB_REGISTER_METHOD(bool, SBEvent, GetDescription, (lldb::SBStream &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBEvent, GetDescription, (lldb::SBStream &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBEvent, GetDescription,
+                             (lldb::SBStream &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

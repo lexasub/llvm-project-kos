@@ -33,13 +33,14 @@ struct IdentityHashTraits {
   uint32_t lookupKeyToStorageKey(uint32_t N) { return N; }
 };
 
-template <class T = uint32_t> class HashTableInternals : public HashTable<T> {
+template <class T = uint32_t>
+class HashTableInternals : public HashTable<T> {
 public:
   using HashTable<T>::Buckets;
   using HashTable<T>::Present;
   using HashTable<T>::Deleted;
 };
-} // namespace
+}
 
 TEST(HashTableTest, TestSimple) {
   HashTableInternals<> Table;
@@ -208,7 +209,9 @@ struct FooBar {
   uint32_t X;
   uint32_t Y;
 
-  bool operator==(const FooBar &RHS) const { return X == RHS.X && Y == RHS.Y; }
+  bool operator==(const FooBar &RHS) const {
+    return X == RHS.X && Y == RHS.Y;
+  }
 };
 
 struct FooBarHashTraits {

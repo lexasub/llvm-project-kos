@@ -24,8 +24,7 @@
 #include <inttypes.h>
 
 int main(int, char**) {
-  int8_t x;
-  (void)x;
+  int8_t x; (void)x;
 
   return 0;
 }

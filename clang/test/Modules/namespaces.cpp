@@ -5,13 +5,13 @@ int &global(int);
 int &global2(int);
 
 namespace N6 {
-char &f(char);
+  char &f(char);
 }
 
-namespace N8 {}
+namespace N8 { }
 
 namespace LookupBeforeImport {
-int &f(int);
+  int &f(int);
 }
 void testEarly() {
   int &r = LookupBeforeImport::f(1);
@@ -43,11 +43,11 @@ void test() {
 
 // Test namespaces merged without a common first declaration.
 namespace N5 {
-char &f(char);
+  char &f(char);
 }
 
-namespace N10 {
-int &f(int);
+namespace N10 { 
+  int &f(int);
 }
 
 void testMerged() {

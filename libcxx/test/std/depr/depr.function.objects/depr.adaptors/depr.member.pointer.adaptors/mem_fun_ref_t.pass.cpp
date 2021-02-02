@@ -19,19 +19,21 @@
 
 #include "test_macros.h"
 
-struct A {
-  char a1() { return 5; }
-  short a2(int i) { return short(i + 1); }
-  int a3() const { return 1; }
-  double a4(unsigned i) const { return i - 1; }
+struct A
+{
+    char a1() {return 5;}
+    short a2(int i) {return short(i+1);}
+    int a3() const {return 1;}
+    double a4(unsigned i) const {return i-1;}
 };
 
-int main(int, char**) {
-  typedef std::mem_fun_ref_t<char, A> F;
-  static_assert((std::is_base_of<std::unary_function<A, char>, F>::value), "");
-  const F f(&A::a1);
-  A a;
-  assert(f(a) == 5);
+int main(int, char**)
+{
+    typedef std::mem_fun_ref_t<char, A> F;
+    static_assert((std::is_base_of<std::unary_function<A, char>, F>::value), "");
+    const F f(&A::a1);
+    A a;
+    assert(f(a) == 5);
 
   return 0;
 }

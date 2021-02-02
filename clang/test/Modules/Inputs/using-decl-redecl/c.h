@@ -1,4 +1,2 @@
 #include "b.h"
-namespace N {
-using ::N::clstring;
-}
+namespace N { using ::N::clstring; }

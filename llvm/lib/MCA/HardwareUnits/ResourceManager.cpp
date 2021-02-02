@@ -114,8 +114,8 @@ ResourceManager::ResourceManager(const MCSchedModel &SM)
       Resource2Groups(SM.getNumProcResourceKinds() - 1, 0),
       ProcResID2Mask(SM.getNumProcResourceKinds(), 0),
       ResIndex2ProcResID(SM.getNumProcResourceKinds() - 1, 0),
-      ProcResUnitMask(0), ReservedResourceGroups(0), AvailableBuffers(~0ULL),
-      ReservedBuffers(0) {
+      ProcResUnitMask(0), ReservedResourceGroups(0),
+      AvailableBuffers(~0ULL), ReservedBuffers(0) {
   computeProcResourceMasks(SM, ProcResID2Mask);
 
   // initialize vector ResIndex2ProcResID.

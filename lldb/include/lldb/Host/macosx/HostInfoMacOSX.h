@@ -50,6 +50,6 @@ protected:
   static bool ComputeSystemPluginsDirectory(FileSpec &file_spec);
   static bool ComputeUserPluginsDirectory(FileSpec &file_spec);
 };
-} // namespace lldb_private
+}
 
 #endif

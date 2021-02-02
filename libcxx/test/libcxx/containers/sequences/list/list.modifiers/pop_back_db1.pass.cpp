@@ -21,17 +21,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  int a[] = {1, 2, 3};
-  std::list<int> c(a, a + 3);
-  c.pop_back();
-  assert(c == std::list<int>(a, a + 2));
-  c.pop_back();
-  assert(c == std::list<int>(a, a + 1));
-  c.pop_back();
-  assert(c.empty());
-  c.pop_back(); // operation under test
-  assert(false);
+int main(int, char**)
+{
+    int a[] = {1, 2, 3};
+    std::list<int> c(a, a+3);
+    c.pop_back();
+    assert(c == std::list<int>(a, a+2));
+    c.pop_back();
+    assert(c == std::list<int>(a, a+1));
+    c.pop_back();
+    assert(c.empty());
+    c.pop_back(); // operation under test
+    assert(false);
 
   return 0;
 }

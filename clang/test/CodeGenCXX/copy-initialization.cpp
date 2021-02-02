@@ -2,12 +2,12 @@
 
 struct Foo {
   Foo();
-  Foo(const Foo &);
+  Foo(const Foo&);
 };
 
 struct Bar {
   Bar();
-  operator const Foo &() const;
+  operator const Foo&() const;
 };
 
 void f(Foo);
@@ -26,3 +26,4 @@ void g(Foo foo) {
   f(foo);
   // CHECK: ret
 }
+

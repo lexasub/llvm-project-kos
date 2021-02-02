@@ -91,7 +91,7 @@ private:
 
   const TpiStreamHeader *Header;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 
 #endif

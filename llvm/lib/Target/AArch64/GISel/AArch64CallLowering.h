@@ -29,7 +29,7 @@ class MachineIRBuilder;
 class MachineRegisterInfo;
 class Type;
 
-class AArch64CallLowering : public CallLowering {
+class AArch64CallLowering: public CallLowering {
 public:
   AArch64CallLowering(const AArch64TargetLowering &TLI);
 
@@ -56,8 +56,8 @@ public:
   bool supportSwiftError() const override { return true; }
 
 private:
-  using RegHandler =
-      std::function<void(MachineIRBuilder &, Type *, unsigned, CCValAssign &)>;
+  using RegHandler = std::function<void(MachineIRBuilder &, Type *, unsigned,
+                                        CCValAssign &)>;
 
   using MemHandler =
       std::function<void(MachineIRBuilder &, int, CCValAssign &)>;

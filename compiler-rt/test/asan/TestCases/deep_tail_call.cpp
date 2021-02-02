@@ -6,7 +6,7 @@
 // CHECK: AddressSanitizer: global-buffer-overflow
 int global[10];
 // CHECK: {{#0.*call4}}
-void __attribute__((noinline)) call4(int i) { global[i + 10]++; }
+void __attribute__((noinline)) call4(int i) { global[i+10]++; }
 // CHECK: {{#1.*call3}}
 void __attribute__((noinline)) call3(int i) { call4(i); }
 // CHECK: {{#2.*call2}}

@@ -24,3 +24,4 @@ int main() {
 // CHECK: BEFORE
 // CHECK: WARNING: ThreadSanitizer: data race
 // CHECK-NOT: AFTER
+

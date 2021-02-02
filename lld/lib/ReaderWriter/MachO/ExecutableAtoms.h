@@ -25,6 +25,7 @@
 namespace lld {
 namespace mach_o {
 
+
 //
 // CEntryFile adds an UndefinedAtom for "_main" so that the Resolving
 // phase will fail if "_main" is undefined.
@@ -33,13 +34,14 @@ class CEntryFile : public SimpleFile {
 public:
   CEntryFile(const MachOLinkingContext &context)
       : SimpleFile("C entry", kindCEntryObject),
-        _undefMain(*this, context.entrySymbolName()) {
+       _undefMain(*this, context.entrySymbolName()) {
     this->addAtom(_undefMain);
   }
 
 private:
-  SimpleUndefinedAtom _undefMain;
+  SimpleUndefinedAtom   _undefMain;
 };
+
 
 //
 // StubHelperFile adds an UndefinedAtom for "dyld_stub_binder" so that
@@ -54,8 +56,9 @@ public:
   }
 
 private:
-  SimpleUndefinedAtom _undefBinder;
+  SimpleUndefinedAtom   _undefBinder;
 };
+
 
 //
 // MachHeaderAliasFile lazily instantiates the magic symbols that mark the start
@@ -64,7 +67,7 @@ private:
 class MachHeaderAliasFile : public SimpleFile {
 public:
   MachHeaderAliasFile(const MachOLinkingContext &context)
-      : SimpleFile("mach_header symbols", kindHeaderObject) {
+    : SimpleFile("mach_header symbols", kindHeaderObject) {
     StringRef machHeaderSymbolName;
     DefinedAtom::Scope symbolScope = DefinedAtom::scopeLinkageUnit;
     StringRef dsoHandleName;
@@ -105,16 +108,17 @@ public:
     }
     if (!machHeaderSymbolName.empty())
       _definedAtoms.push_back(new (allocator()) MachODefinedAtom(
-          *this, machHeaderSymbolName, symbolScope, DefinedAtom::typeMachHeader,
-          DefinedAtom::mergeNo, false, true /* noDeadStrip */,
+          *this, machHeaderSymbolName, symbolScope,
+          DefinedAtom::typeMachHeader, DefinedAtom::mergeNo, false,
+          true /* noDeadStrip */,
           ArrayRef<uint8_t>(), DefinedAtom::Alignment(4096)));
 
     if (!dsoHandleName.empty())
       _definedAtoms.push_back(new (allocator()) MachODefinedAtom(
           *this, dsoHandleName, DefinedAtom::scopeLinkageUnit,
           DefinedAtom::typeDSOHandle, DefinedAtom::mergeNo, false,
-          true /* noDeadStrip */, ArrayRef<uint8_t>(),
-          DefinedAtom::Alignment(1)));
+          true /* noDeadStrip */,
+          ArrayRef<uint8_t>(), DefinedAtom::Alignment(1)));
   }
 
   const AtomRange<DefinedAtom> defined() const override {
@@ -138,6 +142,7 @@ public:
     _noSharedLibraryAtoms.clear();
     _noAbsoluteAtoms.clear();
   }
+
 
 private:
   mutable AtomVector<DefinedAtom> _definedAtoms;

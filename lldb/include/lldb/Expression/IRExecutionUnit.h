@@ -377,14 +377,13 @@ private:
   llvm::Module *m_module; ///< Owned by the execution engine
   std::vector<std::string> m_cpu_features;
   std::vector<JittedFunction> m_jitted_functions; ///< A vector of all functions
-                                                  /// that have been JITted into
-                                                  /// machine code
-  std::vector<JittedGlobalVariable>
-      m_jitted_global_variables; ///< A vector of
-                                 /// all functions
-                                 /// that have been
-                                 /// JITted into
-                                 /// machine code
+                                                  ///that have been JITted into
+                                                  ///machine code
+  std::vector<JittedGlobalVariable> m_jitted_global_variables; ///< A vector of
+                                                               ///all functions
+                                                               ///that have been
+                                                               ///JITted into
+                                                               ///machine code
   const ConstString m_name;
   SymbolContext m_sym_ctx; ///< Used for symbol lookups
   std::vector<ConstString> m_failed_lookups;
@@ -397,7 +396,7 @@ private:
   bool m_strip_underscore = true; ///< True for platforms where global symbols
                                   ///  have a _ prefix
   bool m_reported_allocations; ///< True after allocations have been reported.
-                               /// It is possible that
+                               ///It is possible that
   ///< sections will be allocated when this is true, in which case they weren't
   ///< depended on by any function.  (Top-level code defining a variable, but
   ///< defining no functions using that variable, would do this.)  If this

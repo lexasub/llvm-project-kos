@@ -20,21 +20,25 @@
 
 int xsputn_called = 0;
 
-struct test : public std::basic_streambuf<char> {
-  test() {}
+struct test
+    : public std::basic_streambuf<char>
+{
+    test() {}
 
 protected:
-  std::streamsize xsputn(const char_type*, std::streamsize) {
-    ++xsputn_called;
-    return 5;
-  }
+    std::streamsize xsputn(const char_type*, std::streamsize)
+    {
+        ++xsputn_called;
+        return 5;
+    }
 };
 
-int main(int, char**) {
-  test t;
-  assert(xsputn_called == 0);
-  assert(t.sputn(0, 0) == 5);
-  assert(xsputn_called == 1);
+int main(int, char**)
+{
+    test t;
+    assert(xsputn_called == 0);
+    assert(t.sputn(0, 0) == 5);
+    assert(xsputn_called == 1);
 
   return 0;
 }

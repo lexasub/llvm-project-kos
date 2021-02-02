@@ -23,12 +23,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::shared_ptr<int> p(new int(3));
-    std::shared_ptr<int> q = std::atomic_load(&p);
-    assert(*q == *p);
-  }
+int main(int, char**)
+{
+    {
+        std::shared_ptr<int> p(new int(3));
+        std::shared_ptr<int> q = std::atomic_load(&p);
+        assert(*q == *p);
+    }
 
   return 0;
 }

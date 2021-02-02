@@ -3,3 +3,4 @@
 @interface A
 - (int)stringValue;
 @end
+

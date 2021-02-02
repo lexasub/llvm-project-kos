@@ -6,10 +6,11 @@ public:
 };
 
 struct Foo *GetAFoo() {
-  return (struct Foo *)0;
+  return (struct Foo*)0;
 }
 
 int main() {
   struct Foo *foo = GetAFoo();
   return foo->Sum();
 }
+

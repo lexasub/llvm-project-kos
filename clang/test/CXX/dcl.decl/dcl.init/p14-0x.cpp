@@ -4,7 +4,7 @@ struct NoDefault {
   NoDefault() = delete; // expected-note {{here}}
   NoDefault(int);
 };
-struct Explicit {         // expected-note 2 {{candidate}} expected-note {{here}}
+struct Explicit { // expected-note 2 {{candidate}} expected-note {{here}}
   explicit Explicit(int); // expected-note {{not a candidate}}
 };
 struct NoCopy {
@@ -25,14 +25,15 @@ class Friend {
   Friend(int);
 };
 
+
 class S {
   NoDefault nd1;
   NoDefault nd2 = 42;
-  Explicit e1;          // expected-note {{here}}
-  Explicit e2 = 42;     // expected-error {{no viable conversion}}
+  Explicit e1; // expected-note {{here}}
+  Explicit e2 = 42; // expected-error {{no viable conversion}}
   NoCopy nc = NoCopy(); // expected-error {{call to deleted}}
   NoMove nm = NoMove(); // expected-error {{call to deleted}}
-  Private p = 42;       // expected-error {{private constructor}}
+  Private p = 42; // expected-error {{private constructor}}
   Friend f = 42;
 
   S() {} // expected-error {{call to deleted constructor of 'NoDefault'}} \

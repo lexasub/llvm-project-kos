@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if defined(__need_ptrdiff_t) || defined(__need_size_t) ||                     \
+#if defined(__need_ptrdiff_t) || defined(__need_size_t) || \
     defined(__need_wchar_t) || defined(__need_NULL) || defined(__need_wint_t)
 
 #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
@@ -53,4 +53,4 @@ using std::nullptr_t;
 
 #endif
 
-#endif // _LIBCPP_STDDEF_H
+#endif  // _LIBCPP_STDDEF_H

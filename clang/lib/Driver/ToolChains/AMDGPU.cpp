@@ -77,12 +77,13 @@ void RocmInstallationDetector::scanLibDevicePath(llvm::StringRef Path) {
       if (!BaseName.startswith(DeviceLibPrefix))
         continue;
 
-      StringRef IsaVersionNumber = BaseName.drop_front(DeviceLibPrefix.size());
+      StringRef IsaVersionNumber =
+        BaseName.drop_front(DeviceLibPrefix.size());
 
       llvm::Twine GfxName = Twine("gfx") + IsaVersionNumber;
       SmallString<8> Tmp;
       LibDeviceMap.insert(
-          std::make_pair(GfxName.toStringRef(Tmp), FilePath.str()));
+        std::make_pair(GfxName.toStringRef(Tmp), FilePath.str()));
     }
   }
 }
@@ -206,8 +207,8 @@ void RocmInstallationDetector::detectDeviceLibrary() {
   auto &FS = D.getVFS();
   if (!LibDevicePath.empty()) {
     // Maintain compatability with HIP flag/envvar pointing directly at the
-    // bitcode library directory. This points directly at the library path
-    // instead of the rocm root installation.
+    // bitcode library directory. This points directly at the library path instead
+    // of the rocm root installation.
     if (!FS.exists(LibDevicePath))
       return;
 
@@ -398,8 +399,8 @@ void amdgpu::getAMDGPUTargetFeatures(const Driver &D,
                    options::OPT_mno_wavefrontsize64, false))
     Features.push_back("+wavefrontsize64");
 
-  handleTargetFeaturesGroup(Args, Features,
-                            options::OPT_m_amdgpu_Features_Group);
+  handleTargetFeaturesGroup(
+    Args, Features, options::OPT_m_amdgpu_Features_Group);
 }
 
 /// AMDGPU Toolchain
@@ -505,8 +506,8 @@ llvm::DenormalMode AMDGPUToolChain::getDefaultDenormalModeForType(
 
   // Outputs are flushed to zero (FTZ), preserving sign. Denormal inputs are
   // also implicit treated as zero (DAZ).
-  return DAZ ? llvm::DenormalMode::getPreserveSign()
-             : llvm::DenormalMode::getIEEE();
+  return DAZ ? llvm::DenormalMode::getPreserveSign() :
+               llvm::DenormalMode::getIEEE();
 }
 
 bool AMDGPUToolChain::isWave64(const llvm::opt::ArgList &DriverArgs,
@@ -514,10 +515,10 @@ bool AMDGPUToolChain::isWave64(const llvm::opt::ArgList &DriverArgs,
   const unsigned ArchAttr = llvm::AMDGPU::getArchAttrAMDGCN(Kind);
   bool HasWave32 = (ArchAttr & llvm::AMDGPU::FEATURE_WAVE32);
 
-  return !HasWave32 ||
-         DriverArgs.hasFlag(options::OPT_mwavefrontsize64,
-                            options::OPT_mno_wavefrontsize64, false);
+  return !HasWave32 || DriverArgs.hasFlag(
+    options::OPT_mwavefrontsize64, options::OPT_mno_wavefrontsize64, false);
 }
+
 
 /// ROCM Toolchain
 ROCMToolChain::ROCMToolChain(const Driver &D, const llvm::Triple &Triple,
@@ -527,7 +528,8 @@ ROCMToolChain::ROCMToolChain(const Driver &D, const llvm::Triple &Triple,
 }
 
 void AMDGPUToolChain::addClangTargetOptions(
-    const llvm::opt::ArgList &DriverArgs, llvm::opt::ArgStringList &CC1Args,
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args,
     Action::OffloadKind DeviceOffloadingKind) const {
   // Default to "hidden" visibility, as object level linking will not be
   // supported for the foreseeable future.

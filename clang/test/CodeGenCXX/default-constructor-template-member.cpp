@@ -1,10 +1,8 @@
 // RUN: %clang_cc1 -triple %itanium_abi_triple -emit-llvm %s -o - | FileCheck %s
 
 template <class T> struct A { A(); };
-struct B {
-  A<int> x;
-};
-void a() {
+struct B { A<int> x; };
+void a() {   
   B b;
 }
 

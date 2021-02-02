@@ -9,12 +9,8 @@
 #ifndef HEADER_INCLUDED
 #define HEADER_INCLUDED
 
-struct X {
-  template <typename T> X(T) {}
-};
-struct Y {
-  Y(X x = [] {});
-};
+struct X { template <typename T> X(T) {} };
+struct Y { Y(X x = [] {}); };
 
 #else
 

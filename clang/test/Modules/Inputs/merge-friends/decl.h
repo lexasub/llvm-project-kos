@@ -1,3 +1,1 @@
-namespace N {
-struct foo;
-}
+namespace N { struct foo; }

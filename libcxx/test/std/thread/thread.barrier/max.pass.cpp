@@ -17,9 +17,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   static_assert(std::barrier<>::max() > 0, "");
-  auto l = []() {};
+  auto l = [](){};
   static_assert(std::barrier<decltype(l)>::max() > 0, "");
   return 0;
 }

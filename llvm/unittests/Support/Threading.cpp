@@ -78,4 +78,4 @@ TEST(Threading, RunOnThreadSync) {
 }
 #endif
 
-} // namespace
+} // end anon namespace

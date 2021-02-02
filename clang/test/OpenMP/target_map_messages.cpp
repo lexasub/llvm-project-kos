@@ -17,24 +17,24 @@ void foo(int arg) {
 
   double marr[10][10][10];
 
-#pragma omp target map(marr[2] [0:2] [0:2]) // expected-error {{array section does not specify contiguous storage}}
+  #pragma omp target map(marr[2][0:2][0:2]) // expected-error {{array section does not specify contiguous storage}}
   {}
-#pragma omp target map(marr[:] [0:][:])
+  #pragma omp target map(marr[:][0:][:])
   {}
-#pragma omp target map(marr[:] [1:][:]) // expected-error {{array section does not specify contiguous storage}}
+  #pragma omp target map(marr[:][1:][:]) // expected-error {{array section does not specify contiguous storage}}
   {}
-#pragma omp target map(marr[:] [n:][:])
+  #pragma omp target map(marr[:][n:][:])
   {}
 }
 #else
 
 void xxx(int argc) {
   int map; // expected-note {{initialize the variable 'map' to silence this warning}}
-#pragma omp target map(tofrom \
-                       : map) // expected-warning {{variable 'map' is uninitialized when used here}}
+#pragma omp target map(tofrom: map) // expected-warning {{variable 'map' is uninitialized when used here}}
   for (int i = 0; i < 10; ++i)
     ;
 }
+
 
 struct SREF {
   int &a;
@@ -45,7 +45,7 @@ struct SREF {
 template <typename T, int I>
 struct SA {
   static int ss;
-#pragma omp threadprivate(ss) // expected-note {{defined as threadprivate or thread local}}
+  #pragma omp threadprivate(ss) // expected-note {{defined as threadprivate or thread local}}
   float a;
   int b[12];
   float *c;
@@ -55,171 +55,135 @@ struct SA {
   int bf : 20;
   void func(int arg) {
     SREF sref(arg);
-#pragma omp target
+    #pragma omp target
     {
       a = 0.0;
       func(arg);
       bf = 20;
     }
-#pragma omp target map(arg, a, d, sref.b)
+    #pragma omp target map(arg,a,d,sref.b)
     {}
-#pragma omp target map(arg [2:2], a, d) // expected-error {{subscripted value is not an array or pointer}}
+    #pragma omp target map(arg[2:2],a,d) // expected-error {{subscripted value is not an array or pointer}}
     {}
-#pragma omp target map(arg, a * 2) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error {{expected addressable lvalue in 'map' clause}}
+    #pragma omp target map(arg,a*2) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error {{expected addressable lvalue in 'map' clause}}
     {}
-#pragma omp target map(arg, (c + 1)[2]) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+    #pragma omp target map(arg,(c+1)[2]) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
     {}
-#pragma omp target map(arg, a[:2], d) // expected-error {{subscripted value is not an array or pointer}}
+    #pragma omp target map(arg,a[:2],d) // expected-error {{subscripted value is not an array or pointer}}
     {}
-#pragma omp target map(arg, a, d[:2]) // expected-error {{subscripted value is not an array or pointer}}
-    {}
-
-#pragma omp target map(to \
-                       : ss) // expected-error {{threadprivate variables are not allowed in 'map' clause}}
+    #pragma omp target map(arg,a,d[:2]) // expected-error {{subscripted value is not an array or pointer}}
     {}
 
-#pragma omp target map(to \
-                       : b, e)
-    {}
-#pragma omp target map(to             \
-                       : b, e) map(to \
-                                   : b) // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
-    {}
-#pragma omp target map(to \
-                       : b[:2], e)
-    {}
-#pragma omp target map(to \
-                       : b, e[:])
-    {}
-#pragma omp target map(b [-1:]) // expected-error {{array section must be a subset of the original array}}
-    {}
-#pragma omp target map(b[:-1]) // expected-error {{section length is evaluated to a negative value -1}}
-    {}
-#pragma omp target map(b [true:true])
+    #pragma omp target map(to:ss) // expected-error {{threadprivate variables are not allowed in 'map' clause}}
     {}
 
-#pragma omp target map( \
-    : c, f) // expected-error {{missing map type}}
+    #pragma omp target map(to:b,e)
     {}
-#pragma omp target map(always, tofrom \
-                       : c, f)
+    #pragma omp target map(to:b,e) map(to:b) // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
     {}
-#pragma omp target map(always, tofrom \
-                       : c [1:2], f)
+    #pragma omp target map(to:b[:2],e)
     {}
-#pragma omp target map(always, tofrom \
-                       : c, f [1:2])
+    #pragma omp target map(to:b,e[:])
     {}
-#pragma omp target map(always, tofrom \
-                       : c[:], f) // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    #pragma omp target map(b[-1:]) // expected-error {{array section must be a subset of the original array}}
     {}
-#pragma omp target map(always, tofrom \
-                       : c, f[:]) // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    #pragma omp target map(b[:-1]) // expected-error {{section length is evaluated to a negative value -1}}
     {}
-#pragma omp target map(always) // expected-error {{use of undeclared identifier 'always'}}
+    #pragma omp target map(b[true:true])
     {}
-#pragma omp target map(close, tofrom \
-                       : c, f)
+
+    #pragma omp target map(: c,f) // expected-error {{missing map type}}
     {}
-#pragma omp target map(close, tofrom \
-                       : c [1:2], f)
+    #pragma omp target map(always, tofrom: c,f)
     {}
-#pragma omp target map(close, tofrom \
-                       : c, f [1:2])
+    #pragma omp target map(always, tofrom: c[1:2],f)
     {}
-#pragma omp target map(close, tofrom \
-                       : c[:], f) // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    #pragma omp target map(always, tofrom: c,f[1:2])
     {}
-#pragma omp target map(close, tofrom \
-                       : c, f[:]) // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    #pragma omp target map(always, tofrom: c[:],f)   // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
     {}
-#pragma omp target map(close) // expected-error {{use of undeclared identifier 'close'}}
+    #pragma omp target map(always, tofrom: c,f[:])   // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
     {}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, tofrom \
-                       : c, f)
+    #pragma omp target map(always)   // expected-error {{use of undeclared identifier 'always'}}
     {}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, tofrom \
-                       : c [1:2], f)
+    #pragma omp target map(close, tofrom: c,f)
     {}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, tofrom \
-                       : c, f [1:2])
+    #pragma omp target map(close, tofrom: c[1:2],f)
     {}
-// expected-error@+2 {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, tofrom \
-                       : c[:], f)
+    #pragma omp target map(close, tofrom: c,f[1:2])
     {}
-// expected-error@+2 {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, tofrom \
-                       : c, f[:])
+    #pragma omp target map(close, tofrom: c[:],f)   // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
     {}
-// expected-error@+1 {{use of undeclared identifier 'present'}}
-#pragma omp target map(present)
+    #pragma omp target map(close, tofrom: c,f[:])   // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
     {}
-#pragma omp target map(close, close, tofrom \
-                       : a) // expected-error {{same map type modifier has been specified more than once}}
+    #pragma omp target map(close)   // expected-error {{use of undeclared identifier 'close'}}
     {}
-#pragma omp target map(always, close, always, close, tofrom \
-                       : a) // expected-error 2 {{same map type modifier has been specified more than once}}
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, tofrom: c,f)
     {}
-// ge51-error@+2 {{same map type modifier has been specified more than once}}
-// lt51-error@+1 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(present, present, tofrom \
-                       : a)
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, tofrom: c[1:2],f)
     {}
-// expected-error@+3 2 {{same map type modifier has been specified more than once}}
-// ge51-error@+2 1 {{same map type modifier has been specified more than once}}
-// lt51-error@+1 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(always, close, present, always, close, present, tofrom \
-                       : a)
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, tofrom: c,f[1:2])
     {}
-#pragma omp target map(, tofrom \
-                       : a) // expected-error {{missing map type modifier}}
+    // expected-error@+2 {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, tofrom: c[:],f)
     {}
-#pragma omp target map(, , tofrom \
-                       : a) // expected-error {{missing map type modifier}} expected-error {{missing map type modifier}}
+    // expected-error@+2 {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, tofrom: c,f[:])
     {}
-#pragma omp target map(, , \
-                       : a) // expected-error {{missing map type modifier}} expected-error {{missing map type modifier}} expected-error {{missing map type}}
+    // expected-error@+1 {{use of undeclared identifier 'present'}}
+    #pragma omp target map(present)
     {}
-// ge51-error@+3 2 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
-// lt51-error@+2 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-// expected-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
-#pragma omp target map(d, f, bf \
-                       : a)
+    #pragma omp target map(close, close, tofrom: a)   // expected-error {{same map type modifier has been specified more than once}}
     {}
-// expected-error@+4 {{missing map type modifier}}
-// ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
-// lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-// expected-error@+1 {{missing map type}}
-#pragma omp target map(, f, \
-                       : a)
+    #pragma omp target map(always, close, always, close, tofrom: a)   // expected-error 2 {{same map type modifier has been specified more than once}}
     {}
-#pragma omp target map(always close \
-                       : a) // expected-error {{missing map type}}
+    // ge51-error@+2 {{same map type modifier has been specified more than once}}
+    // lt51-error@+1 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(present, present, tofrom: a)
     {}
-#pragma omp target map(always close bf \
-                       : a) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+    // expected-error@+3 2 {{same map type modifier has been specified more than once}}
+    // ge51-error@+2 1 {{same map type modifier has been specified more than once}}
+    // lt51-error@+1 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(always, close, present, always, close, present, tofrom: a)
     {}
-// ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
-// lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-// expected-error@+1 {{missing map type}}
-#pragma omp target map(always tofrom close \
-                       : a)
+    #pragma omp target map( , tofrom: a)   // expected-error {{missing map type modifier}}
     {}
-// ge51-error@+2 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
-// lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target map(tofrom from \
-                       : a)
+    #pragma omp target map( , , tofrom: a)   // expected-error {{missing map type modifier}} expected-error {{missing map type modifier}}
     {}
-#pragma omp target map(close bf \
-                       : a) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+    #pragma omp target map( , , : a)   // expected-error {{missing map type modifier}} expected-error {{missing map type modifier}} expected-error {{missing map type}}
     {}
-#pragma omp target map(([b[I]][bf])f) // lt50-error {{expected ',' or ']' in lambda capture list}} lt50-error {{expected ')'}} lt50-note {{to match this '('}}
+    // ge51-error@+3 2 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
+    // lt51-error@+2 2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    // expected-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+    #pragma omp target map( d, f, bf: a)
+    {}
+    // expected-error@+4 {{missing map type modifier}}
+    // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
+    // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    // expected-error@+1 {{missing map type}}
+    #pragma omp target map( , f, : a)
+    {}
+    #pragma omp target map(always close: a)   // expected-error {{missing map type}}
+    {}
+    #pragma omp target map(always close bf: a)   // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+    {}
+    // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
+    // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    // expected-error@+1 {{missing map type}}
+    #pragma omp target map(always tofrom close: a)
+    {}
+    // ge51-error@+2 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
+    // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
+    #pragma omp target map(tofrom from: a)
+    {}
+    #pragma omp target map(close bf: a)   // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+    {}
+    #pragma omp target map(([b[I]][bf])f)  // lt50-error {{expected ',' or ']' in lambda capture list}} lt50-error {{expected ')'}} lt50-note {{to match this '('}}
     {}
     return;
   }
@@ -256,7 +220,7 @@ union SD {
 };
 
 void SAclient(int arg) {
-  SA<int, 123> s;
+  SA<int,123> s;
   s.func(arg); // expected-note {{in instantiation of member function}}
   double marr[10][10][10];
   double marr2[5][10][1];
@@ -264,12 +228,12 @@ void SAclient(int arg) {
   double ***mptr;
   const int n = 0;
   const int m = 1;
-  double mvla2[5][arg][m + n + 10];
+  double mvla2[5][arg][m+n+10];
 
   SB *p;
 
   SD u;
-  SC r(p), t(p);
+  SC r(p),t(p);
 #pragma omp target map(r)
   {}
 #pragma omp target map(marr[2] [0:2] [0:2]) // expected-error {{array section does not specify contiguous storage}}
@@ -294,15 +258,15 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(marr[:][:arg] [n:]) // correct if arg is the size of  dimension 2
   {}
-#pragma omp target map(marr[:][:m] [n:]) // expected-error {{array section does not specify contiguous storage}}
+#pragma omp target map(marr[:][:m] [n:])   // expected-error {{array section does not specify contiguous storage}}
   {}
 #pragma omp target map(marr [n:m][:arg] [n:])
   {}
-#pragma omp target map(marr[:2][:1][:]) // expected-error {{array section does not specify contiguous storage}}
+#pragma omp target map(marr[:2][:1][:])  // expected-error {{array section does not specify contiguous storage}}
   {}
 #pragma omp target map(marr[:2] [1:][:]) // expected-error {{array section does not specify contiguous storage}}
   {}
-#pragma omp target map(marr[:2][:][:1]) // expected-error {{array section does not specify contiguous storage}}
+#pragma omp target map(marr[:2][:][:1])  // expected-error {{array section does not specify contiguous storage}}
   {}
 #pragma omp target map(marr[:2][:] [1:]) // expected-error {{array section does not specify contiguous storage}}
   {}
@@ -316,7 +280,7 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(marr[:1] [3:arg][:2]) // correct if arg is 1
   {}
-#pragma omp target map(marr[:1] [3:2][:2]) // expected-error {{array section does not specify contiguous storage}}
+#pragma omp target map(marr[:1] [3:2][:2])   // expected-error {{array section does not specify contiguous storage}}
   {}
 #pragma omp target map(marr[:2][:10][:])
   {}
@@ -330,12 +294,12 @@ void SAclient(int arg) {
 #pragma omp target map(marr2[:1][:2][0])
   {}
 
-#pragma omp target map(mvla[:1][:][0]) // correct if the size of dimension 2 is 1.
+#pragma omp target map(mvla[:1][:][0])    // correct if the size of dimension 2 is 1.
   {}
 #pragma omp target map(mvla[:2][:arg][:]) // correct if arg is the size of dimension 2.
   {}
-#pragma omp target map(mvla[:1][:2][0]) // expected-error {{array section does not specify contiguous storage}}
-  {}
+#pragma omp target map(mvla[:1][:2][0])   // expected-error {{array section does not specify contiguous storage}}
+   {}
 #pragma omp target map(mvla[1] [2:arg][:])
   {}
 #pragma omp target map(mvla[:1][:][:])
@@ -355,14 +319,14 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(mptr[:1][:2] [0:2]) // expected-error {{array section does not specify contiguous storage}}
   {}
-#pragma omp target map(mptr[:1][:] [0:2]) // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
+#pragma omp target map(mptr[:1][:] [0:2])  // expected-error {{section length is unspecified and cannot be inferred because subscripted value is not an array}}
   {}
 #pragma omp target map(mptr[:2][:1] [0:2]) // expected-error {{array section does not specify contiguous storage}}
   {}
 
 #pragma omp target map(r.ArrS[0].B)
   {}
-#pragma omp target map(r.ArrS[:1].B) // expected-error {{OpenMP array section is not allowed here}}
+#pragma omp target map(r.ArrS[:1].B)   // expected-error {{OpenMP array section is not allowed here}}
   {}
 #pragma omp target map(r.ArrS[:arg].B) // expected-error {{OpenMP array section is not allowed here}}
   {}
@@ -372,7 +336,7 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(r.ArrS[0].Arr [arg:23])
   {}
-#pragma omp target map(r.ArrS[0].Error) // expected-error {{no member named 'Error' in 'SB'}}
+#pragma omp target map(r.ArrS[0].Error)          // expected-error {{no member named 'Error' in 'SB'}}
   {}
 #pragma omp target map(r.ArrS[0].A, r.ArrS[1].A) // expected-error {{multiple array elements associated with the same variable are not allowed in map clauses of the same construct}} expected-note {{used here}}
   {}
@@ -380,13 +344,13 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(r.PtrS[0], r.PtrS->B) // expected-error {{same pointer dereferenced in multiple different ways in map clause expressions}} expected-note {{used here}}
   {}
-#pragma omp target map(r.PtrS, r.PtrS->B) // expected-error {{pointer cannot be mapped along with a section derived from itself}} expected-note {{used here}}
+#pragma omp target map(r.PtrS, r.PtrS->B)    // expected-error {{pointer cannot be mapped along with a section derived from itself}} expected-note {{used here}}
   {}
 #pragma omp target map(r.PtrS->A, r.PtrS->B)
   {}
 #pragma omp target map(r.RPtrS[0], r.RPtrS->B) // expected-error {{same pointer dereferenced in multiple different ways in map clause expressions}} expected-note {{used here}}
   {}
-#pragma omp target map(r.RPtrS, r.RPtrS->B) // expected-error {{pointer cannot be mapped along with a section derived from itself}} expected-note {{used here}}
+#pragma omp target map(r.RPtrS, r.RPtrS->B)    // expected-error {{pointer cannot be mapped along with a section derived from itself}} expected-note {{used here}}
   {}
 #pragma omp target map(r.RPtrS->A, r.RPtrS->B)
   {}
@@ -396,13 +360,13 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(r.C, r.D)
   {}
-#pragma omp target map(r.C, r.C) // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
+#pragma omp target map(r.C, r.C)     // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
   {}
 #pragma omp target map(r.C) map(r.C) // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
   {}
-#pragma omp target map(r.C, r.S) // this would be an error only caught at runtime - Sema would have to make sure there is not way for the missing data between fields to be mapped somewhere else.
+#pragma omp target map(r.C, r.S)     // this would be an error only caught at runtime - Sema would have to make sure there is not way for the missing data between fields to be mapped somewhere else.
   {}
-#pragma omp target map(r, r.S) // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
+#pragma omp target map(r, r.S)       // expected-error {{variable already marked as mapped in current construct}} expected-note {{used here}}
   {}
 #pragma omp target map(r.C, t.C)
   {}
@@ -414,7 +378,7 @@ void SAclient(int arg) {
   {}
 #pragma omp target map(r.Ptr [3:5])
   {}
-#pragma omp target map(r.ArrS [3:5].A) // expected-error {{OpenMP array section is not allowed here}}
+#pragma omp target map(r.ArrS [3:5].A)         // expected-error {{OpenMP array section is not allowed here}}
   {}
 #pragma omp target map(r.ArrS [3:5].Arr [6:7]) // expected-error {{OpenMP array section is not allowed here}}
   {}
@@ -428,7 +392,7 @@ void SAclient(int arg) {
   {}
 #pragma omp target map((p + 1)->A) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(u.B) // expected-error {{mapping of union members is not allowed}}
+#pragma omp target map(u.B)        // expected-error {{mapping of union members is not allowed}}
   {}
 #pragma omp target
   {
@@ -439,14 +403,14 @@ void SAclient(int arg) {
 #pragma omp target data map(to \
                             : r.C) //expected-note {{used here}}
   {
-#pragma omp target map(r.D) // expected-error {{original storage of expression in data environment is shared but data environment do not fully contain mapped expression storage}}
+#pragma omp target map(r.D)        // expected-error {{original storage of expression in data environment is shared but data environment do not fully contain mapped expression storage}}
     {}
   }
 
 #pragma omp target data map(to \
                             : t.Ptr) //expected-note {{used here}}
   {
-#pragma omp target map(t.Ptr[:23]) // expected-error {{pointer cannot be mapped along with a section derived from itself}}
+#pragma omp target map(t.Ptr[:23])   // expected-error {{pointer cannot be mapped along with a section derived from itself}}
     {}
   }
 
@@ -455,10 +419,10 @@ void SAclient(int arg) {
   {
 #pragma omp target data map(to \
                             : t.C)
-    {
+  {
 #pragma omp target map(t.D)
-      {}
-    }
+    {}
+  }
   }
 #pragma omp target data map(marr[:][:][:])
   {
@@ -471,10 +435,10 @@ void SAclient(int arg) {
   {
 #pragma omp target data map(to \
                             : t.C)
-    {
+  {
 #pragma omp target map(t.D)
-      {}
-    }
+    {}
+  }
   }
 }
 void foo() {
@@ -488,10 +452,9 @@ struct S1; // expected-note 2 {{declared here}}
 extern S1 a;
 class S2 {
   mutable int a;
-
 public:
-  S2() : a(0) {}
-  S2(S2 &s2) : a(s2.a) {}
+  S2():a(0) { }
+  S2(S2 &s2):a(s2.a) { }
   static float S2s;
   static const float S2sc;
 };
@@ -500,10 +463,9 @@ const S2 b;
 const S2 ba[5];
 class S3 {
   int a;
-
 public:
-  S3() : a(0) {}
-  S3(S3 &s3) : a(s3.a) {}
+  S3():a(0) { }
+  S3(S3 &s3):a(s3.a) { }
 };
 const S3 c;
 const S3 ca[5];
@@ -512,25 +474,24 @@ class S4 {
   int a;
   S4();
   S4(const S4 &s4);
-
 public:
-  S4(int v) : a(v) {}
+  S4(int v):a(v) { }
 };
 class S5 {
   int a;
-  S5() : a(0) {}
-  S5(const S5 &s5) : a(s5.a) {}
-
+  S5():a(0) {}
+  S5(const S5 &s5):a(s5.a) { }
 public:
-  S5(int v) : a(v) {}
+  S5(int v):a(v) { }
 };
 
 template <class T>
 struct S6;
 
-template <>
-struct S6<int> {
-  virtual void foo();
+template<>
+struct S6<int>
+{
+   virtual void foo();
 };
 
 S3 h;
@@ -542,26 +503,23 @@ struct dim {
   double x, y;
 };
 
-template <typename T>
-class Array1D {
-public:
-  unsigned n1;
-  unsigned size;
-  T *dptr;
+template<typename T>
+class Array1D
+{
+  public:
+    unsigned n1;
+    unsigned size;
+    T * dptr;
 
-  inline T &operator()(unsigned i1) { return dptr[i1]; }
+    inline T& operator() (unsigned i1) { return dptr[i1]; }
 
-  Array1D() {
-    n1 = 0;
-    size = 0;
-    dptr = nullptr;
-  }
+    Array1D() {n1=0;size=0;dptr=nullptr;}
 };
 
 template <typename T, int I> // expected-note {{declared here}}
 T tmain(T argc) {
   const T d = 5;
-  const T da[5] = {0};
+  const T da[5] = { 0 };
   S4 e(4);
   S5 g(5);
   T i, t[20];
@@ -570,7 +528,7 @@ T tmain(T argc) {
   T x;
   T y;
   T to, tofrom, always, close, present;
-  const T(&l)[5] = da;
+  const T (&l)[5] = da;
 #pragma omp target map // expected-error {{expected '(' after 'map'}}
   {}
 #pragma omp target map( // expected-error {{expected ')'}} expected-note {{to match this '('}} expected-error {{expected expression}}
@@ -583,19 +541,15 @@ T tmain(T argc) {
   {}
 #pragma omp target map(to:) // expected-error {{expected expression}}
   {}
-#pragma omp target map(from \
-                       : argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp target map(from: argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {}
-#pragma omp target map(x \
-                       : y) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+#pragma omp target map(x: y) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
   {}
 #pragma omp target map(x)
   foo();
-#pragma omp target map(tofrom \
-                       : t[:I])
+#pragma omp target map(tofrom: t[:I])
   foo();
-#pragma omp target map(T \
-                       : a) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}} expected-error {{incomplete type 'S1' where a complete type is required}}
+#pragma omp target map(T: a) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}} expected-error {{incomplete type 'S1' where a complete type is required}}
   foo();
 #pragma omp target map(T) // expected-error {{'T' does not refer to a value}}
   foo();
@@ -607,19 +561,16 @@ T tmain(T argc) {
   foo();
 #pragma omp target map(x)
   foo();
-#pragma omp target map(to \
-                       : x)
+#pragma omp target map(to: x)
   foo();
-#pragma omp target map(to \
-                       : to)
+#pragma omp target map(to: to)
   foo();
 #pragma omp target map(to)
   foo();
 #pragma omp target map(to, x)
   foo();
 #pragma omp target data map(to x) // expected-error {{expected ',' or ')' in 'map' clause}}
-#pragma omp target data map(tofrom \
-                            : argc > 0 ? x : y) // lt50-error 2 {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error 2 {{expected addressable lvalue in 'map' clause}}
+#pragma omp target data map(tofrom: argc > 0 ? x : y) // lt50-error 2 {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error 2 {{expected addressable lvalue in 'map' clause}}
 #pragma omp target data map(argc)
 #pragma omp target data map(S1) // expected-error {{'S1' does not refer to a value}}
 #pragma omp target data map(a, b, c, d, f) // expected-error {{incomplete type 'S1' where a complete type is required}} warn-warning 2 {{Type 'const S2' is not trivially copyable and not guaranteed to be mapped correctly}} warn-warning 2 {{Type 'const S3' is not trivially copyable and not guaranteed to be mapped correctly}}
@@ -647,72 +598,60 @@ T tmain(T argc) {
 #pragma omp target map(l)
   foo();
 
-#pragma omp target data map(always, tofrom \
-                            : x)
-#pragma omp target data map(always \
-                            : x) // expected-error {{missing map type}}
+#pragma omp target data map(always, tofrom: x)
+#pragma omp target data map(always: x) // expected-error {{missing map type}}
 // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // expected-error@+1 {{missing map type}}
-#pragma omp target data map(tofrom, always \
-                            : x)
-#pragma omp target data map(always, tofrom \
-                            : always, tofrom, x)
+#pragma omp target data map(tofrom, always: x)
+#pragma omp target data map(always, tofrom: always, tofrom, x)
 #pragma omp target map(tofrom j) // expected-error {{expected ',' or ')' in 'map' clause}}
   foo();
 
-#pragma omp target data map(close, tofrom \
-                            : x)
-#pragma omp target data map(close \
-                            : x) // expected-error {{missing map type}}
+#pragma omp target data map(close, tofrom: x)
+#pragma omp target data map(close: x) // expected-error {{missing map type}}
 // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // expected-error@+1 {{missing map type}}
-#pragma omp target data map(tofrom, close \
-                            : x)
-#pragma omp target data map(close, tofrom \
-                            : close, tofrom, x)
+#pragma omp target data map(tofrom, close: x)
+#pragma omp target data map(close, tofrom: close, tofrom, x)
   foo();
 
 // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target data map(present, tofrom \
-                            : x)
+#pragma omp target data map(present, tofrom: x)
 // ge51-error@+2 {{missing map type}}
 // lt51-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
-#pragma omp target data map(present \
-                            : x)
+#pragma omp target data map(present: x)
 // ge51-error@+4 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+3 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // ge51-error@+2 {{missing map type}}
 // lt51-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
-#pragma omp target data map(tofrom, present \
-                            : x)
+#pragma omp target data map(tofrom, present: x)
 // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target data map(present, tofrom \
-                            : present, tofrom, x)
+#pragma omp target data map(present, tofrom: present, tofrom, x)
   foo();
 
   T marr[10][10], iarr[5];
-#pragma omp target data map(marr[10] [0:2:2]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
+#pragma omp target data map(marr[10][0:2:2]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
   {}
 #pragma omp target data map(iarr[:2:d]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
   {}
   return 0;
 }
 
-struct SA1 {
+struct SA1{
   int a;
   struct SA1 *p;
   int b[10];
 };
-struct SB1 {
+struct SB1{
   int a;
   struct SA1 s;
   struct SA1 sa[10];
   struct SA1 *sp[10];
   struct SA1 *p;
 };
-struct SC1 {
+struct SC1{
   int a;
   struct SB1 s;
   struct SB1 *p;
@@ -722,16 +661,17 @@ struct SC1 {
 class S8 {
 public:
   virtual void foo() = 0;
-} * s8;
+} *s8;
 
 class S9 {
 public:
   virtual void foo() {}
 } s9;
 
+
 int main(int argc, char **argv) {
   const int d = 5;
-  const int da[5] = {0};
+  const int da[5] = { 0 };
   S4 e(4);
   S5 g(5);
   int i;
@@ -741,7 +681,7 @@ int main(int argc, char **argv) {
   int x;
   int y;
   int to, tofrom, always, close, present;
-  const int(&l)[5] = da;
+  const int (&l)[5] = da;
   SC1 s;
   SC1 *p;
   int Arr[10];
@@ -751,25 +691,20 @@ int main(int argc, char **argv) {
 #pragma omp target data map(alloc) // expected-error {{use of undeclared identifier 'alloc'}}
 #pragma omp target data map(to argc // expected-error {{expected ')'}} expected-note {{to match this '('}} expected-error {{expected ',' or ')' in 'map' clause}}
 #pragma omp target data map(to:) // expected-error {{expected expression}}
-#pragma omp target data map(from \
-                            : argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-#pragma omp target data map(x \
-                            : y) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
+#pragma omp target data map(from: argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp target data map(x: y) // expected-error {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
 #pragma omp target map(x)
   foo();
-#pragma omp target map(to \
-                       : x)
+#pragma omp target map(to: x)
   foo();
-#pragma omp target map(to \
-                       : to)
+#pragma omp target map(to: to)
   foo();
 #pragma omp target map(to)
   foo();
 #pragma omp target map(to, x)
   foo();
 #pragma omp target data map(to x) // expected-error {{expected ',' or ')' in 'map' clause}}
-#pragma omp target data map(tofrom \
-                            : argc > 0 ? argv[1] : argv[2]) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error {{expected addressable lvalue in 'map' clause}}
+#pragma omp target data map(tofrom: argc > 0 ? argv[1] : argv[2]) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}} ge50-error {{expected addressable lvalue in 'map' clause}}
 #pragma omp target data map(argc)
 #pragma omp target data map(S1) // expected-error {{'S1' does not refer to a value}}
 #pragma omp target data map(a, b, c, d, f) // expected-error {{incomplete type 'S1' where a complete type is required}} warn-warning {{Type 'const S2' is not trivially copyable and not guaranteed to be mapped correctly}} warn-warning {{Type 'const S3' is not trivially copyable and not guaranteed to be mapped correctly}}
@@ -798,134 +733,122 @@ int main(int argc, char **argv) {
 #pragma omp target map(l)
   foo();
 
-#pragma omp target data map(always, tofrom \
-                            : x)
-#pragma omp target data map(always \
-                            : x) // expected-error {{missing map type}}
+#pragma omp target data map(always, tofrom: x)
+#pragma omp target data map(always: x) // expected-error {{missing map type}}
 // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // expected-error@+1 {{missing map type}}
-#pragma omp target data map(tofrom, always \
-                            : x)
-#pragma omp target data map(always, tofrom \
-                            : always, tofrom, x)
+#pragma omp target data map(tofrom, always: x)
+#pragma omp target data map(always, tofrom: always, tofrom, x)
 #pragma omp target map(tofrom j) // expected-error {{expected ',' or ')' in 'map' clause}}
   foo();
-#pragma omp target data map(close, tofrom \
-                            : x)
-#pragma omp target data map(close \
-                            : x) // expected-error {{missing map type}}
+#pragma omp target data map(close, tofrom: x)
+#pragma omp target data map(close: x) // expected-error {{missing map type}}
 // ge51-error@+3 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+2 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // expected-error@+1 {{missing map type}}
-#pragma omp target data map(tofrom, close \
-                            : x)
+#pragma omp target data map(tofrom, close: x)
   foo();
 // lt51-error@+1 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
-#pragma omp target data map(present, tofrom \
-                            : x)
+#pragma omp target data map(present, tofrom: x)
 // ge51-error@+2 {{missing map type}}
 // lt51-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
-#pragma omp target data map(present \
-                            : x)
+#pragma omp target data map(present: x)
 // ge51-error@+4 {{incorrect map type modifier, expected 'always', 'close', 'mapper', or 'present'}}
 // lt51-error@+3 {{incorrect map type modifier, expected 'always', 'close', or 'mapper'}}
 // ge51-error@+2 {{missing map type}}
 // lt51-error@+1 {{incorrect map type, expected one of 'to', 'from', 'tofrom', 'alloc', 'release', or 'delete'}}
-#pragma omp target data map(tofrom, present \
-                            : x)
+#pragma omp target data map(tofrom, present: x)
   foo();
 #pragma omp target private(j) map(j) // expected-error {{private variable cannot be in a map clause in '#pragma omp target' directive}}  expected-note {{defined as private}}
   {}
-#pragma omp target firstprivate(j) map(j) // expected-error {{firstprivate variable cannot be in a map clause in '#pragma omp target' directive}} expected-note {{defined as firstprivate}}
+#pragma omp target firstprivate(j) map(j)  // expected-error {{firstprivate variable cannot be in a map clause in '#pragma omp target' directive}} expected-note {{defined as firstprivate}}
   {}
 #pragma omp target map(m) // warn-warning {{Type 'S6<int>' is not trivially copyable and not guaranteed to be mapped correctly}}
   {}
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.s)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.s.a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.b[:5])
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 #pragma omp target map(s.p[:5])
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.sa[3].a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.sp[3]->a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.p->a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.p->a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.s.b[:2])
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.s.p->b[:2])
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 // expected-note@+1 {{used here}}
 #pragma omp target map(s.p->p->p->a)
-  // expected-error@+1 {{variable already marked as mapped in current construct}}
+// expected-error@+1 {{variable already marked as mapped in current construct}}
   { s.a++; }
 #pragma omp target map(s.s.s.b[:2])
   { s.s.s.b[0]++; }
-#pragma omp target map(s8 [0:1], s9) // warn-warning {{Type 'class S8' is not trivially copyable and not guaranteed to be mapped correctly}} warn-warning {{Type 'class S9' is not trivially copyable and not guaranteed to be mapped correctly}}
+#pragma omp target map(s8[0:1], s9) // warn-warning {{Type 'class S8' is not trivially copyable and not guaranteed to be mapped correctly}} warn-warning {{Type 'class S9' is not trivially copyable and not guaranteed to be mapped correctly}}
   {}
 
   int **BB, *offset, *a;
 
-#pragma omp target map(**(BB + *offset)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(BB+*offset)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(**(BB + y)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(BB+y)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(*(a + *offset)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(*(a+*offset)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(**(*offset + BB)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(*offset+BB)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(**(y + BB)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(y+BB)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(*(*offset + a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(*(*offset+a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(**(*offset + BB + *a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(*offset+BB+*a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(**(*(*(&offset)) + BB + *a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
+#pragma omp target map(**(*(*(&offset))+BB+*a)) // lt50-error {{expected expression containing only member accesses and/or array sections based on named variables}}
   {}
-#pragma omp target map(*(a + (a))) // expected-error {{invalid operands to binary expression ('int *' and 'int *')}}
+#pragma omp target map(*(a+(a))) // expected-error {{invalid operands to binary expression ('int *' and 'int *')}}
   {}
-#pragma omp target map(*(1 + *a + *a)) // expected-error {{indirection requires pointer operand ('int' invalid)}}
+#pragma omp target map(*(1+*a+*a)) // expected-error {{indirection requires pointer operand ('int' invalid)}}
   {}
 
-#pragma omp target map(delete \
-                       : a) // expected-error {{map type 'delete' is not allowed for '#pragma omp target'}}
+#pragma omp target map(delete: a) // expected-error {{map type 'delete' is not allowed for '#pragma omp target'}}
   {}
-#pragma omp target map(release \
-                       : a) // expected-error {{map type 'release' is not allowed for '#pragma omp target'}}
+#pragma omp target map(release: a) // expected-error {{map type 'release' is not allowed for '#pragma omp target'}}
   {}
 
   int marr[10][10], iarr[5];
 
-#pragma omp target map(marr[10] [0:2:2]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
+#pragma omp target map(marr[10][0:2:2]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
   {}
 #pragma omp target map(iarr[:2:d]) // expected-error {{expected ']'}} expected-note {{to match this '['}}
   {}
 
-#pragma omp target data map(Arr [0:4]) // lt50-note {{used here}}
+#pragma omp target data map(Arr[0:4]) // lt50-note {{used here}}
   {
 #pragma omp target
     Arr[0] = 2; // lt50-error {{original storage of expression in data environment is shared but data environment do not fully contain mapped expression storage}}
@@ -933,16 +856,14 @@ int main(int argc, char **argv) {
 
   Array1D<dim> pos;
 
-#pragma omp target enter data map(to \
-                                  : pos)
-#pragma omp target enter data map(to \
-                                  : pos.dptr [0:pos.size])
+#pragma omp target enter data map(to:pos)
+#pragma omp target enter data map(to:pos.dptr[0:pos.size])
 #pragma omp target teams distribute parallel for
-  for (int i = 0; i < 100; i++) {
+  for(int i=0; i<100; i++) {
     pos(i).x = i;
-    pos(i).y = i + 1;
+    pos(i).y = i+1;
   }
 
-  return tmain<int, 3>(argc) + tmain<from, 4>(argc); // expected-note {{in instantiation of function template specialization 'tmain<int, 3>' requested here}} expected-note {{in instantiation of function template specialization 'tmain<int, 4>' requested here}}
+  return tmain<int, 3>(argc)+tmain<from, 4>(argc); // expected-note {{in instantiation of function template specialization 'tmain<int, 3>' requested here}} expected-note {{in instantiation of function template specialization 'tmain<int, 4>' requested here}}
 }
 #endif

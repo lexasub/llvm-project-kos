@@ -46,6 +46,7 @@ using SL = source_location;
 
 extern "C" int sink(...);
 
+
 // RUN: FileCheck --input-file %t.ll %s --check-prefix=CHECK-GLOBAL-ONE
 //
 // CHECK-GLOBAL-ONE-DAG: @[[FILE:.*]] = {{.*}}c"test_const_init.cpp\00"

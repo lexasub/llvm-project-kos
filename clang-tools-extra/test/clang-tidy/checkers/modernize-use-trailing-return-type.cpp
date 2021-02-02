@@ -1,25 +1,25 @@
 // RUN: %check_clang_tidy -std=c++14-or-later %s modernize-use-trailing-return-type %t -- -- -fdeclspec -fexceptions -DCOMMAND_LINE_INT=int
 
 namespace std {
-template <typename T>
-class vector;
+    template <typename T>
+    class vector;
 
-template <typename T, int N>
-class array;
+    template <typename T, int N>
+    class array;
 
-class string;
+    class string;
 
-template <typename T>
-class basic_ostream;
+    template <typename T>
+    class basic_ostream;
 
-using ostream = basic_ostream<char>;
+    using ostream = basic_ostream<char>;
 
-template <typename T>
-auto declval() -> T;
+    template <typename T>
+    auto declval() -> T;
 
-template <typename... Ts>
-class tuple;
-} // namespace std
+    template <typename... Ts>
+    class tuple;
+}
 
 //
 // Functions
@@ -28,7 +28,7 @@ class tuple;
 int f();
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto f() -> int;{{$}}
-int((f))();
+int ((f))();
 // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto ((f))() -> int;{{$}}
 int f(int);
@@ -43,8 +43,7 @@ int f(int arg1, int arg2, int arg3);
 int f(int arg1, int arg2, int arg3, ...);
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto f(int arg1, int arg2, int arg3, ...) -> int;{{$}}
-template <typename T>
-int f(T t);
+template <typename T> int f(T t);
 // CHECK-MESSAGES: :[[@LINE-1]]:27: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}template <typename T> auto f(T t) -> int;{{$}}
 
@@ -56,40 +55,43 @@ int a1() { return 42; }
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a1() -> int { return 42; }{{$}}
 int a2() {
-  return 42;
+    return 42;
 }
 // CHECK-MESSAGES: :[[@LINE-3]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a2() -> int {{{$}}
-int a3() {
-  return 42;
+int a3()
+{
+    return 42;
 }
 // CHECK-MESSAGES: :[[@LINE-4]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a3() -> int{{$}}
-int a4(int arg);
+int a4(int   arg   )   ;
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a4(int   arg   ) -> int   ;{{$}}
 int a5
-    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-    // CHECK-FIXES: {{^}}auto a5{{$}}
-    (int arg);
+// CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}auto a5{{$}}
+(int arg);
 // CHECK-FIXES: {{^}}(int arg) -> int;{{$}}
-const int
-    *
-        a7
-    // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-    ()
-    // CHECK-FIXES: {{^}}() -> const{{$}}
-    // CHECK-FIXES: {{^}}int{{$}}
-    // CHECK-FIXES: {{^}}*{{$}}
-    ;
+const
+int
+*
+a7
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+()
+// CHECK-FIXES: {{^}}() -> const{{$}}
+// CHECK-FIXES: {{^}}int{{$}}
+// CHECK-FIXES: {{^}}*{{$}}
+;
 
-int *a7(int arg);
+int*a7(int arg);
 // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a7(int arg) -> int*;{{$}}
-template <template <typename> class C>
-C<int> a8(int arg);
+template<template <typename> class C>
+C<int>a8(int arg);
 // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto a8(int arg) -> C<int>;{{$}}
+
 
 //
 // Functions with qualifiers and specifiers
@@ -104,9 +106,7 @@ extern "C" int d2(int arg);
 inline int d3(int arg) noexcept(true);
 // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}inline auto d3(int arg) noexcept(true) -> int;{{$}}
-inline int d4(int arg) try {
-} catch (...) {
-}
+inline int d4(int arg) try { } catch(...) { }
 // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}inline auto d4(int arg) -> int try { } catch(...) { }{{$}}
 int d5(int arg) throw();
@@ -136,26 +136,26 @@ unsigned constexpr int d11();
 unsigned extern int d13();
 // CHECK-MESSAGES: :[[@LINE-1]]:21: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}extern auto d13() -> unsigned int;{{$}}
-int static &d14();
+int static& d14();
 // CHECK-MESSAGES: :[[@LINE-1]]:13: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}static auto d14() -> int &;{{$}}
 class DDD {
-  int friend unsigned m1();
-  // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    friend auto m1() -> int unsigned;{{$}}
-  int friend unsigned m1() { return 0; }
-  // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    friend auto m1() -> int unsigned { return 0; }{{$}}
-  const long int friend volatile constexpr unsigned inline long m2();
-  // CHECK-MESSAGES: :[[@LINE-1]]:67: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    friend constexpr inline auto m2() -> const long int volatile unsigned long;{{$}}
-  int virtual unsigned m3();
-  // CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto m3() -> int unsigned;{{$}}
-  template <typename T>
-  int friend unsigned m4();
-  // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    friend auto m4() -> int unsigned;{{$}}
+    int friend unsigned m1();
+// CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    friend auto m1() -> int unsigned;{{$}}
+    int friend unsigned m1() { return 0; }
+// CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    friend auto m1() -> int unsigned { return 0; }{{$}}
+    const long int friend volatile constexpr unsigned inline long m2();
+// CHECK-MESSAGES: :[[@LINE-1]]:67: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    friend constexpr inline auto m2() -> const long int volatile unsigned long;{{$}}
+    int virtual unsigned m3();
+// CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto m3() -> int unsigned;{{$}}
+    template <typename T>
+    int friend unsigned m4();
+// CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    friend auto m4() -> int unsigned;{{$}}
 };
 
 //
@@ -163,7 +163,7 @@ class DDD {
 //
 
 namespace N {
-int e1();
+    int e1();
 }
 // CHECK-MESSAGES: :[[@LINE-2]]:9: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}    auto e1() -> int;{{$}}
@@ -178,10 +178,10 @@ int (*e3())(double);
 // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}int (*e3())(double);{{$}}
 struct A;
-int A::*e5();
+int A::* e5();
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}int A::* e5();{{$}}
-int std::vector<std::string>::*e6();
+int std::vector<std::string>::* e6();
 // CHECK-MESSAGES: :[[@LINE-1]]:33: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}int std::vector<std::string>::* e6();{{$}}
 int (std::vector<std::string>::*e7())(double);
@@ -201,19 +201,19 @@ inline const std::vector<std::string> volatile e2();
 inline std::vector<std::string> const volatile e2();
 // CHECK-MESSAGES: :[[@LINE-1]]:48: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}inline auto e2() -> std::vector<std::string> const volatile;{{$}}
-int *e8();
+int* e8();
 // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto e8() -> int*;{{$}}
-static const char *e9(void *user_data);
+static const char* e9(void* user_data);
 // CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}static auto e9(void* user_data) -> const char*;{{$}}
-static const char *const e10(void *user_data);
+static const char* const e10(void* user_data);
 // CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}static auto e10(void* user_data) -> const char* const;{{$}}
-static const char **volatile *const &e11(void *user_data);
+static const char** volatile * const & e11(void* user_data);
 // CHECK-MESSAGES: :[[@LINE-1]]:40: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}static auto e11(void* user_data) -> const char** volatile * const &;{{$}}
-static const char *const *const *const e12(void *user_data);
+static const char* const * const * const e12(void* user_data);
 // CHECK-MESSAGES: :[[@LINE-1]]:42: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}static auto e12(void* user_data) -> const char* const * const * const;{{$}}
 struct A e13();
@@ -227,13 +227,14 @@ struct A e13();
 const auto ded1();
 // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto ded1() -> const auto;{{$}}
-const auto &ded2();
+const auto& ded2();
 // CHECK-MESSAGES: :[[@LINE-1]]:13: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto ded2() -> const auto&;{{$}}
 
 decltype(auto) ded3();
 // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto ded3() -> decltype(auto);{{$}}
+
 
 decltype(1 + 2) dec1() { return 1 + 2; }
 // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
@@ -247,7 +248,7 @@ typename decltype(std::declval<T>())::value_type dec3();
 // CHECK-MESSAGES: :[[@LINE-1]]:50: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto dec3() -> typename decltype(std::declval<T>())::value_type;{{$}}
 template <typename T>
-decltype(std::declval<T>()) *dec4();
+decltype(std::declval<T>())* dec4();
 // CHECK-MESSAGES: :[[@LINE-1]]:30: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto dec4() -> decltype(std::declval<T>())*;{{$}}
 
@@ -256,45 +257,45 @@ decltype(std::declval<T>()) *dec4();
 //
 
 struct B {
-  B &operator=(const B &);
-  // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto operator=(const B&) -> B&;{{$}}
+    B& operator=(const B&);
+// CHECK-MESSAGES: :[[@LINE-1]]:8: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto operator=(const B&) -> B&;{{$}}
+    
+    double base1(int, bool b);
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base1(int, bool b) -> double;{{$}}
 
-  double base1(int, bool b);
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base1(int, bool b) -> double;{{$}}
+    virtual double base2(int, bool b) {}
+// CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base2(int, bool b) -> double {}{{$}}
 
-  virtual double base2(int, bool b) {}
-  // CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base2(int, bool b) -> double {}{{$}}
+    virtual float base3() const = 0;
+// CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base3() const -> float = 0;{{$}}
 
-  virtual float base3() const = 0;
-  // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base3() const -> float = 0;{{$}}
+    virtual float base4() volatile = 0;
+// CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base4() volatile -> float = 0;{{$}}
 
-  virtual float base4() volatile = 0;
-  // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base4() volatile -> float = 0;{{$}}
+    double base5(int, bool b) &&;
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base5(int, bool b) && -> double;{{$}}
 
-  double base5(int, bool b) &&;
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base5(int, bool b) && -> double;{{$}}
+    double base6(int, bool b) const &&;
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base6(int, bool b) const && -> double;{{$}}
 
-  double base6(int, bool b) const &&;
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base6(int, bool b) const && -> double;{{$}}
+    double base7(int, bool b) const & = delete;
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base7(int, bool b) const & -> double = delete;{{$}}
 
-  double base7(int, bool b) const & = delete;
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base7(int, bool b) const & -> double = delete;{{$}}
+    double base8(int, bool b) const volatile & = delete;
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base8(int, bool b) const volatile & -> double = delete;{{$}}
 
-  double base8(int, bool b) const volatile & = delete;
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base8(int, bool b) const volatile & -> double = delete;{{$}}
-
-  virtual const char *base9() const noexcept { return ""; }
-  // CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base9() const noexcept -> const char * { return ""; }{{$}}
+    virtual const char * base9() const noexcept { return ""; }
+// CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base9() const noexcept -> const char * { return ""; }{{$}}
 };
 
 double B::base1(int, bool b) {}
@@ -302,29 +303,29 @@ double B::base1(int, bool b) {}
 // CHECK-FIXES: {{^}}auto B::base1(int, bool b) -> double {}{{$}}
 
 struct D : B {
-  virtual double f1(int, bool b) final;
-  // CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto f1(int, bool b) -> double final;{{$}}
+    virtual double f1(int, bool b) final;
+// CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto f1(int, bool b) -> double final;{{$}}
 
-  virtual double base2(int, bool b) override;
-  // CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base2(int, bool b) -> double override;{{$}}
+    virtual double base2(int, bool b) override;
+// CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base2(int, bool b) -> double override;{{$}}
 
-  virtual float base3() const override final {}
-  // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    virtual auto base3() const -> float override final { }{{$}}
+    virtual float base3() const override final { }
+// CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    virtual auto base3() const -> float override final { }{{$}}
 
-  const char *base9() const noexcept override { return ""; }
-  // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto base9() const noexcept -> const char * override { return ""; }{{$}}
+    const char * base9() const noexcept override { return ""; }
+// CHECK-MESSAGES: :[[@LINE-1]]:18: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto base9() const noexcept -> const char * override { return ""; }{{$}}
 
-  int f2() __restrict;
-  // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto f2() __restrict -> int;{{$}}
+    int f2() __restrict;
+// CHECK-MESSAGES: :[[@LINE-1]]:9: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto f2() __restrict -> int;{{$}}
 
-  volatile int *__restrict f3() const __restrict noexcept;
-  // CHECK-MESSAGES: :[[@LINE-1]]:30: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto f3() const __restrict noexcept -> volatile int* __restrict;{{$}}
+    volatile int* __restrict f3() const __restrict noexcept;
+// CHECK-MESSAGES: :[[@LINE-1]]:30: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto f3() const __restrict noexcept -> volatile int* __restrict;{{$}}
 };
 
 //
@@ -342,26 +343,26 @@ int g2 [[noreturn]] ();
 // CHECK-FIXES: {{^}}auto g2 {{[[][[]}}noreturn{{[]][]]}} () -> int;{{$}}
 int unsigned g3() __attribute__((cdecl)); // FunctionTypeLoc is null.
 // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-int unsigned __attribute__((cdecl)) g3(); // FunctionTypeLoc is null.
+int unsigned __attribute__((cdecl)) g3() ; // FunctionTypeLoc is null.
 // CHECK-MESSAGES: :[[@LINE-1]]:37: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-__attribute__((cdecl)) int unsigned g3(); // FunctionTypeLoc is null.
+__attribute__((cdecl)) int unsigned g3() ; // FunctionTypeLoc is null.
 // CHECK-MESSAGES: :[[@LINE-1]]:37: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 
 //
 // Templates
 //
 template <typename Container>
-[[maybe_unused]] typename Container::value_type const volatile &&t1(Container &C) noexcept;
+[[maybe_unused]] typename Container::value_type const volatile&& t1(Container& C) noexcept;
 // CHECK-MESSAGES: :[[@LINE-1]]:66: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}{{[[][[]}}maybe_unused{{[]][]]}} auto t1(Container& C) noexcept -> typename Container::value_type const volatile&&;{{$}}
 template <typename T>
 class BB {
-  using type = int;
+    using type = int;
 
-  template <typename U>
-  typename BB<U>::type m1();
-  // CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto m1() -> typename BB<U>::type;{{$}}
+    template <typename U>
+    typename BB<U>::type m1();
+// CHECK-MESSAGES: :[[@LINE-1]]:26: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto m1() -> typename BB<U>::type;{{$}}
 };
 
 //
@@ -425,7 +426,7 @@ Real<PRECISION> h8() { return 0.; }
 
 #define MAYBE_UNUSED_MACRO [[maybe_unused]]
 template <typename Container>
-MAYBE_UNUSED_MACRO typename Container::value_type const volatile **const h9(Container &C) noexcept;
+MAYBE_UNUSED_MACRO typename Container::value_type const volatile** const h9(Container& C) noexcept;
 // CHECK-MESSAGES: :[[@LINE-1]]:74: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}MAYBE_UNUSED_MACRO auto h9(Container& C) noexcept -> typename Container::value_type const volatile** const;{{$}}
 
@@ -450,39 +451,36 @@ unsigned STATIC_CONSTEXPR int h12();
 #define STATIC_CONSTEXPR_LONG static constexpr long
 unsigned STATIC_CONSTEXPR_LONG int h13();
 // CHECK-MESSAGES: :[[@LINE-1]]:36: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-DEPRECATED const int &h14();
+DEPRECATED const int& h14();
 // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}DEPRECATED auto h14() -> const int&;{{$}}
-DEPRECATED const long static volatile unsigned &h15();
+DEPRECATED const long static volatile unsigned& h15();
 // CHECK-MESSAGES: :[[@LINE-1]]:49: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}DEPRECATED static auto h15() -> const long volatile unsigned&;{{$}}
 #define WRAP(x) x
-WRAP(const)
-int &h16();
+WRAP(const) int& h16();
 // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-WRAP(CONST)
-int &h16();
+WRAP(CONST) int& h16();
 // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 #define CONCAT(a, b) a##b
-CONCAT(con, st)
-int &h16();
+CONCAT(con, st) int& h16();
 // CHECK-MESSAGES: :[[@LINE-1]]:22: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-DEPRECATED const UNSIGNED &h17();
+DEPRECATED const UNSIGNED& h17();
 // CHECK-MESSAGES: :[[@LINE-1]]:28: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}DEPRECATED auto h17() -> const UNSIGNED&;{{$}}
-DEPRECATED CONST UNSIGNED STATIC &h18();
+DEPRECATED CONST UNSIGNED STATIC& h18();
 // CHECK-MESSAGES: :[[@LINE-1]]:35: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}DEPRECATED STATIC auto h18() -> CONST UNSIGNED &;{{$}}
 #define CONST_CAT con##st
-CONST_CAT int &h19();
+CONST_CAT int& h19();
 // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto h19() -> CONST_CAT int&;{{$}}
 #define CONST_F_MACRO WRAP(CONST_CAT)
-CONST_F_MACRO int &h19();
+CONST_F_MACRO int& h19();
 // CHECK-MESSAGES: :[[@LINE-1]]:20: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto h19() -> CONST_F_MACRO int&;{{$}}
 // Macro COMMAND_LINE_INT is defined on the command line via: -DCOMMAND_LINE_INT=int
-const COMMAND_LINE_INT &h20();
+const COMMAND_LINE_INT& h20();
 // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto h20() -> const COMMAND_LINE_INT&;{{$}}
 decltype(COMMAND_LINE_INT{}) h21();
@@ -492,9 +490,7 @@ decltype(COMMAND_LINE_INT{}) h21();
 //
 // Name collisions
 //
-struct Object {
-  long long value;
-};
+struct Object { long long value; };
 
 Object j1(unsigned Object) { return {Object * 2}; }
 // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
@@ -502,10 +498,10 @@ Object j1(unsigned Object) { return {Object * 2}; }
 ::Object j1(unsigned Object);
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto j1(unsigned Object) -> ::Object;{{$}}
-const Object &j2(unsigned a, int b, char Object, long l);
+const Object& j2(unsigned a, int b, char Object, long l);
 // CHECK-MESSAGES: :[[@LINE-1]]:15: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}const Object& j2(unsigned a, int b, char Object, long l);{{$}}
-const struct Object &j2(unsigned a, int b, char Object, long l);
+const struct Object& j2(unsigned a, int b, char Object, long l);
 // CHECK-MESSAGES: :[[@LINE-1]]:22: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto j2(unsigned a, int b, char Object, long l) -> const struct Object&;{{$}}
 std::vector<Object> j3(unsigned Object);
@@ -538,35 +534,35 @@ std::array<decltype(Size), (Size * 2) + 1> j8(unsigned Size);
 // CHECK-MESSAGES: :[[@LINE-1]]:44: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}std::array<decltype(Size), (Size * 2) + 1> j8(unsigned Size);{{$}}
 using std::ostream;
-std::tuple<int, std::string, ostream> &operator<<(ostream &ostream, float i);
+std::tuple<int, std::string, ostream>& operator<<(ostream& ostream, float i);
 // CHECK-MESSAGES: :[[@LINE-1]]:40: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}std::tuple<int, std::string, ostream>& operator<<(ostream& ostream, float i);{{$}}
 
 class CC {
-  int Object;
-  struct Object m();
-  // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto m() -> struct Object;{{$}}
+    int Object;
+    struct Object m();
+// CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto m() -> struct Object;{{$}}
 };
 Object CC::m() { return {0}; }
 // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}auto CC::m() -> Object { return {0}; }{{$}}
 class DD : public CC {
-  ::Object g();
-  // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}    auto g() -> ::Object;{{$}}
+    ::Object g();
+// CHECK-MESSAGES: :[[@LINE-1]]:14: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}    auto g() -> ::Object;{{$}}
 };
 Object DD::g() {
-  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
-  // CHECK-FIXES: {{^}}auto DD::g() -> Object {{{$}}
-  return {0};
+// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
+// CHECK-FIXES: {{^}}auto DD::g() -> Object {{{$}}
+    return {0};
 }
 
 //
 // bug 44206, no rewrite should happen due to collision with parameter name
 //
 
-ostream &operator<<(ostream &ostream, int i);
+ostream& operator<<(ostream& ostream, int i);
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: use a trailing return type for this function [modernize-use-trailing-return-type]
 // CHECK-FIXES: {{^}}ostream& operator<<(ostream& ostream, int i);{{$}}
 
@@ -579,8 +575,7 @@ auto f(int) -> int;
 auto f(int arg) -> int;
 auto f(int arg1, int arg2, int arg3) -> int;
 auto f(int arg1, int arg2, int arg3, ...) -> int;
-template <typename T>
-auto f(T t) -> int;
+template <typename T> auto f(T t) -> int;
 
 auto ff();
 
@@ -589,14 +584,14 @@ void c(int arg);
 void c(int arg) { return; }
 
 struct D2 : B {
-  D2();
-  virtual ~D2();
+    D2();
+    virtual ~D2();
+    
+    virtual auto f1(int, bool b) -> double final;
+    virtual auto base2(int, bool b) -> double override;
+    virtual auto base3() const -> float override final { }
 
-  virtual auto f1(int, bool b) -> double final;
-  virtual auto base2(int, bool b) -> double override;
-  virtual auto base3() const -> float override final {}
-
-  operator double();
+    operator double();
 };
 
 auto l1 = [](int arg) {};

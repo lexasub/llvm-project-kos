@@ -39,8 +39,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/ParentMap.h"
@@ -56,8 +56,7 @@ using namespace trans;
 
 namespace {
 
-class UnbridgedCastRewriter
-    : public RecursiveASTVisitor<UnbridgedCastRewriter> {
+class UnbridgedCastRewriter : public RecursiveASTVisitor<UnbridgedCastRewriter>{
   MigrationPass &Pass;
   IdentifierInfo *SelfII;
   std::unique_ptr<ParentMap> StmtMap;
@@ -67,7 +66,7 @@ class UnbridgedCastRewriter
 
 public:
   UnbridgedCastRewriter(MigrationPass &pass)
-      : Pass(pass), ParentD(nullptr), Body(nullptr) {
+    : Pass(pass), ParentD(nullptr), Body(nullptr) {
     SelfII = &Pass.Ctx.Idents.get("self");
   }
 
@@ -95,14 +94,12 @@ public:
     Expr *castExpr = E->getSubExpr();
     QualType castExprType = castExpr->getType();
 
-    if (castType->isObjCRetainableType() ==
-        castExprType->isObjCRetainableType())
+    if (castType->isObjCRetainableType() == castExprType->isObjCRetainableType())
       return true;
 
     bool exprRetainable = castExprType->isObjCIndirectLifetimeType();
     bool castRetainable = castType->isObjCIndirectLifetimeType();
-    if (exprRetainable == castRetainable)
-      return true;
+    if (exprRetainable == castRetainable) return true;
 
     if (castExpr->isNullPointerConstant(Pass.Ctx,
                                         Expr::NPC_ValueDependentIsNull))
@@ -122,8 +119,7 @@ public:
 
 private:
   void transformNonObjCToObjCCast(CastExpr *E) {
-    if (!E)
-      return;
+    if (!E) return;
 
     // Global vars are assumed that are cast as unretained.
     if (isGlobalVar(E))
@@ -145,7 +141,8 @@ private:
           castToObjCObject(E, /*retained=*/false);
           return;
         }
-        if (FD->isGlobal() && FD->getIdentifier() &&
+        if (FD->isGlobal() &&
+            FD->getIdentifier() &&
             ento::cocoa::isRefType(E->getSubExpr()->getType(), "CF",
                                    FD->getIdentifier()->getName())) {
           StringRef fname = FD->getIdentifier()->getName();
@@ -155,12 +152,12 @@ private:
             // Do not migrate to couple of bridge transfer casts which
             // cancel each other out. Leave it unchanged so error gets user
             // attention instead.
-            if (FD->getName() == "CFRetain" && FD->getNumParams() == 1 &&
+            if (FD->getName() == "CFRetain" &&
+                FD->getNumParams() == 1 &&
                 FD->getParent()->isTranslationUnit() &&
                 FD->isExternallyVisible()) {
               Expr *Arg = callE->getArg(0);
-              if (const ImplicitCastExpr *ICE =
-                      dyn_cast<ImplicitCastExpr>(Arg)) {
+              if (const ImplicitCastExpr *ICE = dyn_cast<ImplicitCastExpr>(Arg)) {
                 const Expr *sub = ICE->getSubExpr();
                 QualType T = sub->getType();
                 if (T->isObjCObjectPointerType())
@@ -217,16 +214,13 @@ private:
     }
 
     StringRef bridge;
-    switch (Kind) {
+    switch(Kind) {
     case OBC_Bridge:
-      bridge = "__bridge ";
-      break;
+      bridge = "__bridge "; break;
     case OBC_BridgeTransfer:
-      bridge = "__bridge_transfer ";
-      break;
+      bridge = "__bridge_transfer "; break;
     case OBC_BridgeRetained:
-      bridge = "__bridge_retained ";
-      break;
+      bridge = "__bridge_retained "; break;
     }
 
     TA.clearDiagnostic(diag::err_arc_mismatched_cast,
@@ -279,21 +273,17 @@ private:
 
   void rewriteCastForCFRetain(CastExpr *castE, CallExpr *callE) {
     Transaction Trans(Pass.TA);
-    Pass.TA.replace(callE->getSourceRange(),
-                    callE->getArg(0)->getSourceRange());
+    Pass.TA.replace(callE->getSourceRange(), callE->getArg(0)->getSourceRange());
     rewriteToBridgedCast(castE, OBC_BridgeRetained, Trans);
   }
 
-  void getBlockMacroRanges(CastExpr *E, SourceRange &Outer,
-                           SourceRange &Inner) {
+  void getBlockMacroRanges(CastExpr *E, SourceRange &Outer, SourceRange &Inner) {
     SourceManager &SM = Pass.Ctx.getSourceManager();
     SourceLocation Loc = E->getExprLoc();
     assert(Loc.isMacroID());
     CharSourceRange MacroRange = SM.getImmediateExpansionRange(Loc);
-    SourceRange SubRange =
-        E->getSubExpr()->IgnoreParenImpCasts()->getSourceRange();
-    SourceLocation InnerBegin =
-        SM.getImmediateMacroCallerLoc(SubRange.getBegin());
+    SourceRange SubRange = E->getSubExpr()->IgnoreParenImpCasts()->getSourceRange();
+    SourceLocation InnerBegin = SM.getImmediateMacroCallerLoc(SubRange.getBegin());
     SourceLocation InnerEnd = SM.getImmediateMacroCallerLoc(SubRange.getEnd());
 
     Outer = MacroRange.getAsRange();
@@ -309,7 +299,8 @@ private:
     Pass.TA.insert(InnerRange.getBegin(), "[");
     Pass.TA.insertAfterToken(InnerRange.getEnd(), " copy]");
     Pass.TA.clearDiagnostic(diag::err_arc_mismatched_cast,
-                            diag::err_arc_cast_requires_bridge, OuterRange);
+                            diag::err_arc_cast_requires_bridge,
+                            OuterRange);
   }
 
   void removeBlockReleaseMacro(CastExpr *E) {
@@ -318,7 +309,8 @@ private:
 
     Transaction Trans(Pass.TA);
     Pass.TA.clearDiagnostic(diag::err_arc_mismatched_cast,
-                            diag::err_arc_cast_requires_bridge, OuterRange);
+                            diag::err_arc_cast_requires_bridge,
+                            OuterRange);
     if (!hasSideEffects(E, Pass.Ctx)) {
       if (tryRemoving(cast<Expr>(StmtMap->getParentIgnoreParenCasts(E))))
         return;
@@ -343,8 +335,9 @@ private:
   void transformObjCToNonObjCCast(CastExpr *E) {
     SourceLocation CastLoc = E->getExprLoc();
     if (CastLoc.isMacroID()) {
-      StringRef MacroName = Lexer::getImmediateMacroName(
-          CastLoc, Pass.Ctx.getSourceManager(), Pass.Ctx.getLangOpts());
+      StringRef MacroName = Lexer::getImmediateMacroName(CastLoc,
+                                                    Pass.Ctx.getSourceManager(),
+                                                    Pass.Ctx.getLangOpts());
       if (MacroName == "Block_copy") {
         rewriteBlockCopyMacro(E);
         return;
@@ -372,7 +365,7 @@ private:
       err += "' the result of '";
       err += family == OMF_autorelease ? "autorelease" : "release";
       err += "' message; a __bridge cast may result in a pointer to a "
-             "destroyed object and a __bridge_retained may leak the object";
+          "destroyed object and a __bridge_retained may leak the object";
       Pass.TA.reportError(err, E->getBeginLoc(),
                           E->getSubExpr()->getSourceRange());
       Stmt *parent = E;
@@ -382,9 +375,8 @@ private:
 
       if (ReturnStmt *retS = dyn_cast_or_null<ReturnStmt>(parent)) {
         std::string note = "remove the cast and change return type of function "
-                           "to '";
-        note += E->getSubExpr()->getType().getAsString(
-            Pass.Ctx.getPrintingPolicy());
+            "to '";
+        note += E->getSubExpr()->getType().getAsString(Pass.Ctx.getPrintingPolicy());
         note += "' to have the object automatically autoreleased";
         Pass.TA.reportNote(note, retS->getBeginLoc());
       }
@@ -407,8 +399,8 @@ private:
 
     bool isConsumed = false;
     if (isPassedToCParamWithKnownOwnership(E, isConsumed))
-      return rewriteToBridgedCast(E,
-                                  isConsumed ? OBC_BridgeRetained : OBC_Bridge);
+      return rewriteToBridgedCast(E, isConsumed ? OBC_BridgeRetained
+                                                : OBC_Bridge);
   }
 
   static ObjCMethodFamily getFamilyOfMessage(Expr *E) {
@@ -421,11 +413,12 @@ private:
 
   bool isPassedToCFRetain(Expr *E, CallExpr *&callE) const {
     if ((callE = dyn_cast_or_null<CallExpr>(
-             StmtMap->getParentIgnoreParenImpCasts(E))))
-      if (FunctionDecl *FD =
-              dyn_cast_or_null<FunctionDecl>(callE->getCalleeDecl()))
+                                     StmtMap->getParentIgnoreParenImpCasts(E))))
+      if (FunctionDecl *
+            FD = dyn_cast_or_null<FunctionDecl>(callE->getCalleeDecl()))
         if (FD->getName() == "CFRetain" && FD->getNumParams() == 1 &&
-            FD->getParent()->isTranslationUnit() && FD->isExternallyVisible())
+            FD->getParent()->isTranslationUnit() &&
+            FD->isExternallyVisible())
           return true;
 
     return false;
@@ -433,9 +426,9 @@ private:
 
   bool isPassedToCParamWithKnownOwnership(Expr *E, bool &isConsumed) const {
     if (CallExpr *callE = dyn_cast_or_null<CallExpr>(
-            StmtMap->getParentIgnoreParenImpCasts(E)))
-      if (FunctionDecl *FD =
-              dyn_cast_or_null<FunctionDecl>(callE->getCalleeDecl())) {
+                                     StmtMap->getParentIgnoreParenImpCasts(E)))
+      if (FunctionDecl *
+            FD = dyn_cast_or_null<FunctionDecl>(callE->getCalleeDecl())) {
         unsigned i = 0;
         for (unsigned e = callE->getNumArgs(); i != e; ++i) {
           Expr *arg = callE->getArg(i);

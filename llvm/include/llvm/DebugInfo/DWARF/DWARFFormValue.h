@@ -51,10 +51,10 @@ private:
       const char *cstr;
     };
     const uint8_t *data = nullptr;
-    uint64_t SectionIndex; /// Section index for reference forms.
+    uint64_t SectionIndex;      /// Section index for reference forms.
   };
 
-  dwarf::Form Form; /// Form for this value.
+  dwarf::Form Form;             /// Form for this value.
   dwarf::DwarfFormat Format =
       dwarf::DWARF32;           /// Remember the DWARF format at extract time.
   ValueType Value;              /// Contains all data for the form.

@@ -28,7 +28,7 @@
 namespace lldb_private {
 class Event;
 class Stream;
-} // namespace lldb_private
+}
 
 namespace lldb_private {
 

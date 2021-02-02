@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -triple aarch64-none-linux-gnu %s -emit-llvm -o - \
 // RUN:   -target-feature +sve,+bf16 | FileCheck %s
 
-template <typename T> struct S {};
+template<typename T> struct S {};
 
 // CHECK: _Z2f11SIu10__SVInt8_tE
 void f1(S<__SVInt8_t>) {}

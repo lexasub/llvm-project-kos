@@ -6,18 +6,14 @@ struct B {
   void f(char);
   void g(char);
   enum E { e };
-  union {
-    int x;
-  };
+  union { int x; };
 
   enum class EC { ec }; // expected-warning 0-1 {{C++11}}
 
   void f2(char);
   void g2(char);
   enum E2 { e2 };
-  union {
-    int x2;
-  };
+  union { int x2; };
 };
 
 class C {
@@ -27,16 +23,16 @@ class C {
 struct D : B {};
 
 class D2 : public B {
+  using B::f;
   using B::E;
   using B::e;
-  using B::f;
   using B::x;
   using C::g; // expected-error{{using declaration refers into 'C::', which is not a base class of 'D2'}}
 
   // These are valid in C++98 but not in C++11.
+  using D::f2;
   using D::E2;
   using D::e2;
-  using D::f2;
   using D::x2;
 #if __cplusplus >= 201103L
   // expected-error@-5 {{using declaration refers into 'D::', which is not a base class of 'D2'}}
@@ -50,37 +46,37 @@ class D2 : public B {
 };
 
 namespace test1 {
-struct Base {
-  int foo();
-};
+  struct Base {
+    int foo();
+  };
 
-struct Unrelated {
-  int foo();
-};
+  struct Unrelated {
+    int foo();
+  };
 
-struct Subclass : Base {
-};
+  struct Subclass : Base {
+  };
 
-namespace InnerNS {
-int foo();
-}
+  namespace InnerNS {
+    int foo();
+  }
 
-struct B : Base {
-};
+  struct B : Base {
+  };
 
-// We should be able to diagnose these without instantiation.
-template <class T> struct C : Base {
-  using Base::bar;      // expected-error {{no member named 'bar'}}
-  using InnerNS::foo;   // expected-error {{not a class}}
-  using Unrelated::foo; // expected-error {{not a base class}}
+  // We should be able to diagnose these without instantiation.
+  template <class T> struct C : Base {
+    using InnerNS::foo; // expected-error {{not a class}}
+    using Base::bar; // expected-error {{no member named 'bar'}}
+    using Unrelated::foo; // expected-error {{not a base class}}
 
-  // In C++98, it's hard to see that these are invalid, because indirect
-  // references to base class members are permitted.
-  using C::foo;
-  using Subclass::foo;
+    // In C++98, it's hard to see that these are invalid, because indirect
+    // references to base class members are permitted.
+    using C::foo;
+    using Subclass::foo;
 #if __cplusplus >= 201103L
-  // expected-error@-3 {{refers to its own class}}
-  // expected-error@-3 {{not a base class}}
+    // expected-error@-3 {{refers to its own class}}
+    // expected-error@-3 {{not a base class}}
 #endif
-};
-} // namespace test1
+  };
+}

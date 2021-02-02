@@ -13,9 +13,9 @@ struct R {
   // CHECK: CXXConstructorDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:15> col:3 used constexpr R 'void () noexcept' default trivial
   ~R() {} // not trivial
   // CHECK: CXXDestructorDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:9> col:3 used ~R 'void () noexcept'
-  R(const R &) = delete;
+  R(const R&) = delete;
   // CHECK: CXXConstructorDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:22> col:3 R 'void (const R &)' delete trivial
-  R(R &&) = default;
+  R(R&&) = default;
   // CHECK: CXXConstructorDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:18> col:3 constexpr R 'void (R &&)' default trivial noexcept-unevaluated
 
   // CHECK: CXXMethodDecl 0x{{[^ ]*}} <line:[[@LINE-10]]:8> col:8 implicit operator= 'R &(const R &)' inline default_delete trivial noexcept-unevaluated
@@ -115,7 +115,7 @@ void j(void) noexcept(false);
 void k(void) noexcept(1);
 // CHECK: FunctionDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, col:24> col:6 k 'void () noexcept(1)'
 template <typename T>
-T l(T &);
+T l(T&);
 // CHECK: FunctionTemplateDecl 0x{{[^ ]*}} <line:[[@LINE-2]]:1, line:[[@LINE-1]]:7> col:3 l
 // CHECK-NEXT: TemplateTypeParmDecl 0x{{[^ ]*}} <line:[[@LINE-3]]:11, col:20> col:20 referenced typename depth 0 index 0 T
 // CHECK-NEXT: FunctionDecl 0x{{[^ ]*}} <line:[[@LINE-3]]:1, col:7> col:3 l 'T (T &)'

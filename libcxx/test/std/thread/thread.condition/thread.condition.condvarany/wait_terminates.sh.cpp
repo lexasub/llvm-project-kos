@@ -54,6 +54,7 @@
 //     terminate is called (If the program exits with a 0 exit code we know
 //     that terminate has been called)
 
+
 #include <condition_variable>
 #include <atomic>
 #include <thread>
@@ -70,23 +71,27 @@ void my_terminate() {
 
 // The predicate used in the cv.wait calls.
 bool pred = false;
-bool pred_function() { return pred == true; }
+bool pred_function() {
+  return pred == true;
+}
 
-class ThrowingMutex {
+class ThrowingMutex
+{
   std::atomic_bool locked;
   unsigned state = 0;
   ThrowingMutex(const ThrowingMutex&) = delete;
   ThrowingMutex& operator=(const ThrowingMutex&) = delete;
-
 public:
-  ThrowingMutex() { locked = false; }
+  ThrowingMutex() {
+    locked = false;
+  }
   ~ThrowingMutex() = default;
 
   void lock() {
     locked = true;
     if (++state == 2) {
       assert(pred); // Check that we actually waited until we were signaled.
-      throw 1;      // this throw should end up calling terminate()
+      throw 1;  // this throw should end up calling terminate()
     }
   }
 
@@ -98,8 +103,7 @@ ThrowingMutex mut;
 std::condition_variable_any cv;
 
 void signal_me() {
-  while (mut.isLocked()) {
-  } // wait until T1 releases mut inside the cv.wait call.
+  while (mut.isLocked()) {} // wait until T1 releases mut inside the cv.wait call.
   pred = true;
   cv.notify_one();
 }
@@ -107,41 +111,26 @@ void signal_me() {
 typedef std::chrono::system_clock Clock;
 typedef std::chrono::milliseconds MS;
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   assert(argc == 2);
   int id = std::stoi(argv[1]);
   assert(id >= 1 && id <= 6);
-  std::set_terminate(
-      my_terminate); // set terminate after std::stoi because it can throw.
+  std::set_terminate(my_terminate); // set terminate after std::stoi because it can throw.
   MS wait(250);
   try {
     mut.lock();
     assert(pred == false);
     support::make_test_thread(signal_me).detach();
     switch (id) {
-    case 1:
-      cv.wait(mut);
-      break;
-    case 2:
-      cv.wait(mut, pred_function);
-      break;
-    case 3:
-      cv.wait_for(mut, wait);
-      break;
-    case 4:
-      cv.wait_for(mut, wait, pred_function);
-      break;
-    case 5:
-      cv.wait_until(mut, Clock::now() + wait);
-      break;
-    case 6:
-      cv.wait_until(mut, Clock::now() + wait, pred_function);
-      break;
-    default:
-      assert(false);
+      case 1: cv.wait(mut); break;
+      case 2: cv.wait(mut, pred_function); break;
+      case 3: cv.wait_for(mut, wait); break;
+      case 4: cv.wait_for(mut, wait, pred_function); break;
+      case 5: cv.wait_until(mut, Clock::now() + wait); break;
+      case 6: cv.wait_until(mut, Clock::now() + wait, pred_function); break;
+      default: assert(false);
     }
-  } catch (...) {
-  }
+  } catch (...) {}
   assert(false);
 
   return 0;

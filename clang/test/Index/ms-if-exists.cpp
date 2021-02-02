@@ -1,13 +1,13 @@
-template <typename T>
+template<typename T>
 void f(T t) {
   __if_exists(T::foo) {
-    {}
+    { }
     t.foo();
   }
 
   __if_not_exists(T::bar) {
     int *i = t; // expected-error{{no viable conversion from 'HasFoo' to 'int *'}}
-    {}
+    { }
   }
 }
 

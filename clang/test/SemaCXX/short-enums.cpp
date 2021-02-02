@@ -8,10 +8,10 @@ template <typename T>
 struct A {};
 
 template <E Enum>
-struct B : A<B<Enum>> {};
+struct B : A<B<Enum> > {};
 
 void bar(int x) {
   switch (x) {
-  case sizeof(B<VALUE_1>):;
+    case sizeof(B<VALUE_1>): ;
   }
 }

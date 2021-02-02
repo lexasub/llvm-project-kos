@@ -17,15 +17,12 @@
 
 /* Define the default attributes for the functions in this file. */
 #define __DEFAULT_FN_ATTRS128                                                  \
-  __attribute__((__always_inline__, __nodebug__,                               \
-                 __target__("avx512vpopcntdq,avx512vl"),                       \
-                 __min_vector_width__(128)))
+  __attribute__((__always_inline__, __nodebug__, __target__("avx512vpopcntdq,avx512vl"), __min_vector_width__(128)))
 #define __DEFAULT_FN_ATTRS256                                                  \
-  __attribute__((__always_inline__, __nodebug__,                               \
-                 __target__("avx512vpopcntdq,avx512vl"),                       \
-                 __min_vector_width__(256)))
+  __attribute__((__always_inline__, __nodebug__, __target__("avx512vpopcntdq,avx512vl"), __min_vector_width__(256)))
 
-static __inline__ __m128i __DEFAULT_FN_ATTRS128 _mm_popcnt_epi64(__m128i __A) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS128
+_mm_popcnt_epi64(__m128i __A) {
   return (__m128i)__builtin_ia32_vpopcntq_128((__v2di)__A);
 }
 
@@ -40,7 +37,8 @@ _mm_maskz_popcnt_epi64(__mmask8 __U, __m128i __A) {
   return _mm_mask_popcnt_epi64((__m128i)_mm_setzero_si128(), __U, __A);
 }
 
-static __inline__ __m128i __DEFAULT_FN_ATTRS128 _mm_popcnt_epi32(__m128i __A) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS128
+_mm_popcnt_epi32(__m128i __A) {
   return (__m128i)__builtin_ia32_vpopcntd_128((__v4si)__A);
 }
 

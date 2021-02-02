@@ -8,16 +8,16 @@
 #define VISIBLE __attribute__((__visibility__("default")))
 
 namespace ns HIDDEN {
-struct A {};
-template <typename T> struct B { static A a; };
-template <typename T> A B<T>::a;
+    struct A { };
+    template <typename T> struct B { static A a; };
+    template <typename T> A B<T>::a;
 
-// CHECK: @_ZN2ns1BIiE1aE = weak_odr global
-// CHECK-NOT: hidden
-template VISIBLE A B<int>::a;
-} // namespace HIDDEN
+    // CHECK: @_ZN2ns1BIiE1aE = weak_odr global
+    // CHECK-NOT: hidden
+    template VISIBLE A B<int>::a;
+}
 
-struct C {};
+struct C { };
 template <typename T> struct D { static C c; };
 template <typename T> C D<T>::c;
 

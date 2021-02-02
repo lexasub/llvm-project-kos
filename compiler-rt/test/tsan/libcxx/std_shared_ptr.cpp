@@ -1,6 +1,6 @@
 // RUN: %clangxx_tsan -O1 %s %link_libcxx_tsan -o %t && %run %t 2>&1 | FileCheck %s
-#include <memory>
 #include <stdio.h>
+#include <memory>
 #include <thread>
 
 int main() {
@@ -10,9 +10,9 @@ int main() {
   std::thread t2;
 
   {
-    auto thingy = std::make_shared<int>(42);
-    t1 = std::thread([thingy, &v1] { v1 = *thingy; });
-    t2 = std::thread([thingy, &v2] { v2 = *thingy; });
+     auto thingy = std::make_shared<int>(42);
+     t1 = std::thread([thingy, &v1] { v1 = *thingy; });
+     t2 = std::thread([thingy, &v2] { v2 = *thingy; });
   }
 
   t1.join();

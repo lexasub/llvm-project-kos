@@ -321,8 +321,8 @@ StopReplyStop::create(StringRef Response, support::endianness Endian,
     return RegistersOr.takeError();
 
   return std::make_unique<StopReplyStop>(Signal, Thread, Name,
-                                         std::move(ThreadPcs),
-                                         std::move(*RegistersOr), Reason);
+                                          std::move(ThreadPcs),
+                                          std::move(*RegistersOr), Reason);
 }
 
 Expected<std::unique_ptr<StopReplyExit>>

@@ -1,5 +1,6 @@
 // RUN: %clang_cc1 -triple x86_64-gnu-linux -fsanitize=array-bounds,enum,float-cast-overflow,integer-divide-by-zero,implicit-unsigned-integer-truncation,implicit-signed-integer-truncation,implicit-integer-sign-change,unsigned-integer-overflow,signed-integer-overflow,shift-base,shift-exponent -O3 -disable-llvm-passes -emit-llvm -o - %s | FileCheck %s
 
+
 // CHECK: define{{.*}} void @_Z6BoundsRA10_KiU7_ExtIntILi15EEi
 void Bounds(const int (&Array)[10], _ExtInt(15) Index) {
   int I1 = Array[Index];
@@ -11,11 +12,12 @@ void Bounds(const int (&Array)[10], _ExtInt(15) Index) {
 
 // CHECK: define{{.*}} void @_Z4Enumv
 void Enum() {
-  enum E1 { e1a = 0,
-            e1b = 127 } e1;
-  enum E2 { e2a = -1,
-            e2b = 64 } e2;
-  enum E3 { e3a = (1u << 31) - 1 } e3;
+  enum E1 { e1a = 0, e1b = 127 }
+  e1;
+  enum E2 { e2a = -1, e2b = 64 }
+  e2;
+  enum E3 { e3a = (1u << 31) - 1 }
+  e3;
 
   _ExtInt(34) a = e1;
   // CHECK: %[[E1:.+]] = icmp ule i32 %{{.*}}, 127
@@ -207,7 +209,7 @@ void SignedIntegerOverflow(_ExtInt(93) BiggestE,
   // CHECK: br i1 %[[CHECK]]
   // CHECK: call void @__ubsan_handle_sub_overflow_abort
 
-  JustRightE *JustRightE;
+  JustRightE * JustRightE;
   // CHECK: %[[LOAD1:.+]] = load i31, i31*
   // CHECK: %[[LOAD2:.+]] = load i31, i31*
   // CHECK: %[[OFCALL:.+]] = call { i31, i1 } @llvm.smul.with.overflow.i31(i31 %[[LOAD1]], i31 %[[LOAD2]])

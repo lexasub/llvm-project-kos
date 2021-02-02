@@ -15,6 +15,7 @@
 
 #include <array>
 
+
 using namespace llvm;
 
 static_assert(std::is_trivially_copyable<Optional<int>>::value,
@@ -42,15 +43,18 @@ struct NonDefaultConstructible {
   static unsigned CopyConstructions;
   static unsigned Destructions;
   static unsigned CopyAssignments;
-  explicit NonDefaultConstructible(int) {}
-  NonDefaultConstructible(const NonDefaultConstructible &) {
+  explicit NonDefaultConstructible(int) {
+  }
+  NonDefaultConstructible(const NonDefaultConstructible&) {
     ++CopyConstructions;
   }
-  NonDefaultConstructible &operator=(const NonDefaultConstructible &) {
+  NonDefaultConstructible &operator=(const NonDefaultConstructible&) {
     ++CopyAssignments;
     return *this;
   }
-  ~NonDefaultConstructible() { ++Destructions; }
+  ~NonDefaultConstructible() {
+    ++Destructions;
+  }
   static void ResetCounts() {
     CopyConstructions = 0;
     Destructions = 0;
@@ -203,7 +207,7 @@ struct MultiArgConstructor {
   int x, y;
   MultiArgConstructor(int x, int y) : x(x), y(y) {}
   explicit MultiArgConstructor(int x, bool positive)
-      : x(x), y(positive ? x : -x) {}
+    : x(x), y(positive ? x : -x) {}
 
   MultiArgConstructor(const MultiArgConstructor &) = delete;
   MultiArgConstructor(MultiArgConstructor &&) = delete;
@@ -211,8 +215,12 @@ struct MultiArgConstructor {
   MultiArgConstructor &operator=(MultiArgConstructor &&) = delete;
 
   static unsigned Destructions;
-  ~MultiArgConstructor() { ++Destructions; }
-  static void ResetCounts() { Destructions = 0; }
+  ~MultiArgConstructor() {
+    ++Destructions;
+  }
+  static void ResetCounts() {
+    Destructions = 0;
+  }
 };
 unsigned MultiArgConstructor::Destructions = 0;
 
@@ -222,7 +230,7 @@ static_assert(!std::is_trivially_copyable<Optional<MultiArgConstructor>>::value,
 TEST(OptionalTest, Emplace) {
   MultiArgConstructor::ResetCounts();
   Optional<MultiArgConstructor> A;
-
+  
   A.emplace(1, 2);
   EXPECT_TRUE(A.hasValue());
   EXPECT_EQ(1, A->x);
@@ -241,17 +249,20 @@ struct MoveOnly {
   static unsigned Destructions;
   static unsigned MoveAssignments;
   int val;
-  explicit MoveOnly(int val) : val(val) {}
-  MoveOnly(MoveOnly &&other) {
+  explicit MoveOnly(int val) : val(val) {
+  }
+  MoveOnly(MoveOnly&& other) {
     val = other.val;
     ++MoveConstructions;
   }
-  MoveOnly &operator=(MoveOnly &&other) {
+  MoveOnly &operator=(MoveOnly&& other) {
     val = other.val;
     ++MoveAssignments;
     return *this;
   }
-  ~MoveOnly() { ++Destructions; }
+  ~MoveOnly() {
+    ++Destructions;
+  }
   static void ResetCounts() {
     MoveConstructions = 0;
     Destructions = 0;
@@ -349,16 +360,19 @@ struct Immovable {
   static unsigned Constructions;
   static unsigned Destructions;
   int val;
-  explicit Immovable(int val) : val(val) { ++Constructions; }
-  ~Immovable() { ++Destructions; }
+  explicit Immovable(int val) : val(val) {
+    ++Constructions;
+  }
+  ~Immovable() {
+    ++Destructions;
+  }
   static void ResetCounts() {
     Constructions = 0;
     Destructions = 0;
   }
-
 private:
   // This should disable all move/copy operations.
-  Immovable(Immovable &&other) = delete;
+  Immovable(Immovable&& other) = delete;
 };
 
 unsigned Immovable::Constructions = 0;

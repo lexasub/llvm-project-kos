@@ -255,8 +255,8 @@ public:
       ExternalTypeModuleMap;
 
   /// Return the list of Clang modules imported by this SymbolFile.
-  const ExternalTypeModuleMap &getExternalTypeModules() const {
-    return m_external_type_modules;
+  const ExternalTypeModuleMap& getExternalTypeModules() const {
+      return m_external_type_modules;
   }
 
   virtual DWARFDIE GetDIE(const DIERef &die_ref);
@@ -398,10 +398,9 @@ protected:
   virtual lldb::TypeSP
   FindDefinitionTypeForDWARFDeclContext(const DWARFDeclContext &die_decl_ctx);
 
-  virtual lldb::TypeSP
-  FindCompleteObjCDefinitionTypeForDIE(const DWARFDIE &die,
-                                       lldb_private::ConstString type_name,
-                                       bool must_be_implementation);
+  virtual lldb::TypeSP FindCompleteObjCDefinitionTypeForDIE(
+      const DWARFDIE &die, lldb_private::ConstString type_name,
+      bool must_be_implementation);
 
   lldb_private::Symbol *
   GetObjCClassSymbol(lldb_private::ConstString objc_class_name);

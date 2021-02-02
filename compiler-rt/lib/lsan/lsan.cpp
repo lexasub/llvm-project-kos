@@ -13,11 +13,11 @@
 
 #include "lsan.h"
 
+#include "sanitizer_common/sanitizer_flags.h"
+#include "sanitizer_common/sanitizer_flag_parser.h"
 #include "lsan_allocator.h"
 #include "lsan_common.h"
 #include "lsan_thread.h"
-#include "sanitizer_common/sanitizer_flag_parser.h"
-#include "sanitizer_common/sanitizer_flags.h"
 
 bool lsan_inited;
 bool lsan_init_is_running;
@@ -25,14 +25,14 @@ bool lsan_init_is_running;
 namespace __lsan {
 
 ///// Interface to the common LSan module. /////
-bool WordIsPoisoned(uptr addr) { return false; }
+bool WordIsPoisoned(uptr addr) {
+  return false;
+}
 
 }  // namespace __lsan
 
-void __sanitizer::BufferedStackTrace::UnwindImpl(uptr pc, uptr bp,
-                                                 void *context,
-                                                 bool request_fast,
-                                                 u32 max_depth) {
+void __sanitizer::BufferedStackTrace::UnwindImpl(
+    uptr pc, uptr bp, void *context, bool request_fast, u32 max_depth) {
   using namespace __lsan;
   uptr stack_top = 0, stack_bottom = 0;
   ThreadContext *t;
@@ -79,11 +79,9 @@ static void InitializeFlags() {
 
   InitializeCommonFlags();
 
-  if (Verbosity())
-    ReportUnrecognizedFlags();
+  if (Verbosity()) ReportUnrecognizedFlags();
 
-  if (common_flags()->help)
-    parser.PrintFlagDescriptions();
+  if (common_flags()->help) parser.PrintFlagDescriptions();
 
   __sanitizer_set_report_path(common_flags()->log_path);
 }
@@ -115,7 +113,8 @@ extern "C" void __lsan_init() {
   lsan_init_is_running = false;
 }
 
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE void __sanitizer_print_stack_trace() {
+extern "C" SANITIZER_INTERFACE_ATTRIBUTE
+void __sanitizer_print_stack_trace() {
   GET_STACK_TRACE_FATAL;
   stack.Print();
 }

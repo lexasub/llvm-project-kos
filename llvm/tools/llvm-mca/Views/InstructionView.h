@@ -1,5 +1,4 @@
-//===----------------------- InstrucionView.h -----------------------------*-
-//C++ -*-===//
+//===----------------------- InstrucionView.h -----------------------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -18,8 +17,8 @@
 
 #include "Views/View.h"
 #include "llvm/MC/MCInstPrinter.h"
-#include "llvm/Support/JSON.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/JSON.h"
 
 namespace llvm {
 namespace mca {
@@ -37,7 +36,8 @@ class InstructionView : public View {
 public:
   void printView(llvm::raw_ostream &) const override {}
   InstructionView(const llvm::MCSubtargetInfo &STI,
-                  llvm::MCInstPrinter &Printer, llvm::ArrayRef<llvm::MCInst> S,
+                  llvm::MCInstPrinter &Printer,
+                  llvm::ArrayRef<llvm::MCInst> S,
                   StringRef MCPU = StringRef())
       : STI(STI), MCIP(Printer), Source(S), MCPU(MCPU),
         InstrStream(InstructionString) {}

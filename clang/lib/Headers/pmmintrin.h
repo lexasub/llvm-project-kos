@@ -13,9 +13,8 @@
 #include <emmintrin.h>
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("sse3"),           \
-                 __min_vector_width__(128)))
+#define __DEFAULT_FN_ATTRS \
+  __attribute__((__always_inline__, __nodebug__, __target__("sse3"), __min_vector_width__(128)))
 
 /// Loads data from an unaligned memory location to elements in a 128-bit
 ///    vector.
@@ -32,7 +31,8 @@
 ///    A pointer to a 128-bit integer vector containing integer values.
 /// \returns A 128-bit vector containing the moved values.
 static __inline__ __m128i __DEFAULT_FN_ATTRS
-_mm_lddqu_si128(__m128i const *__p) {
+_mm_lddqu_si128(__m128i const *__p)
+{
   return (__m128i)__builtin_ia32_lddqu((char const *)__p);
 }
 
@@ -49,8 +49,9 @@ _mm_lddqu_si128(__m128i const *__p) {
 ///    A 128-bit vector of [4 x float] containing the right source operand.
 /// \returns A 128-bit vector of [4 x float] containing the alternating sums and
 ///    differences of both operands.
-static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_addsub_ps(__m128 __a,
-                                                          __m128 __b) {
+static __inline__ __m128 __DEFAULT_FN_ATTRS
+_mm_addsub_ps(__m128 __a, __m128 __b)
+{
   return __builtin_ia32_addsubps((__v4sf)__a, (__v4sf)__b);
 }
 
@@ -71,8 +72,9 @@ static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_addsub_ps(__m128 __a,
 ///    destination.
 /// \returns A 128-bit vector of [4 x float] containing the horizontal sums of
 ///    both operands.
-static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_hadd_ps(__m128 __a,
-                                                        __m128 __b) {
+static __inline__ __m128 __DEFAULT_FN_ATTRS
+_mm_hadd_ps(__m128 __a, __m128 __b)
+{
   return __builtin_ia32_haddps((__v4sf)__a, (__v4sf)__b);
 }
 
@@ -93,8 +95,9 @@ static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_hadd_ps(__m128 __a,
 ///    bits of the destination.
 /// \returns A 128-bit vector of [4 x float] containing the horizontal
 ///    differences of both operands.
-static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_hsub_ps(__m128 __a,
-                                                        __m128 __b) {
+static __inline__ __m128 __DEFAULT_FN_ATTRS
+_mm_hsub_ps(__m128 __a, __m128 __b)
+{
   return __builtin_ia32_hsubps((__v4sf)__a, (__v4sf)__b);
 }
 
@@ -114,7 +117,9 @@ static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_hsub_ps(__m128 __a,
 ///    destination.
 /// \returns A 128-bit vector of [4 x float] containing the moved and duplicated
 ///    values.
-static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_movehdup_ps(__m128 __a) {
+static __inline__ __m128 __DEFAULT_FN_ATTRS
+_mm_movehdup_ps(__m128 __a)
+{
   return __builtin_shufflevector((__v4sf)__a, (__v4sf)__a, 1, 1, 3, 3);
 }
 
@@ -133,7 +138,9 @@ static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_movehdup_ps(__m128 __a) {
 ///    destination.
 /// \returns A 128-bit vector of [4 x float] containing the moved and duplicated
 ///    values.
-static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_moveldup_ps(__m128 __a) {
+static __inline__ __m128 __DEFAULT_FN_ATTRS
+_mm_moveldup_ps(__m128 __a)
+{
   return __builtin_shufflevector((__v4sf)__a, (__v4sf)__a, 0, 0, 2, 2);
 }
 
@@ -150,8 +157,9 @@ static __inline__ __m128 __DEFAULT_FN_ATTRS _mm_moveldup_ps(__m128 __a) {
 ///    A 128-bit vector of [2 x double] containing the right source operand.
 /// \returns A 128-bit vector of [2 x double] containing the alternating sums
 ///    and differences of both operands.
-static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_addsub_pd(__m128d __a,
-                                                           __m128d __b) {
+static __inline__ __m128d __DEFAULT_FN_ATTRS
+_mm_addsub_pd(__m128d __a, __m128d __b)
+{
   return __builtin_ia32_addsubpd((__v2df)__a, (__v2df)__b);
 }
 
@@ -172,8 +180,9 @@ static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_addsub_pd(__m128d __a,
 ///    destination.
 /// \returns A 128-bit vector of [2 x double] containing the horizontal sums of
 ///    both operands.
-static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_hadd_pd(__m128d __a,
-                                                         __m128d __b) {
+static __inline__ __m128d __DEFAULT_FN_ATTRS
+_mm_hadd_pd(__m128d __a, __m128d __b)
+{
   return __builtin_ia32_haddpd((__v2df)__a, (__v2df)__b);
 }
 
@@ -194,8 +203,9 @@ static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_hadd_pd(__m128d __a,
 ///    the destination.
 /// \returns A 128-bit vector of [2 x double] containing the horizontal
 ///    differences of both operands.
-static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_hsub_pd(__m128d __a,
-                                                         __m128d __b) {
+static __inline__ __m128d __DEFAULT_FN_ATTRS
+_mm_hsub_pd(__m128d __a, __m128d __b)
+{
   return __builtin_ia32_hsubpd((__v2df)__a, (__v2df)__b);
 }
 
@@ -214,7 +224,7 @@ static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_hsub_pd(__m128d __a,
 ///    A pointer to a double-precision value to be moved and duplicated.
 /// \returns A 128-bit vector of [2 x double] containing the moved and
 ///    duplicated values.
-#define _mm_loaddup_pd(dp) _mm_load1_pd(dp)
+#define        _mm_loaddup_pd(dp)        _mm_load1_pd(dp)
 
 /// Moves and duplicates the double-precision value in the lower bits of
 ///    a 128-bit vector of [2 x double] to double-precision values stored in a
@@ -229,7 +239,9 @@ static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_hsub_pd(__m128d __a,
 ///    [127:64] and [63:0] of the destination.
 /// \returns A 128-bit vector of [2 x double] containing the moved and
 ///    duplicated values.
-static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_movedup_pd(__m128d __a) {
+static __inline__ __m128d __DEFAULT_FN_ATTRS
+_mm_movedup_pd(__m128d __a)
+{
   return __builtin_shufflevector((__v2df)__a, (__v2df)__a, 0, 0);
 }
 
@@ -248,9 +260,9 @@ static __inline__ __m128d __DEFAULT_FN_ATTRS _mm_movedup_pd(__m128d __a) {
 ///    Optional extensions for the monitoring state.
 /// \param __hints
 ///    Optional hints for the monitoring state.
-static __inline__ void __DEFAULT_FN_ATTRS _mm_monitor(void const *__p,
-                                                      unsigned __extensions,
-                                                      unsigned __hints) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_mm_monitor(void const *__p, unsigned __extensions, unsigned __hints)
+{
   __builtin_ia32_monitor(__p, __extensions, __hints);
 }
 
@@ -267,8 +279,9 @@ static __inline__ void __DEFAULT_FN_ATTRS _mm_monitor(void const *__p,
 ///    processor.
 /// \param __hints
 ///    Optional hints for the monitoring state, which may vary by processor.
-static __inline__ void __DEFAULT_FN_ATTRS _mm_mwait(unsigned __extensions,
-                                                    unsigned __hints) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_mm_mwait(unsigned __extensions, unsigned __hints)
+{
   __builtin_ia32_mwait(__extensions, __hints);
 }
 

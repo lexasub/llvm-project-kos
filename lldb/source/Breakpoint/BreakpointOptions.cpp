@@ -109,8 +109,8 @@ BreakpointOptions::CommandData::CreateFromStructuredData(
 
 const char *BreakpointOptions::g_option_names[(
     size_t)BreakpointOptions::OptionNames::LastOptionName]{
-    "ConditionText", "IgnoreCount", "EnabledState", "OneShotState",
-    "AutoContinue"};
+    "ConditionText", "IgnoreCount", 
+    "EnabledState", "OneShotState", "AutoContinue"};
 
 bool BreakpointOptions::NullCallback(void *baton,
                                      StoppointCallbackContext *context,
@@ -131,16 +131,18 @@ BreakpointOptions::BreakpointOptions(bool all_flags_set)
 }
 
 BreakpointOptions::BreakpointOptions(const char *condition, bool enabled,
-                                     int32_t ignore, bool one_shot,
+                                     int32_t ignore, bool one_shot, 
                                      bool auto_continue)
     : m_callback(nullptr), m_baton_is_command_baton(false),
       m_callback_is_synchronous(false), m_enabled(enabled),
-      m_one_shot(one_shot), m_ignore_count(ignore), m_condition_text_hash(0),
-      m_auto_continue(auto_continue) {
-  m_set_flags.Set(eEnabled | eIgnoreCount | eOneShot | eAutoContinue);
-  if (condition && *condition != '\0') {
-    SetCondition(condition);
-  }
+      m_one_shot(one_shot), m_ignore_count(ignore),
+      m_condition_text_hash(0), m_auto_continue(auto_continue)
+{
+    m_set_flags.Set(eEnabled | eIgnoreCount | eOneShot 
+                   | eAutoContinue);
+    if (condition && *condition != '\0') {
+      SetCondition(condition);
+    }
 }
 
 // BreakpointOptions copy constructor
@@ -158,8 +160,8 @@ BreakpointOptions::BreakpointOptions(const BreakpointOptions &rhs)
 }
 
 // BreakpointOptions assignment operator
-const BreakpointOptions &
-BreakpointOptions::operator=(const BreakpointOptions &rhs) {
+const BreakpointOptions &BreakpointOptions::
+operator=(const BreakpointOptions &rhs) {
   m_callback = rhs.m_callback;
   m_callback_baton_sp = rhs.m_callback_baton_sp;
   m_baton_is_command_baton = rhs.m_baton_is_command_baton;
@@ -176,27 +178,33 @@ BreakpointOptions::operator=(const BreakpointOptions &rhs) {
   return *this;
 }
 
-void BreakpointOptions::CopyOverSetOptions(const BreakpointOptions &incoming) {
-  if (incoming.m_set_flags.Test(eEnabled)) {
+void BreakpointOptions::CopyOverSetOptions(const BreakpointOptions &incoming)
+{
+  if (incoming.m_set_flags.Test(eEnabled))
+  {
     m_enabled = incoming.m_enabled;
     m_set_flags.Set(eEnabled);
   }
-  if (incoming.m_set_flags.Test(eOneShot)) {
+  if (incoming.m_set_flags.Test(eOneShot))
+  {
     m_one_shot = incoming.m_one_shot;
     m_set_flags.Set(eOneShot);
   }
-  if (incoming.m_set_flags.Test(eCallback)) {
+  if (incoming.m_set_flags.Test(eCallback))
+  {
     m_callback = incoming.m_callback;
     m_callback_baton_sp = incoming.m_callback_baton_sp;
     m_callback_is_synchronous = incoming.m_callback_is_synchronous;
     m_baton_is_command_baton = incoming.m_baton_is_command_baton;
     m_set_flags.Set(eCallback);
   }
-  if (incoming.m_set_flags.Test(eIgnoreCount)) {
+  if (incoming.m_set_flags.Test(eIgnoreCount))
+  {
     m_ignore_count = incoming.m_ignore_count;
     m_set_flags.Set(eIgnoreCount);
   }
-  if (incoming.m_set_flags.Test(eCondition)) {
+  if (incoming.m_set_flags.Test(eCondition))
+  {
     // If we're copying over an empty condition, mark it as unset.
     if (incoming.m_condition_text.empty()) {
       m_condition_text.clear();
@@ -208,7 +216,8 @@ void BreakpointOptions::CopyOverSetOptions(const BreakpointOptions &incoming) {
       m_set_flags.Set(eCondition);
     }
   }
-  if (incoming.m_set_flags.Test(eAutoContinue)) {
+  if (incoming.m_set_flags.Test(eAutoContinue))
+  {
     m_auto_continue = incoming.m_auto_continue;
     m_set_flags.Set(eAutoContinue);
   }
@@ -252,20 +261,20 @@ std::unique_ptr<BreakpointOptions> BreakpointOptions::CreateFromStructuredData(
     if (!success) {
       error.SetErrorStringWithFormat("%s key is not a boolean.", key);
       return nullptr;
-    }
-    set_options.Set(eOneShot);
+      }
+      set_options.Set(eOneShot);
   }
-
+  
   key = GetKey(OptionNames::AutoContinue);
   if (key && options_dict.HasKey(key)) {
     success = options_dict.GetValueForKeyAsBoolean(key, auto_continue);
     if (!success) {
       error.SetErrorStringWithFormat("%s key is not a boolean.", key);
       return nullptr;
-    }
-    set_options.Set(eAutoContinue);
+      }
+      set_options.Set(eAutoContinue);
   }
-
+  
   key = GetKey(OptionNames::IgnoreCount);
   if (key && options_dict.HasKey(key)) {
     success = options_dict.GetValueForKeyAsInteger(key, ignore_count);
@@ -302,8 +311,8 @@ std::unique_ptr<BreakpointOptions> BreakpointOptions::CreateFromStructuredData(
   }
 
   auto bp_options = std::make_unique<BreakpointOptions>(
-      condition_ref.str().c_str(), enabled, ignore_count, one_shot,
-      auto_continue);
+      condition_ref.str().c_str(), enabled, 
+      ignore_count, one_shot, auto_continue);
   if (cmd_data_up) {
     if (cmd_data_up->interpreter == eScriptLanguageNone)
       bp_options->SetCommandDataCallback(cmd_data_up);
@@ -359,17 +368,17 @@ StructuredData::ObjectSP BreakpointOptions::SerializeToStructuredData() {
                                     m_enabled);
   if (m_set_flags.Test(eOneShot))
     options_dict_sp->AddBooleanItem(GetKey(OptionNames::OneShotState),
-                                    m_one_shot);
+                               m_one_shot);
   if (m_set_flags.Test(eAutoContinue))
     options_dict_sp->AddBooleanItem(GetKey(OptionNames::AutoContinue),
-                                    m_auto_continue);
+                               m_auto_continue);
   if (m_set_flags.Test(eIgnoreCount))
     options_dict_sp->AddIntegerItem(GetKey(OptionNames::IgnoreCount),
                                     m_ignore_count);
   if (m_set_flags.Test(eCondition))
     options_dict_sp->AddStringItem(GetKey(OptionNames::ConditionText),
                                    m_condition_text);
-
+         
   if (m_set_flags.Test(eCallback) && m_baton_is_command_baton) {
     auto cmd_baton =
         std::static_pointer_cast<CommandBaton>(m_callback_baton_sp);
@@ -440,9 +449,9 @@ bool BreakpointOptions::InvokeCallback(StoppointCallbackContext *context,
                                        lldb::user_id_t break_loc_id) {
   if (m_callback) {
     if (context->is_synchronous == IsCallbackSynchronous()) {
-      return m_callback(m_callback_baton_sp ? m_callback_baton_sp->data()
-                                            : nullptr,
-                        context, break_id, break_loc_id);
+        return m_callback(m_callback_baton_sp ? m_callback_baton_sp->data()
+                                          : nullptr,
+                      context, break_id, break_loc_id);
     } else if (IsCallbackSynchronous()) {
       // If a synchronous callback is called at async time, it should not say
       // to stop.
@@ -474,7 +483,8 @@ void BreakpointOptions::SetCondition(const char *condition) {
   if (!condition || condition[0] == '\0') {
     condition = "";
     m_set_flags.Clear(eCondition);
-  } else
+  }
+  else
     m_set_flags.Set(eCondition);
 
   m_condition_text.assign(condition);
@@ -648,7 +658,8 @@ bool BreakpointOptions::BreakpointOptionsCallbackFunction(
   return ret_value;
 }
 
-void BreakpointOptions::Clear() {
+void BreakpointOptions::Clear()
+{
   m_set_flags.Clear();
   m_thread_spec_up.release();
   m_one_shot = false;

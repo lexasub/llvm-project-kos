@@ -149,4 +149,4 @@ TYPED_TEST(PriorityWorklistTest, EraseIf) {
   EXPECT_EQ(13, W.pop_back_val());
 }
 
-} // namespace
+}

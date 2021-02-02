@@ -13,7 +13,7 @@ using namespace llvm;
 using namespace llvm::pdb;
 
 #define PDB_ENUM_CLASS_ENT(enum_class, enum)                                   \
-  { #enum, std::underlying_type < enum_class> ::type(enum_class::enum) }
+  { #enum, std::underlying_type < enum_class > ::type(enum_class::enum) }
 
 #define PDB_ENUM_ENT(ns, enum)                                                 \
   { #enum, ns::enum }
@@ -33,5 +33,5 @@ namespace pdb {
 ArrayRef<EnumEntry<uint16_t>> getOMFSegMapDescFlagNames() {
   return makeArrayRef(OMFSegMapDescFlagNames);
 }
-} // namespace pdb
-} // namespace llvm
+}
+}

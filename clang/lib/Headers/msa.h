@@ -29,8 +29,8 @@ typedef unsigned long long v2u64 __attribute__((vector_size(16), aligned(16)));
 typedef unsigned long long v2u64_d __attribute__((vector_size(16), aligned(8)));
 typedef float v4f32 __attribute__((vector_size(16), aligned(16)));
 typedef float v4f32_w __attribute__((vector_size(16), aligned(4)));
-typedef double v2f64 __attribute__((vector_size(16), aligned(16)));
-typedef double v2f64_d __attribute__((vector_size(16), aligned(8)));
+typedef double v2f64 __attribute__ ((vector_size(16), aligned(16)));
+typedef double v2f64_d __attribute__ ((vector_size(16), aligned(8)));
 
 #define __msa_sll_b __builtin_msa_sll_b
 #define __msa_sll_h __builtin_msa_sll_h

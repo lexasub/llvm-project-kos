@@ -358,8 +358,7 @@ const char *WebAssembly::typeToString(wasm::ValType Ty) {
 std::string WebAssembly::typeListToString(ArrayRef<wasm::ValType> List) {
   std::string S;
   for (auto &Ty : List) {
-    if (&Ty != &List[0])
-      S += ", ";
+    if (&Ty != &List[0]) S += ", ";
     S += WebAssembly::typeToString(Ty);
   }
   return S;

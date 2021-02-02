@@ -5,3 +5,4 @@ struct Point {
 #ifdef IGNORED
 int *has_ignored(void);
 #endif
+

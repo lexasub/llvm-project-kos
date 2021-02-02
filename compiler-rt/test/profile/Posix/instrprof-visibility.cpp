@@ -10,7 +10,7 @@ namespace {
 #include "instrprof-visibility-kinds.inc"
 #undef NO_EXTERN
 #undef NO_WEAK
-} // namespace
+}
 
 namespace N1 {
 #include "instrprof-visibility-kinds.inc"

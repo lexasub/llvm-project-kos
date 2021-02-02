@@ -32,9 +32,9 @@ namespace kos {
 class LinkerDriver;
 extern LinkerDriver *driver;
 
-using llvm::Optional;
 using llvm::COFF::MachineTypes;
 using llvm::COFF::WindowsSubsystem;
+using llvm::Optional;
 
 class COFFOptTable : public llvm::opt::OptTable {
 public:

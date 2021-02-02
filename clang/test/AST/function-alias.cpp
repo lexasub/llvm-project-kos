@@ -9,6 +9,6 @@ constexpr int f() noexcept { return 0; }
 
 using F = int();
 
-constexpr int g(F *p) { return p(); }
+constexpr int g(F * p) { return p(); }
 
 constexpr int n = g(f);

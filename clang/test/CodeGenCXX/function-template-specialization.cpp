@@ -3,12 +3,12 @@
 // CHECK-DAG: _ZZN7PR219047GetDataIiEERKibE1i = internal global i32 4
 // CHECK-DAG: _ZZN7PR219047GetDataIiEERKibE1i_0 = internal global i32 2
 
-template <typename T, typename U>
-T *next(T *ptr, const U &diff);
+template<typename T, typename U>
+T* next(T* ptr, const U& diff);
 
-template <typename T, typename U>
-T *next(T *ptr, const U &diff) {
-  return ptr + diff;
+template<typename T, typename U>
+T* next(T* ptr, const U& diff) { 
+  return ptr + diff; 
 }
 
 void test(int *iptr, float *fptr, int diff) {
@@ -19,8 +19,8 @@ void test(int *iptr, float *fptr, int diff) {
   fptr = next(fptr, diff);
 }
 
-template <typename T, typename U>
-T *next(T *ptr, const U &diff);
+template<typename T, typename U>
+T* next(T* ptr, const U& diff);
 
 void test2(int *iptr, double *dptr, int diff) {
   iptr = next(iptr, diff);
@@ -42,4 +42,4 @@ const int &GetData<int>(bool b) {
   }
   return i;
 }
-} // namespace PR21904
+}

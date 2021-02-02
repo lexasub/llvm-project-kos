@@ -68,8 +68,8 @@ public:
   // Given a string returned by GetText, find the beginning and end of the body
   // passed to CreateWrapped. Return true if the bounds could be found.  This
   // will also work on text with FixItHints applied.
-  bool GetOriginalBodyBounds(std::string transformed_text, size_t &start_loc,
-                             size_t &end_loc);
+  bool GetOriginalBodyBounds(std::string transformed_text,
+                             size_t &start_loc, size_t &end_loc);
 
 protected:
   ClangExpressionSourceCode(llvm::StringRef filename, llvm::StringRef name,

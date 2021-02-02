@@ -13,26 +13,28 @@
 using namespace lldb;
 using namespace lldb_private;
 
-OptionGroupPythonClassWithDict::OptionGroupPythonClassWithDict(
-    const char *class_use, bool is_class, int class_option, int key_option,
-    int value_option)
-    : OptionGroup(), m_is_class(is_class) {
+OptionGroupPythonClassWithDict::OptionGroupPythonClassWithDict
+    (const char *class_use,
+     bool is_class,
+     int class_option,
+     int key_option, 
+     int value_option) : OptionGroup(), m_is_class(is_class) {
   m_key_usage_text.assign("The key for a key/value pair passed to the "
                           "implementation of a ");
   m_key_usage_text.append(class_use);
   m_key_usage_text.append(".  Pairs can be specified more than once.");
-
+  
   m_value_usage_text.assign("The value for the previous key in the pair passed "
                             "to the implementation of a ");
   m_value_usage_text.append(class_use);
   m_value_usage_text.append(".  Pairs can be specified more than once.");
-
+  
   m_class_usage_text.assign("The name of the ");
   m_class_usage_text.append(m_is_class ? "class" : "function");
   m_class_usage_text.append(" that will manage a ");
   m_class_usage_text.append(class_use);
   m_class_usage_text.append(".");
-
+  
   m_option_definition[0].usage_mask = LLDB_OPT_SET_1;
   m_option_definition[0].required = true;
   m_option_definition[0].long_option = "script-class";
@@ -65,7 +67,7 @@ OptionGroupPythonClassWithDict::OptionGroupPythonClassWithDict(
   m_option_definition[2].completion_type = 0;
   m_option_definition[2].argument_type = eArgTypeNone;
   m_option_definition[2].usage_text = m_value_usage_text.data();
-
+  
   m_option_definition[3].usage_mask = LLDB_OPT_SET_3;
   m_option_definition[3].required = true;
   m_option_definition[3].long_option = "python-function";
@@ -76,12 +78,14 @@ OptionGroupPythonClassWithDict::OptionGroupPythonClassWithDict(
   m_option_definition[3].completion_type = 0;
   m_option_definition[3].argument_type = eArgTypePythonFunction;
   m_option_definition[3].usage_text = m_class_usage_text.data();
+
 }
 
 OptionGroupPythonClassWithDict::~OptionGroupPythonClassWithDict() {}
 
 Status OptionGroupPythonClassWithDict::SetOptionValue(
-    uint32_t option_idx, llvm::StringRef option_arg,
+    uint32_t option_idx,
+    llvm::StringRef option_arg,
     ExecutionContext *execution_context) {
   Status error;
   switch (option_idx) {
@@ -90,24 +94,25 @@ Status OptionGroupPythonClassWithDict::SetOptionValue(
     m_name.assign(std::string(option_arg));
   } break;
   case 1: {
-    if (!m_dict_sp)
-      m_dict_sp = std::make_shared<StructuredData::Dictionary>();
-    if (m_current_key.empty())
-      m_current_key.assign(std::string(option_arg));
-    else
-      error.SetErrorStringWithFormat("Key: \"%s\" missing value.",
-                                     m_current_key.c_str());
-
+      if (!m_dict_sp)
+        m_dict_sp = std::make_shared<StructuredData::Dictionary>();
+      if (m_current_key.empty())
+        m_current_key.assign(std::string(option_arg));
+      else
+        error.SetErrorStringWithFormat("Key: \"%s\" missing value.",
+                                        m_current_key.c_str());
+    
   } break;
   case 2: {
-    if (!m_dict_sp)
-      m_dict_sp = std::make_shared<StructuredData::Dictionary>();
-    if (!m_current_key.empty()) {
-      m_dict_sp->AddStringItem(m_current_key, option_arg);
-      m_current_key.clear();
-    } else
-      error.SetErrorStringWithFormat("Value: \"%s\" missing matching key.",
-                                     option_arg.str().c_str());
+      if (!m_dict_sp)
+        m_dict_sp = std::make_shared<StructuredData::Dictionary>();
+      if (!m_current_key.empty()) {
+          m_dict_sp->AddStringItem(m_current_key, option_arg);
+          m_current_key.clear();
+      }
+      else
+        error.SetErrorStringWithFormat("Value: \"%s\" missing matching key.",
+                                       option_arg.str().c_str());
   } break;
   default:
     llvm_unreachable("Unimplemented option");
@@ -116,7 +121,7 @@ Status OptionGroupPythonClassWithDict::SetOptionValue(
 }
 
 void OptionGroupPythonClassWithDict::OptionParsingStarting(
-    ExecutionContext *execution_context) {
+  ExecutionContext *execution_context) {
   m_current_key.erase();
   // Leave the dictionary shared pointer unset.  That way you can tell that
   // the user didn't pass any -k -v pairs.  We want to be able to warn if these
@@ -126,12 +131,13 @@ void OptionGroupPythonClassWithDict::OptionParsingStarting(
 }
 
 Status OptionGroupPythonClassWithDict::OptionParsingFinished(
-    ExecutionContext *execution_context) {
+  ExecutionContext *execution_context) {
   Status error;
   // If we get here and there's contents in the m_current_key, somebody must
   // have provided a key but no value.
   if (!m_current_key.empty())
-    error.SetErrorStringWithFormat("Key: \"%s\" missing value.",
-                                   m_current_key.c_str());
+      error.SetErrorStringWithFormat("Key: \"%s\" missing value.",
+                                     m_current_key.c_str());
   return error;
 }
+

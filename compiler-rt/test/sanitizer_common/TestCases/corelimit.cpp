@@ -2,8 +2,8 @@
 // UNSUPPORTED: lsan,ubsan
 
 #include <assert.h>
-#include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 
 int main() {
   struct rlimit lim_core;

@@ -13,10 +13,10 @@
 
 #include "llvm/ADT/BitVector.h"
 #include "llvm/Support/Debug.h"
-#include "llvm/Support/JSON.h"
 #include "llvm/TableGen/Error.h"
 #include "llvm/TableGen/Record.h"
 #include "llvm/TableGen/TableGenBackend.h"
+#include "llvm/Support/JSON.h"
 
 #define DEBUG_TYPE "json-emitter"
 
@@ -170,9 +170,9 @@ void JSONEmitter::run(raw_ostream &OS) {
   }
 
   // Make a JSON object from the std::map of instance lists.
-  json::Object instanceof ;
-  for (auto kv : instance_lists)
-    instanceof [ kv.first ] = std::move(kv.second);
+  json::Object instanceof;
+  for (auto kv: instance_lists)
+    instanceof[kv.first] = std::move(kv.second);
   root["!instanceof"] = std::move(instanceof);
 
   // Done. Write the output.

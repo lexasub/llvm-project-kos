@@ -1,17 +1,15 @@
 struct X {
   int member1;
   void func1();
-
 protected:
   int member2;
   void func2();
-
 private:
   int member3;
   void func3();
 };
 
-struct Y : protected X {
+struct Y: protected X {
   void doSomething();
 };
 
@@ -19,11 +17,9 @@ class Z {
 public:
   int member1;
   void func1();
-
 protected:
   int member2;
   void func2();
-
 private:
   int member3;
   void func3();
@@ -34,6 +30,7 @@ void Y::doSomething() {
   this->;
 
   // RUN: c-index-test -code-completion-at=%s:33:3 %s | FileCheck -check-prefix=CHECK-SUPER-ACCESS-IMPLICIT %s
+  
 
   Z that;
   // RUN: c-index-test -code-completion-at=%s:37:8 %s | FileCheck -check-prefix=CHECK-ACCESS %s
@@ -109,17 +106,18 @@ protected:
 
 class C : private B {};
 
+
 class D : public C {
-public:
+ public:
   void f(::B *b);
 };
 
 void D::f(::B *that) {
   // RUN: c-index-test -code-completion-at=%s:117:9 %s | FileCheck -check-prefix=CHECK-PRIVATE-SUPER-THIS %s
   this->;
-  // CHECK-PRIVATE-SUPER-THIS: FieldDecl:{ResultType int}{Informative B::}{TypedText member} (37) (inaccessible)
+// CHECK-PRIVATE-SUPER-THIS: FieldDecl:{ResultType int}{Informative B::}{TypedText member} (37) (inaccessible)
 
   // RUN: c-index-test -code-completion-at=%s:121:9 %s | FileCheck -check-prefix=CHECK-PRIVATE-SUPER-THAT %s
   that->;
-  // CHECK-PRIVATE-SUPER-THAT: FieldDecl:{ResultType int}{TypedText member} (35) (inaccessible)
+// CHECK-PRIVATE-SUPER-THAT: FieldDecl:{ResultType int}{TypedText member} (35) (inaccessible)
 }

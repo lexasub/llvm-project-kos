@@ -5,7 +5,7 @@ void test() {
 }
 
 // C, C++
-void __attribute((ownership_returns(malloc))) * user_malloc(size_t);
+void __attribute((ownership_returns(malloc))) *user_malloc(size_t);
 
 void test() {
   int *p = (int *)user_malloc(sizeof(int));
@@ -25,7 +25,8 @@ void test() {
 }
 
 // C, C++
-template <typename T> struct SimpleSmartPointer {
+template <typename T>
+struct SimpleSmartPointer {
   T *ptr;
 
   explicit SimpleSmartPointer(T *p = 0) : ptr(p) {}
@@ -34,7 +35,9 @@ template <typename T> struct SimpleSmartPointer {
   }
 };
 
-void test() { SimpleSmartPointer<int> a((int *)malloc(4)); }
+void test() {
+  SimpleSmartPointer<int> a((int *)malloc(4));
+}
 
 // C++
 void test() {
@@ -45,7 +48,9 @@ void test() {
 // Objective-C, C++
 void test(NSUInteger dataLength) {
   int *p = new int;
-  NSData *d = [NSData dataWithBytesNoCopy:p length:sizeof(int) freeWhenDone:1];
-  // warn +dataWithBytesNoCopy:length:freeWhenDone: cannot take
-  // ownership of memory allocated by 'new'
+  NSData *d = [NSData dataWithBytesNoCopy:p
+               length:sizeof(int) freeWhenDone:1];
+    // warn +dataWithBytesNoCopy:length:freeWhenDone: cannot take
+    // ownership of memory allocated by 'new'
 }
+

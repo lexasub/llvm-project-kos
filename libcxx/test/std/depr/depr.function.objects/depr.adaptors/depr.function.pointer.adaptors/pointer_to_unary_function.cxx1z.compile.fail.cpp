@@ -18,10 +18,11 @@
 
 #include "test_macros.h"
 
-double unary_f(int i) { return 0.5 - i; }
+double unary_f(int i) {return 0.5 - i;}
 
-int main(int, char**) {
-  typedef std::pointer_to_unary_function<int, double> F;
+int main(int, char**)
+{
+    typedef std::pointer_to_unary_function<int, double> F;
 
   return 0;
 }

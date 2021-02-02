@@ -10,3 +10,4 @@ static C sc;
 void f(const C &ci) { sc = ci; }
 
 // CHECK: atexit
+

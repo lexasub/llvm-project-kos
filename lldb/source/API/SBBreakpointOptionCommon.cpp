@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lldb/API/SBBreakpointLocation.h"
 #include "lldb/API/SBBreakpointName.h"
+#include "lldb/API/SBBreakpointLocation.h"
 #include "lldb/API/SBDebugger.h"
 #include "lldb/API/SBEvent.h"
 #include "lldb/API/SBProcess.h"
@@ -38,16 +38,19 @@
 using namespace lldb;
 using namespace lldb_private;
 
-SBBreakpointCallbackBaton::SBBreakpointCallbackBaton(
-    SBBreakpointHitCallback callback, void *baton)
-    : TypedBaton(std::make_unique<CallbackData>()) {
-  getItem()->callback = callback;
-  getItem()->callback_baton = baton;
-}
+SBBreakpointCallbackBaton::SBBreakpointCallbackBaton(SBBreakpointHitCallback 
+                                                         callback,
+                                                     void *baton)
+      : TypedBaton(std::make_unique<CallbackData>()) {
+    getItem()->callback = callback;
+    getItem()->callback_baton = baton;
+  }
 
-bool SBBreakpointCallbackBaton::PrivateBreakpointHitCallback(
-    void *baton, StoppointCallbackContext *ctx, lldb::user_id_t break_id,
-    lldb::user_id_t break_loc_id) {
+ bool SBBreakpointCallbackBaton::PrivateBreakpointHitCallback(void *baton,
+                                                  StoppointCallbackContext *ctx,
+                                                  lldb::user_id_t break_id,
+                                                  lldb::user_id_t break_loc_id)
+{
   ExecutionContext exe_ctx(ctx->exe_ctx_ref);
   BreakpointSP bp_sp(
       exe_ctx.GetTargetRef().GetBreakpointList().FindBreakpointByID(break_id));

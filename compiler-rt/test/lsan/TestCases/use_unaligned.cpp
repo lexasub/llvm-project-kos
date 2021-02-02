@@ -4,10 +4,10 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_unaligned=0" not %run %t 2>&1 | FileCheck %s
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_unaligned=1" %run %t 2>&1
 
-#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "sanitizer_common/print_address.h"
 
 void *arr[2];
 

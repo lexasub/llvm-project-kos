@@ -17,7 +17,7 @@
 
 auto &f(int &);
 
-template <typename T> decltype(auto) g(T &t) {
+template<typename T> decltype(auto) g(T &t) {
   return f(t);
 }
 

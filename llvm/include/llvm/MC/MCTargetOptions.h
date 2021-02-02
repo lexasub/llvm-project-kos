@@ -35,7 +35,10 @@ class StringRef;
 
 class MCTargetOptions {
 public:
-  enum AsmInstrumentation { AsmInstrumentationNone, AsmInstrumentationAddress };
+  enum AsmInstrumentation {
+    AsmInstrumentationNone,
+    AsmInstrumentationAddress
+  };
 
   bool MCRelaxAll : 1;
   bool MCNoExecStack : 1;

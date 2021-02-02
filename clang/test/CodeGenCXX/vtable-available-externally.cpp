@@ -16,6 +16,7 @@
 // RUN: FileCheck -allow-deprecated-dag-overlap --check-prefix=CHECK-TEST17 %s < %t.opt
 // RUN: FileCheck -allow-deprecated-dag-overlap --check-prefix=CHECK-FORCE-EMIT %s < %t.vtable
 
+
 #include <typeinfo>
 
 // CHECK-TEST1: @_ZTVN5Test11AE = external unnamed_addr constant
@@ -25,12 +26,12 @@ namespace Test1 {
 struct A {
   A();
   virtual void f();
-  virtual ~A() {}
+  virtual ~A() { }
 };
 
-A::A() {}
+A::A() { }
 
-void f(A *a) {
+void f(A* a) {
   a->f();
 };
 
@@ -41,7 +42,7 @@ void g() {
   f(&a);
 }
 
-} // namespace Test1
+}
 
 // Test2::A's key function (f) is defined in this translation unit, but when
 // we're doing codegen for the typeid(A) call, we don't know that yet.
@@ -52,23 +53,23 @@ void g() {
 // CHECK-TEST2: @_ZTIN5Test21AE ={{.*}} constant
 // CHECK-TEST2: @_ZTVN5Test21AE ={{.*}} unnamed_addr constant
 namespace Test2 {
-struct A {
-  virtual void f();
-};
+  struct A {
+    virtual void f();
+  };
 
-const std::type_info &g() {
-  return typeid(A);
-};
+  const std::type_info &g() {
+    return typeid(A);
+  };
 
-void A::f() {}
-} // namespace Test2
+  void A::f() { }
+}
 
 // Test that we don't assert on this test.
 namespace Test3 {
 
 struct A {
   virtual void f();
-  virtual ~A() {}
+  virtual ~A() { }
 };
 
 struct B : A {
@@ -76,19 +77,19 @@ struct B : A {
   virtual void f();
 };
 
-B::B() {}
+B::B() { }
 
-void g(A *a) {
+void g(A* a) {
   a->f();
 };
 
-} // namespace Test3
+}
 
 // PR9114, test that we don't try to instantiate RefPtr<Node>.
 namespace Test4 {
 
 template <class T> struct RefPtr {
-  T *p;
+  T* p;
   ~RefPtr() {
     p->deref();
   }
@@ -109,23 +110,23 @@ void f() {
   RefPtr<B> b;
 }
 
-} // namespace Test4
+}
 
 // PR9130, test that we emit a definition of A::f.
 // CHECK-TEST5-LABEL: define linkonce_odr void @_ZN5Test51A1fEv
 namespace Test5 {
 
 struct A {
-  virtual void f() {}
+  virtual void f() { }
 };
 
-struct B : A {
+struct B : A { 
   virtual ~B();
 };
 
-B::~B() {}
+B::~B() { }
 
-} // namespace Test5
+}
 
 // Check that we don't assert on this test.
 namespace Test6 {
@@ -140,7 +141,7 @@ struct B {
   int b;
 };
 
-struct C : A, B {
+struct C : A, B { 
   C();
 };
 
@@ -149,23 +150,23 @@ struct D : C {
   D();
 };
 
-D::D() {}
+D::D() { }
 
-} // namespace Test6
+}
 
 namespace Test7 {
 
 struct c1 {};
-struct c10 : c1 {
-  virtual void foo();
+struct c10 : c1{
+  virtual void foo ();
 };
-struct c11 : c10, c1 {
-  virtual void f6();
+struct c11 : c10, c1{
+  virtual void f6 ();
 };
-struct c28 : virtual c11 {
-  void f6();
+struct c28 : virtual c11{
+  void f6 ();
 };
-} // namespace Test7
+}
 
 namespace Test8 {
 // CHECK-TEST8: @_ZTVN5Test81YE = available_externally unnamed_addr constant
@@ -178,7 +179,7 @@ struct Y : X {
   void foo();
 };
 
-void g(X *p) { p->foo(); }
+void g(X* p) { p->foo(); }
 void f() {
   Y y;
   g(&y);
@@ -186,7 +187,7 @@ void f() {
   g(&x);
 }
 
-} // namespace Test8
+}  // Test8
 
 namespace Test9 {
 // All virtual functions are outline, so we can assume that it will
@@ -210,7 +211,7 @@ void g() {
   b.foo();
 }
 
-} // namespace Test9
+}  // Test9
 
 namespace Test10 {
 
@@ -244,8 +245,8 @@ struct B : A {
 // CHECK-TEST10-DAG: @_ZTVN6Test101CE = external unnamed_addr constant
 // CHECK-FORCE-EMIT-DAG: @_ZTVN6Test101CE = available_externally unnamed_addr constant
 struct C : A {
-  void bar() {}              // defined in body - not key function
-  virtual inline void gar(); // inline in body - not key function
+  void bar() {}               // defined in body - not key function
+  virtual inline void gar();  // inline in body - not key function
   virtual void car();
 };
 
@@ -255,7 +256,7 @@ struct C : A {
 
 struct E : A {};
 
-void g(A &a) {
+void g(A& a) {
   a.foo();
   a.bar();
 }
@@ -273,14 +274,14 @@ void f() {
   g(e);
 }
 
-} // namespace Test10
+}  // Test10
 
 namespace Test11 {
 struct D;
 // Can emit C's vtable available_externally.
 // CHECK-TEST11: @_ZTVN6Test111CE = available_externally unnamed_addr constant
 struct C {
-  virtual D &operator=(const D &);
+  virtual D& operator=(const D&);
 };
 
 // Can emit D's vtable available_externally.
@@ -290,7 +291,7 @@ struct D : C {
 };
 D f();
 
-void g(D &a) {
+void g(D& a) {
   C c;
   c = a;
   a.key();
@@ -301,7 +302,7 @@ void g() {
   d = f();
   g(d);
 }
-} // namespace Test11
+}  // Test 11
 
 namespace Test12 {
 
@@ -323,7 +324,7 @@ void g() {
   B b;
   b.foo();
 }
-} // namespace Test12
+}
 
 namespace Test13 {
 
@@ -344,7 +345,7 @@ struct B : A {
 void g() {
   A *b = new B;
 }
-} // namespace Test13
+}
 
 namespace Test14 {
 
@@ -359,15 +360,13 @@ void g() {
   A *b = new A;
   delete b;
 }
-} // namespace Test14
+}
 
 namespace Test15 {
 // In this test D's vtable has two slots for function f(), but uses only one,
 // so the second slot is set to null.
 // CHECK-TEST15: @_ZTVN6Test151DE = available_externally unnamed_addr constant
-struct A {
-  virtual void f() {}
-};
+struct A { virtual void f() {} };
 struct B : virtual A {};
 struct C : virtual A {};
 struct D : B, C {
@@ -376,10 +375,10 @@ struct D : B, C {
 };
 
 void test() {
-  D *d = new D;
+  D * d = new D;
   d->f();
 }
-} // namespace Test15
+}
 
 namespace Test16 {
 // S has virtual method that is hidden, because of it we can't
@@ -396,6 +395,7 @@ struct S {
 struct S2 {
   virtual void doStuff();
   __attribute__((visibility("hidden"))) void unused();
+
 };
 
 void test() {
@@ -405,7 +405,7 @@ void test() {
   S2 *s2 = new S2;
   s2->doStuff();
 }
-} // namespace Test16
+}
 
 namespace Test17 {
 // This test checks if we emit vtables opportunistically.
@@ -450,7 +450,7 @@ namespace Test18 {
 
 struct Base {
   virtual int fun() { return 42; }
-  virtual ~Base() {}
+  virtual ~Base() { }
 };
 
 struct Derived : Base {
@@ -461,14 +461,14 @@ int foo() {
   Derived *der = new Derived();
   return der->fun();
 }
-} // namespace Test18
+}
 
 namespace TestTemplates {
 
 // CHECK-FORCE-EMIT-DAG: @_ZTVN13TestTemplates8TemplateIiEE = linkonce_odr unnamed_addr constant {{.*}} @_ZTIN13TestTemplates8TemplateIiEE {{.*}} @_ZN13TestTemplates8TemplateIiE3fooEi {{.*}}@_ZN13TestTemplates8TemplateIiE22thisShouldBeEmittedTooEi {{.*}}@_ZN13TestTemplates8TemplateIiED1Ev {{.*}}@_ZN13TestTemplates8TemplateIiED0Ev
 // CHECK-FORCE-EMIT-DAG: define linkonce_odr i32 @_ZN13TestTemplates8TemplateIiE22thisShouldBeEmittedTooEi
 
-template <class T>
+template<class T>
 struct Template {
   Template();
   virtual T foo(T val);
@@ -476,6 +476,7 @@ struct Template {
   virtual T thisShouldBeEmittedToo(T val) { return val; }
   virtual ~Template();
 };
+
 
 struct NonTemplate {
   typedef int T;
@@ -489,7 +490,7 @@ struct NonTemplate {
 // CHECK-FORCE-EMIT-DAG: @_ZTVN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiEE = linkonce_odr {{.*}} @_ZTIN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiEE {{.*}} @_ZN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiE3fooEi {{.*}} @_ZN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiE22thisShouldBeEmittedTooEi {{.*}} @_ZN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiED1Ev {{.*}} @_ZN13TestTemplates16OuterNonTemplate27NestedTemplateInNonTemplateIiED0Ev
 
 struct OuterNonTemplate {
-  template <class T>
+  template<class T>
   struct NestedTemplateInNonTemplate {
     NestedTemplateInNonTemplate();
     virtual T foo(T val);
@@ -508,9 +509,9 @@ struct OuterNonTemplate {
   };
 };
 
-template <class>
+template<class>
 struct OuterTemplate {
-  template <class T>
+  template<class T>
   struct NestedTemplateInTemplate {
     NestedTemplateInTemplate();
     virtual T foo(T val);
@@ -529,19 +530,19 @@ struct OuterTemplate {
   };
 };
 
-template <class T>
+template<class T>
 int use() {
   T *ptr = new T();
   return ptr->foo(42);
 }
 
 void test() {
-  use<Template<int>>();
-  use<OuterTemplate<long>::NestedTemplateInTemplate<int>>();
-  use<OuterNonTemplate::NestedTemplateInNonTemplate<int>>();
+  use<Template<int> >();
+  use<OuterTemplate<long>::NestedTemplateInTemplate<int> >();
+  use<OuterNonTemplate::NestedTemplateInNonTemplate<int> >();
 
   use<NonTemplate>();
   use<OuterTemplate<long>::NestedNonTemplateInTemplate>();
   use<OuterNonTemplate::NestedNonTemplateInNonTemplate>();
 }
-} // namespace TestTemplates
+}

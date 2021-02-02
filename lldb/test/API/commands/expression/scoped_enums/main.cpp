@@ -1,6 +1,11 @@
-enum class Foo { FooBar = 42 };
+enum class Foo {
+  FooBar = 42
+};
 
-enum Bar { BarBar = 3, BarBarBar = 42 };
+enum Bar {
+    BarBar = 3,
+    BarBarBar = 42
+};
 
 int main(int argc, const char **argv) {
   Foo f = Foo::FooBar;

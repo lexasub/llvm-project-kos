@@ -136,7 +136,9 @@ public:
   };
 
   /// A little identifier for flagging temporary lookup results.
-  enum TemporaryToken { Temporary };
+  enum TemporaryToken {
+    Temporary
+  };
 
   using iterator = UnresolvedSetImpl::iterator;
 
@@ -153,8 +155,8 @@ public:
   // TODO: consider whether this constructor should be restricted to take
   // as input a const IdentifierInfo* (instead of Name),
   // forcing other cases towards the constructor taking a DNInfo.
-  LookupResult(Sema &SemaRef, DeclarationName Name, SourceLocation NameLoc,
-               Sema::LookupNameKind LookupKind,
+  LookupResult(Sema &SemaRef, DeclarationName Name,
+               SourceLocation NameLoc, Sema::LookupNameKind LookupKind,
                Sema::RedeclarationKind Redecl = Sema::NotForRedeclaration)
       : SemaPtr(&SemaRef), NameInfo(Name, NameLoc), LookupKind(LookupKind),
         Redecl(Redecl != Sema::NotForRedeclaration),
@@ -223,14 +225,14 @@ public:
   }
 
   ~LookupResult() {
-    if (Diagnose)
-      diagnose();
-    if (Paths)
-      deletePaths(Paths);
+    if (Diagnose) diagnose();
+    if (Paths) deletePaths(Paths);
   }
 
   /// Gets the name info to look up.
-  const DeclarationNameInfo &getLookupNameInfo() const { return NameInfo; }
+  const DeclarationNameInfo &getLookupNameInfo() const {
+    return NameInfo;
+  }
 
   /// Sets the name info to look up.
   void setLookupNameInfo(const DeclarationNameInfo &NameInfo) {
@@ -238,30 +240,41 @@ public:
   }
 
   /// Gets the name to look up.
-  DeclarationName getLookupName() const { return NameInfo.getName(); }
+  DeclarationName getLookupName() const {
+    return NameInfo.getName();
+  }
 
   /// Sets the name to look up.
-  void setLookupName(DeclarationName Name) { NameInfo.setName(Name); }
+  void setLookupName(DeclarationName Name) {
+    NameInfo.setName(Name);
+  }
 
   /// Gets the kind of lookup to perform.
-  Sema::LookupNameKind getLookupKind() const { return LookupKind; }
+  Sema::LookupNameKind getLookupKind() const {
+    return LookupKind;
+  }
 
   /// True if this lookup is just looking for an existing declaration.
-  bool isForRedeclaration() const { return Redecl; }
+  bool isForRedeclaration() const {
+    return Redecl;
+  }
 
   /// True if this lookup is just looking for an existing declaration to link
   /// against a declaration with external linkage.
-  bool isForExternalRedeclaration() const { return ExternalRedecl; }
+  bool isForExternalRedeclaration() const {
+    return ExternalRedecl;
+  }
 
   Sema::RedeclarationKind redeclarationKind() const {
-    return ExternalRedecl ? Sema::ForExternalRedeclaration
-           : Redecl       ? Sema::ForVisibleRedeclaration
-                          : Sema::NotForRedeclaration;
+    return ExternalRedecl ? Sema::ForExternalRedeclaration :
+           Redecl ? Sema::ForVisibleRedeclaration : Sema::NotForRedeclaration;
   }
 
   /// Specify whether hidden declarations are visible, e.g.,
   /// for recovery reasons.
-  void setAllowHidden(bool AH) { AllowHidden = AH; }
+  void setAllowHidden(bool AH) {
+    AllowHidden = AH;
+  }
 
   /// Determine whether this lookup is permitted to see hidden
   /// declarations, such as those in modules that have not yet been imported.
@@ -272,7 +285,9 @@ public:
 
   /// Sets whether tag declarations should be hidden by non-tag
   /// declarations during resolution.  The default is true.
-  void setHideTags(bool Hide) { HideTags = Hide; }
+  void setHideTags(bool Hide) {
+    HideTags = Hide;
+  }
 
   /// Sets whether this is a template-name lookup. For template-name lookups,
   /// injected-class-names are treated as naming a template rather than a
@@ -283,15 +298,21 @@ public:
 
   bool isTemplateNameLookup() const { return TemplateNameLookup; }
 
-  bool isAmbiguous() const { return getResultKind() == Ambiguous; }
+  bool isAmbiguous() const {
+    return getResultKind() == Ambiguous;
+  }
 
   /// Determines if this names a single result which is not an
   /// unresolved value using decl.  If so, it is safe to call
   /// getFoundDecl().
-  bool isSingleResult() const { return getResultKind() == Found; }
+  bool isSingleResult() const {
+    return getResultKind() == Found;
+  }
 
   /// Determines if the results are overloaded.
-  bool isOverloadedResult() const { return getResultKind() == FoundOverloaded; }
+  bool isOverloadedResult() const {
+    return getResultKind() == FoundOverloaded;
+  }
 
   bool isUnresolvableResult() const {
     return getResultKind() == FoundUnresolvedValue;
@@ -307,7 +328,9 @@ public:
     return Ambiguity;
   }
 
-  const UnresolvedSetImpl &asUnresolvedSet() const { return Decls; }
+  const UnresolvedSetImpl &asUnresolvedSet() const {
+    return Decls;
+  }
 
   iterator begin() const { return iterator(Decls.begin()); }
   iterator end() const { return iterator(Decls.end()); }
@@ -317,7 +340,9 @@ public:
 
   /// Return the base paths structure that's associated with
   /// these results, or null if none is.
-  CXXBasePaths *getBasePaths() const { return Paths; }
+  CXXBasePaths *getBasePaths() const {
+    return Paths;
+  }
 
   /// Determine whether the given declaration is visible to the
   /// program.
@@ -349,11 +374,15 @@ private:
 
 public:
   /// Returns the identifier namespace mask for this lookup.
-  unsigned getIdentifierNamespace() const { return IDNS; }
+  unsigned getIdentifierNamespace() const {
+    return IDNS;
+  }
 
   /// Returns whether these results arose from performing a
   /// lookup into a class.
-  bool isClassLookup() const { return NamingClass != nullptr; }
+  bool isClassLookup() const {
+    return NamingClass != nullptr;
+  }
 
   /// Returns the 'naming class' for this lookup, i.e. the
   /// class which was looked into to find these results.
@@ -371,22 +400,32 @@ public:
   ///   qualified-id (that is, T). -- end note ]
   ///
   /// This is set by the lookup routines when they find results in a class.
-  CXXRecordDecl *getNamingClass() const { return NamingClass; }
+  CXXRecordDecl *getNamingClass() const {
+    return NamingClass;
+  }
 
   /// Sets the 'naming class' for this lookup.
-  void setNamingClass(CXXRecordDecl *Record) { NamingClass = Record; }
+  void setNamingClass(CXXRecordDecl *Record) {
+    NamingClass = Record;
+  }
 
   /// Returns the base object type associated with this lookup;
   /// important for [class.protected].  Most lookups do not have an
   /// associated base object.
-  QualType getBaseObjectType() const { return BaseObjectType; }
+  QualType getBaseObjectType() const {
+    return BaseObjectType;
+  }
 
   /// Sets the base object type for this lookup.
-  void setBaseObjectType(QualType T) { BaseObjectType = T; }
+  void setBaseObjectType(QualType T) {
+    BaseObjectType = T;
+  }
 
   /// Add a declaration to these results with its natural access.
   /// Does not test the acceptance criteria.
-  void addDecl(NamedDecl *D) { addDecl(D, D->getAccess()); }
+  void addDecl(NamedDecl *D) {
+    addDecl(D, D->getAccess());
+  }
 
   /// Add a declaration to these results with the given access.
   /// Does not test the acceptance criteria.
@@ -464,9 +503,9 @@ public:
     }
   }
 
-  template <class DeclClass> DeclClass *getAsSingle() const {
-    if (getResultKind() != Found)
-      return nullptr;
+  template <class DeclClass>
+  DeclClass *getAsSingle() const {
+    if (getResultKind() != Found) return nullptr;
     return dyn_cast<DeclClass>(getFoundDecl());
   }
 
@@ -476,8 +515,8 @@ public:
   /// This is intended for users who have examined the result kind
   /// and are certain that there is only one result.
   NamedDecl *getFoundDecl() const {
-    assert(getResultKind() == Found &&
-           "getFoundDecl called on non-unique result");
+    assert(getResultKind() == Found
+           && "getFoundDecl called on non-unique result");
     return (*begin())->getUnderlyingDecl();
   }
 
@@ -507,14 +546,15 @@ public:
   /// Make these results show that the name was found in
   /// different contexts and a tag decl was hidden by an ordinary
   /// decl in a different context.
-  void setAmbiguousQualifiedTagHiding() { setAmbiguous(AmbiguousTagHiding); }
+  void setAmbiguousQualifiedTagHiding() {
+    setAmbiguous(AmbiguousTagHiding);
+  }
 
   /// Clears out any current state.
   LLVM_ATTRIBUTE_REINITIALIZES void clear() {
     ResultKind = NotFound;
     Decls.clear();
-    if (Paths)
-      deletePaths(Paths);
+    if (Paths) deletePaths(Paths);
     Paths = nullptr;
     NamingClass = nullptr;
     Shadowed = false;
@@ -540,22 +580,32 @@ public:
 
   /// Suppress the diagnostics that would normally fire because of this
   /// lookup.  This happens during (e.g.) redeclaration lookups.
-  void suppressDiagnostics() { Diagnose = false; }
+  void suppressDiagnostics() {
+    Diagnose = false;
+  }
 
   /// Determines whether this lookup is suppressing diagnostics.
-  bool isSuppressingDiagnostics() const { return !Diagnose; }
+  bool isSuppressingDiagnostics() const {
+    return !Diagnose;
+  }
 
   /// Sets a 'context' source range.
-  void setContextRange(SourceRange SR) { NameContextRange = SR; }
+  void setContextRange(SourceRange SR) {
+    NameContextRange = SR;
+  }
 
   /// Gets the source range of the context of this name; for C++
   /// qualified lookups, this is the source range of the scope
   /// specifier.
-  SourceRange getContextRange() const { return NameContextRange; }
+  SourceRange getContextRange() const {
+    return NameContextRange;
+  }
 
   /// Gets the location of the identifier.  This isn't always defined:
   /// sometimes we're doing lookups on synthesized names.
-  SourceLocation getNameLoc() const { return NameInfo.getLoc(); }
+  SourceLocation getNameLoc() const {
+    return NameInfo.getLoc();
+  }
 
   /// Get the Sema object that this lookup result is searching
   /// with.
@@ -586,7 +636,9 @@ public:
              "LookupResult::Filter destroyed without done() call");
     }
 
-    bool hasNext() const { return I != Results.end(); }
+    bool hasNext() const {
+      return I != Results.end();
+    }
 
     NamedDecl *next() {
       assert(I != Results.end() && "next() called on empty filter");
@@ -594,7 +646,9 @@ public:
     }
 
     /// Restart the iteration.
-    void restart() { I = Results.begin(); }
+    void restart() {
+      I = Results.begin();
+    }
 
     /// Erase the last element returned from this iterator.
     void erase() {
@@ -605,13 +659,13 @@ public:
     /// Replaces the current entry with the given one, preserving the
     /// access bits.
     void replace(NamedDecl *D) {
-      Results.Decls.replace(I - 1, D);
+      Results.Decls.replace(I-1, D);
       Changed = true;
     }
 
     /// Replaces the current entry with the given one.
     void replace(NamedDecl *D, AccessSpecifier AS) {
-      Results.Decls.replace(I - 1, D, AS);
+      Results.Decls.replace(I-1, D, AS);
       Changed = true;
     }
 
@@ -625,7 +679,9 @@ public:
   };
 
   /// Create a filter for this result set.
-  Filter makeFilter() { return Filter(*this); }
+  Filter makeFilter() {
+    return Filter(*this);
+  }
 
   void setFindLocalExtern(bool FindLocalExtern) {
     if (FindLocalExtern)
@@ -742,10 +798,10 @@ public:
 class ADLResult {
 private:
   /// A map from canonical decls to the 'most recent' decl.
-  llvm::MapVector<NamedDecl *, NamedDecl *> Decls;
+  llvm::MapVector<NamedDecl*, NamedDecl*> Decls;
 
   struct select_second {
-    NamedDecl *operator()(std::pair<NamedDecl *, NamedDecl *> P) const {
+    NamedDecl *operator()(std::pair<NamedDecl*, NamedDecl*> P) const {
       return P.second;
     }
   };

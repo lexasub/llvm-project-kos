@@ -43,10 +43,12 @@ void test_ctor_sfinae() {
     static_assert(!test_convertible<V, std::in_place_type_t<long>, int>(), "");
   }
   {
-    using V = std::variant<int, long, int*>;
+    using V = std::variant<int, long, int *>;
     static_assert(
-        std::is_constructible<V, std::in_place_type_t<int*>, int*>::value, "");
-    static_assert(!test_convertible<V, std::in_place_type_t<int*>, int*>(), "");
+        std::is_constructible<V, std::in_place_type_t<int *>, int *>::value,
+        "");
+    static_assert(!test_convertible<V, std::in_place_type_t<int *>, int *>(),
+                  "");
   }
   { // duplicate type
     using V = std::variant<int, long, int>;
@@ -55,13 +57,13 @@ void test_ctor_sfinae() {
     static_assert(!test_convertible<V, std::in_place_type_t<int>, int>(), "");
   }
   { // args not convertible to type
-    using V = std::variant<int, long, int*>;
+    using V = std::variant<int, long, int *>;
     static_assert(
-        !std::is_constructible<V, std::in_place_type_t<int>, int*>::value, "");
-    static_assert(!test_convertible<V, std::in_place_type_t<int>, int*>(), "");
+        !std::is_constructible<V, std::in_place_type_t<int>, int *>::value, "");
+    static_assert(!test_convertible<V, std::in_place_type_t<int>, int *>(), "");
   }
   { // type not in variant
-    using V = std::variant<int, long, int*>;
+    using V = std::variant<int, long, int *>;
     static_assert(
         !std::is_constructible<V, std::in_place_type_t<long long>, int>::value,
         "");

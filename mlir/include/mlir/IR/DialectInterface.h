@@ -127,12 +127,10 @@ protected:
   };
 
   /// Iterator access to the held interfaces.
-  template <typename InterfaceT>
-  iterator<InterfaceT> interface_begin() const {
+  template <typename InterfaceT> iterator<InterfaceT> interface_begin() const {
     return iterator<InterfaceT>(orderedInterfaces.begin());
   }
-  template <typename InterfaceT>
-  iterator<InterfaceT> interface_end() const {
+  template <typename InterfaceT> iterator<InterfaceT> interface_end() const {
     return iterator<InterfaceT>(orderedInterfaces.end());
   }
 

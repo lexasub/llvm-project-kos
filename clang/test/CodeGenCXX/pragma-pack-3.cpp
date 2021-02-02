@@ -4,7 +4,8 @@ struct Base {
   char a;
 };
 
-struct Derived_1 : virtual Base {
+struct Derived_1 : virtual Base
+{
   char b;
 };
 

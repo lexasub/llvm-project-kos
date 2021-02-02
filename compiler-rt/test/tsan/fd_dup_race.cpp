@@ -1,8 +1,8 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t 2>&1 | FileCheck %s
 #include "test.h"
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 // dup2(oldfd, newfd) races with close(newfd).
 

@@ -75,12 +75,10 @@ TEST(CachePruningPolicyParser, Multiple) {
 TEST(CachePruningPolicyParser, Errors) {
   EXPECT_EQ("Duration must not be empty",
             toString(parseCachePruningPolicy("prune_interval=").takeError()));
-  EXPECT_EQ(
-      "'foo' not an integer",
-      toString(parseCachePruningPolicy("prune_interval=foos").takeError()));
-  EXPECT_EQ(
-      "'24x' must end with one of 's', 'm' or 'h'",
-      toString(parseCachePruningPolicy("prune_interval=24x").takeError()));
+  EXPECT_EQ("'foo' not an integer",
+            toString(parseCachePruningPolicy("prune_interval=foos").takeError()));
+  EXPECT_EQ("'24x' must end with one of 's', 'm' or 'h'",
+            toString(parseCachePruningPolicy("prune_interval=24x").takeError()));
   EXPECT_EQ("'foo' must be a percentage",
             toString(parseCachePruningPolicy("cache_size=foo").takeError()));
   EXPECT_EQ("'foo' not an integer",

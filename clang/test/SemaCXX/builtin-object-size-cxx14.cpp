@@ -34,7 +34,7 @@ static_assert(bos0() == sizeof(char) * 5, "");
 static_assert(bos1() == sizeof(char) * 5, "");
 static_assert(bos2() == sizeof(char) * 5, "");
 static_assert(bos3() == sizeof(char) * 5, "");
-} // namespace basic
+}
 
 namespace in_enable_if {
 // The code that prompted these changes was __bos in enable_if
@@ -99,27 +99,23 @@ void tooSmallBuf() {
   SmallStruct small;
   copy5CharsIntoStrict(small.buf); // expected-error{{no matching function for call}}
 }
-} // namespace in_enable_if
+}
 
 namespace InvalidBase {
-// Ensure this doesn't crash.
-struct S {
-  const char *name;
-};
-S invalid_base();
-constexpr size_t bos_name = __builtin_object_size(invalid_base().name, 1);
-static_assert(bos_name == -1, "");
+  // Ensure this doesn't crash.
+  struct S { const char *name; };
+  S invalid_base();
+  constexpr size_t bos_name = __builtin_object_size(invalid_base().name, 1);
+  static_assert(bos_name == -1, "");
 
-struct T {
-  ~T();
-};
-T invalid_base_2();
-constexpr size_t bos_dtor = __builtin_object_size(&(T &)(T &&) invalid_base_2(), 0);
-static_assert(bos_dtor == -1, "");
-} // namespace InvalidBase
+  struct T { ~T(); };
+  T invalid_base_2();
+  constexpr size_t bos_dtor = __builtin_object_size(&(T&)(T&&)invalid_base_2(), 0);
+  static_assert(bos_dtor == -1, "");
+}
 
 // PR44268
 constexpr int bos_new() { // cxx14-error {{constant expression}}
-  void *p = new int;      // cxx14-note {{until C++20}}
+  void *p = new int; // cxx14-note {{until C++20}}
   return __builtin_object_size(p, 0);
 }

@@ -95,7 +95,7 @@ void BPFInstPrinter::printImm64Operand(const MCInst *MI, unsigned OpNo,
 }
 
 void BPFInstPrinter::printBrTargetOperand(const MCInst *MI, unsigned OpNo,
-                                          raw_ostream &O) {
+                                       raw_ostream &O) {
   const MCOperand &Op = MI->getOperand(OpNo);
   if (Op.isImm()) {
     int16_t Imm = Op.getImm();

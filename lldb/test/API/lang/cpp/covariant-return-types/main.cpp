@@ -14,18 +14,18 @@ OtherDerived other_derived;
 
 struct Base {
   // Function with covariant return type that is same class.
-  virtual Base *getPtr() { return this; }
-  virtual Base &getRef() { return *this; }
+  virtual Base* getPtr() { return this; }
+  virtual Base& getRef() { return *this; }
   // Function with covariant return type that is a different class.
-  virtual OtherBase *getOtherPtr() { return &other_base; }
-  virtual OtherBase &getOtherRef() { return other_base; }
+  virtual OtherBase* getOtherPtr() { return &other_base; }
+  virtual OtherBase& getOtherRef() { return other_base; }
 };
 
 struct Derived : public Base {
-  Derived *getPtr() override { return this; }
-  Derived &getRef() override { return *this; }
-  OtherDerived *getOtherPtr() override { return &other_derived; }
-  OtherDerived &getOtherRef() override { return other_derived; }
+  Derived* getPtr() override { return this; }
+  Derived& getRef() override { return *this; }
+  OtherDerived* getOtherPtr() override { return &other_derived; }
+  OtherDerived& getOtherRef() override { return other_derived; }
 };
 
 // A regression test for a class with at least two members containing a
@@ -35,13 +35,13 @@ struct BaseWithMembers {
   int b = 47;
   virtual BaseWithMembers *get() { return this; }
 };
-struct DerivedWithMembers : BaseWithMembers {
+struct DerivedWithMembers: BaseWithMembers {
   DerivedWithMembers *get() override { return this; }
 };
 struct ReferencingBase {
   virtual BaseWithMembers *getOther() { return new BaseWithMembers(); }
 };
-struct ReferencingDerived : ReferencingBase {
+struct ReferencingDerived: ReferencingBase {
   DerivedWithMembers *getOther() { return new DerivedWithMembers(); }
 };
 

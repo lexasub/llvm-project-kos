@@ -65,7 +65,9 @@ void llvm::initializeIPO(PassRegistry &Registry) {
   initializeWholeProgramDevirtPass(Registry);
 }
 
-void LLVMInitializeIPO(LLVMPassRegistryRef R) { initializeIPO(*unwrap(R)); }
+void LLVMInitializeIPO(LLVMPassRegistryRef R) {
+  initializeIPO(*unwrap(R));
+}
 
 void LLVMAddArgumentPromotionPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createArgumentPromotionPass());
@@ -123,7 +125,8 @@ void LLVMAddInternalizePass(LLVMPassManagerRef PM, unsigned AllButMain) {
 }
 
 void LLVMAddInternalizePassWithMustPreservePredicate(
-    LLVMPassManagerRef PM, void *Context,
+    LLVMPassManagerRef PM,
+    void *Context,
     LLVMBool (*Pred)(LLVMValueRef, void *)) {
   unwrap(PM)->add(createInternalizePass([=](const GlobalValue &GV) {
     return Pred(wrap(&GV), Context) == 0 ? false : true;

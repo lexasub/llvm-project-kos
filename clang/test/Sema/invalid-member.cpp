@@ -21,7 +21,7 @@ class Z {
 static_assert(sizeof(Z) == 1, "No valid members");
 
 constexpr int N = undef; // expected-error {{use of undeclared identifier}}
-template <int a>
+template<int a>
 class ABC {};
 class T {
   ABC<N> abc;

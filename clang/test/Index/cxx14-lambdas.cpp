@@ -4,7 +4,7 @@ typedef int Integer;
 struct X {
   void f() {
     int localA, localB;
-    auto lambda = [ptr = &localA, copy = localB](Integer x) -> Integer {
+    auto lambda = [ptr = &localA, copy = localB] (Integer x) -> Integer {
       return *ptr + copy + x;
     };
   }

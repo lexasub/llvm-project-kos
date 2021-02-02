@@ -24,17 +24,17 @@ HwMode::HwMode(Record *R) {
 }
 
 LLVM_DUMP_METHOD
-void HwMode::dump() const { dbgs() << Name << ": " << Features << '\n'; }
+void HwMode::dump() const {
+  dbgs() << Name << ": " << Features << '\n';
+}
 
 HwModeSelect::HwModeSelect(Record *R, CodeGenHwModes &CGH) {
-  std::vector<Record *> Modes = R->getValueAsListOfDefs("Modes");
-  std::vector<Record *> Objects = R->getValueAsListOfDefs("Objects");
+  std::vector<Record*> Modes = R->getValueAsListOfDefs("Modes");
+  std::vector<Record*> Objects = R->getValueAsListOfDefs("Objects");
   if (Modes.size() != Objects.size()) {
-    PrintError(
-        R->getLoc(),
-        "in record " + R->getName() +
-            " derived from HwModeSelect: the lists Modes and Objects should "
-            "have the same size");
+    PrintError(R->getLoc(), "in record " + R->getName() +
+        " derived from HwModeSelect: the lists Modes and Objects should "
+        "have the same size");
     report_fatal_error("error in target description.");
   }
   for (unsigned i = 0, e = Modes.size(); i != e; ++i) {
@@ -52,7 +52,7 @@ void HwModeSelect::dump() const {
 }
 
 CodeGenHwModes::CodeGenHwModes(RecordKeeper &RK) : Records(RK) {
-  std::vector<Record *> MRs = Records.getAllDerivedDefinitions("HwMode");
+  std::vector<Record*> MRs = Records.getAllDerivedDefinitions("HwMode");
   // The default mode needs a definition in the .td sources for TableGen
   // to accept references to it. We need to ignore the definition here.
   for (auto I = MRs.begin(), E = MRs.end(); I != E; ++I) {
@@ -65,10 +65,10 @@ CodeGenHwModes::CodeGenHwModes(RecordKeeper &RK) : Records(RK) {
   for (Record *R : MRs) {
     Modes.emplace_back(R);
     unsigned NewId = Modes.size();
-    ModeIds.insert(std::make_pair(Modes[NewId - 1].Name, NewId));
+    ModeIds.insert(std::make_pair(Modes[NewId-1].Name, NewId));
   }
 
-  std::vector<Record *> MSs = Records.getAllDerivedDefinitions("HwModeSelect");
+  std::vector<Record*> MSs = Records.getAllDerivedDefinitions("HwModeSelect");
   for (Record *R : MSs) {
     auto P = ModeSelects.emplace(std::make_pair(R, HwModeSelect(R, *this)));
     assert(P.second);

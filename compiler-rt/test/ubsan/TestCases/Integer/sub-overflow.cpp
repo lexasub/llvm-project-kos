@@ -21,11 +21,11 @@ int main() {
 #endif
 
 #ifdef SUB_I128
-#if defined(__SIZEOF_INT128__) && !defined(_WIN32)
+# if defined(__SIZEOF_INT128__) && !defined(_WIN32)
   (void)(-(__int128_t(1) << 126) - (__int128_t(1) << 126) - 1);
-#else
+# else
   puts("__int128 not supported");
-#endif
+# endif
   // CHECK-SUB_I128: {{0x80000000000000000000000000000000 - 1 cannot be represented in type '__int128'|__int128 not supported}}
 #endif
 }

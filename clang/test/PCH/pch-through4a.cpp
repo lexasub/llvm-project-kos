@@ -9,7 +9,7 @@
 // RUN:   -pch-through-header=Inputs/pch-through1.h \
 // RUN:   -fms-extensions -o %t.obj -x c++ %s
 
-#define Source(x, y)
+#define Source(x,y)
 #define InOut(size) Source(InOut, (size))
 void f(InOut(a) char *b, unsigned long a);
 #include "Inputs/pch-through1.h"

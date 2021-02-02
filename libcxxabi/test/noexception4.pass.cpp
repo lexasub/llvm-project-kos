@@ -18,10 +18,11 @@
 //      extern unsigned int  __cxa_uncaught_exceptions() throw();
 // }
 
-int main() {
-  // Trivially
-  assert(nullptr == __cxxabiv1::__cxa_current_primary_exception());
-  assert(!__cxxabiv1::__cxa_uncaught_exception());
-  assert(0 == __cxxabiv1::__cxa_uncaught_exceptions());
-  return 0;
+int main ()
+{
+    // Trivially
+    assert(nullptr == __cxxabiv1::__cxa_current_primary_exception());
+    assert(!__cxxabiv1::__cxa_uncaught_exception());
+    assert(0 == __cxxabiv1::__cxa_uncaught_exceptions());
+    return 0;
 }

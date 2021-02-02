@@ -21,8 +21,7 @@
 LLVM_C_EXTERN_C_BEGIN
 
 /**
- * @defgroup LLVMCTransformsAggressiveInstCombine Aggressive Instruction
- * Combining transformations
+ * @defgroup LLVMCTransformsAggressiveInstCombine Aggressive Instruction Combining transformations
  * @ingroup LLVMCTransforms
  *
  * @{
@@ -38,3 +37,4 @@ void LLVMAddAggressiveInstCombinerPass(LLVMPassManagerRef PM);
 LLVM_C_EXTERN_C_END
 
 #endif
+

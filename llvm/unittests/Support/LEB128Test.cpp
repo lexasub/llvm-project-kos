@@ -16,22 +16,22 @@ using namespace llvm;
 namespace {
 
 TEST(LEB128Test, EncodeSLEB128) {
-#define EXPECT_SLEB128_EQ(EXPECTED, VALUE, PAD)                                \
-  do {                                                                         \
-    std::string Expected(EXPECTED, sizeof(EXPECTED) - 1);                      \
-                                                                               \
-    /* encodeSLEB128(uint64_t, raw_ostream &, unsigned) */                     \
-    std::string Actual1;                                                       \
-    raw_string_ostream Stream(Actual1);                                        \
-    encodeSLEB128(VALUE, Stream, PAD);                                         \
-    Stream.flush();                                                            \
-    EXPECT_EQ(Expected, Actual1);                                              \
-                                                                               \
-    /* encodeSLEB128(uint64_t, uint8_t *, unsigned) */                         \
-    uint8_t Buffer[32];                                                        \
-    unsigned Size = encodeSLEB128(VALUE, Buffer, PAD);                         \
-    std::string Actual2(reinterpret_cast<const char *>(Buffer), Size);         \
-    EXPECT_EQ(Expected, Actual2);                                              \
+#define EXPECT_SLEB128_EQ(EXPECTED, VALUE, PAD) \
+  do { \
+    std::string Expected(EXPECTED, sizeof(EXPECTED) - 1); \
+    \
+    /* encodeSLEB128(uint64_t, raw_ostream &, unsigned) */ \
+    std::string Actual1; \
+    raw_string_ostream Stream(Actual1); \
+    encodeSLEB128(VALUE, Stream, PAD); \
+    Stream.flush(); \
+    EXPECT_EQ(Expected, Actual1); \
+    \
+    /* encodeSLEB128(uint64_t, uint8_t *, unsigned) */ \
+    uint8_t Buffer[32]; \
+    unsigned Size = encodeSLEB128(VALUE, Buffer, PAD); \
+    std::string Actual2(reinterpret_cast<const char *>(Buffer), Size); \
+    EXPECT_EQ(Expected, Actual2); \
   } while (0)
 
   // Encode SLEB128
@@ -61,22 +61,22 @@ TEST(LEB128Test, EncodeSLEB128) {
 }
 
 TEST(LEB128Test, EncodeULEB128) {
-#define EXPECT_ULEB128_EQ(EXPECTED, VALUE, PAD)                                \
-  do {                                                                         \
-    std::string Expected(EXPECTED, sizeof(EXPECTED) - 1);                      \
-                                                                               \
-    /* encodeULEB128(uint64_t, raw_ostream &, unsigned) */                     \
-    std::string Actual1;                                                       \
-    raw_string_ostream Stream(Actual1);                                        \
-    encodeULEB128(VALUE, Stream, PAD);                                         \
-    Stream.flush();                                                            \
-    EXPECT_EQ(Expected, Actual1);                                              \
-                                                                               \
-    /* encodeULEB128(uint64_t, uint8_t *, unsigned) */                         \
-    uint8_t Buffer[32];                                                        \
-    unsigned Size = encodeULEB128(VALUE, Buffer, PAD);                         \
-    std::string Actual2(reinterpret_cast<const char *>(Buffer), Size);         \
-    EXPECT_EQ(Expected, Actual2);                                              \
+#define EXPECT_ULEB128_EQ(EXPECTED, VALUE, PAD) \
+  do { \
+    std::string Expected(EXPECTED, sizeof(EXPECTED) - 1); \
+    \
+    /* encodeULEB128(uint64_t, raw_ostream &, unsigned) */ \
+    std::string Actual1; \
+    raw_string_ostream Stream(Actual1); \
+    encodeULEB128(VALUE, Stream, PAD); \
+    Stream.flush(); \
+    EXPECT_EQ(Expected, Actual1); \
+    \
+    /* encodeULEB128(uint64_t, uint8_t *, unsigned) */ \
+    uint8_t Buffer[32]; \
+    unsigned Size = encodeULEB128(VALUE, Buffer, PAD); \
+    std::string Actual2(reinterpret_cast<const char *>(Buffer), Size); \
+    EXPECT_EQ(Expected, Actual2); \
   } while (0)
 
   // Encode ULEB128
@@ -104,13 +104,13 @@ TEST(LEB128Test, EncodeULEB128) {
 }
 
 TEST(LEB128Test, DecodeULEB128) {
-#define EXPECT_DECODE_ULEB128_EQ(EXPECTED, VALUE)                              \
-  do {                                                                         \
-    unsigned ActualSize = 0;                                                   \
-    uint64_t Actual =                                                          \
-        decodeULEB128(reinterpret_cast<const uint8_t *>(VALUE), &ActualSize);  \
-    EXPECT_EQ(sizeof(VALUE) - 1, ActualSize);                                  \
-    EXPECT_EQ(EXPECTED, Actual);                                               \
+#define EXPECT_DECODE_ULEB128_EQ(EXPECTED, VALUE) \
+  do { \
+    unsigned ActualSize = 0; \
+    uint64_t Actual = decodeULEB128(reinterpret_cast<const uint8_t *>(VALUE), \
+                                    &ActualSize); \
+    EXPECT_EQ(sizeof(VALUE) - 1, ActualSize); \
+    EXPECT_EQ(EXPECTED, Actual); \
   } while (0)
 
   // Don't crash
@@ -142,13 +142,13 @@ TEST(LEB128Test, DecodeULEB128) {
 }
 
 TEST(LEB128Test, DecodeSLEB128) {
-#define EXPECT_DECODE_SLEB128_EQ(EXPECTED, VALUE)                              \
-  do {                                                                         \
-    unsigned ActualSize = 0;                                                   \
-    int64_t Actual =                                                           \
-        decodeSLEB128(reinterpret_cast<const uint8_t *>(VALUE), &ActualSize);  \
-    EXPECT_EQ(sizeof(VALUE) - 1, ActualSize);                                  \
-    EXPECT_EQ(EXPECTED, Actual);                                               \
+#define EXPECT_DECODE_SLEB128_EQ(EXPECTED, VALUE) \
+  do { \
+    unsigned ActualSize = 0; \
+    int64_t Actual = decodeSLEB128(reinterpret_cast<const uint8_t *>(VALUE), \
+                                    &ActualSize); \
+    EXPECT_EQ(sizeof(VALUE) - 1, ActualSize); \
+    EXPECT_EQ(EXPECTED, Actual); \
   } while (0)
 
   // Don't crash
@@ -370,4 +370,4 @@ TEST(LEB128Test, ULEB128Size) {
   EXPECT_EQ(10u, getULEB128Size(UINT64_MAX));
 }
 
-} // anonymous namespace
+}  // anonymous namespace

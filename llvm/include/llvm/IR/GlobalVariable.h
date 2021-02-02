@@ -11,8 +11,8 @@
 //
 // Global variables are constant pointers that refer to hunks of space that are
 // allocated by either the VM, or by the linker in a static compiler.  A global
-// variable may have an initial value, which is copied into the executables
-// .data area.  Global Constants are required to have initializers.
+// variable may have an initial value, which is copied into the executables .data
+// area.  Global Constants are required to have initializers.
 //
 //===----------------------------------------------------------------------===//
 
@@ -41,11 +41,11 @@ class GlobalVariable : public GlobalObject, public ilist_node<GlobalVariable> {
   friend class SymbolTableListTraits<GlobalVariable>;
 
   AttributeSet Attrs;
-  bool isConstantGlobal : 1;                // Is this a global constant?
-  bool isExternallyInitializedConstant : 1; // Is this a global whose value
-                                            // can change from its initial
-                                            // value before global
-                                            // initializers are run?
+  bool isConstantGlobal : 1;                   // Is this a global constant?
+  bool isExternallyInitializedConstant : 1;    // Is this a global whose value
+                                               // can change from its initial
+                                               // value before global
+                                               // initializers are run?
 
 public:
   /// GlobalVariable ctor - If a parent module is specified, the global is
@@ -65,19 +65,21 @@ public:
   GlobalVariable(const GlobalVariable &) = delete;
   GlobalVariable &operator=(const GlobalVariable &) = delete;
 
-  ~GlobalVariable() { dropAllReferences(); }
+  ~GlobalVariable() {
+    dropAllReferences();
+  }
 
   // allocate space for exactly one operand
-  void *operator new(size_t s) { return User::operator new(s, 1); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 1);
+  }
 
-  // delete space for exactly one operand as created in the corresponding new
-  // operator
-  void operator delete(void *ptr) {
+  // delete space for exactly one operand as created in the corresponding new operator
+  void operator delete(void *ptr){
     assert(ptr != nullptr && "must not be nullptr");
     User *Obj = static_cast<User *>(ptr);
-    // Number of operands can be set to 0 after construction and initialization.
-    // Make sure that number of operands is reset to 1, as this is needed in
-    // User::operator delete
+    // Number of operands can be set to 0 after construction and initialization. Make sure
+    // that number of operands is reset to 1, as this is needed in User::operator delete
     Obj->setGlobalVariableNumOperands(1);
     User::operator delete(Obj);
   }
@@ -107,13 +109,12 @@ public:
   /// unique.
   inline bool hasDefinitiveInitializer() const {
     return hasInitializer() &&
-           // The initializer of a global variable may change to something
-           // arbitrary at link time.
-           !isInterposable() &&
-           // The initializer of a global variable with the
-           // externally_initialized marker may change at runtime before C++
-           // initializers are evaluated.
-           !isExternallyInitialized();
+      // The initializer of a global variable may change to something arbitrary
+      // at link time.
+      !isInterposable() &&
+      // The initializer of a global variable with the externally_initialized
+      // marker may change at runtime before C++ initializers are evaluated.
+      !isExternallyInitialized();
   }
 
   /// hasUniqueInitializer - Whether the global variable has an initializer, and
@@ -134,11 +135,11 @@ public:
   ///
   inline const Constant *getInitializer() const {
     assert(hasInitializer() && "GV doesn't have initializer!");
-    return static_cast<Constant *>(Op<0>().get());
+    return static_cast<Constant*>(Op<0>().get());
   }
   inline Constant *getInitializer() {
     assert(hasInitializer() && "GV doesn't have initializer!");
-    return static_cast<Constant *>(Op<0>().get());
+    return static_cast<Constant*>(Op<0>().get());
   }
   /// setInitializer - Sets the initializer for this global variable, removing
   /// any existing initializer if InitVal==NULL.  If this GV has type T*, the
@@ -199,10 +200,14 @@ public:
   }
 
   /// Return true if the attribute exists.
-  bool hasAttribute(StringRef Kind) const { return Attrs.hasAttribute(Kind); }
+  bool hasAttribute(StringRef Kind) const {
+    return Attrs.hasAttribute(Kind);
+  }
 
   /// Return true if any attributes exist.
-  bool hasAttributes() const { return Attrs.hasAttributes(); }
+  bool hasAttributes() const {
+    return Attrs.hasAttributes();
+  }
 
   /// Return the attribute object.
   Attribute getAttribute(Attribute::AttrKind Kind) const {
@@ -215,7 +220,9 @@ public:
   }
 
   /// Return the attribute set for this global
-  AttributeSet getAttributes() const { return Attrs; }
+  AttributeSet getAttributes() const {
+    return Attrs;
+  }
 
   /// Return attribute set as list with index.
   /// FIXME: This may not be required once ValueEnumerators
@@ -228,7 +235,9 @@ public:
   }
 
   /// Set attribute list for this global
-  void setAttributes(AttributeSet A) { Attrs = A; }
+  void setAttributes(AttributeSet A) {
+    Attrs = A;
+  }
 
   /// Check if section name is present
   bool hasImplicitSection() const {
@@ -245,8 +254,9 @@ public:
 };
 
 template <>
-struct OperandTraits<GlobalVariable>
-    : public OptionalOperandTraits<GlobalVariable> {};
+struct OperandTraits<GlobalVariable> :
+  public OptionalOperandTraits<GlobalVariable> {
+};
 
 DEFINE_TRANSPARENT_OPERAND_ACCESSORS(GlobalVariable, Value)
 

@@ -52,10 +52,11 @@ int redef_attr_second __attribute__((loader_uninitialized));
 struct trivial {};
 
 trivial default_ok __attribute__((loader_uninitialized));
-trivial value_rejected __attribute__((loader_uninitialized)){};
+trivial value_rejected  __attribute__((loader_uninitialized)) {};
 // expected-error@-1 {{variable with 'loader_uninitialized' attribute cannot have an initializer}}
 
-struct nontrivial {
+struct nontrivial
+{
   nontrivial() {}
 };
 

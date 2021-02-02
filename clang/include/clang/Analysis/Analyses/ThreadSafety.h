@@ -10,8 +10,7 @@
 // A intra-procedural analysis for thread safety (e.g. deadlocks and race
 // conditions), based off of an annotation system.
 //
-// See
-// http://clang.llvm.org/docs/LanguageExtensions.html#thread-safety-annotation-checking
+// See http://clang.llvm.org/docs/LanguageExtensions.html#thread-safety-annotation-checking
 // for more information.
 //
 //===----------------------------------------------------------------------===//
@@ -248,7 +247,8 @@ private:
 /// at the end of each block, and issue warnings for thread safety violations.
 /// Each block in the CFG is traversed exactly once.
 void runThreadSafetyAnalysis(AnalysisDeclContext &AC,
-                             ThreadSafetyHandler &Handler, BeforeSet **Bset);
+                             ThreadSafetyHandler &Handler,
+                             BeforeSet **Bset);
 
 void threadSafetyCleanup(BeforeSet *Cache);
 

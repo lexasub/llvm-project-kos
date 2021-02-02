@@ -22,17 +22,9 @@
 #include "test_macros.h"
 
 template <class T, class = decltype(std::tuple_size<T>::value)>
-constexpr bool has_value(int) {
-  return true;
-}
-template <class>
-constexpr bool has_value(long) {
-  return false;
-}
-template <class T>
-constexpr bool has_value() {
-  return has_value<T>(0);
-}
+constexpr bool has_value(int) { return true; }
+template <class> constexpr bool has_value(long) { return false; }
+template <class T> constexpr bool has_value() { return has_value<T>(0); }
 
 struct Dummy {};
 

@@ -5,23 +5,23 @@
 // rdar://13752382
 
 namespace inner {
-//! This documentation should be inherited.
-struct Opaque;
-} // namespace inner
-// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))]
+  //! This documentation should be inherited.
+  struct Opaque;
+}
+// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))] 
 
 namespace borrow {
-//! This is documentation for the typedef (which shows up).
-typedef inner::Opaque Typedef;
-// CHECK:         (CXComment_Text Text=[ This is documentation for the typedef (which shows up).])))]
+  //! This is documentation for the typedef (which shows up).
+  typedef inner::Opaque Typedef;
+// CHECK:         (CXComment_Text Text=[ This is documentation for the typedef (which shows up).])))] 
 
-//! This is documentation for the alias (which shows up).
-using Alias = inner::Opaque;
-// CHECK:         (CXComment_Text Text=[ This is documentation for the alias (which shows up).])))]
+  //! This is documentation for the alias (which shows up).
+  using Alias = inner::Opaque;
+// CHECK:         (CXComment_Text Text=[ This is documentation for the alias (which shows up).])))] 
 
-typedef inner::Opaque NoDocTypedef;
-// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))]
+  typedef inner::Opaque NoDocTypedef;
+// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))] 
 
-using NoDocAlias = inner::Opaque;
-// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))]
-} // namespace borrow
+  using NoDocAlias = inner::Opaque;
+// CHECK:         (CXComment_Text Text=[ This documentation should be inherited.])))] 
+}

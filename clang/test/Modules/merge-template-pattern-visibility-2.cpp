@@ -4,8 +4,8 @@
 module A1 { export * }
 #pragma clang module contents
 #pragma clang module begin A1
-template <typename T> class A {};
-template <typename T> inline bool f(const A<T> &) { return T::error; }
+template<typename T> class A {};
+template<typename T> inline bool f(const A<T>&) { return T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -14,8 +14,8 @@ module A2 { export * }
 #pragma clang module contents
 #pragma clang module begin A2
 #pragma clang module load A1
-template <typename T> class A {};
-template <typename T> inline bool f(const A<T> &) { return T::error; }
+template<typename T> class A {};
+template<typename T> inline bool f(const A<T>&) { return T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -23,8 +23,8 @@ template <typename T> inline bool f(const A<T> &) { return T::error; }
 module A3 { export * }
 #pragma clang module contents
 #pragma clang module begin A3
-template <typename T> class A {};
-template <typename T> inline bool f(const A<T> &) { return T::error; }
+template<typename T> class A {};
+template<typename T> inline bool f(const A<T>&) { return T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 

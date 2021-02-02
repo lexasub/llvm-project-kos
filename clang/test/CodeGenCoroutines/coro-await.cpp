@@ -20,8 +20,8 @@ struct coroutine_handle : coroutine_handle<> {
   static coroutine_handle from_address(void *) noexcept;
 };
 
-} // namespace experimental
-} // namespace std
+}
+}
 
 struct init_susp {
   bool await_ready();
@@ -41,7 +41,7 @@ struct suspend_always {
   void await_resume();
 };
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void> {
   struct promise_type {
     void get_return_object();
@@ -113,8 +113,9 @@ struct suspend_maybe {
   void await_resume();
 };
 
-template <>
-struct std::experimental::coroutine_traits<void, int> {
+
+template<>
+struct std::experimental::coroutine_traits<void,int> {
   struct promise_type {
     void get_return_object();
     init_susp initial_suspend();
@@ -179,10 +180,7 @@ extern "C" void TestComplex() {
   // CHECK: call <2 x float> @_ZN14ComplexAwaiter12await_resumeEv(%struct.ComplexAwaiter*
 }
 
-struct Aggr {
-  int X, Y, Z;
-  ~Aggr();
-};
+struct Aggr { int X, Y, Z; ~Aggr(); };
 struct AggrAwaiter {
   template <typename F> void await_suspend(F);
   bool await_ready();
@@ -190,7 +188,7 @@ struct AggrAwaiter {
 };
 
 extern "C" void Whatever();
-extern "C" void UseAggr(Aggr &&);
+extern "C" void UseAggr(Aggr&&);
 
 // FIXME: Once the cleanup code is in, add testing that destructors for Aggr
 // are invoked properly on the cleanup branches.
@@ -240,7 +238,7 @@ extern "C" void TestScalar() {
 }
 
 // Test operator co_await codegen.
-enum class MyInt : int {};
+enum class MyInt: int {};
 ScalarAwaiter operator co_await(MyInt);
 
 struct MyAgg {
@@ -283,16 +281,17 @@ void AwaitLValue() {
   co_await lval;
 }
 
-struct RefTag {};
+struct RefTag { };
 
 struct AwaitResumeReturnsLValue {
   bool await_ready();
   void await_suspend(std::experimental::coroutine_handle<>);
-  RefTag &await_resume();
+  RefTag& await_resume();
 };
 
-template <>
-struct std::experimental::coroutine_traits<void, double> {
+
+template<>
+struct std::experimental::coroutine_traits<void,double> {
   struct promise_type {
     void get_return_object();
     init_susp initial_suspend();
@@ -318,15 +317,15 @@ void AwaitReturnsLValue(double) {
 
   // CHECK: %[[RES1:.+]] = call nonnull align 1 dereferenceable({{.*}}) %struct.RefTag* @_ZN24AwaitResumeReturnsLValue12await_resumeEv(%struct.AwaitResumeReturnsLValue* {{[^,]*}} %[[AVAR]])
   // CHECK-NEXT: store %struct.RefTag* %[[RES1]], %struct.RefTag** %[[XVAR]],
-  RefTag &x = co_await a;
+  RefTag& x = co_await a;
 
   // CHECK: %[[RES2:.+]] = call nonnull align 1 dereferenceable({{.*}}) %struct.RefTag* @_ZN24AwaitResumeReturnsLValue12await_resumeEv(%struct.AwaitResumeReturnsLValue* {{[^,]*}} %[[TMP1]])
   // CHECK-NEXT: store %struct.RefTag* %[[RES2]], %struct.RefTag** %[[YVAR]],
 
-  RefTag &y = co_await AwaitResumeReturnsLValue{};
+  RefTag& y = co_await AwaitResumeReturnsLValue{};
   // CHECK: %[[RES3:.+]] = call nonnull align 1 dereferenceable({{.*}}) %struct.RefTag* @_ZN24AwaitResumeReturnsLValue12await_resumeEv(%struct.AwaitResumeReturnsLValue* {{[^,]*}} %[[TMP2]])
   // CHECK-NEXT: store %struct.RefTag* %[[RES3]], %struct.RefTag** %[[ZVAR]],
-  RefTag &z = co_yield 42;
+  RefTag& z = co_yield 42;
 }
 
 struct TailCallAwait {

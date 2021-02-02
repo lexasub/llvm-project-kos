@@ -73,9 +73,9 @@ static cl::opt<bool>
 
 STATISTIC(NumMemCpyInstr, "Number of memcpy instructions deleted");
 STATISTIC(NumMemSetInfer, "Number of memsets inferred");
-STATISTIC(NumMoveToCpy, "Number of memmoves converted to memcpy");
-STATISTIC(NumCpyToSet, "Number of memcpys converted to memset");
-STATISTIC(NumCallSlot, "Number of call slot optimizations performed");
+STATISTIC(NumMoveToCpy,   "Number of memmoves converted to memcpy");
+STATISTIC(NumCpyToSet,    "Number of memcpys converted to memset");
+STATISTIC(NumCallSlot,    "Number of call slot optimizations performed");
 
 namespace {
 
@@ -102,7 +102,7 @@ struct MemsetRange {
   unsigned Alignment;
 
   /// TheStores - The actual stores that make up this range.
-  SmallVector<Instruction *, 16> TheStores;
+  SmallVector<Instruction*, 16> TheStores;
 
   bool isProfitableToUseMemset(const DataLayout &DL) const;
 };
@@ -111,12 +111,10 @@ struct MemsetRange {
 
 bool MemsetRange::isProfitableToUseMemset(const DataLayout &DL) const {
   // If we found more than 4 stores to merge or 16 bytes, use memset.
-  if (TheStores.size() >= 4 || End - Start >= 16)
-    return true;
+  if (TheStores.size() >= 4 || End-Start >= 16) return true;
 
   // If there is nothing to merge, don't do anything.
-  if (TheStores.size() < 2)
-    return false;
+  if (TheStores.size() < 2) return false;
 
   // If any of the stores are a memset, then it is always good to extend the
   // memset.
@@ -126,8 +124,7 @@ bool MemsetRange::isProfitableToUseMemset(const DataLayout &DL) const {
 
   // Assume that the code generator is capable of merging pairs of stores
   // together if it wants to.
-  if (TheStores.size() == 2)
-    return false;
+  if (TheStores.size() == 2) return false;
 
   // If we have fewer than 8 stores, it can still be worthwhile to do this.
   // For example, merging 4 i8 stores into an i32 store is useful almost always.
@@ -139,7 +136,7 @@ bool MemsetRange::isProfitableToUseMemset(const DataLayout &DL) const {
   // the maximum GPR width is the same size as the largest legal integer
   // size. If so, check to see whether we will end up actually reducing the
   // number of stores used.
-  unsigned Bytes = unsigned(End - Start);
+  unsigned Bytes = unsigned(End-Start);
   unsigned MaxIntSize = DL.getLargestLegalIntTypeSizeInBits() / 8;
   if (MaxIntSize == 0)
     MaxIntSize = 1;
@@ -151,7 +148,7 @@ bool MemsetRange::isProfitableToUseMemset(const DataLayout &DL) const {
   // If we will reduce the # stores (according to this heuristic), do the
   // transformation.  This encourages merging 4 x i8 -> i32 and 2 x i16 -> i32
   // etc.
-  return TheStores.size() > NumPointerStores + NumByteStores;
+  return TheStores.size() > NumPointerStores+NumByteStores;
 }
 
 namespace {
@@ -189,12 +186,11 @@ public:
 
   void addMemSet(int64_t OffsetFromFirst, MemSetInst *MSI) {
     int64_t Size = cast<ConstantInt>(MSI->getLength())->getZExtValue();
-    addRange(OffsetFromFirst, Size, MSI->getDest(), MSI->getDestAlignment(),
-             MSI);
+    addRange(OffsetFromFirst, Size, MSI->getDest(), MSI->getDestAlignment(), MSI);
   }
 
-  void addRange(int64_t Start, int64_t Size, Value *Ptr, unsigned Alignment,
-                Instruction *Inst);
+  void addRange(int64_t Start, int64_t Size, Value *Ptr,
+                unsigned Alignment, Instruction *Inst);
 };
 
 } // end anonymous namespace
@@ -204,7 +200,7 @@ public:
 /// existing ranges as appropriate.
 void MemsetRanges::addRange(int64_t Start, int64_t Size, Value *Ptr,
                             unsigned Alignment, Instruction *Inst) {
-  int64_t End = Start + Size;
+  int64_t End = Start+Size;
 
   range_iterator I = partition_point(
       Ranges, [=](const MemsetRange &O) { return O.End < Start; });
@@ -214,10 +210,10 @@ void MemsetRanges::addRange(int64_t Start, int64_t Size, Value *Ptr,
   // to insert a new range.  Handle this now.
   if (I == Ranges.end() || End < I->Start) {
     MemsetRange &R = *Ranges.insert(I, MemsetRange());
-    R.Start = Start;
-    R.End = End;
-    R.StartPtr = Ptr;
-    R.Alignment = Alignment;
+    R.Start        = Start;
+    R.End          = End;
+    R.StartPtr     = Ptr;
+    R.Alignment    = Alignment;
     R.TheStores.push_back(Inst);
     return;
   }
@@ -347,8 +343,8 @@ static bool accessedBetween(AliasAnalysis &AA, MemoryLocation Loc,
   assert(Start->getBlock() == End->getBlock() && "Only local supported");
   for (const MemoryAccess &MA :
        make_range(++Start->getIterator(), End->getIterator())) {
-    if (isModOrRefSet(
-            AA.getModRefInfo(cast<MemoryUseOrDef>(MA).getMemoryInst(), Loc)))
+    if (isModOrRefSet(AA.getModRefInfo(cast<MemoryUseOrDef>(MA).getMemoryInst(),
+                                       Loc)))
       return true;
   }
   return false;
@@ -413,8 +409,7 @@ Instruction *MemCpyOptPass::tryMergingIntoMemset(Instruction *StartInst,
 
     if (StoreInst *NextStore = dyn_cast<StoreInst>(BI)) {
       // If this is a store, see if we can merge it in.
-      if (!NextStore->isSimple())
-        break;
+      if (!NextStore->isSimple()) break;
 
       Value *StoredVal = NextStore->getValueOperand();
 
@@ -472,8 +467,7 @@ Instruction *MemCpyOptPass::tryMergingIntoMemset(Instruction *StartInst,
   // emit memset's for anything big enough to be worthwhile.
   Instruction *AMemSet = nullptr;
   for (const MemsetRange &Range : Ranges) {
-    if (Range.TheStores.size() == 1)
-      continue;
+    if (Range.TheStores.size() == 1) continue;
 
     // If it is profitable to lower this range to memset, do so now.
     if (!Range.isProfitableToUseMemset(DL))
@@ -528,7 +522,7 @@ bool MemCpyOptPass::moveUp(StoreInst *SI, Instruction *P, const LoadInst *LI) {
 
   // Keep track of the arguments of all instruction we plan to lift
   // so we can make sure to lift them as well if appropriate.
-  DenseSet<Instruction *> Args;
+  DenseSet<Instruction*> Args;
   if (auto *Ptr = dyn_cast<Instruction>(SI->getPointerOperand()))
     if (Ptr->getParent() == SI->getParent())
       Args.insert(Ptr);
@@ -599,8 +593,7 @@ bool MemCpyOptPass::moveUp(StoreInst *SI, Instruction *P, const LoadInst *LI) {
       if (auto *A = dyn_cast<Instruction>(C->getOperand(k))) {
         if (A->getParent() == SI->getParent()) {
           // Cannot hoist user of P above P
-          if (A == P)
-            return false;
+          if(A == P) return false;
           Args.insert(A);
         }
       }
@@ -646,8 +639,7 @@ bool MemCpyOptPass::moveUp(StoreInst *SI, Instruction *P, const LoadInst *LI) {
 }
 
 bool MemCpyOptPass::processStore(StoreInst *SI, BasicBlock::iterator &BBI) {
-  if (!SI->isSimple())
-    return false;
+  if (!SI->isSimple()) return false;
 
   // Avoid merging nontemporal stores since the resulting
   // memcpy/memset would not be able to preserve the nontemporal hint.
@@ -713,13 +705,13 @@ bool MemCpyOptPass::processStore(StoreInst *SI, BasicBlock::iterator &BBI) {
           IRBuilder<> Builder(P);
           Instruction *M;
           if (UseMemMove)
-            M = Builder.CreateMemMove(SI->getPointerOperand(), SI->getAlign(),
-                                      LI->getPointerOperand(), LI->getAlign(),
-                                      Size);
+            M = Builder.CreateMemMove(
+                SI->getPointerOperand(), SI->getAlign(),
+                LI->getPointerOperand(), LI->getAlign(), Size);
           else
-            M = Builder.CreateMemCpy(SI->getPointerOperand(), SI->getAlign(),
-                                     LI->getPointerOperand(), LI->getAlign(),
-                                     Size);
+            M = Builder.CreateMemCpy(
+                SI->getPointerOperand(), SI->getAlign(),
+                LI->getPointerOperand(), LI->getAlign(), Size);
 
           LLVM_DEBUG(dbgs() << "Promoting " << *LI << " to " << *SI << " => "
                             << *M << "\n");
@@ -804,8 +796,8 @@ bool MemCpyOptPass::processStore(StoreInst *SI, BasicBlock::iterator &BBI) {
   // 0xA0A0A0A0 and 0.0.
   auto *V = SI->getOperand(0);
   if (Value *ByteVal = isBytewiseValue(V, DL)) {
-    if (Instruction *I =
-            tryMergingIntoMemset(SI, SI->getPointerOperand(), ByteVal)) {
+    if (Instruction *I = tryMergingIntoMemset(SI, SI->getPointerOperand(),
+                                              ByteVal)) {
       BBI = I->getIterator(); // Don't invalidate iterator.
       return true;
     }
@@ -846,8 +838,8 @@ bool MemCpyOptPass::processMemSet(MemSetInst *MSI, BasicBlock::iterator &BBI) {
   // See if there is another memset or store neighboring this memset which
   // allows us to widen out the memset to do a single larger store.
   if (isa<ConstantInt>(MSI->getLength()) && !MSI->isVolatile())
-    if (Instruction *I =
-            tryMergingIntoMemset(MSI, MSI->getDest(), MSI->getValue())) {
+    if (Instruction *I = tryMergingIntoMemset(MSI, MSI->getDest(),
+                                              MSI->getValue())) {
       BBI = I->getIterator(); // Don't invalidate iterator.
       return true;
     }
@@ -999,11 +991,9 @@ bool MemCpyOptPass::performCallSlotOptzn(Instruction *cpyLoad,
   bool changedArgument = false;
   for (unsigned ArgI = 0; ArgI < C->arg_size(); ++ArgI)
     if (C->getArgOperand(ArgI)->stripPointerCasts() == cpySrc) {
-      Value *Dest =
-          cpySrc->getType() == cpyDest->getType()
-              ? cpyDest
-              : CastInst::CreatePointerCast(cpyDest, cpySrc->getType(),
-                                            cpyDest->getName(), C);
+      Value *Dest = cpySrc->getType() == cpyDest->getType() ?  cpyDest
+        : CastInst::CreatePointerCast(cpyDest, cpySrc->getType(),
+                                      cpyDest->getName(), C);
       changedArgument = true;
       if (C->getArgOperand(ArgI)->getType() == Dest->getType())
         C->setArgOperand(ArgI, Dest);
@@ -1099,8 +1089,7 @@ bool MemCpyOptPass::processMemCpyMemCpyDependence(MemCpyInst *M,
 
   // If all checks passed, then we can transform M.
   LLVM_DEBUG(dbgs() << "MemCpyOptPass: Forwarding memcpy->memcpy src:\n"
-                    << *MDep << '\n'
-                    << *M << '\n');
+                    << *MDep << '\n' << *M << '\n');
 
   // TODO: Is this worth it if we're creating a less aligned memcpy? For
   // example we could be moving from movaps -> movq on x86.
@@ -1150,9 +1139,10 @@ bool MemCpyOptPass::processMemSetMemCpyDependence(MemCpyInst *MemCpy,
 
   // Check that src and dst of the memcpy aren't the same. While memcpy
   // operands cannot partially overlap, exact equality is allowed.
-  if (!AA->isNoAlias(
-          MemoryLocation(MemCpy->getSource(), LocationSize::precise(1)),
-          MemoryLocation(MemCpy->getDest(), LocationSize::precise(1))))
+  if (!AA->isNoAlias(MemoryLocation(MemCpy->getSource(),
+                                    LocationSize::precise(1)),
+                     MemoryLocation(MemCpy->getDest(),
+                                    LocationSize::precise(1))))
     return false;
 
   if (EnableMemorySSA) {
@@ -1338,8 +1328,7 @@ bool MemCpyOptPass::performMemCpyToMemSetOptzn(MemCpyInst *MemCpy,
 /// altogether.
 bool MemCpyOptPass::processMemCpy(MemCpyInst *M, BasicBlock::iterator &BBI) {
   // We can only optimize non-volatile memcpy's.
-  if (M->isVolatile())
-    return false;
+  if (M->isVolatile()) return false;
 
   // If the source and destination of the memcpy are the same, then zap it.
   if (M->getSource() == M->getDest()) {
@@ -1389,8 +1378,7 @@ bool MemCpyOptPass::processMemCpy(MemCpyInst *M, BasicBlock::iterator &BBI) {
 
     // The optimizations after this point require the memcpy size.
     ConstantInt *CopySize = dyn_cast<ConstantInt>(M->getLength());
-    if (!CopySize)
-      return false;
+    if (!CopySize) return false;
 
     MemoryAccess *SrcClobber = MSSA->getWalker()->getClobberingMemoryAccess(
         AnyClobber, MemoryLocation::getForSource(M));
@@ -1458,8 +1446,7 @@ bool MemCpyOptPass::processMemCpy(MemCpyInst *M, BasicBlock::iterator &BBI) {
 
     // The optimizations after this point require the memcpy size.
     ConstantInt *CopySize = dyn_cast<ConstantInt>(M->getLength());
-    if (!CopySize)
-      return false;
+    if (!CopySize) return false;
 
     // There are four possible optimizations we can do for memcpy:
     //   a) memcpy-memcpy xform which exposes redundance for DSE.
@@ -1525,10 +1512,11 @@ bool MemCpyOptPass::processMemMove(MemMoveInst *M) {
                     << "\n");
 
   // If not, then we know we can transform this.
-  Type *ArgTys[3] = {M->getRawDest()->getType(), M->getRawSource()->getType(),
-                     M->getLength()->getType()};
-  M->setCalledFunction(
-      Intrinsic::getDeclaration(M->getModule(), Intrinsic::memcpy, ArgTys));
+  Type *ArgTys[3] = { M->getRawDest()->getType(),
+                      M->getRawSource()->getType(),
+                      M->getLength()->getType() };
+  M->setCalledFunction(Intrinsic::getDeclaration(M->getModule(),
+                                                 Intrinsic::memcpy, ArgTys));
 
   // For MemorySSA nothing really changes (except that memcpy may imply stricter
   // aliasing guarantees).
@@ -1580,8 +1568,7 @@ bool MemCpyOptPass::processByValArgument(CallBase &CB, unsigned ArgNo) {
   // Get the alignment of the byval.  If the call doesn't specify the alignment,
   // then it is some target specific value that we can't know.
   MaybeAlign ByValAlign = CB.getParamAlign(ArgNo);
-  if (!ByValAlign)
-    return false;
+  if (!ByValAlign) return false;
 
   // If it is greater than the memcpy, then we check to see if we can force the
   // source of the memcpy to the alignment we need.  If we fail, we bail out.
@@ -1609,17 +1596,17 @@ bool MemCpyOptPass::processByValArgument(CallBase &CB, unsigned ArgNo) {
   } else {
     // NOTE: This is conservative, it will stop on any read from the source loc,
     // not just the defining memcpy.
-    MemDepResult SourceDep =
-        MD->getPointerDependencyFrom(MemoryLocation::getForSource(MDep), false,
-                                     CB.getIterator(), MDep->getParent());
+    MemDepResult SourceDep = MD->getPointerDependencyFrom(
+        MemoryLocation::getForSource(MDep), false,
+        CB.getIterator(), MDep->getParent());
     if (!SourceDep.isClobber() || SourceDep.getInst() != MDep)
       return false;
   }
 
   Value *TmpCast = MDep->getSource();
   if (MDep->getSource()->getType() != ByValArg->getType()) {
-    BitCastInst *TmpBitCast =
-        new BitCastInst(MDep->getSource(), ByValArg->getType(), "tmpcast", &CB);
+    BitCastInst *TmpBitCast = new BitCastInst(MDep->getSource(), ByValArg->getType(),
+                                              "tmpcast", &CB);
     // Set the tmpcast's DebugLoc to MDep's
     TmpBitCast->setDebugLoc(MDep->getDebugLoc());
     TmpCast = TmpBitCast;
@@ -1649,7 +1636,7 @@ bool MemCpyOptPass::iterateOnFunction(Function &F) {
       continue;
 
     for (BasicBlock::iterator BI = BB.begin(), BE = BB.end(); BI != BE;) {
-      // Avoid invalidating the iterator.
+        // Avoid invalidating the iterator.
       Instruction *I = &*BI++;
 
       bool RepeatInstruction = false;
@@ -1743,16 +1730,16 @@ bool MemCpyOptLegacyPass::runOnFunction(Function &F) {
     return false;
 
   auto *MDWP = !EnableMemorySSA
-                   ? &getAnalysis<MemoryDependenceWrapperPass>()
-                   : getAnalysisIfAvailable<MemoryDependenceWrapperPass>();
+      ? &getAnalysis<MemoryDependenceWrapperPass>()
+      : getAnalysisIfAvailable<MemoryDependenceWrapperPass>();
   auto *TLI = &getAnalysis<TargetLibraryInfoWrapperPass>().getTLI(F);
   auto *AA = &getAnalysis<AAResultsWrapperPass>().getAAResults();
   auto *AC = &getAnalysis<AssumptionCacheTracker>().getAssumptionCache(F);
   auto *DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree();
   auto *MSSAWP = EnableMemorySSA
-                     ? &getAnalysis<MemorySSAWrapperPass>()
-                     : getAnalysisIfAvailable<MemorySSAWrapperPass>();
+      ? &getAnalysis<MemorySSAWrapperPass>()
+      : getAnalysisIfAvailable<MemorySSAWrapperPass>();
 
-  return Impl.runImpl(F, MDWP ? &MDWP->getMemDep() : nullptr, TLI, AA, AC, DT,
+  return Impl.runImpl(F, MDWP ? & MDWP->getMemDep() : nullptr, TLI, AA, AC, DT,
                       MSSAWP ? &MSSAWP->getMSSA() : nullptr);
 }

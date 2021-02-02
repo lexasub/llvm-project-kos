@@ -442,7 +442,7 @@ TEST_F(CoreAPIsStandardTest, TestTrivialCircularDependency) {
       << "No symbols marked failed, but Foo failed to emit";
 
   EXPECT_TRUE(FooReady)
-      << "Self-dependency prevented symbol from being marked ready";
+    << "Self-dependency prevented symbol from being marked ready";
 }
 
 TEST_F(CoreAPIsStandardTest, TestCircularDependenceInOneJITDylib) {

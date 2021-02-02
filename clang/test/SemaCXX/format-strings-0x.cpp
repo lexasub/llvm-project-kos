@@ -19,17 +19,17 @@ void f(char **sp, float *fp) {
 
   // PR13099
   printf(
-      R"foobar(%)foobar"
-      R"bazquux(d)bazquux" // expected-warning {{more '%' conversions than data arguments}}
-      R"xyzzy()xyzzy");
+    R"foobar(%)foobar"
+    R"bazquux(d)bazquux" // expected-warning {{more '%' conversions than data arguments}}
+    R"xyzzy()xyzzy");
 
   printf(u8"this is %d test", 0); // ok
   printf(u8R"foo(
       \u1234\U0010fffe
-      %d)foo"                     // expected-warning {{more '%' conversions than data arguments}}
+      %d)foo" // expected-warning {{more '%' conversions than data arguments}}
   );
 
-  printf("init list: %d", {0});  // expected-error {{cannot pass initializer list to variadic function; expected type from format string was 'int'}}
+  printf("init list: %d", { 0 }); // expected-error {{cannot pass initializer list to variadic function; expected type from format string was 'int'}}
   printf("void: %d", f(sp, fp)); // expected-error {{cannot pass expression of type 'void' to variadic function; expected type from format string was 'int'}}
-  printf(0, {0});                // expected-error {{cannot pass initializer list to variadic function}}
+  printf(0, { 0 }); // expected-error {{cannot pass initializer list to variadic function}}
 }

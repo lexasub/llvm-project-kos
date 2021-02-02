@@ -18,19 +18,19 @@ using namespace llvm;
 // Return the VK_* enumeration for MachineOperand target flags Flags.
 static MCSymbolRefExpr::VariantKind getVariantKind(unsigned Flags) {
   switch (Flags & SystemZII::MO_SYMBOL_MODIFIER) {
-  case 0:
-    return MCSymbolRefExpr::VK_None;
-  case SystemZII::MO_GOT:
-    return MCSymbolRefExpr::VK_GOT;
-  case SystemZII::MO_INDNTPOFF:
-    return MCSymbolRefExpr::VK_INDNTPOFF;
+    case 0:
+      return MCSymbolRefExpr::VK_None;
+    case SystemZII::MO_GOT:
+      return MCSymbolRefExpr::VK_GOT;
+    case SystemZII::MO_INDNTPOFF:
+      return MCSymbolRefExpr::VK_INDNTPOFF;
   }
   llvm_unreachable("Unrecognised MO_ACCESS_MODEL");
 }
 
 SystemZMCInstLower::SystemZMCInstLower(MCContext &ctx,
                                        SystemZAsmPrinter &asmprinter)
-    : Ctx(ctx), AsmPrinter(asmprinter) {}
+  : Ctx(ctx), AsmPrinter(asmprinter) {}
 
 const MCExpr *
 SystemZMCInstLower::getExpr(const MachineOperand &MO,

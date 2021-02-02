@@ -208,14 +208,15 @@ public:
                    bool KillSrc) const override;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MBBI, Register SrcReg,
-                           bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MBBI,
+                           Register SrcReg, bool isKill, int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MBBI, Register DestReg,
-                            int FrameIndex, const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MBBI,
+                            Register DestReg, int FrameIndex,
+                            const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
   bool expandPostRAPseudo(MachineInstr &MI) const override;
@@ -227,9 +228,9 @@ public:
                      const MachineInstr &Orig,
                      const TargetRegisterInfo &TRI) const override;
 
-  MachineInstr &duplicate(MachineBasicBlock &MBB,
-                          MachineBasicBlock::iterator InsertBefore,
-                          const MachineInstr &Orig) const override;
+  MachineInstr &
+  duplicate(MachineBasicBlock &MBB, MachineBasicBlock::iterator InsertBefore,
+            const MachineInstr &Orig) const override;
 
   const MachineInstrBuilder &AddDReg(MachineInstrBuilder &MIB, unsigned Reg,
                                      unsigned SubIdx, unsigned State,
@@ -254,16 +255,16 @@ public:
   /// from the common base address. It returns true if it decides it's desirable
   /// to schedule the two loads together. "NumLoads" is the number of loads that
   /// have already been scheduled after Load1.
-  bool shouldScheduleLoadsNear(SDNode *Load1, SDNode *Load2, int64_t Offset1,
-                               int64_t Offset2,
+  bool shouldScheduleLoadsNear(SDNode *Load1, SDNode *Load2,
+                               int64_t Offset1, int64_t Offset2,
                                unsigned NumLoads) const override;
 
   bool isSchedulingBoundary(const MachineInstr &MI,
                             const MachineBasicBlock *MBB,
                             const MachineFunction &MF) const override;
 
-  bool isProfitableToIfCvt(MachineBasicBlock &MBB, unsigned NumCycles,
-                           unsigned ExtraPredCycles,
+  bool isProfitableToIfCvt(MachineBasicBlock &MBB,
+                           unsigned NumCycles, unsigned ExtraPredCycles,
                            BranchProbability Probability) const override;
 
   bool isProfitableToIfCvt(MachineBasicBlock &TMBB, unsigned NumT,
@@ -319,9 +320,9 @@ public:
                         const MachineInstr &DefMI, unsigned DefIdx,
                         const MachineInstr &UseMI,
                         unsigned UseIdx) const override;
-  int getOperandLatency(const InstrItineraryData *ItinData, SDNode *DefNode,
-                        unsigned DefIdx, SDNode *UseNode,
-                        unsigned UseIdx) const override;
+  int getOperandLatency(const InstrItineraryData *ItinData,
+                        SDNode *DefNode, unsigned DefIdx,
+                        SDNode *UseNode, unsigned UseIdx) const override;
 
   /// VFP/NEON execution domains.
   std::pair<uint16_t, uint16_t>
@@ -417,20 +418,25 @@ private:
   unsigned getInstBundleLength(const MachineInstr &MI) const;
 
   int getVLDMDefCycle(const InstrItineraryData *ItinData,
-                      const MCInstrDesc &DefMCID, unsigned DefClass,
+                      const MCInstrDesc &DefMCID,
+                      unsigned DefClass,
                       unsigned DefIdx, unsigned DefAlign) const;
   int getLDMDefCycle(const InstrItineraryData *ItinData,
-                     const MCInstrDesc &DefMCID, unsigned DefClass,
+                     const MCInstrDesc &DefMCID,
+                     unsigned DefClass,
                      unsigned DefIdx, unsigned DefAlign) const;
   int getVSTMUseCycle(const InstrItineraryData *ItinData,
-                      const MCInstrDesc &UseMCID, unsigned UseClass,
+                      const MCInstrDesc &UseMCID,
+                      unsigned UseClass,
                       unsigned UseIdx, unsigned UseAlign) const;
   int getSTMUseCycle(const InstrItineraryData *ItinData,
-                     const MCInstrDesc &UseMCID, unsigned UseClass,
+                     const MCInstrDesc &UseMCID,
+                     unsigned UseClass,
                      unsigned UseIdx, unsigned UseAlign) const;
   int getOperandLatency(const InstrItineraryData *ItinData,
-                        const MCInstrDesc &DefMCID, unsigned DefIdx,
-                        unsigned DefAlign, const MCInstrDesc &UseMCID,
+                        const MCInstrDesc &DefMCID,
+                        unsigned DefIdx, unsigned DefAlign,
+                        const MCInstrDesc &UseMCID,
                         unsigned UseIdx, unsigned UseAlign) const;
 
   int getOperandLatencyImpl(const InstrItineraryData *ItinData,
@@ -551,7 +557,8 @@ static inline MachineOperand t1CondCodeOp(bool isDead = false) {
                                    /*Kill*/ false, isDead);
 }
 
-static inline bool isUncondBranchOpcode(int Opc) {
+static inline
+bool isUncondBranchOpcode(int Opc) {
   return Opc == ARM::B || Opc == ARM::tB || Opc == ARM::t2B;
 }
 
@@ -573,7 +580,8 @@ static inline bool isVPTOpcode(int Opc) {
          Opc == ARM::MVE_VPST;
 }
 
-static inline unsigned VCMPOpcodeToVPT(unsigned Opcode) {
+static inline
+unsigned VCMPOpcodeToVPT(unsigned Opcode) {
   switch (Opcode) {
   default:
     return 0;
@@ -625,7 +633,8 @@ static inline unsigned VCMPOpcodeToVPT(unsigned Opcode) {
   }
 }
 
-static inline bool isCondBranchOpcode(int Opc) {
+static inline
+bool isCondBranchOpcode(int Opc) {
   return Opc == ARM::Bcc || Opc == ARM::tBcc || Opc == ARM::t2Bcc;
 }
 
@@ -640,7 +649,8 @@ static inline bool isLowOverheadTerminatorOpcode(int Opc) {
          Opc == ARM::t2LoopEnd || Opc == ARM::t2LoopEndDec;
 }
 
-static inline bool isIndirectBranchOpcode(int Opc) {
+static inline
+bool isIndirectBranchOpcode(int Opc) {
   return Opc == ARM::BX || Opc == ARM::MOVPCRX || Opc == ARM::tBRIND;
 }
 
@@ -717,9 +727,10 @@ static inline bool isPushOpcode(int Opc) {
 }
 
 static inline bool isSubImmOpcode(int Opc) {
-  return Opc == ARM::SUBri || Opc == ARM::tSUBi3 || Opc == ARM::tSUBi8 ||
-         Opc == ARM::tSUBSi3 || Opc == ARM::tSUBSi8 || Opc == ARM::t2SUBri ||
-         Opc == ARM::t2SUBri12 || Opc == ARM::t2SUBSri;
+  return Opc == ARM::SUBri ||
+         Opc == ARM::tSUBi3 || Opc == ARM::tSUBi8 ||
+         Opc == ARM::tSUBSi3 || Opc == ARM::tSUBSi8 ||
+         Opc == ARM::t2SUBri || Opc == ARM::t2SUBri12 || Opc == ARM::t2SUBSri;
 }
 
 static inline bool isMovRegOpcode(int Opc) {
@@ -729,7 +740,7 @@ static inline bool isMovRegOpcode(int Opc) {
 /// number is legal in generic instructions like CDP. The answer can
 /// vary with the subtarget.
 static inline bool isValidCoprocessorNumber(unsigned Num,
-                                            const FeatureBitset &featureBits) {
+                                            const FeatureBitset& featureBits) {
   // In Armv7 and Armv8-M CP10 and CP11 clash with VFP/NEON, however, the
   // coprocessor is still valid for CDP/MCR/MRC and friends. Allowing it is
   // useful for code which is shared with older architectures which do not know

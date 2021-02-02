@@ -3,11 +3,11 @@
 // RUN: %clang_cc1 -verify -fcxx-exceptions -triple=x86_64-linux-gnu -std=c++20 -DCXX14 -DCXX20 %s
 
 namespace N {
-typedef char C;
+  typedef char C;
 }
 
 namespace M {
-typedef double D;
+  typedef double D;
 }
 
 struct NonLiteral { // expected-note 3{{no constexpr constructors}}
@@ -77,7 +77,7 @@ struct T : SS, NonLiteral {
   // destructor can be defaulted. Destructors can't be constexpr since they
   // don't have a literal return type. Defaulted assignment operators can't be
   // constexpr since they can't be const.
-  constexpr T &operator=(const T &) = default;
+  constexpr T &operator=(const T&) = default;
 #ifndef CXX14
   // expected-error@-2 {{an explicitly-defaulted copy assignment operator may not have 'const', 'constexpr' or 'volatile' qualifiers}}
   // expected-warning@-3 {{C++14}}
@@ -90,10 +90,10 @@ constexpr int T::OutOfLineVirtual() const { return 0; }
 #ifdef CXX14
 struct T2 {
   int n = 0;
-  constexpr T2 &operator=(const T2 &) = default; // ok
+  constexpr T2 &operator=(const T2&) = default; // ok
 };
 struct T3 {
-  constexpr T3 &operator=(const T3 &) const = default;
+  constexpr T3 &operator=(const T3&) const = default;
 #ifndef CXX20
   // expected-error@-2 {{an explicitly-defaulted copy assignment operator may not have 'const' or 'volatile' qualifiers}}
 #else
@@ -107,7 +107,7 @@ struct U {
   constexpr int SelfParam(U) const;
 };
 
-struct V : virtual U {                  // expected-note {{here}}
+struct V : virtual U { // expected-note {{here}}
   constexpr int F() const { return 0; } // expected-error {{constexpr member function not allowed in struct with virtual base class}}
 };
 
@@ -144,7 +144,7 @@ constexpr int DisallowedStmtsCXX14_1(bool b) {
   if (b)
     asm("int3");
 #if !defined(CXX20)
-    // expected-error@-2 {{use of this statement in a constexpr function is a C++20 extension}}
+  // expected-error@-2 {{use of this statement in a constexpr function is a C++20 extension}}
 #endif
   return 0;
 }
@@ -158,15 +158,12 @@ constexpr int DisallowedStmtsCXX14_2_1() {
   try {
     return 0;
   } catch (...) {
-  merp:
-    goto merp; // expected-error {{statement not allowed in constexpr function}}
+  merp: goto merp; // expected-error {{statement not allowed in constexpr function}}
   }
 }
 constexpr int DisallowedStmtsCXX14_3() {
   //  - a try-block,
-  try {
-  } catch (...) {
-  }
+  try {} catch (...) {}
 #if !defined(CXX20)
   // expected-error@-2 {{use of this statement in a constexpr function is a C++20 extension}}
 #endif
@@ -241,22 +238,21 @@ constexpr int FuncDecl() {
   return ForwardDecl(42);
 }
 constexpr int ClassDecl1() {
-  typedef struct {
-  } S1;
+  typedef struct { } S1;
 #ifndef CXX14
   // expected-error@-2 {{type definition in a constexpr function is a C++14 extension}}
 #endif
   return 0;
 }
 constexpr int ClassDecl2() {
-  using S2 = struct {};
+  using S2 = struct { };
 #ifndef CXX14
   // expected-error@-2 {{type definition in a constexpr function is a C++14 extension}}
 #endif
   return 0;
 }
 constexpr int ClassDecl3() {
-  struct S3 {};
+  struct S3 { };
 #ifndef CXX14
   // expected-error@-2 {{type definition in a constexpr function is a C++14 extension}}
 #endif
@@ -279,73 +275,72 @@ constexpr int MultiReturn() {
 // However, we implement the spirit of the check as part of the p5 checking that
 // a constexpr function must be able to produce a constant expression.
 namespace DR1364 {
-constexpr int f(int k) {
-  return k; // ok, even though lvalue-to-rvalue conversion of a function
-            // parameter is not allowed in a constant expression.
-}
-int kGlobal;        // expected-note {{here}}
-constexpr int f() { // expected-error {{constexpr function never produces a constant expression}}
-  return kGlobal;   // expected-note {{read of non-const}}
-}
-} // namespace DR1364
-
-namespace rdar13584715 {
-typedef __PTRDIFF_TYPE__ ptrdiff_t;
-
-template <typename T> struct X {
-  static T value(){};
-};
-
-void foo(ptrdiff_t id) {
-  switch (id) {
-  case reinterpret_cast<ptrdiff_t>(&X<long>::value): // expected-error{{case value is not a constant expression}} \
-      // expected-note{{reinterpret_cast is not allowed in a constant expression}}
-    break;
+  constexpr int f(int k) {
+    return k; // ok, even though lvalue-to-rvalue conversion of a function
+              // parameter is not allowed in a constant expression.
+  }
+  int kGlobal; // expected-note {{here}}
+  constexpr int f() { // expected-error {{constexpr function never produces a constant expression}}
+    return kGlobal; // expected-note {{read of non-const}}
   }
 }
-} // namespace rdar13584715
+
+namespace rdar13584715 {
+  typedef __PTRDIFF_TYPE__ ptrdiff_t;
+
+  template<typename T> struct X {
+    static T value() {};
+  };
+
+  void foo(ptrdiff_t id) {
+    switch (id) {
+    case reinterpret_cast<ptrdiff_t>(&X<long>::value):  // expected-error{{case value is not a constant expression}} \
+      // expected-note{{reinterpret_cast is not allowed in a constant expression}}
+      break;
+    }
+  }
+}
 
 namespace std_example {
-constexpr int square(int x) {
-  return x * x;
-}
-constexpr long long_max() {
-  return 2147483647;
-}
-constexpr int abs(int x) {
-  if (x < 0)
+  constexpr int square(int x) {
+    return x * x;
+  }
+  constexpr long long_max() {
+    return 2147483647;
+  }
+  constexpr int abs(int x) {
+    if (x < 0)
 #ifndef CXX14
-  // expected-error@-2 {{C++14}}
+      // expected-error@-2 {{C++14}}
 #endif
-    x = -x;
-  return x;
-}
-constexpr int first(int n) {
-  static int value = n; // expected-error {{static variable not permitted}}
-  return value;
-}
-constexpr int uninit() {
-  int a;
+      x = -x;
+    return x;
+  }
+  constexpr int first(int n) {
+    static int value = n; // expected-error {{static variable not permitted}}
+    return value;
+  }
+  constexpr int uninit() {
+    int a;
 #ifndef CXX20
-  // expected-error@-2 {{uninitialized}}
+    // expected-error@-2 {{uninitialized}}
 #endif
-  return a;
-}
-constexpr int prev(int x) {
-  return --x;
-}
+    return a;
+  }
+  constexpr int prev(int x) {
+    return --x;
+  }
 #ifndef CXX14
-// expected-error@-4 {{never produces a constant expression}}
-// expected-note@-4 {{subexpression}}
+  // expected-error@-4 {{never produces a constant expression}}
+  // expected-note@-4 {{subexpression}}
 #endif
-constexpr int g(int x, int n) {
-  int r = 1;
-  while (--n > 0)
-    r *= x;
-  return r;
-}
+  constexpr int g(int x, int n) {
+    int r = 1;
+    while (--n > 0) r *= x;
+    return r;
+  }
 #ifndef CXX14
-// expected-error@-5 {{C++14}}
-// expected-error@-5 {{statement not allowed}}
+    // expected-error@-5 {{C++14}}
+    // expected-error@-5 {{statement not allowed}}
 #endif
-} // namespace std_example
+}

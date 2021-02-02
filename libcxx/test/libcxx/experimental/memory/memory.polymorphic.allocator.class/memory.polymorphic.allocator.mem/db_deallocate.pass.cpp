@@ -28,17 +28,18 @@ int AssertCount = 0;
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  using Alloc = ex::polymorphic_allocator<int>;
-  using Traits = std::allocator_traits<Alloc>;
-  NullResource R;
-  Alloc a(&R);
-  const std::size_t maxSize = Traits::max_size(a);
+int main(int, char**)
+{
+    using Alloc = ex::polymorphic_allocator<int>;
+    using Traits = std::allocator_traits<Alloc>;
+    NullResource R;
+    Alloc a(&R);
+    const std::size_t maxSize = Traits::max_size(a);
 
-  a.deallocate(nullptr, maxSize);
-  assert(AssertCount == 0);
-  a.deallocate(nullptr, maxSize + 1);
-  assert(AssertCount == 1);
+    a.deallocate(nullptr, maxSize);
+    assert(AssertCount == 0);
+    a.deallocate(nullptr, maxSize + 1);
+    assert(AssertCount == 1);
 
   return 0;
 }

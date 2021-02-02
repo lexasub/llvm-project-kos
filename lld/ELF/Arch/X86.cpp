@@ -70,7 +70,9 @@ X86::X86() {
   defaultImageBase = 0x400000;
 }
 
-int X86::getTlsGdRelaxSkip(RelType type) const { return 2; }
+int X86::getTlsGdRelaxSkip(RelType type) const {
+  return 2;
+}
 
 RelExpr X86::getRelExpr(RelType type, const Symbol &s,
                         const uint8_t *loc) const {
@@ -204,9 +206,9 @@ void X86::writePltHeader(uint8_t *buf) const {
   }
 
   const uint8_t pltData[] = {
-      0xff, 0x35, 0,    0,    0, 0, // pushl (GOTPLT+4)
-      0xff, 0x25, 0,    0,    0, 0, // jmp *(GOTPLT+8)
-      0x90, 0x90, 0x90, 0x90,       // nop
+      0xff, 0x35, 0, 0, 0, 0, // pushl (GOTPLT+4)
+      0xff, 0x25, 0, 0, 0, 0, // jmp *(GOTPLT+8)
+      0x90, 0x90, 0x90, 0x90, // nop
   };
   memcpy(buf, pltData, sizeof(pltData));
   uint32_t gotPlt = in.gotPlt->getVA();
@@ -329,7 +331,7 @@ void X86::relaxTlsGdToLe(uint8_t *loc, const Relocation &, uint64_t val) const {
   //   subl $x@ntpoff,%eax
   const uint8_t inst[] = {
       0x65, 0xa1, 0x00, 0x00, 0x00, 0x00, // movl %gs:0, %eax
-      0x81, 0xe8, 0,    0,    0,    0,    // subl Val(%ebx), %eax
+      0x81, 0xe8, 0, 0, 0, 0,             // subl Val(%ebx), %eax
   };
   memcpy(loc - 3, inst, sizeof(inst));
   write32le(loc + 5, val);
@@ -344,7 +346,7 @@ void X86::relaxTlsGdToIe(uint8_t *loc, const Relocation &, uint64_t val) const {
   //   addl x@gotntpoff(%ebx), %eax
   const uint8_t inst[] = {
       0x65, 0xa1, 0x00, 0x00, 0x00, 0x00, // movl %gs:0, %eax
-      0x03, 0x83, 0,    0,    0,    0,    // addl Val(%ebx), %eax
+      0x03, 0x83, 0, 0, 0, 0,             // addl Val(%ebx), %eax
   };
   memcpy(loc - 3, inst, sizeof(inst));
   write32le(loc + 5, val);

@@ -27,6 +27,6 @@ MCELFStreamer *createMipsNaClELFStreamer(MCContext &Context,
                                          std::unique_ptr<MCObjectWriter> OW,
                                          std::unique_ptr<MCCodeEmitter> Emitter,
                                          bool RelaxAll);
-} // namespace llvm
+}
 
 #endif

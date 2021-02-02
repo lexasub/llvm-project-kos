@@ -10,9 +10,9 @@
 
 using namespace llvm;
 
-TestRunner::TestRunner(StringRef TestName,
-                       const std::vector<std::string> &TestArgs)
-    : TestName(TestName), TestArgs(TestArgs) {}
+TestRunner::TestRunner(StringRef TestName, const std::vector<std::string> &TestArgs)
+    : TestName(TestName), TestArgs(TestArgs) {
+}
 
 /// Runs the interestingness test, passes file to be tested as first argument
 /// and other specified test arguments after that.

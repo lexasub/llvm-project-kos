@@ -20,11 +20,11 @@
 #include <cassert>
 
 namespace llvm {
-class IntegerType;
-class Type;
-class StructType;
-class VectorType;
-} // namespace llvm
+  class IntegerType;
+  class Type;
+  class StructType;
+  class VectorType;
+}
 
 namespace clang {
 class Decl;
@@ -46,7 +46,9 @@ class SwiftAggLowering {
     CharUnits End;
     llvm::Type *Type;
 
-    CharUnits getWidth() const { return End - Begin; }
+    CharUnits getWidth() const {
+      return End - Begin;
+    }
   };
   SmallVector<StorageEntry, 4> Entries;
   bool Finished = false;
@@ -86,8 +88,8 @@ public:
   ///   passed indirectly as an argument
   bool shouldPassIndirectly(bool asReturnValue) const;
 
-  using EnumerationCallback = llvm::function_ref<void(
-      CharUnits offset, CharUnits end, llvm::Type *type)>;
+  using EnumerationCallback =
+    llvm::function_ref<void(CharUnits offset, CharUnits end, llvm::Type *type)>;
 
   /// Enumerate the expanded components of this type.
   ///
@@ -103,7 +105,7 @@ public:
   ///
   /// The second type removes any internal padding members and, if only
   /// one element remains, is simply that element type.
-  std::pair<llvm::StructType *, llvm::Type *> getCoerceAndExpandTypes() const;
+  std::pair<llvm::StructType*, llvm::Type*> getCoerceAndExpandTypes() const;
 
 private:
   void addBitFieldData(const FieldDecl *field, CharUnits begin,
@@ -118,7 +120,8 @@ private:
 
 /// Should an aggregate which expands to the given type sequence
 /// be passed/returned indirectly under swiftcall?
-bool shouldPassIndirectly(CodeGenModule &CGM, ArrayRef<llvm::Type *> types,
+bool shouldPassIndirectly(CodeGenModule &CGM,
+                          ArrayRef<llvm::Type*> types,
                           bool asReturnValue);
 
 /// Return the maximum voluntary integer size for the current target.
@@ -139,7 +142,7 @@ bool isLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
                        llvm::Type *eltTy, unsigned numElts);
 
 /// Minimally split a legal vector type.
-std::pair<llvm::Type *, unsigned>
+std::pair<llvm::Type*, unsigned>
 splitLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
                      llvm::VectorType *vectorTy);
 
@@ -149,7 +152,7 @@ splitLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
 /// types will equal the data size of the vector type.
 void legalizeVectorType(CodeGenModule &CGM, CharUnits vectorSize,
                         llvm::VectorType *vectorTy,
-                        llvm::SmallVectorImpl<llvm::Type *> &types);
+                        llvm::SmallVectorImpl<llvm::Type*> &types);
 
 /// Is the given record type required to be passed and returned indirectly
 /// because of language restrictions?

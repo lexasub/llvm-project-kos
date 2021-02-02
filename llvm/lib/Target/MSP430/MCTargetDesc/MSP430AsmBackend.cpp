@@ -67,26 +67,26 @@ public:
 
   const MCFixupKindInfo &getFixupKindInfo(MCFixupKind Kind) const override {
     const static MCFixupKindInfo Infos[MSP430::NumTargetFixupKinds] = {
-        // This table must be in the same order of enum in MSP430FixupKinds.h.
-        //
-        // name            offset bits flags
-        {"fixup_32", 0, 32, 0},
-        {"fixup_10_pcrel", 0, 10, MCFixupKindInfo::FKF_IsPCRel},
-        {"fixup_16", 0, 16, 0},
-        {"fixup_16_pcrel", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
-        {"fixup_16_byte", 0, 16, 0},
-        {"fixup_16_pcrel_byte", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
-        {"fixup_2x_pcrel", 0, 10, MCFixupKindInfo::FKF_IsPCRel},
-        {"fixup_rl_pcrel", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
-        {"fixup_8", 0, 8, 0},
-        {"fixup_sym_diff", 0, 32, 0},
+      // This table must be in the same order of enum in MSP430FixupKinds.h.
+      //
+      // name            offset bits flags
+      {"fixup_32",            0, 32, 0},
+      {"fixup_10_pcrel",      0, 10, MCFixupKindInfo::FKF_IsPCRel},
+      {"fixup_16",            0, 16, 0},
+      {"fixup_16_pcrel",      0, 16, MCFixupKindInfo::FKF_IsPCRel},
+      {"fixup_16_byte",       0, 16, 0},
+      {"fixup_16_pcrel_byte", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
+      {"fixup_2x_pcrel",      0, 10, MCFixupKindInfo::FKF_IsPCRel},
+      {"fixup_rl_pcrel",      0, 16, MCFixupKindInfo::FKF_IsPCRel},
+      {"fixup_8",             0,  8, 0},
+      {"fixup_sym_diff",      0, 32, 0},
     };
     static_assert((array_lengthof(Infos)) == MSP430::NumTargetFixupKinds,
                   "Not all fixup kinds added to Infos array");
-
+  
     if (Kind < FirstTargetFixupKind)
       return MCAsmBackend::getFixupKindInfo(Kind);
-
+  
     return Infos[Kind - FirstTargetFixupKind];
   }
 
@@ -124,8 +124,8 @@ uint64_t MSP430AsmBackend::adjustFixupValue(const MCFixup &Fixup,
 
 void MSP430AsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
                                   const MCValue &Target,
-                                  MutableArrayRef<char> Data, uint64_t Value,
-                                  bool IsResolved,
+                                  MutableArrayRef<char> Data,
+                                  uint64_t Value, bool IsResolved,
                                   const MCSubtargetInfo *STI) const {
   Value = adjustFixupValue(Fixup, Value, Asm.getContext());
   MCFixupKindInfo Info = getFixupKindInfo(Fixup.getKind());

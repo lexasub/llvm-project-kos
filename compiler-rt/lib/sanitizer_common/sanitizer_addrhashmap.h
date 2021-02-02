@@ -13,10 +13,10 @@
 #ifndef SANITIZER_ADDRHASHMAP_H
 #define SANITIZER_ADDRHASHMAP_H
 
-#include "sanitizer_allocator_internal.h"
-#include "sanitizer_atomic.h"
 #include "sanitizer_common.h"
 #include "sanitizer_mutex.h"
+#include "sanitizer_atomic.h"
+#include "sanitizer_allocator_internal.h"
 
 namespace __sanitizer {
 
@@ -39,12 +39,12 @@ namespace __sanitizer {
 //   the current thread has exclusive access to the data
 //   if !h.exists() then the element never existed
 // }
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 class AddrHashMap {
  private:
   struct Cell {
     atomic_uintptr_t addr;
-    T val;
+    T                val;
   };
 
   struct AddBucket {
@@ -56,9 +56,9 @@ class AddrHashMap {
   static const uptr kBucketSize = 3;
 
   struct Bucket {
-    RWMutex mtx;
+    RWMutex          mtx;
     atomic_uintptr_t add;
-    Cell cells[kBucketSize];
+    Cell             cells[kBucketSize];
   };
 
  public:
@@ -80,13 +80,13 @@ class AddrHashMap {
    private:
     friend AddrHashMap<T, kSize>;
     AddrHashMap<T, kSize> *map_;
-    Bucket *bucket_;
-    Cell *cell_;
-    uptr addr_;
-    uptr addidx_;
-    bool created_;
-    bool remove_;
-    bool create_;
+    Bucket                *bucket_;
+    Cell                  *cell_;
+    uptr                   addr_;
+    uptr                   addidx_;
+    bool                   created_;
+    bool                   remove_;
+    bool                   create_;
   };
 
  private:
@@ -98,7 +98,7 @@ class AddrHashMap {
   uptr calcHash(uptr addr);
 };
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr) {
   map_ = map;
   addr_ = addr;
@@ -107,9 +107,9 @@ AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr) {
   map_->acquire(this);
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr,
-                                      bool remove) {
+    bool remove) {
   map_ = map;
   addr_ = addr;
   remove_ = remove;
@@ -117,9 +117,9 @@ AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr,
   map_->acquire(this);
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr,
-                                      bool remove, bool create) {
+    bool remove, bool create) {
   map_ = map;
   addr_ = addr;
   remove_ = remove;
@@ -127,7 +127,7 @@ AddrHashMap<T, kSize>::Handle::Handle(AddrHashMap<T, kSize> *map, uptr addr,
   map_->acquire(this);
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 AddrHashMap<T, kSize>::Handle::~Handle() {
   map_->release(this);
 }
@@ -147,22 +147,22 @@ T &AddrHashMap<T, kSize>::Handle::operator*() {
   return cell_->val;
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 bool AddrHashMap<T, kSize>::Handle::created() const {
   return created_;
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 bool AddrHashMap<T, kSize>::Handle::exists() const {
   return cell_ != nullptr;
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 AddrHashMap<T, kSize>::AddrHashMap() {
-  table_ = (Bucket *)MmapOrDie(kSize * sizeof(table_[0]), "AddrHashMap");
+  table_ = (Bucket*)MmapOrDie(kSize * sizeof(table_[0]), "AddrHashMap");
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 void AddrHashMap<T, kSize>::acquire(Handle *h) {
   uptr addr = h->addr_;
   uptr hash = calcHash(addr);
@@ -178,7 +178,7 @@ void AddrHashMap<T, kSize>::acquire(Handle *h) {
   if (h->remove_)
     goto locked;
 
-retry:
+ retry:
   // First try to find an existing element w/o read mutex.
   CHECK(!h->remove_);
   // Check the embed cells.
@@ -194,7 +194,7 @@ retry:
   // Check the add cells with read lock.
   if (atomic_load(&b->add, memory_order_relaxed)) {
     b->mtx.ReadLock();
-    AddBucket *add = (AddBucket *)atomic_load(&b->add, memory_order_relaxed);
+    AddBucket *add = (AddBucket*)atomic_load(&b->add, memory_order_relaxed);
     for (uptr i = 0; i < add->size; i++) {
       Cell *c = &add->cells[i];
       uptr addr1 = atomic_load(&c->addr, memory_order_relaxed);
@@ -207,7 +207,7 @@ retry:
     b->mtx.ReadUnlock();
   }
 
-locked:
+ locked:
   // Re-check existence under write lock.
   // Embed cells.
   b->mtx.Lock();
@@ -225,7 +225,7 @@ locked:
   }
 
   // Add cells.
-  AddBucket *add = (AddBucket *)atomic_load(&b->add, memory_order_relaxed);
+  AddBucket *add = (AddBucket*)atomic_load(&b->add, memory_order_relaxed);
   if (add) {
     for (uptr i = 0; i < add->size; i++) {
       Cell *c = &add->cells[i];
@@ -264,7 +264,7 @@ locked:
   if (!add) {
     // Allocate a new add array.
     const uptr kInitSize = 64;
-    add = (AddBucket *)InternalAlloc(kInitSize);
+    add = (AddBucket*)InternalAlloc(kInitSize);
     internal_memset(add, 0, kInitSize);
     add->cap = (kInitSize - sizeof(*add)) / sizeof(add->cells[0]) + 1;
     add->size = 0;
@@ -274,7 +274,7 @@ locked:
     // Grow existing add array.
     uptr oldsize = sizeof(*add) + (add->cap - 1) * sizeof(add->cells[0]);
     uptr newsize = oldsize * 2;
-    AddBucket *add1 = (AddBucket *)InternalAlloc(newsize);
+    AddBucket *add1 = (AddBucket*)InternalAlloc(newsize);
     internal_memset(add1, 0, newsize);
     add1->cap = (newsize - sizeof(*add)) / sizeof(add->cells[0]) + 1;
     add1->size = add->size;
@@ -291,7 +291,7 @@ locked:
   h->cell_ = c;
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 void AddrHashMap<T, kSize>::release(Handle *h) {
   if (!h->cell_)
     return;
@@ -310,7 +310,7 @@ void AddrHashMap<T, kSize>::release(Handle *h) {
     CHECK_EQ(addr1, h->addr_);
     atomic_store(&c->addr, 0, memory_order_release);
     // See if we need to compact the bucket.
-    AddBucket *add = (AddBucket *)atomic_load(&b->add, memory_order_relaxed);
+    AddBucket *add = (AddBucket*)atomic_load(&b->add, memory_order_relaxed);
     if (h->addidx_ == -1U) {
       // Removed from embed array, move an add element into the freed cell.
       if (add && add->size != 0) {
@@ -341,13 +341,13 @@ void AddrHashMap<T, kSize>::release(Handle *h) {
   }
 }
 
-template <typename T, uptr kSize>
+template<typename T, uptr kSize>
 uptr AddrHashMap<T, kSize>::calcHash(uptr addr) {
   addr += addr << 10;
   addr ^= addr >> 6;
   return addr % kSize;
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_ADDRHASHMAP_H
+#endif // SANITIZER_ADDRHASHMAP_H

@@ -43,7 +43,7 @@ enum Kind {
   // Also, don't forget to update the Clang C API at CXObjCPropertyAttrKind and
   // clang_Cursor_getObjCPropertyAttributes.
 };
-} // namespace ObjCPropertyAttribute
+} // namespace ObjCPropertyAttribute::Kind
 
 enum {
   /// Number of bits fitting all the property attributes.

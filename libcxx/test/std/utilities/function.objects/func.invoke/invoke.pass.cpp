@@ -46,283 +46,264 @@
 #include "test_macros.h"
 
 struct NonCopyable {
-  NonCopyable() {}
-
+    NonCopyable() {}
 private:
-  NonCopyable(NonCopyable const&) = delete;
-  NonCopyable& operator=(NonCopyable const&) = delete;
+    NonCopyable(NonCopyable const&) = delete;
+    NonCopyable& operator=(NonCopyable const&) = delete;
 };
 
 struct TestClass {
-  explicit TestClass(int x) : data(x) {}
+    explicit TestClass(int x) : data(x) {}
 
-  int& operator()(NonCopyable&&) & { return data; }
-  int const& operator()(NonCopyable&&) const& { return data; }
-  int volatile& operator()(NonCopyable&&) volatile& { return data; }
-  int const volatile& operator()(NonCopyable&&) const volatile& { return data; }
+    int& operator()(NonCopyable&&) & { return data; }
+    int const& operator()(NonCopyable&&) const & { return data; }
+    int volatile& operator()(NonCopyable&&) volatile & { return data; }
+    int const volatile& operator()(NonCopyable&&) const volatile & { return data; }
 
-  int&& operator()(NonCopyable&&) && { return std::move(data); }
-  int const&& operator()(NonCopyable&&) const&& { return std::move(data); }
-  int volatile&& operator()(NonCopyable&&) volatile&& {
-    return std::move(data);
-  }
-  int const volatile&& operator()(NonCopyable&&) const volatile&& {
-    return std::move(data);
-  }
+    int&& operator()(NonCopyable&&) && { return std::move(data); }
+    int const&& operator()(NonCopyable&&) const && { return std::move(data); }
+    int volatile&& operator()(NonCopyable&&) volatile && { return std::move(data); }
+    int const volatile&& operator()(NonCopyable&&) const volatile && { return std::move(data); }
 
-  int data;
-
+    int data;
 private:
-  TestClass(TestClass const&) = delete;
-  TestClass& operator=(TestClass const&) = delete;
+    TestClass(TestClass const&) = delete;
+    TestClass& operator=(TestClass const&) = delete;
 };
 
 struct DerivedFromTestClass : public TestClass {
-  explicit DerivedFromTestClass(int x) : TestClass(x) {}
+    explicit DerivedFromTestClass(int x) : TestClass(x) {}
 };
 
 int& foo(NonCopyable&&) {
-  static int data = 42;
-  return data;
+    static int data = 42;
+    return data;
 }
 
-template <class Signature, class Expect, class Functor>
+template <class Signature,  class Expect, class Functor>
 void test_b12(Functor&& f) {
-  // Create the callable object.
-  typedef Signature TestClass::*ClassFunc;
-  ClassFunc func_ptr = &TestClass::operator();
+    // Create the callable object.
+    typedef Signature TestClass::*ClassFunc;
+    ClassFunc func_ptr = &TestClass::operator();
 
-  // Create the dummy arg.
-  NonCopyable arg;
+    // Create the dummy arg.
+    NonCopyable arg;
 
-  // Check that the deduced return type of invoke is what is expected.
-  typedef decltype(std::invoke(func_ptr, std::forward<Functor>(f),
-                               std::move(arg))) DeducedReturnType;
-  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+    // Check that the deduced return type of invoke is what is expected.
+    typedef decltype(
+        std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg))
+    ) DeducedReturnType;
+    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-  // Check that result_of_t matches Expect.
-  typedef
-      typename std::result_of<ClassFunc && (Functor&&, NonCopyable &&)>::type
-          ResultOfReturnType;
-  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+    // Check that result_of_t matches Expect.
+    typedef typename std::result_of<ClassFunc&&(Functor&&, NonCopyable&&)>::type
+      ResultOfReturnType;
+    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-  // Run invoke and check the return value.
-  DeducedReturnType ret =
-      std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg));
-  assert(ret == 42);
+    // Run invoke and check the return value.
+    DeducedReturnType ret =
+            std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg));
+    assert(ret == 42);
 }
 
 template <class Expect, class Functor>
 void test_b34(Functor&& f) {
-  // Create the callable object.
-  typedef int TestClass::*ClassFunc;
-  ClassFunc func_ptr = &TestClass::data;
+    // Create the callable object.
+    typedef int TestClass::*ClassFunc;
+    ClassFunc func_ptr = &TestClass::data;
 
-  // Check that the deduced return type of invoke is what is expected.
-  typedef decltype(std::invoke(func_ptr, std::forward<Functor>(f)))
-      DeducedReturnType;
-  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+    // Check that the deduced return type of invoke is what is expected.
+    typedef decltype(
+        std::invoke(func_ptr, std::forward<Functor>(f))
+    ) DeducedReturnType;
+    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-  // Check that result_of_t matches Expect.
-  typedef typename std::result_of<ClassFunc && (Functor &&)>::type
-      ResultOfReturnType;
-  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+    // Check that result_of_t matches Expect.
+    typedef typename std::result_of<ClassFunc&&(Functor&&)>::type
+            ResultOfReturnType;
+    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-  // Run invoke and check the return value.
-  DeducedReturnType ret = std::invoke(func_ptr, std::forward<Functor>(f));
-  assert(ret == 42);
+    // Run invoke and check the return value.
+    DeducedReturnType ret =
+            std::invoke(func_ptr, std::forward<Functor>(f));
+    assert(ret == 42);
 }
 
 template <class Expect, class Functor>
 void test_b5(Functor&& f) {
-  NonCopyable arg;
+    NonCopyable arg;
 
-  // Check that the deduced return type of invoke is what is expected.
-  typedef decltype(std::invoke(std::forward<Functor>(f), std::move(arg)))
-      DeducedReturnType;
-  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+    // Check that the deduced return type of invoke is what is expected.
+    typedef decltype(
+        std::invoke(std::forward<Functor>(f), std::move(arg))
+    ) DeducedReturnType;
+    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-  // Check that result_of_t matches Expect.
-  typedef typename std::result_of<Functor && (NonCopyable &&)>::type
-      ResultOfReturnType;
-  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+    // Check that result_of_t matches Expect.
+    typedef typename std::result_of<Functor&&(NonCopyable&&)>::type
+            ResultOfReturnType;
+    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-  // Run invoke and check the return value.
-  DeducedReturnType ret = std::invoke(std::forward<Functor>(f), std::move(arg));
-  assert(ret == 42);
+    // Run invoke and check the return value.
+    DeducedReturnType ret = std::invoke(std::forward<Functor>(f), std::move(arg));
+    assert(ret == 42);
 }
 
 void bullet_one_two_tests() {
-  {
-    TestClass cl(42);
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
+    {
+        TestClass cl(42);
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
 
-    test_b12<int && (NonCopyable &&)&&, int&&>(std::move(cl));
-    test_b12<int const && (NonCopyable &&) const&&, int const&&>(std::move(cl));
-    test_b12<int volatile && (NonCopyable &&) volatile&&, int volatile&&>(
-        std::move(cl));
-    test_b12<int const volatile && (NonCopyable &&) const volatile&&,
-             int const volatile&&>(std::move(cl));
-  }
-  {
-    DerivedFromTestClass cl(42);
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
+        test_b12<int&&(NonCopyable&&) &&, int&&>(std::move(cl));
+        test_b12<int const&&(NonCopyable&&) const &&, int const&&>(std::move(cl));
+        test_b12<int volatile&&(NonCopyable&&) volatile &&, int volatile&&>(std::move(cl));
+        test_b12<int const volatile&&(NonCopyable&&) const volatile &&, int const volatile&&>(std::move(cl));
+    }
+    {
+        DerivedFromTestClass cl(42);
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
 
-    test_b12<int && (NonCopyable &&)&&, int&&>(std::move(cl));
-    test_b12<int const && (NonCopyable &&) const&&, int const&&>(std::move(cl));
-    test_b12<int volatile && (NonCopyable &&) volatile&&, int volatile&&>(
-        std::move(cl));
-    test_b12<int const volatile && (NonCopyable &&) const volatile&&,
-             int const volatile&&>(std::move(cl));
-  }
-  {
-    TestClass cl_obj(42);
-    std::reference_wrapper<TestClass> cl(cl_obj);
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
+        test_b12<int&&(NonCopyable&&) &&, int&&>(std::move(cl));
+        test_b12<int const&&(NonCopyable&&) const &&, int const&&>(std::move(cl));
+        test_b12<int volatile&&(NonCopyable&&) volatile &&, int volatile&&>(std::move(cl));
+        test_b12<int const volatile&&(NonCopyable&&) const volatile &&, int const volatile&&>(std::move(cl));
+    }
+    {
+        TestClass cl_obj(42);
+        std::reference_wrapper<TestClass> cl(cl_obj);
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
 
-    test_b12<int&(NonCopyable &&)&, int&>(std::move(cl));
-    test_b12<int const&(NonCopyable &&) const&, int const&>(std::move(cl));
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(
-        std::move(cl));
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(std::move(cl));
-  }
-  {
-    DerivedFromTestClass cl_obj(42);
-    std::reference_wrapper<DerivedFromTestClass> cl(cl_obj);
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
+        test_b12<int&(NonCopyable&&) &, int&>(std::move(cl));
+        test_b12<int const&(NonCopyable&&) const &, int const&>(std::move(cl));
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(std::move(cl));
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(std::move(cl));
+    }
+    {
+        DerivedFromTestClass cl_obj(42);
+        std::reference_wrapper<DerivedFromTestClass> cl(cl_obj);
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
 
-    test_b12<int&(NonCopyable &&)&, int&>(std::move(cl));
-    test_b12<int const&(NonCopyable &&) const&, int const&>(std::move(cl));
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(
-        std::move(cl));
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(std::move(cl));
-  }
-  {
-    TestClass cl_obj(42);
-    TestClass* cl = &cl_obj;
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
-  }
-  {
-    DerivedFromTestClass cl_obj(42);
-    DerivedFromTestClass* cl = &cl_obj;
-    test_b12<int&(NonCopyable &&)&, int&>(cl);
-    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
-    test_b12<int volatile&(NonCopyable &&) volatile&, int volatile&>(cl);
-    test_b12<int const volatile&(NonCopyable &&) const volatile&,
-             int const volatile&>(cl);
-  }
+        test_b12<int&(NonCopyable&&) &, int&>(std::move(cl));
+        test_b12<int const&(NonCopyable&&) const &, int const&>(std::move(cl));
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(std::move(cl));
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(std::move(cl));
+    }
+    {
+        TestClass cl_obj(42);
+        TestClass *cl = &cl_obj;
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
+    }
+    {
+        DerivedFromTestClass cl_obj(42);
+        DerivedFromTestClass *cl = &cl_obj;
+        test_b12<int&(NonCopyable&&) &, int&>(cl);
+        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+        test_b12<int volatile&(NonCopyable&&) volatile &, int volatile&>(cl);
+        test_b12<int const volatile&(NonCopyable&&) const volatile &, int const volatile&>(cl);
+    }
 }
 
 void bullet_three_four_tests() {
-  {
-    typedef TestClass Fn;
-    Fn cl(42);
-    test_b34<int&>(cl);
-    test_b34<int const&>(static_cast<Fn const&>(cl));
-    test_b34<int volatile&>(static_cast<Fn volatile&>(cl));
-    test_b34<int const volatile&>(static_cast<Fn const volatile&>(cl));
+    {
+        typedef TestClass Fn;
+        Fn cl(42);
+        test_b34<int&>(cl);
+        test_b34<int const&>(static_cast<Fn const&>(cl));
+        test_b34<int volatile&>(static_cast<Fn volatile&>(cl));
+        test_b34<int const volatile&>(static_cast<Fn const volatile &>(cl));
 
-    test_b34<int&&>(static_cast<Fn&&>(cl));
-    test_b34<int const&&>(static_cast<Fn const&&>(cl));
-    test_b34<int volatile&&>(static_cast<Fn volatile&&>(cl));
-    test_b34<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
-  }
-  {
-    typedef DerivedFromTestClass Fn;
-    Fn cl(42);
-    test_b34<int&>(cl);
-    test_b34<int const&>(static_cast<Fn const&>(cl));
-    test_b34<int volatile&>(static_cast<Fn volatile&>(cl));
-    test_b34<int const volatile&>(static_cast<Fn const volatile&>(cl));
+        test_b34<int&&>(static_cast<Fn &&>(cl));
+        test_b34<int const&&>(static_cast<Fn const&&>(cl));
+        test_b34<int volatile&&>(static_cast<Fn volatile&&>(cl));
+        test_b34<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
+    }
+    {
+        typedef DerivedFromTestClass Fn;
+        Fn cl(42);
+        test_b34<int&>(cl);
+        test_b34<int const&>(static_cast<Fn const&>(cl));
+        test_b34<int volatile&>(static_cast<Fn volatile&>(cl));
+        test_b34<int const volatile&>(static_cast<Fn const volatile &>(cl));
 
-    test_b34<int&&>(static_cast<Fn&&>(cl));
-    test_b34<int const&&>(static_cast<Fn const&&>(cl));
-    test_b34<int volatile&&>(static_cast<Fn volatile&&>(cl));
-    test_b34<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
-  }
-  {
-    typedef TestClass Fn;
-    Fn cl(42);
-    test_b34<int&>(std::reference_wrapper<Fn>(cl));
-    test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
-    test_b34<int volatile&>(std::reference_wrapper<Fn volatile>(cl));
-    test_b34<int const volatile&>(
-        std::reference_wrapper<Fn const volatile>(cl));
-  }
-  {
-    typedef DerivedFromTestClass Fn;
-    Fn cl(42);
-    test_b34<int&>(std::reference_wrapper<Fn>(cl));
-    test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
-    test_b34<int volatile&>(std::reference_wrapper<Fn volatile>(cl));
-    test_b34<int const volatile&>(
-        std::reference_wrapper<Fn const volatile>(cl));
-  }
-  {
-    typedef TestClass Fn;
-    Fn cl_obj(42);
-    Fn* cl = &cl_obj;
-    test_b34<int&>(cl);
-    test_b34<int const&>(static_cast<Fn const*>(cl));
-    test_b34<int volatile&>(static_cast<Fn volatile*>(cl));
-    test_b34<int const volatile&>(static_cast<Fn const volatile*>(cl));
-  }
-  {
-    typedef DerivedFromTestClass Fn;
-    Fn cl_obj(42);
-    Fn* cl = &cl_obj;
-    test_b34<int&>(cl);
-    test_b34<int const&>(static_cast<Fn const*>(cl));
-    test_b34<int volatile&>(static_cast<Fn volatile*>(cl));
-    test_b34<int const volatile&>(static_cast<Fn const volatile*>(cl));
-  }
+        test_b34<int&&>(static_cast<Fn &&>(cl));
+        test_b34<int const&&>(static_cast<Fn const&&>(cl));
+        test_b34<int volatile&&>(static_cast<Fn volatile&&>(cl));
+        test_b34<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
+    }
+    {
+        typedef TestClass Fn;
+        Fn cl(42);
+        test_b34<int&>(std::reference_wrapper<Fn>(cl));
+        test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
+        test_b34<int volatile&>(std::reference_wrapper<Fn volatile>(cl));
+        test_b34<int const volatile&>(std::reference_wrapper<Fn const volatile>(cl));
+    }
+    {
+        typedef DerivedFromTestClass Fn;
+        Fn cl(42);
+        test_b34<int&>(std::reference_wrapper<Fn>(cl));
+        test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
+        test_b34<int volatile&>(std::reference_wrapper<Fn volatile>(cl));
+        test_b34<int const volatile&>(std::reference_wrapper<Fn const volatile>(cl));
+    }
+    {
+        typedef TestClass Fn;
+        Fn cl_obj(42);
+        Fn* cl = &cl_obj;
+        test_b34<int&>(cl);
+        test_b34<int const&>(static_cast<Fn const*>(cl));
+        test_b34<int volatile&>(static_cast<Fn volatile*>(cl));
+        test_b34<int const volatile&>(static_cast<Fn const volatile *>(cl));
+    }
+    {
+        typedef DerivedFromTestClass Fn;
+        Fn cl_obj(42);
+        Fn* cl = &cl_obj;
+        test_b34<int&>(cl);
+        test_b34<int const&>(static_cast<Fn const*>(cl));
+        test_b34<int volatile&>(static_cast<Fn volatile*>(cl));
+        test_b34<int const volatile&>(static_cast<Fn const volatile *>(cl));
+    }
 }
 
 void bullet_five_tests() {
-  using FooType = int&(NonCopyable &&);
-  {
-    FooType& fn = foo;
-    test_b5<int&>(fn);
-  }
-  {
-    FooType* fn = foo;
-    test_b5<int&>(fn);
-  }
-  {
-    typedef TestClass Fn;
-    Fn cl(42);
-    test_b5<int&>(cl);
-    test_b5<int const&>(static_cast<Fn const&>(cl));
-    test_b5<int volatile&>(static_cast<Fn volatile&>(cl));
-    test_b5<int const volatile&>(static_cast<Fn const volatile&>(cl));
+    using FooType = int&(NonCopyable&&);
+    {
+        FooType& fn = foo;
+        test_b5<int &>(fn);
+    }
+    {
+        FooType* fn = foo;
+        test_b5<int &>(fn);
+    }
+    {
+        typedef TestClass Fn;
+        Fn cl(42);
+        test_b5<int&>(cl);
+        test_b5<int const&>(static_cast<Fn const&>(cl));
+        test_b5<int volatile&>(static_cast<Fn volatile&>(cl));
+        test_b5<int const volatile&>(static_cast<Fn const volatile &>(cl));
 
-    test_b5<int&&>(static_cast<Fn&&>(cl));
-    test_b5<int const&&>(static_cast<Fn const&&>(cl));
-    test_b5<int volatile&&>(static_cast<Fn volatile&&>(cl));
-    test_b5<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
-  }
+        test_b5<int&&>(static_cast<Fn &&>(cl));
+        test_b5<int const&&>(static_cast<Fn const&&>(cl));
+        test_b5<int volatile&&>(static_cast<Fn volatile&&>(cl));
+        test_b5<int const volatile&&>(static_cast<Fn const volatile&&>(cl));
+    }
 }
 
 struct CopyThrows {
@@ -345,32 +326,28 @@ struct MemberObj {
 };
 
 void noexcept_test() {
-  {
-    NoThrowCallable obj;
-    ((void)obj); // suppress unused warning
-    CopyThrows arg;
-    ((void)arg); // suppress unused warning
-    static_assert(noexcept(std::invoke(obj)), "");
-    static_assert(!noexcept(std::invoke(obj, arg)), "");
-    static_assert(noexcept(std::invoke(obj, std::move(arg))), "");
-  }
-  {
-    ThrowsCallable obj;
-    ((void)obj); // suppress unused warning
-    static_assert(!noexcept(std::invoke(obj)), "");
-  }
-  {
-    MemberObj obj{42};
-    ((void)obj); // suppress unused warning.
-    static_assert(noexcept(std::invoke(&MemberObj::x, obj)), "");
-  }
+    {
+        NoThrowCallable obj; ((void)obj); // suppress unused warning
+        CopyThrows arg; ((void)arg); // suppress unused warning
+        static_assert(noexcept(std::invoke(obj)), "");
+        static_assert(!noexcept(std::invoke(obj, arg)), "");
+        static_assert(noexcept(std::invoke(obj, std::move(arg))), "");
+    }
+    {
+        ThrowsCallable obj; ((void)obj); // suppress unused warning
+        static_assert(!noexcept(std::invoke(obj)), "");
+    }
+    {
+        MemberObj obj{42}; ((void)obj); // suppress unused warning.
+        static_assert(noexcept(std::invoke(&MemberObj::x, obj)), "");
+    }
 }
 
 int main(int, char**) {
-  bullet_one_two_tests();
-  bullet_three_four_tests();
-  bullet_five_tests();
-  noexcept_test();
+    bullet_one_two_tests();
+    bullet_three_four_tests();
+    bullet_five_tests();
+    noexcept_test();
 
   return 0;
 }

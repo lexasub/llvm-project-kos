@@ -1,14 +1,11 @@
 // RUN: %clang_cc1 -fsyntax-only -Wmismatched-tags -verify %s
 // RUN: not %clang_cc1 -fsyntax-only -Wmismatched-tags %s 2>&1 | FileCheck %s
-class X;               // expected-note 2{{here}}
-typedef struct X *X_t; // expected-warning{{previously declared}}
-union X {
-  int x;
-  float y;
-}; // expected-error{{use of 'X' with tag type that does not match previous declaration}}
+class X; // expected-note 2{{here}}
+typedef struct X * X_t; // expected-warning{{previously declared}}
+union X { int x; float y; }; // expected-error{{use of 'X' with tag type that does not match previous declaration}}
 
-template <typename T> struct Y; // expected-note{{did you mean class here?}}
-template <class U> class Y {};  // expected-warning{{previously declared}}
+template<typename T> struct Y; // expected-note{{did you mean class here?}}
+template<class U> class Y { }; // expected-warning{{previously declared}}
 
 template <typename>
 struct Z {
@@ -18,29 +15,29 @@ struct Z {
 
 class A;
 class A;  // expected-note{{previous use is here}}
-struct A; // expected-warning{{struct 'A' was previously declared as a class}}
+struct A;  // expected-warning{{struct 'A' was previously declared as a class}}
 
-class B;     // expected-note{{did you mean struct here?}}
-class B;     // expected-note{{previous use is here}}\
+class B;  // expected-note{{did you mean struct here?}}
+class B;  // expected-note{{previous use is here}}\
           // expected-note{{did you mean struct here?}}
-struct B;    // expected-warning{{struct 'B' was previously declared as a class}}
-struct B {}; // expected-warning{{'B' defined as a struct here but previously declared as a class}}
+struct B;  // expected-warning{{struct 'B' was previously declared as a class}}
+struct B {};  // expected-warning{{'B' defined as a struct here but previously declared as a class}}
 
-class C;    // expected-note{{previous use is here}}
-struct C;   // expected-warning{{struct 'C' was previously declared as a class}}\
+class C;  // expected-note{{previous use is here}}
+struct C;  // expected-warning{{struct 'C' was previously declared as a class}}\
            // expected-note{{previous use is here}}\
            // expected-note{{did you mean class here?}}
-class C;    // expected-warning{{class 'C' was previously declared as a struct}}\
+class C;  // expected-warning{{class 'C' was previously declared as a struct}}\
           // expected-note{{previous use is here}}
-struct C;   // expected-warning{{struct 'C' was previously declared as a class}}\
+struct C;  // expected-warning{{struct 'C' was previously declared as a class}}\
            // expected-note{{did you mean class here?}}
-class C {}; // expected-warning{{'C' defined as a class here but previously declared as a struct}}
+class C {};  // expected-warning{{'C' defined as a class here but previously declared as a struct}}
 
-struct D {}; // expected-note{{previous definition is here}}\
+struct D {};  // expected-note{{previous definition is here}}\
               // expected-note{{previous use is here}}
 class D {};  // expected-error{{redefinition of 'D'}}
 struct D;
-class D; // expected-warning{{class 'D' was previously declared as a struct}}\
+class D;  // expected-warning{{class 'D' was previously declared as a struct}}\
           // expected-note{{did you mean struct here?}}
 
 class E;
@@ -54,10 +51,10 @@ struct F {}; // expected-note {{previous use}}
 struct F;
 class F; // expected-warning {{previously declared as a struct}} expected-note {{did you mean struct}}
 
-template <class U> class G;     // expected-note{{previous use is here}}\
+template<class U> class G;  // expected-note{{previous use is here}}\
                             // expected-note{{did you mean struct here?}}
-template <class U> struct G;    // expected-warning{{struct template 'G' was previously declared as a class template}}
-template <class U> struct G {}; // expected-warning{{'G' defined as a struct template here but previously declared as a class template}}
+template<class U> struct G;  // expected-warning{{struct template 'G' was previously declared as a class template}}
+template<class U> struct G {};  // expected-warning{{'G' defined as a struct template here but previously declared as a class template}}
 
 // Declarations from contexts where the warning is disabled are entirely
 // ignored for the purpose of this warning.
@@ -76,11 +73,11 @@ class L;
 class M {};
 #pragma clang diagnostic pop
 
-class H;  // expected-note {{previous use}}
+class H; // expected-note {{previous use}}
 struct H; // expected-warning {{previously declared as a class}}
 
 struct I; // expected-note {{previous use}}
-class I;  // expected-warning {{previously declared as a struct}}
+class I; // expected-warning {{previously declared as a struct}}
 
 struct J;
 class K; // expected-warning {{previously declared as a struct}}

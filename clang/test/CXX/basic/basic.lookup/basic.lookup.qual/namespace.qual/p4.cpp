@@ -2,22 +2,22 @@
 // expected-no-diagnostics
 
 namespace A {
-int a;
+  int a;
 }
 
 namespace C {
-int c;
+  int c;
 }
 
 namespace B {
-using namespace C;
-int b;
-} // namespace B
+  using namespace C;
+  int b;
+}
 
 namespace C {
-using namespace B;
-using namespace A;
-} // namespace C
+  using namespace B;
+  using namespace A;
+}
 
 void test() {
   C::a++;

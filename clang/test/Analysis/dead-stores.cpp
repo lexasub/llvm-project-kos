@@ -57,26 +57,25 @@ int test2(int x) {
 //===----------------------------------------------------------------------===//
 
 namespace TestTemp {
-template <typename _Tp>
-class pencil {
-public:
-  ~pencil() throw() {}
-};
-template <typename _Tp, typename _Number2> struct _Row_base {
-  _Row_base(const pencil<_Tp> &x) {}
-};
-template <typename _Tp, typename _Number2 = TestTemp::pencil<_Tp>>
-class row : protected _Row_base<_Tp, _Number2> {
-  typedef _Row_base<_Tp, _Number2> _Base;
-  typedef _Number2 pencil_type;
-
-public:
-  explicit row(const pencil_type &__a = pencil_type()) : _Base(__a) {}
-};
-} // namespace TestTemp
+  template<typename _Tp>
+  class pencil {
+  public:
+    ~pencil() throw() {}
+  };
+  template<typename _Tp, typename _Number2> struct _Row_base {
+    _Row_base(const pencil<_Tp>& x) {}
+  };
+  template<typename _Tp, typename _Number2 = TestTemp::pencil<_Tp> >
+  class row : protected _Row_base<_Tp, _Number2>     {
+    typedef _Row_base<_Tp, _Number2> _Base;
+    typedef _Number2 pencil_type;
+  public:
+    explicit row(const pencil_type& __a = pencil_type()) : _Base(__a) {}
+  };
+}
 
 void test2_b() {
-  TestTemp::row<const char *> x; // no-warning
+  TestTemp::row<const char*> x; // no-warning
 }
 
 //===----------------------------------------------------------------------===//
@@ -125,7 +124,7 @@ int test_4(int x) {
   x = 2;
   return x;
 }
-} // namespace foo
+}
 
 //===----------------------------------------------------------------------===//
 // Dead stores in with EH code.
@@ -177,7 +176,7 @@ void testCXX11Using() {
 //===----------------------------------------------------------------------===//
 
 template <bool f> int radar13213575_testit(int i) {
-  int x = 5 + i; // warning: Value stored to 'x' during its initialization is never read
+  int x = 5+i; // warning: Value stored to 'x' during its initialization is never read
   int y = 7;
   if (f)
     return x;
@@ -203,6 +202,7 @@ void test_block_in_non_dependent_context(int *someArray) {
   }();
 }
 
+
 //===----------------------------------------------------------------------===//
 // Dead store checking involving lambdas.
 //===----------------------------------------------------------------------===//
@@ -216,3 +216,4 @@ int basicLambda(int i, int j) {
   j = 3;
   return i + j;
 }
+

@@ -277,8 +277,8 @@ void aliases() {
   // We use 'Base' instead of 'struct Base'.
   typedef std::shared_ptr<Base> BasePtr;
   BasePtr StructType = BasePtr(new Base);
-  // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: use std::make_shared instead
-  // CHECK-FIXES: BasePtr StructType = std::make_shared<Base>();
+// CHECK-MESSAGES: :[[@LINE-1]]:24: warning: use std::make_shared instead
+// CHECK-FIXES: BasePtr StructType = std::make_shared<Base>();
 
 #define PTR shared_ptr<int>
   std::shared_ptr<int> Macro = std::PTR(new int());

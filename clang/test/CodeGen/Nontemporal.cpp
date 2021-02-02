@@ -15,7 +15,7 @@ float __attribute__((vector_size(16))) vf1, vf2;
 char __attribute__((vector_size(8))) vc1, vc2;
 bool b1, b2;
 
-void test_all_sizes(void) // CHECK-LABEL: test_all_sizes
+void test_all_sizes(void)                 // CHECK-LABEL: test_all_sizes
 {
   __builtin_nontemporal_store(true, &b1); // CHECK: store i8 1, i8* @b1, align 1, !nontemporal
   __builtin_nontemporal_store(b1, &b2);   // CHECK: store i8{{.*}}, align 1, !nontemporal

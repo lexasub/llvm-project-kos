@@ -81,7 +81,7 @@ public:
   }
 
   template <class... Args>
-  constexpr explicit OptionalStorage(in_place_t, Args &&...args)
+  constexpr explicit OptionalStorage(in_place_t, Args &&... args)
       : value(std::forward<Args>(args)...), hasVal(true) {}
 
   void reset() noexcept {
@@ -102,13 +102,13 @@ public:
     return value;
   }
 #if LLVM_HAS_RVALUE_REFERENCE_THIS
-  T &&getValue() &&noexcept {
+  T &&getValue() && noexcept {
     assert(hasVal);
     return std::move(value);
   }
 #endif
 
-  template <class... Args> void emplace(Args &&...args) {
+  template <class... Args> void emplace(Args &&... args) {
     reset();
     ::new ((void *)std::addressof(value)) T(std::forward<Args>(args)...);
     hasVal = true;
@@ -181,7 +181,7 @@ public:
   OptionalStorage &operator=(OptionalStorage &&other) = default;
 
   template <class... Args>
-  constexpr explicit OptionalStorage(in_place_t, Args &&...args)
+  constexpr explicit OptionalStorage(in_place_t, Args &&... args)
       : value(std::forward<Args>(args)...), hasVal(true) {}
 
   void reset() noexcept {
@@ -202,13 +202,13 @@ public:
     return value;
   }
 #if LLVM_HAS_RVALUE_REFERENCE_THIS
-  T &&getValue() &&noexcept {
+  T &&getValue() && noexcept {
     assert(hasVal);
     return std::move(value);
   }
 #endif
 
-  template <class... Args> void emplace(Args &&...args) {
+  template <class... Args> void emplace(Args &&... args) {
     reset();
     ::new ((void *)std::addressof(value)) T(std::forward<Args>(args)...);
     hasVal = true;
@@ -259,7 +259,7 @@ public:
   Optional &operator=(Optional &&O) = default;
 
   /// Create a new object by constructing it in place with the given arguments.
-  template <typename... ArgTypes> void emplace(ArgTypes &&...Args) {
+  template <typename... ArgTypes> void emplace(ArgTypes &&... Args) {
     Storage.emplace(std::forward<ArgTypes>(Args)...);
   }
 
@@ -300,8 +300,7 @@ public:
   template <class Function>
   auto map(const Function &F) const LLVM_LVALUE_FUNCTION
       -> Optional<decltype(F(getValue()))> {
-    if (*this)
-      return F(getValue());
+    if (*this) return F(getValue());
     return None;
   }
 
@@ -309,16 +308,16 @@ public:
   T &&getValue() && { return std::move(Storage.getValue()); }
   T &&operator*() && { return std::move(Storage.getValue()); }
 
-  template <typename U> T getValueOr(U &&value) && {
+  template <typename U>
+  T getValueOr(U &&value) && {
     return hasValue() ? std::move(getValue()) : std::forward<U>(value);
   }
 
   /// Apply a function to the value if present; otherwise return None.
   template <class Function>
-  auto map(const Function &F)
-      && -> Optional<decltype(F(std::move(*this).getValue()))> {
-    if (*this)
-      return F(std::move(*this).getValue());
+  auto map(const Function &F) &&
+      -> Optional<decltype(F(std::move(*this).getValue()))> {
+    if (*this) return F(std::move(*this).getValue());
     return None;
   }
 #endif

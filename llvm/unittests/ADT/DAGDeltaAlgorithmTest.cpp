@@ -23,13 +23,14 @@ class FixedDAGDeltaAlgorithm : public DAGDeltaAlgorithm {
 protected:
   bool ExecuteOneTest(const changeset_ty &Changes) override {
     ++NumTests;
-    return std::includes(Changes.begin(), Changes.end(), FailingSet.begin(),
-                         FailingSet.end());
+    return std::includes(Changes.begin(), Changes.end(),
+                         FailingSet.begin(), FailingSet.end());
   }
 
 public:
   FixedDAGDeltaAlgorithm(const changeset_ty &_FailingSet)
-      : FailingSet(_FailingSet), NumTests(0) {}
+    : FailingSet(_FailingSet),
+      NumTests(0) {}
 
   unsigned getNumTests() const { return NumTests; }
 };
@@ -51,7 +52,9 @@ std::set<unsigned> range(unsigned Start, unsigned End) {
   return S;
 }
 
-std::set<unsigned> range(unsigned N) { return range(0, N); }
+std::set<unsigned> range(unsigned N) {
+  return range(0, N);
+}
 
 TEST(DAGDeltaAlgorithmTest, Basic) {
   std::vector<edge_ty> Deps;
@@ -97,4 +100,5 @@ TEST(DAGDeltaAlgorithmTest, Basic) {
   EXPECT_GE(6U, FDA3.getNumTests());
 }
 
-} // namespace
+}
+

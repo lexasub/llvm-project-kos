@@ -17,7 +17,7 @@
 
 #if TEST_STD_VER >= 11
 #ifndef __cpp_lib_experimental_filesystem
-#error Filesystem feature test macro is not defined (__cpp_lib_experimental_filesystem)
+#error Filesystem feature test macro is not defined  (__cpp_lib_experimental_filesystem)
 #elif __cpp_lib_experimental_filesystem != 201406L
 #error Filesystem feature test macro has an incorrect value (__cpp_lib_experimental_filesystem)
 #endif
@@ -27,4 +27,6 @@
 #endif
 #endif
 
-int main(int, char**) { return 0; }
+int main(int, char**) {
+  return 0;
+}

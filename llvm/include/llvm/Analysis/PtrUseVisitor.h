@@ -238,7 +238,7 @@ public:
         Offset = std::move(ToVisit.Offset);
 
       Instruction *I = cast<Instruction>(U->getUser());
-      static_cast<DerivedT *>(this)->visit(I);
+      static_cast<DerivedT*>(this)->visit(I);
       if (PI.isAborted())
         break;
     }
@@ -251,11 +251,17 @@ protected:
       PI.setEscaped(&SI);
   }
 
-  void visitBitCastInst(BitCastInst &BC) { enqueueUsers(BC); }
+  void visitBitCastInst(BitCastInst &BC) {
+    enqueueUsers(BC);
+  }
 
-  void visitAddrSpaceCastInst(AddrSpaceCastInst &ASC) { enqueueUsers(ASC); }
+  void visitAddrSpaceCastInst(AddrSpaceCastInst &ASC) {
+    enqueueUsers(ASC);
+  }
 
-  void visitPtrToIntInst(PtrToIntInst &I) { PI.setEscaped(&I); }
+  void visitPtrToIntInst(PtrToIntInst &I) {
+    PI.setEscaped(&I);
+  }
 
   void visitGetElementPtrInst(GetElementPtrInst &GEPI) {
     if (GEPI.use_empty())

@@ -3,11 +3,11 @@
 #if !defined(PASS1)
 #define PASS1
 struct X {
-  operator int *();
+  operator int*();
 };
 
 struct Z {
-  operator int *();
+  operator int*();
 };
 #elif !defined(PASS2)
 #define PASS2
@@ -17,10 +17,10 @@ struct Y {
 #else
 int main() {
   X x;
-  int *ip = x.operator int *();
+  int *ip = x.operator int*();
   Y y;
-  int *ip2 = y.operator int *();
+  int *ip2 = y.operator int*();
   Z z;
-  int *ip3 = z.operator int *();
+  int *ip3 = z.operator int*();
 }
 #endif

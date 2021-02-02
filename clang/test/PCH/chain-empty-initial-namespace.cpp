@@ -5,13 +5,13 @@
 #if !defined(PASS1)
 #define PASS1
 
-namespace foo {} // namespace foo
+namespace foo {} // no external storage
 
 #elif !defined(PASS2)
 #define PASS2
 
 namespace foo {
-void bar();
+  void bar();
 }
 
 #else

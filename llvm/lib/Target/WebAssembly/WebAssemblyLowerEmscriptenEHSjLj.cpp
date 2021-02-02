@@ -352,7 +352,7 @@ static std::string getSignature(FunctionType *FTy) {
 
 static Function *getEmscriptenFunction(FunctionType *Ty, const Twine &Name,
                                        Module *M) {
-  Function *F = Function::Create(Ty, GlobalValue::ExternalLinkage, Name, M);
+  Function* F = Function::Create(Ty, GlobalValue::ExternalLinkage, Name, M);
   // Tell the linker that this function is expected to be imported from the
   // 'env' module.
   if (!F->hasFnAttribute("wasm-import-module")) {

@@ -377,7 +377,8 @@ TEST_F(RenameFunctionTest, MoveFromGlobalToNamespaceWithoutLeadingDotDot) {
       void f() { ns::X(); }
       }
       )";
-  std::string After = runClangRenameOnCode(Before, "::X", "ns::X");
+  std::string After =
+      runClangRenameOnCode(Before, "::X", "ns::X");
   CompareSnippets(Expected, After);
 }
 
@@ -398,7 +399,8 @@ TEST_F(RenameFunctionTest, MoveFromGlobalToNamespaceWithLeadingDotDot) {
       void f() { ::ns::Y(); }
       }
       )";
-  std::string After = runClangRenameOnCode(Before, "::Y", "::ns::Y");
+  std::string After =
+      runClangRenameOnCode(Before, "::Y", "::ns::Y");
   CompareSnippets(Expected, After);
 }
 
@@ -568,4 +570,4 @@ TEST_F(ClangRenameTest, DISABLED_ReferencesInLambdaFunctionParameters) {
 } // anonymous namespace
 } // namespace test
 } // namespace clang_rename
-} // namespace clang
+} // namesdpace clang

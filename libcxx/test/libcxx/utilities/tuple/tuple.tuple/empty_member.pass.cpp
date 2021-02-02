@@ -22,27 +22,28 @@ struct A {};
 
 struct B {};
 
-int main(int, char**) {
-  {
-    typedef std::tuple<int, A> T;
-    static_assert((sizeof(T) == sizeof(int)), "");
-  }
-  {
-    typedef std::tuple<A, int> T;
-    static_assert((sizeof(T) == sizeof(int)), "");
-  }
-  {
-    typedef std::tuple<A, int, B> T;
-    static_assert((sizeof(T) == sizeof(int)), "");
-  }
-  {
-    typedef std::tuple<A, B, int> T;
-    static_assert((sizeof(T) == sizeof(int)), "");
-  }
-  {
-    typedef std::tuple<int, A, B> T;
-    static_assert((sizeof(T) == sizeof(int)), "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::tuple<int, A> T;
+        static_assert((sizeof(T) == sizeof(int)), "");
+    }
+    {
+        typedef std::tuple<A, int> T;
+        static_assert((sizeof(T) == sizeof(int)), "");
+    }
+    {
+        typedef std::tuple<A, int, B> T;
+        static_assert((sizeof(T) == sizeof(int)), "");
+    }
+    {
+        typedef std::tuple<A, B, int> T;
+        static_assert((sizeof(T) == sizeof(int)), "");
+    }
+    {
+        typedef std::tuple<int, A, B> T;
+        static_assert((sizeof(T) == sizeof(int)), "");
+    }
 
   return 0;
 }

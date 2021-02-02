@@ -1,15 +1,15 @@
 // RUN: %clang_cc1 -std=c++17 %s -triple x86_64-linux-gnu -emit-llvm -o - | FileCheck %s --implicit-check-not='call{{.*}}dtor'
 
 namespace std {
-typedef decltype(sizeof(int)) size_t;
+  typedef decltype(sizeof(int)) size_t;
 
-template <class E>
-struct initializer_list {
-  const E *begin;
-  size_t size;
-  initializer_list() : begin(nullptr), size(0) {}
-};
-} // namespace std
+  template <class E>
+  struct initializer_list {
+    const E *begin;
+    size_t   size;
+    initializer_list() : begin(nullptr), size(0) {}
+  };
+}
 
 void then();
 
@@ -65,21 +65,15 @@ void array_subscript_1() {
 void array_subscript_2() {
   using T = dtor[1];
   // CHECK: call {{.*}}ctor
-  auto &&x = ((dtor *)T{ctor()})[0];
+  auto &&x = ((dtor*)T{ctor()})[0];
   // CHECK: call {{.*}}dtor
   // CHECK: call {{.*}}then
   then();
   // CHECK: }
 }
 
-struct with_member {
-  dtor d;
-  ~with_member();
-};
-struct with_ref_member {
-  dtor &&d;
-  ~with_ref_member();
-};
+struct with_member { dtor d; ~with_member(); };
+struct with_ref_member { dtor &&d; ~with_ref_member(); };
 
 //  -- a class member access using the . operator [...]
 // CHECK-LABEL: member_access_1
@@ -104,7 +98,7 @@ void member_access_2() {
 // CHECK-LABEL: member_access_3
 void member_access_3() {
   // CHECK: call {{.*}}ctor
-  auto &&x = (&(const with_member &)with_member{ctor()})->d;
+  auto &&x = (&(const with_member&)with_member{ctor()})->d;
   // CHECK: call {{.*}}with_member
   // CHECK: call {{.*}}then
   then();
@@ -124,7 +118,7 @@ void member_ptr_access_1() {
 // CHECK-LABEL: member_ptr_access_2
 void member_ptr_access_2() {
   // CHECK: call {{.*}}ctor
-  auto &&x = (&(const with_member &)with_member{ctor()})->*&with_member::d;
+  auto &&x = (&(const with_member&)with_member{ctor()})->*&with_member::d;
   // CHECK: call {{.*}}with_member
   // CHECK: call {{.*}}then
   then();
@@ -135,7 +129,7 @@ void member_ptr_access_2() {
 // CHECK-LABEL: static_cast
 void test_static_cast() {
   // CHECK: call {{.*}}ctor
-  auto &&x = static_cast<dtor &&>(ctor());
+  auto &&x = static_cast<dtor&&>(ctor());
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -144,7 +138,7 @@ void test_static_cast() {
 // CHECK-LABEL: const_cast
 void test_const_cast() {
   // CHECK: call {{.*}}ctor
-  auto &&x = const_cast<dtor &&>(ctor());
+  auto &&x = const_cast<dtor&&>(ctor());
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -153,7 +147,7 @@ void test_const_cast() {
 // CHECK-LABEL: reinterpret_cast
 void test_reinterpret_cast() {
   // CHECK: call {{.*}}ctor
-  auto &&x = reinterpret_cast<dtor &&>(static_cast<dtor &&>(ctor()));
+  auto &&x = reinterpret_cast<dtor&&>(static_cast<dtor&&>(ctor()));
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -162,7 +156,7 @@ void test_reinterpret_cast() {
 // CHECK-LABEL: dynamic_cast
 void test_dynamic_cast() {
   // CHECK: call {{.*}}ctor
-  auto &&x = dynamic_cast<dtor &&>(ctor());
+  auto &&x = dynamic_cast<dtor&&>(ctor());
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -173,7 +167,7 @@ void test_dynamic_cast() {
 // CHECK-LABEL: c_style_cast
 void c_style_cast() {
   // CHECK: call {{.*}}ctor
-  auto &&x = (dtor &&) ctor();
+  auto &&x = (dtor&&)ctor();
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -182,7 +176,7 @@ void c_style_cast() {
 // CHECK-LABEL: function_style_cast
 void function_style_cast() {
   // CHECK: call {{.*}}ctor
-  using R = dtor &&;
+  using R = dtor&&;
   auto &&x = R(ctor());
   // CHECK: call {{.*}}then
   then();
@@ -195,7 +189,7 @@ void function_style_cast() {
 void conditional(bool b) {
   // CHECK: call {{.*}}ctor
   // CHECK: call {{.*}}ctor
-  auto &&x = b ? (dtor &&) ctor() : (dtor &&) ctor();
+  auto &&x = b ? (dtor&&)ctor() : (dtor&&)ctor();
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -207,19 +201,20 @@ void conditional(bool b) {
 // CHECK-LABEL: comma
 void comma() {
   // CHECK: call {{.*}}ctor
-  auto &&x = (true, (dtor &&) ctor());
+  auto &&x = (true, (dtor&&)ctor());
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
   // CHECK: }
 }
 
+
 // This applies recursively: if an object is lifetime-extended and contains a
 // reference, the referent is also extended.
 // CHECK-LABEL: init_capture_ref
 void init_capture_ref() {
   // CHECK: call {{.*}}ctor
-  auto x = [&a = (const dtor &)ctor()] {};
+  auto x = [&a = (const dtor&)ctor()] {};
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor
@@ -228,7 +223,7 @@ void init_capture_ref() {
 // CHECK-LABEL: init_capture_ref_indirect
 void init_capture_ref_indirect() {
   // CHECK: call {{.*}}ctor
-  auto x = [&a = (const dtor &)ctor()] {};
+  auto x = [&a = (const dtor&)ctor()] {};
   // CHECK: call {{.*}}then
   then();
   // CHECK: call {{.*}}dtor

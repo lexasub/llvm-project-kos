@@ -14,7 +14,7 @@
 #if SANITIZER_MAC
 
 #if !defined(INCLUDED_FROM_INTERCEPTION_LIB)
-#error "interception_mac.h should be included from interception.h only"
+# error "interception_mac.h should be included from interception.h only"
 #endif
 
 #ifndef INTERCEPTION_MAC_H

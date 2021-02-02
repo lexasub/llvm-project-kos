@@ -7,23 +7,21 @@
 namespace NS {
 // CHECK-NOT: DW_TAG_class_type
 // CHECK-NOT: DW_TAG_friend
-class C {
-  friend class D;
-};
+class C { friend class D; };
 class D {};
 // CHECK-NOT: DW_TAG_inheritance
 class E : public C {
   // CHECK-NOT: DW_TAG_reference type
-  void x(const D &d);
+  void x(const D& d);
 };
 struct F {
-  enum X {};
+  enum X { };
   void func(X);
   virtual ~F();
 };
 F::~F() {
 }
-} // namespace NS
+}
 
 // CHECK-NOT: DW_TAG_variable
 NS::C c;

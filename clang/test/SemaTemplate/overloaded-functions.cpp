@@ -9,7 +9,7 @@ void Foo() {
   int arr[size];
   // expected-error@-1 {{'arr' declared as an array with a negative size}}
 }
-} // namespace
+}
 
 void test_foo() {
   Foo<-1>();
@@ -29,3 +29,4 @@ void test_bar() {
   Bar<-1>();
   // expected-note@-1 {{in instantiation of function template specialization 'Bar<-1>' requested here}}
 }
+

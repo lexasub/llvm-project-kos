@@ -31,7 +31,8 @@ static DiagnosticMessage makeMessage(const std::string &Message, int FileOffset,
   return DiagMessage;
 }
 
-static FileByteRange makeByteRange(int FileOffset, int Length,
+static FileByteRange makeByteRange(int FileOffset,
+                                   int Length,
                                    const std::string &FilePath) {
   FileByteRange Range;
   Range.FileOffset = FileOffset;
@@ -114,8 +115,8 @@ TEST(DiagnosticsYamlTest, serializesDiagnostics) {
   StringMap<Replacements> Fix2 = {
       {"path/to/header.h",
        Replacements({"path/to/header.h", 62, 2, "replacement #2"})}};
-  SmallVector<FileByteRange, 1> Ranges2 = {
-      makeByteRange(10, 10, "path/to/source.cpp")};
+  SmallVector<FileByteRange, 1> Ranges2 =
+      {makeByteRange(10, 10, "path/to/source.cpp")};
   TUD.Diagnostics.push_back(makeDiagnostic("diagnostic#2", "message #2", 60,
                                            "path/to/header.h", Fix2, Ranges2));
 

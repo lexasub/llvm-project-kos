@@ -18,6 +18,7 @@
 #include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 
+
 #include "Iterator.h"
 
 using namespace clang;
@@ -27,7 +28,7 @@ using namespace iterator;
 namespace {
 
 class MismatchedIteratorChecker
-    : public Checker<check::PreCall, check::PreStmt<BinaryOperator>> {
+  : public Checker<check::PreCall, check::PreStmt<BinaryOperator>> {
 
   std::unique_ptr<BugType> MismatchedBugType;
 
@@ -35,8 +36,9 @@ class MismatchedIteratorChecker
                    const MemRegion *Cont) const;
   void verifyMatch(CheckerContext &C, const SVal &Iter1,
                    const SVal &Iter2) const;
-  void reportBug(const StringRef &Message, const SVal &Val1, const SVal &Val2,
-                 CheckerContext &C, ExplodedNode *ErrNode) const;
+  void reportBug(const StringRef &Message, const SVal &Val1,
+                 const SVal &Val2, CheckerContext &C,
+                 ExplodedNode *ErrNode) const;
   void reportBug(const StringRef &Message, const SVal &Val,
                  const MemRegion *Reg, CheckerContext &C,
                  ExplodedNode *ErrNode) const;
@@ -46,14 +48,15 @@ public:
 
   void checkPreCall(const CallEvent &Call, CheckerContext &C) const;
   void checkPreStmt(const BinaryOperator *BO, CheckerContext &C) const;
+
 };
 
 } // namespace
 
 MismatchedIteratorChecker::MismatchedIteratorChecker() {
-  MismatchedBugType.reset(new BugType(this, "Iterator(s) mismatched",
-                                      "Misuse of STL APIs",
-                                      /*SuppressOnSink=*/true));
+  MismatchedBugType.reset(
+      new BugType(this, "Iterator(s) mismatched", "Misuse of STL APIs",
+                  /*SuppressOnSink=*/true));
 }
 
 void MismatchedIteratorChecker::checkPreCall(const CallEvent &Call,
@@ -228,8 +231,8 @@ void MismatchedIteratorChecker::verifyMatch(CheckerContext &C, const SVal &Iter,
     if (!N) {
       return;
     }
-    reportBug("Container accessed using foreign iterator argument.", Iter, Cont,
-              C, N);
+    reportBug("Container accessed using foreign iterator argument.",
+                        Iter, Cont, C, N);
   }
 }
 
@@ -268,13 +271,13 @@ void MismatchedIteratorChecker::verifyMatch(CheckerContext &C,
     if (!N)
       return;
     reportBug("Iterators of different containers used where the "
-              "same container is expected.",
-              Iter1, Iter2, C, N);
+                        "same container is expected.", Iter1, Iter2, C, N);
   }
 }
 
 void MismatchedIteratorChecker::reportBug(const StringRef &Message,
-                                          const SVal &Val1, const SVal &Val2,
+                                          const SVal &Val1,
+                                          const SVal &Val2,
                                           CheckerContext &C,
                                           ExplodedNode *ErrNode) const {
   auto R = std::make_unique<PathSensitiveBugReport>(*MismatchedBugType, Message,

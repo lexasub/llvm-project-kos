@@ -215,7 +215,9 @@ public:
     return cast<ConstantInt>(getArgOperand(AlignArg))->getAlignValue();
   }
 
-  Value *getStorage() const { return getArgOperand(StorageArg); }
+  Value *getStorage() const {
+    return getArgOperand(StorageArg);
+  }
 
   /// Return the prototype for the continuation function.  The type,
   /// attributes, and calling convention of the continuation function(s)
@@ -237,8 +239,8 @@ public:
   // Methods to support type inquiry through isa, cast, and dyn_cast:
   static bool classof(const IntrinsicInst *I) {
     auto ID = I->getIntrinsicID();
-    return ID == Intrinsic::coro_id_retcon ||
-           ID == Intrinsic::coro_id_retcon_once;
+    return ID == Intrinsic::coro_id_retcon
+        || ID == Intrinsic::coro_id_retcon_once;
   }
   static bool classof(const Value *V) {
     return isa<IntrinsicInst>(V) && classof(cast<IntrinsicInst>(V));
@@ -246,7 +248,8 @@ public:
 };
 
 /// This represents the llvm.coro.id.retcon instruction.
-class LLVM_LIBRARY_VISIBILITY CoroIdRetconInst : public AnyCoroIdRetconInst {
+class LLVM_LIBRARY_VISIBILITY CoroIdRetconInst
+    : public AnyCoroIdRetconInst {
 public:
   // Methods to support type inquiry through isa, cast, and dyn_cast:
   static bool classof(const IntrinsicInst *I) {
@@ -538,8 +541,7 @@ public:
 };
 
 /// This represents the llvm.coro.suspend.retcon instruction.
-class LLVM_LIBRARY_VISIBILITY CoroSuspendRetconInst
-    : public AnyCoroSuspendInst {
+class LLVM_LIBRARY_VISIBILITY CoroSuspendRetconInst : public AnyCoroSuspendInst {
 public:
   op_iterator value_begin() { return arg_begin(); }
   const_op_iterator value_begin() const { return arg_begin(); }
@@ -633,9 +635,10 @@ public:
 /// This represents the llvm.coro.alloca.alloc instruction.
 class LLVM_LIBRARY_VISIBILITY CoroAllocaAllocInst : public IntrinsicInst {
   enum { SizeArg, AlignArg };
-
 public:
-  Value *getSize() const { return getArgOperand(SizeArg); }
+  Value *getSize() const {
+    return getArgOperand(SizeArg);
+  }
   Align getAlignment() const {
     return cast<ConstantInt>(getArgOperand(AlignArg))->getAlignValue();
   }
@@ -652,7 +655,6 @@ public:
 /// This represents the llvm.coro.alloca.get instruction.
 class LLVM_LIBRARY_VISIBILITY CoroAllocaGetInst : public IntrinsicInst {
   enum { AllocArg };
-
 public:
   CoroAllocaAllocInst *getAlloc() const {
     return cast<CoroAllocaAllocInst>(getArgOperand(AllocArg));
@@ -670,7 +672,6 @@ public:
 /// This represents the llvm.coro.alloca.free instruction.
 class LLVM_LIBRARY_VISIBILITY CoroAllocaFreeInst : public IntrinsicInst {
   enum { AllocArg };
-
 public:
   CoroAllocaAllocInst *getAlloc() const {
     return cast<CoroAllocaAllocInst>(getArgOperand(AllocArg));

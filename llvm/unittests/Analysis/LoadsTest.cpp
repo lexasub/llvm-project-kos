@@ -52,8 +52,8 @@ entry:
   auto *LI = dyn_cast<LoadInst>(Inst);
   ASSERT_TRUE(LI);
   BasicBlock::iterator BBI(LI);
-  Value *Loaded =
-      FindAvailableLoadedValue(LI, LI->getParent(), BBI, 0, nullptr, nullptr);
+  Value *Loaded = FindAvailableLoadedValue(
+      LI, LI->getParent(), BBI, 0, nullptr, nullptr);
   ASSERT_TRUE(Loaded);
   auto *CI = dyn_cast<ConstantInt>(Loaded);
   ASSERT_TRUE(CI);

@@ -34,8 +34,8 @@ struct __declspec(code_seg("my_derived")) D3 : Base2 {};
 // expected-error@-1 {{derived class must specify the same code segment as its base classes}}
 // expected-note@25 {{base class 'Base2' specified here}}
 
-template <typename T> struct __declspec(code_seg("my_base")) MB : T {};
-template <typename T> struct __declspec(code_seg("my_derived")) MD : T {};
+template <typename T> struct __declspec(code_seg("my_base")) MB : T { };
+template <typename T> struct __declspec(code_seg("my_derived")) MD : T { };
 MB<Base1> mb1; // ok
 MB<Base2> mb2;
 // expected-error@37 {{derived class must specify the same code segment as its base classes}}
@@ -63,14 +63,14 @@ struct __declspec(code_seg("my_one")) Derived3 : Base3 {
 };
 
 struct Base4 {
-  virtual int __declspec(code_seg("my_one")) barA() { return 1; }
-  virtual int barB() { return 2; }
+  virtual int __declspec(code_seg("my_one")) barA() {return 1;}
+  virtual int barB() { return 2;}
 };
 struct Derived4 : Base4 {
-  virtual int barA() { return 1; }
+  virtual int barA() {return 1;}
   // expected-error@-1 {{overriding virtual function must specify the same code segment as its overridden function}}
   // expected-note@66 {{previous declaration is here}}
-  virtual int __declspec(code_seg("my_two")) barB() { return 1; }
+  virtual int __declspec(code_seg("my_two")) barB() {return 1;}
   // expected-error@-1 {{overriding virtual function must specify the same code segment as its overridden function}}
   // expected-note@67 {{previous declaration is here}}
 };
@@ -86,11 +86,11 @@ int __declspec(code_seg("foo")) __declspec(code_seg("bar")) bar2() { return 1; }
 // Class
 struct __declspec(code_seg("foo")) __declspec(code_seg("foo")) Foo {
   // expected-warning@-1 {{duplicate code segment specifiers}}
-  int bar3() { return 0; }
+  int bar3() {return 0;}
 };
 struct __declspec(code_seg("foo")) __declspec(code_seg("bar")) FooSix {
   // expected-error@-1 {{conflicting code segment specifiers}}
-  int bar3() { return 0; }
+  int bar3() {return 0;}
 };
 
 //Class Members
@@ -102,3 +102,4 @@ struct FooThree {
   int bar8();
   int bar9() { return 9; }
 };
+

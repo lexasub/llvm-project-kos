@@ -53,7 +53,7 @@ protected:
 class ASTMatchRefactorer {
 public:
   explicit ASTMatchRefactorer(
-      std::map<std::string, Replacements> &FileToReplaces);
+    std::map<std::string, Replacements> &FileToReplaces);
 
   template <typename T>
   void addMatcher(const T &Matcher, RefactoringCallback *Callback) {

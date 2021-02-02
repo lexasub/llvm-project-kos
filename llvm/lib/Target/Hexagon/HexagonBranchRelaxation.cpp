@@ -33,54 +33,51 @@ using namespace llvm;
 
 // Since we have no exact knowledge of code layout, allow some safety buffer
 // for jump target. This is measured in bytes.
-static cl::opt<uint32_t>
-    BranchRelaxSafetyBuffer("branch-relax-safety-buffer", cl::init(200),
-                            cl::Hidden, cl::ZeroOrMore,
-                            cl::desc("safety buffer size"));
+static cl::opt<uint32_t> BranchRelaxSafetyBuffer("branch-relax-safety-buffer",
+  cl::init(200), cl::Hidden, cl::ZeroOrMore, cl::desc("safety buffer size"));
 
 namespace llvm {
 
-FunctionPass *createHexagonBranchRelaxation();
-void initializeHexagonBranchRelaxationPass(PassRegistry &);
+  FunctionPass *createHexagonBranchRelaxation();
+  void initializeHexagonBranchRelaxationPass(PassRegistry&);
 
 } // end namespace llvm
 
 namespace {
 
-struct HexagonBranchRelaxation : public MachineFunctionPass {
-public:
-  static char ID;
+  struct HexagonBranchRelaxation : public MachineFunctionPass {
+  public:
+    static char ID;
 
-  HexagonBranchRelaxation() : MachineFunctionPass(ID) {
-    initializeHexagonBranchRelaxationPass(*PassRegistry::getPassRegistry());
-  }
+    HexagonBranchRelaxation() : MachineFunctionPass(ID) {
+      initializeHexagonBranchRelaxationPass(*PassRegistry::getPassRegistry());
+    }
 
-  bool runOnMachineFunction(MachineFunction &MF) override;
+    bool runOnMachineFunction(MachineFunction &MF) override;
 
-  StringRef getPassName() const override { return "Hexagon Branch Relaxation"; }
+    StringRef getPassName() const override {
+      return "Hexagon Branch Relaxation";
+    }
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesCFG();
-    MachineFunctionPass::getAnalysisUsage(AU);
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesCFG();
+      MachineFunctionPass::getAnalysisUsage(AU);
+    }
 
-private:
-  const HexagonInstrInfo *HII;
-  const HexagonRegisterInfo *HRI;
+  private:
+    const HexagonInstrInfo *HII;
+    const HexagonRegisterInfo *HRI;
 
-  bool relaxBranches(MachineFunction &MF);
-  void
-  computeOffset(MachineFunction &MF,
-                DenseMap<MachineBasicBlock *, unsigned> &BlockToInstOffset);
-  bool
-  reGenerateBranch(MachineFunction &MF,
-                   DenseMap<MachineBasicBlock *, unsigned> &BlockToInstOffset);
-  bool
-  isJumpOutOfRange(MachineInstr &MI,
-                   DenseMap<MachineBasicBlock *, unsigned> &BlockToInstOffset);
-};
+    bool relaxBranches(MachineFunction &MF);
+    void computeOffset(MachineFunction &MF,
+          DenseMap<MachineBasicBlock*, unsigned> &BlockToInstOffset);
+    bool reGenerateBranch(MachineFunction &MF,
+          DenseMap<MachineBasicBlock*, unsigned> &BlockToInstOffset);
+    bool isJumpOutOfRange(MachineInstr &MI,
+          DenseMap<MachineBasicBlock*, unsigned> &BlockToInstOffset);
+  };
 
-char HexagonBranchRelaxation::ID = 0;
+  char HexagonBranchRelaxation::ID = 0;
 
 } // end anonymous namespace
 
@@ -103,8 +100,8 @@ bool HexagonBranchRelaxation::runOnMachineFunction(MachineFunction &MF) {
   return Changed;
 }
 
-void HexagonBranchRelaxation::computeOffset(
-    MachineFunction &MF, DenseMap<MachineBasicBlock *, unsigned> &OffsetMap) {
+void HexagonBranchRelaxation::computeOffset(MachineFunction &MF,
+      DenseMap<MachineBasicBlock*, unsigned> &OffsetMap) {
   // offset of the current instruction from the start.
   unsigned InstOffset = 0;
   for (auto &B : MF) {
@@ -133,7 +130,7 @@ bool HexagonBranchRelaxation::relaxBranches(MachineFunction &MF) {
   // Compute the offset of each basic block
   // offset of the current instruction from the start.
   // map for each instruction to the beginning of the function
-  DenseMap<MachineBasicBlock *, unsigned> BlockToInstOffset;
+  DenseMap<MachineBasicBlock*, unsigned> BlockToInstOffset;
   computeOffset(MF, BlockToInstOffset);
 
   return reGenerateBranch(MF, BlockToInstOffset);
@@ -143,9 +140,8 @@ bool HexagonBranchRelaxation::relaxBranches(MachineFunction &MF) {
 /// - a jump to a distant target
 /// - that exceeds its immediate range
 /// If both conditions are true, it requires constant extension.
-bool HexagonBranchRelaxation::isJumpOutOfRange(
-    MachineInstr &MI,
-    DenseMap<MachineBasicBlock *, unsigned> &BlockToInstOffset) {
+bool HexagonBranchRelaxation::isJumpOutOfRange(MachineInstr &MI,
+      DenseMap<MachineBasicBlock*, unsigned> &BlockToInstOffset) {
   MachineBasicBlock &B = *MI.getParent();
   auto FirstTerm = B.getFirstInstrTerminator();
   if (FirstTerm == B.instr_end())
@@ -174,29 +170,28 @@ bool HexagonBranchRelaxation::isJumpOutOfRange(
       TBB = FirstTerm->getOperand(HII->getCExtOpNum(*FirstTerm)).getMBB();
   }
   if (TBB && &MI == &*FirstTerm) {
-    Distance = std::abs((long long)InstOffset - BlockToInstOffset[TBB]) +
-               BranchRelaxSafetyBuffer;
+    Distance = std::abs((long long)InstOffset - BlockToInstOffset[TBB])
+                + BranchRelaxSafetyBuffer;
     return !HII->isJumpWithinBranchRange(*FirstTerm, Distance);
   }
   if (FBB) {
     // Look for second terminator.
     auto SecondTerm = std::next(FirstTerm);
     assert(SecondTerm != B.instr_end() &&
-           (SecondTerm->isBranch() || SecondTerm->isCall()) &&
-           "Bad second terminator");
+          (SecondTerm->isBranch() || SecondTerm->isCall()) &&
+          "Bad second terminator");
     if (&MI != &*SecondTerm)
       return false;
     // Analyze the second branch in the BB.
-    Distance = std::abs((long long)InstOffset - BlockToInstOffset[FBB]) +
-               BranchRelaxSafetyBuffer;
+    Distance = std::abs((long long)InstOffset - BlockToInstOffset[FBB])
+                + BranchRelaxSafetyBuffer;
     return !HII->isJumpWithinBranchRange(*SecondTerm, Distance);
   }
   return false;
 }
 
-bool HexagonBranchRelaxation::reGenerateBranch(
-    MachineFunction &MF,
-    DenseMap<MachineBasicBlock *, unsigned> &BlockToInstOffset) {
+bool HexagonBranchRelaxation::reGenerateBranch(MachineFunction &MF,
+      DenseMap<MachineBasicBlock*, unsigned> &BlockToInstOffset) {
   bool Changed = false;
 
   for (auto &B : MF) {

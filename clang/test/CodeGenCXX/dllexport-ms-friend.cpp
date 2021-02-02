@@ -12,9 +12,9 @@ struct FuncFriend1 {
 // CHECK-NOT: friend3
 // CHECK-NOT: friend4
 struct FuncFriend2 {
-  template <typename> friend __declspec(dllexport) void friend2() {}
+  template<typename> friend __declspec(dllexport) void friend2() {}
 };
-template <typename> struct FuncFriend3 {
+template<typename> struct FuncFriend3 {
   friend __declspec(dllexport) void friend3() {}
   struct Inner {
     friend __declspec(dllexport) void friend4() {}

@@ -55,15 +55,14 @@ const auto& AllocBytes = malloc_allocator_base::outstanding_bytes;
 
 template <class Deque>
 struct PrintOnFailure {
-  explicit PrintOnFailure(Deque const& deque) : deque_(&deque) {}
+   explicit PrintOnFailure(Deque const& deque) : deque_(&deque) {}
 
   ~PrintOnFailure() {
-    if (::rapid_cxx_test::get_reporter().current_failure().type !=
-        ::rapid_cxx_test::failure_type::none) {
+    if (::rapid_cxx_test::get_reporter().current_failure().type
+        != ::rapid_cxx_test::failure_type::none) {
       print(*deque_);
     }
   }
-
 private:
   const Deque* deque_;
 
@@ -74,9 +73,9 @@ TEST_SUITE(deque_spare_tests)
 
 TEST_CASE(push_back) {
   const auto BS = BlockSize<LargeT>::value;
-  std::unique_ptr<Deque<LargeT> > dp(new Deque<LargeT>);
+  std::unique_ptr<Deque<LargeT>> dp(new Deque<LargeT>);
   auto& d = *dp;
-  PrintOnFailure<Deque<LargeT> > on_fail(d);
+  PrintOnFailure<Deque<LargeT>> on_fail(d);
 
   // Test nothing is allocated after default construction.
   {
@@ -103,8 +102,7 @@ TEST_CASE(push_back) {
     TEST_REQUIRE(d.__back_spare_blocks() == 0);
   }
   // Push back until we need a new block.
-  for (int RemainingCap = d.__capacity() - d.size(); RemainingCap >= 0;
-       --RemainingCap)
+  for (int RemainingCap = d.__capacity() - d.size(); RemainingCap >= 0; --RemainingCap)
     d.push_back({});
   {
     TEST_REQUIRE(d.__block_count() == 2);
@@ -137,9 +135,9 @@ TEST_CASE(push_back) {
 }
 
 TEST_CASE(push_front) {
-  std::unique_ptr<Deque<LargeT> > dp(new Deque<LargeT>);
+  std::unique_ptr<Deque<LargeT>> dp(new Deque<LargeT>);
   auto& d = *dp;
-  PrintOnFailure<Deque<LargeT> > on_fail(d);
+  PrintOnFailure<Deque<LargeT>> on_fail(d);
 
   // Test nothing is allocated after default construction.
   {
@@ -205,8 +203,8 @@ TEST_CASE(std_queue) {
   using Queue = std::queue<LargeT, D>;
   ContainerAdaptor<Queue> CA;
   const D& d = CA.GetContainer();
-  Queue& q = CA;
-  PrintOnFailure<Deque<LargeT> > on_fail(d);
+  Queue &q = CA;
+  PrintOnFailure<Deque<LargeT>> on_fail(d);
 
   while (d.__block_count() < 4)
     q.push({});

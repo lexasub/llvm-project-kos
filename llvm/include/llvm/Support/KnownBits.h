@@ -102,15 +102,17 @@ public:
   bool isNonZero() const { return !One.isNullValue(); }
 
   /// Returns true if this value is known to be positive.
-  bool isStrictlyPositive() const {
-    return Zero.isSignBitSet() && !One.isNullValue();
-  }
+  bool isStrictlyPositive() const { return Zero.isSignBitSet() && !One.isNullValue(); }
 
   /// Make this value negative.
-  void makeNegative() { One.setSignBit(); }
+  void makeNegative() {
+    One.setSignBit();
+  }
 
   /// Make this value non-negative.
-  void makeNonNegative() { Zero.setSignBit(); }
+  void makeNonNegative() {
+    Zero.setSignBit();
+  }
 
   /// Return the minimal unsigned value possible given these KnownBits.
   APInt getMinValue() const {
@@ -214,16 +216,24 @@ public:
   KnownBits makeGE(const APInt &Val) const;
 
   /// Returns the minimum number of trailing zero bits.
-  unsigned countMinTrailingZeros() const { return Zero.countTrailingOnes(); }
+  unsigned countMinTrailingZeros() const {
+    return Zero.countTrailingOnes();
+  }
 
   /// Returns the minimum number of trailing one bits.
-  unsigned countMinTrailingOnes() const { return One.countTrailingOnes(); }
+  unsigned countMinTrailingOnes() const {
+    return One.countTrailingOnes();
+  }
 
   /// Returns the minimum number of leading zero bits.
-  unsigned countMinLeadingZeros() const { return Zero.countLeadingOnes(); }
+  unsigned countMinLeadingZeros() const {
+    return Zero.countLeadingOnes();
+  }
 
   /// Returns the minimum number of leading one bits.
-  unsigned countMinLeadingOnes() const { return One.countLeadingOnes(); }
+  unsigned countMinLeadingOnes() const {
+    return One.countLeadingOnes();
+  }
 
   /// Returns the number of times the sign bit is replicated into the other
   /// bits.
@@ -236,19 +246,29 @@ public:
   }
 
   /// Returns the maximum number of trailing zero bits possible.
-  unsigned countMaxTrailingZeros() const { return One.countTrailingZeros(); }
+  unsigned countMaxTrailingZeros() const {
+    return One.countTrailingZeros();
+  }
 
   /// Returns the maximum number of trailing one bits possible.
-  unsigned countMaxTrailingOnes() const { return Zero.countTrailingZeros(); }
+  unsigned countMaxTrailingOnes() const {
+    return Zero.countTrailingZeros();
+  }
 
   /// Returns the maximum number of leading zero bits possible.
-  unsigned countMaxLeadingZeros() const { return One.countLeadingZeros(); }
+  unsigned countMaxLeadingZeros() const {
+    return One.countLeadingZeros();
+  }
 
   /// Returns the maximum number of leading one bits possible.
-  unsigned countMaxLeadingOnes() const { return Zero.countLeadingZeros(); }
+  unsigned countMaxLeadingOnes() const {
+    return Zero.countLeadingZeros();
+  }
 
   /// Returns the number of bits known to be one.
-  unsigned countMinPopulation() const { return One.countPopulation(); }
+  unsigned countMinPopulation() const {
+    return One.countPopulation();
+  }
 
   /// Returns the maximum number of bits that could be one.
   unsigned countMaxPopulation() const {
@@ -256,7 +276,9 @@ public:
   }
 
   /// Create known bits from a known constant.
-  static KnownBits makeConstant(const APInt &C) { return KnownBits(~C, C); }
+  static KnownBits makeConstant(const APInt &C) {
+    return KnownBits(~C, C);
+  }
 
   /// Compute known bits common to LHS and RHS.
   static KnownBits commonBits(const KnownBits &LHS, const KnownBits &RHS) {
@@ -264,9 +286,8 @@ public:
   }
 
   /// Compute known bits resulting from adding LHS, RHS and a 1-bit Carry.
-  static KnownBits computeForAddCarry(const KnownBits &LHS,
-                                      const KnownBits &RHS,
-                                      const KnownBits &Carry);
+  static KnownBits computeForAddCarry(
+      const KnownBits &LHS, const KnownBits &RHS, const KnownBits &Carry);
 
   /// Compute known bits resulting from adding LHS and RHS.
   static KnownBits computeForAddSub(bool Add, bool NSW, const KnownBits &LHS,
@@ -362,7 +383,9 @@ public:
   /// Compute known bits for the absolute value.
   KnownBits abs(bool IntMinIsPoison = false) const;
 
-  KnownBits byteSwap() { return KnownBits(Zero.byteSwap(), One.byteSwap()); }
+  KnownBits byteSwap() {
+    return KnownBits(Zero.byteSwap(), One.byteSwap());
+  }
 
   KnownBits reverseBits() {
     return KnownBits(Zero.reverseBits(), One.reverseBits());

@@ -8,15 +8,16 @@
 
 #include <iostream>
 
-extern "C" __declspec(dllexport) int test_function() {
+extern "C" __declspec(dllexport)
+int test_function() {
   // Just make sure we can use cout.
   std::cout << "All ok\n";
-  // CHECK: All ok
+// CHECK: All ok
 
   // This line forces a declaration of some global basic_ostream internal object that
   // calls memcpy() in its constructor.  This doesn't work if __asan_init is not
   // called early enough.
   std::cout << 42;
-  // CHECK: 42
+// CHECK: 42
   return 0;
 }

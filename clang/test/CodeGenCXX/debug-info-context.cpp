@@ -8,7 +8,6 @@ private:
 };
 class ios_base {
   locale _M_ios_locale;
-
 public:
   class Init {
   };

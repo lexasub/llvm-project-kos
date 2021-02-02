@@ -48,7 +48,7 @@ static void updateVersion(DraftStore::Draft &D,
 }
 
 int64_t DraftStore::addDraft(PathRef File, llvm::Optional<int64_t> Version,
-                             llvm::StringRef Contents) {
+                         llvm::StringRef Contents) {
   std::lock_guard<std::mutex> Lock(Mutex);
 
   Draft &D = Drafts[File];

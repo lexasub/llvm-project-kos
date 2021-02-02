@@ -78,7 +78,7 @@ private:
   const SourceManager &SM;
 };
 
-} // namespace portability
+} // namespace portability 
 } // namespace tidy
 } // namespace clang
 

@@ -17,8 +17,8 @@ struct D : C {
   virtual int f() { return 4; }
 };
 
-static int f(D *d) {
-  B *b = d;
+static int f(D* d) {
+  B* b = d;
   return b->f();
 };
 

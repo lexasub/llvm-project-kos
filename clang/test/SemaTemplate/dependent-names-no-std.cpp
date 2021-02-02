@@ -4,18 +4,18 @@
 // absence of namespace 'std'.
 
 namespace PR10053 {
-namespace ns {
-struct Data {};
-} // namespace ns
-
-template <typename T> struct A {
-  T t;
-  A() {
-    f(t); // expected-error {{call to function 'f' that is neither visible in the template definition nor found by argument-dependent lookup}}
+  namespace ns {
+    struct Data {};
   }
-};
 
-void f(ns::Data); // expected-note {{in namespace 'PR10053::ns'}}
+  template<typename T> struct A {
+    T t;
+    A() {
+      f(t); // expected-error {{call to function 'f' that is neither visible in the template definition nor found by argument-dependent lookup}}
+    }
+  };
 
-A<ns::Data> a; // expected-note {{in instantiation of member function}}
-} // namespace PR10053
+  void f(ns::Data); // expected-note {{in namespace 'PR10053::ns'}}
+
+  A<ns::Data> a; // expected-note {{in instantiation of member function}}
+}

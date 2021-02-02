@@ -35,8 +35,8 @@ SBFunction::SBFunction(const lldb::SBFunction &rhs)
 }
 
 const SBFunction &SBFunction::operator=(const SBFunction &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBFunction &, SBFunction, operator=,
-                     (const lldb::SBFunction &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBFunction &,
+                     SBFunction, operator=,(const lldb::SBFunction &), rhs);
 
   m_opaque_ptr = rhs.m_opaque_ptr;
   return LLDB_RECORD_RESULT(*this);
@@ -84,15 +84,15 @@ const char *SBFunction::GetMangledName() const {
 }
 
 bool SBFunction::operator==(const SBFunction &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFunction, operator==,
-                           (const lldb::SBFunction &), rhs);
+  LLDB_RECORD_METHOD_CONST(
+      bool, SBFunction, operator==,(const lldb::SBFunction &), rhs);
 
   return m_opaque_ptr == rhs.m_opaque_ptr;
 }
 
 bool SBFunction::operator!=(const SBFunction &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFunction, operator!=,
-                           (const lldb::SBFunction &), rhs);
+  LLDB_RECORD_METHOD_CONST(
+      bool, SBFunction, operator!=,(const lldb::SBFunction &), rhs);
 
   return m_opaque_ptr != rhs.m_opaque_ptr;
 }
@@ -241,20 +241,21 @@ bool SBFunction::GetIsOptimized() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBFunction>(Registry &R) {
+template <>
+void RegisterMethods<SBFunction>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBFunction, ());
   LLDB_REGISTER_CONSTRUCTOR(SBFunction, (const lldb::SBFunction &));
-  LLDB_REGISTER_METHOD(const lldb::SBFunction &, SBFunction, operator=,
-                       (const lldb::SBFunction &));
+  LLDB_REGISTER_METHOD(const lldb::SBFunction &,
+                       SBFunction, operator=,(const lldb::SBFunction &));
   LLDB_REGISTER_METHOD_CONST(bool, SBFunction, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBFunction, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBFunction, GetName, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBFunction, GetDisplayName, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBFunction, GetMangledName, ());
-  LLDB_REGISTER_METHOD_CONST(bool, SBFunction, operator==,
-                             (const lldb::SBFunction &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBFunction, operator!=,
-                             (const lldb::SBFunction &));
+  LLDB_REGISTER_METHOD_CONST(
+      bool, SBFunction, operator==,(const lldb::SBFunction &));
+  LLDB_REGISTER_METHOD_CONST(
+      bool, SBFunction, operator!=,(const lldb::SBFunction &));
   LLDB_REGISTER_METHOD(bool, SBFunction, GetDescription, (lldb::SBStream &));
   LLDB_REGISTER_METHOD(lldb::SBInstructionList, SBFunction, GetInstructions,
                        (lldb::SBTarget));
@@ -270,5 +271,5 @@ template <> void RegisterMethods<SBFunction>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBFunction, GetIsOptimized, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

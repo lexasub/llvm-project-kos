@@ -344,9 +344,8 @@ void IRExecutionUnit::GetRunnableInfo(Status &error, lldb::addr_t &func_addr,
           function.getName().str().c_str());
       return;
     }
-    m_jitted_functions.push_back(
-        JittedFunction(function.getName().str().c_str(), external,
-                       reinterpret_cast<uintptr_t>(fun_ptr)));
+    m_jitted_functions.push_back(JittedFunction(
+        function.getName().str().c_str(), external, reinterpret_cast<uintptr_t>(fun_ptr)));
   }
 
   CommitAllocations(process_sp);
@@ -358,28 +357,27 @@ void IRExecutionUnit::GetRunnableInfo(Status &error, lldb::addr_t &func_addr,
   // local -> remote. That means we don't know the local address of the
   // Variables, but we don't need that for anything, so that's okay.
 
-  std::function<void(llvm::GlobalValue &)> RegisterOneValue =
-      [this](llvm::GlobalValue &val) {
-        if (val.hasExternalLinkage() && !val.isDeclaration()) {
-          uint64_t var_ptr_addr =
-              m_execution_engine_up->getGlobalValueAddress(val.getName().str());
+  std::function<void(llvm::GlobalValue &)> RegisterOneValue = [this](
+      llvm::GlobalValue &val) {
+    if (val.hasExternalLinkage() && !val.isDeclaration()) {
+      uint64_t var_ptr_addr =
+          m_execution_engine_up->getGlobalValueAddress(val.getName().str());
 
-          lldb::addr_t remote_addr = GetRemoteAddressForLocal(var_ptr_addr);
+      lldb::addr_t remote_addr = GetRemoteAddressForLocal(var_ptr_addr);
 
-          // This is a really unfortunae API that sometimes returns local
-          // addresses and sometimes returns remote addresses, based on whether
-          // the variable was relocated during ReportAllocations or not.
+      // This is a really unfortunae API that sometimes returns local addresses
+      // and sometimes returns remote addresses, based on whether the variable
+      // was relocated during ReportAllocations or not.
 
-          if (remote_addr == LLDB_INVALID_ADDRESS) {
-            remote_addr = var_ptr_addr;
-          }
+      if (remote_addr == LLDB_INVALID_ADDRESS) {
+        remote_addr = var_ptr_addr;
+      }
 
-          if (var_ptr_addr != 0)
-            m_jitted_global_variables.push_back(
-                JittedGlobalVariable(val.getName().str().c_str(),
-                                     LLDB_INVALID_ADDRESS, remote_addr));
-        }
-      };
+      if (var_ptr_addr != 0)
+        m_jitted_global_variables.push_back(JittedGlobalVariable(
+            val.getName().str().c_str(), LLDB_INVALID_ADDRESS, remote_addr));
+    }
+  };
 
   for (llvm::GlobalVariable &global_var : m_module->getGlobalList()) {
     RegisterOneValue(global_var);
@@ -698,7 +696,8 @@ struct IRExecutionUnit::SearchSpec {
 };
 
 void IRExecutionUnit::CollectCandidateCNames(
-    std::vector<IRExecutionUnit::SearchSpec> &C_specs, ConstString name) {
+    std::vector<IRExecutionUnit::SearchSpec> &C_specs,
+    ConstString name) {
   if (m_strip_underscore && name.AsCString()[0] == '_')
     C_specs.insert(C_specs.begin(), ConstString(&name.AsCString()[1]));
   C_specs.push_back(SearchSpec(name));
@@ -752,14 +751,16 @@ void IRExecutionUnit::CollectFallbackNames(
     if (!lparen_loc)
       continue;
 
-    llvm::StringRef base_name(demangled_cstr, lparen_loc - demangled_cstr);
+    llvm::StringRef base_name(demangled_cstr,
+                              lparen_loc - demangled_cstr);
     fallback_specs.push_back(ConstString(base_name));
   }
 }
 
 lldb::addr_t IRExecutionUnit::FindInSymbols(
     const std::vector<IRExecutionUnit::SearchSpec> &specs,
-    const lldb_private::SymbolContext &sc, bool &symbol_was_missing_weak) {
+    const lldb_private::SymbolContext &sc,
+    bool &symbol_was_missing_weak) {
   symbol_was_missing_weak = false;
   Target *target = sc.target_sp.get();
 
@@ -775,26 +776,26 @@ lldb::addr_t IRExecutionUnit::FindInSymbols(
 
     std::function<bool(lldb::addr_t &, SymbolContextList &,
                        const lldb_private::SymbolContext &)>
-        get_external_load_address =
-            [&best_internal_load_address, target, &symbol_was_missing_weak](
-                lldb::addr_t &load_address, SymbolContextList &sc_list,
-                const lldb_private::SymbolContext &sc) -> lldb::addr_t {
+        get_external_load_address = [&best_internal_load_address, target,
+                                     &symbol_was_missing_weak](
+            lldb::addr_t &load_address, SymbolContextList &sc_list,
+            const lldb_private::SymbolContext &sc) -> lldb::addr_t {
       load_address = LLDB_INVALID_ADDRESS;
 
       if (sc_list.GetSize() == 0)
         return false;
 
-      // missing_weak_symbol will be true only if we found only weak undefined
+      // missing_weak_symbol will be true only if we found only weak undefined 
       // references to this symbol.
-      symbol_was_missing_weak = true;
-      for (auto candidate_sc : sc_list.SymbolContexts()) {
+      symbol_was_missing_weak = true;      
+      for (auto candidate_sc : sc_list.SymbolContexts()) {        
         // Only symbols can be weak undefined:
         if (!candidate_sc.symbol)
           symbol_was_missing_weak = false;
-        else if (candidate_sc.symbol->GetType() != lldb::eSymbolTypeUndefined ||
-                 !candidate_sc.symbol->IsWeak())
+        else if (candidate_sc.symbol->GetType() != lldb::eSymbolTypeUndefined
+                  || !candidate_sc.symbol->IsWeak())
           symbol_was_missing_weak = false;
-
+        
         const bool is_external =
             (candidate_sc.function) ||
             (candidate_sc.symbol && candidate_sc.symbol->IsExternal());
@@ -837,7 +838,7 @@ lldb::addr_t IRExecutionUnit::FindInSymbols(
         load_address = 0;
         return true;
       }
-
+      
       return false;
     };
 
@@ -930,18 +931,18 @@ lldb::addr_t IRExecutionUnit::FindInUserDefinedSymbols(
   return LLDB_INVALID_ADDRESS;
 }
 
-lldb::addr_t IRExecutionUnit::FindSymbol(lldb_private::ConstString name,
-                                         bool &missing_weak) {
+lldb::addr_t
+IRExecutionUnit::FindSymbol(lldb_private::ConstString name, bool &missing_weak) {
   std::vector<SearchSpec> candidate_C_names;
   std::vector<SearchSpec> candidate_CPlusPlus_names;
 
   CollectCandidateCNames(candidate_C_names, name);
-
+  
   lldb::addr_t ret = FindInSymbols(candidate_C_names, m_sym_ctx, missing_weak);
   if (ret != LLDB_INVALID_ADDRESS)
     return ret;
-
-  // If we find the symbol in runtimes or user defined symbols it can't be
+  
+  // If we find the symbol in runtimes or user defined symbols it can't be 
   // a missing weak symbol.
   missing_weak = false;
   ret = FindInRuntimes(candidate_C_names, m_sym_ctx);
@@ -1015,16 +1016,16 @@ void IRExecutionUnit::GetStaticInitializers(
   }
 }
 
-llvm::JITSymbol
+llvm::JITSymbol 
 IRExecutionUnit::MemoryManager::findSymbol(const std::string &Name) {
-  bool missing_weak = false;
-  uint64_t addr = GetSymbolAddressAndPresence(Name, missing_weak);
-  // This is a weak symbol:
-  if (missing_weak)
-    return llvm::JITSymbol(addr, llvm::JITSymbolFlags::Exported |
-                                     llvm::JITSymbolFlags::Weak);
-  else
-    return llvm::JITSymbol(addr, llvm::JITSymbolFlags::Exported);
+    bool missing_weak = false;
+    uint64_t addr = GetSymbolAddressAndPresence(Name, missing_weak);
+    // This is a weak symbol:
+    if (missing_weak) 
+      return llvm::JITSymbol(addr, 
+          llvm::JITSymbolFlags::Exported | llvm::JITSymbolFlags::Weak);
+    else
+      return llvm::JITSymbol(addr, llvm::JITSymbolFlags::Exported);
 }
 
 uint64_t
@@ -1033,7 +1034,8 @@ IRExecutionUnit::MemoryManager::getSymbolAddress(const std::string &Name) {
   return GetSymbolAddressAndPresence(Name, missing_weak);
 }
 
-uint64_t IRExecutionUnit::MemoryManager::GetSymbolAddressAndPresence(
+uint64_t 
+IRExecutionUnit::MemoryManager::GetSymbolAddressAndPresence(
     const std::string &Name, bool &missing_weak) {
   Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_EXPRESSIONS));
 
@@ -1250,7 +1252,7 @@ void IRExecutionUnit::PopulateSectionList(
 
 ArchSpec IRExecutionUnit::GetArchitecture() {
   ExecutionContext exe_ctx(GetBestExecutionContextScope());
-  if (Target *target = exe_ctx.GetTargetPtr())
+  if(Target *target = exe_ctx.GetTargetPtr())
     return target->GetArchitecture();
   return ArchSpec();
 }

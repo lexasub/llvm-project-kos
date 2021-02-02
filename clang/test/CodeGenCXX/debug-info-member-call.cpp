@@ -21,3 +21,4 @@ void test(Foo *f) {
 
 // CHECK: ![[CALL1LOC]] = !DILocation(line: [[LINE:[0-9]+]], column: 6,
 // CHECK: ![[CALL2LOC]] = !DILocation(line: [[LINE]], column: 13,
+

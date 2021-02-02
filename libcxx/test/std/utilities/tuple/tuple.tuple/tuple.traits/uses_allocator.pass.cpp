@@ -22,31 +22,28 @@
 
 struct A {};
 
-int main(int, char**) {
-  {
-    typedef std::tuple<> T;
-    static_assert(
-        (std::is_base_of<std::true_type, std::uses_allocator<T, A> >::value),
-        "");
-  }
-  {
-    typedef std::tuple<int> T;
-    static_assert(
-        (std::is_base_of<std::true_type, std::uses_allocator<T, A> >::value),
-        "");
-  }
-  {
-    typedef std::tuple<char, int> T;
-    static_assert(
-        (std::is_base_of<std::true_type, std::uses_allocator<T, A> >::value),
-        "");
-  }
-  {
-    typedef std::tuple<double&, char, int> T;
-    static_assert(
-        (std::is_base_of<std::true_type, std::uses_allocator<T, A> >::value),
-        "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::tuple<> T;
+        static_assert((std::is_base_of<std::true_type,
+                                       std::uses_allocator<T, A>>::value), "");
+    }
+    {
+        typedef std::tuple<int> T;
+        static_assert((std::is_base_of<std::true_type,
+                                       std::uses_allocator<T, A>>::value), "");
+    }
+    {
+        typedef std::tuple<char, int> T;
+        static_assert((std::is_base_of<std::true_type,
+                                       std::uses_allocator<T, A>>::value), "");
+    }
+    {
+        typedef std::tuple<double&, char, int> T;
+        static_assert((std::is_base_of<std::true_type,
+                                       std::uses_allocator<T, A>>::value), "");
+    }
 
   return 0;
 }

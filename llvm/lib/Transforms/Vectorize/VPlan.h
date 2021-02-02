@@ -643,6 +643,7 @@ class VPRecipeBase : public ilist_node_with_parent<VPRecipeBase, VPBasicBlock>,
   friend VPBasicBlock;
   friend class VPBlockUtils;
 
+
   /// Each VPRecipe belongs to a single VPBasicBlock.
   VPBasicBlock *Parent = nullptr;
 
@@ -901,7 +902,9 @@ public:
 };
 
 /// A recipe for handling GEP instructions.
-class VPWidenGEPRecipe : public VPRecipeBase, public VPUser, public VPValue {
+class VPWidenGEPRecipe : public VPRecipeBase,
+                         public VPUser,
+                         public VPValue {
   bool IsPtrLoopInvariant;
   SmallBitVector IsIndexLoopInvariant;
 
@@ -1135,7 +1138,8 @@ public:
                     VPValue *VecOp, VPValue *CondOp,
                     const TargetTransformInfo *TTI)
       : VPRecipeBase(VPRecipeBase::VPReductionSC), VPUser({ChainOp, VecOp}),
-        VPValue(VPValue::VPVReductionSC, I, this), RdxDesc(R), TTI(TTI) {
+        VPValue(VPValue::VPVReductionSC, I, this), RdxDesc(R),
+        TTI(TTI) {
     if (CondOp)
       addOperand(CondOp);
   }
@@ -1294,7 +1298,8 @@ public:
 /// - For store: Address, stored value, optional mask
 /// TODO: We currently execute only per-part unless a specific instance is
 /// provided.
-class VPWidenMemoryInstructionRecipe : public VPRecipeBase, public VPUser {
+class VPWidenMemoryInstructionRecipe : public VPRecipeBase,
+                                       public VPUser {
   Instruction &Ingredient;
 
   void setMask(VPValue *Mask) {
@@ -1714,8 +1719,7 @@ class VPlan {
   /// Holds the VPLoopInfo analysis for this VPlan.
   VPLoopInfo VPLInfo;
 
-  /// Holds the condition bit values built during VPInstruction to VPRecipe
-  /// transformation.
+  /// Holds the condition bit values built during VPInstruction to VPRecipe transformation.
   SmallVector<VPValue *, 4> VPCBVs;
 
 public:
@@ -1771,10 +1775,14 @@ public:
 
   /// Add \p VPVal to the pool of external definitions if it's not already
   /// in the pool.
-  void addExternalDef(VPValue *VPVal) { VPExternalDefs.insert(VPVal); }
+  void addExternalDef(VPValue *VPVal) {
+    VPExternalDefs.insert(VPVal);
+  }
 
   /// Add \p CBV to the vector of condition bit values.
-  void addCBV(VPValue *CBV) { VPCBVs.push_back(CBV); }
+  void addCBV(VPValue *CBV) {
+    VPCBVs.push_back(CBV);
+  }
 
   void addVPValue(Value *V) {
     assert(V && "Trying to add a null Value to VPlan");

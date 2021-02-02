@@ -160,16 +160,13 @@ public:
 
   /// Return iterators that walk operations of type 'T' nested directly within
   /// this region.
-  template <typename OpT>
-  op_iterator<OpT> op_begin() {
+  template <typename OpT> op_iterator<OpT> op_begin() {
     return detail::op_filter_iterator<OpT, OpIterator>(op_begin(), op_end());
   }
-  template <typename OpT>
-  op_iterator<OpT> op_end() {
+  template <typename OpT> op_iterator<OpT> op_end() {
     return detail::op_filter_iterator<OpT, OpIterator>(op_end(), op_end());
   }
-  template <typename OpT>
-  iterator_range<op_iterator<OpT>> getOps() {
+  template <typename OpT> iterator_range<op_iterator<OpT>> getOps() {
     auto endIt = op_end();
     return {detail::op_filter_iterator<OpT, OpIterator>(op_begin(), endIt),
             detail::op_filter_iterator<OpT, OpIterator>(endIt, endIt)};
@@ -188,8 +185,7 @@ public:
 
   /// Find the first parent operation of the given type, or nullptr if there is
   /// no ancestor operation.
-  template <typename ParentT>
-  ParentT getParentOfType() {
+  template <typename ParentT> ParentT getParentOfType() {
     auto *region = this;
     do {
       if (auto parent = dyn_cast_or_null<ParentT>(region->container))

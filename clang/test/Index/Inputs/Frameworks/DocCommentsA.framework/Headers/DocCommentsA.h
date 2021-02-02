@@ -5,3 +5,4 @@ void functionFromDocCommentsA1(void);
 
 /// Comment for 'functionFromDocCommentsA2'.
 void functionFromDocCommentsA2(void);
+

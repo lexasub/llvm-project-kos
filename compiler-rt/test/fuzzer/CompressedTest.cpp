@@ -18,10 +18,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   size_t UncompressedLen = sizeof(Uncompressed);
   if (Z_OK != uncompress(Uncompressed, &UncompressedLen, Data, Size))
     return 0;
-  if (UncompressedLen < 2)
-    return 0;
+  if (UncompressedLen < 2) return 0;
   if (Uncompressed[0] == 'F' && Uncompressed[1] == 'U')
-    abort(); // Boom
+    abort();  // Boom
   return 0;
 }
 
@@ -59,4 +58,4 @@ extern "C" size_t LLVMFuzzerCustomMutator(uint8_t *Data, size_t Size,
   return CompressedLen;
 }
 
-#endif // CUSTOM_MUTATOR
+#endif  // CUSTOM_MUTATOR

@@ -34,6 +34,6 @@ enum PragmaFloatControlKind {
   PFC_Push,      // #pragma float_control(push)
   PFC_Pop        // #pragma float_control(pop)
 };
-} // namespace clang
+}
 
 #endif

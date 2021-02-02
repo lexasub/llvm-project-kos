@@ -10,8 +10,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "SourceCoverageViewHTML.h"
 #include "CoverageReport.h"
+#include "SourceCoverageViewHTML.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringExtras.h"
@@ -65,7 +65,7 @@ std::string a(const std::string &Link, const std::string &Str,
 }
 
 const char *BeginHeader =
-    "<head>"
+  "<head>"
     "<meta name='viewport' content='width=device-width,initial-scale=1'>"
     "<meta charset='UTF-8'>";
 
@@ -593,9 +593,8 @@ void SourceCoverageViewHTML::renderLine(raw_ostream &OS, LineRef L,
         continue;
 
       Snippets[I + 1] =
-          tag("div",
-              Snippets[I + 1] +
-                  tag("span", formatCount(CurSeg->Count), "tooltip-content"),
+          tag("div", Snippets[I + 1] + tag("span", formatCount(CurSeg->Count),
+                                           "tooltip-content"),
               "tooltip");
 
       if (getOptions().Debug)

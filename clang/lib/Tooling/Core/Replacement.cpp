@@ -40,7 +40,7 @@
 using namespace clang;
 using namespace tooling;
 
-static const char *const InvalidLocation = "";
+static const char * const InvalidLocation = "";
 
 Replacement::Replacement() : FilePath(InvalidLocation) {}
 
@@ -61,7 +61,9 @@ Replacement::Replacement(const SourceManager &Sources,
   setFromSourceRange(Sources, Range, ReplacementText, LangOpts);
 }
 
-bool Replacement::isApplicable() const { return FilePath != InvalidLocation; }
+bool Replacement::isApplicable() const {
+  return FilePath != InvalidLocation;
+}
 
 bool Replacement::apply(Rewriter &Rewrite) const {
   SourceManager &SM = Rewrite.getSourceMgr();
@@ -70,8 +72,9 @@ bool Replacement::apply(Rewriter &Rewrite) const {
     return false;
 
   FileID ID = SM.getOrCreateFileID(*Entry, SrcMgr::C_User);
-  const SourceLocation Start = SM.getLocForStartOfFile(ID).getLocWithOffset(
-      ReplacementRange.getOffset());
+  const SourceLocation Start =
+    SM.getLocForStartOfFile(ID).
+    getLocWithOffset(ReplacementRange.getOffset());
   // ReplaceText returns false on success.
   // ReplaceText only fails if the source location is not a file location, in
   // which case we already returned false earlier.
@@ -135,8 +138,7 @@ static int getRangeSize(const SourceManager &Sources,
   SourceLocation SpellingEnd = Sources.getSpellingLoc(Range.getEnd());
   std::pair<FileID, unsigned> Start = Sources.getDecomposedLoc(SpellingBegin);
   std::pair<FileID, unsigned> End = Sources.getDecomposedLoc(SpellingEnd);
-  if (Start.first != End.first)
-    return -1;
+  if (Start.first != End.first) return -1;
   if (Range.isTokenRange())
     End.second += Lexer::MeasureTokenLength(SpellingEnd, Sources, LangOpts);
   return End.second - Start.second;
@@ -575,7 +577,7 @@ bool applyAllReplacements(const Replacements &Replaces, Rewriter &Rewrite) {
 }
 
 llvm::Expected<std::string> applyAllReplacements(StringRef Code,
-                                                 const Replacements &Replaces) {
+                                                const Replacements &Replaces) {
   if (Replaces.empty())
     return Code.str();
 
@@ -590,7 +592,8 @@ llvm::Expected<std::string> applyAllReplacements(StringRef Code,
   InMemoryFileSystem->addFile(
       "<stdin>", 0, llvm::MemoryBuffer::getMemBuffer(Code, "<stdin>"));
   FileID ID = SourceMgr.createFileID(*Files.getOptionalFileRef("<stdin>"),
-                                     SourceLocation(), clang::SrcMgr::C_User);
+                                     SourceLocation(),
+                                     clang::SrcMgr::C_User);
   for (auto I = Replaces.rbegin(), E = Replaces.rend(); I != E; ++I) {
     Replacement Replace("<stdin>", I->getOffset(), I->getLength(),
                         I->getReplacementText());

@@ -9,7 +9,5 @@ struct B : virtual A {
   // expected-error@+1 2 {{cannot compile this return-adjusting thunk with variadic arguments yet}}
   B *clone(const char *f, ...) override;
 };
-struct C : B {
-  int c;
-};
+struct C : B { int c; };
 C c;

@@ -4,23 +4,21 @@
 
 struct A; // expected-note 4 {{forward declaration of 'A'}}
 
-struct Abstract {
-  virtual void f() = 0;
-}; // expected-note {{unimplemented pure virtual method 'f'}}
+struct Abstract { virtual void f() = 0; }; // expected-note {{unimplemented pure virtual method 'f'}}
 
 void trys() {
   int k = 42;
   try {
-  } catch (int i) { // expected-note {{previous definition}}
+  } catch(int i) { // expected-note {{previous definition}}
     int j = i;
     int i; // expected-error {{redefinition of 'i'}}
-  } catch (float i) {
-  } catch (void v) {   // expected-error {{cannot catch incomplete type 'void'}}
-  } catch (A a) {      // expected-error {{cannot catch incomplete type 'A'}}
-  } catch (A *a) {     // expected-error {{cannot catch pointer to incomplete type 'A'}}
-  } catch (A &a) {     // expected-error {{cannot catch reference to incomplete type 'A'}}
-  } catch (Abstract) { // expected-error {{variable type 'Abstract' is an abstract class}}
-  } catch (...) {
+  } catch(float i) {
+  } catch(void v) { // expected-error {{cannot catch incomplete type 'void'}}
+  } catch(A a) { // expected-error {{cannot catch incomplete type 'A'}}
+  } catch(A *a) { // expected-error {{cannot catch pointer to incomplete type 'A'}}
+  } catch(A &a) { // expected-error {{cannot catch reference to incomplete type 'A'}}
+  } catch(Abstract) { // expected-error {{variable type 'Abstract' is an abstract class}}
+  } catch(...) {
     int ref = k;
     {
       int ref = k;
@@ -29,16 +27,16 @@ void trys() {
   }
 
   try {
-  } catch (...) { // expected-error {{catch-all handler must come last}}
-  } catch (int) {
+  } catch(...) { // expected-error {{catch-all handler must come last}}
+  } catch(int) {
   }
 }
 
 void throws() {
   throw;
   throw 0;
-  throw throw;  // expected-error {{cannot throw object of incomplete type 'void'}}
-  throw(A *) 0; // expected-error {{cannot throw pointer to object of incomplete type 'A'}}
+  throw throw; // expected-error {{cannot throw object of incomplete type 'void'}}
+  throw (A*)0; // expected-error {{cannot throw pointer to object of incomplete type 'A'}}
 }
 
 void jumps() {
@@ -55,14 +53,14 @@ l1:
     goto l3; // expected-error {{cannot jump}}
     goto l2;
     goto l1;
-  } catch (int) { // expected-note 4 {{jump bypasses initialization of catch block}}
+  } catch(int) { // expected-note 4 {{jump bypasses initialization of catch block}}
   l3:
     goto l5;
     goto l4; // expected-error {{cannot jump}}
     goto l3;
     goto l2; // expected-error {{cannot jump}}
     goto l1;
-  } catch (...) { // expected-note 4 {{jump bypasses initialization of catch block}}
+  } catch(...) { // expected-note 4 {{jump bypasses initialization of catch block}}
   l4:
     goto l5;
     goto l4;
@@ -80,10 +78,10 @@ l5:
 
 struct BadReturn {
   BadReturn() try {
-  } catch (...) {
+  } catch(...) {
     // Try to hide
     try {
-    } catch (...) {
+    } catch(...) {
       {
         if (0)
           return; // expected-error {{return in the catch of a function try block of a constructor is illegal}}
@@ -94,12 +92,12 @@ struct BadReturn {
 };
 
 BadReturn::BadReturn(int) try {
-} catch (...) {
+} catch(...) {
   // Try to hide
   try {
-  } catch (int) {
+  } catch(int) {
     return; // expected-error {{return in the catch of a function try block of a constructor is illegal}}
-  } catch (...) {
+  } catch(...) {
     {
       if (0)
         return; // expected-error {{return in the catch of a function try block of a constructor is illegal}}
@@ -111,63 +109,59 @@ BadReturn::BadReturn(int) try {
 class foo {
 public:
   foo() {}
-  void bar() {
+  void bar () {
     throw *this; // expected-error{{cannot throw an object of abstract type 'foo'}}
   }
-  virtual void test() = 0; // expected-note{{unimplemented pure virtual method 'test'}}
+  virtual void test () = 0; // expected-note{{unimplemented pure virtual method 'test'}}
 };
 
 namespace PR6831 {
-namespace NA {
-struct S;
-}
-namespace NB {
-struct S;
-}
-
-void f() {
-  using namespace NA;
-  using namespace NB;
-  try {
-  } catch (int S) {
+  namespace NA { struct S; }
+  namespace NB { struct S; }
+  
+  void f() {
+    using namespace NA;
+    using namespace NB;
+    try {
+    } catch (int S) { 
+    }
   }
 }
-} // namespace PR6831
 
 namespace Decay {
-struct A {
-  void f() throw(A[10]);
-};
+  struct A {
+    void f() throw (A[10]);
+  };
 
-template <typename T> struct B {
-  void f() throw(B[10]);
-};
-template struct B<int>;
+  template<typename T> struct B {
+    void f() throw (B[10]);
+  };
+  template struct B<int>;
 
-void f() throw(int[10], int (*)());
-void f() throw(int *, int());
+  void f() throw (int[10], int(*)());
+  void f() throw (int*, int());
 
-template <typename T> struct C {
-  void f() throw(T);
+  template<typename T> struct C {
+    void f() throw (T);
 #if __cplusplus <= 199711L
-  // expected-error@-2 {{pointer to incomplete type 'Decay::E' is not allowed in exception specification}}
+    // expected-error@-2 {{pointer to incomplete type 'Decay::E' is not allowed in exception specification}}
 #endif
-};
-struct D {
-  C<D[10]> c;
-};
-struct E;
+  };
+  struct D {
+    C<D[10]> c;
+  };
+  struct E;
 #if __cplusplus <= 199711L
-// expected-note@-2 {{forward declaration of 'Decay::E'}}
+  // expected-note@-2 {{forward declaration of 'Decay::E'}}
 #endif
 
-C<E[10]> e;
+  C<E[10]> e;
 #if __cplusplus <= 199711L
-// expected-note@-2 {{in instantiation of template class 'Decay::C<Decay::E [10]>' requested here}}
+  // expected-note@-2 {{in instantiation of template class 'Decay::C<Decay::E [10]>' requested here}}
 #endif
-} // namespace Decay
+}
 
-void rval_ref() throw(int &&); // expected-error {{rvalue reference type 'int &&' is not allowed in exception specification}}
+void rval_ref() throw (int &&); // expected-error {{rvalue reference type 'int &&' is not allowed in exception specification}}
 #if __cplusplus <= 199711L
 // expected-warning@-2 {{rvalue references are a C++11 extension}}
 #endif
@@ -214,7 +208,7 @@ void f5() {
 void f6() {
   try {
   } catch (B &b) {  // expected-note {{for type 'HandlerInversion::B &'}}
-  } catch (D2 &d) { // expected-warning {{exception of type 'HandlerInversion::D2 &' will be caught by earlier handler}}
+  } catch (D2 &d) {  // expected-warning {{exception of type 'HandlerInversion::D2 &' will be caught by earlier handler}}
   }
 }
 
@@ -225,28 +219,28 @@ void f7() {
   }
 
   try {
-  } catch (B b) {  // Ok
+  } catch (B b) { // Ok
   } catch (D *d) { // Ok
   }
 }
 
 void f8() {
   try {
-  } catch (const B &b) { // expected-note {{for type 'const HandlerInversion::B &'}}
-  } catch (D2 &d) {      // expected-warning {{exception of type 'HandlerInversion::D2 &' will be caught by earlier handler}}
+  } catch (const B &b) {  // expected-note {{for type 'const HandlerInversion::B &'}}
+  } catch (D2 &d) {  // expected-warning {{exception of type 'HandlerInversion::D2 &' will be caught by earlier handler}}
   }
 
   try {
-  } catch (B &b) {        // expected-note {{for type 'HandlerInversion::B &'}}
-  } catch (const D2 &d) { // expected-warning {{exception of type 'const HandlerInversion::D2 &' will be caught by earlier handler}}
+  } catch (B &b) {  // expected-note {{for type 'HandlerInversion::B &'}}
+  } catch (const D2 &d) {  // expected-warning {{exception of type 'const HandlerInversion::D2 &' will be caught by earlier handler}}
   }
 
   try {
-  } catch (B b) {  // expected-note {{for type 'HandlerInversion::B'}}
+  } catch (B b) { // expected-note {{for type 'HandlerInversion::B'}}
   } catch (D &d) { // expected-warning {{exception of type 'HandlerInversion::D &' will be caught by earlier handler}}
   }
 }
-} // namespace HandlerInversion
+}
 
 namespace ConstVolatileThrow {
 struct S {
@@ -259,7 +253,7 @@ typedef const volatile S CVS;
 void f() {
   throw CVS(); // expected-error{{no matching constructor for initialization}}
 }
-} // namespace ConstVolatileThrow
+}
 
 namespace ConstVolatileCatch {
 struct S {
@@ -278,7 +272,7 @@ void g() {
   } catch (volatile S s) { // expected-error {{calling a private constructor}}
   }
 }
-} // namespace ConstVolatileCatch
+}
 
 namespace PR28047 {
 void test1(int i) {
@@ -292,4 +286,4 @@ void test2() {
   } catch (int(*)[i]) { // expected-error{{cannot catch variably modified type}}
   }
 }
-} // namespace PR28047
+}

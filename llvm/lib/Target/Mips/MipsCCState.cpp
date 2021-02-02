@@ -59,7 +59,7 @@ static bool originalEVTTypeIsVectorFloat(EVT Ty) {
 }
 
 /// Return true if the original type was vXfXX / vXfXX.
-static bool originalTypeIsVectorFloat(const Type *Ty) {
+static bool originalTypeIsVectorFloat(const Type * Ty) {
   if (Ty->isVectorTy() && Ty->isFPOrFPVectorTy())
     return true;
 
@@ -84,10 +84,11 @@ MipsCCState::getSpecialCallingConvForCallee(const SDNode *Callee,
 }
 
 void MipsCCState::PreAnalyzeCallResultForF128(
-    const SmallVectorImpl<ISD::InputArg> &Ins, const Type *RetTy,
-    const char *Call) {
+    const SmallVectorImpl<ISD::InputArg> &Ins,
+    const Type *RetTy, const char *Call) {
   for (unsigned i = 0; i < Ins.size(); ++i) {
-    OriginalArgWasF128.push_back(originalTypeIsF128(RetTy, Call));
+    OriginalArgWasF128.push_back(
+        originalTypeIsF128(RetTy, Call));
     OriginalArgWasFloat.push_back(RetTy->isFloatingPointTy());
   }
 }
@@ -129,7 +130,8 @@ void MipsCCState::PreAnalyzeReturnForVectorFloat(
 /// arguments and record this.
 void MipsCCState::PreAnalyzeCallOperands(
     const SmallVectorImpl<ISD::OutputArg> &Outs,
-    std::vector<TargetLowering::ArgListEntry> &FuncArgs, const char *Func) {
+    std::vector<TargetLowering::ArgListEntry> &FuncArgs,
+    const char *Func) {
   for (unsigned i = 0; i < Outs.size(); ++i) {
     TargetLowering::ArgListEntry FuncArg = FuncArgs[Outs[i].OrigArgIndex];
 

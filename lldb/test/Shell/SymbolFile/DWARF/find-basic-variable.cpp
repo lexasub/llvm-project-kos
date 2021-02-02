@@ -52,13 +52,13 @@ namespace baz {
 static short foo;
 // NAME-DAG: name = "foo", type = {{.*}} (short), {{.*}} decl = find-basic-variable.cpp:[[@LINE-1]]
 // REGEX-DAG: name = "foo", type = {{.*}} (short), {{.*}} decl = find-basic-variable.cpp:[[@LINE-2]]
-} // namespace baz
-} // namespace bar
+}
+}
 
 struct sbar {
   static int foo;
-  // NAME-DAG: name = "foo", type = {{.*}} (int), {{.*}} decl = find-basic-variable.cpp:[[@LINE-1]]
-  // REGEX-DAG: name = "foo", type = {{.*}} (int), {{.*}} decl = find-basic-variable.cpp:[[@LINE-2]]
+// NAME-DAG: name = "foo", type = {{.*}} (int), {{.*}} decl = find-basic-variable.cpp:[[@LINE-1]]
+// REGEX-DAG: name = "foo", type = {{.*}} (int), {{.*}} decl = find-basic-variable.cpp:[[@LINE-2]]
 };
 int sbar::foo;
 

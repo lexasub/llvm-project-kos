@@ -7,4 +7,4 @@ struct cls {
   char *m;
 };
 
-char *cls::*__uptr wrong2 = &cls::m; // expected-error {{'__uptr' attribute cannot be used with pointers to members}}
+char * cls::* __uptr wrong2 = &cls::m; // expected-error {{'__uptr' attribute cannot be used with pointers to members}}

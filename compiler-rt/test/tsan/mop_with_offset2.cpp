@@ -3,13 +3,13 @@
 
 void *Thread1(void *x) {
   barrier_wait(&barrier);
-  int *p = (int *)x;
+  int *p = (int*)x;
   p[0] = 1;
   return NULL;
 }
 
 void *Thread2(void *x) {
-  char *p = (char *)x;
+  char *p = (char*)x;
   p[2] = 1;
   barrier_wait(&barrier);
   return NULL;
@@ -19,7 +19,7 @@ int main() {
   barrier_init(&barrier, 2);
   int *data = new int(42);
   print_address("ptr1=", 1, data);
-  print_address("ptr2=", 1, (char *)data + 2);
+  print_address("ptr2=", 1, (char*)data + 2);
   pthread_t t[2];
   pthread_create(&t[0], NULL, Thread1, data);
   pthread_create(&t[1], NULL, Thread2, data);

@@ -84,4 +84,4 @@ public:
   }
 };
 Foo f;
-} // namespace foonamespace
+}

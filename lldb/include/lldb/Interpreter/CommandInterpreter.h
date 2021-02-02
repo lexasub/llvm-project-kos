@@ -230,10 +230,9 @@ public:
 
   enum ChildrenTruncatedWarningStatus // tristate boolean to manage children
                                       // truncation warning
-  {
-    eNoTruncation = 0,       // never truncated
-    eUnwarnedTruncation = 1, // truncated but did not notify
-    eWarnedTruncation = 2    // truncated and notified
+  { eNoTruncation = 0,                // never truncated
+    eUnwarnedTruncation = 1,          // truncated but did not notify
+    eWarnedTruncation = 2             // truncated and notified
   };
 
   enum CommandTypes {

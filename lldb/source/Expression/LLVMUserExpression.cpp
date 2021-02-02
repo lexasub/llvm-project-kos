@@ -6,6 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #include "lldb/Expression/LLVMUserExpression.h"
 #include "lldb/Core/Module.h"
 #include "lldb/Core/StreamFile.h"
@@ -231,7 +232,7 @@ LLVMUserExpression::DoExecute(DiagnosticManager &diagnostic_manager,
           eDiagnosticSeverityError,
           "Couldn't complete execution; the thread "
           "on which the expression was being run: 0x%" PRIx64
-          " exited during its execution.",
+          " exited during its execution.", 
           expr_thread_id);
       return execution_result;
     } else if (execution_result != lldb::eExpressionCompleted) {
@@ -367,3 +368,4 @@ bool LLVMUserExpression::PrepareToExecuteJITExpression(
   }
   return true;
 }
+

@@ -15,6 +15,7 @@
 #include "sanitizer_flags.h"
 #include "sanitizer_procmaps.h"
 
+
 namespace __sanitizer {
 
 static void (*SoftRssLimitExceededCallback)(bool exceeded);
@@ -51,7 +52,8 @@ void *BackgroundThread(void *arg) {
       if (stack_depot_stats) {
         if (prev_reported_stack_depot_size * 11 / 10 <
             stack_depot_stats->allocated) {
-          Printf("%s: StackDepot: %zd ids; %zdM allocated\n", SanitizerToolName,
+          Printf("%s: StackDepot: %zd ids; %zdM allocated\n",
+                 SanitizerToolName,
                  stack_depot_stats->n_uniq_ids,
                  stack_depot_stats->allocated >> 20);
           prev_reported_stack_depot_size = stack_depot_stats->allocated;
@@ -115,16 +117,17 @@ void MaybeStartBackgroudThread() {
     !SANITIZER_GO  // Need to implement/test on other platforms.
   // Start the background thread if one of the rss limits is given.
   if (!common_flags()->hard_rss_limit_mb &&
-      !common_flags()->soft_rss_limit_mb && !common_flags()->heap_profile)
-    return;
-  if (!&real_pthread_create)
-    return;  // Can't spawn the thread anyway.
+      !common_flags()->soft_rss_limit_mb &&
+      !common_flags()->heap_profile) return;
+  if (!&real_pthread_create) return;  // Can't spawn the thread anyway.
   internal_start_thread(BackgroundThread, nullptr);
 #endif
 }
 
 static void (*sandboxing_callback)();
-void SetSandboxingCallback(void (*f)()) { sandboxing_callback = f; }
+void SetSandboxingCallback(void (*f)()) {
+  sandboxing_callback = f;
+}
 
 uptr ReservedAddressRange::InitAligned(uptr size, uptr align,
                                        const char *name) {

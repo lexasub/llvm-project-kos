@@ -108,12 +108,12 @@ bool isReallocLikeFn(const Function *F, const TargetLibraryInfo *TLI);
 /// Tests if a value is a call or invoke to a library function that
 /// allocates memory and throws if an allocation failed (e.g., new).
 bool isOpNewLikeFn(const Value *V, const TargetLibraryInfo *TLI,
-                   bool LookThroughBitCast = false);
+                     bool LookThroughBitCast = false);
 
 /// Tests if a value is a call or invoke to a library function that
 /// allocates memory (strdup, strndup).
 bool isStrdupLikeFn(const Value *V, const TargetLibraryInfo *TLI,
-                    bool LookThroughBitCast = false);
+                     bool LookThroughBitCast = false);
 
 //===----------------------------------------------------------------------===//
 //  malloc Call Utility Functions.
@@ -162,8 +162,9 @@ Value *getMallocArraySize(CallInst *CI, const DataLayout &DL,
 /// is a calloc call.
 const CallInst *extractCallocCall(const Value *I, const TargetLibraryInfo *TLI);
 inline CallInst *extractCallocCall(Value *I, const TargetLibraryInfo *TLI) {
-  return const_cast<CallInst *>(extractCallocCall((const Value *)I, TLI));
+  return const_cast<CallInst*>(extractCallocCall((const Value*)I, TLI));
 }
+
 
 //===----------------------------------------------------------------------===//
 //  free Call Utility Functions.
@@ -176,7 +177,7 @@ bool isLibFreeFunction(const Function *F, const LibFunc TLIFn);
 const CallInst *isFreeCall(const Value *I, const TargetLibraryInfo *TLI);
 
 inline CallInst *isFreeCall(Value *I, const TargetLibraryInfo *TLI) {
-  return const_cast<CallInst *>(isFreeCall((const Value *)I, TLI));
+  return const_cast<CallInst*>(isFreeCall((const Value*)I, TLI));
 }
 
 //===----------------------------------------------------------------------===//
@@ -221,12 +222,14 @@ bool getObjectSize(const Value *Ptr, uint64_t &Size, const DataLayout &DL,
 Value *lowerObjectSizeCall(IntrinsicInst *ObjectSize, const DataLayout &DL,
                            const TargetLibraryInfo *TLI, bool MustSucceed);
 
+
+
 using SizeOffsetType = std::pair<APInt, APInt>;
 
 /// Evaluate the size and offset of an object pointed to by a Value*
 /// statically. Fails if size or offset are not known at compile time.
 class ObjectSizeOffsetVisitor
-    : public InstVisitor<ObjectSizeOffsetVisitor, SizeOffsetType> {
+  : public InstVisitor<ObjectSizeOffsetVisitor, SizeOffsetType> {
   const DataLayout &DL;
   const TargetLibraryInfo *TLI;
   ObjectSizeOpts Options;
@@ -236,7 +239,9 @@ class ObjectSizeOffsetVisitor
 
   APInt align(APInt Size, uint64_t Align);
 
-  SizeOffsetType unknown() { return std::make_pair(APInt(), APInt()); }
+  SizeOffsetType unknown() {
+    return std::make_pair(APInt(), APInt());
+  }
 
 public:
   ObjectSizeOffsetVisitor(const DataLayout &DL, const TargetLibraryInfo *TLI,
@@ -261,17 +266,17 @@ public:
   SizeOffsetType visitAllocaInst(AllocaInst &I);
   SizeOffsetType visitArgument(Argument &A);
   SizeOffsetType visitCallBase(CallBase &CB);
-  SizeOffsetType visitConstantPointerNull(ConstantPointerNull &);
+  SizeOffsetType visitConstantPointerNull(ConstantPointerNull&);
   SizeOffsetType visitExtractElementInst(ExtractElementInst &I);
   SizeOffsetType visitExtractValueInst(ExtractValueInst &I);
   SizeOffsetType visitGEPOperator(GEPOperator &GEP);
   SizeOffsetType visitGlobalAlias(GlobalAlias &GA);
   SizeOffsetType visitGlobalVariable(GlobalVariable &GV);
-  SizeOffsetType visitIntToPtrInst(IntToPtrInst &);
+  SizeOffsetType visitIntToPtrInst(IntToPtrInst&);
   SizeOffsetType visitLoadInst(LoadInst &I);
-  SizeOffsetType visitPHINode(PHINode &);
+  SizeOffsetType visitPHINode(PHINode&);
   SizeOffsetType visitSelectInst(SelectInst &I);
-  SizeOffsetType visitUndefValue(UndefValue &);
+  SizeOffsetType visitUndefValue(UndefValue&);
   SizeOffsetType visitInstruction(Instruction &I);
 
 private:
@@ -283,7 +288,7 @@ using SizeOffsetEvalType = std::pair<Value *, Value *>;
 /// Evaluate the size and offset of an object pointed to by a Value*.
 /// May create code to compute the result at run-time.
 class ObjectSizeOffsetEvaluator
-    : public InstVisitor<ObjectSizeOffsetEvaluator, SizeOffsetEvalType> {
+  : public InstVisitor<ObjectSizeOffsetEvaluator, SizeOffsetEvalType> {
   using BuilderTy = IRBuilder<TargetFolder, IRBuilderCallbackInserter>;
   using WeakEvalType = std::pair<WeakTrackingVH, WeakTrackingVH>;
   using CacheMapTy = DenseMap<const Value *, WeakEvalType>;
@@ -312,9 +317,13 @@ public:
 
   SizeOffsetEvalType compute(Value *V);
 
-  bool knownSize(SizeOffsetEvalType SizeOffset) { return SizeOffset.first; }
+  bool knownSize(SizeOffsetEvalType SizeOffset) {
+    return SizeOffset.first;
+  }
 
-  bool knownOffset(SizeOffsetEvalType SizeOffset) { return SizeOffset.second; }
+  bool knownOffset(SizeOffsetEvalType SizeOffset) {
+    return SizeOffset.second;
+  }
 
   bool anyKnown(SizeOffsetEvalType SizeOffset) {
     return knownSize(SizeOffset) || knownOffset(SizeOffset);
@@ -330,7 +339,7 @@ public:
   SizeOffsetEvalType visitExtractElementInst(ExtractElementInst &I);
   SizeOffsetEvalType visitExtractValueInst(ExtractValueInst &I);
   SizeOffsetEvalType visitGEPOperator(GEPOperator &GEP);
-  SizeOffsetEvalType visitIntToPtrInst(IntToPtrInst &);
+  SizeOffsetEvalType visitIntToPtrInst(IntToPtrInst&);
   SizeOffsetEvalType visitLoadInst(LoadInst &I);
   SizeOffsetEvalType visitPHINode(PHINode &PHI);
   SizeOffsetEvalType visitSelectInst(SelectInst &I);

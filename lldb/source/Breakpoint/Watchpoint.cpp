@@ -308,8 +308,9 @@ const char *Watchpoint::GetConditionText() const {
 
 void Watchpoint::SendWatchpointChangedEvent(
     lldb::WatchpointEventType eventKind) {
-  if (!m_being_created && GetTarget().EventTypeHasListeners(
-                              Target::eBroadcastBitWatchpointChanged)) {
+  if (!m_being_created &&
+      GetTarget().EventTypeHasListeners(
+          Target::eBroadcastBitWatchpointChanged)) {
     WatchpointEventData *data =
         new Watchpoint::WatchpointEventData(eventKind, shared_from_this());
     GetTarget().BroadcastEvent(Target::eBroadcastBitWatchpointChanged, data);

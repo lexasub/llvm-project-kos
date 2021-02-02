@@ -124,14 +124,15 @@ void InefficientVectorOperationCheck::AddMatcher(
   //
   // FIXME: Support more types of counter-based loops like decrement loops.
   Finder->addMatcher(
-      forStmt(hasLoopInit(LoopVarInit),
-              hasCondition(binaryOperator(
-                  hasOperatorName("<"), hasLHS(RefersToLoopVar),
-                  hasRHS(expr(unless(hasDescendant(expr(RefersToLoopVar))))
-                             .bind(LoopEndExprName)))),
-              hasIncrement(unaryOperator(hasOperatorName("++"),
-                                         hasUnaryOperand(RefersToLoopVar))),
-              HasInterestingLoopBody, InInterestingCompoundStmt)
+      forStmt(
+          hasLoopInit(LoopVarInit),
+          hasCondition(binaryOperator(
+              hasOperatorName("<"), hasLHS(RefersToLoopVar),
+              hasRHS(expr(unless(hasDescendant(expr(RefersToLoopVar))))
+                         .bind(LoopEndExprName)))),
+          hasIncrement(unaryOperator(hasOperatorName("++"),
+                                     hasUnaryOperand(RefersToLoopVar))),
+          HasInterestingLoopBody, InInterestingCompoundStmt)
           .bind(LoopCounterName),
       this);
 
@@ -174,7 +175,7 @@ void InefficientVectorOperationCheck::registerMatchers(MatchFinder *Finder) {
 
 void InefficientVectorOperationCheck::check(
     const MatchFinder::MatchResult &Result) {
-  auto *Context = Result.Context;
+  auto* Context = Result.Context;
   if (Context->getDiagnostics().hasUncompilableErrorOccurred())
     return;
 

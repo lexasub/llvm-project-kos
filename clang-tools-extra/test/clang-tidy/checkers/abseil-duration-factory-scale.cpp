@@ -2,9 +2,7 @@
 
 #include "absl/time/time.h"
 
-namespace std {
-typedef long long int64_t;
-}
+namespace std { typedef long long int64_t; }
 using int64_t = std::int64_t;
 
 void ScaleTest() {

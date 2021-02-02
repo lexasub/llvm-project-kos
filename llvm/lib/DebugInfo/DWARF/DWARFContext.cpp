@@ -87,7 +87,7 @@ static void dumpUUID(raw_ostream &OS, const ObjectFile &Obj) {
         return;
       }
       OS << "UUID: ";
-      memcpy(&UUID, LC.Ptr + sizeof(LC.C), sizeof(UUID));
+      memcpy(&UUID, LC.Ptr+sizeof(LC.C), sizeof(UUID));
       OS.write_uuid(UUID);
       Triple T = MachO->getArchTriple();
       OS << " (" << T.getArchName() << ')';
@@ -585,8 +585,8 @@ void DWARFContext::dump(
 
   if (shouldDump(Explicit, ".debug_addr", DIDT_ID_DebugAddr,
                  DObj->getAddrSection().Data)) {
-    DWARFDataExtractor AddrData(*DObj, DObj->getAddrSection(), isLittleEndian(),
-                                0);
+    DWARFDataExtractor AddrData(*DObj, DObj->getAddrSection(),
+                                   isLittleEndian(), 0);
     dumpAddrSection(OS, AddrData, DumpOpts, getMaxVersion(), getCUAddrSize());
   }
 
@@ -711,7 +711,7 @@ DWARFCompileUnit *DWARFContext::getDWOCompileUnitForHash(uint64_t Hash) {
     // Might not have parsed DWO ID yet.
     if (!DWOCU->getDWOId()) {
       if (Optional<uint64_t> DWOId =
-              toUnsigned(DWOCU->getUnitDIE().find(DW_AT_GNU_dwo_id)))
+          toUnsigned(DWOCU->getUnitDIE().find(DW_AT_GNU_dwo_id)))
         DWOCU->setDWOId(*DWOId);
       else
         // No DWO ID?
@@ -911,8 +911,8 @@ const AppleAcceleratorTable &DWARFContext::getAppleTypes() {
 
 const AppleAcceleratorTable &DWARFContext::getAppleNamespaces() {
   return getAccelTable(AppleNamespaces, *DObj,
-                       DObj->getAppleNamespacesSection(), DObj->getStrSection(),
-                       isLittleEndian());
+                       DObj->getAppleNamespacesSection(),
+                       DObj->getStrSection(), isLittleEndian());
 }
 
 const AppleAcceleratorTable &DWARFContext::getAppleObjC() {
@@ -1030,10 +1030,13 @@ DWARFContext::DIEsForAddress DWARFContext::getDIEsForAddress(uint64_t Address) {
 
 /// TODO: change input parameter from "uint64_t Address"
 ///       into "SectionedAddress Address"
-static bool getFunctionNameAndStartLineForAddress(
-    DWARFCompileUnit *CU, uint64_t Address, FunctionNameKind Kind,
-    DILineInfoSpecifier::FileLineInfoKind FileNameKind,
-    std::string &FunctionName, std::string &StartFile, uint32_t &StartLine) {
+static bool getFunctionNameAndStartLineForAddress(DWARFCompileUnit *CU,
+                                                  uint64_t Address,
+                                                  FunctionNameKind Kind,
+                                                  DILineInfoSpecifier::FileLineInfoKind FileNameKind,
+                                                  std::string &FunctionName,
+                                                  std::string &StartFile,
+                                                  uint32_t &StartLine) {
   // The address may correspond to instruction in some inlined function,
   // so we have to build the chain of inlined functions and take the
   // name of the topmost function in it.
@@ -1225,8 +1228,8 @@ DILineInfo DWARFContext::getLineInfoForAddress(object::SectionedAddress Address,
   if (!CU)
     return Result;
 
-  getFunctionNameAndStartLineForAddress(CU, Address.Address, Spec.FNKind,
-                                        Spec.FLIKind, Result.FunctionName,
+  getFunctionNameAndStartLineForAddress(CU, Address.Address, Spec.FNKind, Spec.FLIKind,
+                                        Result.FunctionName,
                                         Result.StartFileName, Result.StartLine);
   if (Spec.FLIKind != FileLineInfoKind::None) {
     if (const DWARFLineTable *LineTable = getLineTableForUnit(CU)) {
@@ -1240,7 +1243,7 @@ DILineInfo DWARFContext::getLineInfoForAddress(object::SectionedAddress Address,
 
 DILineInfoTable DWARFContext::getLineInfoForAddressRange(
     object::SectionedAddress Address, uint64_t Size, DILineInfoSpecifier Spec) {
-  DILineInfoTable Lines;
+  DILineInfoTable  Lines;
   DWARFCompileUnit *CU = getCompileUnitForAddress(Address.Address);
   if (!CU)
     return Lines;
@@ -1248,9 +1251,8 @@ DILineInfoTable DWARFContext::getLineInfoForAddressRange(
   uint32_t StartLine = 0;
   std::string StartFileName;
   std::string FunctionName(DILineInfo::BadString);
-  getFunctionNameAndStartLineForAddress(CU, Address.Address, Spec.FNKind,
-                                        Spec.FLIKind, FunctionName,
-                                        StartFileName, StartLine);
+  getFunctionNameAndStartLineForAddress(CU, Address.Address, Spec.FNKind, Spec.FLIKind,
+                                        FunctionName, StartFileName, StartLine);
 
   // If the Specifier says we don't need FileLineInfo, just
   // return the top-most function at the starting address.
@@ -1640,8 +1642,7 @@ public:
     }
   }
   DWARFObjInMemory(const object::ObjectFile &Obj, const LoadedObjectInfo *L,
-                   function_ref<void(Error)> HandleError,
-                   function_ref<void(Error)> HandleWarning)
+                   function_ref<void(Error)> HandleError, function_ref<void(Error)> HandleWarning )
       : IsLittleEndian(Obj.isLittleEndian()),
         AddressSize(Obj.getBytesInAddress()), FileName(Obj.getFileName()),
         Obj(&Obj) {
@@ -1655,7 +1656,7 @@ public:
         consumeError(NameOrErr.takeError());
 
       ++SectionAmountMap[Name];
-      SectionNames.push_back({Name, true});
+      SectionNames.push_back({ Name, true });
 
       // Skip BSS and Virtual sections, they aren't interesting.
       if (Section.isBSS() || Section.isVirtual())
@@ -1893,19 +1894,17 @@ public:
 
   StringRef getAbbrevSection() const override { return AbbrevSection; }
   const DWARFSection &getLocSection() const override { return LocSection; }
-  const DWARFSection &getLoclistsSection() const override {
-    return LoclistsSection;
-  }
+  const DWARFSection &getLoclistsSection() const override { return LoclistsSection; }
   StringRef getArangesSection() const override { return ArangesSection; }
-  const DWARFSection &getFrameSection() const override { return FrameSection; }
+  const DWARFSection &getFrameSection() const override {
+    return FrameSection;
+  }
   const DWARFSection &getEHFrameSection() const override {
     return EHFrameSection;
   }
   const DWARFSection &getLineSection() const override { return LineSection; }
   StringRef getStrSection() const override { return StrSection; }
-  const DWARFSection &getRangesSection() const override {
-    return RangesSection;
-  }
+  const DWARFSection &getRangesSection() const override { return RangesSection; }
   const DWARFSection &getRnglistsSection() const override {
     return RnglistsSection;
   }
@@ -1913,12 +1912,8 @@ public:
   StringRef getMacroDWOSection() const override { return MacroDWOSection; }
   StringRef getMacinfoSection() const override { return MacinfoSection; }
   StringRef getMacinfoDWOSection() const override { return MacinfoDWOSection; }
-  const DWARFSection &getPubnamesSection() const override {
-    return PubnamesSection;
-  }
-  const DWARFSection &getPubtypesSection() const override {
-    return PubtypesSection;
-  }
+  const DWARFSection &getPubnamesSection() const override { return PubnamesSection; }
+  const DWARFSection &getPubtypesSection() const override { return PubtypesSection; }
   const DWARFSection &getGnuPubnamesSection() const override {
     return GnuPubnamesSection;
   }
@@ -1937,7 +1932,9 @@ public:
   const DWARFSection &getAppleObjCSection() const override {
     return AppleObjCSection;
   }
-  const DWARFSection &getNamesSection() const override { return NamesSection; }
+  const DWARFSection &getNamesSection() const override {
+    return NamesSection;
+  }
 
   StringRef getFileName() const override { return FileName; }
   uint8_t getAddressSize() const override { return AddressSize; }
@@ -1959,8 +1956,8 @@ DWARFContext::create(const object::ObjectFile &Obj, const LoadedObjectInfo *L,
                      std::string DWPName,
                      std::function<void(Error)> RecoverableErrorHandler,
                      std::function<void(Error)> WarningHandler) {
-  auto DObj = std::make_unique<DWARFObjInMemory>(
-      Obj, L, RecoverableErrorHandler, WarningHandler);
+  auto DObj =
+      std::make_unique<DWARFObjInMemory>(Obj, L, RecoverableErrorHandler, WarningHandler);
   return std::make_unique<DWARFContext>(std::move(DObj), std::move(DWPName),
                                         RecoverableErrorHandler,
                                         WarningHandler);
@@ -1988,7 +1985,8 @@ Error DWARFContext::loadRegisterInfo(const object::ObjectFile &Obj) {
   const Target *TheTarget =
       TargetRegistry::lookupTarget(TT.str(), TargetLookupError);
   if (!TargetLookupError.empty())
-    return createStringError(errc::invalid_argument, TargetLookupError.c_str());
+    return createStringError(errc::invalid_argument,
+                             TargetLookupError.c_str());
   RegInfo.reset(TheTarget->createMCRegInfo(TT.str()));
   return Error::success();
 }

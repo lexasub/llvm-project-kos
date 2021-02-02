@@ -131,7 +131,9 @@ public:
 
   SymbolID getSymbolID() const { return Sym; }
 
-  unsigned computeComplexity() const override { return 1; };
+  unsigned computeComplexity() const override {
+    return 1;
+  };
 
   // Implement isa<T> support.
   static inline bool classof(const SymExpr *SE) {

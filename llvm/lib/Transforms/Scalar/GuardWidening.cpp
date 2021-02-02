@@ -93,7 +93,7 @@ static Value *getCondition(Instruction *I) {
 }
 
 // Set the condition for \p I to \p NewCond. \p I can either be a guard or a
-// conditional branch.
+// conditional branch.  
 static void setCondition(Instruction *I, Value *NewCond) {
   if (IntrinsicInst *GI = dyn_cast<IntrinsicInst>(I)) {
     assert(GI->getIntrinsicID() == Intrinsic::experimental_guard &&
@@ -118,7 +118,7 @@ class GuardWideningImpl {
   /// Together, these describe the region of interest.  This might be all of
   /// the blocks within a function, or only a given loop's blocks and preheader.
   DomTreeNode *Root;
-  std::function<bool(BasicBlock *)> BlockFilter;
+  std::function<bool(BasicBlock*)> BlockFilter;
 
   /// The set of guards and conditional branches whose conditions have been
   /// widened into dominating guards.
@@ -134,9 +134,8 @@ class GuardWideningImpl {
   /// maps BasicBlocks to the set of guards seen in that block.
   bool eliminateInstrViaWidening(
       Instruction *Instr, const df_iterator<DomTreeNode *> &DFSI,
-      const DenseMap<BasicBlock *, SmallVector<Instruction *, 8>>
-          &GuardsPerBlock,
-      bool InvertCondition = false);
+      const DenseMap<BasicBlock *, SmallVector<Instruction *, 8>> &
+          GuardsPerBlock, bool InvertCondition = false);
 
   /// Used to keep track of which widening potential is more effective.
   enum WideningScore {
@@ -259,7 +258,7 @@ class GuardWideningImpl {
   void widenGuard(Instruction *ToWiden, Value *NewCondition,
                   bool InvertCondition) {
     Value *Result;
-
+    
     widenCondCommon(getCondition(ToWiden), NewCondition, ToWiden, Result,
                     InvertCondition);
     if (isGuardAsWidenableBranch(ToWiden)) {
@@ -270,15 +269,17 @@ class GuardWideningImpl {
   }
 
 public:
+
   explicit GuardWideningImpl(DominatorTree &DT, PostDominatorTree *PDT,
                              LoopInfo &LI, DomTreeNode *Root,
-                             std::function<bool(BasicBlock *)> BlockFilter)
-      : DT(DT), PDT(PDT), LI(LI), Root(Root), BlockFilter(BlockFilter) {}
+                             std::function<bool(BasicBlock*)> BlockFilter)
+    : DT(DT), PDT(PDT), LI(LI), Root(Root), BlockFilter(BlockFilter)
+        {}
 
   /// The entry point for this pass.
   bool run();
 };
-} // namespace
+}
 
 static bool isSupportedGuardInstruction(const Instruction *Insn) {
   if (isGuard(Insn))
@@ -291,7 +292,8 @@ static bool isSupportedGuardInstruction(const Instruction *Insn) {
 bool GuardWideningImpl::run() {
   DenseMap<BasicBlock *, SmallVector<Instruction *, 8>> GuardsInBlock;
   bool Changed = false;
-  for (auto DFI = df_begin(Root), DFE = df_end(Root); DFI != DFE; ++DFI) {
+  for (auto DFI = df_begin(Root), DFE = df_end(Root);
+       DFI != DFE; ++DFI) {
     auto *BB = (*DFI)->getBlock();
     if (!BlockFilter(BB))
       continue;
@@ -324,8 +326,8 @@ bool GuardWideningImpl::run() {
 
 bool GuardWideningImpl::eliminateInstrViaWidening(
     Instruction *Instr, const df_iterator<DomTreeNode *> &DFSI,
-    const DenseMap<BasicBlock *, SmallVector<Instruction *, 8>> &GuardsInBlock,
-    bool InvertCondition) {
+    const DenseMap<BasicBlock *, SmallVector<Instruction *, 8>> &
+        GuardsInBlock, bool InvertCondition) {
   // Ignore trivial true or false conditions. These instructions will be
   // trivially eliminated by any cleanup pass. Do not erase them because other
   // guards can possibly be widened into them.
@@ -366,8 +368,8 @@ bool GuardWideningImpl::eliminateInstrViaWidening(
 
     for (auto *Candidate : make_range(I, E)) {
       auto Score = computeWideningScore(Instr, Candidate, InvertCondition);
-      LLVM_DEBUG(dbgs() << "Score between " << *getCondition(Instr) << " and "
-                        << *getCondition(Candidate) << " is "
+      LLVM_DEBUG(dbgs() << "Score between " << *getCondition(Instr)
+                        << " and " << *getCondition(Candidate) << " is "
                         << scoreTypeToString(Score) << "\n");
       if (Score > BestScoreSoFar) {
         BestScoreSoFar = Score;
@@ -449,8 +451,7 @@ GuardWideningImpl::computeWideningScore(Instruction *DominatedInstr,
     if (DominatedBlock == DominatingBlock->getUniqueSuccessor())
       return false;
     // TODO: diamond, triangle cases
-    if (!PDT)
-      return true;
+    if (!PDT) return true;
     return !PDT->dominates(DominatedBlock, DominatingBlock);
   };
 
@@ -541,8 +542,8 @@ bool GuardWideningImpl::widenCondCommon(Value *Cond0, Value *Cond1,
   {
     SmallVector<GuardWideningImpl::RangeCheck, 4> Checks, CombinedChecks;
     // TODO: Support InvertCondition case?
-    if (!InvertCondition && parseRangeChecks(Cond0, Checks) &&
-        parseRangeChecks(Cond1, Checks) &&
+    if (!InvertCondition &&
+        parseRangeChecks(Cond0, Checks) && parseRangeChecks(Cond1, Checks) &&
         combineRangeChecks(Checks, CombinedChecks)) {
       if (InsertPt) {
         Result = nullptr;
@@ -765,9 +766,8 @@ PreservedAnalyses GuardWideningPass::run(Function &F,
   auto &DT = AM.getResult<DominatorTreeAnalysis>(F);
   auto &LI = AM.getResult<LoopAnalysis>(F);
   auto &PDT = AM.getResult<PostDominatorTreeAnalysis>(F);
-  if (!GuardWideningImpl(DT, &PDT, LI, DT.getRootNode(), [](BasicBlock *) {
-         return true;
-       }).run())
+  if (!GuardWideningImpl(DT, &PDT, LI, DT.getRootNode(),
+                         [](BasicBlock*) { return true; } ).run())
     return PreservedAnalyses::all();
 
   PreservedAnalyses PA;
@@ -785,8 +785,7 @@ PreservedAnalyses GuardWideningPass::run(Loop &L, LoopAnalysisManager &AM,
     return BB == RootBB || L.contains(BB);
   };
   if (!GuardWideningImpl(AR.DT, nullptr, AR.LI, AR.DT.getNode(RootBB),
-                         BlockFilter)
-           .run())
+                         BlockFilter).run())
     return PreservedAnalyses::all();
 
   return getLoopPassPreservedAnalyses();
@@ -807,8 +806,7 @@ struct GuardWideningLegacyPass : public FunctionPass {
     auto &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
     auto &PDT = getAnalysis<PostDominatorTreeWrapperPass>().getPostDomTree();
     return GuardWideningImpl(DT, &PDT, LI, DT.getRootNode(),
-                             [](BasicBlock *) { return true; })
-        .run();
+                         [](BasicBlock*) { return true; } ).run();
   }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
@@ -841,8 +839,8 @@ struct LoopGuardWideningLegacyPass : public LoopPass {
     auto BlockFilter = [&](BasicBlock *BB) {
       return BB == RootBB || L->contains(BB);
     };
-    return GuardWideningImpl(DT, PDT, LI, DT.getNode(RootBB), BlockFilter)
-        .run();
+    return GuardWideningImpl(DT, PDT, LI,
+                             DT.getNode(RootBB), BlockFilter).run();
   }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
@@ -851,7 +849,7 @@ struct LoopGuardWideningLegacyPass : public LoopPass {
     AU.addPreserved<PostDominatorTreeWrapperPass>();
   }
 };
-} // namespace
+}
 
 char GuardWideningLegacyPass::ID = 0;
 char LoopGuardWideningLegacyPass::ID = 0;

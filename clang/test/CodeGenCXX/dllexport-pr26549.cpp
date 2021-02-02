@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 %s -fms-extensions -triple x86_64-windows-msvc -emit-llvm -o - | FileCheck %s
 
-template <typename> struct MessageT {};
+template <typename> struct MessageT { };
 extern template struct MessageT<int>;
 
 // CHECK: define weak_odr dso_local dllexport {{.*}} %struct.MessageT* @"??4?$MessageT@H@@QEAAAEAU0@AEBU0@@Z"(

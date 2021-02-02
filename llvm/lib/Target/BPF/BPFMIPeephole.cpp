@@ -62,6 +62,7 @@ private:
   std::set<MachineInstr *> PhiInsns;
 
 public:
+
   // Main entry point for this pass.
   bool runOnMachineFunction(MachineFunction &MF) override {
     if (skipFunction(MF.getFunction()))
@@ -86,7 +87,8 @@ void BPFMIPeephole::initialize(MachineFunction &MFParm) {
   LLVM_DEBUG(dbgs() << "*** BPF MachineSSA ZEXT Elim peephole pass ***\n\n");
 }
 
-bool BPFMIPeephole::isCopyFrom32Def(MachineInstr *CopyMI) {
+bool BPFMIPeephole::isCopyFrom32Def(MachineInstr *CopyMI)
+{
   MachineOperand &opnd = CopyMI->getOperand(1);
 
   if (!opnd.isReg())
@@ -109,7 +111,8 @@ bool BPFMIPeephole::isCopyFrom32Def(MachineInstr *CopyMI) {
   return true;
 }
 
-bool BPFMIPeephole::isPhiFrom32Def(MachineInstr *PhiMI) {
+bool BPFMIPeephole::isPhiFrom32Def(MachineInstr *PhiMI)
+{
   for (unsigned i = 1, e = PhiMI->getNumOperands(); i < e; i += 2) {
     MachineOperand &opnd = PhiMI->getOperand(i);
 
@@ -134,7 +137,8 @@ bool BPFMIPeephole::isPhiFrom32Def(MachineInstr *PhiMI) {
 }
 
 // The \p DefInsn instruction defines a virtual register.
-bool BPFMIPeephole::isInsnFrom32Def(MachineInstr *DefInsn) {
+bool BPFMIPeephole::isInsnFrom32Def(MachineInstr *DefInsn)
+{
   if (!DefInsn)
     return false;
 
@@ -152,7 +156,8 @@ bool BPFMIPeephole::isInsnFrom32Def(MachineInstr *DefInsn) {
   return true;
 }
 
-bool BPFMIPeephole::isMovFrom32Def(MachineInstr *MovMI) {
+bool BPFMIPeephole::isMovFrom32Def(MachineInstr *MovMI)
+{
   MachineInstr *DefInsn = MRI->getVRegDef(MovMI->getOperand(1).getReg());
 
   LLVM_DEBUG(dbgs() << "  Def of Mov Src:");
@@ -168,7 +173,7 @@ bool BPFMIPeephole::isMovFrom32Def(MachineInstr *MovMI) {
 }
 
 bool BPFMIPeephole::eliminateZExtSeq(void) {
-  MachineInstr *ToErase = nullptr;
+  MachineInstr* ToErase = nullptr;
   bool Eliminated = false;
 
   for (MachineBasicBlock &MBB : *MF) {
@@ -184,7 +189,8 @@ bool BPFMIPeephole::eliminateZExtSeq(void) {
       //   MOV_32_64 rB, wA
       //   SLL_ri    rB, rB, 32
       //   SRL_ri    rB, rB, 32
-      if (MI.getOpcode() == BPF::SRL_ri && MI.getOperand(2).getImm() == 32) {
+      if (MI.getOpcode() == BPF::SRL_ri &&
+          MI.getOperand(2).getImm() == 32) {
         Register DstReg = MI.getOperand(0).getReg();
         Register ShfReg = MI.getOperand(1).getReg();
         MachineInstr *SllMI = MRI->getVRegDef(ShfReg);
@@ -192,7 +198,9 @@ bool BPFMIPeephole::eliminateZExtSeq(void) {
         LLVM_DEBUG(dbgs() << "Starting SRL found:");
         LLVM_DEBUG(MI.dump());
 
-        if (!SllMI || SllMI->isPHI() || SllMI->getOpcode() != BPF::SLL_ri ||
+        if (!SllMI ||
+            SllMI->isPHI() ||
+            SllMI->getOpcode() != BPF::SLL_ri ||
             SllMI->getOperand(2).getImm() != 32)
           continue;
 
@@ -200,7 +208,9 @@ bool BPFMIPeephole::eliminateZExtSeq(void) {
         LLVM_DEBUG(SllMI->dump());
 
         MachineInstr *MovMI = MRI->getVRegDef(SllMI->getOperand(1).getReg());
-        if (!MovMI || MovMI->isPHI() || MovMI->getOpcode() != BPF::MOV_32_64)
+        if (!MovMI ||
+            MovMI->isPHI() ||
+            MovMI->getOpcode() != BPF::MOV_32_64)
           continue;
 
         LLVM_DEBUG(dbgs() << "  Type cast Mov found:");
@@ -214,9 +224,7 @@ bool BPFMIPeephole::eliminateZExtSeq(void) {
         }
 
         BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(BPF::SUBREG_TO_REG), DstReg)
-            .addImm(0)
-            .addReg(SubReg)
-            .addImm(BPF::sub_32);
+          .addImm(0).addReg(SubReg).addImm(BPF::sub_32);
 
         SllMI->eraseFromParent();
         MovMI->eraseFromParent();
@@ -233,7 +241,7 @@ bool BPFMIPeephole::eliminateZExtSeq(void) {
 }
 
 bool BPFMIPeephole::eliminateZExt(void) {
-  MachineInstr *ToErase = nullptr;
+  MachineInstr* ToErase = nullptr;
   bool Eliminated = false;
 
   for (MachineBasicBlock &MBB : *MF) {
@@ -267,9 +275,7 @@ bool BPFMIPeephole::eliminateZExt(void) {
 
       // Build a SUBREG_TO_REG instruction.
       BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(BPF::SUBREG_TO_REG), dst)
-          .addImm(0)
-          .addReg(src)
-          .addImm(BPF::sub_32);
+        .addImm(0).addReg(src).addImm(BPF::sub_32);
 
       ToErase = &MI;
       Eliminated = true;
@@ -279,14 +285,14 @@ bool BPFMIPeephole::eliminateZExt(void) {
   return Eliminated;
 }
 
-} // namespace
+} // end default namespace
 
 INITIALIZE_PASS(BPFMIPeephole, DEBUG_TYPE,
                 "BPF MachineSSA Peephole Optimization For ZEXT Eliminate",
                 false, false)
 
 char BPFMIPeephole::ID = 0;
-FunctionPass *llvm::createBPFMIPeepholePass() { return new BPFMIPeephole(); }
+FunctionPass* llvm::createBPFMIPeepholePass() { return new BPFMIPeephole(); }
 
 STATISTIC(RedundantMovElemNum, "Number of redundant moves eliminated");
 
@@ -309,6 +315,7 @@ private:
   bool eliminateRedundantMov(void);
 
 public:
+
   // Main entry point for this pass.
   bool runOnMachineFunction(MachineFunction &MF) override {
     if (skipFunction(MF.getFunction()))
@@ -328,7 +335,7 @@ void BPFMIPreEmitPeephole::initialize(MachineFunction &MFParm) {
 }
 
 bool BPFMIPreEmitPeephole::eliminateRedundantMov(void) {
-  MachineInstr *ToErase = nullptr;
+  MachineInstr* ToErase = nullptr;
   bool Eliminated = false;
 
   for (MachineBasicBlock &MBB : *MF) {
@@ -368,13 +375,14 @@ bool BPFMIPreEmitPeephole::eliminateRedundantMov(void) {
   return Eliminated;
 }
 
-} // namespace
+} // end default namespace
 
 INITIALIZE_PASS(BPFMIPreEmitPeephole, "bpf-mi-pemit-peephole",
                 "BPF PreEmit Peephole Optimization", false, false)
 
 char BPFMIPreEmitPeephole::ID = 0;
-FunctionPass *llvm::createBPFMIPreEmitPeepholePass() {
+FunctionPass* llvm::createBPFMIPreEmitPeepholePass()
+{
   return new BPFMIPreEmitPeephole();
 }
 
@@ -400,6 +408,7 @@ private:
   bool eliminateTruncSeq(void);
 
 public:
+
   // Main entry point for this pass.
   bool runOnMachineFunction(MachineFunction &MF) override {
     if (skipFunction(MF.getFunction()))
@@ -411,7 +420,8 @@ public:
   }
 };
 
-static bool TruncSizeCompatible(int TruncSize, unsigned opcode) {
+static bool TruncSizeCompatible(int TruncSize, unsigned opcode)
+{
   if (TruncSize == 1)
     return opcode == BPF::LDB || opcode == BPF::LDB32;
 
@@ -443,7 +453,7 @@ void BPFMIPeepholeTruncElim::initialize(MachineFunction &MFParm) {
 // it with 64-bit value. Therefore, truncating the value after the
 // load will result in incorrect code.
 bool BPFMIPeepholeTruncElim::eliminateTruncSeq(void) {
-  MachineInstr *ToErase = nullptr;
+  MachineInstr* ToErase = nullptr;
   bool Eliminated = false;
 
   for (MachineBasicBlock &MBB : *MF) {
@@ -462,12 +472,14 @@ bool BPFMIPeepholeTruncElim::eliminateTruncSeq(void) {
 
       // AND A, 0xFFFFFFFF will be turned into SLL/SRL pair due to immediate
       // for BPF ANDI is i32, and this case only happens on ALU64.
-      if (MI.getOpcode() == BPF::SRL_ri && MI.getOperand(2).getImm() == 32) {
+      if (MI.getOpcode() == BPF::SRL_ri &&
+          MI.getOperand(2).getImm() == 32) {
         SrcReg = MI.getOperand(1).getReg();
         MI2 = MRI->getVRegDef(SrcReg);
         DstReg = MI.getOperand(0).getReg();
 
-        if (!MI2 || MI2->getOpcode() != BPF::SLL_ri ||
+        if (!MI2 ||
+            MI2->getOpcode() != BPF::SLL_ri ||
             MI2->getOperand(2).getImm() != 32)
           continue;
 
@@ -521,7 +533,7 @@ bool BPFMIPeepholeTruncElim::eliminateTruncSeq(void) {
       }
 
       BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(BPF::MOV_rr), DstReg)
-          .addReg(SrcReg);
+              .addReg(SrcReg);
 
       if (MI2)
         MI2->eraseFromParent();
@@ -536,13 +548,14 @@ bool BPFMIPeepholeTruncElim::eliminateTruncSeq(void) {
   return Eliminated;
 }
 
-} // namespace
+} // end default namespace
 
 INITIALIZE_PASS(BPFMIPeepholeTruncElim, "bpf-mi-trunc-elim",
                 "BPF MachineSSA Peephole Optimization For TRUNC Eliminate",
                 false, false)
 
 char BPFMIPeepholeTruncElim::ID = 0;
-FunctionPass *llvm::createBPFMIPeepholeTruncElimPass() {
+FunctionPass* llvm::createBPFMIPeepholeTruncElimPass()
+{
   return new BPFMIPeepholeTruncElim();
 }

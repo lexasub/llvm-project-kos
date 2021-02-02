@@ -60,6 +60,6 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
     return &RISCV::GPRRegClass;
   }
 };
-} // namespace llvm
+}
 
 #endif

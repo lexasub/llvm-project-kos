@@ -198,7 +198,7 @@ static int ExecuteFilesOnyByOne(int argc, char **argv) {
     std::ifstream in(argv[i], std::ios::binary);
     in.seekg(0, in.end);
     size_t length = in.tellg();
-    in.seekg(0, in.beg);
+    in.seekg (0, in.beg);
     std::cout << "Reading " << length << " bytes from " << argv[i] << std::endl;
     // Allocate exactly length bytes so that we reliably catch buffer overflows.
     std::vector<char> bytes(length);
@@ -212,18 +212,19 @@ static int ExecuteFilesOnyByOne(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-  Printf("======================= INFO =========================\n"
-         "This binary is built for AFL-fuzz.\n"
-         "To run the target function on individual input(s) execute this:\n"
-         "  %s < INPUT_FILE\n"
-         "or\n"
-         "  %s INPUT_FILE1 [INPUT_FILE2 ... ]\n"
-         "To fuzz with afl-fuzz execute this:\n"
-         "  afl-fuzz [afl-flags] %s [-N]\n"
-         "afl-fuzz will run N iterations before "
-         "re-spawning the process (default: 1000)\n"
-         "======================================================\n",
-         argv[0], argv[0], argv[0]);
+  Printf(
+      "======================= INFO =========================\n"
+      "This binary is built for AFL-fuzz.\n"
+      "To run the target function on individual input(s) execute this:\n"
+      "  %s < INPUT_FILE\n"
+      "or\n"
+      "  %s INPUT_FILE1 [INPUT_FILE2 ... ]\n"
+      "To fuzz with afl-fuzz execute this:\n"
+      "  afl-fuzz [afl-flags] %s [-N]\n"
+      "afl-fuzz will run N iterations before "
+      "re-spawning the process (default: 1000)\n"
+      "======================================================\n",
+          argv[0], argv[0], argv[0]);
 
   maybe_duplicate_stderr();
   maybe_close_fd_mask();
@@ -236,9 +237,9 @@ int main(int argc, char **argv) {
 
   int N = 1000;
   if (argc == 2 && argv[1][0] == '-')
-    N = atoi(argv[1] + 1);
-  else if (argc == 2 && (N = atoi(argv[1])) > 0)
-    Printf("WARNING: using the deprecated call style `%s %d`\n", argv[0], N);
+      N = atoi(argv[1] + 1);
+  else if(argc == 2 && (N = atoi(argv[1])) > 0)
+      Printf("WARNING: using the deprecated call style `%s %d`\n", argv[0], N);
   else if (argc > 1)
     return ExecuteFilesOnyByOne(argc, argv);
 

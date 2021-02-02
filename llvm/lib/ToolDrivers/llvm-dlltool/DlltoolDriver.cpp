@@ -153,7 +153,7 @@ int llvm::dlltoolDriverMain(llvm::ArrayRef<const char *> ArgsArr) {
   // library and not linking, the internal name is irrelevant. This avoids
   // cases where writeImportLibrary tries to transplant decoration from
   // symbol decoration onto ExtName.
-  for (COFFShortExport &E : Def->Exports) {
+  for (COFFShortExport& E : Def->Exports) {
     if (!E.ExtName.empty()) {
       E.Name = E.ExtName;
       E.ExtName.clear();
@@ -161,7 +161,7 @@ int llvm::dlltoolDriverMain(llvm::ArrayRef<const char *> ArgsArr) {
   }
 
   if (Machine == IMAGE_FILE_MACHINE_I386 && Args.getLastArg(OPT_k)) {
-    for (COFFShortExport &E : Def->Exports) {
+    for (COFFShortExport& E : Def->Exports) {
       if (!E.AliasTarget.empty() || (!E.Name.empty() && E.Name[0] == '?'))
         continue;
       E.SymbolName = E.Name;

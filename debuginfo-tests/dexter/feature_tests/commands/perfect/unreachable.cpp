@@ -7,7 +7,8 @@
 // RUN: %dexter_regression_test -- %s | FileCheck %s
 // CHECK: unreachable.cpp:
 
-int main() {
+int main()
+{
   return 0;
   return 1; // DexUnreachable()
 }

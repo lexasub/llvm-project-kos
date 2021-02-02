@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 class Base {
-public:
+ public:
   virtual void Foo() {
     fprintf(stderr, "Base::Foo\n");
   }
@@ -23,7 +23,7 @@ public:
 };
 
 class Derived : public Base {
-public:
+ public:
   void Foo() override {
     fprintf(stderr, "Derived::Foo\n");
   }
@@ -33,15 +33,16 @@ public:
   }
 };
 
-__attribute__((noinline)) void print(Base *ptr) {
+__attribute__((noinline)) void print(Base* ptr) {
   ptr->Foo();
   // Corrupt the vtable pointer. We expect that the optimization will
   // check vtable before the first vcall then store it in a local
   // variable, and reuse it for the second vcall. With no optimization,
   // CFI will complain about the virtual table being corrupted.
-  *reinterpret_cast<void **>(ptr) = 0;
+  *reinterpret_cast<void**>(ptr) = 0;
   ptr->Bar();
 }
+
 
 int main() {
   Base b;

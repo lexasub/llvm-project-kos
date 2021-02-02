@@ -23,7 +23,7 @@ extern "C" {
 #include <iso646.h>
 #include <limits.h>
 #ifndef _LIBCPP_HAS_NO_LOCALIZATION
-#include <locale.h>
+#   include <locale.h>
 #endif
 #include <math.h>
 #include <setjmp.h>
@@ -43,4 +43,6 @@ extern "C" {
 #include <wctype.h>
 }
 
-int main(int, char**) { return 0; }
+int main(int, char**) {
+  return 0;
+}

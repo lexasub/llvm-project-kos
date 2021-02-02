@@ -25,6 +25,7 @@
 //
 // size_t hash_value(path const&) noexcept;
 
+
 #include "filesystem_include.h"
 #include <type_traits>
 #include <vector>
@@ -41,20 +42,13 @@ struct PathCompareTest {
   int expect;
 };
 
-#define LONGA                                                                  \
-  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
-  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-#define LONGB                                                                  \
-  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" \
-  "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-#define LONGC                                                                  \
-  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC" \
-  "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
-#define LONGD                                                                  \
-  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD" \
-  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-const PathCompareTest CompareTestCases[] = {
-    {"", "", 0},
+#define LONGA "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+#define LONGB "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+#define LONGC "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+#define LONGD "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+const PathCompareTest CompareTestCases[] =
+{
+    {"", "",  0},
     {"a", "", 1},
     {"", "a", -1},
     {"a/b/c", "a/b/c", 0},
@@ -63,18 +57,15 @@ const PathCompareTest CompareTestCases[] = {
     {"a/b", "a/b/c", -1},
     {"a/b/c", "a/b", 1},
     {"a/b/", "a/b/.", -1},
-    {"a/b/", "a/b", 1},
+    {"a/b/", "a/b",    1},
     {"a/b//////", "a/b/////.", -1},
     {"a/.././b", "a///..//.////b", 0},
     {"//foo//bar///baz////", "//foo/bar/baz/", 0}, // duplicate separators
     {"///foo/bar", "/foo/bar", 0}, // "///" is not a root directory
-    {"/foo/bar/", "/foo/bar", 1},  // trailing separator
-    {"foo", "/foo",
-     -1}, // if !this->has_root_directory() and p.has_root_directory(), a value less than 0.
-    {"/foo", "foo",
-     1}, //  if this->has_root_directory() and !p.has_root_directory(), a value greater than 0.
-    {("//" LONGA "////" LONGB "/" LONGC "///" LONGD),
-     ("//" LONGA "/" LONGB "/" LONGC "/" LONGD), 0},
+    {"/foo/bar/", "/foo/bar", 1}, // trailing separator
+    {"foo", "/foo", -1}, // if !this->has_root_directory() and p.has_root_directory(), a value less than 0.
+    {"/foo", "foo", 1}, //  if this->has_root_directory() and !p.has_root_directory(), a value greater than 0.
+    {("//" LONGA "////" LONGB "/" LONGC "///" LONGD), ("//" LONGA "/" LONGB "/" LONGC "/" LONGD), 0},
     {(LONGA "/" LONGB "/" LONGC), (LONGA "/" LONGB "/" LONGB), 1}
 
 };
@@ -83,19 +74,21 @@ const PathCompareTest CompareTestCases[] = {
 #undef LONGC
 #undef LONGD
 
-static inline int normalize_ret(int ret) {
+static inline int normalize_ret(int ret)
+{
   return ret < 0 ? -1 : (ret > 0 ? 1 : 0);
 }
 
-void test_compare_basic() {
+void test_compare_basic()
+{
   using namespace fs;
-  for (auto const& TC : CompareTestCases) {
+  for (auto const & TC : CompareTestCases) {
     const path p1(TC.LHS);
     const path p2(TC.RHS);
     const std::string R(TC.RHS);
     const std::string_view RV(TC.RHS);
     const int E = TC.expect;
-    {                           // compare(...) functions
+    { // compare(...) functions
       DisableAllocationGuard g; // none of these operations should allocate
 
       // check runtime results
@@ -113,23 +106,23 @@ void test_compare_basic() {
       // check signatures
       ASSERT_NOEXCEPT(p1.compare(p2));
     }
-    {                           // comparison operators
+    { // comparison operators
       DisableAllocationGuard g; // none of these operations should allocate
 
       // Check runtime result
       assert((p1 == p2) == (E == 0));
       assert((p1 != p2) == (E != 0));
-      assert((p1 < p2) == (E < 0));
+      assert((p1 <  p2) == (E <  0));
       assert((p1 <= p2) == (E <= 0));
-      assert((p1 > p2) == (E > 0));
+      assert((p1 >  p2) == (E >  0));
       assert((p1 >= p2) == (E >= 0));
 
       // Check signatures
       ASSERT_NOEXCEPT(p1 == p2);
       ASSERT_NOEXCEPT(p1 != p2);
-      ASSERT_NOEXCEPT(p1 < p2);
+      ASSERT_NOEXCEPT(p1 <  p2);
       ASSERT_NOEXCEPT(p1 <= p2);
-      ASSERT_NOEXCEPT(p1 > p2);
+      ASSERT_NOEXCEPT(p1 >  p2);
       ASSERT_NOEXCEPT(p1 >= p2);
     }
     { // check hash values
@@ -143,15 +136,12 @@ void test_compare_basic() {
   }
 }
 
-int CompareElements(std::vector<std::string> const& LHS,
-                    std::vector<std::string> const& RHS) {
-  bool IsLess = std::lexicographical_compare(LHS.begin(), LHS.end(),
-                                             RHS.begin(), RHS.end());
+int CompareElements(std::vector<std::string> const& LHS, std::vector<std::string> const& RHS) {
+  bool IsLess = std::lexicographical_compare(LHS.begin(), LHS.end(), RHS.begin(), RHS.end());
   if (IsLess)
     return -1;
 
-  bool IsGreater = std::lexicographical_compare(RHS.begin(), RHS.end(),
-                                                LHS.begin(), LHS.end());
+  bool IsGreater = std::lexicographical_compare(RHS.begin(), RHS.end(), LHS.begin(), LHS.end());
   if (IsGreater)
     return 1;
 
@@ -177,12 +167,12 @@ void test_compare_elements() {
 
   auto BuildPath = [](std::vector<std::string> const& Elems) {
     fs::path p;
-    for (auto& E : Elems)
+    for (auto &E : Elems)
       p /= E;
     return p;
   };
 
-  for (auto& TC : TestCases) {
+  for (auto &TC : TestCases) {
     fs::path LHS = BuildPath(TC.LHSElements);
     fs::path RHS = BuildPath(TC.RHSElements);
     const int ExpectCmp = CompareElements(TC.LHSElements, TC.RHSElements);

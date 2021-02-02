@@ -16,26 +16,27 @@
 #include <complex>
 #include <cassert>
 
-const std::complex<double> testcases[] = {
-    std::complex<double>(1.e-6, 1.e-6),
-    std::complex<double>(-1.e-6, 1.e-6),
+const std::complex<double> testcases[] =
+{
+    std::complex<double>( 1.e-6,  1.e-6),
+    std::complex<double>(-1.e-6,  1.e-6),
     std::complex<double>(-1.e-6, -1.e-6),
-    std::complex<double>(1.e-6, -1.e-6),
+    std::complex<double>( 1.e-6, -1.e-6),
 
-    std::complex<double>(1.e+6, 1.e-6),
-    std::complex<double>(-1.e+6, 1.e-6),
+    std::complex<double>( 1.e+6,  1.e-6),
+    std::complex<double>(-1.e+6,  1.e-6),
     std::complex<double>(-1.e+6, -1.e-6),
-    std::complex<double>(1.e+6, -1.e-6),
+    std::complex<double>( 1.e+6, -1.e-6),
 
-    std::complex<double>(1.e-6, 1.e+6),
-    std::complex<double>(-1.e-6, 1.e+6),
+    std::complex<double>( 1.e-6,  1.e+6),
+    std::complex<double>(-1.e-6,  1.e+6),
     std::complex<double>(-1.e-6, -1.e+6),
-    std::complex<double>(1.e-6, -1.e+6),
+    std::complex<double>( 1.e-6, -1.e+6),
 
-    std::complex<double>(1.e+6, 1.e+6),
-    std::complex<double>(-1.e+6, 1.e+6),
+    std::complex<double>( 1.e+6,  1.e+6),
+    std::complex<double>(-1.e+6,  1.e+6),
     std::complex<double>(-1.e+6, -1.e+6),
-    std::complex<double>(1.e+6, -1.e+6),
+    std::complex<double>( 1.e+6, -1.e+6),
 
     std::complex<double>(NAN, NAN),
     std::complex<double>(-INFINITY, NAN),
@@ -167,49 +168,62 @@ const std::complex<double> testcases[] = {
     std::complex<double>(0.5, INFINITY),
     std::complex<double>(1, INFINITY),
     std::complex<double>(2, INFINITY),
-    std::complex<double>(INFINITY, INFINITY)};
+    std::complex<double>(INFINITY, INFINITY)
+};
 
-enum { zero, non_zero, inf, NaN, non_zero_nan };
+enum {zero, non_zero, inf, NaN, non_zero_nan};
 
 template <class T>
-int classify(const std::complex<T>& x) {
-  if (x == std::complex<T>())
-    return zero;
-  if (std::isinf(x.real()) || std::isinf(x.imag()))
-    return inf;
-  if (std::isnan(x.real()) && std::isnan(x.imag()))
-    return NaN;
-  if (std::isnan(x.real())) {
-    if (x.imag() == T(0))
-      return NaN;
-    return non_zero_nan;
-  }
-  if (std::isnan(x.imag())) {
-    if (x.real() == T(0))
-      return NaN;
-    return non_zero_nan;
-  }
-  return non_zero;
+int
+classify(const std::complex<T>& x)
+{
+    if (x == std::complex<T>())
+        return zero;
+    if (std::isinf(x.real()) || std::isinf(x.imag()))
+        return inf;
+    if (std::isnan(x.real()) && std::isnan(x.imag()))
+        return NaN;
+    if (std::isnan(x.real()))
+    {
+        if (x.imag() == T(0))
+            return NaN;
+        return non_zero_nan;
+    }
+    if (std::isnan(x.imag()))
+    {
+        if (x.real() == T(0))
+            return NaN;
+        return non_zero_nan;
+    }
+    return non_zero;
 }
 
-inline int classify(double x) {
-  if (x == 0)
-    return zero;
-  if (std::isinf(x))
-    return inf;
-  if (std::isnan(x))
-    return NaN;
-  return non_zero;
+inline
+int
+classify(double x)
+{
+    if (x == 0)
+        return zero;
+    if (std::isinf(x))
+        return inf;
+    if (std::isnan(x))
+        return NaN;
+    return non_zero;
 }
 
-void is_about(float x, float y) { assert(std::abs((x - y) / (x + y)) < 1.e-6); }
-
-void is_about(double x, double y) {
-  assert(std::abs((x - y) / (x + y)) < 1.e-14);
+void is_about(float x, float y)
+{
+    assert(std::abs((x-y)/(x+y)) < 1.e-6);
 }
 
-void is_about(long double x, long double y) {
-  assert(std::abs((x - y) / (x + y)) < 1.e-14);
+void is_about(double x, double y)
+{
+    assert(std::abs((x-y)/(x+y)) < 1.e-14);
 }
 
-#endif // CASES_H
+void is_about(long double x, long double y)
+{
+    assert(std::abs((x-y)/(x+y)) < 1.e-14);
+}
+
+#endif  // CASES_H

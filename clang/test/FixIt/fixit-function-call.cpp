@@ -14,44 +14,45 @@ void f1(double *a);
 void f1(intTy &a);
 
 void f2(intTy2 *a) {
-  // CHECK: error: no matching function for call to 'f1
-  // CHECK: dereference the argument with *
-  // CHECK: void f1(intTy &a);
-  // CHECK: fix-it{{.*}}*(
-  // CHECK-NEXT: fix-it{{.*}})
-  // CHECK: void f1(double *a);
+// CHECK: error: no matching function for call to 'f1
+// CHECK: dereference the argument with *
+// CHECK: void f1(intTy &a);
+// CHECK: fix-it{{.*}}*(
+// CHECK-NEXT: fix-it{{.*}})
+// CHECK: void f1(double *a);
   f1(a + 1);
 
-  // This call cannot be fixed since without resulting in null pointer dereference.
-  // CHECK: error: no matching function for call to 'f1
-  // CHECK-NOT: dereference the argument with *
-  // CHECK-NOT: fix-it
+// This call cannot be fixed since without resulting in null pointer dereference.
+// CHECK: error: no matching function for call to 'f1
+// CHECK-NOT: dereference the argument with *
+// CHECK-NOT: fix-it
   f1((int *)0);
 }
 
 void f3(int &a) {
-  // CHECK: error: no matching function for call to 'f0
-  // CHECK: fix-it{{.*}}&
-  f0(a);
+// CHECK: error: no matching function for call to 'f0
+// CHECK: fix-it{{.*}}&
+ f0(a);
 }
 
+
 void m(int *a, const int *b); // match 2
-void m(double *a, int *b);    // no match
-void m(int *a, double *b);    // no match
-void m(intTy &a, int *b);     // match 1
+void m(double *a, int *b); // no match
+void m(int *a, double *b); // no match
+void m(intTy &a, int *b); // match 1
 
 void mcaller(intTy2 a, int b) {
-  // CHECK: error: no matching function for call to 'm
-  // CHECK: take the address of the argument with &
-  // CHECK: fix-it{{.*}}&
-  // CHECK: take the address of the argument with &
-  // CHECK: fix-it{{.*}}&
-  // CHECK: fix-it{{.*}}&
+// CHECK: error: no matching function for call to 'm
+// CHECK: take the address of the argument with &
+// CHECK: fix-it{{.*}}&
+// CHECK: take the address of the argument with &
+// CHECK: fix-it{{.*}}&
+// CHECK: fix-it{{.*}}&
   m(a, b);
 
-  // This call cannot be fixed because (a + 1) is not an l-value.
-  // CHECK: error: no matching function for call to 'm
-  // CHECK-NOT: fix-it
+// This call cannot be fixed because (a + 1) is not an l-value.
+// CHECK: error: no matching function for call to 'm
+// CHECK-NOT: fix-it
   m(a + 1, b);
 }
 
@@ -77,40 +78,40 @@ void u(double x);
 void dbcaller(A *ptra, B *ptrb, C &c, B &refb) {
   B b;
 
-  // CHECK: error: no matching function for call to 'br
-  // CHECK: fix-it{{.*}}*
+// CHECK: error: no matching function for call to 'br
+// CHECK: fix-it{{.*}}*
   br(ptrb); // good
 
-  // CHECK: error: no matching function for call to 'bp
-  // CHECK: fix-it{{.*}}&
+// CHECK: error: no matching function for call to 'bp
+// CHECK: fix-it{{.*}}&
   bp(b); // good
 
-  // CHECK: error: no matching function for call to 'dv
-  // CHECK-NOT: fix-it
+// CHECK: error: no matching function for call to 'dv
+// CHECK-NOT: fix-it
   dv(ptra); // bad: base to derived
 
-  // CHECK: error: no matching function for call to 'dv
-  // CHECK: remove &
+// CHECK: error: no matching function for call to 'dv
+// CHECK: remove &
   dv(&b);
 
-  // CHECK: error: no matching function for call to 'bp
-  // CHECK: remove *
+// CHECK: error: no matching function for call to 'bp
+// CHECK: remove *
   bp(*ptra);
 
-  // CHECK: error: no viable overloaded '='
-  // CHECK: remove &
+// CHECK: error: no viable overloaded '='
+// CHECK: remove &
   b = &refb;
 
-  // TODO: Test that we do not provide a fixit when inheritance is private.
-  // CHECK: error: no matching function for call to 'bp
-  // There should not be a fixit here:
-  // CHECK: fix-it
+// TODO: Test that we do not provide a fixit when inheritance is private.
+// CHECK: error: no matching function for call to 'bp
+// There should not be a fixit here:
+// CHECK: fix-it
   bp(c);
 
-  // CHECK: no matching function for call to 'u'
-  // CHECK: candidate function not viable: no known conversion from 'C' to 'const C *' for 1st argument; take the address of the argument with &
-  // CHECK: candidate function not viable
-  // CHECK: candidate function not viable
+// CHECK: no matching function for call to 'u'
+// CHECK: candidate function not viable: no known conversion from 'C' to 'const C *' for 1st argument; take the address of the argument with &
+// CHECK: candidate function not viable
+// CHECK: candidate function not viable
   u(c);
 }
 

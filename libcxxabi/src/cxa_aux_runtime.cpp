@@ -40,4 +40,4 @@ __cxa_throw_bad_array_new_length(void) {
 #endif
 }
 } // extern "C"
-} // namespace __cxxabiv1
+} // abi

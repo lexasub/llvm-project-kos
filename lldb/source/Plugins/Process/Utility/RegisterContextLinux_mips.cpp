@@ -120,20 +120,22 @@ const RegisterInfo *RegisterContextLinux_mips::GetRegisterInfo() const {
   }
 }
 
-const RegisterSet *RegisterContextLinux_mips::GetRegisterSet(size_t set) const {
+const RegisterSet * 
+RegisterContextLinux_mips::GetRegisterSet(size_t set) const {
   if (set >= k_num_register_sets)
     return nullptr;
   switch (m_target_arch.GetMachine()) {
-  case llvm::Triple::mips:
-  case llvm::Triple::mipsel:
-    return &g_reg_sets_mips[set];
-  default:
-    assert(false && "Unhandled target architecture.");
-    return nullptr;
+    case llvm::Triple::mips:
+    case llvm::Triple::mipsel:
+      return &g_reg_sets_mips[set];
+    default:
+      assert(false && "Unhandled target architecture.");
+      return nullptr;
   }
 }
 
-size_t RegisterContextLinux_mips::GetRegisterSetCount() const {
+size_t
+RegisterContextLinux_mips::GetRegisterSetCount() const {
   return k_num_register_sets;
 }
 

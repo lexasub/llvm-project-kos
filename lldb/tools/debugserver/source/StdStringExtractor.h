@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <string>
 
+
 // Based on StringExtractor, with the added limitation that this file should not
 // take a dependency on LLVM, as it is used from debugserver.
 class StdStringExtractor {

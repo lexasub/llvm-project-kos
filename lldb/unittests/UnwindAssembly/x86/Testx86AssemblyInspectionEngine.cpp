@@ -1421,7 +1421,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestPushRBPWithREX) {
 
   uint8_t data[] = {
       0x40, 0x55, // pushq %rbp
-      0x90        // nop
+      0x90  // nop
   };
 
   AddressRange sample_range(0x1000, sizeof(data));
@@ -2627,8 +2627,9 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyJunkBytes) {
   std::unique_ptr<x86AssemblyInspectionEngine> engine32 = Geti386Inspector();
   std::unique_ptr<x86AssemblyInspectionEngine> engine64 = Getx86_64Inspector();
 
-  uint8_t data[] = {0x10, 0x10, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-                    0x0,  0x0,  0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+  uint8_t data[] = {
+      0x10, 0x10, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+      0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
 
   sample_range = AddressRange(0x1000, sizeof(data));
 
@@ -2639,6 +2640,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyJunkBytes) {
 
   EXPECT_TRUE(engine64->GetNonCallSiteUnwindPlanFromAssembly(
       data, sizeof(data), sample_range, unwind_plan));
+
 }
 
 TEST_F(Testx86AssemblyInspectionEngine, TestReturnDetect) {
@@ -2812,6 +2814,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestReturnDetect) {
   EXPECT_EQ(-8, regloc.GetOffset());
 }
 
+
 // Test mid-function epilogues - the unwind state post-prologue
 // should be re-instated.
 
@@ -2822,28 +2825,28 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   std::unique_ptr<x86AssemblyInspectionEngine> engine64 = Getx86_64Inspector();
 
   uint8_t data[] = {
-      0x55,                   // <+0>: pushq %rbp
-      0x48, 0x89, 0xe5,       // <+1>: movq %rsp, %rbp
-      0x48, 0x83, 0xec, 0x70, // <+4>: subq $0x70, %rsp
-      0x90,                   // <+8>: nop               // prologue set up
+    0x55,                   // <+0>: pushq %rbp
+    0x48, 0x89, 0xe5,       // <+1>: movq %rsp, %rbp
+    0x48, 0x83, 0xec, 0x70, // <+4>: subq $0x70, %rsp
+    0x90,                   // <+8>: nop               // prologue set up
 
-      0x74, 0x7,              // <+9>: je 7 <+18>
-      0x48, 0x83, 0xc4, 0x70, // <+11>: addq $0x70, %rsp
-      0x5d,                   // <+15>: popq %rbp
-      0xff, 0xe0,             // <+16>: jmpq *%rax      // epilogue completed
+    0x74, 0x7,              // <+9>: je 7 <+18>
+    0x48, 0x83, 0xc4, 0x70, // <+11>: addq $0x70, %rsp
+    0x5d,                   // <+15>: popq %rbp
+    0xff, 0xe0,             // <+16>: jmpq *%rax      // epilogue completed
 
-      0x90, // <+18>: nop             // prologue setup back
+    0x90,                   // <+18>: nop             // prologue setup back
 
-      0x74, 0x7,              // <+19>: je 6 <+27>
-      0x48, 0x83, 0xc4, 0x70, // <+21>: addq $0x70, %rsp
-      0x5d,                   // <+25>: popq %rbp
-      0xc3,                   // <+26>: retq            // epilogue completed
+    0x74, 0x7,              // <+19>: je 6 <+27>
+    0x48, 0x83, 0xc4, 0x70, // <+21>: addq $0x70, %rsp
+    0x5d,                   // <+25>: popq %rbp
+    0xc3,                   // <+26>: retq            // epilogue completed
 
-      0x90, // <+27>: nop             // prologue setup back
+    0x90,                   // <+27>: nop             // prologue setup back
 
-      0x48, 0x83, 0xc4, 0x70, // <+28>: addq $0x70, %rsp
-      0x5d,                   // <+32>: popq %rbp
-      0xc3,                   // <+33>: retq            // epilogue completed
+    0x48, 0x83, 0xc4, 0x70, // <+28>: addq $0x70, %rsp
+    0x5d,                   // <+32>: popq %rbp
+    0xc3,                   // <+33>: retq            // epilogue completed
 
   };
 
@@ -2861,7 +2864,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize, row_sp->GetCFAValue().GetOffset());
 
-  // Check that we've reinstated the stack frame setup
+  // Check that we've reinstated the stack frame setup 
   // unwind instructions after a jmpq *%eax
   // row:   CFA=ebp +8 => esp=CFA+0 eip=[CFA-8]
   row_sp = unwind_plan.GetRowForFunctionOffset(18);
@@ -2870,7 +2873,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize * 2, row_sp->GetCFAValue().GetOffset());
 
-  // Check that we've reinstated the stack frame setup
+  // Check that we've reinstated the stack frame setup 
   // unwind instructions after a mid-function retq
   // row:   CFA=ebp +8 => esp=CFA+0 eip=[CFA-8]
   row_sp = unwind_plan.GetRowForFunctionOffset(27);
@@ -2888,6 +2891,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize, row_sp->GetCFAValue().GetOffset());
 
+
   unwind_plan.Clear();
 
   wordsize = 8;
@@ -2902,7 +2906,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize, row_sp->GetCFAValue().GetOffset());
 
-  // Check that we've reinstated the stack frame setup
+  // Check that we've reinstated the stack frame setup 
   // unwind instructions after a jmpq *%eax
   // row:   CFA=rbp+16 => rsp=CFA+0 rip=[CFA-16]
   row_sp = unwind_plan.GetRowForFunctionOffset(18);
@@ -2911,7 +2915,7 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize * 2, row_sp->GetCFAValue().GetOffset());
 
-  // Check that we've reinstated the stack frame setup
+  // Check that we've reinstated the stack frame setup 
   // unwind instructions after a mid-function retq
   // row:   CFA=rbp+16 => rsp=CFA+0 rip=[CFA-16]
   row_sp = unwind_plan.GetRowForFunctionOffset(27);
@@ -2928,4 +2932,6 @@ TEST_F(Testx86AssemblyInspectionEngine, TestDisassemblyMidFunctionEpilogues) {
   EXPECT_TRUE(row_sp->GetCFAValue().GetRegisterNumber() == k_rsp);
   EXPECT_TRUE(row_sp->GetCFAValue().IsRegisterPlusOffset() == true);
   EXPECT_EQ(wordsize, row_sp->GetCFAValue().GetOffset());
+
+
 }

@@ -11,9 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/StaticAnalyzer/Core/PathSensitive/WorkList.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/PriorityQueue.h"
+#include "llvm/ADT/DenseSet.h"
+#include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/Statistic.h"
 #include <deque>
@@ -37,13 +37,17 @@ class DFS : public WorkList {
   SmallVector<WorkListUnit, 20> Stack;
 
 public:
-  bool hasWork() const override { return !Stack.empty(); }
+  bool hasWork() const override {
+    return !Stack.empty();
+  }
 
-  void enqueue(const WorkListUnit &U) override { Stack.push_back(U); }
+  void enqueue(const WorkListUnit& U) override {
+    Stack.push_back(U);
+  }
 
   WorkListUnit dequeue() override {
     assert(!Stack.empty());
-    const WorkListUnit &U = Stack.back();
+    const WorkListUnit& U = Stack.back();
     Stack.pop_back(); // This technically "invalidates" U, but we are fine.
     return U;
   }
@@ -53,9 +57,13 @@ class BFS : public WorkList {
   std::deque<WorkListUnit> Queue;
 
 public:
-  bool hasWork() const override { return !Queue.empty(); }
+  bool hasWork() const override {
+    return !Queue.empty();
+  }
 
-  void enqueue(const WorkListUnit &U) override { Queue.push_back(U); }
+  void enqueue(const WorkListUnit& U) override {
+    Queue.push_back(U);
+  }
 
   WorkListUnit dequeue() override {
     WorkListUnit U = Queue.front();
@@ -80,36 +88,38 @@ std::unique_ptr<WorkList> WorkList::makeBFS() {
 
 namespace {
 
-class BFSBlockDFSContents : public WorkList {
-  std::deque<WorkListUnit> Queue;
-  SmallVector<WorkListUnit, 20> Stack;
+  class BFSBlockDFSContents : public WorkList {
+    std::deque<WorkListUnit> Queue;
+    SmallVector<WorkListUnit, 20> Stack;
 
-public:
-  bool hasWork() const override { return !Queue.empty() || !Stack.empty(); }
-
-  void enqueue(const WorkListUnit &U) override {
-    if (U.getNode()->getLocation().getAs<BlockEntrance>())
-      Queue.push_front(U);
-    else
-      Stack.push_back(U);
-  }
-
-  WorkListUnit dequeue() override {
-    // Process all basic blocks to completion.
-    if (!Stack.empty()) {
-      const WorkListUnit &U = Stack.back();
-      Stack.pop_back(); // This technically "invalidates" U, but we are fine.
-      return U;
+  public:
+    bool hasWork() const override {
+      return !Queue.empty() || !Stack.empty();
     }
 
-    assert(!Queue.empty());
-    // Don't use const reference.  The subsequent pop_back() might make it
-    // unsafe.
-    WorkListUnit U = Queue.front();
-    Queue.pop_front();
-    return U;
-  }
-};
+    void enqueue(const WorkListUnit& U) override {
+      if (U.getNode()->getLocation().getAs<BlockEntrance>())
+        Queue.push_front(U);
+      else
+        Stack.push_back(U);
+    }
+
+    WorkListUnit dequeue() override {
+      // Process all basic blocks to completion.
+      if (!Stack.empty()) {
+        const WorkListUnit& U = Stack.back();
+        Stack.pop_back(); // This technically "invalidates" U, but we are fine.
+        return U;
+      }
+
+      assert(!Queue.empty());
+      // Don't use const reference.  The subsequent pop_back() might make it
+      // unsafe.
+      WorkListUnit U = Queue.front();
+      Queue.pop_front();
+      return U;
+    }
+  };
 
 } // namespace
 
@@ -145,9 +155,9 @@ public:
       // correct.
       StackUnexplored.push_back(U);
     } else {
-      LocIdentifier LocId =
-          std::make_pair(BE->getBlock()->getBlockID(),
-                         N->getLocationContext()->getStackFrame());
+      LocIdentifier LocId = std::make_pair(
+          BE->getBlock()->getBlockID(),
+          N->getLocationContext()->getStackFrame());
       auto InsertInfo = Reachable.insert(LocId);
 
       if (InsertInfo.second) {
@@ -196,7 +206,7 @@ class UnexploredFirstPriorityQueue : public WorkList {
   using QueueItem = std::pair<WorkListUnit, QueuePriority>;
 
   struct ExplorationComparator {
-    bool operator()(const QueueItem &LHS, const QueueItem &RHS) {
+    bool operator() (const QueueItem &LHS, const QueueItem &RHS) {
       return LHS.second < RHS.second;
     }
   };
@@ -213,15 +223,17 @@ class UnexploredFirstPriorityQueue : public WorkList {
       queue;
 
 public:
-  bool hasWork() const override { return !queue.empty(); }
+  bool hasWork() const override {
+    return !queue.empty();
+  }
 
   void enqueue(const WorkListUnit &U) override {
     const ExplodedNode *N = U.getNode();
     unsigned NumVisited = 0;
     if (auto BE = N->getLocation().getAs<BlockEntrance>()) {
-      LocIdentifier LocId =
-          std::make_pair(BE->getBlock()->getBlockID(),
-                         N->getLocationContext()->getStackFrame());
+      LocIdentifier LocId = std::make_pair(
+          BE->getBlock()->getBlockID(),
+          N->getLocationContext()->getStackFrame());
       NumVisited = NumReached[LocId]++;
     }
 
@@ -256,7 +268,7 @@ class UnexploredFirstPriorityLocationQueue : public WorkList {
   using QueueItem = std::pair<WorkListUnit, QueuePriority>;
 
   struct ExplorationComparator {
-    bool operator()(const QueueItem &LHS, const QueueItem &RHS) {
+    bool operator() (const QueueItem &LHS, const QueueItem &RHS) {
       return LHS.second < RHS.second;
     }
   };
@@ -273,7 +285,9 @@ class UnexploredFirstPriorityLocationQueue : public WorkList {
       queue;
 
 public:
-  bool hasWork() const override { return !queue.empty(); }
+  bool hasWork() const override {
+    return !queue.empty();
+  }
 
   void enqueue(const WorkListUnit &U) override {
     const ExplodedNode *N = U.getNode();
@@ -289,9 +303,10 @@ public:
     queue.pop();
     return U.first;
   }
+
 };
 
-} // namespace
+}
 
 std::unique_ptr<WorkList> WorkList::makeUnexploredFirstPriorityLocationQueue() {
   return std::make_unique<UnexploredFirstPriorityLocationQueue>();

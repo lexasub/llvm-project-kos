@@ -22,16 +22,17 @@ class IdentifierInfo;
 
 /// Captures information about a \#pragma weak directive.
 class WeakInfo {
-  IdentifierInfo *alias; // alias (optional)
-  SourceLocation loc;    // for diagnostics
-  bool used;             // identifier later declared?
+  IdentifierInfo *alias;  // alias (optional)
+  SourceLocation loc;     // for diagnostics
+  bool used;              // identifier later declared?
 public:
-  WeakInfo() : alias(nullptr), loc(SourceLocation()), used(false) {}
+  WeakInfo()
+    : alias(nullptr), loc(SourceLocation()), used(false) {}
   WeakInfo(IdentifierInfo *Alias, SourceLocation Loc)
-      : alias(Alias), loc(Loc), used(false) {}
-  inline IdentifierInfo *getAlias() const { return alias; }
+    : alias(Alias), loc(Loc), used(false) {}
+  inline IdentifierInfo * getAlias() const { return alias; }
   inline SourceLocation getLocation() const { return loc; }
-  void setUsed(bool Used = true) { used = Used; }
+  void setUsed(bool Used=true) { used = Used; }
   inline bool getUsed() { return used; }
   bool operator==(WeakInfo RHS) const {
     return alias == RHS.getAlias() && loc == RHS.getLocation();

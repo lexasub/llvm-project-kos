@@ -9,18 +9,18 @@
 
 #pragma GCC system_header
 namespace std {
-namespace tr1 {
-template <typename T> struct hashnode;
-template <typename T> struct hashtable {
-  typedef hashnode<T> node;
-  node *find_node() {
-    // This is ill-formed in C++11, per core issue 903, but we accept
-    // it anyway in a system header.
-    return false;
+  namespace tr1 {
+    template<typename T> struct hashnode;
+    template<typename T> struct hashtable {
+      typedef hashnode<T> node;
+      node *find_node() {
+        // This is ill-formed in C++11, per core issue 903, but we accept
+        // it anyway in a system header.
+        return false;
+      }
+    };
   }
-};
-} // namespace tr1
-} // namespace std
+}
 
 #else
 

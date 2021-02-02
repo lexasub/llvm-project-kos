@@ -49,13 +49,15 @@ public:
     CheckFactories.registerCheck<bugprone::SpuriouslyWakeUpFunctionsCheck>(
         "cert-con54-cpp");
     // DCL
-    CheckFactories.registerCheck<PostfixOperatorCheck>("cert-dcl21-cpp");
+    CheckFactories.registerCheck<PostfixOperatorCheck>(
+        "cert-dcl21-cpp");
     CheckFactories.registerCheck<VariadicFunctionDefCheck>("cert-dcl50-cpp");
     CheckFactories.registerCheck<bugprone::ReservedIdentifierCheck>(
         "cert-dcl51-cpp");
     CheckFactories.registerCheck<misc::NewDeleteOverloadsCheck>(
         "cert-dcl54-cpp");
-    CheckFactories.registerCheck<DontModifyStdNamespaceCheck>("cert-dcl58-cpp");
+    CheckFactories.registerCheck<DontModifyStdNamespaceCheck>(
+        "cert-dcl58-cpp");
     CheckFactories.registerCheck<google::build::UnnamedNamespaceInHeaderCheck>(
         "cert-dcl59-cpp");
     // ERR
@@ -80,7 +82,8 @@ public:
         "cert-oop54-cpp");
     CheckFactories.registerCheck<NonTrivialTypesLibcMemoryCallsCheck>(
         "cert-oop57-cpp");
-    CheckFactories.registerCheck<MutatingCopyCheck>("cert-oop58-cpp");
+    CheckFactories.registerCheck<MutatingCopyCheck>(
+        "cert-oop58-cpp");
 
     // C checkers
     // CON

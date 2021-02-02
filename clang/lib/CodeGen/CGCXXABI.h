@@ -23,7 +23,7 @@ class Constant;
 class Type;
 class Value;
 class CallInst;
-} // namespace llvm
+}
 
 namespace clang {
 class CastExpr;
@@ -47,7 +47,7 @@ protected:
   std::unique_ptr<MangleContext> MangleCtx;
 
   CGCXXABI(CodeGenModule &CGM)
-      : CGM(CGM), MangleCtx(CGM.getContext().createMangleContext()) {}
+    : CGM(CGM), MangleCtx(CGM.getContext().createMangleContext()) {}
 
 protected:
   ImplicitParamDecl *getThisDecl(CodeGenFunction &CGF) {
@@ -90,10 +90,13 @@ protected:
   virtual bool isThisCompleteObject(GlobalDecl GD) const = 0;
 
 public:
+
   virtual ~CGCXXABI();
 
   /// Gets the mangle context.
-  MangleContext &getMangleContext() { return *MangleCtx; }
+  MangleContext &getMangleContext() {
+    return *MangleCtx;
+  }
 
   /// Returns true if the given constructor or destructor is one of the
   /// kinds that the ABI says returns 'this' (only applies when called
@@ -128,8 +131,7 @@ public:
     RAA_Default = 0,
 
     /// Pass it on the stack using its defined layout.  The argument must be
-    /// evaluated directly into the correct stack position in the arguments
-    /// area,
+    /// evaluated directly into the correct stack position in the arguments area,
     /// and the call machinery must not move it or introduce extra copies.
     RAA_DirectInMemory,
 
@@ -153,16 +155,16 @@ public:
 
   /// Find the LLVM type used to represent the given member pointer
   /// type.
-  virtual llvm::Type *ConvertMemberPointerType(const MemberPointerType *MPT);
+  virtual llvm::Type *
+  ConvertMemberPointerType(const MemberPointerType *MPT);
 
   /// Load a member function from an object and a member function
   /// pointer.  Apply the this-adjustment and set 'This' to the
   /// adjusted value.
-  virtual CGCallee
-  EmitLoadOfMemberFunctionPointer(CodeGenFunction &CGF, const Expr *E,
-                                  Address This, llvm::Value *&ThisPtrForCall,
-                                  llvm::Value *MemPtr,
-                                  const MemberPointerType *MPT);
+  virtual CGCallee EmitLoadOfMemberFunctionPointer(
+      CodeGenFunction &CGF, const Expr *E, Address This,
+      llvm::Value *&ThisPtrForCall, llvm::Value *MemPtr,
+      const MemberPointerType *MPT);
 
   /// Calculate an l-value from an object and a data member pointer.
   virtual llvm::Value *
@@ -204,16 +206,18 @@ public:
   virtual llvm::Constant *EmitMemberPointer(const APValue &MP, QualType MPT);
 
   /// Emit a comparison between two member pointers.  Returns an i1.
-  virtual llvm::Value *EmitMemberPointerComparison(CodeGenFunction &CGF,
-                                                   llvm::Value *L,
-                                                   llvm::Value *R,
-                                                   const MemberPointerType *MPT,
-                                                   bool Inequality);
+  virtual llvm::Value *
+  EmitMemberPointerComparison(CodeGenFunction &CGF,
+                              llvm::Value *L,
+                              llvm::Value *R,
+                              const MemberPointerType *MPT,
+                              bool Inequality);
 
   /// Determine if a member pointer is non-null.  Returns an i1.
-  virtual llvm::Value *EmitMemberPointerIsNotNull(CodeGenFunction &CGF,
-                                                  llvm::Value *MemPtr,
-                                                  const MemberPointerType *MPT);
+  virtual llvm::Value *
+  EmitMemberPointerIsNotNull(CodeGenFunction &CGF,
+                             llvm::Value *MemPtr,
+                             const MemberPointerType *MPT);
 
 protected:
   /// A utility method for computing the offset required for the given
@@ -225,8 +229,8 @@ protected:
 
 public:
   virtual void emitVirtualObjectDelete(CodeGenFunction &CGF,
-                                       const CXXDeleteExpr *DE, Address Ptr,
-                                       QualType ElementType,
+                                       const CXXDeleteExpr *DE,
+                                       Address Ptr, QualType ElementType,
                                        const CXXDestructorDecl *Dtor) = 0;
   virtual void emitRethrow(CodeGenFunction &CGF, bool isNoReturn) = 0;
   virtual void emitThrow(CodeGenFunction &CGF, const CXXThrowExpr *E) = 0;
@@ -240,7 +244,8 @@ public:
   virtual void emitBeginCatch(CodeGenFunction &CGF, const CXXCatchStmt *C) = 0;
 
   virtual llvm::CallInst *
-  emitTerminateForUnexpectedException(CodeGenFunction &CGF, llvm::Value *Exn);
+  emitTerminateForUnexpectedException(CodeGenFunction &CGF,
+                                      llvm::Value *Exn);
 
   virtual llvm::Constant *getAddrOfRTTIDescriptor(QualType Ty) = 0;
   virtual CatchTypeInfo
@@ -257,11 +262,10 @@ public:
   virtual bool shouldDynamicCastCallBeNullChecked(bool SrcIsPtr,
                                                   QualType SrcRecordTy) = 0;
 
-  virtual llvm::Value *EmitDynamicCastCall(CodeGenFunction &CGF, Address Value,
-                                           QualType SrcRecordTy,
-                                           QualType DestTy,
-                                           QualType DestRecordTy,
-                                           llvm::BasicBlock *CastEnd) = 0;
+  virtual llvm::Value *
+  EmitDynamicCastCall(CodeGenFunction &CGF, Address Value,
+                      QualType SrcRecordTy, QualType DestTy,
+                      QualType DestRecordTy, llvm::BasicBlock *CastEnd) = 0;
 
   virtual llvm::Value *EmitDynamicCastToVoid(CodeGenFunction &CGF,
                                              Address Value,
@@ -270,13 +274,13 @@ public:
 
   virtual bool EmitBadCastCall(CodeGenFunction &CGF) = 0;
 
-  virtual llvm::Value *
-  GetVirtualBaseClassOffset(CodeGenFunction &CGF, Address This,
-                            const CXXRecordDecl *ClassDecl,
-                            const CXXRecordDecl *BaseClassDecl) = 0;
+  virtual llvm::Value *GetVirtualBaseClassOffset(CodeGenFunction &CGF,
+                                                 Address This,
+                                                 const CXXRecordDecl *ClassDecl,
+                                        const CXXRecordDecl *BaseClassDecl) = 0;
 
-  virtual llvm::BasicBlock *
-  EmitCtorCompleteObjectHandler(CodeGenFunction &CGF, const CXXRecordDecl *RD);
+  virtual llvm::BasicBlock *EmitCtorCompleteObjectHandler(CodeGenFunction &CGF,
+                                                          const CXXRecordDecl *RD);
 
   /// Emit the code to initialize hidden members required
   /// to handle virtual inheritance, if needed by the ABI.
@@ -357,10 +361,9 @@ public:
   /// Perform ABI-specific "this" argument adjustment required prior to
   /// a call of a virtual function.
   /// The "VirtualCall" argument is true iff the call itself is virtual.
-  virtual Address adjustThisArgumentForVirtualFunctionCall(CodeGenFunction &CGF,
-                                                           GlobalDecl GD,
-                                                           Address This,
-                                                           bool VirtualCall) {
+  virtual Address
+  adjustThisArgumentForVirtualFunctionCall(CodeGenFunction &CGF, GlobalDecl GD,
+                                           Address This, bool VirtualCall) {
     return This;
   }
 
@@ -477,15 +480,16 @@ public:
   virtual void setThunkLinkage(llvm::Function *Thunk, bool ForVTable,
                                GlobalDecl GD, bool ReturnAdjustment) = 0;
 
-  virtual llvm::Value *performThisAdjustment(CodeGenFunction &CGF, Address This,
+  virtual llvm::Value *performThisAdjustment(CodeGenFunction &CGF,
+                                             Address This,
                                              const ThisAdjustment &TA) = 0;
 
   virtual llvm::Value *performReturnAdjustment(CodeGenFunction &CGF,
                                                Address Ret,
                                                const ReturnAdjustment &RA) = 0;
 
-  virtual void EmitReturnFromThunk(CodeGenFunction &CGF, RValue RV,
-                                   QualType ResultType);
+  virtual void EmitReturnFromThunk(CodeGenFunction &CGF,
+                                   RValue RV, QualType ResultType);
 
   virtual size_t getSrcArgforCopyCtor(const CXXConstructorDecl *,
                                       FunctionArgList &Args) const = 0;
@@ -521,7 +525,8 @@ public:
   ///   always a size_t
   /// \param ElementType - the base element allocated type,
   ///   i.e. the allocated type after stripping all array types
-  virtual Address InitializeArrayCookie(CodeGenFunction &CGF, Address NewPtr,
+  virtual Address InitializeArrayCookie(CodeGenFunction &CGF,
+                                        Address NewPtr,
                                         llvm::Value *NumElements,
                                         const CXXNewExpr *expr,
                                         QualType ElementType);
@@ -540,8 +545,8 @@ public:
   /// \param CookieSize - an out parameter which will be initialized
   ///   with the size of the cookie, or zero if there is no cookie
   virtual void ReadArrayCookie(CodeGenFunction &CGF, Address Ptr,
-                               const CXXDeleteExpr *expr, QualType ElementType,
-                               llvm::Value *&NumElements,
+                               const CXXDeleteExpr *expr,
+                               QualType ElementType, llvm::Value *&NumElements,
                                llvm::Value *&AllocPtr, CharUnits &CookieSize);
 
   /// Return whether the given global decl needs a VTT parameter.
@@ -566,6 +571,7 @@ protected:
                                            CharUnits cookieSize);
 
 public:
+
   /*************************** Static local guards ****************************/
 
   /// Emits the guarded initializer and destructor setup for the given
@@ -647,7 +653,7 @@ struct CatchRetScope final : EHScopeStack::Cleanup {
     CGF.EmitBlock(BB);
   }
 };
-} // namespace CodeGen
-} // namespace clang
+}
+}
 
 #endif

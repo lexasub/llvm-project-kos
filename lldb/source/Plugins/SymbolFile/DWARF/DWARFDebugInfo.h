@@ -25,7 +25,8 @@ class DWARFContext;
 
 class DWARFDebugInfo {
 public:
-  typedef dw_offset_t (*Callback)(SymbolFileDWARF *dwarf2Data, DWARFUnit *cu,
+  typedef dw_offset_t (*Callback)(SymbolFileDWARF *dwarf2Data,
+                                  DWARFUnit *cu,
                                   DWARFDebugInfoEntry *die,
                                   const dw_offset_t next_offset,
                                   const uint32_t depth, void *userData);
@@ -42,7 +43,8 @@ public:
   DWARFUnit *GetUnit(const DIERef &die_ref);
   DWARFTypeUnit *GetTypeUnitForHash(uint64_t hash);
   bool ContainsTypeUnits();
-  DWARFDIE GetDIEForDIEOffset(DIERef::Section section, dw_offset_t die_offset);
+  DWARFDIE GetDIEForDIEOffset(DIERef::Section section,
+                              dw_offset_t die_offset);
   DWARFDIE GetDIE(const DIERef &die_ref);
 
   enum {

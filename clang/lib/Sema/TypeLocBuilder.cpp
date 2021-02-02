@@ -27,16 +27,15 @@ void TypeLocBuilder::pushFullCopy(TypeLoc L) {
   }
 
   for (unsigned i = 0, e = TypeLocs.size(); i < e; ++i) {
-    TypeLoc CurTL = TypeLocs[e - i - 1];
+    TypeLoc CurTL = TypeLocs[e-i-1];
     switch (CurTL.getTypeLocClass()) {
 #define ABSTRACT_TYPELOC(CLASS, PARENT)
-#define TYPELOC(CLASS, PARENT)                                                 \
-  case TypeLoc::CLASS: {                                                       \
-    CLASS##TypeLoc NewTL = push<class CLASS##TypeLoc>(CurTL.getType());        \
-    memcpy(NewTL.getOpaqueData(), CurTL.getOpaqueData(),                       \
-           NewTL.getLocalDataSize());                                          \
-    break;                                                                     \
-  }
+#define TYPELOC(CLASS, PARENT) \
+    case TypeLoc::CLASS: { \
+      CLASS##TypeLoc NewTL = push<class CLASS##TypeLoc>(CurTL.getType()); \
+      memcpy(NewTL.getOpaqueData(), CurTL.getOpaqueData(), NewTL.getLocalDataSize()); \
+      break; \
+    }
 #include "clang/AST/TypeLocNodes.def"
     }
   }
@@ -48,7 +47,9 @@ void TypeLocBuilder::grow(size_t NewCapacity) {
   // Allocate the new buffer and copy the old data into it.
   char *NewBuffer = new char[NewCapacity];
   unsigned NewIndex = Index + NewCapacity - Capacity;
-  memcpy(&NewBuffer[NewIndex], &Buffer[Index], Capacity - Index);
+  memcpy(&NewBuffer[NewIndex],
+         &Buffer[Index],
+         Capacity - Index);
 
   if (Buffer != InlineBuffer)
     delete[] Buffer;
@@ -58,8 +59,7 @@ void TypeLocBuilder::grow(size_t NewCapacity) {
   Index = NewIndex;
 }
 
-TypeLoc TypeLocBuilder::pushImpl(QualType T, size_t LocalSize,
-                                 unsigned LocalAlignment) {
+TypeLoc TypeLocBuilder::pushImpl(QualType T, size_t LocalSize, unsigned LocalAlignment) {
 #ifndef NDEBUG
   QualType TLast = TypeLoc(T, nullptr).getNextTypeLoc().getType();
   assert(TLast == LastTy &&

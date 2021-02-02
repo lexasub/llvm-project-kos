@@ -53,8 +53,8 @@ INITIALIZE_PASS_BEGIN(SpillPlacement, DEBUG_TYPE,
                       "Spill Code Placement Analysis", true, true)
 INITIALIZE_PASS_DEPENDENCY(EdgeBundles)
 INITIALIZE_PASS_DEPENDENCY(MachineLoopInfo)
-INITIALIZE_PASS_END(SpillPlacement, DEBUG_TYPE, "Spill Code Placement Analysis",
-                    true, true)
+INITIALIZE_PASS_END(SpillPlacement, DEBUG_TYPE,
+                    "Spill Code Placement Analysis", true, true)
 
 void SpillPlacement::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesAll();
@@ -259,8 +259,7 @@ void SpillPlacement::setThreshold(const BlockFrequency &Entry) {
 /// Set a bit in NodeMask for each active node.
 void SpillPlacement::addConstraints(ArrayRef<BlockConstraint> LiveBlocks) {
   for (ArrayRef<BlockConstraint>::iterator I = LiveBlocks.begin(),
-                                           E = LiveBlocks.end();
-       I != E; ++I) {
+       E = LiveBlocks.end(); I != E; ++I) {
     BlockFrequency Freq = BlockFrequencies[I->Number];
 
     // Live-in to block?
@@ -346,7 +345,7 @@ void SpillPlacement::iterate() {
   // Update the network energy starting at this new frontier.
   // The call to ::update will add the nodes that changed into the todolist.
   unsigned Limit = bundles->getNumBundles() * 10;
-  while (Limit-- > 0 && !TodoList.empty()) {
+  while(Limit-- > 0 && !TodoList.empty()) {
     unsigned n = TodoList.pop_back_val();
     if (!update(n))
       continue;
@@ -364,7 +363,8 @@ void SpillPlacement::prepare(BitVector &RegBundles) {
   ActiveNodes->resize(bundles->getNumBundles());
 }
 
-bool SpillPlacement::finish() {
+bool
+SpillPlacement::finish() {
   assert(ActiveNodes && "Call prepare() first");
 
   // Write preferences back to ActiveNodes.

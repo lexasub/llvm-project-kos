@@ -19,23 +19,27 @@
 
 #include "test_macros.h"
 
-struct test : public std::basic_streambuf<char> {
-  typedef std::basic_streambuf<char> base;
+struct test
+    : public std::basic_streambuf<char>
+{
+    typedef std::basic_streambuf<char> base;
 
-  test() {}
+    test() {}
 
-  void setg(char* gbeg, char* gnext, char* gend) {
-    base::setg(gbeg, gnext, gend);
-  }
+    void setg(char* gbeg, char* gnext, char* gend)
+    {
+        base::setg(gbeg, gnext, gend);
+    }
 };
 
-int main(int, char**) {
-  test t;
-  char input[7] = "123456";
-  t.setg(input, input, input + 7);
-  char output[sizeof(input)] = {0};
-  assert(t.sgetn(output, 10) == 7);
-  assert(std::strcmp(input, output) == 0);
+int main(int, char**)
+{
+    test t;
+    char input[7] = "123456";
+    t.setg(input, input, input+7);
+    char output[sizeof(input)] = {0};
+    assert(t.sgetn(output, 10) == 7);
+    assert(std::strcmp(input, output) == 0);
 
   return 0;
 }

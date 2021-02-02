@@ -5,10 +5,10 @@
 // RUN: %clangxx_asan -O3 %s -o %t && %env_asan_opts=max_redzone=32 %run %t 0 2>&1
 // RUN: %clangxx_asan -O3 %s -o %t && %run %t 1 2>&1
 
-#include <sanitizer/allocator_interface.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <sanitizer/allocator_interface.h>
 
 int main(int argc, char **argv) {
   if (argc < 2)

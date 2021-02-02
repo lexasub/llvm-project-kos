@@ -12,27 +12,27 @@ void fn(int n) {
   // CHECK: store i32 3
   // CHECK: sub {{.*}}, 12
   // CHECK: call void @llvm.memset
-  new int[n]{1, 2, 3};
+  new int[n] { 1, 2, 3 };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z11const_exactv
 void const_exact() {
   // CHECK-NOT: icmp ult i{{32|64}} %{{[^ ]+}}, 3
   // CHECK-NOT: icmp eq i32*
-  new int[3]{1, 2, 3};
+  new int[3] { 1, 2, 3 };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z16const_sufficientv
 void const_sufficient() {
   // CHECK-NOT: icmp ult i{{32|64}} %{{[^ ]+}}, 3
-  new int[4]{1, 2, 3};
+  new int[4] { 1, 2, 3 };
   // CHECK: ret void
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z22check_array_value_initv
 void check_array_value_init() {
   struct S;
-  new (int S::*[3][4][5])();
+  new (int S::*[3][4][5]) ();
 
   // CHECK: call noalias nonnull i8* @_Zna{{.}}(i{{32 240|64 480}})
   // CHECK: getelementptr inbounds i{{32|64}}, i{{32|64}}* {{.*}}, i{{32|64}} 60
@@ -54,7 +54,7 @@ void string_nonconst(int n) {
   // CHECK: %[[REST:.*]] = getelementptr inbounds i8, i8* %[[PTR]], i32 4
   // CHECK: %[[RESTSIZE:.*]] = sub {{.*}}, 4
   // CHECK: call void @llvm.memset{{.*}}(i8* align {{[0-9]+}} %[[REST]], i8 0, i{{32|64}} %[[RESTSIZE]],
-  new char[n]{"abc"};
+  new char[n] { "abc" };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z12string_exactv
@@ -63,7 +63,7 @@ void string_exact() {
   // CHECK: %[[PTR:.*]] = call noalias nonnull i8* @_Zna{{.}}(i{{32|64}} 4)
   // CHECK: call void @llvm.memcpy{{.*}}(i8* align {{[0-9]+}} %[[PTR]], i8* align {{[0-9]+}} getelementptr inbounds ([4 x i8], [4 x i8]* @[[ABC4]], i32 0, i32 0), i32 4,
   // CHECK-NOT: memset
-  new char[4]{"abc"};
+  new char[4] { "abc" };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z17string_sufficientv
@@ -73,7 +73,7 @@ void string_sufficient() {
   // FIXME: For very large arrays, it would be preferable to emit a small copy and a memset.
   // CHECK: call void @llvm.memcpy{{.*}}(i8* align {{[0-9]+}} %[[PTR]], i8* align {{[0-9]+}} getelementptr inbounds ([15 x i8], [15 x i8]* @[[ABC15]], i32 0, i32 0), i32 15,
   // CHECK-NOT: memset
-  new char[15]{"abc"};
+  new char[15] { "abc" };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z10aggr_exactv
@@ -92,10 +92,8 @@ void aggr_exact() {
   // CHECK: store i32 0, i32* %[[FIELD]]
   // CHECK-NOT: store
   // CHECK-NOT: memset
-  struct Aggr {
-    int a, b;
-  };
-  new Aggr[2]{1, 2, 3};
+  struct Aggr { int a, b; };
+  new Aggr[2] { 1, 2, 3 };
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z15aggr_sufficienti
@@ -116,23 +114,19 @@ void aggr_sufficient(int n) {
   // CHECK: %[[REMAIN:.*]] = sub i32 {{.*}}, 16
   // CHECK: %[[MEM:.*]] = bitcast %[[AGGR]]* %[[PTR2]] to i8*
   // CHECK: call void @llvm.memset{{.*}}(i8* align {{[0-9]+}} %[[MEM]], i8 0, i32 %[[REMAIN]],
-  struct Aggr {
-    int a, b;
-  };
-  new Aggr[n]{1, 2, 3};
+  struct Aggr { int a, b; };
+  new Aggr[n] { 1, 2, 3 };
 }
 
 // SIO-LABEL: define{{.*}} void @_Z14constexpr_testv
 void constexpr_test() {
   // SIO: call noalias nonnull i8* @_Zna{{.}}(i32 4)
-  new int[0 + 1]{0};
+  new int[0+1]{0};
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z13unknown_boundv
 void unknown_bound() {
-  struct Aggr {
-    int x, y, z;
-  };
+  struct Aggr { int x, y, z; };
   new Aggr[]{1, 2, 3, 4};
   // CHECK: call {{.*}}_Znaj(i32 24)
   // CHECK: store i32 1

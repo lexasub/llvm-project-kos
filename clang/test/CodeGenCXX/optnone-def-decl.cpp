@@ -18,7 +18,8 @@ int decl_only(int a) {
 // Test optnone on definition but not extern declaration.
 extern int def_only(int a);
 
-__attribute__((optnone)) int def_only(int a) {
+__attribute__((optnone))
+int def_only(int a) {
   return a + a + a + a;
 }
 
@@ -34,7 +35,8 @@ int user_of_def_only() {
 // Test optnone on both definition and declaration.
 extern int def_and_decl(int a) __attribute__((optnone));
 
-__attribute__((optnone)) int def_and_decl(int a) {
+__attribute__((optnone))
+int def_and_decl(int a) {
   return a + a + a + a;
 }
 
@@ -45,7 +47,8 @@ __attribute__((optnone)) int def_and_decl(int a) {
 // Test optnone on definition and always_inline on declaration.
 extern int always_inline_function(int a) __attribute__((always_inline));
 
-__attribute__((optnone)) extern int always_inline_function(int a) {
+__attribute__((optnone))
+extern int always_inline_function(int a) {
   return a + a + a + a;
 }
 // CHECK: define {{.*}} @_Z22always_inline_functioni({{.*}}) [[OPTNONE]]
@@ -59,7 +62,8 @@ int user_of_always_inline_function() {
 // Test optnone on declaration and always_inline on definition.
 extern int optnone_function(int a) __attribute__((optnone));
 
-__attribute__((always_inline)) int optnone_function(int a) {
+__attribute__((always_inline))
+int optnone_function(int a) {
   return a + a + a + a;
 }
 // CHECK: define {{.*}} @_Z16optnone_functioni({{.*}}) [[OPTNONE]]
@@ -73,12 +77,13 @@ int user_of_optnone_function() {
 // Test the combination of optnone with forceinline (optnone wins).
 extern __forceinline int forceinline_optnone_function(int a, int b);
 
-__attribute__((optnone)) extern int forceinline_optnone_function(int a, int b) {
-  return a + b;
+__attribute__((optnone))
+extern int forceinline_optnone_function(int a, int b) {
+    return a + b;
 }
 
 int user_of_forceinline_optnone_function() {
-  return forceinline_optnone_function(4, 5);
+    return forceinline_optnone_function(4,5);
 }
 
 // CHECK: @_Z36user_of_forceinline_optnone_functionv() [[NORMAL]]

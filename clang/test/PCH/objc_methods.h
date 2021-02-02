@@ -14,16 +14,14 @@
 @end
 
 @implementation PR12689
-- (void)mugi:(int)x {
-  switch (x) {
-  case 23: {
-  }
+-(void)mugi:(int)x {
+  switch(x) {
+    case 23: {}
   }
 }
-- (void)bonk:(int)x {
-  switch (x) {
-  case 42: {
-  }
+-(void)bonk:(int)x {
+  switch(x) {
+    case 42: {}
   }
 }
 @end
@@ -32,15 +30,12 @@
 @end
 
 @implementation PR12689_2
-- (void)mugi:(int)x {
-  switch (x) {
-  case 23:
-    [self bonk:x];
-    break;
-  case 82:
-    break;
-  }
+-(void)mugi:(int)x {
+    switch(x) {
+        case 23: [self bonk:x]; break;
+        case 82: break;
+    }
 }
-- (void)bonk:(int)x {
+-(void)bonk:(int)x {
 }
 @end

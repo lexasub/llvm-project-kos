@@ -11,11 +11,12 @@
 // expected-no-diagnostics
 #endif
 
-#include "../Inputs/system-header-simulator-cxx.h"
 #include <stdint.h>
+#include "../Inputs/system-header-simulator-cxx.h"
 
 void error();
 void *malloc(size_t);
+
 
 // From llvm/include/llvm/Support/MathExtras.h
 inline uintptr_t alignAddr(const void *Addr, size_t Alignment) {
@@ -26,6 +27,7 @@ inline size_t alignmentAdjustment(const void *Ptr, size_t Alignment) {
   return alignAddr(Ptr, Alignment) - (uintptr_t)Ptr;
 }
 
+
 // From llvm/include/llvm/Support/MemAlloc.h
 inline void *safe_malloc(size_t Sz) {
   void *Result = malloc(Sz);
@@ -34,6 +36,7 @@ inline void *safe_malloc(size_t Sz) {
 
   return Result;
 }
+
 
 // From llvm/include/llvm/Support/Allocator.h
 class MallocAllocator {
@@ -53,7 +56,7 @@ public:
     size_t PaddedSize = SizeToAllocate + Alignment - 1;
     uintptr_t AlignedAddr = alignAddr(Allocator.Allocate(PaddedSize, 0),
                                       Alignment);
-    char *AlignedPtr = (char *)AlignedAddr;
+    char *AlignedPtr = (char*)AlignedAddr;
 
     return AlignedPtr;
   }
@@ -64,11 +67,13 @@ private:
   MallocAllocator Allocator;
 };
 
+
 // From clang/include/clang/AST/ASTContextAllocate.h
 class ASTContext;
 
 void *operator new(size_t Bytes, const ASTContext &C, size_t Alignment = 8);
 void *operator new[](size_t Bytes, const ASTContext &C, size_t Alignment = 8);
+
 
 // From clang/include/clang/AST/ASTContext.h
 class ASTContext {
@@ -86,6 +91,7 @@ private:
   mutable BumpPtrAllocator BumpAlloc;
 };
 
+
 // From clang/include/clang/AST/ASTContext.h
 inline void *operator new(size_t Bytes, const ASTContext &C,
                           size_t Alignment /* = 8 */) {
@@ -97,16 +103,17 @@ inline void *operator new[](size_t Bytes, const ASTContext &C,
   return C.Allocate(Bytes, Alignment);
 }
 
+
 // From clang/include/clang/AST/Attr.h
 void *operator new(size_t Bytes, ASTContext &C,
                    size_t Alignment = 8) noexcept {
   return ::operator new(Bytes, C, Alignment);
 }
 
+
 class A {
 public:
   void setValue(int value) { Value = value; }
-
 private:
   int Value;
 };
@@ -117,7 +124,7 @@ void f(const ASTContext &C) {
 #ifndef SUPPRESSED
   // expected-warning@-2 {{Called C++ object pointer is null}}
 #endif
-}
+}	
 
 void g(const ASTContext &C) {
   A *a = new (C) A[1];
@@ -126,3 +133,4 @@ void g(const ASTContext &C) {
   // expected-warning@-2 {{Called C++ object pointer is null}}
 #endif
 }
+

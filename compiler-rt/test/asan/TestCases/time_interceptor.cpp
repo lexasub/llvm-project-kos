@@ -10,7 +10,7 @@
 #include <time.h>
 
 int main() {
-  time_t *tm = (time_t *)malloc(sizeof(time_t));
+  time_t *tm = (time_t*)malloc(sizeof(time_t));
   free(tm);
   time_t t = time(tm);
   printf("Time: %s\n", ctime(&t));

@@ -54,8 +54,8 @@ static MCStreamer *createBPFMCStreamer(const Triple &T, MCContext &Ctx,
                                        std::unique_ptr<MCObjectWriter> &&OW,
                                        std::unique_ptr<MCCodeEmitter> &&Emitter,
                                        bool RelaxAll) {
-  return createELFStreamer(Ctx, std::move(MAB), std::move(OW),
-                           std::move(Emitter), RelaxAll);
+  return createELFStreamer(Ctx, std::move(MAB), std::move(OW), std::move(Emitter),
+                           RelaxAll);
 }
 
 static MCInstPrinter *createBPFMCInstPrinter(const Triple &T,
@@ -110,7 +110,8 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBPFTargetMC() {
     TargetRegistry::RegisterMCRegInfo(*T, createBPFMCRegisterInfo);
 
     // Register the MC subtarget info.
-    TargetRegistry::RegisterMCSubtargetInfo(*T, createBPFMCSubtargetInfo);
+    TargetRegistry::RegisterMCSubtargetInfo(*T,
+                                            createBPFMCSubtargetInfo);
 
     // Register the object streamer
     TargetRegistry::RegisterELFStreamer(*T, createBPFMCStreamer);
@@ -145,4 +146,5 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBPFTargetMC() {
     TargetRegistry::RegisterMCAsmBackend(getTheBPFTarget(),
                                          createBPFbeAsmBackend);
   }
+
 }

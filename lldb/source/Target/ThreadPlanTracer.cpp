@@ -55,7 +55,7 @@ Stream *ThreadPlanTracer::GetLogStream() {
 Thread &ThreadPlanTracer::GetThread() {
   if (m_thread)
     return *m_thread;
-
+    
   ThreadSP thread_sp = m_process.GetThreadList().FindThreadByID(m_tid);
   m_thread = thread_sp.get();
   return *m_thread;
@@ -123,7 +123,8 @@ TypeFromUser ThreadPlanAssemblyTracer::GetIntPointerType() {
 
 ThreadPlanAssemblyTracer::~ThreadPlanAssemblyTracer() = default;
 
-void ThreadPlanAssemblyTracer::TracingStarted() {}
+void ThreadPlanAssemblyTracer::TracingStarted() {
+}
 
 void ThreadPlanAssemblyTracer::TracingEnded() { m_register_values.clear(); }
 

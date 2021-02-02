@@ -1,13 +1,14 @@
 
-#include "hwasan_thread.h"
-
 #include "hwasan.h"
-#include "hwasan_interface_internal.h"
 #include "hwasan_mapping.h"
+#include "hwasan_thread.h"
 #include "hwasan_poisoning.h"
+#include "hwasan_interface_internal.h"
+
 #include "sanitizer_common/sanitizer_file.h"
 #include "sanitizer_common/sanitizer_placement_new.h"
 #include "sanitizer_common/sanitizer_tls_get_addr.h"
+
 
 namespace __hwasan {
 
@@ -98,8 +99,9 @@ void Thread::Destroy() {
 }
 
 void Thread::Print(const char *Prefix) {
-  Printf("%sT%zd %p stack: [%p,%p) sz: %zd tls: [%p,%p)\n", Prefix, unique_id_,
-         this, stack_bottom(), stack_top(), stack_top() - stack_bottom(),
+  Printf("%sT%zd %p stack: [%p,%p) sz: %zd tls: [%p,%p)\n", Prefix,
+         unique_id_, this, stack_bottom(), stack_top(),
+         stack_top() - stack_bottom(),
          tls_begin(), tls_end());
 }
 
@@ -112,8 +114,7 @@ static u32 xorshift(u32 state) {
 
 // Generate a (pseudo-)random non-zero tag.
 tag_t Thread::GenerateRandomTag() {
-  if (tagging_disabled_)
-    return 0;
+  if (tagging_disabled_) return 0;
   tag_t tag;
   do {
     if (flags()->random_tags) {
@@ -129,4 +130,4 @@ tag_t Thread::GenerateRandomTag() {
   return tag;
 }
 
-}  // namespace __hwasan
+} // namespace __hwasan

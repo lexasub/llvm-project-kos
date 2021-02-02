@@ -11,17 +11,9 @@
 // WebAssembly uses the same representation of method pointers as ARM.
 // RUN: %clang_cc1 %s -emit-llvm -o - -triple=wasm32-unknown-unknown | FileCheck -check-prefix GLOBAL-ARM %s
 
-struct A {
-  int a;
-  void f();
-  virtual void vf1();
-  virtual void vf2();
-};
-struct B {
-  int b;
-  virtual void g();
-};
-struct C : B, A {};
+struct A { int a; void f(); virtual void vf1(); virtual void vf2(); };
+struct B { int b; virtual void g(); };
+struct C : B, A { };
 
 void (A::*pa)();
 void (A::*volatile vpa)();
@@ -71,11 +63,11 @@ void f() {
 void f2() {
   // CODE-LP64: store { i64, i64 } { i64 ptrtoint (void (%struct.A*)* @_ZN1A1fEv to i64), i64 0 }
   void (A::*pa2)() = &A::f;
-
+  
   // CODE-LP64: store { i64, i64 } { i64 1, i64 0 }
   // CODE-LP32: store { i32, i32 } { i32 1, i32 0 }
   void (A::*pa3)() = &A::vf1;
-
+  
   // CODE-LP64: store { i64, i64 } { i64 9, i64 0 }
   // CODE-LP32: store { i32, i32 } { i32 5, i32 0 }
   void (A::*pa4)() = &A::vf2;
@@ -92,230 +84,213 @@ bool f4() {
 
 // PR5177
 namespace PR5177 {
-struct A {
-  bool foo(int *) const;
-} a;
+  struct A {
+   bool foo(int*) const;
+  } a;
 
-struct B1 {
-  bool (A::*pmf)(int *) const;
-  const A *pa;
+  struct B1 {
+   bool (A::*pmf)(int*) const;
+   const A* pa;
 
-  B1() : pmf(&A::foo), pa(&a) {}
-  bool operator()() const { return (pa->*pmf)(new int); }
-};
+   B1() : pmf(&A::foo), pa(&a) {}
+   bool operator()() const { return (pa->*pmf)(new int); }
+  };
 
-void bar(B1 b2) {
-  while (b2())
-    ;
+  void bar(B1 b2) { while (b2()) ; }
 }
-} // namespace PR5177
 
 // PR5138
 namespace PR5138 {
-struct foo {
-  virtual void bar(foo *);
-};
+  struct foo {
+      virtual void bar(foo *);
+  };
 
-extern "C" {
-void baz(foo *);
+  extern "C" {
+    void baz(foo *);
+  }
+  
+  void (foo::*ptr1)(void *) = (void (foo::*)(void *))&foo::bar;
+  void (*ptr2)(void *) = (void (*)(void *))&baz;
+
+  void (foo::*ptr3)(void) = (void (foo::*)(void))&foo::bar;
 }
-
-void (foo::*ptr1)(void *) = (void (foo::*)(void *)) & foo::bar;
-void (*ptr2)(void *) = (void (*)(void *)) & baz;
-
-void (foo::*ptr3)(void) = (void (foo::*)(void)) & foo::bar;
-} // namespace PR5138
 
 // PR5593
 namespace PR5593 {
-struct A {};
-
-bool f(void (A::*f)()) {
-  return f && f;
+  struct A { };
+  
+  bool f(void (A::*f)()) {
+    return f && f;
+  }
 }
-} // namespace PR5593
 
 namespace PR5718 {
-struct A {};
-
-bool f(void (A::*f)(), void (A::*g)()) {
-  return f == g;
+  struct A { };
+  
+  bool f(void (A::*f)(), void (A::*g)()) {
+    return f == g;
+  }
 }
-} // namespace PR5718
 
 namespace BoolMemberPointer {
-struct A {};
+  struct A { };
+  
+  bool f(void (A::*f)()) {
+    return !f;
+  }
 
-bool f(void (A::*f)()) {
-  return !f;
+  bool g(void (A::*f)()) {
+    if (!!f)
+      return true;
+    return false;
+  }
 }
-
-bool g(void (A::*f)()) {
-  if (!!f)
-    return true;
-  return false;
-}
-} // namespace BoolMemberPointer
 
 // PR5940
 namespace PR5940 {
-class foo {
-public:
-  virtual void baz(void);
-};
+  class foo {
+  public:
+    virtual void baz(void);
+  };
 
-void foo::baz(void) {
-  void (foo::*ptr)(void) = &foo::baz;
+  void foo::baz(void) {
+       void (foo::*ptr)(void) = &foo::baz;
+  }
 }
-} // namespace PR5940
 
 namespace MemberPointerImpCast {
-struct A {
-  int x;
-};
-struct B : public A {
-};
-void f(B *obj, void (A::*method)()) {
-  (obj->*method)();
+  struct A {
+    int x;
+  };
+  struct B : public A {
+  };
+  void f(B* obj, void (A::*method)()) {
+    (obj->*method)();
+  }
 }
-} // namespace MemberPointerImpCast
 
 // PR6258
 namespace PR6258 {
 
-struct A {
-  void f(bool);
-};
+  struct A {
+    void f(bool);
+  };
 
-void (A::*pf)(bool) = &A::f;
-
-void f() {
   void (A::*pf)(bool) = &A::f;
-}
-} // namespace PR6258
 
-// PR7027
+  void f() {
+    void (A::*pf)(bool) = &A::f;
+  }
+}
+
+// PR7027 
 namespace PR7027 {
-struct X {
-  void test();
-};
-void testX() { &X::test; }
-} // namespace PR7027
+  struct X { void test( ); };
+  void testX() { &X::test; }
+}
 
 namespace test7 {
-struct A {
-  void foo();
-  virtual void vfoo();
-};
-struct B {
-  void foo();
-  virtual void vfoo();
-};
-struct C : A, B {
-  void foo();
-  virtual void vfoo();
-};
+  struct A { void foo(); virtual void vfoo(); };
+  struct B { void foo(); virtual void vfoo(); };
+  struct C : A, B { void foo(); virtual void vfoo(); };
 
-// GLOBAL-ARM: @_ZN5test74ptr0E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71A3fooEv to i32), i32 0 }
-// GLOBAL-ARM: @_ZN5test74ptr1E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71B3fooEv to i32), i32 8 }
-// GLOBAL-ARM: @_ZN5test74ptr2E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71C3fooEv to i32), i32 0 }
-// GLOBAL-ARM: @_ZN5test74ptr3E ={{.*}} global {{.*}} { i32 0, i32 1 }
-// GLOBAL-ARM: @_ZN5test74ptr4E ={{.*}} global {{.*}} { i32 0, i32 9 }
-// GLOBAL-ARM: @_ZN5test74ptr5E ={{.*}} global {{.*}} { i32 0, i32 1 }
-void (C::*ptr0)() = &A::foo;
-void (C::*ptr1)() = &B::foo;
-void (C::*ptr2)() = &C::foo;
-void (C::*ptr3)() = &A::vfoo;
-void (C::*ptr4)() = &B::vfoo;
-void (C::*ptr5)() = &C::vfoo;
-} // namespace test7
+  // GLOBAL-ARM: @_ZN5test74ptr0E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71A3fooEv to i32), i32 0 }
+  // GLOBAL-ARM: @_ZN5test74ptr1E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71B3fooEv to i32), i32 8 }
+  // GLOBAL-ARM: @_ZN5test74ptr2E ={{.*}} global {{.*}} { i32 ptrtoint ({{.*}}* @_ZN5test71C3fooEv to i32), i32 0 }
+  // GLOBAL-ARM: @_ZN5test74ptr3E ={{.*}} global {{.*}} { i32 0, i32 1 }
+  // GLOBAL-ARM: @_ZN5test74ptr4E ={{.*}} global {{.*}} { i32 0, i32 9 }
+  // GLOBAL-ARM: @_ZN5test74ptr5E ={{.*}} global {{.*}} { i32 0, i32 1 }
+  void (C::*ptr0)() = &A::foo;
+  void (C::*ptr1)() = &B::foo;
+  void (C::*ptr2)() = &C::foo;
+  void (C::*ptr3)() = &A::vfoo;
+  void (C::*ptr4)() = &B::vfoo;
+  void (C::*ptr5)() = &C::vfoo;
+}
 
 namespace test8 {
-struct X {};
-typedef int (X::*pmf)(int);
-
-// CHECK: {{define.*_ZN5test81fEv}}
-pmf f() {
-  // CHECK: {{ret.*zeroinitializer}}
-  return pmf();
+  struct X { };
+  typedef int (X::*pmf)(int);
+  
+  // CHECK: {{define.*_ZN5test81fEv}}
+  pmf f() {
+    // CHECK: {{ret.*zeroinitializer}}
+    return pmf();
+  }
 }
-} // namespace test8
 
 namespace test9 {
-struct A {
-  void foo();
-};
-struct B : A {
-  void foo();
-};
+  struct A {
+    void foo();
+  };
+  struct B : A {
+    void foo();
+  };
 
-typedef void (A::*fooptr)();
+  typedef void (A::*fooptr)();
 
-struct S {
-  fooptr p;
-};
+  struct S {
+    fooptr p;
+  };
 
-// CODE-LP64-LABEL:    define{{.*}} void @_ZN5test94testEv(
-// CODE-LP64:      alloca i32
-// CODE-LP64-NEXT: ret void
-void test() {
-  int x;
-  static S array[] = {(fooptr)&B::foo};
+  // CODE-LP64-LABEL:    define{{.*}} void @_ZN5test94testEv(
+  // CODE-LP64:      alloca i32
+  // CODE-LP64-NEXT: ret void
+  void test() {
+    int x;
+    static S array[] = { (fooptr) &B::foo };
+  }
 }
-} // namespace test9
 
 // rdar://problem/10815683 - Verify that we can emit reinterprets of
 // member pointers as constant initializers.  For added trickiness,
 // we also add some non-trivial adjustments.
 namespace test10 {
-struct A {
-  int nonEmpty;
-  void foo();
-};
-struct B : public A {
-  virtual void requireNonZeroAdjustment();
-};
-struct C {
-  int nonEmpty;
-};
-struct D : public C {
-  virtual void requireNonZeroAdjustment();
-};
+  struct A {
+    int nonEmpty;
+    void foo();
+  };
+  struct B : public A {
+    virtual void requireNonZeroAdjustment();
+  };
+  struct C {
+    int nonEmpty;
+  };
+  struct D : public C {
+    virtual void requireNonZeroAdjustment();
+  };
+
 
 // It's not that the offsets are doubled on ARM, it's that they're left-shifted by 1.
 
 // GLOBAL-LP64: @_ZN6test101aE ={{.*}} global { i64, i64 } { i64 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i64), i64 0 }, align 8
 // GLOBAL-LP32: @_ZN6test101aE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 0 }, align 4
 // GLOBAL-ARM:  @_ZN6test101aE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 0 }, align 4
-void (A::*a)() = &A::foo;
+  void (A::*a)() = &A::foo;
 
 // GLOBAL-LP64: @_ZN6test101bE ={{.*}} global { i64, i64 } { i64 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i64), i64 8 }, align 8
 // GLOBAL-LP32: @_ZN6test101bE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 4 }, align 4
 // GLOBAL-ARM:  @_ZN6test101bE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 8 }, align 4
-void (B::*b)() = (void (B::*)()) & A::foo;
+  void (B::*b)() = (void (B::*)()) &A::foo;
 
 // GLOBAL-LP64: @_ZN6test101cE ={{.*}} global { i64, i64 } { i64 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i64), i64 8 }, align 8
 // GLOBAL-LP32: @_ZN6test101cE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 4 }, align 4
 // GLOBAL-ARM:  @_ZN6test101cE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 8 }, align 4
-void (C::*c)() = (void (C::*)())(void (B::*)()) & A::foo;
+  void (C::*c)() = (void (C::*)()) (void (B::*)()) &A::foo;
 
 // GLOBAL-LP64: @_ZN6test101dE ={{.*}} global { i64, i64 } { i64 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i64), i64 16 }, align 8
 // GLOBAL-LP32: @_ZN6test101dE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 8 }, align 4
 // GLOBAL-ARM:  @_ZN6test101dE ={{.*}} global { i32, i32 } { i32 ptrtoint (void (%"struct.test10::A"*)* @_ZN6test101A3fooEv to i32), i32 16 }, align 4
-void (D::*d)() = (void (C::*)())(void (B::*)()) & A::foo;
-} // namespace test10
+  void (D::*d)() = (void (C::*)()) (void (B::*)()) &A::foo;
+}
 
 namespace test11 {
-struct A {
-  virtual void a();
-};
-struct B : A {};
-struct C : B {
-  virtual void a();
-};
-void (C::*x)() = &C::a;
+  struct A { virtual void a(); };
+  struct B : A {};
+  struct C : B { virtual void a(); };
+  void (C::*x)() = &C::a;
 
-// GLOBAL-LP64: @_ZN6test111xE ={{.*}} global { i64, i64 } { i64 1, i64 0 }
-// GLOBAL-LP32: @_ZN6test111xE ={{.*}} global { i32, i32 } { i32 1, i32 0 }
-// GLOBAL-ARM:  @_ZN6test111xE ={{.*}} global { i32, i32 } { i32 0, i32 1 }
-} // namespace test11
+  // GLOBAL-LP64: @_ZN6test111xE ={{.*}} global { i64, i64 } { i64 1, i64 0 }
+  // GLOBAL-LP32: @_ZN6test111xE ={{.*}} global { i32, i32 } { i32 1, i32 0 }
+  // GLOBAL-ARM:  @_ZN6test111xE ={{.*}} global { i32, i32 } { i32 0, i32 1 }
+}

@@ -28,28 +28,31 @@
 #include <stdlib.h>
 
 #ifndef kSize
-#define kSize 1
+# define kSize 1
 #endif
 
 #ifndef UseThread
-#define UseThread 0
+# define UseThread 0
 #endif
 
 #ifndef kStackSize
-#define kStackSize 0
+# define kStackSize 0
 #endif
 
-__attribute__((noinline)) char *Ident(char *x) {
+__attribute__((noinline))
+char *Ident(char *x) {
   fprintf(stderr, "1: %p\n", x);
   return x;
 }
 
-__attribute__((noinline)) char *Func1() {
+__attribute__((noinline))
+char *Func1() {
   char local[kSize];
   return Ident(local);
 }
 
-__attribute__((noinline)) void Func2(char *x) {
+__attribute__((noinline))
+void Func2(char *x) {
   fprintf(stderr, "2: %p\n", x);
   *x = 1;
   // CHECK: WRITE of size 1 {{.*}} thread T0
@@ -64,7 +67,7 @@ __attribute__((noinline)) void Func2(char *x) {
   // CHECK-24: T0: FakeStack created:{{.*}} stack_size_log: 24
 }
 
-void *Thread(void *unused) {
+void *Thread(void *unused)  {
   Func2(Func1());
   return NULL;
 }
@@ -86,7 +89,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "pthread_attr_setstacksize returned %d\n", ret);
       abort();
     }
-
+    
     size_t stacksize_check;
     ret = pthread_attr_getstacksize(&attr, &stacksize_check);
     if (ret != 0) {
@@ -97,7 +100,7 @@ int main(int argc, char **argv) {
     if (stacksize_check != desired_stack_size) {
       fprintf(stderr, "Unable to set stack size to %d, the stack size is %d.\n",
               (int)desired_stack_size, (int)stacksize_check);
-      abort();
+      abort(); 
     }
   }
   pthread_t t;

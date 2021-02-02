@@ -20,8 +20,8 @@
 #include <cassert>
 
 int main(int, char**) {
-  int i;
-  std::cin >> i;
-  assert(i == 1234);
-  return 0;
+    int i;
+    std::cin >> i;
+    assert(i == 1234);
+    return 0;
 }

@@ -4,9 +4,9 @@
 // RUN: %clangxx_lsan %s -o %t
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_stacks=0" not %run %t 2>&1 | FileCheck %s
 
-#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "sanitizer_common/print_address.h"
 
 int main() {
   void *p = malloc(1337);

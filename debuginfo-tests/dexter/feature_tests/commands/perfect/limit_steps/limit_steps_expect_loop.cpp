@@ -7,11 +7,11 @@
 // RUN: %dexter_regression_test -- %s | FileCheck %s
 // CHECK: limit_steps_expect_loop.cpp:
 
-int main(const int argc, const char *argv[]) {
+int main(const int argc, const char * argv[]) {
   unsigned int sum = 1;
-  for (unsigned int ix = 0; ix != 5; ++ix) {
-    unsigned thing_to_add = ix + ix - ix; // DexLabel('start')
-    sum += ix;                            // DexLabel('end')
+  for(unsigned int ix = 0; ix != 5; ++ix) {
+    unsigned thing_to_add = ix + ix - ix;   // DexLabel('start')
+    sum += ix;                              // DexLabel('end')
   }
   return sum;
 }

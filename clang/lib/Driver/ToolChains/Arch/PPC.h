@@ -45,7 +45,7 @@ void getPPCTargetFeatures(const Driver &D, const llvm::Triple &Triple,
                           std::vector<llvm::StringRef> &Features);
 
 } // end namespace ppc
-} // namespace tools
+} // end namespace target
 } // end namespace driver
 } // end namespace clang
 

@@ -2,13 +2,13 @@
 #define TEST_OUTPUT_TEST_H
 
 #undef NDEBUG
-#include <functional>
 #include <initializer_list>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
+#include <functional>
+#include <sstream>
 
 #include "../src/re.h"
 #include "benchmark/benchmark.h"
@@ -18,14 +18,14 @@
 
 #define ADD_CASES(...) int CONCAT(dummy, __LINE__) = ::AddCases(__VA_ARGS__)
 
-#define SET_SUBSTITUTIONS(...)                                                 \
+#define SET_SUBSTITUTIONS(...) \
   int CONCAT(dummy, __LINE__) = ::SetSubstitutions(__VA_ARGS__)
 
 enum MatchRules {
-  MR_Default, // Skip non-matching lines until a match is found.
-  MR_Next,    // Match must occur on the next line.
-  MR_Not      // No line between the current position and the next match matches
-              // the regex
+  MR_Default,  // Skip non-matching lines until a match is found.
+  MR_Next,     // Match must occur on the next line.
+  MR_Not  // No line between the current position and the next match matches
+          // the regex
 };
 
 struct TestCase {
@@ -45,7 +45,7 @@ enum TestCaseID {
   TC_CSVOut,
   TC_CSVErr,
 
-  TC_NumID // PRIVATE
+  TC_NumID  // PRIVATE
 };
 
 // Add a list of test cases to be run against the output specified by
@@ -58,7 +58,7 @@ int SetSubstitutions(
     std::initializer_list<std::pair<std::string, std::string>> il);
 
 // Run all output tests.
-void RunOutputTests(int argc, char *argv[]);
+void RunOutputTests(int argc, char* argv[]);
 
 // ========================================================================= //
 // ------------------------- Results checking ------------------------------ //
@@ -72,13 +72,13 @@ void RunOutputTests(int argc, char *argv[]);
 //                  all the benchmark names. Matching benchmarks
 //                  will be the subject of a call to checker_function
 // checker_function: should be of type ResultsCheckFn (see below)
-#define CHECK_BENCHMARK_RESULTS(bm_name_pattern, checker_function)             \
-  size_t CONCAT(dummy, __LINE__) = AddChecker(bm_name_pattern, checker_function)
+#define CHECK_BENCHMARK_RESULTS(bm_name_pattern, checker_function) \
+    size_t CONCAT(dummy, __LINE__) = AddChecker(bm_name_pattern, checker_function)
 
 struct Results;
-typedef std::function<void(Results const &)> ResultsCheckFn;
+typedef std::function< void(Results const&) > ResultsCheckFn;
 
-size_t AddChecker(const char *bm_name_pattern, ResultsCheckFn fn);
+size_t AddChecker(const char* bm_name_pattern, ResultsCheckFn fn);
 
 // Class holding the results of a benchmark.
 // It is passed in calls to checker functions.
@@ -87,9 +87,9 @@ struct Results {
   // the benchmark name
   std::string name;
   // the benchmark fields
-  std::map<std::string, std::string> values;
+  std::map< std::string, std::string > values;
 
-  Results(const std::string &n) : name(n) {}
+  Results(const std::string& n) : name(n) {}
 
   int NumThreads() const;
 
@@ -102,36 +102,38 @@ struct Results {
   // it is better to use fuzzy float checks for this, as the float
   // ASCII formatting is lossy.
   double DurationRealTime() const {
-    return GetAs<double>("iterations") * GetTime(kRealTime);
+    return GetAs< double >("iterations") * GetTime(kRealTime);
   }
   // get the cpu_time duration of the benchmark in seconds
   double DurationCPUTime() const {
-    return GetAs<double>("iterations") * GetTime(kCpuTime);
+    return GetAs< double >("iterations") * GetTime(kCpuTime);
   }
 
   // get the string for a result by name, or nullptr if the name
   // is not found
-  const std::string *Get(const char *entry_name) const {
+  const std::string* Get(const char* entry_name) const {
     auto it = values.find(entry_name);
-    if (it == values.end())
-      return nullptr;
+    if(it == values.end()) return nullptr;
     return &it->second;
   }
 
   // get a result by name, parsed as a specific type.
   // NOTE: for counters, use GetCounterAs instead.
-  template <class T> T GetAs(const char *entry_name) const;
+  template <class T>
+  T GetAs(const char* entry_name) const;
 
   // counters are written as doubles, so they have to be read first
   // as a double, and only then converted to the asked type.
-  template <class T> T GetCounterAs(const char *entry_name) const {
-    double dval = GetAs<double>(entry_name);
-    T tval = static_cast<T>(dval);
+  template <class T>
+  T GetCounterAs(const char* entry_name) const {
+    double dval = GetAs< double >(entry_name);
+    T tval = static_cast< T >(dval);
     return tval;
   }
 };
 
-template <class T> T Results::GetAs(const char *entry_name) const {
+template <class T>
+T Results::GetAs(const char* entry_name) const {
   auto *sv = Get(entry_name);
   CHECK(sv != nullptr && !sv->empty());
   std::stringstream ss;
@@ -146,54 +148,45 @@ template <class T> T Results::GetAs(const char *entry_name) const {
 // Macros to help in result checking. Do not use them with arguments causing
 // side-effects.
 
-#define _CHECK_RESULT_VALUE(entry, getfn, var_type, var_name, relationship,    \
-                            value)                                             \
-  CONCAT(CHECK_, relationship)                                                 \
-  (entry.getfn<var_type>(var_name), (value))                                   \
-      << "\n"                                                                  \
-      << __FILE__ << ":" << __LINE__ << ": " << (entry).name << ":\n"          \
-      << __FILE__ << ":" << __LINE__ << ": "                                   \
-      << "expected (" << #var_type << ")" << (var_name) << "="                 \
-      << (entry).getfn<var_type>(var_name) << " to be " #relationship " to "   \
-      << (value) << "\n"
+#define _CHECK_RESULT_VALUE(entry, getfn, var_type, var_name, relationship, value) \
+    CONCAT(CHECK_, relationship)                                        \
+    (entry.getfn< var_type >(var_name), (value)) << "\n"                \
+    << __FILE__ << ":" << __LINE__ << ": " << (entry).name << ":\n"     \
+    << __FILE__ << ":" << __LINE__ << ": "                              \
+    << "expected (" << #var_type << ")" << (var_name)                   \
+    << "=" << (entry).getfn< var_type >(var_name)                       \
+    << " to be " #relationship " to " << (value) << "\n"
 
 // check with tolerance. eps_factor is the tolerance window, which is
 // interpreted relative to value (eg, 0.1 means 10% of value).
-#define _CHECK_FLOAT_RESULT_VALUE(entry, getfn, var_type, var_name,            \
-                                  relationship, value, eps_factor)             \
-  CONCAT(CHECK_FLOAT_, relationship)                                           \
-  (entry.getfn<var_type>(var_name), (value), (eps_factor) * (value))           \
-      << "\n"                                                                  \
-      << __FILE__ << ":" << __LINE__ << ": " << (entry).name << ":\n"          \
-      << __FILE__ << ":" << __LINE__ << ": "                                   \
-      << "expected (" << #var_type << ")" << (var_name) << "="                 \
-      << (entry).getfn<var_type>(var_name) << " to be " #relationship " to "   \
-      << (value) << "\n"                                                       \
-      << __FILE__ << ":" << __LINE__ << ": "                                   \
-      << "with tolerance of " << (eps_factor) * (value) << " ("                \
-      << (eps_factor)*100. << "%), "                                           \
-      << "but delta was " << ((entry).getfn<var_type>(var_name) - (value))     \
-      << " ("                                                                  \
-      << (((entry).getfn<var_type>(var_name) - (value)) /                      \
-          ((value) > 1.e-5 || value < -1.e-5 ? value : 1.e-5) * 100.)          \
-      << "%)"
+#define _CHECK_FLOAT_RESULT_VALUE(entry, getfn, var_type, var_name, relationship, value, eps_factor) \
+    CONCAT(CHECK_FLOAT_, relationship)                                  \
+    (entry.getfn< var_type >(var_name), (value), (eps_factor) * (value)) << "\n" \
+    << __FILE__ << ":" << __LINE__ << ": " << (entry).name << ":\n"     \
+    << __FILE__ << ":" << __LINE__ << ": "                              \
+    << "expected (" << #var_type << ")" << (var_name)                   \
+    << "=" << (entry).getfn< var_type >(var_name)                       \
+    << " to be " #relationship " to " << (value) << "\n"                \
+    << __FILE__ << ":" << __LINE__ << ": "                              \
+    << "with tolerance of " << (eps_factor) * (value)                   \
+    << " (" << (eps_factor)*100. << "%), "                              \
+    << "but delta was " << ((entry).getfn< var_type >(var_name) - (value)) \
+    << " (" << (((entry).getfn< var_type >(var_name) - (value))         \
+               /                                                        \
+               ((value) > 1.e-5 || value < -1.e-5 ? value : 1.e-5)*100.) \
+    << "%)"
 
-#define CHECK_RESULT_VALUE(entry, var_type, var_name, relationship, value)     \
-  _CHECK_RESULT_VALUE(entry, GetAs, var_type, var_name, relationship, value)
+#define CHECK_RESULT_VALUE(entry, var_type, var_name, relationship, value) \
+    _CHECK_RESULT_VALUE(entry, GetAs, var_type, var_name, relationship, value)
 
-#define CHECK_COUNTER_VALUE(entry, var_type, var_name, relationship, value)    \
-  _CHECK_RESULT_VALUE(entry, GetCounterAs, var_type, var_name, relationship,   \
-                      value)
+#define CHECK_COUNTER_VALUE(entry, var_type, var_name, relationship, value) \
+    _CHECK_RESULT_VALUE(entry, GetCounterAs, var_type, var_name, relationship, value)
 
-#define CHECK_FLOAT_RESULT_VALUE(entry, var_name, relationship, value,         \
-                                 eps_factor)                                   \
-  _CHECK_FLOAT_RESULT_VALUE(entry, GetAs, double, var_name, relationship,      \
-                            value, eps_factor)
+#define CHECK_FLOAT_RESULT_VALUE(entry, var_name, relationship, value, eps_factor) \
+    _CHECK_FLOAT_RESULT_VALUE(entry, GetAs, double, var_name, relationship, value, eps_factor)
 
-#define CHECK_FLOAT_COUNTER_VALUE(entry, var_name, relationship, value,        \
-                                  eps_factor)                                  \
-  _CHECK_FLOAT_RESULT_VALUE(entry, GetCounterAs, double, var_name,             \
-                            relationship, value, eps_factor)
+#define CHECK_FLOAT_COUNTER_VALUE(entry, var_name, relationship, value, eps_factor) \
+    _CHECK_FLOAT_RESULT_VALUE(entry, GetCounterAs, double, var_name, relationship, value, eps_factor)
 
 // ========================================================================= //
 // --------------------------- Misc Utilities ------------------------------ //
@@ -201,8 +194,8 @@ template <class T> T Results::GetAs(const char *entry_name) const {
 
 namespace {
 
-const char *const dec_re = "[0-9]*[.]?[0-9]+([eE][-+][0-9]+)?";
+const char* const dec_re = "[0-9]*[.]?[0-9]+([eE][-+][0-9]+)?";
 
-} //  end namespace
+}  //  end namespace
 
-#endif // TEST_OUTPUT_TEST_H
+#endif  // TEST_OUTPUT_TEST_H

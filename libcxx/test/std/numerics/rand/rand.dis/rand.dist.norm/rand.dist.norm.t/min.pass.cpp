@@ -18,12 +18,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::student_t_distribution<> D;
-    D d(.5);
-    assert(d.min() == -INFINITY);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::student_t_distribution<> D;
+        D d(.5);
+        assert(d.min() == -INFINITY);
+    }
 
   return 0;
 }

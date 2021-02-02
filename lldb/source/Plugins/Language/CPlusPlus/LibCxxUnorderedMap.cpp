@@ -89,8 +89,8 @@ lldb::ValueObjectSP lldb_private::formatters::
         node_sp->GetChildMemberWithName(ConstString("__hash_"), true);
     if (!hash_sp || !value_sp) {
       if (!m_element_type) {
-        auto p1_sp = m_backend.GetChildAtNamePath(
-            {ConstString("__table_"), ConstString("__p1_")});
+        auto p1_sp = m_backend.GetChildAtNamePath({ConstString("__table_"),
+                                                   ConstString("__p1_")});
         if (!p1_sp)
           return nullptr;
 
@@ -98,14 +98,15 @@ lldb::ValueObjectSP lldb_private::formatters::
         switch (p1_sp->GetCompilerType().GetNumDirectBaseClasses()) {
         case 1:
           // Assume a pre llvm r300140 __compressed_pair implementation:
-          first_sp =
-              p1_sp->GetChildMemberWithName(ConstString("__first_"), true);
+          first_sp = p1_sp->GetChildMemberWithName(ConstString("__first_"),
+                                                   true);
           break;
         case 2: {
           // Assume a post llvm r300140 __compressed_pair implementation:
-          ValueObjectSP first_elem_parent_sp = p1_sp->GetChildAtIndex(0, true);
-          first_sp =
-              p1_sp->GetChildMemberWithName(ConstString("__value_"), true);
+          ValueObjectSP first_elem_parent_sp =
+            p1_sp->GetChildAtIndex(0, true);
+          first_sp = p1_sp->GetChildMemberWithName(ConstString("__value_"),
+                                                   true);
           break;
         }
         default:
@@ -167,15 +168,15 @@ bool lldb_private::formatters::LibcxxStdUnorderedMapSyntheticFrontEnd::
   if (!table_sp)
     return false;
 
-  ValueObjectSP p2_sp =
-      table_sp->GetChildMemberWithName(ConstString("__p2_"), true);
+  ValueObjectSP p2_sp = table_sp->GetChildMemberWithName(
+    ConstString("__p2_"), true);
   ValueObjectSP num_elements_sp = nullptr;
   llvm::SmallVector<ConstString, 3> next_path;
   switch (p2_sp->GetCompilerType().GetNumDirectBaseClasses()) {
   case 1:
     // Assume a pre llvm r300140 __compressed_pair implementation:
-    num_elements_sp =
-        p2_sp->GetChildMemberWithName(ConstString("__first_"), true);
+    num_elements_sp = p2_sp->GetChildMemberWithName(
+      ConstString("__first_"), true);
     next_path.append({ConstString("__p1_"), ConstString("__first_"),
                       ConstString("__next_")});
     break;
@@ -183,7 +184,7 @@ bool lldb_private::formatters::LibcxxStdUnorderedMapSyntheticFrontEnd::
     // Assume a post llvm r300140 __compressed_pair implementation:
     ValueObjectSP first_elem_parent = p2_sp->GetChildAtIndex(0, true);
     num_elements_sp = first_elem_parent->GetChildMemberWithName(
-        ConstString("__value_"), true);
+      ConstString("__value_"), true);
     next_path.append({ConstString("__p1_"), ConstString("__value_"),
                       ConstString("__next_")});
     break;
@@ -197,7 +198,8 @@ bool lldb_private::formatters::LibcxxStdUnorderedMapSyntheticFrontEnd::
   m_num_elements = num_elements_sp->GetValueAsUnsigned(0);
   m_tree = table_sp->GetChildAtNamePath(next_path).get();
   if (m_num_elements > 0)
-    m_next_element = table_sp->GetChildAtNamePath(next_path).get();
+    m_next_element =
+        table_sp->GetChildAtNamePath(next_path).get();
   return false;
 }
 

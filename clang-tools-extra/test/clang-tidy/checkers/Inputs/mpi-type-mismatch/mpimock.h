@@ -18,13 +18,7 @@ typedef int int8_t;
 typedef int uint8_t;
 typedef int uint16_t;
 typedef int int64_t;
-namespace std {
-template <class T>
-struct complex {
-  T real;
-  T imag;
-};
-} // namespace std
+namespace std { template<class T> struct complex { T real; T imag; }; }
 
 // These defines are used to mock MPI constants.
 #define MPI_DATATYPE_NULL 0
@@ -58,13 +52,13 @@ int MPI_Comm_rank(MPI_Comm, int *);
 int MPI_Send(const void *, int, MPI_Datatype, int, int, MPI_Comm);
 int MPI_Recv(void *, int, MPI_Datatype, int, int, MPI_Comm, MPI_Status *);
 int MPI_Isend(const void *, int, MPI_Datatype, int, int, MPI_Comm,
-              MPI_Request *);
+    MPI_Request *);
 int MPI_Irecv(void *, int, MPI_Datatype, int, int, MPI_Comm, MPI_Request *);
 int MPI_Wait(MPI_Request *, MPI_Status *);
 int MPI_Waitall(int, MPI_Request[], MPI_Status[]);
 int MPI_Reduce(const void *, void *, int, MPI_Datatype, MPI_Op, int, MPI_Comm);
 int MPI_Ireduce(const void *, void *, int, MPI_Datatype, MPI_Op, int, MPI_Comm,
-                MPI_Request *);
+    MPI_Request *);
 int MPI_Bcast(void *, int count, MPI_Datatype, int, MPI_Comm);
 
-#endif // end of include guard: MPIMOCK_H
+#endif  // end of include guard: MPIMOCK_H

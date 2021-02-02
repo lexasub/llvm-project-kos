@@ -20,6 +20,7 @@
 using namespace clang::ast_matchers;
 using namespace clang::tidy::utils;
 
+
 namespace clang {
 namespace tidy {
 namespace bugprone {
@@ -85,6 +86,7 @@ private:
 };
 
 } // namespace
+
 
 // Matches nodes that are
 // - Part of a decltype argument or class template argument (we check this by

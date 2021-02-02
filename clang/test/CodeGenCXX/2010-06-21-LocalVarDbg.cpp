@@ -5,10 +5,7 @@
 // CHECK-NOT: llvm.dbg.lv.~A
 class A {
 public:
-  ~A() {
-    int i = 0;
-    i++;
-  }
+  ~A() { int i = 0; i++; }
 };
 
 int foo(int i) {

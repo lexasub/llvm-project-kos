@@ -79,8 +79,7 @@ void FooTest::TearDownTestCase() {}
 // CHECK-MESSAGES: [[@LINE-1]]:15: warning: Google Test APIs named with 'case'
 // CHECK-FIXES: void FooTest::TearDownTestSuite() {}
 
-template <typename T>
-class FooTypedTest : public testing::Test {
+template <typename T> class FooTypedTest : public testing::Test {
 public:
   static void SetUpTestCase();
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: Google Test APIs named with 'case'
@@ -90,13 +89,11 @@ public:
   // CHECK-FIXES: static void TearDownTestSuite();
 };
 
-template <typename T>
-void FooTypedTest<T>::SetUpTestCase() {}
+template <typename T> void FooTypedTest<T>::SetUpTestCase() {}
 // CHECK-MESSAGES: [[@LINE-1]]:45: warning: Google Test APIs named with 'case'
 // CHECK-FIXES: void FooTypedTest<T>::SetUpTestSuite() {}
 
-template <typename T>
-void FooTypedTest<T>::TearDownTestCase() {}
+template <typename T> void FooTypedTest<T>::TearDownTestCase() {}
 // CHECK-MESSAGES: [[@LINE-1]]:45: warning: Google Test APIs named with 'case'
 // CHECK-FIXES: void FooTypedTest<T>::TearDownTestSuite() {}
 
@@ -123,7 +120,7 @@ public:
 // If a derived type already has the replacements, we only provide a warning
 // since renaming or deleting the old declarations may not be safe.
 class BarTest3 : public testing::Test {
-public:
+ public:
   static void SetUpTestCase() {}
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: Google Test APIs named with 'case'
   static void SetUpTestSuite() {}
@@ -243,10 +240,10 @@ public:
 };
 
 class BarTestInfo3 : public testing::TestInfo {
-public:
-  const char *test_case_name() const;
+ public:
+  const char* test_case_name() const;
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: Google Test APIs named with 'case'
-  const char *test_suite_name() const;
+  const char* test_suite_name() const;
 };
 
 namespace nesting_ns {
@@ -403,11 +400,11 @@ void testEventListenerInstantiationOnlyWarns() {
 #endif
 
 #define ON_TEST_CASE_START_MACRO_REPLACE OnTestCaseStart
-#define ON_TEST_CASE_START_MACRO_WARN_ONLY \
+#define ON_TEST_CASE_START_MACRO_WARN_ONLY                                     \
   testing::TestEventListener().OnTestCaseStart
 
 #define ON_TEST_CASE_END_MACRO_REPLACE OnTestCaseEnd
-#define ON_TEST_CASE_END_MACRO_WARN_ONLY \
+#define ON_TEST_CASE_END_MACRO_WARN_ONLY                                       \
   testing::TestEventListener().OnTestCaseEnd
 
 void testEventListenerCallAndReference(testing::TestCase &Case) {
@@ -638,13 +635,13 @@ void unitTestInstantiationOnlyWarns() {
 #define UNIT_TEST_NAME_MACRO_REPLACE5 test_case_to_run_count
 #define UNIT_TEST_NAME_MACRO_REPLACE6 GetTestCase
 #define UNIT_TEST_NAME_MACRO_WARN_ONLY1 testing::UnitTest().current_test_case
-#define UNIT_TEST_NAME_MACRO_WARN_ONLY2 \
+#define UNIT_TEST_NAME_MACRO_WARN_ONLY2                                        \
   testing::UnitTest().successful_test_case_count
-#define UNIT_TEST_NAME_MACRO_WARN_ONLY3 \
+#define UNIT_TEST_NAME_MACRO_WARN_ONLY3                                        \
   testing::UnitTest().failed_test_case_count
-#define UNIT_TEST_NAME_MACRO_WARN_ONLY4 \
+#define UNIT_TEST_NAME_MACRO_WARN_ONLY4                                        \
   testing::UnitTest().total_test_case_count
-#define UNIT_TEST_NAME_MACRO_WARN_ONLY5 \
+#define UNIT_TEST_NAME_MACRO_WARN_ONLY5                                        \
   testing::UnitTest().test_case_to_run_count
 #define UNIT_TEST_NAME_MACRO_WARN_ONLY6 testing::UnitTest().GetTestCase
 
@@ -966,10 +963,8 @@ struct TypedefTestCaseHolder {
 };
 
 class TypedefMyTest : public typedef_ns::MyTestCase {};
-template <typename T = typedef_ns::MyTestCase>
-class TypedefTestTypeHolder {};
-template <>
-class TypedefTestTypeHolder<typedef_ns::MyTestCase> {};
+template <typename T = typedef_ns::MyTestCase> class TypedefTestTypeHolder {};
+template <> class TypedefTestTypeHolder<typedef_ns::MyTestCase> {};
 
 namespace alias_ns {
 
@@ -989,10 +984,8 @@ struct TestCaseHolder {
 };
 
 class MyTest : public MyTestCase {};
-template <typename T = MyTestCase>
-class TestTypeHolder {};
-template <>
-class TestTypeHolder<MyTestCase> {};
+template <typename T = MyTestCase> class TestTypeHolder {};
+template <> class TestTypeHolder<MyTestCase> {};
 
 } // namespace alias_ns
 
@@ -1009,13 +1002,11 @@ struct AliasTestCaseHolder {
 };
 
 class AliasMyTest : public alias_ns::MyTestCase {};
-template <typename T = alias_ns::MyTestCase>
-class AliasTestTypeHolder {};
-template <>
-class AliasTestTypeHolder<alias_ns::MyTestCase> {};
+template <typename T = alias_ns::MyTestCase> class AliasTestTypeHolder {};
+template <> class AliasTestTypeHolder<alias_ns::MyTestCase> {};
 
 template <typename T>
-void templateFunction(const T &t) {
+void templateFunction(const T& t) {
   (void)t.current_test_case();
   // CHECK-MESSAGES: [[@LINE-1]]:11: warning: Google Test APIs named with 'case'
 }

@@ -17,20 +17,21 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::exception_ptr p;
-  assert(p == nullptr);
-  std::exception_ptr p2 = p;
-  assert(nullptr == p);
-  assert(!p);
-  assert(p2 == p);
-  p2 = p;
-  assert(p2 == p);
-  assert(p2 == nullptr);
-  std::exception_ptr p3 = nullptr;
-  assert(p3 == nullptr);
-  p3 = nullptr;
-  assert(p3 == nullptr);
+int main(int, char**)
+{
+    std::exception_ptr p;
+    assert(p == nullptr);
+    std::exception_ptr p2 = p;
+    assert(nullptr == p);
+    assert(!p);
+    assert(p2 == p);
+    p2 = p;
+    assert(p2 == p);
+    assert(p2 == nullptr);
+    std::exception_ptr p3 = nullptr;
+    assert(p3 == nullptr);
+    p3 = nullptr;
+    assert(p3 == nullptr);
 
   return 0;
 }

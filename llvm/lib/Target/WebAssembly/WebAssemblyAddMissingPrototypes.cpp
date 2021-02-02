@@ -104,7 +104,7 @@ bool WebAssemblyAddMissingPrototypes::runOnModule(Module &M) {
                       "conflicting signatures: "
                    << F.getName() << "\n";
             LLVM_DEBUG(dbgs() << "  " << *DestType << "\n");
-            LLVM_DEBUG(dbgs() << "  " << *NewType << "\n");
+            LLVM_DEBUG(dbgs() << "  "<<  *NewType << "\n");
           }
         }
       }

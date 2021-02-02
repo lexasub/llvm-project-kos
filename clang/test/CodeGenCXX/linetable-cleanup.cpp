@@ -21,7 +21,8 @@ public:
   int i;
 };
 
-int foo() {
+int foo()
+{
   C c;
   c.i = 42;
   return 0;
@@ -29,7 +30,8 @@ int foo() {
   // CHECK: ![[RET]] = !DILocation(line: [[@LINE+1]], scope: !{{.*}})
 }
 
-void bar() {
+void bar()
+{
   if (!foo())
     // CHECK: {{.*}} = !DILocation(line: [[@LINE+1]], scope: !{{.*}})
     return;
@@ -42,7 +44,8 @@ void bar() {
   // CHECK: ![[RETBAR]] = !DILocation(line: [[@LINE+1]], scope: !{{.*}})
 }
 
-void baz() {
+void baz()
+{
   if (!foo())
     // CHECK: ![[SCOPE1:.*]] = distinct !DILexicalBlock({{.*}}, line: [[@LINE-1]])
     // CHECK: {{.*}} = !DILocation(line: [[@LINE+1]], scope: ![[SCOPE1]])

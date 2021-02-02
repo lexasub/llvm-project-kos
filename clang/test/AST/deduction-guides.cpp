@@ -38,23 +38,24 @@ HasDeductionGuideTypeAlias()->HasDeductionGuideTypeAlias<int>;
 // CHECK: CXXDeductionGuideDecl {{.*}} <deduction guide for HasDeductionGuideTypeAlias> 'auto () -> HasDeductionGuideTypeAlias<int>'
 } // namespace PR46111
 
+
 namespace PR48177 {
-template <class A> struct Base {
-  using type_alias = A;
-};
-template <class T, int S, class A>
-struct Derived : Base<A> {
-  using type_alias = typename Derived::type_alias;
-  Derived(Derived &&, typename Derived::type_alias const &);
-  Derived(T);
-};
+  template <class A> struct Base {
+    using type_alias = A;
+  };
+  template<class T, int S, class A>
+  struct Derived : Base<A> {
+    using type_alias = typename Derived::type_alias;
+    Derived(Derived &&, typename Derived::type_alias const&);
+    Derived(T);
+  };
 
-template <class T, class A>
-Derived(T, A) -> Derived<T, 1, A>;
+  template<class T, class A>
+  Derived(T, A) -> Derived<T, 1, A>;
 
-void init() {
-  Derived d{1, 2};
-}
+  void init() {
+    Derived d {1,2};
+  }
 } // namespace PR48177
 
 // CHECK: CXXRecordDecl {{.*}} struct Derived

@@ -17,34 +17,35 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**) {
-  {
-    std::vector<bool> v(100);
-    v.resize(50);
-    assert(v.size() == 50);
-    assert(v.capacity() >= 100);
-    v.resize(200);
-    assert(v.size() == 200);
-    assert(v.capacity() >= 200);
-    v.reserve(400);
-    v.resize(300); // check the case when resizing and we already have room
-    assert(v.size() == 300);
-    assert(v.capacity() >= 400);
-  }
+int main(int, char**)
+{
+    {
+        std::vector<bool> v(100);
+        v.resize(50);
+        assert(v.size() == 50);
+        assert(v.capacity() >= 100);
+        v.resize(200);
+        assert(v.size() == 200);
+        assert(v.capacity() >= 200);
+        v.reserve(400);
+        v.resize(300);  // check the case when resizing and we already have room
+        assert(v.size() == 300);
+        assert(v.capacity() >= 400);
+    }
 #if TEST_STD_VER >= 11
-  {
-    std::vector<bool, min_allocator<bool> > v(100);
-    v.resize(50);
-    assert(v.size() == 50);
-    assert(v.capacity() >= 100);
-    v.resize(200);
-    assert(v.size() == 200);
-    assert(v.capacity() >= 200);
-    v.reserve(400);
-    v.resize(300); // check the case when resizing and we already have room
-    assert(v.size() == 300);
-    assert(v.capacity() >= 400);
-  }
+    {
+        std::vector<bool, min_allocator<bool>> v(100);
+        v.resize(50);
+        assert(v.size() == 50);
+        assert(v.capacity() >= 100);
+        v.resize(200);
+        assert(v.size() == 200);
+        assert(v.capacity() >= 200);
+        v.reserve(400);
+        v.resize(300);  // check the case when resizing and we already have room
+        assert(v.size() == 300);
+        assert(v.capacity() >= 400);
+    }
 #endif
 
   return 0;

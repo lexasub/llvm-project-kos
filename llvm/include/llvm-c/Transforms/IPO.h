@@ -77,7 +77,8 @@ void LLVMAddInternalizePass(LLVMPassManagerRef, unsigned AllButMain);
  * @see llvm::createInternalizePass function.
  */
 void LLVMAddInternalizePassWithMustPreservePredicate(
-    LLVMPassManagerRef PM, void *Context,
+    LLVMPassManagerRef PM,
+    void *Context,
     LLVMBool (*MustPreserve)(LLVMValueRef, void *));
 
 /** See llvm::createStripDeadPrototypesPass function. */

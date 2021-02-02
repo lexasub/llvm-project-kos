@@ -20,12 +20,11 @@
 #include <unistd.h>
 #include <unwind.h>
 
-_Unwind_Reason_Code frame_handler(struct _Unwind_Context *ctx, void *arg) {
+_Unwind_Reason_Code frame_handler(struct _Unwind_Context* ctx, void* arg) {
   (void)arg;
-  Dl_info info = {0, 0, 0, 0};
+  Dl_info info = { 0, 0, 0, 0 };
 
-  // Unwind util the main is reached, above frames deeped on the platfrom and
-  // architecture.
+  // Unwind util the main is reached, above frames deeped on the platfrom and architecture.
   if (dladdr(reinterpret_cast<void *>(_Unwind_GetIP(ctx)), &info) &&
       info.dli_sname && !strcmp("main", info.dli_sname)) {
     _Exit(0);
@@ -39,11 +38,13 @@ void signal_handler(int signum) {
   _Exit(-1);
 }
 
-int *faultyPointer = NULL;
+int* faultyPointer = NULL;
 
-__attribute__((noinline)) void crashing_leaf_func(void) { *faultyPointer = 0; }
+__attribute__((noinline)) void crashing_leaf_func(void) {
+  *faultyPointer = 0;
+}
 
-int main(int, char **) {
+int main(int, char**) {
   signal(SIGSEGV, signal_handler);
   crashing_leaf_func();
   return -2;

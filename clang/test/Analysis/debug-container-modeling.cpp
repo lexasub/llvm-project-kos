@@ -13,10 +13,10 @@
 #include "Inputs/system-header-simulator-cxx.h"
 
 template <typename Container>
-long clang_analyzer_container_begin(const Container &);
+long clang_analyzer_container_begin(const Container&);
 template <typename Container>
-long clang_analyzer_container_end(const Container &);
-void clang_analyzer_denote(long, const char *);
+long clang_analyzer_container_end(const Container&);
+void clang_analyzer_denote(long, const char*);
 void clang_analyzer_express(long);
 
 void container_begin_end(const std::vector<int> v0) {
@@ -27,5 +27,5 @@ void container_begin_end(const std::vector<int> v0) {
   clang_analyzer_denote(clang_analyzer_container_end(v0), "$e0");
 
   clang_analyzer_express(clang_analyzer_container_begin(v0)); // expected-warning{{$b0}}
-  clang_analyzer_express(clang_analyzer_container_end(v0));   // expected-warning{{$e0}}
+  clang_analyzer_express(clang_analyzer_container_end(v0)); // expected-warning{{$e0}}
 }

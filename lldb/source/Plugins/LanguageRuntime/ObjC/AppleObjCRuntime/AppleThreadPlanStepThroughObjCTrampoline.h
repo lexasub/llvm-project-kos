@@ -12,9 +12,9 @@
 #include "AppleObjCTrampolineHandler.h"
 #include "lldb/Core/Value.h"
 #include "lldb/Target/ThreadPlan.h"
-#include "lldb/Target/ThreadPlanShouldStopHere.h"
 #include "lldb/Target/ThreadPlanStepInRange.h"
 #include "lldb/Target/ThreadPlanStepOut.h"
+#include "lldb/Target/ThreadPlanShouldStopHere.h"
 #include "lldb/lldb-enumerations.h"
 #include "lldb/lldb-types.h"
 
@@ -69,10 +69,10 @@ private:
   FunctionCaller *m_impl_function; /// This is a pointer to a impl function that
                                    /// is owned by the client that pushes this
                                    /// plan.
-  bool m_stop_others;              /// Whether we should stop other threads.
+  bool m_stop_others;  /// Whether we should stop other threads.
 };
 
-class AppleThreadPlanStepThroughDirectDispatch : public ThreadPlanStepOut {
+class AppleThreadPlanStepThroughDirectDispatch: public ThreadPlanStepOut {
 public:
   AppleThreadPlanStepThroughDirectDispatch(
       Thread &thread, AppleObjCTrampolineHandler &handler,
@@ -92,22 +92,23 @@ public:
   bool DoWillResume(lldb::StateType resume_state, bool current_plan) override;
 
   void SetFlagsToDefault() override {
-    GetFlags().Set(ThreadPlanStepInRange::GetDefaultFlagsValue());
+          GetFlags().Set(ThreadPlanStepInRange::GetDefaultFlagsValue());
   }
 
 protected:
   bool DoPlanExplainsStop(Event *event_ptr) override;
 
   AppleObjCTrampolineHandler &m_trampoline_handler;
-  std::string m_dispatch_func_name; /// Which dispatch function we're stepping
-                                    /// through.
+  std::string m_dispatch_func_name;  /// Which dispatch function we're stepping
+                                     /// through.
   lldb::ThreadPlanSP m_objc_step_through_sp; /// When we hit an objc_msgSend,
                                              /// we'll use this plan to get to
                                              /// its target.
   std::vector<lldb::BreakpointSP> m_msgSend_bkpts; /// Breakpoints on the objc
                                                    /// dispatch functions.
-  bool m_at_msg_send; /// Are we currently handling an msg_send
-  bool m_stop_others; /// Whether we should stop other threads.
+  bool m_at_msg_send;  /// Are we currently handling an msg_send
+  bool m_stop_others;  /// Whether we should stop other threads.
+
 };
 
 } // namespace lldb_private

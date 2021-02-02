@@ -19,7 +19,7 @@ int global_function() { return -1; }
 namespace ns {
 void global_namespace_function() { global_variable.member_function(); }
 int global_namespace_variable = 1;
-} // namespace ns
+}
 
 // Check that the functions that belong to C have C as a context and the
 // functions that belong to the namespace have it as a context, and the global

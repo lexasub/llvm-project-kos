@@ -48,15 +48,13 @@ void throws() {
       // PGOGEN-EXC: store {{.*}} @[[THC]], i64 0, i64 6
       // PGOGEN-EXC: store {{.*}} @[[THC]], i64 0, i64 7
       // PGOUSE-EXC: br {{.*}} !prof ![[TH5:[0-9]+]]
-      if (e) {
-      }
+      if (e) {}
     }
     // PGOGEN: store {{.*}} @[[THC]], i64 0, i64 2
 
     // PGOGEN: store {{.*}} @[[THC]], i64 0, i64 8
     // PGOUSE: br {{.*}} !prof ![[TH6:[0-9]+]]
-    if (i < 100) {
-    }
+    if (i < 100) {}
   }
 
   // PGOUSE-NOT: br {{.*}} !prof ![0-9]+
@@ -75,8 +73,7 @@ void unreachable(int i) {
   // PGOGEN: store {{.*}} @[[UNC]], i64 0, i64 2
   // Since we never reach here, the weights should all be zero (and skipped)
   // PGOUSE-NOT: br {{.*}} !prof !{{.*}}
-  if (i) {
-  }
+  if (i) {}
 }
 
 // PGOUSE-DAG: ![[TH1]] = !{!"branch_weights", i32 101, i32 2}
@@ -91,7 +88,6 @@ int main(int argc, const char *argv[]) {
   throws();
   try {
     unreachable(1);
-  } catch (int) {
-  }
+  } catch (int) {}
   return 0;
 }

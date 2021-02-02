@@ -17,7 +17,7 @@
 #include "llvm/CodeGen/TargetFrameLowering.h"
 
 namespace llvm {
-class MipsSubtarget;
+  class MipsSubtarget;
 
 class MipsFrameLowering : public TargetFrameLowering {
 protected:
@@ -41,7 +41,8 @@ public:
   }
 
   MachineBasicBlock::iterator
-  eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
+  eliminateCallFramePseudoInstr(MachineFunction &MF,
+                                MachineBasicBlock &MBB,
                                 MachineBasicBlock::iterator I) const override;
 
 protected:
@@ -52,6 +53,6 @@ protected:
 const MipsFrameLowering *createMips16FrameLowering(const MipsSubtarget &ST);
 const MipsFrameLowering *createMipsSEFrameLowering(const MipsSubtarget &ST);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

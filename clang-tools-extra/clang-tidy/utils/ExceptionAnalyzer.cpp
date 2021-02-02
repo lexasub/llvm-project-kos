@@ -251,7 +251,8 @@ ExceptionAnalyzer::analyze(const FunctionDecl *Func) {
   return analyzeDispatch(Func);
 }
 
-ExceptionAnalyzer::ExceptionInfo ExceptionAnalyzer::analyze(const Stmt *Stmt) {
+ExceptionAnalyzer::ExceptionInfo
+ExceptionAnalyzer::analyze(const Stmt *Stmt) {
   return analyzeDispatch(Stmt);
 }
 

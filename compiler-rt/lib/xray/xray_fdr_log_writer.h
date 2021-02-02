@@ -62,7 +62,7 @@ template <class Tuple> struct AggregateSizes {
 };
 
 template <MetadataRecord::RecordKinds Kind, class... DataTypes>
-MetadataRecord createMetadataRecord(DataTypes &&...Ds) {
+MetadataRecord createMetadataRecord(DataTypes &&... Ds) {
   static_assert(AggregateSizes<std::tuple<DataTypes...>>::value <=
                     sizeof(MetadataRecord) - 1,
                 "Metadata payload longer than metadata buffer!");
@@ -99,7 +99,7 @@ public:
       : FDRLogWriter(B, static_cast<char *>(B.Data)) {}
 
   template <MetadataRecord::RecordKinds Kind, class... Data>
-  bool writeMetadata(Data &&...Ds) {
+  bool writeMetadata(Data &&... Ds) {
     // TODO: Check boundary conditions:
     // 1) Buffer is full, and cannot handle one metadata record.
     // 2) Buffer queue is finalising.

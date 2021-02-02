@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <vector>
 
+
 namespace llvm {
 class raw_ostream;
 
@@ -59,7 +60,7 @@ class GsymReader;
 ///
 struct InlineInfo {
 
-  uint32_t Name;     ///< String table offset in the string table.
+  uint32_t Name; ///< String table offset in the string table.
   uint32_t CallFile; ///< 1 based file index in the file table.
   uint32_t CallLine; ///< Source line number.
   AddressRanges Ranges;

@@ -20,19 +20,19 @@
 #ifdef CK1
 
 template <typename T, int X, long long Y>
-struct SS {
+struct SS{
   T a[X][Y];
 
   // CK1: define {{.*}}i32 @{{.+}}foo{{.+}}(
   int foo(void) {
 
-// CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-// CK1: call void @[[OFFL1:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd collapse(2)
-    for (int i = 0; i < X; i++) {
-      for (int j = 0; j < Y; j++) {
-        a[i][j] = (T)0;
+    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+    // CK1: call void @[[OFFL1:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd collapse(2)
+    for(int i = 0; i < X; i++) {
+      for(int j = 0; j < Y; j++) {
+	a[i][j] = (T)0;
       }
     }
     // CK1: define internal void @[[OFFL1]](
@@ -60,6 +60,7 @@ struct SS {
 int teams_template_struct(void) {
   SS<int, 123, 456> V;
   return V.foo();
+
 }
 
 // CK4: !{!"llvm.loop.vectorize.enable", i1 true}
@@ -86,24 +87,24 @@ int teams_template_struct(void) {
 template <typename T, int n, int m>
 int tmain(T argc) {
   T a[n][m];
-#pragma omp target
-#pragma omp teams distribute parallel for simd collapse(2)
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
+  #pragma omp target
+  #pragma omp teams distribute parallel for simd collapse(2)
+  for(int i = 0; i < n; i++) {
+    for(int j = 0; j < m; j++) {
       a[i][j] = (T)0;
     }
   }
   return 0;
 }
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   int n = 100;
   int m = 2;
   int a[n][m];
-#pragma omp target
-#pragma omp teams distribute parallel for simd collapse(2)
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
+  #pragma omp target
+  #pragma omp teams distribute parallel for simd collapse(2)
+  for(int i = 0; i < n; i++) {
+    for(int j = 0; j < m; j++) {
       a[i][j] = 0;
     }
   }
@@ -132,6 +133,7 @@ int main(int argc, char **argv) {
 // CK2: call void @__kmpc_for_static_init_{{[4|8]}}({{.+}}, {{.+}}, i32 34, {{.+}}, {{.+}},
 // CK2: call void @__kmpc_for_static_fini(
 // CK2: ret void
+
 
 // CK2: define {{.*}}i32 @[[TMAIN]]({{.+}})
 // CK2: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},

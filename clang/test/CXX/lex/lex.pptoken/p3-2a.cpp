@@ -2,11 +2,11 @@
 
 // Check for context-sensitive header-name token formation.
 // CHECK: import <foo  bar>;
-import<foo bar>;
+import <foo  bar>;
 
 // Not at the top level: these are each 8 tokens rather than 5.
 // CHECK: { import <foo bar>; }
-{ import<foo bar>; }
+{ import <foo  bar>; }
 // CHECK: ( import <foo bar>; :>
 ( import <foo  bar>; :>
 // CHECK: [ import <foo bar>; %>
@@ -76,6 +76,6 @@ foo
 import
 <foo  bar>;
 
-#define IMPORT import<foo bar>
+#define IMPORT import <foo  bar>
 // CHECK: import <foo bar>;
 IMPORT;

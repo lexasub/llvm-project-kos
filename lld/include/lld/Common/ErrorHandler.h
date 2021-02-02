@@ -77,7 +77,7 @@
 namespace llvm {
 class DiagnosticInfo;
 class raw_ostream;
-} // namespace llvm
+}
 
 namespace lld {
 

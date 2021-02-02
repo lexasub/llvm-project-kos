@@ -4,10 +4,10 @@
 
 @interface Container : NSObject {
 @public
-  ForwardDeclaredClass *member;
+    ForwardDeclaredClass *member;
 }
 
-- (id)init;
-- (ForwardDeclaredClass *)getMember;
+-(id)init;
+-(ForwardDeclaredClass*)getMember;
 
 @end

@@ -12,7 +12,6 @@
 //===---------------------------------------------------------------------===//
 
 #include "asan_interceptors_memintrinsics.h"
-
 #include "asan_report.h"
 #include "asan_stack.h"
 #include "asan_suppressions.h"
@@ -37,8 +36,8 @@ void *__asan_memmove(void *to, const void *from, uptr size) {
 // the only things there it wants are these three.  Just define them
 // as aliases here rather than repeating the contents.
 
-extern "C" decltype(__asan_memcpy) memcpy [[gnu::alias("__asan_memcpy")]];
-extern "C" decltype(__asan_memmove) memmove [[gnu::alias("__asan_memmove")]];
-extern "C" decltype(__asan_memset) memset [[gnu::alias("__asan_memset")]];
+extern "C" decltype(__asan_memcpy) memcpy[[gnu::alias("__asan_memcpy")]];
+extern "C" decltype(__asan_memmove) memmove[[gnu::alias("__asan_memmove")]];
+extern "C" decltype(__asan_memset) memset[[gnu::alias("__asan_memset")]];
 
 #endif  // SANITIZER_FUCHSIA || SANITIZER_RTEMS

@@ -1,4 +1,4 @@
-// RUN: %clangxx_msan -fsanitize-memory-track-origins=2 -g %s -o %t
+// RUN: %clangxx_msan -fsanitize-memory-track-origins=2 -g %s -o %t 
 // RUN: %run %t 2>&1 | \
 // RUN:   FileCheck --check-prefixes=CHECK,CHECK-NOSTATS %s
 // RUN: MSAN_OPTIONS=print_stats=1 %run %t 2>&1 | \
@@ -6,7 +6,7 @@
 // RUN: MSAN_OPTIONS=print_stats=1,atexit=1 %run %t 2>&1 | \
 // RUN:   FileCheck --check-prefixes=CHECK,CHECK-STATS %s
 
-// RUN: %clangxx_msan -fsanitize-memory-track-origins=2 -g -DPOSITIVE=1 %s -o %t
+// RUN: %clangxx_msan -fsanitize-memory-track-origins=2 -g -DPOSITIVE=1 %s -o %t 
 // RUN: not %run %t 2>&1 | \
 // RUN:   FileCheck --check-prefixes=CHECK,CHECK-NOSTATS %s
 // RUN: MSAN_OPTIONS=print_stats=1 not %run %t 2>&1 | \

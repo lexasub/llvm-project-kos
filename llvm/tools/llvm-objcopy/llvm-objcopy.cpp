@@ -331,7 +331,9 @@ static Error executeObjcopy(CopyConfig &Config) {
   return Error::success();
 }
 
-namespace {} // anonymous namespace
+namespace {
+
+} // anonymous namespace
 
 int main(int argc, char **argv) {
   InitLLVM X(argc, argv);

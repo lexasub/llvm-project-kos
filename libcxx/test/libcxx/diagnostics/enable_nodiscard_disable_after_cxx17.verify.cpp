@@ -19,6 +19,7 @@
 // ADDITIONAL_COMPILE_FLAGS: -D_LIBCPP_DISABLE_NODISCARD_AFTER_CXX17
 #include <__config>
 
+
 _LIBCPP_NODISCARD_EXT int foo() { return 42; }
 _LIBCPP_NODISCARD_AFTER_CXX17 int bar() { return 42; }
 

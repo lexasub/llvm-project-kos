@@ -2,35 +2,35 @@
 
 struct ConstCopy {
   ConstCopy();
-  ConstCopy(const ConstCopy &);
+  ConstCopy(const ConstCopy&);
 };
 
 struct NonConstCopy {
   NonConstCopy();
-  NonConstCopy(NonConstCopy &);
+  NonConstCopy(NonConstCopy&);
 };
 
-struct VirtualInheritsNonConstCopy : virtual NonConstCopy {
+struct VirtualInheritsNonConstCopy : virtual NonConstCopy { 
   VirtualInheritsNonConstCopy();
-  VirtualInheritsNonConstCopy(const VirtualInheritsNonConstCopy &);
+  VirtualInheritsNonConstCopy(const VirtualInheritsNonConstCopy&);
 };
 
 struct ImplicitNonConstCopy1 : NonConstCopy { // expected-note {{candidate constructor}}
-  ImplicitNonConstCopy1();                    // expected-note {{candidate constructor}}
+  ImplicitNonConstCopy1(); // expected-note {{candidate constructor}}
 };
 
 struct ImplicitNonConstCopy2 { // expected-note {{candidate constructor}}
-  ImplicitNonConstCopy2();     // expected-note {{candidate constructor}}
+  ImplicitNonConstCopy2(); // expected-note {{candidate constructor}}
   NonConstCopy ncc;
 };
 
 struct ImplicitNonConstCopy3 { // expected-note {{candidate constructor}}
-  ImplicitNonConstCopy3();     // expected-note {{candidate constructor}}
+  ImplicitNonConstCopy3(); // expected-note {{candidate constructor}}
   NonConstCopy ncc_array[2][3];
 };
 
 struct ImplicitNonConstCopy4 : VirtualInheritsNonConstCopy { // expected-note {{candidate constructor}}
-  ImplicitNonConstCopy4();                                   // expected-note {{candidate constructor}}
+  ImplicitNonConstCopy4(); // expected-note {{candidate constructor}}
 };
 
 void test_non_const_copy(const ImplicitNonConstCopy1 &cincc1,

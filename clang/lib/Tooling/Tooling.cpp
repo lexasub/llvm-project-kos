@@ -86,16 +86,15 @@ newDriver(DiagnosticsEngine *Diagnostics, const char *BinaryName,
 /// Retrieves the clang CC1 specific flags out of the compilation's jobs.
 ///
 /// Returns nullptr on error.
-static const llvm::opt::ArgStringList *
-getCC1Arguments(DiagnosticsEngine *Diagnostics,
-                driver::Compilation *Compilation) {
+static const llvm::opt::ArgStringList *getCC1Arguments(
+    DiagnosticsEngine *Diagnostics, driver::Compilation *Compilation) {
   // We expect to get back exactly one Command job, if we didn't something
   // failed. Extract that job from the Compilation.
   const driver::JobList &Jobs = Compilation->getJobs();
   const driver::ActionList &Actions = Compilation->getActions();
   bool OffloadCompilation = false;
   if (Jobs.size() > 1) {
-    for (auto A : Actions) {
+    for (auto A : Actions){
       // On MacOSX real actions may end up being wrapped in BindArchAction
       if (isa<driver::BindArchAction>(A))
         A = *A->input_begin();
@@ -321,7 +320,7 @@ ToolInvocation::~ToolInvocation() {
 }
 
 bool ToolInvocation::run() {
-  std::vector<const char *> Argv;
+  std::vector<const char*> Argv;
   for (const std::string &Str : CommandLine)
     Argv.push_back(Str.c_str());
   const char *const BinaryName = Argv[0];
@@ -330,7 +329,8 @@ bool ToolInvocation::run() {
   llvm::opt::InputArgList ParsedArgs = driver::getDriverOptTable().ParseArgs(
       ArrayRef<const char *>(Argv).slice(1), MissingArgIndex, MissingArgCount);
   ParseDiagnosticArgs(*DiagOpts, ParsedArgs);
-  TextDiagnosticPrinter DiagnosticPrinter(llvm::errs(), &*DiagOpts);
+  TextDiagnosticPrinter DiagnosticPrinter(
+      llvm::errs(), &*DiagOpts);
   DiagnosticsEngine Diagnostics(
       IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()), &*DiagOpts,
       DiagConsumer ? DiagConsumer : &DiagnosticPrinter, false);
@@ -347,8 +347,8 @@ bool ToolInvocation::run() {
       Driver->BuildCompilation(llvm::makeArrayRef(Argv)));
   if (!Compilation)
     return false;
-  const llvm::opt::ArgStringList *const CC1Args =
-      getCC1Arguments(&Diagnostics, Compilation.get());
+  const llvm::opt::ArgStringList *const CC1Args = getCC1Arguments(
+      &Diagnostics, Compilation.get());
   if (!CC1Args)
     return false;
   std::unique_ptr<CompilerInvocation> Invocation(
@@ -428,7 +428,9 @@ void ClangTool::appendArgumentsAdjuster(ArgumentsAdjuster Adjuster) {
   ArgsAdjuster = combineAdjusters(std::move(ArgsAdjuster), std::move(Adjuster));
 }
 
-void ClangTool::clearArgumentsAdjusters() { ArgsAdjuster = nullptr; }
+void ClangTool::clearArgumentsAdjusters() {
+  ArgsAdjuster = nullptr;
+}
 
 static void injectResourceDir(CommandLineArguments &Args, const char *Argv0,
                               void *MainAddr) {
@@ -643,7 +645,7 @@ std::unique_ptr<ASTUnit> buildASTFromCodeWithArgs(
 
   if (!Invocation.run())
     return nullptr;
-
+ 
   assert(ASTs.size() == 1);
   return std::move(ASTs[0]);
 }

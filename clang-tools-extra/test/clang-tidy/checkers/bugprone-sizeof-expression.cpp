@@ -12,9 +12,7 @@ extern int A[10];
 extern short B[10];
 
 #pragma pack(1)
-struct S {
-  char a, b, c;
-};
+struct  S { char a, b, c; };
 
 enum E { E_VALUE = 0 };
 enum class EC { VALUE = 0 };
@@ -72,7 +70,7 @@ bool TestTemplates() {
   return b;
 }
 
-int Test1(const char *ptr) {
+int Test1(const char* ptr) {
   int sum = 0;
   sum += sizeof(LEN);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(K)'
@@ -102,7 +100,7 @@ int Test1(const char *ptr) {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(sizeof(...))'
   sum += sizeof(LEN + -sizeof(X));
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(sizeof(...))'
-  sum += sizeof(LEN + -+-sizeof(X));
+  sum += sizeof(LEN + - + -sizeof(X));
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(sizeof(...))'
   sum += sizeof(char) / sizeof(char);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(T)/sizeof(T)'
@@ -118,11 +116,11 @@ int Test1(const char *ptr) {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(T*)/sizeof(T)'
   sum += sizeof(ptr) / sizeof(ptr[0]);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(T*)/sizeof(T)'
-  sum += sizeof(ptr) / sizeof(char *);
+  sum += sizeof(ptr) / sizeof(char*);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(P*)/sizeof(Q*)'
-  sum += sizeof(ptr) / sizeof(void *);
+  sum += sizeof(ptr) / sizeof(void*);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(P*)/sizeof(Q*)'
-  sum += sizeof(ptr) / sizeof(const void volatile *);
+  sum += sizeof(ptr) / sizeof(const void volatile*);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(P*)/sizeof(Q*)'
   sum += sizeof(ptr) / sizeof(char);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(T*)/sizeof(T)'
@@ -136,11 +134,9 @@ int Test1(const char *ptr) {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious 'sizeof' by 'sizeof' multiplication
   sum += (2 * sizeof(char)) * sizeof(int);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious 'sizeof' by 'sizeof' multiplication
-  if (sizeof(A) < 0x100000)
-    sum += 42;
+  if (sizeof(A) < 0x100000) sum += 42;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: suspicious comparison of 'sizeof(expr)' to a constant
-  if (sizeof(A) <= 0xFFFFFFFEU)
-    sum += 42;
+  if (sizeof(A) <= 0xFFFFFFFEU) sum += 42;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: suspicious comparison of 'sizeof(expr)' to a constant
   return sum;
 }
@@ -150,16 +146,16 @@ typedef const MyChar MyConstChar;
 
 int CE0 = sizeof sizeof(char);
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: suspicious usage of 'sizeof(sizeof(...))'
-int CE1 = sizeof + sizeof(char);
+int CE1 = sizeof +sizeof(char);
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: suspicious usage of 'sizeof(sizeof(...))'
-int CE2 = sizeof sizeof(const char *);
+int CE2 = sizeof sizeof(const char*);
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: suspicious usage of 'sizeof(sizeof(...))'
-int CE3 = sizeof sizeof(const volatile char *const *);
+int CE3 = sizeof sizeof(const volatile char* const*);
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: suspicious usage of 'sizeof(sizeof(...))'
 int CE4 = sizeof sizeof(MyConstChar);
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: suspicious usage of 'sizeof(sizeof(...))'
 
-int Test2(MyConstChar *A) {
+int Test2(MyConstChar* A) {
   int sum = 0;
   sum += sizeof(MyConstChar) / sizeof(char);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of sizeof pointer 'sizeof(T)/sizeof(T)'
@@ -171,21 +167,15 @@ int Test2(MyConstChar *A) {
 }
 
 template <int T>
-int Foo() {
-  int A[T];
-  return sizeof(T);
-}
+int Foo() { int A[T]; return sizeof(T); }
 // CHECK-MESSAGES: :[[@LINE-1]]:30: warning: suspicious usage of 'sizeof(K)'
 template <typename T>
-int Bar() {
-  T A[5];
-  return sizeof(A[0]) / sizeof(T);
-}
+int Bar() { T A[5]; return sizeof(A[0]) / sizeof(T); }
 // CHECK-MESSAGES: :[[@LINE-1]]:28: warning: suspicious usage of sizeof pointer 'sizeof(T)/sizeof(T)'
 int Test3() { return Foo<42>() + Bar<char>(); }
 
-static const char *kABC = "abc";
-static const wchar_t *kDEF = L"def";
+static const char* kABC = "abc";
+static const wchar_t* kDEF = L"def";
 int Test4(const char A[10]) {
   int sum = 0;
   sum += sizeof(kABC);
@@ -201,14 +191,14 @@ int Test5() {
 
   struct MyStruct {
     Array10 arr;
-    Array10 *ptr;
+    Array10* ptr;
   };
   typedef const MyStruct TMyStruct;
   typedef const MyStruct *PMyStruct;
   typedef TMyStruct *PMyStruct2;
 
   static TMyStruct kGlocalMyStruct = {};
-  static TMyStruct volatile *kGlocalMyStructPtr = &kGlocalMyStruct;
+  static TMyStruct volatile * kGlocalMyStructPtr = &kGlocalMyStruct;
 
   MyStruct S;
   PMyStruct PS;
@@ -226,9 +216,9 @@ int Test5() {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
   sum += sizeof(S.arr + 0);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
-  sum += sizeof(+S.arr);
+  sum += sizeof(+ S.arr);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
-  sum += sizeof((int *)S.arr);
+  sum += sizeof((int*)S.arr);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
 
   sum += sizeof(S.ptr);
@@ -242,7 +232,7 @@ int Test5() {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
   sum += sizeof(&S);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
-  sum += sizeof(MyStruct *);
+  sum += sizeof(MyStruct*);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
   sum += sizeof(PMyStruct);
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: suspicious usage of 'sizeof(A*)'; pointer to aggregate
@@ -299,7 +289,7 @@ int Test6() {
 int ValidExpressions() {
   int A[] = {1, 2, 3, 4};
   static const char str[] = "hello";
-  static const char *ptr[]{"aaa", "bbb", "ccc"};
+  static const char* ptr[] { "aaa", "bbb", "ccc" };
   typedef C *CA10[10];
   C *PtrArray[10];
   CA10 PtrArray1;
@@ -312,8 +302,8 @@ int ValidExpressions() {
   sum += sizeof(M{}.AsStruct());
   sum += sizeof(A[sizeof(A) / sizeof(int)]);
   sum += sizeof(&A[sizeof(A) / sizeof(int)]);
-  sum += sizeof(sizeof(0)); // Special case: sizeof size_t.
-  sum += sizeof(void *);
+  sum += sizeof(sizeof(0));  // Special case: sizeof size_t.
+  sum += sizeof(void*);
   sum += sizeof(void const *);
   sum += sizeof(void const *) / 4;
   sum += sizeof(str);

@@ -18,7 +18,7 @@ template <> struct LinearPolyBaseTypeTraits<Poly3D> {
   using ScalarTy = int64_t;
   static const unsigned Dimensions = 3;
 };
-} // namespace llvm
+}
 
 using Poly3DBase = LinearPolyBase<Poly3D>;
 class Poly3D : public Poly3DBase {
@@ -88,7 +88,7 @@ template <> struct LinearPolyBaseTypeTraits<Univariate3D> {
   using ScalarTy = int64_t;
   static const unsigned Dimensions = 3;
 };
-} // namespace llvm
+}
 
 using Univariate3DBase = UnivariateLinearPolyBase<Univariate3D>;
 class Univariate3D : public Univariate3DBase {
@@ -176,3 +176,4 @@ TEST(UnivariateLinearPolyBase, Univariate3D_Invert) {
   EXPECT_EQ(-Univariate3D(4, 0), Univariate3D(-4, 0));
   EXPECT_EQ(-Univariate3D(4, 1), Univariate3D(-4, 1));
 }
+

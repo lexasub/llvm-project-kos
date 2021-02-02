@@ -36,6 +36,6 @@ public:
 private:
   WatchpointMap m_watchpoints;
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_HOST_COMMON_NATIVEWATCHPOINTLIST_H

@@ -10,12 +10,10 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_clock.h"
-
+#include "tsan_rtl.h"
+#include "gtest/gtest.h"
 #include <sys/time.h>
 #include <time.h>
-
-#include "gtest/gtest.h"
-#include "tsan_rtl.h"
 
 namespace __tsan {
 
@@ -54,9 +52,9 @@ TEST(Clock, ChunkedBasic) {
   chunked.Reset(&cache);
 }
 
-static const uptr interesting_sizes[] = {
-    0,   1,   2,   30,  61,  62,  63,  64,  65,  66,  100, 124, 125,
-    126, 127, 128, 129, 130, 188, 189, 190, 191, 192, 193, 254, 255};
+static const uptr interesting_sizes[] = {0, 1, 2, 30, 61, 62, 63, 64, 65, 66,
+    100, 124, 125, 126, 127, 128, 129, 130, 188, 189, 190, 191, 192, 193, 254,
+    255};
 
 TEST(Clock, Iter) {
   const uptr n = ARRAY_SIZE(interesting_sizes);
@@ -64,7 +62,8 @@ TEST(Clock, Iter) {
     const uptr size = interesting_sizes[fi];
     SyncClock sync;
     ThreadClock vector(0);
-    for (uptr i = 0; i < size; i++) vector.set(&cache, i, i + 1);
+    for (uptr i = 0; i < size; i++)
+      vector.set(&cache, i, i + 1);
     if (size != 0)
       vector.release(&cache, &sync);
     uptr i = 0;
@@ -119,7 +118,7 @@ TEST(Clock, releaseStoreAcquire) {
   ASSERT_EQ(syncA.size(), 0U);
   ASSERT_EQ(syncB.size(), 0U);
   thr1.releaseStoreAcquire(&cache, &syncB);
-  ASSERT_EQ(syncB.size(), 2U);  // T0 and T1
+  ASSERT_EQ(syncB.size(), 2U); // T0 and T1
   // releaseStoreAcquire to an empty SyncClock
   thr0.releaseStoreAcquire(&cache, &syncA);
   ASSERT_EQ(syncA.size(), 1U);
@@ -154,7 +153,8 @@ TEST(Clock, ManyThreads) {
   ThreadClock vector(1);
   vector.acquire(&cache, &chunked);
   ASSERT_EQ(200U, vector.size());
-  for (unsigned i = 0; i < 200; i++) ASSERT_EQ(i + 1, vector.get(i));
+  for (unsigned i = 0; i < 200; i++)
+    ASSERT_EQ(i + 1, vector.get(i));
 
   chunked.Reset(&cache);
 }
@@ -272,19 +272,24 @@ TEST(Clock, Growth2) {
       const uptr to = interesting_sizes[ti];
       SyncClock sync;
       ThreadClock vector(0);
-      for (uptr i = 0; i < from; i++) vector.set(&cache, i, i + 1);
+      for (uptr i = 0; i < from; i++)
+        vector.set(&cache, i, i + 1);
       if (from != 0)
         vector.release(&cache, &sync);
       ASSERT_EQ(sync.size(), from);
-      for (uptr i = 0; i < from; i++) ASSERT_EQ(sync.get(i), i + 1);
-      for (uptr i = 0; i < to; i++) vector.set(&cache, i, i + 1);
+      for (uptr i = 0; i < from; i++)
+        ASSERT_EQ(sync.get(i), i + 1);
+      for (uptr i = 0; i < to; i++)
+        vector.set(&cache, i, i + 1);
       vector.release(&cache, &sync);
       ASSERT_EQ(sync.size(), to);
-      for (uptr i = 0; i < to; i++) ASSERT_EQ(sync.get(i), i + 1);
+      for (uptr i = 0; i < to; i++)
+        ASSERT_EQ(sync.get(i), i + 1);
       vector.set(&cache, to + 1, to + 1);
       vector.release(&cache, &sync);
       ASSERT_EQ(sync.size(), to + 2);
-      for (uptr i = 0; i < to; i++) ASSERT_EQ(sync.get(i), i + 1);
+      for (uptr i = 0; i < to; i++)
+        ASSERT_EQ(sync.get(i), i + 1);
       ASSERT_EQ(sync.get(to), 0U);
       ASSERT_EQ(sync.get(to + 1), to + 1);
       sync.Reset(&cache);
@@ -301,11 +306,14 @@ struct SimpleSyncClock {
   u64 clock[kThreads];
   uptr size;
 
-  SimpleSyncClock() { Reset(); }
+  SimpleSyncClock() {
+    Reset();
+  }
 
   void Reset() {
     size = 0;
-    for (uptr i = 0; i < kThreads; i++) clock[i] = 0;
+    for (uptr i = 0; i < kThreads; i++)
+      clock[i] = 0;
   }
 
   bool verify(const SyncClock *other) const {
@@ -331,15 +339,19 @@ struct SimpleThreadClock {
   explicit SimpleThreadClock(unsigned tid) {
     this->tid = tid;
     size = tid + 1;
-    for (uptr i = 0; i < kThreads; i++) clock[i] = 0;
+    for (uptr i = 0; i < kThreads; i++)
+      clock[i] = 0;
   }
 
-  void tick() { clock[tid]++; }
+  void tick() {
+    clock[tid]++;
+  }
 
   void acquire(const SimpleSyncClock *src) {
     if (size < src->size)
       size = src->size;
-    for (uptr i = 0; i < kThreads; i++) clock[i] = max(clock[i], src->clock[i]);
+    for (uptr i = 0; i < kThreads; i++)
+      clock[i] = max(clock[i], src->clock[i]);
   }
 
   void release(SimpleSyncClock *dst) const {
@@ -369,7 +381,8 @@ struct SimpleThreadClock {
   void ReleaseStore(SimpleSyncClock *dst) const {
     if (dst->size < size)
       dst->size = size;
-    for (uptr i = 0; i < kThreads; i++) dst->clock[i] = clock[i];
+    for (uptr i = 0; i < kThreads; i++)
+      dst->clock[i] = clock[i];
   }
 
   bool verify(const ThreadClock *other) const {
@@ -415,54 +428,54 @@ static bool ClockFuzzer(bool printing) {
     thr1[tid]->tick();
 
     switch (rand() % 7) {
-      case 0:
-        if (printing)
-          printf("acquire thr%d <- clk%d\n", tid, cid);
-        thr0[tid]->acquire(sync0[cid]);
-        thr1[tid]->acquire(&cache, sync1[cid]);
-        break;
-      case 1:
-        if (printing)
-          printf("release thr%d -> clk%d\n", tid, cid);
-        thr0[tid]->release(sync0[cid]);
-        thr1[tid]->release(&cache, sync1[cid]);
-        break;
-      case 2:
-        if (printing)
-          printf("acq_rel thr%d <> clk%d\n", tid, cid);
-        thr0[tid]->acq_rel(sync0[cid]);
-        thr1[tid]->acq_rel(&cache, sync1[cid]);
-        break;
-      case 3:
-        if (printing)
-          printf("rel_str thr%d >> clk%d\n", tid, cid);
-        thr0[tid]->ReleaseStore(sync0[cid]);
-        thr1[tid]->ReleaseStore(&cache, sync1[cid]);
-        break;
-      case 4:
-        if (printing)
-          printf("reset clk%d\n", cid);
-        sync0[cid]->Reset();
-        sync1[cid]->Reset(&cache);
-        break;
-      case 5:
-        if (printing)
-          printf("releaseStoreAcquire thr%d -> clk%d\n", tid, cid);
-        thr0[tid]->releaseStoreAcquire(sync0[cid]);
-        thr1[tid]->releaseStoreAcquire(&cache, sync1[cid]);
-        break;
-      case 6:
-        if (printing)
-          printf("reset thr%d\n", tid);
-        u64 epoch = thr0[tid]->clock[tid] + 1;
-        reused[tid]++;
-        delete thr0[tid];
-        thr0[tid] = new SimpleThreadClock(tid);
-        thr0[tid]->clock[tid] = epoch;
-        delete thr1[tid];
-        thr1[tid] = new ThreadClock(tid, reused[tid]);
-        thr1[tid]->set(epoch);
-        break;
+    case 0:
+      if (printing)
+        printf("acquire thr%d <- clk%d\n", tid, cid);
+      thr0[tid]->acquire(sync0[cid]);
+      thr1[tid]->acquire(&cache, sync1[cid]);
+      break;
+    case 1:
+      if (printing)
+        printf("release thr%d -> clk%d\n", tid, cid);
+      thr0[tid]->release(sync0[cid]);
+      thr1[tid]->release(&cache, sync1[cid]);
+      break;
+    case 2:
+      if (printing)
+        printf("acq_rel thr%d <> clk%d\n", tid, cid);
+      thr0[tid]->acq_rel(sync0[cid]);
+      thr1[tid]->acq_rel(&cache, sync1[cid]);
+      break;
+    case 3:
+      if (printing)
+        printf("rel_str thr%d >> clk%d\n", tid, cid);
+      thr0[tid]->ReleaseStore(sync0[cid]);
+      thr1[tid]->ReleaseStore(&cache, sync1[cid]);
+      break;
+    case 4:
+      if (printing)
+        printf("reset clk%d\n", cid);
+      sync0[cid]->Reset();
+      sync1[cid]->Reset(&cache);
+      break;
+    case 5:
+      if (printing)
+        printf("releaseStoreAcquire thr%d -> clk%d\n", tid, cid);
+      thr0[tid]->releaseStoreAcquire(sync0[cid]);
+      thr1[tid]->releaseStoreAcquire(&cache, sync1[cid]);
+      break;
+    case 6:
+      if (printing)
+        printf("reset thr%d\n", tid);
+      u64 epoch = thr0[tid]->clock[tid] + 1;
+      reused[tid]++;
+      delete thr0[tid];
+      thr0[tid] = new SimpleThreadClock(tid);
+      thr0[tid]->clock[tid] = epoch;
+      delete thr1[tid];
+      thr1[tid] = new ThreadClock(tid, reused[tid]);
+      thr1[tid]->set(epoch);
+      break;
     }
 
     if (printing) {

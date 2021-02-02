@@ -11,15 +11,14 @@
 // ASan flag parsing logic.
 //===----------------------------------------------------------------------===//
 
-#include "asan_flags.h"
-
 #include "asan_activation.h"
+#include "asan_flags.h"
 #include "asan_interface_internal.h"
 #include "asan_stack.h"
 #include "lsan/lsan_common.h"
 #include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_flag_parser.h"
 #include "sanitizer_common/sanitizer_flags.h"
+#include "sanitizer_common/sanitizer_flag_parser.h"
 #include "ubsan/ubsan_flags.h"
 #include "ubsan/ubsan_platform.h"
 
@@ -128,8 +127,7 @@ void InitializeFlags() {
   InitializeCommonFlags();
 
   // TODO(eugenis): dump all flags at verbosity>=2?
-  if (Verbosity())
-    ReportUnrecognizedFlags();
+  if (Verbosity()) ReportUnrecognizedFlags();
 
   if (common_flags()->help) {
     // TODO(samsonov): print all of the flags (ASan, LSan, common).
@@ -165,10 +163,8 @@ void InitializeFlags() {
   // quarantine_size is deprecated but we still honor it.
   // quarantine_size can not be used together with quarantine_size_mb.
   if (f->quarantine_size >= 0 && f->quarantine_size_mb >= 0) {
-    Report(
-        "%s: please use either 'quarantine_size' (deprecated) or "
-        "quarantine_size_mb, but not both\n",
-        SanitizerToolName);
+    Report("%s: please use either 'quarantine_size' (deprecated) or "
+           "quarantine_size_mb, but not both\n", SanitizerToolName);
     Die();
   }
   if (f->quarantine_size >= 0)
@@ -189,31 +185,26 @@ void InitializeFlags() {
     f->thread_local_quarantine_size_kb = kDefaultThreadLocalQuarantineSizeKb;
   }
   if (f->thread_local_quarantine_size_kb == 0 && f->quarantine_size_mb > 0) {
-    Report(
-        "%s: thread_local_quarantine_size_kb can be set to 0 only when "
-        "quarantine_size_mb is set to 0\n",
-        SanitizerToolName);
+    Report("%s: thread_local_quarantine_size_kb can be set to 0 only when "
+           "quarantine_size_mb is set to 0\n", SanitizerToolName);
     Die();
   }
   if (!f->replace_str && common_flags()->intercept_strlen) {
-    Report(
-        "WARNING: strlen interceptor is enabled even though replace_str=0. "
-        "Use intercept_strlen=0 to disable it.");
+    Report("WARNING: strlen interceptor is enabled even though replace_str=0. "
+           "Use intercept_strlen=0 to disable it.");
   }
   if (!f->replace_str && common_flags()->intercept_strchr) {
-    Report(
-        "WARNING: strchr* interceptors are enabled even though "
-        "replace_str=0. Use intercept_strchr=0 to disable them.");
+    Report("WARNING: strchr* interceptors are enabled even though "
+           "replace_str=0. Use intercept_strchr=0 to disable them.");
   }
   if (!f->replace_str && common_flags()->intercept_strndup) {
-    Report(
-        "WARNING: strndup* interceptors are enabled even though "
-        "replace_str=0. Use intercept_strndup=0 to disable them.");
+    Report("WARNING: strndup* interceptors are enabled even though "
+           "replace_str=0. Use intercept_strndup=0 to disable them.");
   }
 }
 
 }  // namespace __asan
 
-SANITIZER_INTERFACE_WEAK_DEF(const char *, __asan_default_options, void) {
+SANITIZER_INTERFACE_WEAK_DEF(const char*, __asan_default_options, void) {
   return "";
 }

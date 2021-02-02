@@ -11,14 +11,13 @@
 //===----------------------------------------------------------------------===//
 
 #include "tsan_interface_java.h"
-
-#include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_internal_defs.h"
-#include "sanitizer_common/sanitizer_placement_new.h"
-#include "sanitizer_common/sanitizer_procmaps.h"
-#include "sanitizer_common/sanitizer_stacktrace.h"
-#include "tsan_mutex.h"
 #include "tsan_rtl.h"
+#include "tsan_mutex.h"
+#include "sanitizer_common/sanitizer_internal_defs.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_placement_new.h"
+#include "sanitizer_common/sanitizer_stacktrace.h"
+#include "sanitizer_common/sanitizer_procmaps.h"
 
 using namespace __tsan;
 
@@ -31,12 +30,15 @@ struct JavaContext {
   const uptr heap_size;
 
   JavaContext(jptr heap_begin, jptr heap_size)
-      : heap_begin(heap_begin), heap_size(heap_size) {}
+      : heap_begin(heap_begin)
+      , heap_size(heap_size) {
+  }
 };
 
 class ScopedJavaFunc {
  public:
-  ScopedJavaFunc(ThreadState *thr, uptr pc) : thr_(thr) {
+  ScopedJavaFunc(ThreadState *thr, uptr pc)
+      : thr_(thr) {
     Initialize(thr_);
     FuncEntry(thr, pc);
   }
@@ -55,13 +57,13 @@ static JavaContext *jctx;
 
 }  // namespace __tsan
 
-#define SCOPED_JAVA_FUNC(func)                \
-  ThreadState *thr = cur_thread();            \
-  const uptr caller_pc = GET_CALLER_PC();     \
+#define SCOPED_JAVA_FUNC(func) \
+  ThreadState *thr = cur_thread(); \
+  const uptr caller_pc = GET_CALLER_PC(); \
   const uptr pc = StackTrace::GetCurrentPc(); \
-  (void)pc;                                   \
-  ScopedJavaFunc scoped(thr, caller_pc);      \
-  /**/
+  (void)pc; \
+  ScopedJavaFunc scoped(thr, caller_pc); \
+/**/
 
 void __tsan_java_init(jptr heap_begin, jptr heap_size) {
   SCOPED_JAVA_FUNC(__tsan_java_init);
@@ -72,10 +74,10 @@ void __tsan_java_init(jptr heap_begin, jptr heap_size) {
   CHECK_EQ(heap_begin % kHeapAlignment, 0);
   CHECK_EQ(heap_size % kHeapAlignment, 0);
   CHECK_LT(heap_begin, heap_begin + heap_size);
-  jctx = new (jctx_buf) JavaContext(heap_begin, heap_size);
+  jctx = new(jctx_buf) JavaContext(heap_begin, heap_size);
 }
 
-int __tsan_java_fini() {
+int  __tsan_java_fini() {
   SCOPED_JAVA_FUNC(__tsan_java_fini);
   DPrintf("#%d: java_fini()\n", thr->tid);
   CHECK_NE(jctx, 0);
@@ -131,14 +133,14 @@ void __tsan_java_move(jptr src, jptr dst, jptr size) {
   ctx->metamap.MoveMemory(src, dst, size);
 
   // Move shadow.
-  u64 *s = (u64 *)MemToShadow(src);
-  u64 *d = (u64 *)MemToShadow(dst);
-  u64 *send = (u64 *)MemToShadow(src + size);
+  u64 *s = (u64*)MemToShadow(src);
+  u64 *d = (u64*)MemToShadow(dst);
+  u64 *send = (u64*)MemToShadow(src + size);
   uptr inc = 1;
   if (dst > src) {
-    s = (u64 *)MemToShadow(src + size) - 1;
-    d = (u64 *)MemToShadow(dst + size) - 1;
-    send = (u64 *)MemToShadow(src) - 1;
+    s = (u64*)MemToShadow(src + size) - 1;
+    d = (u64*)MemToShadow(dst + size) - 1;
+    send = (u64*)MemToShadow(src) - 1;
     inc = -1;
   }
   for (; s != send; s += inc, d += inc) {
@@ -177,9 +179,8 @@ void __tsan_java_mutex_lock(jptr addr) {
   CHECK_GE(addr, jctx->heap_begin);
   CHECK_LT(addr, jctx->heap_begin + jctx->heap_size);
 
-  MutexPostLock(thr, pc, addr,
-                MutexFlagLinkerInit | MutexFlagWriteReentrant |
-                    MutexFlagDoPreLockOnPostLock);
+  MutexPostLock(thr, pc, addr, MutexFlagLinkerInit | MutexFlagWriteReentrant |
+      MutexFlagDoPreLockOnPostLock);
 }
 
 void __tsan_java_mutex_unlock(jptr addr) {
@@ -199,9 +200,8 @@ void __tsan_java_mutex_read_lock(jptr addr) {
   CHECK_GE(addr, jctx->heap_begin);
   CHECK_LT(addr, jctx->heap_begin + jctx->heap_size);
 
-  MutexPostReadLock(thr, pc, addr,
-                    MutexFlagLinkerInit | MutexFlagWriteReentrant |
-                        MutexFlagDoPreLockOnPostLock);
+  MutexPostReadLock(thr, pc, addr, MutexFlagLinkerInit |
+      MutexFlagWriteReentrant | MutexFlagDoPreLockOnPostLock);
 }
 
 void __tsan_java_mutex_read_unlock(jptr addr) {
@@ -222,10 +222,8 @@ void __tsan_java_mutex_lock_rec(jptr addr, int rec) {
   CHECK_LT(addr, jctx->heap_begin + jctx->heap_size);
   CHECK_GT(rec, 0);
 
-  MutexPostLock(thr, pc, addr,
-                MutexFlagLinkerInit | MutexFlagWriteReentrant |
-                    MutexFlagDoPreLockOnPostLock | MutexFlagRecursiveLock,
-                rec);
+  MutexPostLock(thr, pc, addr, MutexFlagLinkerInit | MutexFlagWriteReentrant |
+      MutexFlagDoPreLockOnPostLock | MutexFlagRecursiveLock, rec);
 }
 
 int __tsan_java_mutex_unlock_rec(jptr addr) {

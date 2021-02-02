@@ -41,7 +41,8 @@ time_point start;
 
 ms WaitTime = ms(250);
 
-void f() {
+void f()
+{
   ready.store(true);
   m.lock();
   time_point t0 = start;
@@ -51,7 +52,8 @@ void f() {
   assert(t1 - t0 >= WaitTime);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   m.lock();
   std::thread t = support::make_test_thread(f);
   while (!ready)

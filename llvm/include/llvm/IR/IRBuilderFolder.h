@@ -29,14 +29,14 @@ public:
   // Binary Operators
   //===--------------------------------------------------------------------===//
 
-  virtual Value *CreateAdd(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                           bool HasNSW = false) const = 0;
+  virtual Value *CreateAdd(Constant *LHS, Constant *RHS,
+                           bool HasNUW = false, bool HasNSW = false) const = 0;
   virtual Value *CreateFAdd(Constant *LHS, Constant *RHS) const = 0;
-  virtual Value *CreateSub(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                           bool HasNSW = false) const = 0;
+  virtual Value *CreateSub(Constant *LHS, Constant *RHS,
+                           bool HasNUW = false, bool HasNSW = false) const = 0;
   virtual Value *CreateFSub(Constant *LHS, Constant *RHS) const = 0;
-  virtual Value *CreateMul(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                           bool HasNSW = false) const = 0;
+  virtual Value *CreateMul(Constant *LHS, Constant *RHS,
+                           bool HasNUW = false, bool HasNSW = false) const = 0;
   virtual Value *CreateFMul(Constant *LHS, Constant *RHS) const = 0;
   virtual Value *CreateUDiv(Constant *LHS, Constant *RHS,
                             bool isExact = false) const = 0;
@@ -46,8 +46,8 @@ public:
   virtual Value *CreateURem(Constant *LHS, Constant *RHS) const = 0;
   virtual Value *CreateSRem(Constant *LHS, Constant *RHS) const = 0;
   virtual Value *CreateFRem(Constant *LHS, Constant *RHS) const = 0;
-  virtual Value *CreateShl(Constant *LHS, Constant *RHS, bool HasNUW = false,
-                           bool HasNSW = false) const = 0;
+  virtual Value *CreateShl(Constant *LHS, Constant *RHS,
+                           bool HasNUW = false, bool HasNSW = false) const = 0;
   virtual Value *CreateLShr(Constant *LHS, Constant *RHS,
                             bool isExact = false) const = 0;
   virtual Value *CreateAShr(Constant *LHS, Constant *RHS,
@@ -55,15 +55,15 @@ public:
   virtual Value *CreateAnd(Constant *LHS, Constant *RHS) const = 0;
   virtual Value *CreateOr(Constant *LHS, Constant *RHS) const = 0;
   virtual Value *CreateXor(Constant *LHS, Constant *RHS) const = 0;
-  virtual Value *CreateBinOp(Instruction::BinaryOps Opc, Constant *LHS,
-                             Constant *RHS) const = 0;
+  virtual Value *CreateBinOp(Instruction::BinaryOps Opc,
+                             Constant *LHS, Constant *RHS) const = 0;
 
   //===--------------------------------------------------------------------===//
   // Unary Operators
   //===--------------------------------------------------------------------===//
 
-  virtual Value *CreateNeg(Constant *C, bool HasNUW = false,
-                           bool HasNSW = false) const = 0;
+  virtual Value *CreateNeg(Constant *C,
+                           bool HasNUW = false, bool HasNSW = false) const = 0;
   virtual Value *CreateFNeg(Constant *C) const = 0;
   virtual Value *CreateNot(Constant *C) const = 0;
   virtual Value *CreateUnOp(Instruction::UnaryOps Opc, Constant *C) const = 0;
@@ -81,17 +81,15 @@ public:
                                      Constant *Idx) const = 0;
   virtual Value *CreateGetElementPtr(Type *Ty, Constant *C,
                                      ArrayRef<Value *> IdxList) const = 0;
-  virtual Value *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Constant *> IdxList) const = 0;
+  virtual Value *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Constant *> IdxList) const = 0;
   // This form of the function only exists to avoid ambiguous overload
   // warnings about whether to convert Idx to ArrayRef<Constant *> or
   // ArrayRef<Value *>.
   virtual Value *CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
                                              Constant *Idx) const = 0;
-  virtual Value *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Value *> IdxList) const = 0;
+  virtual Value *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Value *> IdxList) const = 0;
 
   //===--------------------------------------------------------------------===//
   // Cast/Conversion Operators

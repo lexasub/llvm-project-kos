@@ -6,13 +6,13 @@
 // REQUIRES: compiler-rt-optimized
 // REQUIRES: stable-runtime
 
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 int main(int argc, char **argv) {
-  char *hello = (char *)malloc(6);
+  char *hello = (char*)malloc(6);
   strcpy(hello, "hello");
-  char *short_buffer = (char *)malloc(9);
-  strncpy(short_buffer, hello, 10); // BOOM
+  char *short_buffer = (char*)malloc(9);
+  strncpy(short_buffer, hello, 10);  // BOOM
   // CHECK: {{WRITE of size 10 at 0x.* thread T0}}
   // CHECK-Linux: {{    #0 0x.* in .*strncpy}}
   // CHECK-Darwin: {{    #0 0x.* in wrap_strncpy}}

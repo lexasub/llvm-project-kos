@@ -32,7 +32,7 @@ char *PR24565() __attribute__((__malloc__));
 // CHECK: class __attribute__((consumable("unknown"))) AttrTester1
 class __attribute__((consumable(unknown))) AttrTester1 {
   // CHECK: void callableWhen() __attribute__((callable_when("unconsumed", "consumed")));
-  void callableWhen() __attribute__((callable_when("unconsumed", "consumed")));
+  void callableWhen()  __attribute__((callable_when("unconsumed", "consumed")));
 };
 
 // CHECK: class __single_inheritance SingleInheritance;

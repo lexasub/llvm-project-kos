@@ -37,8 +37,7 @@ IdentifierLoc *IdentifierLoc::create(ASTContext &Ctx, SourceLocation Loc,
 }
 
 size_t ParsedAttr::allocated_size() const {
-  if (IsAvailability)
-    return AttributeFactory::AvailabilityAllocSize;
+  if (IsAvailability) return AttributeFactory::AvailabilityAllocSize;
   else if (IsTypeTagForDatatype)
     return AttributeFactory::TypeTagForDatatypeAllocSize;
   else if (IsProperty)
@@ -60,7 +59,7 @@ AttributeFactory::~AttributeFactory() = default;
 
 static size_t getFreeListIndexForSize(size_t size) {
   assert(size >= sizeof(ParsedAttr));
-  assert((size % sizeof(void *)) == 0);
+  assert((size % sizeof(void*)) == 0);
   return ((size - sizeof(ParsedAttr)) / sizeof(void *));
 }
 
@@ -152,7 +151,9 @@ unsigned ParsedAttr::getMaxArgs() const {
   return getMinArgs() + getInfo().OptArgs;
 }
 
-bool ParsedAttr::hasCustomParsing() const { return getInfo().HasCustomParsing; }
+bool ParsedAttr::hasCustomParsing() const {
+  return getInfo().HasCustomParsing;
+}
 
 bool ParsedAttr::diagnoseAppertainsTo(Sema &S, const Decl *D) const {
   return getInfo().diagAppertainsToDecl(S, *this, D);

@@ -109,7 +109,8 @@ private:
                                 SmallPtrSet<LiveInterval *, 8>>;
 
   /// Helper for eliminateDeadDefs.
-  void eliminateDeadDef(MachineInstr *MI, ToShrinkSet &ToShrink, AAResults *AA);
+  void eliminateDeadDef(MachineInstr *MI, ToShrinkSet &ToShrink,
+                        AAResults *AA);
 
   /// MachineRegisterInfo callback to notify when new virtual
   /// registers are created.

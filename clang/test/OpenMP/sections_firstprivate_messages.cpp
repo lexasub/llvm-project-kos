@@ -100,10 +100,7 @@ int foomain(int argc, char **argv) {
     foo();
   }
 #pragma omp parallel
-#pragma omp sections firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                             : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                              : argv),              \
-                                                                                                                                                               allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp sections firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   {
     foo();
   }
@@ -163,14 +160,13 @@ int foomain(int argc, char **argv) {
   {
     foo();
   }
-#pragma omp parallel private(i) // expected-note {{defined as private}}
+#pragma omp parallel private(i)      // expected-note {{defined as private}}
 #pragma omp sections firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   {
     foo();
   }
-#pragma omp parallel reduction(+ \
-                               : i) // expected-note {{defined as reduction}}
-#pragma omp sections firstprivate(i) // expected-error {{firstprivate variable must be shared}}
+#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
+#pragma omp sections firstprivate(i)  // expected-error {{firstprivate variable must be shared}}
   {
     foo();
   }
@@ -180,7 +176,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -335,14 +331,13 @@ int main(int argc, char **argv) {
     }
     v += i;
   }
-#pragma omp parallel private(i) // expected-note {{defined as private}}
+#pragma omp parallel private(i)      // expected-note {{defined as private}}
 #pragma omp sections firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   {
     foo();
   }
-#pragma omp parallel reduction(+ \
-                               : i) // expected-note {{defined as reduction}}
-#pragma omp sections firstprivate(i) // expected-error {{firstprivate variable must be shared}}
+#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
+#pragma omp sections firstprivate(i)  // expected-error {{firstprivate variable must be shared}}
   {
     foo();
   }

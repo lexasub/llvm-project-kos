@@ -12,15 +12,15 @@
 /********************************** LOWERING *********************************/
 /*****************************************************************************/
 
-#define TEST(TYPE)                                \
-  extern "C" SWIFTCALL TYPE return_##TYPE(void) { \
-    TYPE result = {};                             \
-    return result;                                \
-  }                                               \
-  extern "C" SWIFTCALL void take_##TYPE(TYPE v) { \
-  }                                               \
-  extern "C" void test_##TYPE() {                 \
-    take_##TYPE(return_##TYPE());                 \
+#define TEST(TYPE)                                  \
+  extern "C" SWIFTCALL TYPE return_##TYPE(void) {   \
+    TYPE result = {};                               \
+    return result;                                  \
+  }                                                 \
+  extern "C" SWIFTCALL void take_##TYPE(TYPE v) {   \
+  }                                                 \
+  extern "C" void test_##TYPE() {                   \
+    take_##TYPE(return_##TYPE());                   \
   }
 
 /*****************************************************************************/
@@ -121,4 +121,5 @@ class struct_trivial {
   int x;
 };
 // CHECK-LABEL: define{{.*}} swiftcc void @test_struct_trivial(i32{{( %.*)?}})
-extern "C" SWIFTCALL void test_struct_trivial(struct_trivial triv) {}
+extern "C" SWIFTCALL
+void test_struct_trivial(struct_trivial triv) {}

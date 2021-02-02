@@ -30,13 +30,13 @@ enum omp_allocator_handle_t {
   KMP_ALLOCATOR_MAX_HANDLE = __UINTPTR_MAX__
 };
 
-struct St {
-  int a;
+struct St{
+ int a;
 };
 
-struct St1 {
-  int a;
-  static int b;
+struct St1{
+ int a;
+ static int b;
 #pragma omp allocate(b) allocator(omp_default_mem_alloc)
 } d;
 
@@ -48,28 +48,28 @@ int a, b, c;
 template <class T>
 struct ST {
   static T m;
-#pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
+  #pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
 };
 
 template <class T> T foo() {
   T v;
-#pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
+  #pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
   v = ST<T>::m;
   return v;
 }
 
-namespace ns {
-int a;
+namespace ns{
+  int a;
 }
 #pragma omp allocate(ns::a) allocator(omp_pteam_mem_alloc)
 
 // CHECK-NOT:  call {{.+}} {{__kmpc_alloc|__kmpc_free}}
 
 // CHECK-LABEL: @main
-int main() {
+int main () {
   static int a;
 #pragma omp allocate(a) allocator(omp_thread_mem_alloc)
-  a = 2;
+  a=2;
   // CHECK-NOT:  {{__kmpc_alloc|__kmpc_free}}
   // CHECK:      alloca double,
   // CHECK-NOT:  {{__kmpc_alloc|__kmpc_free}}
@@ -101,11 +101,11 @@ void bar(int a, float &z) {
 // CHECK: [[Z_VOID_PTR:%.+]] = call i8* @__kmpc_alloc(i32 [[GTID]], i64 8, i8* inttoptr (i64 1 to i8*))
 // CHECK: [[Z_ADDR:%.+]] = bitcast i8* [[Z_VOID_PTR]] to float**
 // CHECK: store float* %{{.+}}, float** [[Z_ADDR]],
-#pragma omp allocate(a, z) allocator(omp_default_mem_alloc)
-  // CHECK-NEXT: [[Z_VOID_PTR:%.+]] = bitcast float** [[Z_ADDR]] to i8*
-  // CHECK: call void @__kmpc_free(i32 [[GTID]], i8* [[Z_VOID_PTR]], i8* inttoptr (i64 1 to i8*))
-  // CHECK-NEXT: [[A_VOID_PTR:%.+]] = bitcast i32* [[A_ADDR]] to i8*
-  // CHECK: call void @__kmpc_free(i32 [[GTID]], i8* [[A_VOID_PTR]], i8* inttoptr (i64 1 to i8*))
-  // CHECK: ret void
+#pragma omp allocate(a,z) allocator(omp_default_mem_alloc)
+// CHECK-NEXT: [[Z_VOID_PTR:%.+]] = bitcast float** [[Z_ADDR]] to i8*
+// CHECK: call void @__kmpc_free(i32 [[GTID]], i8* [[Z_VOID_PTR]], i8* inttoptr (i64 1 to i8*))
+// CHECK-NEXT: [[A_VOID_PTR:%.+]] = bitcast i32* [[A_ADDR]] to i8*
+// CHECK: call void @__kmpc_free(i32 [[GTID]], i8* [[A_VOID_PTR]], i8* inttoptr (i64 1 to i8*))
+// CHECK: ret void
 }
 #endif

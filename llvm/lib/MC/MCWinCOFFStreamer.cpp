@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/MC/MCWinCOFFStreamer.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Triple.h"
@@ -28,6 +27,7 @@
 #include "llvm/MC/MCObjectWriter.h"
 #include "llvm/MC/MCSection.h"
 #include "llvm/MC/MCSymbolCOFF.h"
+#include "llvm/MC/MCWinCOFFStreamer.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
@@ -113,8 +113,7 @@ bool MCWinCOFFStreamer::emitSymbolAttribute(MCSymbol *S,
   getAssembler().registerSymbol(*Symbol);
 
   switch (Attribute) {
-  default:
-    return false;
+  default: return false;
   case MCSA_WeakReference:
   case MCSA_Weak:
     Symbol->setIsWeakExternal();
@@ -149,7 +148,8 @@ void MCWinCOFFStreamer::EmitCOFFSymbolStorageClass(int StorageClass) {
   }
 
   if (StorageClass & ~COFF::SSC_Invalid) {
-    Error("storage class value '" + Twine(StorageClass) + "' out of range");
+    Error("storage class value '" + Twine(StorageClass) +
+               "' out of range");
     return;
   }
 

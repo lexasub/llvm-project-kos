@@ -1,6 +1,6 @@
 class MyType012345678901234567890123456789 {};
 
-void g(int, int *, int, int *, int, int *, int);
+void g(int, int*, int, int*, int, int*, int);
 
 void f() {
   MyType012345678901234567890123456789 *a =

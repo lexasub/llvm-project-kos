@@ -112,6 +112,6 @@ void OptionValueEnumeration::AutoComplete(CommandInterpreter &interpreter,
     }
     return;
   }
-  for (size_t i = 0; i < num_enumerators; ++i)
-    request.AddCompletion(m_enumerations.GetCStringAtIndex(i).GetStringRef());
+    for (size_t i = 0; i < num_enumerators; ++i)
+      request.AddCompletion(m_enumerations.GetCStringAtIndex(i).GetStringRef());
 }

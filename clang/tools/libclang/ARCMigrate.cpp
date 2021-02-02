@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "CXString.h"
 #include "clang-c/Index.h"
+#include "CXString.h"
 #include "clang/ARCMigrate/ARCMT.h"
 #include "clang/Config/config.h"
 #include "clang/Frontend/TextDiagnosticBuffer.h"
@@ -23,7 +23,7 @@ using namespace arcmt;
 namespace {
 
 struct Remap {
-  std::vector<std::pair<std::string, std::string>> Vec;
+  std::vector<std::pair<std::string, std::string> > Vec;
 };
 
 } // anonymous namespace.
@@ -57,16 +57,14 @@ CXRemapping clang_getRemappings(const char *migrate_dir_path) {
   TextDiagnosticBuffer diagBuffer;
   std::unique_ptr<Remap> remap(new Remap());
 
-  bool err =
-      arcmt::getFileRemappings(remap->Vec, migrate_dir_path, &diagBuffer);
+  bool err = arcmt::getFileRemappings(remap->Vec, migrate_dir_path,&diagBuffer);
 
   if (err) {
     if (Logging) {
       llvm::errs() << "Error by clang_getRemappings(\"" << migrate_dir_path
                    << "\")\n";
-      for (TextDiagnosticBuffer::const_iterator I = diagBuffer.err_begin(),
-                                                E = diagBuffer.err_end();
-           I != E; ++I)
+      for (TextDiagnosticBuffer::const_iterator
+             I = diagBuffer.err_begin(), E = diagBuffer.err_end(); I != E; ++I)
         llvm::errs() << I->second << '\n';
     }
     return nullptr;
@@ -103,15 +101,14 @@ CXRemapping clang_getRemappingsFromFileList(const char **filePaths,
   TextDiagnosticBuffer diagBuffer;
   SmallVector<StringRef, 32> Files(filePaths, filePaths + numFiles);
 
-  bool err =
-      arcmt::getFileRemappingsFromFileList(remap->Vec, Files, &diagBuffer);
+  bool err = arcmt::getFileRemappingsFromFileList(remap->Vec, Files,
+                                                  &diagBuffer);
 
   if (err) {
     if (Logging) {
       llvm::errs() << "Error by clang_getRemappingsFromFileList\n";
-      for (TextDiagnosticBuffer::const_iterator I = diagBuffer.err_begin(),
-                                                E = diagBuffer.err_end();
-           I != E; ++I)
+      for (TextDiagnosticBuffer::const_iterator
+             I = diagBuffer.err_begin(), E = diagBuffer.err_end(); I != E; ++I)
         llvm::errs() << I->second << '\n';
     }
     return remap.release();
@@ -123,16 +120,19 @@ CXRemapping clang_getRemappingsFromFileList(const char **filePaths,
 
 unsigned clang_remap_getNumFiles(CXRemapping map) {
   return static_cast<Remap *>(map)->Vec.size();
+  
 }
 
 void clang_remap_getFilenames(CXRemapping map, unsigned index,
                               CXString *original, CXString *transformed) {
   if (original)
-    *original =
-        cxstring::createDup(static_cast<Remap *>(map)->Vec[index].first);
+    *original = cxstring::createDup(
+                    static_cast<Remap *>(map)->Vec[index].first);
   if (transformed)
-    *transformed =
-        cxstring::createDup(static_cast<Remap *>(map)->Vec[index].second);
+    *transformed = cxstring::createDup(
+                    static_cast<Remap *>(map)->Vec[index].second);
 }
 
-void clang_remap_dispose(CXRemapping map) { delete static_cast<Remap *>(map); }
+void clang_remap_dispose(CXRemapping map) {
+  delete static_cast<Remap *>(map);
+}

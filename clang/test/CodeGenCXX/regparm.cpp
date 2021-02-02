@@ -1,7 +1,8 @@
 // RUN: %clang_cc1 -triple i386-unknown-unknown %s -emit-llvm -o - | FileCheck %s
 
+
 // CHECK: _Z3fooRi(i32* inreg
-void __attribute__((regparm(1))) foo(int &a) {
+void __attribute__ ((regparm (1)))  foo(int &a) {
 }
 
 struct S1 {
@@ -27,8 +28,7 @@ void bar3(struct S2 a, int b) {
 
 struct S3 {
   struct {
-    struct {
-    } b[0];
+    struct {} b[0];
   } a;
 };
 __attribute((regparm(2))) void foo4(S3 a, int b);

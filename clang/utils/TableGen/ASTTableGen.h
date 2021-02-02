@@ -9,8 +9,8 @@
 #ifndef CLANG_AST_TABLEGEN_H
 #define CLANG_AST_TABLEGEN_H
 
-#include "llvm/ADT/STLExtras.h"
 #include "llvm/TableGen/Record.h"
+#include "llvm/ADT/STLExtras.h"
 
 // These are spellings in the tblgen files.
 
@@ -101,17 +101,19 @@ public:
 
   explicit operator bool() const { return Record != nullptr; }
 
-  llvm::ArrayRef<llvm::SMLoc> getLoc() const { return get()->getLoc(); }
+  llvm::ArrayRef<llvm::SMLoc> getLoc() const {
+    return get()->getLoc();
+  }
 
   /// Does the node inherit from the given TableGen class?
   bool isSubClassOf(llvm::StringRef className) const {
     return get()->isSubClassOf(className);
   }
 
-  template <class NodeClass> NodeClass getAs() const {
+  template <class NodeClass>
+  NodeClass getAs() const {
     return (isSubClassOf(NodeClass::getTableGenNodeClassName())
-                ? NodeClass(get())
-                : NodeClass());
+              ? NodeClass(get()) : NodeClass());
   }
 
   friend bool operator<(WrappedRecord lhs, WrappedRecord rhs) {
@@ -156,7 +158,9 @@ class ASTNode : public HasProperties {
 public:
   ASTNode(llvm::Record *record = nullptr) : HasProperties(record) {}
 
-  llvm::StringRef getName() const { return get()->getName(); }
+  llvm::StringRef getName() const {
+    return get()->getName();
+  }
 
   /// Return the node for the base, if there is one.
   ASTNode getBase() const {
@@ -164,9 +168,13 @@ public:
   }
 
   /// Is the corresponding class abstract?
-  bool isAbstract() const { return get()->getValueAsBit(AbstractFieldName); }
+  bool isAbstract() const {
+    return get()->getValueAsBit(AbstractFieldName);
+  }
 
-  static llvm::StringRef getTableGenNodeClassName() { return ASTNodeClassName; }
+  static llvm::StringRef getTableGenNodeClassName() {
+    return ASTNodeClassName;
+  }
 };
 
 class DeclNode : public ASTNode {
@@ -177,9 +185,15 @@ public:
   std::string getClassName() const;
   DeclNode getBase() const { return DeclNode(ASTNode::getBase().getRecord()); }
 
-  static llvm::StringRef getASTHierarchyName() { return "Decl"; }
-  static llvm::StringRef getASTIdTypeName() { return "Decl::Kind"; }
-  static llvm::StringRef getASTIdAccessorName() { return "getKind"; }
+  static llvm::StringRef getASTHierarchyName() {
+    return "Decl";
+  }
+  static llvm::StringRef getASTIdTypeName() {
+    return "Decl::Kind";
+  }
+  static llvm::StringRef getASTIdAccessorName() {
+    return "getKind";
+  }
   static llvm::StringRef getTableGenNodeClassName() {
     return DeclNodeClassName;
   }
@@ -193,9 +207,15 @@ public:
   llvm::StringRef getClassName() const;
   TypeNode getBase() const { return TypeNode(ASTNode::getBase().getRecord()); }
 
-  static llvm::StringRef getASTHierarchyName() { return "Type"; }
-  static llvm::StringRef getASTIdTypeName() { return "Type::TypeClass"; }
-  static llvm::StringRef getASTIdAccessorName() { return "getTypeClass"; }
+  static llvm::StringRef getASTHierarchyName() {
+    return "Type";
+  }
+  static llvm::StringRef getASTIdTypeName() {
+    return "Type::TypeClass";
+  }
+  static llvm::StringRef getASTIdAccessorName() {
+    return "getTypeClass";
+  }
   static llvm::StringRef getTableGenNodeClassName() {
     return TypeNodeClassName;
   }
@@ -209,9 +229,15 @@ public:
   llvm::StringRef getClassName() const;
   StmtNode getBase() const { return StmtNode(ASTNode::getBase().getRecord()); }
 
-  static llvm::StringRef getASTHierarchyName() { return "Stmt"; }
-  static llvm::StringRef getASTIdTypeName() { return "Stmt::StmtClass"; }
-  static llvm::StringRef getASTIdAccessorName() { return "getStmtClass"; }
+  static llvm::StringRef getASTHierarchyName() {
+    return "Stmt";
+  }
+  static llvm::StringRef getASTIdTypeName() {
+    return "Stmt::StmtClass";
+  }
+  static llvm::StringRef getASTIdAccessorName() {
+    return "getStmtClass";
+  }
   static llvm::StringRef getTableGenNodeClassName() {
     return StmtNodeClassName;
   }
@@ -223,11 +249,15 @@ public:
   PropertyType(llvm::Record *record = nullptr) : WrappedRecord(record) {}
 
   /// Is this a generic specialization (i.e. `Array<T>` or `Optional<T>`)?
-  bool isGenericSpecialization() const { return get()->isAnonymous(); }
+  bool isGenericSpecialization() const {
+    return get()->isAnonymous();
+  }
 
   /// The abstract type name of the property.  Doesn't work for generic
   /// specializations.
-  llvm::StringRef getAbstractTypeName() const { return get()->getName(); }
+  llvm::StringRef getAbstractTypeName() const {
+    return get()->getName();
+  }
 
   /// The C++ type name of the property.  Doesn't work for generic
   /// specializations.
@@ -276,7 +306,9 @@ public:
   }
 
   /// Does this represent an enum type?
-  bool isEnum() const { return isSubClassOf(EnumPropertyTypeClassName); }
+  bool isEnum() const {
+    return isSubClassOf(EnumPropertyTypeClassName);
+  }
 
   llvm::StringRef getPackOptionalCode() const {
     return get()->getValueAsString(PackOptionalCodeFieldName);
@@ -286,7 +318,7 @@ public:
     return get()->getValueAsString(UnpackOptionalCodeFieldName);
   }
 
-  std::vector<llvm::Record *> getBufferElementTypes() const {
+  std::vector<llvm::Record*> getBufferElementTypes() const {
     return get()->getValueAsListOfDefs(BufferElementTypesFieldName);
   }
 
@@ -356,7 +388,9 @@ public:
   }
 
   /// Return the type of this property.
-  PropertyType getType() const { return get()->getValueAsDef(TypeFieldName); }
+  PropertyType getType() const {
+    return get()->getValueAsDef(TypeFieldName);
+  }
 
   /// Return the class of which this is a property.
   HasProperties getClass() const {
@@ -446,7 +480,7 @@ public:
 /// the root class.
 template <class NodeClass>
 using ASTNodeHierarchyVisitor =
-    llvm::function_ref<void(NodeClass node, NodeClass base)>;
+  llvm::function_ref<void(NodeClass node, NodeClass base)>;
 
 void visitASTNodeHierarchyImpl(llvm::RecordKeeper &records,
                                llvm::StringRef nodeClassName,
@@ -462,7 +496,7 @@ void visitASTNodeHierarchy(llvm::RecordKeeper &records,
                             });
 }
 
-} // namespace tblgen
+} // end namespace clang::tblgen
 } // end namespace clang
 
 #endif

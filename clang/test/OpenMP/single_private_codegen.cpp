@@ -54,35 +54,35 @@ int main() {
   // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
 #pragma omp single private(g, sivar)
-    {
-      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca double,
-      // LAMBDA: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      g = 1;
-      sivar = 101;
-      // LAMBDA: call {{.*}}i32 @__kmpc_single(
-      // LAMBDA: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
-      // LAMBDA: store i{{[0-9]+}} 101, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
-      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: store double* [[G_PRIVATE_ADDR]], double** [[G_PRIVATE_ADDR_REF]]
-      // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-      // LAMBDA: store i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
-      // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-      // LAMBDA: call {{.*}}void @__kmpc_end_single(
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        g = 2;
-        sivar = 211;
-        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-        // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
-        // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
-        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 211, i{{[0-9]+}}* [[SIVAR_REF]]
-      }();
-    }
+  {
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca double,
+    // LAMBDA: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    g = 1;
+    sivar = 101;
+    // LAMBDA: call {{.*}}i32 @__kmpc_single(
+    // LAMBDA: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
+    // LAMBDA: store i{{[0-9]+}} 101, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+    // LAMBDA: store double* [[G_PRIVATE_ADDR]], double** [[G_PRIVATE_ADDR_REF]]
+    // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+    // LAMBDA: store i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
+    // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+    // LAMBDA: call {{.*}}void @__kmpc_end_single(
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      g = 2;
+      sivar = 211;
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
+      // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
+      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 211, i{{[0-9]+}}* [[SIVAR_REF]]
+    }();
+  }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -94,36 +94,36 @@ int main() {
   // BLOCKS: call {{.*}}void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
 #pragma omp single private(g, sivar)
-    {
-      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca double,
-      // BLOCKS: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      g = 1;
-      sivar = 101;
-      // BLOCKS: call {{.*}}i32 @__kmpc_single(
-      // BLOCKS: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
-      // BLOCKS: store i{{[0-9]+}} 101, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+  {
+    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca double,
+    // BLOCKS: [[SIVAR_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    g = 1;
+    sivar = 101;
+    // BLOCKS: call {{.*}}i32 @__kmpc_single(
+    // BLOCKS: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
+    // BLOCKS: store i{{[0-9]+}} 101, i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]],
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: double* [[G_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+    // BLOCKS: i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+    // BLOCKS: call {{.*}}void {{%.+}}(i8
+    // BLOCKS: call {{.*}}void @__kmpc_end_single(
+    ^{
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      g = 2;
+      sivar = 203;
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: double* [[G_PRIVATE_ADDR]]
+      // BLOCKS: store double 2.0{{.+}}, double*
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
       // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: i{{[0-9]+}}* [[SIVAR_PRIVATE_ADDR]]
+      // BLOCKS: store i{{[0-9]+}} 203, i{{[0-9]+}}*
       // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: call {{.*}}void {{%.+}}(i8
-      // BLOCKS: call {{.*}}void @__kmpc_end_single(
-      ^{
-        // BLOCKS: define {{.+}} void {{@.+}}(i8*
-        g = 2;
-        sivar = 203;
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: store double 2.0{{.+}}, double*
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-        // BLOCKS: store i{{[0-9]+}} 203, i{{[0-9]+}}*
-        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-        // BLOCKS: ret
-      }();
-    }
+      // BLOCKS: ret
+    }();
+  }
   }();
   return 0;
 #else
@@ -205,3 +205,4 @@ int main() {
 // CHECK: call void @__kmpc_end_single(
 // CHECK: ret void
 #endif
+

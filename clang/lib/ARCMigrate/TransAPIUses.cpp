@@ -16,8 +16,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Sema/SemaDiagnostic.h"
 
@@ -34,7 +34,6 @@ class APIChecker : public RecursiveASTVisitor<APIChecker> {
   Selector getArgumentSel, setArgumentSel;
 
   Selector zoneSel;
-
 public:
   APIChecker(MigrationPass &pass) : Pass(pass) {
     SelectorTable &sels = Pass.Ctx.Selectors;
@@ -54,7 +53,8 @@ public:
 
   bool VisitObjCMessageExpr(ObjCMessageExpr *E) {
     // NSInvocation.
-    if (E->isInstanceMessage() && E->getReceiverInterface() &&
+    if (E->isInstanceMessage() &&
+        E->getReceiverInterface() &&
         E->getReceiverInterface()->getName() == "NSInvocation") {
       StringRef selName;
       if (E->getSelector() == getReturnValueSel)
@@ -83,7 +83,8 @@ public:
     }
 
     // -zone.
-    if (E->isInstanceMessage() && E->getInstanceReceiver() &&
+    if (E->isInstanceMessage() &&
+        E->getInstanceReceiver() &&
         E->getSelector() == zoneSel &&
         Pass.TA.hasDiagnostic(diag::err_unavailable,
                               diag::err_unavailable_message,

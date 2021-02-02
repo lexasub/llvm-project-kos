@@ -26,6 +26,7 @@
 
 using namespace llvm;
 
+
 //===----------------------------------------------------------------------===//
 //
 // Stack Frame Processing methods
@@ -94,8 +95,8 @@ bool MipsFrameLowering::hasFP(const MachineFunction &MF) const {
   const TargetRegisterInfo *TRI = STI.getRegisterInfo();
 
   return MF.getTarget().Options.DisableFramePointerElim(MF) ||
-         MFI.hasVarSizedObjects() || MFI.isFrameAddressTaken() ||
-         TRI->needsStackRealignment(MF);
+      MFI.hasVarSizedObjects() || MFI.isFrameAddressTaken() ||
+      TRI->needsStackRealignment(MF);
 }
 
 bool MipsFrameLowering::hasBP(const MachineFunction &MF) const {
@@ -133,9 +134,9 @@ uint64_t MipsFrameLowering::estimateStackSize(const MachineFunction &MF) const {
 }
 
 // Eliminate ADJCALLSTACKDOWN, ADJCALLSTACKUP pseudo instructions
-MachineBasicBlock::iterator MipsFrameLowering::eliminateCallFramePseudoInstr(
-    MachineFunction &MF, MachineBasicBlock &MBB,
-    MachineBasicBlock::iterator I) const {
+MachineBasicBlock::iterator MipsFrameLowering::
+eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
+                              MachineBasicBlock::iterator I) const {
   unsigned SP = STI.getABI().IsN64() ? Mips::SP_64 : Mips::SP;
 
   if (!hasReservedCallFrame(MF)) {

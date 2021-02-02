@@ -1,20 +1,12 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-linux-gnu -emit-llvm --std=c++17 -fcxx-exceptions -fexceptions -discard-value-names %s -o - | FileCheck %s
 
-struct Q {
-  Q();
-};
-struct R {
-  R(Q);
-  ~R();
-};
-struct S {
-  S(Q);
-  ~S();
-};
+struct Q { Q(); };
+struct R { R(Q); ~R(); };
+struct S { S(Q); ~S(); };
 struct T : R, S {};
 
 Q q;
-T t{R{q}, S{q}};
+T t { R{q}, S{q} };
 
 // CHECK-LABEL: define internal void @__cxx_global_var_init.1() {{.*}} {
 // CHECK-NEXT: [[TMP_R:%[a-z0-9.]+]] = alloca %struct.R, align 1

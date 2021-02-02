@@ -608,7 +608,7 @@ inline uint32_t alignOf(CodeViewContainer Container) {
     return 1;
   return 4;
 }
-} // namespace codeview
-} // namespace llvm
+}
+}
 
 #endif

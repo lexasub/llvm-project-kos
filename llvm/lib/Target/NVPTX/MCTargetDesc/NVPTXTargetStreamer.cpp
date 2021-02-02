@@ -132,3 +132,4 @@ void NVPTXTargetStreamer::emitRawBytes(StringRef Data) {
   }
 #endif
 }
+

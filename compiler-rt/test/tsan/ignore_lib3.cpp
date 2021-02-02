@@ -14,10 +14,10 @@
 #ifndef LIB
 
 #include <dlfcn.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 #include <libgen.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 
 int main(int argc, char **argv) {
@@ -27,12 +27,13 @@ int main(int argc, char **argv) {
   fprintf(stderr, "OK\n");
 }
 
-#else // #ifdef LIB
+#else  // #ifdef LIB
 
 extern "C" void libfunc() {
 }
 
-#endif // #ifdef LIB
+#endif  // #ifdef LIB
 
 // CHECK: ThreadSanitizer: library {{.*}} that was matched against called_from_lib suppression 'ignore_lib3.so' is unloaded
 // CHECK-NOT: OK
+

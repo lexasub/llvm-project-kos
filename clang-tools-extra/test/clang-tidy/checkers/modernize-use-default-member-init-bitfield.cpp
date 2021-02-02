@@ -1,6 +1,7 @@
 // RUN: %check_clang_tidy -std=c++20-or-later %s modernize-use-default-member-init %t
 
-struct PositiveBitField {
+struct PositiveBitField
+{
   PositiveBitField() : i(6) {}
   // CHECK-FIXES: PositiveBitField()  {}
   int i : 5;

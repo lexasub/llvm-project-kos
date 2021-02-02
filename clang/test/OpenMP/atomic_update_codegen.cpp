@@ -39,7 +39,7 @@ struct BitFields {
 struct BitFields_packed {
   int : 32;
   int a : 31;
-} __attribute__((__packed__)) bfx_packed;
+} __attribute__ ((__packed__)) bfx_packed;
 
 struct BitFields2 {
   int : 31;
@@ -49,7 +49,7 @@ struct BitFields2 {
 struct BitFields2_packed {
   int : 31;
   int a : 1;
-} __attribute__((__packed__)) bfx2_packed;
+} __attribute__ ((__packed__)) bfx2_packed;
 
 struct BitFields3 {
   int : 11;
@@ -59,19 +59,19 @@ struct BitFields3 {
 struct BitFields3_packed {
   int : 11;
   int a : 14;
-} __attribute__((__packed__)) bfx3_packed;
+} __attribute__ ((__packed__)) bfx3_packed;
 
 struct BitFields4 {
   short : 16;
-  int a : 1;
+  int a: 1;
   long b : 7;
 } bfx4;
 
 struct BitFields4_packed {
   short : 16;
-  int a : 1;
+  int a: 1;
   long b : 7;
-} __attribute__((__packed__)) bfx4_packed;
+} __attribute__ ((__packed__)) bfx4_packed;
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 float2 float2x;

@@ -26,14 +26,15 @@ struct A {
 
 #if TEST_STD_VER >= 11
 struct B {
-  typedef std::forward_list<B, min_allocator<B> > FList;
+  typedef std::forward_list<B, min_allocator<B>> FList;
   FList d;
   FList::iterator it;
   FList::const_iterator it2;
 };
 #endif
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     A a;
     assert(a.d.empty());

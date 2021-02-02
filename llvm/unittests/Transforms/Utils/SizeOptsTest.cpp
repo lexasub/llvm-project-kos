@@ -7,10 +7,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Transforms/Utils/SizeOpts.h"
+#include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/Analysis/BlockFrequencyInfo.h"
 #include "llvm/Analysis/BranchProbabilityInfo.h"
 #include "llvm/Analysis/LoopInfo.h"
-#include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Dominators.h"
@@ -27,7 +27,7 @@ namespace {
 
 class SizeOptsTest : public testing::Test {
 protected:
-  static const char *IRString;
+  static const char* IRString;
   LLVMContext C;
   std::unique_ptr<Module> M;
   struct BFIData {
@@ -77,7 +77,7 @@ TEST_F(SizeOptsTest, Test) {
   EXPECT_FALSE(shouldOptimizeForSize(BB3, &PSI, BFI_F, PGSOQueryType::Test));
 }
 
-const char *SizeOptsTest::IRString = R"IR(
+const char* SizeOptsTest::IRString = R"IR(
   define i32 @g(i32 %x) !prof !14 {
     ret i32 0
   }

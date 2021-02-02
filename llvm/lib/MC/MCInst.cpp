@@ -45,11 +45,12 @@ bool MCOperand::evaluateAsConstantImm(int64_t &Imm) const {
 }
 
 bool MCOperand::isBareSymbolRef() const {
-  assert(isExpr() && "isBareSymbolRef expects only expressions");
+  assert(isExpr() &&
+         "isBareSymbolRef expects only expressions");
   const MCExpr *Expr = getExpr();
   MCExpr::ExprKind Kind = getExpr()->getKind();
   return Kind == MCExpr::SymbolRef &&
-         cast<MCSymbolRefExpr>(Expr)->getKind() == MCSymbolRefExpr::VK_None;
+    cast<MCSymbolRefExpr>(Expr)->getKind() == MCSymbolRefExpr::VK_None;
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

@@ -17,28 +17,30 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(const S& s) {
-  typename S::const_iterator cb = s.cbegin();
-  if (!s.empty()) {
-    assert(*cb == s[0]);
-  }
-  assert(cb == s.begin());
+void
+test(const S& s)
+{
+    typename S::const_iterator cb = s.cbegin();
+    if (!s.empty())
+    {
+        assert(*cb == s[0]);
+    }
+    assert(cb == s.begin());
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S());
     test(S("123"));
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S());
     test(S("123"));
-  }
+    }
 #endif
 
   return 0;

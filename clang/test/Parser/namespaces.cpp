@@ -1,14 +1,10 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
 // PR6596
-namespace g {
-enum { o = 0 };
-}
+namespace g { enum { o = 0 }; }
 
 void foo() {
-  namespace a {
-  typedef g::o o;
-  } // namespace a
+  namespace a { typedef g::o o; } // expected-error{{namespaces can only be defined in global or namespace scope}}
 }
 
 // PR14085

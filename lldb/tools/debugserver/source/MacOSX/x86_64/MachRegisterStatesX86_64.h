@@ -83,9 +83,7 @@ typedef struct {
   uint8_t __mmst_rsrv[6];
 } __x86_64_mmst_reg;
 
-typedef struct {
-  uint8_t __xmm_reg[16];
-} __x86_64_xmm_reg;
+typedef struct { uint8_t __xmm_reg[16]; } __x86_64_xmm_reg;
 
 typedef struct {
   uint32_t __fpu_reserved[2];
@@ -190,15 +188,9 @@ typedef struct {
   __x86_64_xmm_reg __fpu_ymmh15;
 } __x86_64_avx_state_t;
 
-typedef struct {
-  uint8_t __ymm_reg[32];
-} __x86_64_ymm_reg;
-typedef struct {
-  uint8_t __zmm_reg[64];
-} __x86_64_zmm_reg;
-typedef struct {
-  uint8_t __opmask_reg[8];
-} __x86_64_opmask_reg;
+typedef struct { uint8_t __ymm_reg[32]; } __x86_64_ymm_reg;
+typedef struct { uint8_t __zmm_reg[64]; } __x86_64_zmm_reg;
+typedef struct { uint8_t __opmask_reg[8]; } __x86_64_opmask_reg;
 
 typedef struct {
   uint32_t __fpu_reserved[2];

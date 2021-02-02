@@ -6,8 +6,8 @@
 //
 //===--------------------------------------------------------------===//
 
-#include "clang/Lex/HeaderMap.h"
 #include "clang/Basic/CharInfo.h"
+#include "clang/Lex/HeaderMap.h"
 #include "clang/Lex/HeaderMapTypes.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/SwapByteOrder.h"
@@ -71,8 +71,7 @@ template <class FileTy> struct FileMaker {
     SI += S.size() + 1;
     return OldSI;
   }
-  void addBucket(unsigned Hash, unsigned Key, unsigned Prefix,
-                 unsigned Suffix) {
+  void addBucket(unsigned Hash, unsigned Key, unsigned Prefix, unsigned Suffix) {
     assert(!(File.Header.NumBuckets & (File.Header.NumBuckets - 1)));
     unsigned I = Hash & (File.Header.NumBuckets - 1);
     do {

@@ -244,7 +244,8 @@ public:
 
 class ElemSection : public SyntheticSection {
 public:
-  ElemSection() : SyntheticSection(llvm::wasm::WASM_SEC_ELEM) {}
+  ElemSection()
+      : SyntheticSection(llvm::wasm::WASM_SEC_ELEM) {}
   bool isNeeded() const override { return indirectFunctions.size() > 0; };
   void writeBody() override;
   void addEntry(FunctionSymbol *sym);

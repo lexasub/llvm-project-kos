@@ -25,7 +25,9 @@ typedef uptr AllocatorStatCounters[AllocatorStatCount];
 // Per-thread stats, live in per-thread cache.
 class AllocatorStats {
  public:
-  void Init() { internal_memset(this, 0, sizeof(*this)); }
+  void Init() {
+    internal_memset(this, 0, sizeof(*this));
+  }
   void InitLinkerInitialized() {}
 
   void Add(AllocatorStat i, uptr v) {
@@ -100,3 +102,5 @@ class AllocatorGlobalStats : public AllocatorStats {
  private:
   mutable StaticSpinMutex mu_;
 };
+
+

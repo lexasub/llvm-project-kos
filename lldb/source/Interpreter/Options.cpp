@@ -600,7 +600,8 @@ void Options::GenerateOptionUsage(Stream &strm, CommandObject *cmd,
           if (is_first) {
             strm.Printf("%s", enum_value.string_value);
             is_first = false;
-          } else
+          }
+          else
             strm.Printf(" | %s", enum_value.string_value);
         }
         strm.EOL();
@@ -836,7 +837,9 @@ void OptionGroupOptions::Append(OptionGroup *group, uint32_t src_mask,
   }
 }
 
-void OptionGroupOptions::Finalize() { m_did_finalize = true; }
+void OptionGroupOptions::Finalize() {
+  m_did_finalize = true;
+}
 
 Status OptionGroupOptions::SetOptionValue(uint32_t option_idx,
                                           llvm::StringRef option_value,
@@ -1379,7 +1382,7 @@ llvm::Expected<Args> Options::Parse(const Args &args,
       // If the Option setting returned an error, we should stop parsing
       // and return the error.
       if (error.Fail())
-        break;
+        break;      
     } else {
       error.SetErrorStringWithFormat("invalid option with value '%i'", val);
     }

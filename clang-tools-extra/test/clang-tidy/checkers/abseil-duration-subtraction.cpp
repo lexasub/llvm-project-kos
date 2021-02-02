@@ -39,8 +39,7 @@ void f() {
 #undef THIRTY
 
   // Some other contexts
-  if (absl::ToDoubleSeconds(d) - 1.0 > 10) {
-  }
+  if (absl::ToDoubleSeconds(d) - 1.0 > 10) {}
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: perform subtraction in the duration domain [abseil-duration-subtraction]
   // CHECK-FIXES: if (absl::ToDoubleSeconds(d - absl::Seconds(1)) > 10) {}
 

@@ -80,21 +80,21 @@ int GetAddressSpaceValue(T __attribute__((address_space(N))) * p) {
   return N;
 }
 
-template <unsigned A> int __attribute__((address_space(A))) * same_template();
-template <unsigned B> int __attribute__((address_space(B))) * same_template();
-void test_same_template() { (void)same_template<0>(); }
+template <unsigned A> int __attribute__((address_space(A))) *same_template();
+template <unsigned B> int __attribute__((address_space(B))) *same_template();
+void test_same_template() { (void) same_template<0>(); }
 
-template <unsigned A> int __attribute__((address_space(A))) * different_template();     // expected-note {{candidate function [with A = 0]}}
-template <unsigned B> int __attribute__((address_space(B + 1))) * different_template(); // expected-note {{candidate function [with B = 0]}}
-void test_different_template() { (void)different_template<0>(); }                       // expected-error {{call to 'different_template' is ambiguous}}
+template <unsigned A> int __attribute__((address_space(A))) *different_template(); // expected-note {{candidate function [with A = 0]}}
+template <unsigned B> int __attribute__((address_space(B+1))) *different_template(); // expected-note {{candidate function [with B = 0]}}
+void test_different_template() { (void) different_template<0>(); } // expected-error {{call to 'different_template' is ambiguous}}
 
 template <typename T> struct partial_spec_deduce_as;
-template <typename T, unsigned AS>
-struct partial_spec_deduce_as<__attribute__((address_space(AS))) T *> {
-  static const unsigned value = AS;
-};
+template <typename T, unsigned AS> 
+struct partial_spec_deduce_as <__attribute__((address_space(AS))) T *> {
+   static const unsigned value = AS;  
+}; 
 
-int main() {
+int main() {  
   int __attribute__((address_space(1))) * p1;
   int p = GetAddressSpaceValue(p1);
 
@@ -112,8 +112,8 @@ int main() {
   ff.get_0(); // expected-note {{in instantiation of member function 'fooFunction<1>::get_0' requested here}}
   ff.qf();
   ff.test3(); // expected-note {{in instantiation of member function 'fooFunction<1>::test3' requested here}}
-
-  static_assert(partial_spec_deduce_as<int __attribute__((address_space(3))) *>::value == 3, "address space value has been incorrectly deduced");
+  
+  static_assert(partial_spec_deduce_as<int __attribute__((address_space(3))) *>::value == 3, "address space value has been incorrectly deduced"); 
 
   return 0;
 }

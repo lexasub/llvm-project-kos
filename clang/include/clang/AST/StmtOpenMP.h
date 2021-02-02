@@ -68,7 +68,7 @@ protected:
   template <typename T, typename... Params>
   static T *createDirective(const ASTContext &C, ArrayRef<OMPClause *> Clauses,
                             Stmt *AssociatedStmt, unsigned NumChildren,
-                            Params &&...P) {
+                            Params &&... P) {
     void *Mem =
         C.Allocate(sizeof(T) + OMPChildren::size(Clauses.size(), AssociatedStmt,
                                                  NumChildren),
@@ -84,7 +84,7 @@ protected:
   template <typename T, typename... Params>
   static T *createEmptyDirective(const ASTContext &C, unsigned NumClauses,
                                  bool HasAssociatedStmt, unsigned NumChildren,
-                                 Params &&...P) {
+                                 Params &&... P) {
     void *Mem =
         C.Allocate(sizeof(T) + OMPChildren::size(NumClauses, HasAssociatedStmt,
                                                  NumChildren),
@@ -241,7 +241,8 @@ public:
 
   /// Returns true if the current directive has one or more clauses of a
   /// specific kind.
-  template <typename SpecificClause> bool hasClausesOfKind() const {
+  template <typename SpecificClause>
+  bool hasClausesOfKind() const {
     auto Clauses = getClausesOfKind<SpecificClause>();
     return Clauses.begin() != Clauses.end();
   }
@@ -2249,6 +2250,7 @@ public:
   static OMPTaskgroupDirective *CreateEmpty(const ASTContext &C,
                                             unsigned NumClauses, EmptyShell);
 
+
   /// Returns reference to the task_reduction return variable.
   const Expr *getReductionRef() const {
     return const_cast<OMPTaskgroupDirective *>(this)->getReductionRef();
@@ -3796,10 +3798,10 @@ public:
   /// \param AssociatedStmt Statement, associated with the directive.
   /// \param Exprs Helper expressions for CodeGen.
   ///
-  static OMPDistributeParallelForSimdDirective *
-  Create(const ASTContext &C, SourceLocation StartLoc, SourceLocation EndLoc,
-         unsigned CollapsedNum, ArrayRef<OMPClause *> Clauses,
-         Stmt *AssociatedStmt, const HelperExprs &Exprs);
+  static OMPDistributeParallelForSimdDirective *Create(
+      const ASTContext &C, SourceLocation StartLoc, SourceLocation EndLoc,
+      unsigned CollapsedNum, ArrayRef<OMPClause *> Clauses,
+      Stmt *AssociatedStmt, const HelperExprs &Exprs);
 
   /// Creates an empty directive with the place for \a NumClauses clauses.
   ///
@@ -3807,9 +3809,9 @@ public:
   /// \param CollapsedNum Number of collapsed nested loops.
   /// \param NumClauses Number of clauses.
   ///
-  static OMPDistributeParallelForSimdDirective *
-  CreateEmpty(const ASTContext &C, unsigned NumClauses, unsigned CollapsedNum,
-              EmptyShell);
+  static OMPDistributeParallelForSimdDirective *CreateEmpty(
+      const ASTContext &C, unsigned NumClauses, unsigned CollapsedNum,
+      EmptyShell);
 
   static bool classof(const Stmt *T) {
     return T->getStmtClass() == OMPDistributeParallelForSimdDirectiveClass;
@@ -4006,7 +4008,8 @@ public:
   ///
   static OMPTargetSimdDirective *CreateEmpty(const ASTContext &C,
                                              unsigned NumClauses,
-                                             unsigned CollapsedNum, EmptyShell);
+                                             unsigned CollapsedNum,
+                                             EmptyShell);
 
   static bool classof(const Stmt *T) {
     return T->getStmtClass() == OMPTargetSimdDirectiveClass;
@@ -4344,9 +4347,11 @@ public:
   /// \param Clauses List of clauses.
   /// \param AssociatedStmt Statement, associated with the directive.
   ///
-  static OMPTargetTeamsDirective *
-  Create(const ASTContext &C, SourceLocation StartLoc, SourceLocation EndLoc,
-         ArrayRef<OMPClause *> Clauses, Stmt *AssociatedStmt);
+  static OMPTargetTeamsDirective *Create(const ASTContext &C,
+                                         SourceLocation StartLoc,
+                                         SourceLocation EndLoc,
+                                         ArrayRef<OMPClause *> Clauses,
+                                         Stmt *AssociatedStmt);
 
   /// Creates an empty directive with the place for \a NumClauses clauses.
   ///
@@ -4417,10 +4422,9 @@ public:
   /// \param CollapsedNum Number of collapsed nested loops.
   /// \param NumClauses Number of clauses.
   ///
-  static OMPTargetTeamsDistributeDirective *CreateEmpty(const ASTContext &C,
-                                                        unsigned NumClauses,
-                                                        unsigned CollapsedNum,
-                                                        EmptyShell);
+  static OMPTargetTeamsDistributeDirective *
+  CreateEmpty(const ASTContext &C, unsigned NumClauses, unsigned CollapsedNum,
+              EmptyShell);
 
   static bool classof(const Stmt *T) {
     return T->getStmtClass() == OMPTargetTeamsDistributeDirectiveClass;

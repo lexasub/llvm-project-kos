@@ -25,19 +25,20 @@ struct ExplicitCopy {
 };
 
 std::tuple<ExplicitCopy> const_explicit_copy_test() {
-  const ExplicitCopy e(42);
-  return {std::allocator_arg, std::allocator<int>{}, e};
-  // expected-error@-1 {{chosen constructor is explicit in copy-initialization}}
+    const ExplicitCopy e(42);
+    return {std::allocator_arg, std::allocator<int>{}, e};
+    // expected-error@-1 {{chosen constructor is explicit in copy-initialization}}
 }
 
 std::tuple<ExplicitCopy> non_const_explicity_copy_test() {
-  ExplicitCopy e(42);
-  return {std::allocator_arg, std::allocator<int>{}, e};
-  // expected-error@-1 {{chosen constructor is explicit in copy-initialization}}
+    ExplicitCopy e(42);
+    return {std::allocator_arg, std::allocator<int>{}, e};
+    // expected-error@-1 {{chosen constructor is explicit in copy-initialization}}
 }
-int main(int, char**) {
-  const_explicit_copy_test();
-  non_const_explicity_copy_test();
+int main(int, char**)
+{
+    const_explicit_copy_test();
+    non_const_explicity_copy_test();
 
   return 0;
 }

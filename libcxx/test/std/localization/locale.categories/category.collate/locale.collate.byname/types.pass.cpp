@@ -31,18 +31,19 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**) {
-  std::locale l(LOCALE_en_US_UTF_8);
-  {
-    assert(std::has_facet<std::collate_byname<char> >(l));
-    assert(&std::use_facet<std::collate<char> >(l) ==
-           &std::use_facet<std::collate_byname<char> >(l));
-  }
-  {
-    assert(std::has_facet<std::collate_byname<wchar_t> >(l));
-    assert(&std::use_facet<std::collate<wchar_t> >(l) ==
-           &std::use_facet<std::collate_byname<wchar_t> >(l));
-  }
+int main(int, char**)
+{
+    std::locale l(LOCALE_en_US_UTF_8);
+    {
+        assert(std::has_facet<std::collate_byname<char> >(l));
+        assert(&std::use_facet<std::collate<char> >(l)
+            == &std::use_facet<std::collate_byname<char> >(l));
+    }
+    {
+        assert(std::has_facet<std::collate_byname<wchar_t> >(l));
+        assert(&std::use_facet<std::collate<wchar_t> >(l)
+            == &std::use_facet<std::collate_byname<wchar_t> >(l));
+    }
 
   return 0;
 }

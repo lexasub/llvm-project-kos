@@ -217,7 +217,8 @@ public:
                        const ValueMapping *OperandsMapping,
                        unsigned NumOperands)
         : ID(ID), Cost(Cost), OperandsMapping(OperandsMapping),
-          NumOperands(NumOperands) {}
+          NumOperands(NumOperands) {
+    }
 
     /// Default constructor.
     /// Use this constructor to express that the mapping is invalid.
@@ -629,9 +630,8 @@ public:
   /// similar to ::copyCost, except for cases where multiple copy-like
   /// operations need to be inserted. If the register is used as a source
   /// operand and already has a bank assigned, \p CurBank is non-null.
-  virtual unsigned
-  getBreakDownCost(const ValueMapping &ValMapping,
-                   const RegisterBank *CurBank = nullptr) const {
+  virtual unsigned getBreakDownCost(const ValueMapping &ValMapping,
+                                    const RegisterBank *CurBank = nullptr) const {
     return std::numeric_limits<unsigned>::max();
   }
 

@@ -18,40 +18,44 @@
 
 #include "test_macros.h"
 
-struct A {
-  A(std::initializer_list<int> il) {
-    const int* b = begin(il);
-    const int* e = end(il);
-    assert(il.size() == 3);
-    assert(static_cast<std::size_t>(e - b) == il.size());
-    assert(*b++ == 3);
-    assert(*b++ == 2);
-    assert(*b++ == 1);
-  }
+struct A
+{
+    A(std::initializer_list<int> il)
+    {
+        const int* b = begin(il);
+        const int* e = end(il);
+        assert(il.size() == 3);
+        assert(static_cast<std::size_t>(e - b) == il.size());
+        assert(*b++ == 3);
+        assert(*b++ == 2);
+        assert(*b++ == 1);
+    }
 };
 
 #if TEST_STD_VER > 11
-struct B {
-  constexpr B(std::initializer_list<int> il) {
-    const int* b = begin(il);
-    const int* e = end(il);
-    assert(il.size() == 3);
-    assert(static_cast<std::size_t>(e - b) == il.size());
-    assert(*b++ == 3);
-    assert(*b++ == 2);
-    assert(*b++ == 1);
-  }
+struct B
+{
+    constexpr B(std::initializer_list<int> il)
+    {
+        const int* b = begin(il);
+        const int* e = end(il);
+        assert(il.size() == 3);
+        assert(static_cast<std::size_t>(e - b) == il.size());
+        assert(*b++ == 3);
+        assert(*b++ == 2);
+        assert(*b++ == 1);
+    }
 };
 
-#endif // TEST_STD_VER > 11
+#endif  // TEST_STD_VER > 11
 
-int main(int, char**) {
-  A test1 = {3, 2, 1};
-  (void)test1;
+int main(int, char**)
+{
+    A test1 = {3, 2, 1}; (void)test1;
 #if TEST_STD_VER > 11
-  constexpr B test2 = {3, 2, 1};
-  (void)test2;
-#endif // TEST_STD_VER > 11
+    constexpr B test2 = {3, 2, 1};
+    (void)test2;
+#endif  // TEST_STD_VER > 11
 
   return 0;
 }

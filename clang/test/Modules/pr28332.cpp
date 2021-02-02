@@ -5,3 +5,4 @@
 #include "a.h"
 
 // expected-no-diagnostics
+

@@ -8,11 +8,11 @@
 
 #include "lldb/Interpreter/OptionValueDictionary.h"
 
+#include "llvm/ADT/StringRef.h"
 #include "lldb/DataFormatters/FormatManager.h"
 #include "lldb/Interpreter/OptionValueString.h"
 #include "lldb/Utility/Args.h"
 #include "lldb/Utility/State.h"
-#include "llvm/ADT/StringRef.h"
 
 using namespace lldb;
 using namespace lldb_private;
@@ -221,10 +221,10 @@ OptionValueDictionary::GetSubValue(const ExecutionContext *exe_ctx,
   std::tie(left, temp) = name.split('[');
   if (left.size() == name.size()) {
     error.SetErrorStringWithFormat("invalid value path '%s', %s values only "
-                                   "support '[<key>]' subvalues where <key> "
-                                   "a string value optionally delimited by "
-                                   "single or double quotes",
-                                   name.str().c_str(), GetTypeAsCString());
+      "support '[<key>]' subvalues where <key> "
+      "a string value optionally delimited by "
+      "single or double quotes",
+      name.str().c_str(), GetTypeAsCString());
     return nullptr;
   }
   assert(!temp.empty());
@@ -240,20 +240,18 @@ OptionValueDictionary::GetSubValue(const ExecutionContext *exe_ctx,
   std::tie(key, sub_name) = temp.split(']');
 
   if (!key.consume_back(quote_char) || key.empty()) {
-    error.SetErrorStringWithFormat(
-        "invalid value path '%s', "
-        "key names must be formatted as ['<key>'] where <key> "
-        "is a string that doesn't contain quotes and the quote"
-        " char is optional",
-        name.str().c_str());
+    error.SetErrorStringWithFormat("invalid value path '%s', "
+      "key names must be formatted as ['<key>'] where <key> "
+      "is a string that doesn't contain quotes and the quote"
+      " char is optional", name.str().c_str());
     return nullptr;
   }
 
   value_sp = GetValueForKey(ConstString(key));
   if (!value_sp) {
     error.SetErrorStringWithFormat(
-        "dictionary does not contain a value for the key name '%s'",
-        key.str().c_str());
+      "dictionary does not contain a value for the key name '%s'",
+      key.str().c_str());
     return nullptr;
   }
 
@@ -273,8 +271,7 @@ Status OptionValueDictionary::SetSubValue(const ExecutionContext *exe_ctx,
     error = value_sp->SetValueFromString(value, op);
   else {
     if (error.AsCString() == nullptr)
-      error.SetErrorStringWithFormat("invalid value path '%s'",
-                                     name.str().c_str());
+      error.SetErrorStringWithFormat("invalid value path '%s'", name.str().c_str());
   }
   return error;
 }

@@ -443,7 +443,7 @@ static unsigned insertUndefLaneMask(MachineBasicBlock &MBB) {
 bool SILowerI1Copies::runOnMachineFunction(MachineFunction &TheMF) {
   // Only need to run this in SelectionDAG path.
   if (TheMF.getProperties().hasProperty(
-          MachineFunctionProperties::Property::Selected))
+        MachineFunctionProperties::Property::Selected))
     return false;
 
   MF = &TheMF;
@@ -486,7 +486,8 @@ bool SILowerI1Copies::runOnMachineFunction(MachineFunction &TheMF) {
 
 #ifndef NDEBUG
 static bool isVRegCompatibleReg(const SIRegisterInfo &TRI,
-                                const MachineRegisterInfo &MRI, Register Reg) {
+                                const MachineRegisterInfo &MRI,
+                                Register Reg) {
   unsigned Size = TRI.getRegSizeInBits(Reg, MRI);
   return Size == 1 || Size == 32;
 }
@@ -606,7 +607,8 @@ void SILowerI1Copies::lowerPhis() {
 
       for (unsigned i = 0; i < IncomingRegs.size(); ++i) {
         IncomingUpdated.push_back(createLaneMaskReg(*MF));
-        SSAUpdater.AddAvailableValue(IncomingBlocks[i], IncomingUpdated.back());
+        SSAUpdater.AddAvailableValue(IncomingBlocks[i],
+                                     IncomingUpdated.back());
       }
 
       for (unsigned i = 0; i < IncomingRegs.size(); ++i) {
@@ -817,7 +819,9 @@ void SILowerI1Copies::buildMergeLaneMasks(MachineBasicBlock &MBB,
     } else if (CurVal) {
       BuildMI(MBB, I, DL, TII->get(AMDGPU::COPY), DstReg).addReg(ExecReg);
     } else {
-      BuildMI(MBB, I, DL, TII->get(XorOp), DstReg).addReg(ExecReg).addImm(-1);
+      BuildMI(MBB, I, DL, TII->get(XorOp), DstReg)
+          .addReg(ExecReg)
+          .addImm(-1);
     }
     return;
   }
@@ -847,9 +851,11 @@ void SILowerI1Copies::buildMergeLaneMasks(MachineBasicBlock &MBB,
   }
 
   if (PrevConstant && !PrevVal) {
-    BuildMI(MBB, I, DL, TII->get(AMDGPU::COPY), DstReg).addReg(CurMaskedReg);
+    BuildMI(MBB, I, DL, TII->get(AMDGPU::COPY), DstReg)
+        .addReg(CurMaskedReg);
   } else if (CurConstant && !CurVal) {
-    BuildMI(MBB, I, DL, TII->get(AMDGPU::COPY), DstReg).addReg(PrevMaskedReg);
+    BuildMI(MBB, I, DL, TII->get(AMDGPU::COPY), DstReg)
+        .addReg(PrevMaskedReg);
   } else if (PrevConstant && PrevVal) {
     BuildMI(MBB, I, DL, TII->get(OrN2Op), DstReg)
         .addReg(CurMaskedReg)

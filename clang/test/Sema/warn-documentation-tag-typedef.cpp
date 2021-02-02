@@ -3,13 +3,11 @@
 /*!
 @class Foo
 */
-typedef class {
-} Foo;
+typedef class { } Foo;
 // CHECK-NOT: warning:
 
 /*! 
 @struct Bar
 */
-typedef struct {
-} Bar;
+typedef struct { } Bar;
 // CHECK-NOT: warning:

@@ -26,8 +26,7 @@ public:
   explicit Simple(int Member) : Member(Member) {
     // CTRGEN: store {{.*}} @[[SCC]], i64 0, i64 1
     // CTRUSE: br {{.*}} !prof ![[SC1:[0-9]+]]
-    if (Member) {
-    }
+    if (Member) {}
     // CTRGEN-NOT: store {{.*}} @[[SCC]],
     // CTRUSE-NOT: br {{.*}} !prof ![0-9]+
     // CTRUSE: ret
@@ -40,8 +39,7 @@ public:
   ~Simple() {
     // DTRGEN: store {{.*}} @[[SDC]], i64 0, i64 1
     // DTRUSE: br {{.*}} !prof ![[SD1:[0-9]+]]
-    if (Member) {
-    }
+    if (Member) {}
     // DTRGEN-NOT: store {{.*}} @[[SDC]],
     // DTRUSE-NOT: br {{.*}} !prof ![0-9]+
     // DTRUSE: ret
@@ -54,8 +52,7 @@ public:
   void method() {
     // MTHGEN: store {{.*}} @[[SMC]], i64 0, i64 1
     // MTHUSE: br {{.*}} !prof ![[SM1:[0-9]+]]
-    if (Member) {
-    }
+    if (Member) {}
     // MTHGEN-NOT: store {{.*}} @[[SMC]],
     // MTHUSE-NOT: br {{.*}} !prof ![0-9]+
     // MTHUSE: ret
@@ -71,8 +68,7 @@ public:
   Derived() : Simple(0) {
     // VCTRGEN: store {{.*}} @[[SCC]], i64 0, i64 1
     // VCTRUSE: br {{.*}} !prof ![[SC1:[0-9]+]]
-    if (Member) {
-    }
+    if (Member) {}
     // VCTRGEN-NOT: store {{.*}} @[[SCC]],
     // VCTRUSE-NOT: br {{.*}} !prof ![0-9]+
     // VCTRUSE: ret
@@ -85,8 +81,7 @@ public:
   ~Derived() {
     // VDTRGEN: store {{.*}} @[[SDC]], i64 0, i64 1
     // VDTRUSE: br {{.*}} !prof ![[SD1:[0-9]+]]
-    if (Member) {
-    }
+    if (Member) {}
     // VDTRGEN-NOT: store {{.*}} @[[SDC]],
     // VDTRUSE-NOT: br {{.*}} !prof ![0-9]+
     // VDTRUSE: ret

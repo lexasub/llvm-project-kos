@@ -131,8 +131,8 @@ DWARFUnit::ScopedExtractDIEs::ScopedExtractDIEs(ScopedExtractDIEs &&rhs)
   rhs.m_cu = nullptr;
 }
 
-DWARFUnit::ScopedExtractDIEs &
-DWARFUnit::ScopedExtractDIEs::operator=(DWARFUnit::ScopedExtractDIEs &&rhs) {
+DWARFUnit::ScopedExtractDIEs &DWARFUnit::ScopedExtractDIEs::operator=(
+    DWARFUnit::ScopedExtractDIEs &&rhs) {
   m_cu = rhs.m_cu;
   rhs.m_cu = nullptr;
   m_clear_dies = rhs.m_clear_dies;
@@ -473,8 +473,7 @@ DWARFDataExtractor DWARFUnit::GetLocationData() const {
   const DWARFDataExtractor &data =
       GetVersion() >= 5 ? Ctx.getOrLoadLocListsData() : Ctx.getOrLoadLocData();
   if (const llvm::DWARFUnitIndex::Entry *entry = m_header.GetIndexEntry()) {
-    if (const auto *contribution =
-            entry->getContribution(llvm::DW_SECT_EXT_LOC))
+    if (const auto *contribution = entry->getContribution(llvm::DW_SECT_EXT_LOC))
       return DWARFDataExtractor(data, contribution->Offset,
                                 contribution->Length);
     return DWARFDataExtractor();
@@ -962,7 +961,8 @@ DWARFUnit::FindRnglistFromOffset(dw_offset_t offset) {
   return ranges;
 }
 
-llvm::Expected<DWARFRangeList> DWARFUnit::FindRnglistFromIndex(uint32_t index) {
+llvm::Expected<DWARFRangeList>
+DWARFUnit::FindRnglistFromIndex(uint32_t index) {
   if (llvm::Optional<uint64_t> offset = GetRnglistOffset(index))
     return FindRnglistFromOffset(*offset);
   if (m_rnglist_table)

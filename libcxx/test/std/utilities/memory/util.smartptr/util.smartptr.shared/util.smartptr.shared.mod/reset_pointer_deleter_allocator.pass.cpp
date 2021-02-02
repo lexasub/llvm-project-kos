@@ -18,73 +18,77 @@
 #include "deleter_types.h"
 #include "test_allocator.h"
 
-struct B {
-  static int count;
+struct B
+{
+    static int count;
 
-  B() { ++count; }
-  B(const B&) { ++count; }
-  virtual ~B() { --count; }
+    B() {++count;}
+    B(const B&) {++count;}
+    virtual ~B() {--count;}
 };
 
 int B::count = 0;
 
-struct A : public B {
-  static int count;
+struct A
+    : public B
+{
+    static int count;
 
-  A() { ++count; }
-  A(const A& other) : B(other) { ++count; }
-  ~A() { --count; }
+    A() {++count;}
+    A(const A& other) : B(other) {++count;}
+    ~A() {--count;}
 };
 
 int A::count = 0;
 
-int main(int, char**) {
-  {
-    std::shared_ptr<B> p(new B);
-    A* ptr = new A;
-    p.reset(ptr, test_deleter<A>(3), test_allocator<A>(4));
-    assert(A::count == 1);
-    assert(B::count == 1);
-    assert(p.use_count() == 1);
-    assert(p.get() == ptr);
-    assert(test_deleter<A>::count == 1);
-    assert(test_deleter<A>::dealloc_count == 0);
+int main(int, char**)
+{
+    {
+        std::shared_ptr<B> p(new B);
+        A* ptr = new A;
+        p.reset(ptr, test_deleter<A>(3), test_allocator<A>(4));
+        assert(A::count == 1);
+        assert(B::count == 1);
+        assert(p.use_count() == 1);
+        assert(p.get() == ptr);
+        assert(test_deleter<A>::count == 1);
+        assert(test_deleter<A>::dealloc_count == 0);
 #ifndef TEST_HAS_NO_RTTI
-    test_deleter<A>* d = std::get_deleter<test_deleter<A> >(p);
-    assert(d);
-    assert(d->state() == 3);
+        test_deleter<A>* d = std::get_deleter<test_deleter<A> >(p);
+        assert(d);
+        assert(d->state() == 3);
 #endif
-    assert(test_allocator<A>::count == 1);
-    assert(test_allocator<A>::alloc_count == 1);
-  }
-  assert(A::count == 0);
-  assert(test_deleter<A>::count == 0);
-  assert(test_deleter<A>::dealloc_count == 1);
-  assert(test_allocator<A>::count == 0);
-  assert(test_allocator<A>::alloc_count == 0);
-  {
-    std::shared_ptr<B> p;
-    A* ptr = new A;
-    p.reset(ptr, test_deleter<A>(3), test_allocator<A>(4));
-    assert(A::count == 1);
-    assert(B::count == 1);
-    assert(p.use_count() == 1);
-    assert(p.get() == ptr);
-    assert(test_deleter<A>::count == 1);
+        assert(test_allocator<A>::count == 1);
+        assert(test_allocator<A>::alloc_count == 1);
+    }
+    assert(A::count == 0);
+    assert(test_deleter<A>::count == 0);
     assert(test_deleter<A>::dealloc_count == 1);
+    assert(test_allocator<A>::count == 0);
+    assert(test_allocator<A>::alloc_count == 0);
+    {
+        std::shared_ptr<B> p;
+        A* ptr = new A;
+        p.reset(ptr, test_deleter<A>(3), test_allocator<A>(4));
+        assert(A::count == 1);
+        assert(B::count == 1);
+        assert(p.use_count() == 1);
+        assert(p.get() == ptr);
+        assert(test_deleter<A>::count == 1);
+        assert(test_deleter<A>::dealloc_count == 1);
 #ifndef TEST_HAS_NO_RTTI
-    test_deleter<A>* d = std::get_deleter<test_deleter<A> >(p);
-    assert(d);
-    assert(d->state() == 3);
+        test_deleter<A>* d = std::get_deleter<test_deleter<A> >(p);
+        assert(d);
+        assert(d->state() == 3);
 #endif
-    assert(test_allocator<A>::count == 1);
-    assert(test_allocator<A>::alloc_count == 1);
-  }
-  assert(A::count == 0);
-  assert(test_deleter<A>::count == 0);
-  assert(test_deleter<A>::dealloc_count == 2);
-  assert(test_allocator<A>::count == 0);
-  assert(test_allocator<A>::alloc_count == 0);
+        assert(test_allocator<A>::count == 1);
+        assert(test_allocator<A>::alloc_count == 1);
+    }
+    assert(A::count == 0);
+    assert(test_deleter<A>::count == 0);
+    assert(test_deleter<A>::dealloc_count == 2);
+    assert(test_allocator<A>::count == 0);
+    assert(test_allocator<A>::alloc_count == 0);
 
   return 0;
 }

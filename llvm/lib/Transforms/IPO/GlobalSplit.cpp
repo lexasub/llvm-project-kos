@@ -90,8 +90,7 @@ static bool splitGlobal(GlobalVariable &GV) {
     // Rebuild type metadata, adjusting by the split offset.
     // FIXME: See if we can use DW_OP_piece to preserve debug metadata here.
     for (MDNode *Type : Types) {
-      uint64_t ByteOffset =
-          cast<ConstantInt>(
+      uint64_t ByteOffset = cast<ConstantInt>(
               cast<ConstantAsMetadata>(Type->getOperand(0))->getValue())
               ->getZExtValue();
       // Type metadata may be attached one byte after the end of the vtable, for
@@ -186,7 +185,9 @@ char GlobalSplit::ID = 0;
 
 INITIALIZE_PASS(GlobalSplit, "globalsplit", "Global splitter", false, false)
 
-ModulePass *llvm::createGlobalSplitPass() { return new GlobalSplit; }
+ModulePass *llvm::createGlobalSplitPass() {
+  return new GlobalSplit;
+}
 
 PreservedAnalyses GlobalSplitPass::run(Module &M, ModuleAnalysisManager &AM) {
   if (!splitGlobals(M))

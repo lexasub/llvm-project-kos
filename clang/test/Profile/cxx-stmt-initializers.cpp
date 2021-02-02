@@ -23,8 +23,7 @@ void switch_init() {
 // CHECK-LABEL: define {{.*}}void @_Z7if_initv()
 // PGOGEN: store {{.*}} @[[IIC]], i64 0, i64 0
 void if_init() {
-  if (int i = true ? 0 : 1; i) {
-  }
+  if (int i = true ? 0 : 1; i) {}
   // PGOGEN: store {{.*}} @[[IIC]], i64 0, i64 2
   // PGOGEN: store {{.*}} @[[IIC]], i64 0, i64 1
 }

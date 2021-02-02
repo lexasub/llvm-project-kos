@@ -16,7 +16,7 @@
 
 using namespace llvm;
 
-void MipsMCAsmInfo::anchor() {}
+void MipsMCAsmInfo::anchor() { }
 
 MipsMCAsmInfo::MipsMCAsmInfo(const Triple &TheTriple,
                              const MCTargetOptions &Options) {
@@ -33,18 +33,18 @@ MipsMCAsmInfo::MipsMCAsmInfo(const Triple &TheTriple,
     PrivateGlobalPrefix = ".L";
   PrivateLabelPrefix = PrivateGlobalPrefix;
 
-  AlignmentIsInBytes = false;
-  Data16bitsDirective = "\t.2byte\t";
-  Data32bitsDirective = "\t.4byte\t";
-  Data64bitsDirective = "\t.8byte\t";
-  CommentString = "#";
-  ZeroDirective = "\t.space\t";
-  GPRel32Directive = "\t.gpword\t";
-  GPRel64Directive = "\t.gpdword\t";
-  DTPRel32Directive = "\t.dtprelword\t";
-  DTPRel64Directive = "\t.dtpreldword\t";
-  TPRel32Directive = "\t.tprelword\t";
-  TPRel64Directive = "\t.tpreldword\t";
+  AlignmentIsInBytes          = false;
+  Data16bitsDirective         = "\t.2byte\t";
+  Data32bitsDirective         = "\t.4byte\t";
+  Data64bitsDirective         = "\t.8byte\t";
+  CommentString               = "#";
+  ZeroDirective               = "\t.space\t";
+  GPRel32Directive            = "\t.gpword\t";
+  GPRel64Directive            = "\t.gpdword\t";
+  DTPRel32Directive           = "\t.dtprelword\t";
+  DTPRel64Directive           = "\t.dtpreldword\t";
+  TPRel32Directive            = "\t.tprelword\t";
+  TPRel64Directive            = "\t.tpreldword\t";
   UseAssignmentForEHBegin = true;
   SupportsDebugInformation = true;
   ExceptionsType = ExceptionHandling::DwarfCFI;

@@ -3,7 +3,7 @@
 #pragma pack(1)
 struct S {
   char : 8;
-  short : 8;
+  short   : 8;
   short x : 8;
 } s;
 

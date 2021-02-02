@@ -687,7 +687,8 @@ findSanitizerCovFunctions(const object::ObjectFile &O) {
   return Result;
 }
 
-static uint64_t getPreviousInstructionPc(uint64_t PC, Triple TheTriple) {
+static uint64_t getPreviousInstructionPc(uint64_t PC,
+                                         Triple TheTriple) {
   if (TheTriple.isARM()) {
     return (PC - 3) & (~1);
   } else if (TheTriple.isAArch64()) {
@@ -1137,8 +1138,7 @@ int main(int Argc, char **Argv) {
   llvm::InitializeAllTargetMCs();
   llvm::InitializeAllDisassemblers();
 
-  cl::ParseCommandLineOptions(
-      Argc, Argv,
+  cl::ParseCommandLineOptions(Argc, Argv,
       "Sanitizer Coverage Processing Tool (sancov)\n\n"
       "  This tool can extract various coverage-related information from: \n"
       "  coverage-instrumented binary files, raw .sancov files and their "
@@ -1147,7 +1147,8 @@ int main(int Argc, char **Argv) {
       "    -print-coverage-pcs     - coverage-instrumented binary files\n"
       "    -print-coverage         - .sancov files\n"
       "    <other actions>         - .sancov files & corresponding binary "
-      "files, .symcov files\n");
+      "files, .symcov files\n"
+      );
 
   // -print doesn't need object files.
   if (Action == PrintAction) {

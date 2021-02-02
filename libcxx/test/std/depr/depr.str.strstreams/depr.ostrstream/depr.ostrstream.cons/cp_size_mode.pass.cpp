@@ -18,27 +18,28 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    char buf[] = "123 4.5 dog";
-    std::ostrstream out(buf, 0);
-    assert(out.str() == std::string("123 4.5 dog"));
-    int i = 321;
-    double d = 5.5;
-    std::string s("cat");
-    out << i << ' ' << d << ' ' << s << std::ends;
-    assert(out.str() == std::string("321 5.5 cat"));
-  }
-  {
-    char buf[23] = "123 4.5 dog";
-    std::ostrstream out(buf, 11, std::ios::app);
-    assert(out.str() == std::string("123 4.5 dog"));
-    int i = 321;
-    double d = 5.5;
-    std::string s("cat");
-    out << i << ' ' << d << ' ' << s << std::ends;
-    assert(out.str() == std::string("123 4.5 dog321 5.5 cat"));
-  }
+int main(int, char**)
+{
+    {
+        char buf[] = "123 4.5 dog";
+        std::ostrstream out(buf, 0);
+        assert(out.str() == std::string("123 4.5 dog"));
+        int i = 321;
+        double d = 5.5;
+        std::string s("cat");
+        out << i << ' ' << d << ' ' << s << std::ends;
+        assert(out.str() == std::string("321 5.5 cat"));
+    }
+    {
+        char buf[23] = "123 4.5 dog";
+        std::ostrstream out(buf, 11, std::ios::app);
+        assert(out.str() == std::string("123 4.5 dog"));
+        int i = 321;
+        double d = 5.5;
+        std::string s("cat");
+        out << i << ' ' << d << ' ' << s << std::ends;
+        assert(out.str() == std::string("123 4.5 dog321 5.5 cat"));
+    }
 
   return 0;
 }

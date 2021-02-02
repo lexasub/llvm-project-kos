@@ -19,30 +19,34 @@
 #include "test_macros.h"
 
 template <class CharT>
-struct test : public std::basic_streambuf<CharT> {
-  typedef std::basic_streambuf<CharT> base;
+struct test
+    : public std::basic_streambuf<CharT>
+{
+    typedef std::basic_streambuf<CharT> base;
 
-  test() {}
+    test() {}
 
-  void setg(CharT* gbeg, CharT* gnext, CharT* gend) {
-    base::setg(gbeg, gnext, gend);
-    assert(base::eback() == gbeg);
-    assert(base::gptr() == gnext);
-    assert(base::egptr() == gend);
-  }
+    void setg(CharT* gbeg, CharT* gnext, CharT* gend)
+    {
+        base::setg(gbeg, gnext, gend);
+        assert(base::eback() == gbeg);
+        assert(base::gptr() == gnext);
+        assert(base::egptr() == gend);
+    }
 };
 
-int main(int, char**) {
-  {
-    test<char> t;
-    char in[] = "ABC";
-    t.setg(in, in + 1, in + sizeof(in) / sizeof(in[0]));
-  }
-  {
-    test<wchar_t> t;
-    wchar_t in[] = L"ABC";
-    t.setg(in, in + 1, in + sizeof(in) / sizeof(in[0]));
-  }
+int main(int, char**)
+{
+    {
+        test<char> t;
+        char in[] = "ABC";
+        t.setg(in, in+1, in+sizeof(in)/sizeof(in[0]));
+    }
+    {
+        test<wchar_t> t;
+        wchar_t in[] = L"ABC";
+        t.setg(in, in+1, in+sizeof(in)/sizeof(in[0]));
+    }
 
   return 0;
 }

@@ -22,15 +22,26 @@
 using namespace llvm;
 
 LLVMContextImpl::LLVMContextImpl(LLVMContext &C)
-    : DiagHandler(std::make_unique<DiagnosticHandler>()),
-      VoidTy(C, Type::VoidTyID), LabelTy(C, Type::LabelTyID),
-      HalfTy(C, Type::HalfTyID), BFloatTy(C, Type::BFloatTyID),
-      FloatTy(C, Type::FloatTyID), DoubleTy(C, Type::DoubleTyID),
-      MetadataTy(C, Type::MetadataTyID), TokenTy(C, Type::TokenTyID),
-      X86_FP80Ty(C, Type::X86_FP80TyID), FP128Ty(C, Type::FP128TyID),
-      PPC_FP128Ty(C, Type::PPC_FP128TyID), X86_MMXTy(C, Type::X86_MMXTyID),
-      X86_AMXTy(C, Type::X86_AMXTyID), Int1Ty(C, 1), Int8Ty(C, 8),
-      Int16Ty(C, 16), Int32Ty(C, 32), Int64Ty(C, 64), Int128Ty(C, 128) {}
+  : DiagHandler(std::make_unique<DiagnosticHandler>()),
+    VoidTy(C, Type::VoidTyID),
+    LabelTy(C, Type::LabelTyID),
+    HalfTy(C, Type::HalfTyID),
+    BFloatTy(C, Type::BFloatTyID),
+    FloatTy(C, Type::FloatTyID),
+    DoubleTy(C, Type::DoubleTyID),
+    MetadataTy(C, Type::MetadataTyID),
+    TokenTy(C, Type::TokenTyID),
+    X86_FP80Ty(C, Type::X86_FP80TyID),
+    FP128Ty(C, Type::FP128TyID),
+    PPC_FP128Ty(C, Type::PPC_FP128TyID),
+    X86_MMXTy(C, Type::X86_MMXTyID),
+    X86_AMXTy(C, Type::X86_AMXTyID),
+    Int1Ty(C, 1),
+    Int8Ty(C, 8),
+    Int16Ty(C, 16),
+    Int32Ty(C, 32),
+    Int64Ty(C, 64),
+    Int128Ty(C, 128) {}
 
 LLVMContextImpl::~LLVMContextImpl() {
   // NOTE: We need to delete the contents of OwnedModules, but Module's dtor
@@ -94,8 +105,7 @@ LLVMContextImpl::~LLVMContextImpl() {
 
   // Destroy attribute node lists.
   for (FoldingSetIterator<AttributeSetNode> I = AttrsSetNodes.begin(),
-                                            E = AttrsSetNodes.end();
-       I != E;) {
+         E = AttrsSetNodes.end(); I != E; ) {
     FoldingSetIterator<AttributeSetNode> Elem = I++;
     delete &*Elem;
   }
@@ -184,8 +194,7 @@ StringMapEntry<uint32_t> *LLVMContextImpl::getOrInsertBundleTag(StringRef Tag) {
   return &*(BundleTagCache.insert(std::make_pair(Tag, NewIdx)).first);
 }
 
-void LLVMContextImpl::getOperandBundleTags(
-    SmallVectorImpl<StringRef> &Tags) const {
+void LLVMContextImpl::getOperandBundleTags(SmallVectorImpl<StringRef> &Tags) const {
   Tags.resize(BundleTagCache.size());
   for (const auto &T : BundleTagCache)
     Tags[T.second] = T.first();
@@ -219,4 +228,6 @@ OptPassGate &LLVMContextImpl::getOptPassGate() const {
   return *OPG;
 }
 
-void LLVMContextImpl::setOptPassGate(OptPassGate &OPG) { this->OPG = &OPG; }
+void LLVMContextImpl::setOptPassGate(OptPassGate& OPG) {
+  this->OPG = &OPG;
+}

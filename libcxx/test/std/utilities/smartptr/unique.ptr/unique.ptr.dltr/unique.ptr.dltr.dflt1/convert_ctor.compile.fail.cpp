@@ -15,13 +15,19 @@
 #include <memory>
 #include <cassert>
 
-struct A {};
+struct A
+{
+};
 
-struct B : public A {};
+struct B
+    : public A
+{
+};
 
-int main(int, char**) {
-  std::default_delete<B[]> d2;
-  std::default_delete<A[]> d1 = d2;
+int main(int, char**)
+{
+    std::default_delete<B[]> d2;
+    std::default_delete<A[]> d1 = d2;
 
   return 0;
 }

@@ -101,7 +101,7 @@ class format_object final : public format_object_base {
   }
 
 public:
-  format_object(const char *fmt, const Ts &...vals)
+  format_object(const char *fmt, const Ts &... vals)
       : format_object_base(fmt), Vals(vals...) {
     validate_format_parameters<Ts...>();
   }
@@ -121,7 +121,7 @@ public:
 /// \endcode
 
 template <typename... Ts>
-inline format_object<Ts...> format(const char *Fmt, const Ts &...Vals) {
+inline format_object<Ts...> format(const char *Fmt, const Ts &... Vals) {
   return format_object<Ts...>(Fmt, Vals...);
 }
 

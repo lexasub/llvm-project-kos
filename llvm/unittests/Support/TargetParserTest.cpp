@@ -18,19 +18,19 @@ using namespace llvm;
 
 namespace {
 const char *ARMArch[] = {
-    "armv2",       "armv2a",    "armv3",        "armv3m",      "armv4",
-    "armv4t",      "armv5",     "armv5t",       "armv5e",      "armv5te",
-    "armv5tej",    "armv6",     "armv6j",       "armv6k",      "armv6hl",
-    "armv6t2",     "armv6kz",   "armv6z",       "armv6zk",     "armv6-m",
-    "armv6m",      "armv6sm",   "armv6s-m",     "armv7-a",     "armv7",
-    "armv7a",      "armv7ve",   "armv7hl",      "armv7l",      "armv7-r",
-    "armv7r",      "armv7-m",   "armv7m",       "armv7k",      "armv7s",
-    "armv7e-m",    "armv7em",   "armv8-a",      "armv8",       "armv8a",
-    "armv8l",      "armv8.1-a", "armv8.1a",     "armv8.2-a",   "armv8.2a",
-    "armv8.3-a",   "armv8.3a",  "armv8.4-a",    "armv8.4a",    "armv8.5-a",
-    "armv8.5a",    "armv8.6-a", "armv8.6a",     "armv8.7-a",   "armv8.7a",
-    "armv8-r",     "armv8r",    "armv8-m.base", "armv8m.base", "armv8-m.main",
-    "armv8m.main", "iwmmxt",    "iwmmxt2",      "xscale",      "armv8.1-m.main",
+    "armv2",       "armv2a",       "armv3",       "armv3m",       "armv4",
+    "armv4t",      "armv5",        "armv5t",      "armv5e",       "armv5te",
+    "armv5tej",    "armv6",        "armv6j",      "armv6k",       "armv6hl",
+    "armv6t2",     "armv6kz",      "armv6z",      "armv6zk",      "armv6-m",
+    "armv6m",      "armv6sm",      "armv6s-m",    "armv7-a",      "armv7",
+    "armv7a",      "armv7ve",      "armv7hl",     "armv7l",       "armv7-r",
+    "armv7r",      "armv7-m",      "armv7m",      "armv7k",       "armv7s",
+    "armv7e-m",    "armv7em",      "armv8-a",     "armv8",        "armv8a",
+    "armv8l",      "armv8.1-a",    "armv8.1a",    "armv8.2-a",    "armv8.2a",
+    "armv8.3-a",   "armv8.3a",     "armv8.4-a",   "armv8.4a",     "armv8.5-a",
+    "armv8.5a",    "armv8.6-a",    "armv8.6a",    "armv8.7-a",    "armv8.7a",
+    "armv8-r",     "armv8r",       "armv8-m.base","armv8m.base",  "armv8-m.main",
+    "armv8m.main", "iwmmxt",       "iwmmxt2",     "xscale",       "armv8.1-m.main",
 };
 
 template <ARM::ISAKind ISAKind>
@@ -309,9 +309,10 @@ INSTANTIATE_TEST_CASE_P(
                              ARM::AEK_FP16 | ARM::AEK_RAS | ARM::AEK_DOTPROD,
                          "8.2-A"),
         ARMCPUTestParams("cortex-a78c", "armv8.2-a", "crypto-neon-fp-armv8",
-                         ARM::AEK_SEC | ARM::AEK_MP | ARM::AEK_VIRT |
-                             ARM::AEK_HWDIVARM | ARM::AEK_HWDIVTHUMB |
-                             ARM::AEK_DSP | ARM::AEK_CRC | ARM::AEK_RAS |
+                         ARM::AEK_SEC | ARM::AEK_MP |
+                             ARM::AEK_VIRT | ARM::AEK_HWDIVARM |
+                             ARM::AEK_HWDIVTHUMB | ARM::AEK_DSP |
+                             ARM::AEK_CRC | ARM::AEK_RAS |
                              ARM::AEK_FP16 | ARM::AEK_DOTPROD,
                          "8.2-A"),
         ARMCPUTestParams("cortex-a77", "armv8.2-a", "crypto-neon-fp-armv8",
@@ -400,14 +401,14 @@ TEST(TargetParserTest, testARMCPUArchList) {
   // No list exists for these in this test suite, so ensure all are
   // valid, and match the expected 'magic' count.
   EXPECT_EQ(List.size(), NumARMCPUArchs);
-  for (StringRef CPU : List) {
+  for(StringRef CPU : List) {
     EXPECT_NE(ARM::parseCPUArch(CPU), ARM::ArchKind::INVALID);
   }
 }
 
 TEST(TargetParserTest, testInvalidARMArch) {
   auto InvalidArchStrings = {"armv", "armv99", "noarm"};
-  for (const char *InvalidArch : InvalidArchStrings)
+  for (const char* InvalidArch : InvalidArchStrings)
     EXPECT_EQ(ARM::parseArch(InvalidArch), ARM::ArchKind::INVALID);
 }
 
@@ -423,81 +424,116 @@ bool testARMArch(StringRef Arch, StringRef DefaultCPU, StringRef SubArch,
 
 TEST(TargetParserTest, testARMArch) {
   EXPECT_TRUE(
-      testARMArch("armv2", "arm2", "v2", ARMBuildAttrs::CPUArch::Pre_v4));
+      testARMArch("armv2", "arm2", "v2",
+                          ARMBuildAttrs::CPUArch::Pre_v4));
   EXPECT_TRUE(
-      testARMArch("armv2a", "arm3", "v2a", ARMBuildAttrs::CPUArch::Pre_v4));
+      testARMArch("armv2a", "arm3", "v2a",
+                          ARMBuildAttrs::CPUArch::Pre_v4));
   EXPECT_TRUE(
-      testARMArch("armv3", "arm6", "v3", ARMBuildAttrs::CPUArch::Pre_v4));
+      testARMArch("armv3", "arm6", "v3",
+                          ARMBuildAttrs::CPUArch::Pre_v4));
   EXPECT_TRUE(
-      testARMArch("armv3m", "arm7m", "v3m", ARMBuildAttrs::CPUArch::Pre_v4));
+      testARMArch("armv3m", "arm7m", "v3m",
+                          ARMBuildAttrs::CPUArch::Pre_v4));
   EXPECT_TRUE(
-      testARMArch("armv4", "strongarm", "v4", ARMBuildAttrs::CPUArch::v4));
+      testARMArch("armv4", "strongarm", "v4",
+                          ARMBuildAttrs::CPUArch::v4));
   EXPECT_TRUE(
-      testARMArch("armv4t", "arm7tdmi", "v4t", ARMBuildAttrs::CPUArch::v4T));
+      testARMArch("armv4t", "arm7tdmi", "v4t",
+                          ARMBuildAttrs::CPUArch::v4T));
   EXPECT_TRUE(
-      testARMArch("armv5t", "arm10tdmi", "v5", ARMBuildAttrs::CPUArch::v5T));
+      testARMArch("armv5t", "arm10tdmi", "v5",
+                          ARMBuildAttrs::CPUArch::v5T));
   EXPECT_TRUE(
-      testARMArch("armv5te", "arm1022e", "v5e", ARMBuildAttrs::CPUArch::v5TE));
-  EXPECT_TRUE(testARMArch("armv5tej", "arm926ej-s", "v5e",
+      testARMArch("armv5te", "arm1022e", "v5e",
+                          ARMBuildAttrs::CPUArch::v5TE));
+  EXPECT_TRUE(
+      testARMArch("armv5tej", "arm926ej-s", "v5e",
                           ARMBuildAttrs::CPUArch::v5TEJ));
   EXPECT_TRUE(
-      testARMArch("armv6", "arm1136jf-s", "v6", ARMBuildAttrs::CPUArch::v6));
+      testARMArch("armv6", "arm1136jf-s", "v6",
+                          ARMBuildAttrs::CPUArch::v6));
   EXPECT_TRUE(
-      testARMArch("armv6k", "mpcore", "v6k", ARMBuildAttrs::CPUArch::v6K));
-  EXPECT_TRUE(testARMArch("armv6t2", "arm1156t2-s", "v6t2",
+      testARMArch("armv6k", "mpcore", "v6k",
+                          ARMBuildAttrs::CPUArch::v6K));
+  EXPECT_TRUE(
+      testARMArch("armv6t2", "arm1156t2-s", "v6t2",
                           ARMBuildAttrs::CPUArch::v6T2));
-  EXPECT_TRUE(testARMArch("armv6kz", "arm1176jzf-s", "v6kz",
+  EXPECT_TRUE(
+      testARMArch("armv6kz", "arm1176jzf-s", "v6kz",
                           ARMBuildAttrs::CPUArch::v6KZ));
   EXPECT_TRUE(
-      testARMArch("armv6-m", "cortex-m0", "v6m", ARMBuildAttrs::CPUArch::v6_M));
+      testARMArch("armv6-m", "cortex-m0", "v6m",
+                          ARMBuildAttrs::CPUArch::v6_M));
   EXPECT_TRUE(
-      testARMArch("armv7-a", "generic", "v7", ARMBuildAttrs::CPUArch::v7));
+      testARMArch("armv7-a", "generic", "v7",
+                          ARMBuildAttrs::CPUArch::v7));
   EXPECT_TRUE(
-      testARMArch("armv7ve", "generic", "v7ve", ARMBuildAttrs::CPUArch::v7));
+      testARMArch("armv7ve", "generic", "v7ve",
+                          ARMBuildAttrs::CPUArch::v7));
   EXPECT_TRUE(
-      testARMArch("armv7-r", "cortex-r4", "v7r", ARMBuildAttrs::CPUArch::v7));
+      testARMArch("armv7-r", "cortex-r4", "v7r",
+                          ARMBuildAttrs::CPUArch::v7));
   EXPECT_TRUE(
-      testARMArch("armv7-m", "cortex-m3", "v7m", ARMBuildAttrs::CPUArch::v7));
-  EXPECT_TRUE(testARMArch("armv7e-m", "cortex-m4", "v7em",
+      testARMArch("armv7-m", "cortex-m3", "v7m",
+                          ARMBuildAttrs::CPUArch::v7));
+  EXPECT_TRUE(
+      testARMArch("armv7e-m", "cortex-m4", "v7em",
                           ARMBuildAttrs::CPUArch::v7E_M));
   EXPECT_TRUE(
-      testARMArch("armv8-a", "generic", "v8", ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.1-a", "generic", "v8.1a",
+      testARMArch("armv8-a", "generic", "v8",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.2-a", "generic", "v8.2a",
+  EXPECT_TRUE(
+      testARMArch("armv8.1-a", "generic", "v8.1a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.3-a", "generic", "v8.3a",
+  EXPECT_TRUE(
+      testARMArch("armv8.2-a", "generic", "v8.2a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.4-a", "generic", "v8.4a",
+  EXPECT_TRUE(
+      testARMArch("armv8.3-a", "generic", "v8.3a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.5-a", "generic", "v8.5a",
+  EXPECT_TRUE(
+      testARMArch("armv8.4-a", "generic", "v8.4a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.6-a", "generic", "v8.6a",
+  EXPECT_TRUE(
+      testARMArch("armv8.5-a", "generic", "v8.5a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8.7-a", "generic", "v8.7a",
+  EXPECT_TRUE(
+      testARMArch("armv8.6-a", "generic", "v8.6a",
                           ARMBuildAttrs::CPUArch::v8_A));
-  EXPECT_TRUE(testARMArch("armv8-r", "cortex-r52", "v8r",
+  EXPECT_TRUE(
+      testARMArch("armv8.7-a", "generic", "v8.7a",
+                          ARMBuildAttrs::CPUArch::v8_A));
+  EXPECT_TRUE(
+      testARMArch("armv8-r", "cortex-r52", "v8r",
                           ARMBuildAttrs::CPUArch::v8_R));
-  EXPECT_TRUE(testARMArch("armv8-m.base", "generic", "v8m.base",
+  EXPECT_TRUE(
+      testARMArch("armv8-m.base", "generic", "v8m.base",
                           ARMBuildAttrs::CPUArch::v8_M_Base));
-  EXPECT_TRUE(testARMArch("armv8-m.main", "generic", "v8m.main",
+  EXPECT_TRUE(
+      testARMArch("armv8-m.main", "generic", "v8m.main",
                           ARMBuildAttrs::CPUArch::v8_M_Main));
-  EXPECT_TRUE(testARMArch("armv8.1-m.main", "generic", "v8.1m.main",
+  EXPECT_TRUE(
+      testARMArch("armv8.1-m.main", "generic", "v8.1m.main",
                           ARMBuildAttrs::CPUArch::v8_1_M_Main));
   EXPECT_TRUE(
-      testARMArch("iwmmxt", "iwmmxt", "", ARMBuildAttrs::CPUArch::v5TE));
+      testARMArch("iwmmxt", "iwmmxt", "",
+                          ARMBuildAttrs::CPUArch::v5TE));
   EXPECT_TRUE(
-      testARMArch("iwmmxt2", "generic", "", ARMBuildAttrs::CPUArch::v5TE));
+      testARMArch("iwmmxt2", "generic", "",
+                          ARMBuildAttrs::CPUArch::v5TE));
   EXPECT_TRUE(
-      testARMArch("xscale", "xscale", "v5e", ARMBuildAttrs::CPUArch::v5TE));
+      testARMArch("xscale", "xscale", "v5e",
+                          ARMBuildAttrs::CPUArch::v5TE));
   EXPECT_TRUE(
-      testARMArch("armv7s", "swift", "v7s", ARMBuildAttrs::CPUArch::v7));
+      testARMArch("armv7s", "swift", "v7s",
+                          ARMBuildAttrs::CPUArch::v7));
   EXPECT_TRUE(
-      testARMArch("armv7k", "generic", "v7k", ARMBuildAttrs::CPUArch::v7));
+      testARMArch("armv7k", "generic", "v7k",
+                          ARMBuildAttrs::CPUArch::v7));
 }
 
-bool testARMExtension(StringRef CPUName, ARM::ArchKind ArchKind,
-                      StringRef ArchExt) {
+bool testARMExtension(StringRef CPUName,ARM::ArchKind ArchKind, StringRef ArchExt) {
   return ARM::getDefaultExtensions(CPUName, ArchKind) &
          ARM::parseArchExt(ArchExt);
 }
@@ -509,30 +545,41 @@ TEST(TargetParserTest, testARMExtension) {
   EXPECT_FALSE(testARMExtension("arm7m", ARM::ArchKind::INVALID, "thumb"));
   EXPECT_FALSE(testARMExtension("strongarm", ARM::ArchKind::INVALID, "dsp"));
   EXPECT_FALSE(testARMExtension("arm7tdmi", ARM::ArchKind::INVALID, "dsp"));
-  EXPECT_FALSE(testARMExtension("arm10tdmi", ARM::ArchKind::INVALID, "simd"));
+  EXPECT_FALSE(testARMExtension("arm10tdmi",
+                                ARM::ArchKind::INVALID, "simd"));
   EXPECT_FALSE(testARMExtension("arm1022e", ARM::ArchKind::INVALID, "simd"));
-  EXPECT_FALSE(testARMExtension("arm926ej-s", ARM::ArchKind::INVALID, "simd"));
-  EXPECT_FALSE(
-      testARMExtension("arm1136jf-s", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(
-      testARMExtension("arm1176j-s", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(
-      testARMExtension("arm1156t2-s", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(
-      testARMExtension("arm1176jzf-s", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(testARMExtension("cortex-m0", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(testARMExtension("cortex-a8", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(testARMExtension("cortex-r4", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(testARMExtension("cortex-m3", ARM::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(testARMExtension("cortex-a53", ARM::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(testARMExtension("cortex-a53", ARM::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(testARMExtension("cortex-a55", ARM::ArchKind::INVALID, "fp16"));
-  EXPECT_FALSE(
-      testARMExtension("cortex-a55", ARM::ArchKind::INVALID, "fp16fml"));
-  EXPECT_TRUE(testARMExtension("cortex-a75", ARM::ArchKind::INVALID, "fp16"));
-  EXPECT_FALSE(
-      testARMExtension("cortex-a75", ARM::ArchKind::INVALID, "fp16fml"));
-  EXPECT_FALSE(testARMExtension("cortex-r52", ARM::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testARMExtension("arm926ej-s",
+                                ARM::ArchKind::INVALID, "simd"));
+  EXPECT_FALSE(testARMExtension("arm1136jf-s",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("arm1176j-s",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("arm1156t2-s",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("arm1176jzf-s",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("cortex-m0",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("cortex-a8",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("cortex-r4",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("cortex-m3",
+                                ARM::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testARMExtension("cortex-a53",
+                                ARM::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testARMExtension("cortex-a53",
+                                ARM::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testARMExtension("cortex-a55",
+                                ARM::ArchKind::INVALID, "fp16"));
+  EXPECT_FALSE(testARMExtension("cortex-a55",
+                                ARM::ArchKind::INVALID, "fp16fml"));
+  EXPECT_TRUE(testARMExtension("cortex-a75",
+                                ARM::ArchKind::INVALID, "fp16"));
+  EXPECT_FALSE(testARMExtension("cortex-a75",
+                                ARM::ArchKind::INVALID, "fp16fml"));
+  EXPECT_FALSE(testARMExtension("cortex-r52",
+                                ARM::ArchKind::INVALID, "ras"));
   EXPECT_FALSE(testARMExtension("iwmmxt", ARM::ArchKind::INVALID, "crc"));
   EXPECT_FALSE(testARMExtension("xscale", ARM::ArchKind::INVALID, "crc"));
   EXPECT_FALSE(testARMExtension("swift", ARM::ArchKind::INVALID, "crc"));
@@ -548,13 +595,16 @@ TEST(TargetParserTest, testARMExtension) {
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV5TEJ, "simd"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV6, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV6K, "crypto"));
-  EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV6T2, "crypto"));
-  EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV6KZ, "crypto"));
+  EXPECT_FALSE(testARMExtension("generic",
+                                ARM::ArchKind::ARMV6T2, "crypto"));
+  EXPECT_FALSE(testARMExtension("generic",
+                                ARM::ArchKind::ARMV6KZ, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV6M, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV7A, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV7R, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV7M, "crypto"));
-  EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV7EM, "crypto"));
+  EXPECT_FALSE(testARMExtension("generic",
+                                ARM::ArchKind::ARMV7EM, "crypto"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8A, "ras"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8_1A, "ras"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8_2A, "profile"));
@@ -565,10 +615,10 @@ TEST(TargetParserTest, testARMExtension) {
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8_4A, "fp16"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8_4A, "fp16fml"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::ARMV8R, "ras"));
-  EXPECT_FALSE(
-      testARMExtension("generic", ARM::ArchKind::ARMV8MBaseline, "crc"));
-  EXPECT_FALSE(
-      testARMExtension("generic", ARM::ArchKind::ARMV8MMainline, "crc"));
+  EXPECT_FALSE(testARMExtension("generic",
+                                ARM::ArchKind::ARMV8MBaseline, "crc"));
+  EXPECT_FALSE(testARMExtension("generic",
+                                ARM::ArchKind::ARMV8MMainline, "crc"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::IWMMXT, "crc"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::IWMMXT2, "crc"));
   EXPECT_FALSE(testARMExtension("generic", ARM::ArchKind::XSCALE, "crc"));
@@ -593,9 +643,11 @@ TEST(TargetParserTest, ARMFPUNeonSupportLevel) {
        FK = static_cast<ARM::FPUKind>(static_cast<unsigned>(FK) + 1))
     if (FK == ARM::FK_LAST ||
         ARM::getFPUName(FK).find("neon") == std::string::npos)
-      EXPECT_EQ(ARM::NeonSupportLevel::None, ARM::getFPUNeonSupportLevel(FK));
+      EXPECT_EQ(ARM::NeonSupportLevel::None,
+                 ARM::getFPUNeonSupportLevel(FK));
     else
-      EXPECT_NE(ARM::NeonSupportLevel::None, ARM::getFPUNeonSupportLevel(FK));
+      EXPECT_NE(ARM::NeonSupportLevel::None,
+                ARM::getFPUNeonSupportLevel(FK));
 }
 
 TEST(TargetParserTest, ARMFPURestriction) {
@@ -616,11 +668,12 @@ TEST(TargetParserTest, ARMExtensionFeatures) {
 
   for (auto &Ext : ARM::ARCHExtNames) {
     if (Ext.Feature && Ext.NegFeature)
-      Extensions[Ext.ID] = {StringRef(Ext.Feature), StringRef(Ext.NegFeature)};
+      Extensions[Ext.ID] = { StringRef(Ext.Feature),
+                             StringRef(Ext.NegFeature) };
   }
 
-  Extensions[ARM::AEK_HWDIVARM] = {"+hwdiv-arm", "-hwdiv-arm"};
-  Extensions[ARM::AEK_HWDIVTHUMB] = {"+hwdiv", "-hwdiv"};
+  Extensions[ARM::AEK_HWDIVARM]   = { "+hwdiv-arm", "-hwdiv-arm" };
+  Extensions[ARM::AEK_HWDIVTHUMB] = { "+hwdiv",     "-hwdiv" };
 
   std::vector<StringRef> Features;
 
@@ -712,16 +765,15 @@ TEST(TargetParserTest, ARMparseHWDiv) {
 
 TEST(TargetParserTest, ARMparseArchEndianAndISA) {
   const char *Arch[] = {
-      "v2",    "v2a",    "v3",       "v3m",      "v4",        "v4t",
-      "v5",    "v5t",    "v5e",      "v5te",     "v5tej",     "v6",
-      "v6j",   "v6k",    "v6hl",     "v6t2",     "v6kz",      "v6z",
-      "v6zk",  "v6-m",   "v6m",      "v6sm",     "v6s-m",     "v7-a",
-      "v7",    "v7a",    "v7ve",     "v7hl",     "v7l",       "v7-r",
-      "v7r",   "v7-m",   "v7m",      "v7k",      "v7s",       "v7e-m",
-      "v7em",  "v8-a",   "v8",       "v8a",      "v8l",       "v8.1-a",
-      "v8.1a", "v8.2-a", "v8.2a",    "v8.3-a",   "v8.3a",     "v8.4-a",
-      "v8.4a", "v8.5-a", "v8.5a",    "v8.6-a",   "v8.6a",     "v8.7-a",
-      "v8.7a", "v8-r",   "v8m.base", "v8m.main", "v8.1m.main"};
+      "v2",   "v2a",    "v3",    "v3m",    "v4",    "v4t",    "v5",    "v5t",
+      "v5e",  "v5te",   "v5tej", "v6",     "v6j",   "v6k",    "v6hl",  "v6t2",
+      "v6kz", "v6z",    "v6zk",  "v6-m",   "v6m",   "v6sm",   "v6s-m", "v7-a",
+      "v7",   "v7a",    "v7ve",  "v7hl",   "v7l",   "v7-r",   "v7r",   "v7-m",
+      "v7m",  "v7k",    "v7s",   "v7e-m",  "v7em",  "v8-a",   "v8",    "v8a",
+      "v8l",  "v8.1-a", "v8.1a", "v8.2-a", "v8.2a", "v8.3-a", "v8.3a", "v8.4-a",
+      "v8.4a", "v8.5-a","v8.5a", "v8.6-a", "v8.6a", "v8.7-a", "v8.7a", "v8-r",
+      "v8m.base", "v8m.main", "v8.1m.main"
+  };
 
   for (unsigned i = 0; i < array_lengthof(Arch); i++) {
     std::string arm_1 = "armeb" + (std::string)(Arch[i]);
@@ -1131,7 +1183,7 @@ TEST(TargetParserTest, testAArch64CPUArchList) {
   // No list exists for these in this test suite, so ensure all are
   // valid, and match the expected 'magic' count.
   EXPECT_EQ(List.size(), NumAArch64CPUArchs);
-  for (StringRef CPU : List) {
+  for(StringRef CPU : List) {
     EXPECT_NE(AArch64::parseCPUArch(CPU), AArch64::ArchKind::INVALID);
   }
 }
@@ -1171,149 +1223,154 @@ bool testAArch64Extension(StringRef CPUName, AArch64::ArchKind AK,
 }
 
 TEST(TargetParserTest, testAArch64Extension) {
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a34", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a35", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a53", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-a55", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-a55", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_FALSE(testAArch64Extension("cortex-a55", AArch64::ArchKind::INVALID,
-                                    "fp16fml"));
-  EXPECT_TRUE(testAArch64Extension("cortex-a55", AArch64::ArchKind::INVALID,
-                                   "dotprod"));
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a57", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a72", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("cortex-a73", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-a75", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-a75", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_FALSE(testAArch64Extension("cortex-a75", AArch64::ArchKind::INVALID,
-                                    "fp16fml"));
-  EXPECT_TRUE(testAArch64Extension("cortex-a75", AArch64::ArchKind::INVALID,
-                                   "dotprod"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-r82", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-r82", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(testAArch64Extension("cortex-r82", AArch64::ArchKind::INVALID,
-                                   "fp16fml"));
-  EXPECT_TRUE(testAArch64Extension("cortex-r82", AArch64::ArchKind::INVALID,
-                                   "dotprod"));
-  EXPECT_TRUE(
-      testAArch64Extension("cortex-r82", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_FALSE(
-      testAArch64Extension("cyclone", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("exynos-m3", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m4", AArch64::ArchKind::INVALID, "dotprod"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m4", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m4", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m4", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m4", AArch64::ArchKind::INVALID, "rdm"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m5", AArch64::ArchKind::INVALID, "dotprod"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m5", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m5", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m5", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("exynos-m5", AArch64::ArchKind::INVALID, "rdm"));
-  EXPECT_TRUE(
-      testAArch64Extension("falkor", AArch64::ArchKind::INVALID, "rdm"));
-  EXPECT_FALSE(testAArch64Extension("kryo", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "crc"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "rdm"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "rcpc"));
-  EXPECT_TRUE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "profile"));
-  EXPECT_FALSE(
-      testAArch64Extension("saphira", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_FALSE(
-      testAArch64Extension("thunderx2t99", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("thunderx", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_FALSE(
-      testAArch64Extension("thunderxt81", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_FALSE(
-      testAArch64Extension("thunderxt83", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_FALSE(
-      testAArch64Extension("thunderxt88", AArch64::ArchKind::INVALID, "lse"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "crypto"));
-  EXPECT_FALSE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "sha3"));
-  EXPECT_FALSE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "sm4"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "ras"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "profile"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "fp16fml"));
-  EXPECT_TRUE(
-      testAArch64Extension("tsv110", AArch64::ArchKind::INVALID, "dotprod"));
-  EXPECT_TRUE(
-      testAArch64Extension("a64fx", AArch64::ArchKind::INVALID, "fp16"));
-  EXPECT_TRUE(testAArch64Extension("a64fx", AArch64::ArchKind::INVALID, "sve"));
-  EXPECT_FALSE(
-      testAArch64Extension("a64fx", AArch64::ArchKind::INVALID, "sve2"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a34",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a35",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a53",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a55",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a55",
+                                    AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a55",
+                                    AArch64::ArchKind::INVALID, "fp16fml"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a55",
+                                    AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a57",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a72",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a73",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a75",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a75",
+                                    AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_FALSE(testAArch64Extension("cortex-a75",
+                                    AArch64::ArchKind::INVALID, "fp16fml"));
+  EXPECT_TRUE(testAArch64Extension("cortex-a75",
+                                   AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_TRUE(testAArch64Extension("cortex-r82",
+                                   AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("cortex-r82",
+                                   AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testAArch64Extension("cortex-r82",
+                                   AArch64::ArchKind::INVALID, "fp16fml"));
+  EXPECT_TRUE(testAArch64Extension("cortex-r82",
+                                   AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_TRUE(testAArch64Extension("cortex-r82",
+                                   AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_FALSE(testAArch64Extension("cyclone",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("exynos-m3",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m4",
+                                   AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m4",
+                                   AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m4",
+                                   AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m4",
+                                   AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m4",
+                                   AArch64::ArchKind::INVALID, "rdm"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m5",
+                                   AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m5",
+                                   AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m5",
+                                   AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m5",
+                                   AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("exynos-m5",
+                                   AArch64::ArchKind::INVALID, "rdm"));
+  EXPECT_TRUE(testAArch64Extension("falkor",
+                                   AArch64::ArchKind::INVALID, "rdm"));
+  EXPECT_FALSE(testAArch64Extension("kryo",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                    AArch64::ArchKind::INVALID, "crc"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                    AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                   AArch64::ArchKind::INVALID, "rdm"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                   AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                   AArch64::ArchKind::INVALID, "rcpc"));
+  EXPECT_TRUE(testAArch64Extension("saphira",
+                                   AArch64::ArchKind::INVALID, "profile"));
+  EXPECT_FALSE(testAArch64Extension("saphira",
+                                    AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_FALSE(testAArch64Extension("thunderx2t99",
+                                    AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_FALSE(testAArch64Extension("thunderx",
+                                    AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_FALSE(testAArch64Extension("thunderxt81",
+                                    AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_FALSE(testAArch64Extension("thunderxt83",
+                                    AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_FALSE(testAArch64Extension("thunderxt88",
+                                    AArch64::ArchKind::INVALID, "lse"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "crypto"));
+  EXPECT_FALSE(testAArch64Extension("tsv110",
+                                    AArch64::ArchKind::INVALID, "sha3"));
+  EXPECT_FALSE(testAArch64Extension("tsv110",
+                                    AArch64::ArchKind::INVALID, "sm4"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "ras"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "profile"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "fp16fml"));
+  EXPECT_TRUE(testAArch64Extension("tsv110",
+                                   AArch64::ArchKind::INVALID, "dotprod"));
+  EXPECT_TRUE(testAArch64Extension("a64fx",
+                                   AArch64::ArchKind::INVALID, "fp16"));
+  EXPECT_TRUE(testAArch64Extension("a64fx",
+                                   AArch64::ArchKind::INVALID, "sve"));
+  EXPECT_FALSE(testAArch64Extension("a64fx",
+                                   AArch64::ArchKind::INVALID, "sve2"));
   EXPECT_TRUE(
       testAArch64Extension("carmel", AArch64::ArchKind::INVALID, "crypto"));
   EXPECT_TRUE(
       testAArch64Extension("carmel", AArch64::ArchKind::INVALID, "fp16"));
 
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8A, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_1A, "ras"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_2A, "profile"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_2A, "fp16"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_2A, "fp16fml"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_3A, "fp16"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_3A, "fp16fml"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_4A, "fp16"));
-  EXPECT_FALSE(
-      testAArch64Extension("generic", AArch64::ArchKind::ARMV8_4A, "fp16fml"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8A, "ras"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_1A, "ras"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_2A, "profile"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_2A, "fp16"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_2A, "fp16fml"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_3A, "fp16"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_3A, "fp16fml"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_4A, "fp16"));
+  EXPECT_FALSE(testAArch64Extension(
+      "generic", AArch64::ArchKind::ARMV8_4A, "fp16fml"));
 }
 
 TEST(TargetParserTest, AArch64ExtensionFeatures) {
   std::vector<uint64_t> Extensions = {
-      AArch64::AEK_CRC,         AArch64::AEK_CRYPTO,  AArch64::AEK_FP,
-      AArch64::AEK_SIMD,        AArch64::AEK_FP16,    AArch64::AEK_PROFILE,
-      AArch64::AEK_RAS,         AArch64::AEK_LSE,     AArch64::AEK_RDM,
-      AArch64::AEK_DOTPROD,     AArch64::AEK_SVE,     AArch64::AEK_SVE2,
-      AArch64::AEK_SVE2AES,     AArch64::AEK_SVE2SM4, AArch64::AEK_SVE2SHA3,
-      AArch64::AEK_SVE2BITPERM, AArch64::AEK_RCPC,    AArch64::AEK_FP16FML};
+    AArch64::AEK_CRC,      AArch64::AEK_CRYPTO,
+    AArch64::AEK_FP,       AArch64::AEK_SIMD,
+    AArch64::AEK_FP16,     AArch64::AEK_PROFILE,
+    AArch64::AEK_RAS,      AArch64::AEK_LSE,
+    AArch64::AEK_RDM,      AArch64::AEK_DOTPROD,
+    AArch64::AEK_SVE,      AArch64::AEK_SVE2,
+    AArch64::AEK_SVE2AES,  AArch64::AEK_SVE2SM4,
+    AArch64::AEK_SVE2SHA3, AArch64::AEK_SVE2BITPERM,
+    AArch64::AEK_RCPC,     AArch64::AEK_FP16FML };
 
   std::vector<StringRef> Features;
 
@@ -1357,37 +1414,40 @@ TEST(TargetParserTest, AArch64ArchFeatures) {
 }
 
 TEST(TargetParserTest, AArch64ArchExtFeature) {
-  const char *ArchExt[][4] = {
-      {"crc", "nocrc", "+crc", "-crc"},
-      {"crypto", "nocrypto", "+crypto", "-crypto"},
-      {"flagm", "noflagm", "+flagm", "-flagm"},
-      {"fp", "nofp", "+fp-armv8", "-fp-armv8"},
-      {"simd", "nosimd", "+neon", "-neon"},
-      {"fp16", "nofp16", "+fullfp16", "-fullfp16"},
-      {"fp16fml", "nofp16fml", "+fp16fml", "-fp16fml"},
-      {"profile", "noprofile", "+spe", "-spe"},
-      {"ras", "noras", "+ras", "-ras"},
-      {"lse", "nolse", "+lse", "-lse"},
-      {"rdm", "nordm", "+rdm", "-rdm"},
-      {"sve", "nosve", "+sve", "-sve"},
-      {"sve2", "nosve2", "+sve2", "-sve2"},
-      {"sve2-aes", "nosve2-aes", "+sve2-aes", "-sve2-aes"},
-      {"sve2-sm4", "nosve2-sm4", "+sve2-sm4", "-sve2-sm4"},
-      {"sve2-sha3", "nosve2-sha3", "+sve2-sha3", "-sve2-sha3"},
-      {"sve2-bitperm", "nosve2-bitperm", "+sve2-bitperm", "-sve2-bitperm"},
-      {"dotprod", "nodotprod", "+dotprod", "-dotprod"},
-      {"rcpc", "norcpc", "+rcpc", "-rcpc"},
-      {"rng", "norng", "+rand", "-rand"},
-      {"memtag", "nomemtag", "+mte", "-mte"},
-      {"tme", "notme", "+tme", "-tme"},
-      {"pauth", "nopauth", "+pauth", "-pauth"},
-      {"ssbs", "nossbs", "+ssbs", "-ssbs"},
-      {"sb", "nosb", "+sb", "-sb"},
-      {"predres", "nopredres", "+predres", "-predres"},
-      {"i8mm", "noi8mm", "+i8mm", "-i8mm"},
-      {"f32mm", "nof32mm", "+f32mm", "-f32mm"},
-      {"f64mm", "nof64mm", "+f64mm", "-f64mm"},
-  };
+  const char *ArchExt[][4] = {{"crc", "nocrc", "+crc", "-crc"},
+                              {"crypto", "nocrypto", "+crypto", "-crypto"},
+                              {"flagm", "noflagm", "+flagm", "-flagm"},
+                              {"fp", "nofp", "+fp-armv8", "-fp-armv8"},
+                              {"simd", "nosimd", "+neon", "-neon"},
+                              {"fp16", "nofp16", "+fullfp16", "-fullfp16"},
+                              {"fp16fml", "nofp16fml", "+fp16fml", "-fp16fml"},
+                              {"profile", "noprofile", "+spe", "-spe"},
+                              {"ras", "noras", "+ras", "-ras"},
+                              {"lse", "nolse", "+lse", "-lse"},
+                              {"rdm", "nordm", "+rdm", "-rdm"},
+                              {"sve", "nosve", "+sve", "-sve"},
+                              {"sve2", "nosve2", "+sve2", "-sve2"},
+                              {"sve2-aes", "nosve2-aes", "+sve2-aes",
+                               "-sve2-aes"},
+                              {"sve2-sm4", "nosve2-sm4", "+sve2-sm4",
+                               "-sve2-sm4"},
+                              {"sve2-sha3", "nosve2-sha3", "+sve2-sha3",
+                               "-sve2-sha3"},
+                              {"sve2-bitperm", "nosve2-bitperm",
+                               "+sve2-bitperm", "-sve2-bitperm"},
+                              {"dotprod", "nodotprod", "+dotprod", "-dotprod"},
+                              {"rcpc", "norcpc", "+rcpc", "-rcpc" },
+                              {"rng", "norng", "+rand", "-rand"},
+                              {"memtag", "nomemtag", "+mte", "-mte"},
+                              {"tme", "notme", "+tme", "-tme"},
+                              {"pauth", "nopauth", "+pauth", "-pauth"},
+                              {"ssbs", "nossbs", "+ssbs", "-ssbs"},
+                              {"sb", "nosb", "+sb", "-sb"},
+                              {"predres", "nopredres", "+predres", "-predres"},
+                              {"i8mm", "noi8mm", "+i8mm", "-i8mm"},
+                              {"f32mm", "nof32mm", "+f32mm", "-f32mm"},
+                              {"f64mm", "nof64mm", "+f64mm", "-f64mm"},
+};
 
   for (unsigned i = 0; i < array_lengthof(ArchExt); i++) {
     EXPECT_EQ(StringRef(ArchExt[i][2]),

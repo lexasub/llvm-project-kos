@@ -1,5 +1,5 @@
 // RUN: %clang_cc1 -templight-dump %s 2>&1 | FileCheck %s
-template <class T, class U = T>
+template<class T, class U = T>
 class A {};
 
 // CHECK-LABEL: {{^---$}}

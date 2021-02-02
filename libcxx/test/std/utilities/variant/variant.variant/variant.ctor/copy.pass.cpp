@@ -30,29 +30,29 @@
 
 struct NonT {
   NonT(int v) : value(v) {}
-  NonT(const NonT& o) : value(o.value) {}
+  NonT(const NonT &o) : value(o.value) {}
   int value;
 };
 static_assert(!std::is_trivially_copy_constructible<NonT>::value, "");
 
 struct NoCopy {
-  NoCopy(const NoCopy&) = delete;
+  NoCopy(const NoCopy &) = delete;
 };
 
 struct MoveOnly {
-  MoveOnly(const MoveOnly&) = delete;
-  MoveOnly(MoveOnly&&) = default;
+  MoveOnly(const MoveOnly &) = delete;
+  MoveOnly(MoveOnly &&) = default;
 };
 
 struct MoveOnlyNT {
-  MoveOnlyNT(const MoveOnlyNT&) = delete;
-  MoveOnlyNT(MoveOnlyNT&&) {}
+  MoveOnlyNT(const MoveOnlyNT &) = delete;
+  MoveOnlyNT(MoveOnlyNT &&) {}
 };
 
 struct NTCopy {
   constexpr NTCopy(int v) : value(v) {}
-  NTCopy(const NTCopy& that) : value(that.value) {}
-  NTCopy(NTCopy&&) = delete;
+  NTCopy(const NTCopy &that) : value(that.value) {}
+  NTCopy(NTCopy &&) = delete;
   int value;
 };
 
@@ -61,8 +61,8 @@ static_assert(std::is_copy_constructible<NTCopy>::value, "");
 
 struct TCopy {
   constexpr TCopy(int v) : value(v) {}
-  TCopy(TCopy const&) = default;
-  TCopy(TCopy&&) = delete;
+  TCopy(TCopy const &) = default;
+  TCopy(TCopy &&) = delete;
   int value;
 };
 
@@ -81,21 +81,20 @@ static_assert(std::is_trivially_copy_constructible<TCopyNTMove>::value, "");
 struct MakeEmptyT {
   static int alive;
   MakeEmptyT() { ++alive; }
-  MakeEmptyT(const MakeEmptyT&) {
+  MakeEmptyT(const MakeEmptyT &) {
     ++alive;
     // Don't throw from the copy constructor since variant's assignment
     // operator performs a copy before committing to the assignment.
   }
-  MakeEmptyT(MakeEmptyT&&) { throw 42; }
-  MakeEmptyT& operator=(const MakeEmptyT&) { throw 42; }
-  MakeEmptyT& operator=(MakeEmptyT&&) { throw 42; }
+  MakeEmptyT(MakeEmptyT &&) { throw 42; }
+  MakeEmptyT &operator=(const MakeEmptyT &) { throw 42; }
+  MakeEmptyT &operator=(MakeEmptyT &&) { throw 42; }
   ~MakeEmptyT() { --alive; }
 };
 
 int MakeEmptyT::alive = 0;
 
-template <class Variant>
-void makeEmpty(Variant& v) {
+template <class Variant> void makeEmpty(Variant &v) {
   Variant v2(std::in_place_type<MakeEmptyT>);
   try {
     v = std::move(v2);
@@ -226,17 +225,17 @@ void test_copy_ctor_valueless_by_exception() {
   using V = std::variant<int, MakeEmptyT>;
   V v1;
   makeEmpty(v1);
-  const V& cv1 = v1;
+  const V &cv1 = v1;
   V v(cv1);
   assert(v.valueless_by_exception());
 #endif // TEST_HAS_NO_EXCEPTIONS
 }
 
 template <size_t Idx>
-constexpr bool
-test_constexpr_copy_ctor_imp(std::variant<long, void*, const int> const& v) {
+constexpr bool test_constexpr_copy_ctor_imp(std::variant<long, void*, const int> const& v) {
   auto v2 = v;
-  return v2.index() == v.index() && v2.index() == Idx &&
+  return v2.index() == v.index() &&
+         v2.index() == Idx &&
          std::get<Idx>(v2) == std::get<Idx>(v);
 }
 

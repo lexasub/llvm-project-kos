@@ -10,11 +10,10 @@
 #include <cassert>
 
 class A {
-public:
+ public:
   A() : me(this) {}
   A(const A &other) : me(this) {
-    for (int i = 0; i < 8; ++i)
-      a[i] = other.a[i];
+    for (int i = 0; i < 8; ++i) a[i] = other.a[i];
   }
 
   int a[8];

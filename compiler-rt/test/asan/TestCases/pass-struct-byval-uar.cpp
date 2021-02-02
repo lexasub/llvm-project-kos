@@ -24,9 +24,9 @@ A *foo(A a) {
 int main() {
   A *a = foo(A());
   a->a[0] = 7;
-  std::fprintf(stderr, "\n"); // Ensures some output is generated for FileCheck
-                              // to verify in the case where UAR is not
-                              // detected.
+  std::fprintf(stderr, "\n");  // Ensures some output is generated for FileCheck
+                               // to verify in the case where UAR is not
+                               // detected.
 }
 
 // CHECK-NO-UAR-NOT: ERROR: AddressSanitizer: stack-use-after-return

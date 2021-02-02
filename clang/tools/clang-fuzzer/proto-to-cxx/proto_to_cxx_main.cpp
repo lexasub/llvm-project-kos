@@ -26,3 +26,4 @@ int main(int argc, char **argv) {
         reinterpret_cast<const uint8_t *>(str.data()), str.size());
   }
 }
+

@@ -96,7 +96,7 @@ template <typename T>
 struct i {
   void f() {}
 };
-template <> void i<int>::f();
+template<> void i<int>::f();
 extern template class i<int>;
 i<int> ii;
 // CHECK: DICompositeType(tag: DW_TAG_structure_type, name: "i<int>"

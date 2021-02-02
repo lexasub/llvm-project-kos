@@ -15,12 +15,13 @@ public:
 
 A a;
 
-__attribute__((noinline)) void f(long x) {
+__attribute__((noinline))
+void f(long x) {
 }
 
 int main(void) {
-  long x;
-  long *volatile p = &x;
+  long  x;
+  long * volatile p = &x;
   // This call poisons TLS shadow for the first function argument.
   f(*p);
   return 0;

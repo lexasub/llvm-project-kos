@@ -18,19 +18,22 @@
 #include "test_macros.h"
 
 template <class T>
-void test() {
-  std::complex<T> z(1.5, 2.5);
-  assert(z.real() == 1.5);
-  assert(z.imag() == 2.5);
-  std::complex<T> c = -z;
-  assert(c.real() == -1.5);
-  assert(c.imag() == -2.5);
+void
+test()
+{
+    std::complex<T> z(1.5, 2.5);
+    assert(z.real() == 1.5);
+    assert(z.imag() == 2.5);
+    std::complex<T> c = -z;
+    assert(c.real() == -1.5);
+    assert(c.imag() == -2.5);
 }
 
-int main(int, char**) {
-  test<float>();
-  test<double>();
-  test<long double>();
+int main(int, char**)
+{
+    test<float>();
+    test<double>();
+    test<long double>();
 
   return 0;
 }

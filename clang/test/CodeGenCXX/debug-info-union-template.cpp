@@ -3,12 +3,12 @@
 // Make sure that the union type has template parameters.
 
 namespace PR15637 {
-template <typename T> union Value { int a; };
-void g(float value) {
-  Value<float> tempValue;
+  template <typename T> union Value { int a; };
+  void g(float value) {
+    Value<float> tempValue;
+  }
+  Value<float> f;
 }
-Value<float> f;
-} // namespace PR15637
 
 // CHECK: !DICompositeType(tag: DW_TAG_union_type, name: "Value<float>",
 // CHECK-SAME:             templateParams: [[TTPARAM:![0-9]+]]

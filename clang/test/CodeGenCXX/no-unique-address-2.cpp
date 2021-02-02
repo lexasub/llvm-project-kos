@@ -4,7 +4,7 @@ struct TriviallyCopyable {};
 
 struct NonTriviallyCopyable {
   NonTriviallyCopyable() = default;
-  NonTriviallyCopyable(const NonTriviallyCopyable &) = default;
+  NonTriviallyCopyable(const NonTriviallyCopyable&) = default;
   NonTriviallyCopyable(NonTriviallyCopyable &&) {}
 };
 
@@ -16,7 +16,7 @@ struct Foo {
 
 void call() {
   Foo foo;
-  Foo foo2(static_cast<Foo &&>(foo));
+  Foo foo2(static_cast<Foo&&>(foo));
 }
 
 // The memcpy call should copy exact 4 bytes for member 'int i'

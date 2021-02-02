@@ -127,14 +127,14 @@ bool lldb_private::formatters::LibcxxStdVectorSyntheticFrontEnd::Update() {
   case 1:
     // Assume a pre llvm r300140 __compressed_pair implementation:
     data_type_finder_sp = data_type_finder_sp->GetChildMemberWithName(
-        ConstString("__first_"), true);
+      ConstString("__first_"), true);
     break;
   case 2: {
     // Assume a post llvm r300140 __compressed_pair implementation:
     ValueObjectSP first_elem_parent_sp =
-        data_type_finder_sp->GetChildAtIndex(0, true);
+      data_type_finder_sp->GetChildAtIndex(0, true);
     data_type_finder_sp = first_elem_parent_sp->GetChildMemberWithName(
-        ConstString("__value_"), true);
+      ConstString("__value_"), true);
     break;
   }
   default:

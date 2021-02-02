@@ -11,18 +11,16 @@ extern int sprintf(char *, const char *restrict, ...);
 
 class HasCStr {
   const char *str;
-
-public:
-  HasCStr(const char *s) : str(s) {}
-  const char *c_str() { return str; }
+ public:
+  HasCStr(const char *s): str(s) { }
+  const char *c_str() {return str;}
 };
 
 class HasNoCStr {
   const char *str;
-
-public:
-  HasNoCStr(const char *s) : str(s) {}
-  const char *not_c_str() { return str; }
+ public:
+  HasNoCStr(const char *s): str(s) { }
+  const char *not_c_str() {return str;}
 };
 
 extern const char extstr[16];
@@ -45,7 +43,7 @@ void pod_test() {
 
   printf("%d: %s\n", n, hncs);
 #if __cplusplus <= 199711L
-  // expected-warning@-2 {{cannot pass non-POD object of type 'HasNoCStr' to variadic function; expected type from format string was 'char *'}}
+ // expected-warning@-2 {{cannot pass non-POD object of type 'HasNoCStr' to variadic function; expected type from format string was 'char *'}}
 #else
   // expected-warning@-4 {{format specifies type 'char *' but the argument has type 'HasNoCStr'}}
 #endif
@@ -72,8 +70,8 @@ void pod_test() {
 
 struct Printf {
   Printf();
-  Printf(const Printf &);
-  Printf(const char *, ...) __attribute__((__format__(__printf__, 2, 3)));
+  Printf(const Printf&);
+  Printf(const char *,...) __attribute__((__format__(__printf__,2,3)));
 };
 
 void constructor_test() {

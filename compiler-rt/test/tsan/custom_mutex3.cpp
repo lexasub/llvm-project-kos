@@ -13,7 +13,7 @@ long data;
 void *thr1(void *arg) {
   mu.Lock();
   mu.~Mutex();
-  new (&mu) Mutex(true, __tsan_mutex_write_reentrant);
+  new(&mu) Mutex(true, __tsan_mutex_write_reentrant);
   return 0;
 }
 

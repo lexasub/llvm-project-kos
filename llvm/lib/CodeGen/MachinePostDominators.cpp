@@ -24,7 +24,7 @@ extern bool VerifyMachineDomInfo;
 
 char MachinePostDominatorTree::ID = 0;
 
-// declare initializeMachinePostDominatorTreePass
+//declare initializeMachinePostDominatorTreePass
 INITIALIZE_PASS(MachinePostDominatorTree, "machinepostdomtree",
                 "MachinePostDominator Tree Construction", true, true)
 

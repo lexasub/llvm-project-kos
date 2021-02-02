@@ -26,6 +26,7 @@
 
 #include "test_macros.h"
 
+
 template <typename Container>
 Container makeContainer(int size) {
   Container c;
@@ -39,14 +40,13 @@ Container makeContainer(int size) {
 template <typename Container>
 void ThreadUseIter() {
   const size_t maxRounds = 7;
-  struct TestRunner {
+  struct TestRunner{
     void operator()() {
       for (size_t count = 0; count < maxRounds; count++) {
         const size_t containerCount = 11;
         std::vector<Container> containers;
         std::vector<typename Container::iterator> iterators;
-        for (size_t containerIndex = 0; containerIndex < containerCount;
-             containerIndex++) {
+        for (size_t containerIndex = 0; containerIndex < containerCount; containerIndex++) {
           containers.push_back(makeContainer<Container>(3));
           Container& c = containers.back();
           iterators.push_back(c.begin());

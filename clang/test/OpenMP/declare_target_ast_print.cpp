@@ -33,7 +33,7 @@ void bazz();
 #endif // _OPENMP
 
 int out_decl_target = 0;
-#pragma omp declare target(out_decl_target)
+#pragma omp declare target (out_decl_target)
 
 // CHECK: #pragma omp declare target{{$}}
 // CHECK: int out_decl_target = 0;
@@ -43,11 +43,11 @@ int out_decl_target = 0;
 // CHECK: #pragma omp end declare target{{$}}
 
 #pragma omp declare target
-void lambda() {
+void lambda () {
 #ifdef __cpp_lambdas
   (void)[&] { ++out_decl_target; };
 #else
-#pragma clang __debug captured
+  #pragma clang __debug captured
   (void)out_decl_target;
 #endif
 };
@@ -81,37 +81,37 @@ void foo_cpp() {}
 #pragma omp declare target
 template <class T>
 struct C {
-  // CHECK: template <class T> struct C {
-  // CHECK: #pragma omp declare target
-  // CHECK-NEXT: static T ts;
-  // CHECK-NEXT: #pragma omp end declare target
+// CHECK: template <class T> struct C {
+// CHECK: #pragma omp declare target
+// CHECK-NEXT: static T ts;
+// CHECK-NEXT: #pragma omp end declare target
 
-  // CHECK: template<> struct C<int>
+// CHECK: template<> struct C<int>
   T t;
-  // CHECK-NEXT: int t;
+// CHECK-NEXT: int t;
   static T ts;
-  // CHECK-NEXT: #pragma omp declare target
-  // CHECK-NEXT: static int ts;
-  // CHECK: #pragma omp end declare target
+// CHECK-NEXT: #pragma omp declare target
+// CHECK-NEXT: static int ts;
+// CHECK: #pragma omp end declare target
 
   C(T t) : t(t) {
   }
-  // CHECK: #pragma omp declare target
-  // CHECK-NEXT: C(int t) : t(t) {
-  // CHECK-NEXT: }
-  // CHECK: #pragma omp end declare target
+// CHECK: #pragma omp declare target
+// CHECK-NEXT: C(int t) : t(t) {
+// CHECK-NEXT: }
+// CHECK: #pragma omp end declare target
 
   T foo() {
     return t;
   }
-  // CHECK: #pragma omp declare target
-  // CHECK-NEXT: int foo() {
-  // CHECK-NEXT: return this->t;
-  // CHECK-NEXT: }
-  // CHECK: #pragma omp end declare target
+// CHECK: #pragma omp declare target
+// CHECK-NEXT: int foo() {
+// CHECK-NEXT: return this->t;
+// CHECK-NEXT: }
+// CHECK: #pragma omp end declare target
 };
 
-template <class T>
+template<class T>
 T C<T>::ts = 1;
 // CHECK: #pragma omp declare target
 // CHECK: T ts = 1;
@@ -129,7 +129,7 @@ int test1() {
 int a1;
 void f1() {
 }
-#pragma omp declare target(a1, f1)
+#pragma omp declare target (a1, f1)
 // CHECK: #pragma omp declare target{{$}}
 // CHECK: int a1;
 // CHECK: #pragma omp end declare target{{$}}
@@ -216,8 +216,8 @@ int baz() { return 1; }
 // CHECK: #pragma omp end declare target
 
 #pragma omp declare target
-#include "declare_target_include.h"
-void xyz();
+  #include "declare_target_include.h"
+  void xyz();
 #pragma omp end declare target
 
 // CHECK: #pragma omp declare target
@@ -228,10 +228,10 @@ void xyz();
 // CHECK: #pragma omp end declare target
 
 #pragma omp declare target
-#pragma omp declare target
-void abc();
-#pragma omp end declare target
-void cba();
+  #pragma omp declare target
+    void abc();
+  #pragma omp end declare target
+  void cba();
 #pragma omp end declare target
 
 // CHECK: #pragma omp declare target
@@ -263,7 +263,7 @@ int inner_link;
 // CHECK-NEXT: int inner_link;
 // CHECK-NEXT: #pragma omp end declare target
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   foo();
   foo_c();
   foo_cpp();

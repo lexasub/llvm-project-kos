@@ -528,7 +528,7 @@ class NotACopyAssignmentOperator {
   Uy *Ptr2;
 
 public:
-  NotACopyAssignmentOperator &operator=(const NotACopyAssignmentOperator<Uy, Ty> &RHS) {
+  NotACopyAssignmentOperator& operator=(const NotACopyAssignmentOperator<Uy, Ty> &RHS) {
     Ptr1 = RHS.getUy();
     Ptr2 = RHS.getTy();
     return *this;

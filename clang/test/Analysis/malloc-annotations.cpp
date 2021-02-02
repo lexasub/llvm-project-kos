@@ -48,7 +48,7 @@ void af1_f(MemoryAllocator &Alloc, struct stuff *somestuff) {
 // Allocating memory for a field via multiple indirections to our arguments is OK.
 void af1_g(MemoryAllocator &Alloc, struct stuff **pps) {
   *pps = (struct stuff *)Alloc.my_malloc(sizeof(struct stuff)); // no-warning
-  (*pps)->somefield = Alloc.my_malloc(42);                      // no-warning
+  (*pps)->somefield = Alloc.my_malloc(42); // no-warning
 }
 
 void af2(MemoryAllocator &Alloc) {
@@ -74,7 +74,7 @@ void af2e(MemoryAllocator &Alloc) {
   void *p = Alloc.my_malloc(12);
   if (!p)
     return; // no-warning
-  free(p);  // no-warning
+  free(p); // no-warning
 }
 
 // This case inflicts a possible double-free.
@@ -84,15 +84,16 @@ void af3(MemoryAllocator &Alloc) {
   free(p); // expected-warning{{Attempt to free non-owned memory}}
 }
 
-void *af4(MemoryAllocator &Alloc) {
+void * af4(MemoryAllocator &Alloc) {
   void *p = Alloc.my_malloc(12);
   Alloc.my_free(p);
   return p; // expected-warning{{Use of memory after it is freed}}
 }
 
 // This case is (possibly) ok, be conservative
-void *af5(MemoryAllocator &Alloc) {
+void * af5(MemoryAllocator &Alloc) {
   void *p = Alloc.my_malloc(12);
   Alloc.my_hold(p);
   return p; // no-warning
 }
+

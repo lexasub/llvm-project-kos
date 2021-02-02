@@ -29,8 +29,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Lex/Lexer.h"
 #include "clang/Sema/SemaDiagnostic.h"
@@ -61,7 +61,7 @@ class PropertiesRewriter {
     ObjCPropertyImplDecl *ImplD;
 
     PropData(ObjCPropertyDecl *propD)
-        : PropD(propD), IvarD(nullptr), ImplD(nullptr) {}
+      : PropD(propD), IvarD(nullptr), ImplD(nullptr) {}
   };
 
   typedef SmallVector<PropData, 2> PropsTy;
@@ -71,7 +71,7 @@ class PropertiesRewriter {
 
 public:
   explicit PropertiesRewriter(MigrationContext &MigrateCtx)
-      : MigrateCtx(MigrateCtx), Pass(MigrateCtx.Pass) {}
+    : MigrateCtx(MigrateCtx), Pass(MigrateCtx.Pass) { }
 
   static void collectProperties(ObjCContainerDecl *D, AtPropDeclsTy &AtProps,
                                 AtPropDeclsTy *PrevAtProps = nullptr) {
@@ -101,12 +101,11 @@ public:
 
     typedef DeclContext::specific_decl_iterator<ObjCPropertyImplDecl>
         prop_impl_iterator;
-    for (prop_impl_iterator I = prop_impl_iterator(D->decls_begin()),
-                            E = prop_impl_iterator(D->decls_end());
-         I != E; ++I) {
+    for (prop_impl_iterator
+           I = prop_impl_iterator(D->decls_begin()),
+           E = prop_impl_iterator(D->decls_end()); I != E; ++I) {
       ObjCPropertyImplDecl *implD = *I;
-      if (implD->getPropertyImplementation() !=
-          ObjCPropertyImplDecl::Synthesize)
+      if (implD->getPropertyImplementation() != ObjCPropertyImplDecl::Synthesize)
         continue;
       ObjCPropertyDecl *propD = implD->getPropertyDecl();
       if (!propD || propD->isInvalidDecl())
@@ -128,8 +127,8 @@ public:
       }
     }
 
-    for (AtPropDeclsTy::iterator I = AtProps.begin(), E = AtProps.end(); I != E;
-         ++I) {
+    for (AtPropDeclsTy::iterator
+           I = AtProps.begin(), E = AtProps.end(); I != E; ++I) {
       SourceLocation atLoc = I->first;
       PropsTy &props = I->second;
       if (!getPropertyType(props)->isObjCRetainableType())
@@ -143,7 +142,8 @@ public:
   }
 
 private:
-  void doPropAction(PropActionKind kind, PropsTy &props, SourceLocation atLoc,
+  void doPropAction(PropActionKind kind,
+                    PropsTy &props, SourceLocation atLoc,
                     bool markAction = true) {
     if (markAction)
       for (PropsTy::iterator I = props.begin(), E = props.end(); I != E; ++I)
@@ -211,12 +211,11 @@ private:
   }
 
   void rewriteAssign(PropsTy &props, SourceLocation atLoc) const {
-    bool canUseWeak =
-        canApplyWeak(Pass.Ctx, getPropertyType(props),
-                     /*AllowOnUnknownClass=*/Pass.isGCMigration());
-    const char *toWhich = (Pass.isGCMigration() && !hasGCWeak(props, atLoc))
-                              ? "strong"
-                              : (canUseWeak ? "weak" : "unsafe_unretained");
+    bool canUseWeak = canApplyWeak(Pass.Ctx, getPropertyType(props),
+                                  /*AllowOnUnknownClass=*/Pass.isGCMigration());
+    const char *toWhich =
+      (Pass.isGCMigration() && !hasGCWeak(props, atLoc)) ? "strong" :
+      (canUseWeak ? "weak" : "unsafe_unretained");
 
     bool rewroteAttr = rewriteAttribute("assign", toWhich, atLoc);
     if (!rewroteAttr)
@@ -227,9 +226,8 @@ private:
         if (I->IvarD &&
             I->IvarD->getType().getObjCLifetime() != Qualifiers::OCL_Weak) {
           const char *toWhich =
-              (Pass.isGCMigration() && !hasGCWeak(props, atLoc))
-                  ? "__strong "
-                  : (canUseWeak ? "__weak " : "__unsafe_unretained ");
+            (Pass.isGCMigration() && !hasGCWeak(props, atLoc)) ? "__strong " :
+              (canUseWeak ? "__weak " : "__unsafe_unretained ");
           Pass.TA.insert(I->IvarD->getLocation(), toWhich);
         }
       }
@@ -243,12 +241,11 @@ private:
 
   void maybeAddWeakOrUnsafeUnretainedAttr(PropsTy &props,
                                           SourceLocation atLoc) const {
-    bool canUseWeak =
-        canApplyWeak(Pass.Ctx, getPropertyType(props),
-                     /*AllowOnUnknownClass=*/Pass.isGCMigration());
+    bool canUseWeak = canApplyWeak(Pass.Ctx, getPropertyType(props),
+                                  /*AllowOnUnknownClass=*/Pass.isGCMigration());
 
-    bool addedAttr =
-        addAttribute(canUseWeak ? "weak" : "unsafe_unretained", atLoc);
+    bool addedAttr = addAttribute(canUseWeak ? "weak" : "unsafe_unretained",
+                                  atLoc);
     if (!addedAttr)
       canUseWeak = false;
 
@@ -265,8 +262,8 @@ private:
                                 diag::err_arc_inconsistent_property_ownership,
                                 I->IvarD->getLocation());
         Pass.TA.clearDiagnostic(
-            diag::err_arc_objc_property_default_assign_on_object,
-            I->ImplD->getLocation());
+                           diag::err_arc_objc_property_default_assign_on_object,
+                           I->ImplD->getLocation());
       }
     }
   }
@@ -286,7 +283,6 @@ private:
 
   class PlusOneAssign : public RecursiveASTVisitor<PlusOneAssign> {
     ObjCIvarDecl *Ivar;
-
   public:
     PlusOneAssign(ObjCIvarDecl *D) : Ivar(D) {}
 
@@ -326,8 +322,8 @@ private:
       if (isUserDeclared(I->IvarD)) {
         if (isa<AttributedType>(I->IvarD->getType()))
           return true;
-        if (I->IvarD->getType().getLocalQualifiers().getObjCLifetime() !=
-            Qualifiers::OCL_Strong)
+        if (I->IvarD->getType().getLocalQualifiers().getObjCLifetime()
+              != Qualifiers::OCL_Strong)
           return true;
       }
     }
@@ -377,7 +373,7 @@ private:
 } // anonymous namespace
 
 void PropertyRewriteTraverser::traverseObjCImplementation(
-    ObjCImplementationContext &ImplCtx) {
+                                           ObjCImplementationContext &ImplCtx) {
   PropertiesRewriter(ImplCtx.getMigrationContext())
-      .doTransform(ImplCtx.getImplementationDecl());
+                                  .doTransform(ImplCtx.getImplementationDecl());
 }

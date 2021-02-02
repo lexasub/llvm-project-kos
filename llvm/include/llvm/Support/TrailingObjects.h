@@ -99,9 +99,11 @@ class alignas(4) TrailingObjectsAligner<4> : public TrailingObjectsBase {};
 template <>
 class alignas(8) TrailingObjectsAligner<8> : public TrailingObjectsBase {};
 template <>
-class alignas(16) TrailingObjectsAligner<16> : public TrailingObjectsBase {};
+class alignas(16) TrailingObjectsAligner<16> : public TrailingObjectsBase {
+};
 template <>
-class alignas(32) TrailingObjectsAligner<32> : public TrailingObjectsBase {};
+class alignas(32) TrailingObjectsAligner<32> : public TrailingObjectsBase {
+};
 
 // Just a little helper for transforming a type pack into the same
 // number of a different type. e.g.:

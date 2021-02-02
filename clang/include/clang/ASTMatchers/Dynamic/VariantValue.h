@@ -32,8 +32,14 @@ namespace dynamic {
 ///
 /// It supports all types that VariantValue can contain.
 class ArgKind {
-public:
-  enum Kind { AK_Matcher, AK_Boolean, AK_Double, AK_Unsigned, AK_String };
+ public:
+  enum Kind {
+    AK_Matcher,
+    AK_Boolean,
+    AK_Double,
+    AK_Unsigned,
+    AK_String
+  };
   /// Constructor for non-matcher types.
   ArgKind(Kind K) : K(K) { assert(K != AK_Matcher); }
 
@@ -162,13 +168,13 @@ public:
   /// For the Polymorphic case, it returns true if one, and only one, of the
   /// overloads can be converted to \c Matcher<T>. If there are more than one
   /// that can, the result would be ambiguous and false is returned.
-  template <class T> bool hasTypedMatcher() const {
+  template <class T>
+  bool hasTypedMatcher() const {
     return hasTypedMatcher(ASTNodeKind::getFromNodeKind<T>());
   }
 
   bool hasTypedMatcher(ASTNodeKind NK) const {
-    if (!Value)
-      return false;
+    if (!Value) return false;
     return Value->getTypedMatcher(MatcherOps(NK)).hasValue();
   }
 
@@ -209,6 +215,7 @@ public:
 private:
   explicit VariantMatcher(std::shared_ptr<Payload> Value)
       : Value(std::move(Value)) {}
+
 
   class SinglePayload;
   class PolymorphicPayload;
@@ -289,7 +296,7 @@ public:
   ///
   /// \param Specificity value corresponding to the "specificity" of the
   ///   conversion.
-  bool isConvertibleTo(ArgKind Kind, unsigned *Specificity) const;
+  bool isConvertibleTo(ArgKind Kind, unsigned* Specificity) const;
 
   /// Determines if the contained value can be converted to any kind
   /// in \p Kinds.
@@ -336,4 +343,4 @@ private:
 } // end namespace ast_matchers
 } // end namespace clang
 
-#endif // LLVM_CLANG_AST_MATCHERS_DYNAMIC_VARIANT_VALUE_H
+#endif  // LLVM_CLANG_AST_MATCHERS_DYNAMIC_VARIANT_VALUE_H

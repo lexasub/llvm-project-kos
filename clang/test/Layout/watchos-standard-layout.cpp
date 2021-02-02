@@ -8,16 +8,9 @@
 
 // B is not standard-layout, but it was under C++11's rule, so we pack
 // C::d into its tail padding anyway.
-struct A {
-  int : 0;
-};
-struct B : A {
-  int n;
-  char c[3];
-};
-struct C : B {
-  char d;
-};
+struct A { int : 0; };
+struct B : A { int n; char c[3]; };
+struct C : B { char d; };
 int c = sizeof(C);
 static_assert(!__is_standard_layout(B));
 
@@ -25,7 +18,7 @@ static_assert(!__is_standard_layout(B));
 // CHECK:          0 | struct C
 // CHECK-NEXT:     0 |   struct B (base)
 // CHECK-NEXT:     0 |     struct A (base) (empty)
-// CHECK-NEXT:   0:- |       int
+// CHECK-NEXT:   0:- |       int 
 // CHECK-NEXT:     0 |     int n
 // CHECK-NEXT:     4 |     char [3] c
 // CHECK-NEXT:     8 |   char d
@@ -36,14 +29,8 @@ static_assert(!__is_standard_layout(B));
 // C++11's rule, so we pack G::d into its tail padding anyway.
 struct D {};
 struct E : D {};
-struct F : D, E {
-  int n;
-  char c[3];
-};
-struct G : F {
-  G(const G &);
-  char d;
-};
+struct F : D, E { int n; char c[3]; };
+struct G : F { G(const G&); char d; };
 int g = sizeof(G);
 static_assert(!__is_standard_layout(F));
 

@@ -14,8 +14,7 @@ int bar() {
 
 int maini1() {
   int a;
-#pragma omp target parallel map(from \
-                                : a)
+#pragma omp target parallel map(from:a)
   {
     int b;
     a = foo(b) + bar();

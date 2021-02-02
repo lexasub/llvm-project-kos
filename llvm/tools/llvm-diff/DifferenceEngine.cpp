@@ -32,7 +32,8 @@ using namespace llvm;
 namespace {
 
 /// A priority queue, implemented as a heap.
-template <class T, class Sorter, unsigned InlineCapacity> class PriorityQueue {
+template <class T, class Sorter, unsigned InlineCapacity>
+class PriorityQueue {
   Sorter Precedes;
   llvm::SmallVector<T, InlineCapacity> Storage;
 
@@ -46,17 +47,14 @@ public:
   void insert(const T &V) {
     unsigned Index = Storage.size();
     Storage.push_back(V);
-    if (Index == 0)
-      return;
+    if (Index == 0) return;
 
     T *data = Storage.data();
     while (true) {
       unsigned Target = (Index + 1) / 2 - 1;
-      if (!Precedes(data[Index], data[Target]))
-        return;
+      if (!Precedes(data[Index], data[Target])) return;
       std::swap(data[Index], data[Target]);
-      if (Target == 0)
-        return;
+      if (Target == 0) return;
       Index = Target;
     }
   }
@@ -65,7 +63,7 @@ public:
   T remove_min() {
     assert(!empty());
     T tmp = Storage[0];
-
+    
     unsigned NewSize = Storage.size() - 1;
     if (NewSize) {
       // Move the slot at the end to the beginning.
@@ -84,8 +82,7 @@ public:
         // If R is out of bounds, we're done after this in any case.
         if (R >= NewSize) {
           // If L is also out of bounds, we're done immediately.
-          if (L >= NewSize)
-            break;
+          if (L >= NewSize) break;
 
           // Otherwise, test whether we should swap L and Index.
           if (Precedes(Storage[L], Storage[Index]))
@@ -117,22 +114,21 @@ class FunctionDifferenceEngine {
   DifferenceEngine &Engine;
 
   /// The current mapping from old local values to new local values.
-  DenseMap<Value *, Value *> Values;
+  DenseMap<Value*, Value*> Values;
 
   /// The current mapping from old blocks to new blocks.
-  DenseMap<BasicBlock *, BasicBlock *> Blocks;
+  DenseMap<BasicBlock*, BasicBlock*> Blocks;
 
-  DenseSet<std::pair<Value *, Value *>> TentativeValues;
+  DenseSet<std::pair<Value*, Value*> > TentativeValues;
 
   unsigned getUnprocPredCount(BasicBlock *Block) const {
     unsigned Count = 0;
     for (pred_iterator I = pred_begin(Block), E = pred_end(Block); I != E; ++I)
-      if (!Blocks.count(*I))
-        Count++;
+      if (!Blocks.count(*I)) Count++;
     return Count;
   }
 
-  typedef std::pair<BasicBlock *, BasicBlock *> BlockPair;
+  typedef std::pair<BasicBlock*, BasicBlock*> BlockPair;
 
   /// A type which sorts a priority queue by the number of unprocessed
   /// predecessor blocks it has remaining.
@@ -143,8 +139,8 @@ class FunctionDifferenceEngine {
     explicit QueueSorter(const FunctionDifferenceEngine &fde) : fde(fde) {}
 
     bool operator()(const BlockPair &Old, const BlockPair &New) {
-      return fde.getUnprocPredCount(Old.first) <
-             fde.getUnprocPredCount(New.first);
+      return fde.getUnprocPredCount(Old.first)
+           < fde.getUnprocPredCount(New.first);
     }
   };
 
@@ -159,12 +155,11 @@ class FunctionDifferenceEngine {
     BasicBlock *&Ref = Blocks[L];
 
     if (Ref) {
-      if (Ref == R)
-        return false;
+      if (Ref == R) return false;
 
       Engine.logf("successor %l cannot be equivalent to %r; "
                   "it's already equivalent to %r")
-          << L << R << Ref;
+        << L << R << Ref;
       return true;
     }
 
@@ -172,7 +167,7 @@ class FunctionDifferenceEngine {
     Queue.insert(BlockPair(L, R));
     return false;
   }
-
+  
   /// Unifies two instructions, given that they're known not to have
   /// structural differences.
   void unify(Instruction *L, Instruction *R) {
@@ -180,7 +175,7 @@ class FunctionDifferenceEngine {
 
     bool Result = diff(L, R, true, true);
     assert(!Result && "structural differences second time around?");
-    (void)Result;
+    (void) Result;
     if (!L->use_empty())
       Values[L] = R;
   }
@@ -230,13 +225,11 @@ class FunctionDifferenceEngine {
   bool diffCallSites(CallBase &L, CallBase &R, bool Complain) {
     // FIXME: call attributes
     if (!equivalentAsOperands(L.getCalledOperand(), R.getCalledOperand())) {
-      if (Complain)
-        Engine.log("called functions differ");
+      if (Complain) Engine.log("called functions differ");
       return true;
     }
     if (L.arg_size() != R.arg_size()) {
-      if (Complain)
-        Engine.log("argument counts differ");
+      if (Complain) Engine.log("argument counts differ");
       return true;
     }
     for (unsigned I = 0, E = L.arg_size(); I != E; ++I)
@@ -254,16 +247,14 @@ class FunctionDifferenceEngine {
 
     // Different opcodes always imply different operations.
     if (L->getOpcode() != R->getOpcode()) {
-      if (Complain)
-        Engine.log("different instruction types");
+      if (Complain) Engine.log("different instruction types");
       return true;
     }
 
     if (isa<CmpInst>(L)) {
-      if (cast<CmpInst>(L)->getPredicate() !=
-          cast<CmpInst>(R)->getPredicate()) {
-        if (Complain)
-          Engine.log("different predicates");
+      if (cast<CmpInst>(L)->getPredicate()
+            != cast<CmpInst>(R)->getPredicate()) {
+        if (Complain) Engine.log("different predicates");
         return true;
       }
     } else if (isa<CallInst>(L)) {
@@ -274,14 +265,13 @@ class FunctionDifferenceEngine {
       // This is really weird;  type uniquing is broken?
       if (L->getType() != R->getType()) {
         if (!L->getType()->isPointerTy() || !R->getType()->isPointerTy()) {
-          if (Complain)
-            Engine.log("different phi types");
+          if (Complain) Engine.log("different phi types");
           return true;
         }
       }
       return false;
 
-      // Terminators.
+    // Terminators.
     } else if (isa<InvokeInst>(L)) {
       InvokeInst &LI = cast<InvokeInst>(*L);
       InvokeInst &RI = cast<InvokeInst>(*R);
@@ -298,36 +288,30 @@ class FunctionDifferenceEngine {
       BranchInst *LI = cast<BranchInst>(L);
       BranchInst *RI = cast<BranchInst>(R);
       if (LI->isConditional() != RI->isConditional()) {
-        if (Complain)
-          Engine.log("branch conditionality differs");
+        if (Complain) Engine.log("branch conditionality differs");
         return true;
       }
 
       if (LI->isConditional()) {
         if (!equivalentAsOperands(LI->getCondition(), RI->getCondition())) {
-          if (Complain)
-            Engine.log("branch conditions differ");
+          if (Complain) Engine.log("branch conditions differ");
           return true;
         }
-        if (TryUnify)
-          tryUnify(LI->getSuccessor(1), RI->getSuccessor(1));
+        if (TryUnify) tryUnify(LI->getSuccessor(1), RI->getSuccessor(1));
       }
-      if (TryUnify)
-        tryUnify(LI->getSuccessor(0), RI->getSuccessor(0));
+      if (TryUnify) tryUnify(LI->getSuccessor(0), RI->getSuccessor(0));
       return false;
 
     } else if (isa<IndirectBrInst>(L)) {
       IndirectBrInst *LI = cast<IndirectBrInst>(L);
       IndirectBrInst *RI = cast<IndirectBrInst>(R);
       if (LI->getNumDestinations() != RI->getNumDestinations()) {
-        if (Complain)
-          Engine.log("indirectbr # of destinations differ");
+        if (Complain) Engine.log("indirectbr # of destinations differ");
         return true;
       }
 
       if (!equivalentAsOperands(LI->getAddress(), RI->getAddress())) {
-        if (Complain)
-          Engine.log("indirectbr addresses differ");
+        if (Complain) Engine.log("indirectbr addresses differ");
         return true;
       }
 
@@ -342,16 +326,14 @@ class FunctionDifferenceEngine {
       SwitchInst *LI = cast<SwitchInst>(L);
       SwitchInst *RI = cast<SwitchInst>(R);
       if (!equivalentAsOperands(LI->getCondition(), RI->getCondition())) {
-        if (Complain)
-          Engine.log("switch conditions differ");
+        if (Complain) Engine.log("switch conditions differ");
         return true;
       }
-      if (TryUnify)
-        tryUnify(LI->getDefaultDest(), RI->getDefaultDest());
+      if (TryUnify) tryUnify(LI->getDefaultDest(), RI->getDefaultDest());
 
       bool Difference = false;
 
-      DenseMap<ConstantInt *, BasicBlock *> LCases;
+      DenseMap<ConstantInt*,BasicBlock*> LCases;
       for (auto Case : LI->cases())
         LCases[Case.getCaseValue()] = Case.getCaseSuccessor();
 
@@ -369,9 +351,8 @@ class FunctionDifferenceEngine {
         }
       }
       if (!Difference)
-        for (DenseMap<ConstantInt *, BasicBlock *>::iterator I = LCases.begin(),
-                                                             E = LCases.end();
-             I != E; ++I) {
+        for (DenseMap<ConstantInt*,BasicBlock*>::iterator
+               I = LCases.begin(), E = LCases.end(); I != E; ++I) {
           if (Complain)
             Engine.logf("left switch has extra case %l") << I->first;
           Difference = true;
@@ -382,16 +363,14 @@ class FunctionDifferenceEngine {
     }
 
     if (L->getNumOperands() != R->getNumOperands()) {
-      if (Complain)
-        Engine.log("instructions have different operand counts");
+      if (Complain) Engine.log("instructions have different operand counts");
       return true;
     }
 
     for (unsigned I = 0, E = L->getNumOperands(); I != E; ++I) {
       Value *LO = L->getOperand(I), *RO = R->getOperand(I);
       if (!equivalentAsOperands(LO, RO)) {
-        if (Complain)
-          Engine.logf("operands %l and %r differ") << LO << RO;
+        if (Complain) Engine.logf("operands %l and %r differ") << LO << RO;
         return true;
       }
     }
@@ -406,7 +385,7 @@ class FunctionDifferenceEngine {
 
     if (L->getValueID() != R->getValueID())
       return false;
-
+    
     // Ask the engine about global values.
     if (isa<GlobalValue>(L))
       return Engine.equivalentAsOperands(cast<GlobalValue>(L),
@@ -414,19 +393,19 @@ class FunctionDifferenceEngine {
 
     // Compare constant expressions structurally.
     if (isa<ConstantExpr>(L))
-      return equivalentAsOperands(cast<ConstantExpr>(L), cast<ConstantExpr>(R));
+      return equivalentAsOperands(cast<ConstantExpr>(L),
+                                  cast<ConstantExpr>(R));
 
     // Constants of the "same type" don't always actually have the same
     // type; I don't know why.  Just white-list them.
-    if (isa<ConstantPointerNull>(L) || isa<UndefValue>(L) ||
-        isa<ConstantAggregateZero>(L))
+    if (isa<ConstantPointerNull>(L) || isa<UndefValue>(L) || isa<ConstantAggregateZero>(L))
       return true;
 
     // Block addresses only match if we've already encountered the
     // block.  FIXME: tentative matches?
     if (isa<BlockAddress>(L))
-      return Blocks[cast<BlockAddress>(L)->getBasicBlock()] ==
-             cast<BlockAddress>(R)->getBasicBlock();
+      return Blocks[cast<BlockAddress>(L)->getBasicBlock()]
+                 == cast<BlockAddress>(R)->getBasicBlock();
 
     // If L and R are ConstantVectors, compare each element
     if (isa<ConstantVector>(L)) {
@@ -504,16 +483,17 @@ class FunctionDifferenceEngine {
   FunctionDifferenceEngine *this_() { return this; }
 
 public:
-  FunctionDifferenceEngine(DifferenceEngine &Engine)
-      : Engine(Engine), Queue(QueueSorter(*this_())) {}
+  FunctionDifferenceEngine(DifferenceEngine &Engine) :
+    Engine(Engine), Queue(QueueSorter(*this_())) {}
 
   void diff(Function *L, Function *R) {
     if (L->arg_size() != R->arg_size())
       Engine.log("different argument counts");
 
     // Map the arguments.
-    for (Function::arg_iterator LI = L->arg_begin(), LE = L->arg_end(),
-                                RI = R->arg_begin(), RE = R->arg_end();
+    for (Function::arg_iterator
+           LI = L->arg_begin(), LE = L->arg_end(),
+           RI = R->arg_begin(), RE = R->arg_end();
          LI != LE && RI != RE; ++LI, ++RI)
       Values[&*LI] = &*RI;
 
@@ -541,8 +521,8 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
 
   unsigned NL = std::distance(LStart, LE);
 
-  SmallVector<DiffEntry, 20> Paths1(NL + 1);
-  SmallVector<DiffEntry, 20> Paths2(NL + 1);
+  SmallVector<DiffEntry, 20> Paths1(NL+1);
+  SmallVector<DiffEntry, 20> Paths2(NL+1);
 
   DiffEntry *Cur = Paths1.data();
   DiffEntry *Next = Paths2.data();
@@ -554,7 +534,7 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
   assert(TentativeValues.empty());
 
   // Initialize the first column.
-  for (unsigned I = 0; I != NL + 1; ++I) {
+  for (unsigned I = 0; I != NL+1; ++I) {
     Cur[I].Cost = I * LeftCost;
     for (unsigned J = 0; J != I; ++J)
       Cur[I].Path.push_back(DC_left);
@@ -569,12 +549,12 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
     unsigned Index = 1;
     for (BasicBlock::iterator LI = LStart; LI != LE; ++LI, ++Index) {
       if (matchForBlockDiff(&*LI, &*RI)) {
-        Next[Index] = Cur[Index - 1];
+        Next[Index] = Cur[Index-1];
         Next[Index].Cost += MatchCost;
         Next[Index].Path.push_back(DC_match);
         TentativeValues.insert(std::make_pair(&*LI, &*RI));
-      } else if (Next[Index - 1].Cost <= Cur[Index].Cost) {
-        Next[Index] = Next[Index - 1];
+      } else if (Next[Index-1].Cost <= Cur[Index].Cost) {
+        Next[Index] = Next[Index-1];
         Next[Index].Cost += LeftCost;
         Next[Index].Path.push_back(DC_left);
       } else {
@@ -601,7 +581,8 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
     Path.pop_back();
 
   // Skip leading matches.
-  SmallVectorImpl<char>::iterator PI = Path.begin(), PE = Path.end();
+  SmallVectorImpl<char>::iterator
+    PI = Path.begin(), PE = Path.end();
   while (PI != PE && *PI == DC_match) {
     unify(&*LI, &*RI);
     ++PI;
@@ -618,8 +599,7 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
         unify(L, R);
         Diff.addMatch(L, R);
       }
-      ++LI;
-      ++RI;
+      ++LI; ++RI;
       break;
 
     case DC_left:
@@ -651,14 +631,11 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
   Instruction *LTerm = LStart->getParent()->getTerminator();
   Instruction *RTerm = RStart->getParent()->getTerminator();
   if (isa<BranchInst>(LTerm) && isa<InvokeInst>(RTerm)) {
-    if (cast<BranchInst>(LTerm)->isConditional())
-      return;
+    if (cast<BranchInst>(LTerm)->isConditional()) return;
     BasicBlock::iterator I = LTerm->getIterator();
-    if (I == LStart->getParent()->begin())
-      return;
+    if (I == LStart->getParent()->begin()) return;
     --I;
-    if (!isa<CallInst>(*I))
-      return;
+    if (!isa<CallInst>(*I)) return;
     CallInst *LCall = cast<CallInst>(&*I);
     InvokeInst *RInvoke = cast<InvokeInst>(RTerm);
     if (!equivalentAsOperands(LCall->getCalledOperand(),
@@ -668,14 +645,11 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
       Values[LCall] = RInvoke;
     tryUnify(LTerm->getSuccessor(0), RInvoke->getNormalDest());
   } else if (isa<InvokeInst>(LTerm) && isa<BranchInst>(RTerm)) {
-    if (cast<BranchInst>(RTerm)->isConditional())
-      return;
+    if (cast<BranchInst>(RTerm)->isConditional()) return;
     BasicBlock::iterator I = RTerm->getIterator();
-    if (I == RStart->getParent()->begin())
-      return;
+    if (I == RStart->getParent()->begin()) return;
     --I;
-    if (!isa<CallInst>(*I))
-      return;
+    if (!isa<CallInst>(*I)) return;
     CallInst *RCall = cast<CallInst>(I);
     InvokeInst *LInvoke = cast<InvokeInst>(LTerm);
     if (!equivalentAsOperands(LInvoke->getCalledOperand(),
@@ -687,9 +661,9 @@ void FunctionDifferenceEngine::runBlockDiff(BasicBlock::iterator LStart,
   }
 }
 
-} // namespace
+}
 
-void DifferenceEngine::Oracle::anchor() {}
+void DifferenceEngine::Oracle::anchor() { }
 
 void DifferenceEngine::diff(Function *L, Function *R) {
   Context C(*this, L, R);
@@ -697,7 +671,7 @@ void DifferenceEngine::diff(Function *L, Function *R) {
   // FIXME: types
   // FIXME: attributes and CC
   // FIXME: parameter attributes
-
+  
   // If both are declarations, we're done.
   if (L->empty() && R->empty())
     return;
@@ -711,7 +685,7 @@ void DifferenceEngine::diff(Function *L, Function *R) {
 
 void DifferenceEngine::diff(Module *L, Module *R) {
   StringSet<> LNames;
-  SmallVector<std::pair<Function *, Function *>, 20> Queue;
+  SmallVector<std::pair<Function*,Function*>, 20> Queue;
 
   unsigned LeftAnonCount = 0;
   unsigned RightAnonCount = 0;
@@ -744,6 +718,7 @@ void DifferenceEngine::diff(Module *L, Module *R) {
       logf("function %r exists only in right module") << RFn;
   }
 
+
   if (LeftAnonCount != 0 || RightAnonCount != 0) {
     SmallString<32> Tmp;
     logf(("not comparing " + Twine(LeftAnonCount) +
@@ -752,16 +727,13 @@ void DifferenceEngine::diff(Module *L, Module *R) {
              .toStringRef(Tmp));
   }
 
-  for (SmallVectorImpl<std::pair<Function *, Function *>>::iterator
-           I = Queue.begin(),
-           E = Queue.end();
-       I != E; ++I)
+  for (SmallVectorImpl<std::pair<Function*,Function*> >::iterator
+         I = Queue.begin(), E = Queue.end(); I != E; ++I)
     diff(I->first, I->second);
 }
 
 bool DifferenceEngine::equivalentAsOperands(GlobalValue *L, GlobalValue *R) {
-  if (globalValueOracle)
-    return (*globalValueOracle)(L, R);
+  if (globalValueOracle) return (*globalValueOracle)(L, R);
 
   if (isa<GlobalVariable>(L) && isa<GlobalVariable>(R)) {
     GlobalVariable *GVL = cast<GlobalVariable>(L);

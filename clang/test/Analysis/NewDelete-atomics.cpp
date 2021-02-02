@@ -50,7 +50,7 @@ public:
   }
 
   ~IntrusivePtr() {
-    // We should not take the path on which the object is deleted.
+  // We should not take the path on which the object is deleted.
     if (Ptr->decRef() == 1)
       delete Ptr;
   }

@@ -16,9 +16,10 @@
 
 struct X {};
 
-int main(int, char**) {
-  X x;
-  size_t h = std::hash<X>{}(x);
+int main(int, char**)
+{
+    X x;
+    size_t h = std::hash<X>{} ( x );
 
   return 0;
 }

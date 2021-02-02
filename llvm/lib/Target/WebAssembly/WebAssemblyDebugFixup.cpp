@@ -117,9 +117,8 @@ bool WebAssemblyDebugFixup::runOnMachineFunction(MachineFunction &MF) {
               // a $noreg DBG_VALUE for the variable to end it, right after
               // the current instruction.
               BuildMI(*Prev.DebugValue->getParent(), std::next(MII),
-                      Prev.DebugValue->getDebugLoc(),
-                      TII->get(WebAssembly::DBG_VALUE), false, Register(),
-                      Prev.DebugValue->getOperand(2).getMetadata(),
+                      Prev.DebugValue->getDebugLoc(), TII->get(WebAssembly::DBG_VALUE), false,
+                      Register(), Prev.DebugValue->getOperand(2).getMetadata(),
                       Prev.DebugValue->getOperand(3).getMetadata());
             }
           }

@@ -5,8 +5,7 @@ using int64_t = long long;
 
 #include "absl/time/time.h"
 
-template <typename T>
-struct ConvertibleTo {
+template <typename T> struct ConvertibleTo {
   operator T() const;
 };
 
@@ -125,8 +124,7 @@ void arithmeticOperatorBasicNegative() {
   d = d / (1 + ConvertibleTo<int>());
 }
 
-template <typename T>
-void templateForOpsSpecialization(T) {}
+template <typename T> void templateForOpsSpecialization(T) {}
 template <>
 void templateForOpsSpecialization<absl::Duration>(absl::Duration d) {
   d *= ConvertibleTo<int64_t>();
@@ -134,30 +132,26 @@ void templateForOpsSpecialization<absl::Duration>(absl::Duration d) {
   // CHECK-FIXES: d *= static_cast<int64_t>(ConvertibleTo<int64_t>());
 }
 
-template <int N>
-void arithmeticNonTypeTemplateParamSpecialization() {
+template <int N> void arithmeticNonTypeTemplateParamSpecialization() {
   absl::Duration d;
   d *= N;
 }
 
-template <>
-void arithmeticNonTypeTemplateParamSpecialization<5>() {
+template <> void arithmeticNonTypeTemplateParamSpecialization<5>() {
   absl::Duration d;
   d *= ConvertibleTo<int>();
   // CHECK-MESSAGES: [[@LINE-1]]:8: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   // CHECK-FIXES: d *= static_cast<int64_t>(ConvertibleTo<int>());
 }
 
-template <typename T>
-void templateOpsFix() {
+template <typename T> void templateOpsFix() {
   absl::Duration d;
   d *= ConvertibleTo<int64_t>();
   // CHECK-MESSAGES: [[@LINE-1]]:8: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   // CHECK-FIXES: d *= static_cast<int64_t>(ConvertibleTo<int64_t>());
 }
 
-template <typename T, typename U>
-void templateOpsWarnOnly(T t, U u) {
+template <typename T, typename U> void templateOpsWarnOnly(T t, U u) {
   t *= u;
   // CHECK-MESSAGES: [[@LINE-1]]:8: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   absl::Duration d;
@@ -165,14 +159,12 @@ void templateOpsWarnOnly(T t, U u) {
   // CHECK-MESSAGES: [[@LINE-1]]:8: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
 }
 
-template <typename T>
-struct TemplateTypeOpsWarnOnly {
+template <typename T> struct TemplateTypeOpsWarnOnly {
   void memberA(T t) {
     d *= t;
     // CHECK-MESSAGES: [[@LINE-1]]:10: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   }
-  template <typename U, typename V>
-  void memberB(U u, V v) {
+  template <typename U, typename V> void memberB(U u, V v) {
     u *= v;
     // CHECK-MESSAGES: [[@LINE-1]]:10: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
     d *= v;
@@ -215,8 +207,7 @@ void templateOpsInstantiationBeforeDefinition(T t, U u) {
 #define T_OBJECT T()
 #define T_CALL_EXPR d *= T()
 
-template <typename T>
-void arithmeticTemplateAndMacro() {
+template <typename T> void arithmeticTemplateAndMacro() {
   absl::Duration d;
   d *= T_OBJECT;
   // CHECK-MESSAGES: [[@LINE-1]]:8: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
@@ -227,11 +218,10 @@ void arithmeticTemplateAndMacro() {
   // CHECK-MESSAGES: [[@LINE-1]]:3: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
 }
 
-#define TEMPLATE_MACRO(type)  \
-  template <typename T>       \
-  void TemplateInMacro(T t) { \
-    type d;                   \
-    d *= t;                   \
+#define TEMPLATE_MACRO(type)                                                   \
+  template <typename T> void TemplateInMacro(T t) {                            \
+    type d;                                                                    \
+    d *= t;                                                                    \
   }
 
 TEMPLATE_MACRO(absl::Duration)
@@ -350,51 +340,42 @@ void factoryFunctionNegative() {
   (void)absl::Hours(static_cast<int>(ConvertibleTo<int>()));
 }
 
-template <typename T>
-void templateForFactorySpecialization(T) {}
-template <>
-void templateForFactorySpecialization<ConvertibleTo<int>>(ConvertibleTo<int> c) {
+template <typename T> void templateForFactorySpecialization(T) {}
+template <> void templateForFactorySpecialization<ConvertibleTo<int>>(ConvertibleTo<int> c) {
   (void)absl::Nanoseconds(c);
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   // CHECK-FIXES: (void)absl::Nanoseconds(static_cast<int64_t>(c));
 }
 
-template <int N>
-void factoryNonTypeTemplateParamSpecialization() {
+template <int N> void factoryNonTypeTemplateParamSpecialization() {
   (void)absl::Nanoseconds(N);
 }
 
-template <>
-void factoryNonTypeTemplateParamSpecialization<5>() {
+template <> void factoryNonTypeTemplateParamSpecialization<5>() {
   (void)absl::Nanoseconds(ConvertibleTo<int>());
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   // CHECK-FIXES: (void)absl::Nanoseconds(static_cast<int64_t>(ConvertibleTo<int>()));
 }
 
-template <typename T>
-void templateFactoryFix() {
+template <typename T> void templateFactoryFix() {
   (void)absl::Nanoseconds(ConvertibleTo<int>());
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   // CHECK-FIXES: (void)absl::Nanoseconds(static_cast<int64_t>(ConvertibleTo<int>()));
 }
 
-template <typename T>
-void templateFactoryWarnOnly(T t) {
+template <typename T> void templateFactoryWarnOnly(T t) {
   (void)absl::Nanoseconds(t);
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
 }
 
-template <typename T>
-void templateFactoryInstantiationBeforeDefinition(T t);
+template <typename T> void templateFactoryInstantiationBeforeDefinition(T t);
 
-template <typename T>
-struct TemplateTypeFactoryWarnOnly {
+template <typename T> struct TemplateTypeFactoryWarnOnly {
   void memberA(T t) {
     (void)absl::Nanoseconds(t);
     // CHECK-MESSAGES: [[@LINE-1]]:29: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   }
-  template <typename U>
-  void memberB(U u) {
+  template <typename U> void memberB(U u) {
     (void)absl::Nanoseconds(u);
     // CHECK-MESSAGES: [[@LINE-1]]:29: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   }
@@ -413,18 +394,16 @@ void factoryInTemplates() {
   t.memberB(ConvertibleTo<int>());
 }
 
-template <typename T>
-void templateFactoryInstantiationBeforeDefinition(T t) {
+template <typename T> void templateFactoryInstantiationBeforeDefinition(T t) {
   (void)absl::Nanoseconds(t);
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
 }
 
-#define ONLY_WARN_INSIDE_MACRO_FACTORY \
+#define ONLY_WARN_INSIDE_MACRO_FACTORY                                         \
   (void)absl::Nanoseconds(ConvertibleTo<int>())
 #define T_CALL_FACTORTY_INSIDE_MACRO (void)absl::Nanoseconds(T())
 
-template <typename T>
-void factoryTemplateAndMacro() {
+template <typename T> void factoryTemplateAndMacro() {
   (void)absl::Nanoseconds(T_OBJECT);
   // CHECK-MESSAGES: [[@LINE-1]]:27: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
   (void)absl::Nanoseconds(CONVERTIBLE_TMP);
@@ -434,9 +413,8 @@ void factoryTemplateAndMacro() {
   // CHECK-MESSAGES: [[@LINE-1]]:3: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead
 }
 
-#define TEMPLATE_FACTORY_MACRO(factory) \
-  template <typename T>                 \
-  void TemplateFactoryInMacro(T t) { (void)factory(t); }
+#define TEMPLATE_FACTORY_MACRO(factory)                                        \
+  template <typename T> void TemplateFactoryInMacro(T t) { (void)factory(t); }
 
 TEMPLATE_FACTORY_MACRO(absl::Nanoseconds)
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: implicit conversion to 'int64_t' is deprecated in this context; use an explicit cast instead

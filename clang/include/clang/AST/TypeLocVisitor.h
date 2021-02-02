@@ -17,18 +17,18 @@
 
 namespace clang {
 
-#define DISPATCH(CLASSNAME)                                                    \
-  return static_cast<ImplClass *>(this)->Visit##CLASSNAME(                     \
-      TyLoc.castAs<CLASSNAME>())
+#define DISPATCH(CLASSNAME) \
+  return static_cast<ImplClass*>(this)-> \
+    Visit##CLASSNAME(TyLoc.castAs<CLASSNAME>())
 
-template <typename ImplClass, typename RetTy = void> class TypeLocVisitor {
+template<typename ImplClass, typename RetTy=void>
+class TypeLocVisitor {
 public:
   RetTy Visit(TypeLoc TyLoc) {
     switch (TyLoc.getTypeLocClass()) {
 #define ABSTRACT_TYPELOC(CLASS, PARENT)
-#define TYPELOC(CLASS, PARENT)                                                 \
-  case TypeLoc::CLASS:                                                         \
-    DISPATCH(CLASS##TypeLoc);
+#define TYPELOC(CLASS, PARENT) \
+    case TypeLoc::CLASS: DISPATCH(CLASS##TypeLoc);
 #include "clang/AST/TypeLocNodes.def"
     }
     llvm_unreachable("unexpected type loc class!");
@@ -37,16 +37,17 @@ public:
   RetTy Visit(UnqualTypeLoc TyLoc) {
     switch (TyLoc.getTypeLocClass()) {
 #define ABSTRACT_TYPELOC(CLASS, PARENT)
-#define TYPELOC(CLASS, PARENT)                                                 \
-  case TypeLoc::CLASS:                                                         \
-    DISPATCH(CLASS##TypeLoc);
+#define TYPELOC(CLASS, PARENT) \
+    case TypeLoc::CLASS: DISPATCH(CLASS##TypeLoc);
 #include "clang/AST/TypeLocNodes.def"
     }
     llvm_unreachable("unexpected type loc class!");
   }
 
-#define TYPELOC(CLASS, PARENT)                                                 \
-  RetTy Visit##CLASS##TypeLoc(CLASS##TypeLoc TyLoc) { DISPATCH(PARENT); }
+#define TYPELOC(CLASS, PARENT)      \
+  RetTy Visit##CLASS##TypeLoc(CLASS##TypeLoc TyLoc) { \
+    DISPATCH(PARENT);               \
+  }
 #include "clang/AST/TypeLocNodes.def"
 
   RetTy VisitTypeLoc(TypeLoc TyLoc) { return RetTy(); }
@@ -54,6 +55,6 @@ public:
 
 #undef DISPATCH
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif // LLVM_CLANG_AST_TYPELOCVISITOR_H

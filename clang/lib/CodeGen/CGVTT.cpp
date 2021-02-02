@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "CGCXXABI.h"
 #include "CodeGenModule.h"
+#include "CGCXXABI.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/AST/VTTBuilder.h"
 using namespace clang;
@@ -30,14 +30,17 @@ GetAddrOfVTTVTable(CodeGenVTables &CGVT, CodeGenModule &CGM,
     return CGM.getCXXABI().getAddrOfVTable(MostDerivedClass, CharUnits());
   }
 
-  return CGVT.GenerateConstructionVTable(
-      MostDerivedClass, VTable.getBaseSubobject(), VTable.isVirtual(), Linkage,
-      AddressPoints);
+  return CGVT.GenerateConstructionVTable(MostDerivedClass,
+                                         VTable.getBaseSubobject(),
+                                         VTable.isVirtual(),
+                                         Linkage,
+                                         AddressPoints);
 }
 
-void CodeGenVTables::EmitVTTDefinition(
-    llvm::GlobalVariable *VTT, llvm::GlobalVariable::LinkageTypes Linkage,
-    const CXXRecordDecl *RD) {
+void
+CodeGenVTables::EmitVTTDefinition(llvm::GlobalVariable *VTT,
+                                  llvm::GlobalVariable::LinkageTypes Linkage,
+                                  const CXXRecordDecl *RD) {
   VTTBuilder Builder(CGM.getContext(), RD, /*GenerateDefinition=*/true);
   llvm::ArrayType *ArrayType =
       llvm::ArrayType::get(CGM.Int8PtrTy, Builder.getVTTComponents().size());
@@ -45,8 +48,7 @@ void CodeGenVTables::EmitVTTDefinition(
   SmallVector<llvm::GlobalVariable *, 8> VTables;
   SmallVector<VTableAddressPointsMapTy, 8> VTableAddressPoints;
   for (const VTTVTable *i = Builder.getVTTVTables().begin(),
-                       *e = Builder.getVTTVTables().end();
-       i != e; ++i) {
+                       *e = Builder.getVTTVTables().end(); i != e; ++i) {
     VTableAddressPoints.push_back(VTableAddressPointsMapTy());
     VTables.push_back(GetAddrOfVTTVTable(*this, CGM, RD, *i, Linkage,
                                          VTableAddressPoints.back()));
@@ -54,8 +56,7 @@ void CodeGenVTables::EmitVTTDefinition(
 
   SmallVector<llvm::Constant *, 8> VTTComponents;
   for (const VTTComponent *i = Builder.getVTTComponents().begin(),
-                          *e = Builder.getVTTComponents().end();
-       i != e; ++i) {
+                          *e = Builder.getVTTComponents().end(); i != e; ++i) {
     const VTTVTable &VTTVT = Builder.getVTTVTables()[i->VTableIndex];
     llvm::GlobalVariable *VTable = VTables[i->VTableIndex];
     VTableLayout::AddressPointLocation AddressPoint;
@@ -70,20 +71,20 @@ void CodeGenVTables::EmitVTTDefinition(
              "Did not find ctor vtable address point!");
     }
 
-    llvm::Value *Idxs[] = {
-        llvm::ConstantInt::get(CGM.Int32Ty, 0),
-        llvm::ConstantInt::get(CGM.Int32Ty, AddressPoint.VTableIndex),
-        llvm::ConstantInt::get(CGM.Int32Ty, AddressPoint.AddressPointIndex),
-    };
+     llvm::Value *Idxs[] = {
+       llvm::ConstantInt::get(CGM.Int32Ty, 0),
+       llvm::ConstantInt::get(CGM.Int32Ty, AddressPoint.VTableIndex),
+       llvm::ConstantInt::get(CGM.Int32Ty, AddressPoint.AddressPointIndex),
+     };
 
-    llvm::Constant *Init = llvm::ConstantExpr::getGetElementPtr(
-        VTable->getValueType(), VTable, Idxs, /*InBounds=*/true,
-        /*InRangeIndex=*/1);
+     llvm::Constant *Init = llvm::ConstantExpr::getGetElementPtr(
+         VTable->getValueType(), VTable, Idxs, /*InBounds=*/true,
+         /*InRangeIndex=*/1);
 
-    Init = llvm::ConstantExpr::getPointerBitCastOrAddrSpaceCast(Init,
-                                                                CGM.Int8PtrTy);
+     Init = llvm::ConstantExpr::getPointerBitCastOrAddrSpaceCast(Init,
+                                                                 CGM.Int8PtrTy);
 
-    VTTComponents.push_back(Init);
+     VTTComponents.push_back(Init);
   }
 
   llvm::Constant *Init = llvm::ConstantArray::get(ArrayType, VTTComponents);
@@ -110,12 +111,12 @@ llvm::GlobalVariable *CodeGenVTables::GetAddrOfVTT(const CXXRecordDecl *RD) {
   StringRef Name = OutName.str();
 
   // This will also defer the definition of the VTT.
-  (void)CGM.getCXXABI().getAddrOfVTable(RD, CharUnits());
+  (void) CGM.getCXXABI().getAddrOfVTable(RD, CharUnits());
 
   VTTBuilder Builder(CGM.getContext(), RD, /*GenerateDefinition=*/false);
 
   llvm::ArrayType *ArrayType =
-      llvm::ArrayType::get(CGM.Int8PtrTy, Builder.getVTTComponents().size());
+    llvm::ArrayType::get(CGM.Int8PtrTy, Builder.getVTTComponents().size());
   unsigned Align = CGM.getDataLayout().getABITypeAlignment(CGM.Int8PtrTy);
 
   llvm::GlobalVariable *GV = CGM.CreateOrReplaceCXXRuntimeVariable(
@@ -134,10 +135,9 @@ uint64_t CodeGenVTables::getSubVTTIndex(const CXXRecordDecl *RD,
 
   VTTBuilder Builder(CGM.getContext(), RD, /*GenerateDefinition=*/false);
 
-  for (llvm::DenseMap<BaseSubobject, uint64_t>::const_iterator
-           I = Builder.getSubVTTIndicies().begin(),
-           E = Builder.getSubVTTIndicies().end();
-       I != E; ++I) {
+  for (llvm::DenseMap<BaseSubobject, uint64_t>::const_iterator I =
+       Builder.getSubVTTIndicies().begin(),
+       E = Builder.getSubVTTIndicies().end(); I != E; ++I) {
     // Insert all indices.
     BaseSubobjectPairTy ClassSubobjectPair(RD, I->first);
 
@@ -154,7 +154,7 @@ uint64_t
 CodeGenVTables::getSecondaryVirtualPointerIndex(const CXXRecordDecl *RD,
                                                 BaseSubobject Base) {
   SecondaryVirtualPointerIndicesMapTy::iterator I =
-      SecondaryVirtualPointerIndices.find(std::make_pair(RD, Base));
+    SecondaryVirtualPointerIndices.find(std::make_pair(RD, Base));
 
   if (I != SecondaryVirtualPointerIndices.end())
     return I->second;
@@ -162,12 +162,11 @@ CodeGenVTables::getSecondaryVirtualPointerIndex(const CXXRecordDecl *RD,
   VTTBuilder Builder(CGM.getContext(), RD, /*GenerateDefinition=*/false);
 
   // Insert all secondary vpointer indices.
-  for (llvm::DenseMap<BaseSubobject, uint64_t>::const_iterator
-           I = Builder.getSecondaryVirtualPointerIndices().begin(),
-           E = Builder.getSecondaryVirtualPointerIndices().end();
-       I != E; ++I) {
+  for (llvm::DenseMap<BaseSubobject, uint64_t>::const_iterator I =
+       Builder.getSecondaryVirtualPointerIndices().begin(),
+       E = Builder.getSecondaryVirtualPointerIndices().end(); I != E; ++I) {
     std::pair<const CXXRecordDecl *, BaseSubobject> Pair =
-        std::make_pair(RD, I->first);
+      std::make_pair(RD, I->first);
 
     SecondaryVirtualPointerIndices.insert(std::make_pair(Pair, I->second));
   }

@@ -35,22 +35,22 @@ struct SequenceContainerChecks : BasicContainerChecks<Container, CT> {
 
   using Base::makeContainer;
   using Base::makeValueType;
-
 public:
   static void run() {
     Base::run();
     SanityTest();
     FrontOnEmptyContainer();
 
-    if constexpr (CT != CT_ForwardList) {
-      AssignInvalidates();
-      BackOnEmptyContainer();
-      InsertIterValue();
-      InsertIterSizeValue();
-      InsertIterIterIter();
-      EmplaceIterValue();
-      EraseIterIter();
-    } else {
+    if constexpr(CT != CT_ForwardList) {
+        AssignInvalidates();
+        BackOnEmptyContainer();
+        InsertIterValue();
+        InsertIterSizeValue();
+        InsertIterIterIter();
+        EmplaceIterValue();
+        EraseIterIter();
+      }
+    else {
       SpliceFirstElemAfter();
     }
     if constexpr (CT == CT_Vector || CT == CT_Deque || CT == CT_List) {
@@ -139,17 +139,20 @@ private:
       it3 = C.end();
     };
     auto check = [&]() {
-      EXPECT_DEATH(C.erase(it1));
-      EXPECT_DEATH(C.erase(it2));
-      EXPECT_DEATH(C.erase(it3, C.end()));
+      EXPECT_DEATH( C.erase(it1) );
+      EXPECT_DEATH( C.erase(it2) );
+      EXPECT_DEATH( C.erase(it3, C.end()) );
     };
     reset();
     C.assign(2, makeValueType(4));
     check();
     reset();
     // assign(Iter, Iter)
-    std::vector<value_type> V = {makeValueType(1), makeValueType(2),
-                                 makeValueType(3)};
+    std::vector<value_type> V = {
+        makeValueType(1),
+        makeValueType(2),
+        makeValueType(3)
+    };
     C.assign(V.begin(), V.end());
     check();
     reset();
@@ -165,8 +168,8 @@ private:
     (void)C.back();
     (void)CC.back();
     C.clear();
-    EXPECT_DEATH(C.back());
-    EXPECT_DEATH(CC.back());
+    EXPECT_DEATH( C.back() );
+    EXPECT_DEATH( CC.back() );
   }
 
   static void FrontOnEmptyContainer() {
@@ -176,8 +179,8 @@ private:
     (void)C.front();
     (void)CC.front();
     C.clear();
-    EXPECT_DEATH(C.front());
-    EXPECT_DEATH(CC.front());
+    EXPECT_DEATH( C.front() );
+    EXPECT_DEATH( CC.front() );
   }
 
   static void EraseIterIter() {
@@ -190,15 +193,15 @@ private:
     iterator it1_back = --C1.end();
     assert(it1_next != it1_back);
     if (CT == CT_Vector) {
-      EXPECT_DEATH(C1.erase(it1_next, it1)); // bad range
+      EXPECT_DEATH( C1.erase(it1_next, it1) ); // bad range
     }
     C1.erase(it1, it1_after_next);
-    EXPECT_DEATH(C1.erase(it1));
-    EXPECT_DEATH(C1.erase(it1_next));
+    EXPECT_DEATH( C1.erase(it1) );
+    EXPECT_DEATH( C1.erase(it1_next) );
     if (CT == CT_List) {
       C1.erase(it1_back);
     } else {
-      EXPECT_DEATH(C1.erase(it1_back));
+      EXPECT_DEATH( C1.erase(it1_back) );
     }
   }
 
@@ -208,10 +211,10 @@ private:
     iterator it1 = C1.end();
     --it1;
     C1.pop_back();
-    EXPECT_DEATH(C1.erase(it1));
+    EXPECT_DEATH( C1.erase(it1) );
     C1.erase(C1.begin());
     assert(C1.size() == 0);
-    EXPECT_DEATH(C1.pop_back());
+    EXPECT_DEATH( C1.pop_back() );
   }
 
   static void PopFront() {
@@ -219,10 +222,10 @@ private:
     Container C1 = makeContainer(2);
     iterator it1 = C1.begin();
     C1.pop_front();
-    EXPECT_DEATH(C1.erase(it1));
+    EXPECT_DEATH( C1.erase(it1) );
     C1.erase(C1.begin());
     assert(C1.size() == 0);
-    EXPECT_DEATH(C1.pop_front());
+    EXPECT_DEATH( C1.pop_front() );
   }
 
   static void InsertIterValue() {
@@ -234,20 +237,19 @@ private:
     Container C2 = C1;
     const value_type value = makeValueType(3);
     value_type rvalue = makeValueType(3);
-    EXPECT_DEATH(C2.insert(it1, value));             // wrong container
-    EXPECT_DEATH(C2.insert(it1, std::move(rvalue))); // wrong container
+    EXPECT_DEATH( C2.insert(it1, value) ); // wrong container
+    EXPECT_DEATH( C2.insert(it1, std::move(rvalue)) ); // wrong container
     C1.insert(it1_next, value);
-    if (CT == CT_List) {
+    if  (CT == CT_List) {
       C1.insert(it1_next, value);
       C1.insert(it1, value);
       C1.insert(it1_next, std::move(rvalue));
       C1.insert(it1, std::move(rvalue));
     } else {
-      EXPECT_DEATH(C1.insert(it1_next, value)); // invalidated iterator
-      EXPECT_DEATH(C1.insert(it1, value));      // invalidated iterator
-      EXPECT_DEATH(
-          C1.insert(it1_next, std::move(rvalue)));     // invalidated iterator
-      EXPECT_DEATH(C1.insert(it1, std::move(rvalue))); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1_next, value) ); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1, value) ); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1_next, std::move(rvalue)) ); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1, std::move(rvalue)) ); // invalidated iterator
     }
   }
 
@@ -259,15 +261,15 @@ private:
     ++it1_next;
     Container C2 = C1;
     const value_type value = makeValueType(3);
-    EXPECT_DEATH(C2.emplace(it1, value));            // wrong container
-    EXPECT_DEATH(C2.emplace(it1, makeValueType(4))); // wrong container
+    EXPECT_DEATH( C2.emplace(it1, value) ); // wrong container
+    EXPECT_DEATH( C2.emplace(it1, makeValueType(4)) ); // wrong container
     C1.emplace(it1_next, value);
-    if (CT == CT_List) {
+    if  (CT == CT_List) {
       C1.emplace(it1_next, value);
       C1.emplace(it1, value);
     } else {
-      EXPECT_DEATH(C1.emplace(it1_next, value)); // invalidated iterator
-      EXPECT_DEATH(C1.emplace(it1, value));      // invalidated iterator
+      EXPECT_DEATH( C1.emplace(it1_next, value) ); // invalidated iterator
+      EXPECT_DEATH( C1.emplace(it1, value) ); // invalidated iterator
     }
   }
 
@@ -279,14 +281,14 @@ private:
     ++it1_next;
     Container C2 = C1;
     const value_type value = makeValueType(3);
-    EXPECT_DEATH(C2.insert(it1, 1, value)); // wrong container
+    EXPECT_DEATH( C2.insert(it1, 1, value) ); // wrong container
     C1.insert(it1_next, 2, value);
-    if (CT == CT_List) {
+    if  (CT == CT_List) {
       C1.insert(it1_next, 3, value);
       C1.insert(it1, 1, value);
     } else {
-      EXPECT_DEATH(C1.insert(it1_next, 1, value)); // invalidated iterator
-      EXPECT_DEATH(C1.insert(it1, 1, value));      // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1_next, 1, value) ); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1, 1, value) ); // invalidated iterator
     }
   }
 
@@ -297,22 +299,25 @@ private:
     iterator it1_next = it1;
     ++it1_next;
     Container C2 = C1;
-    std::vector<value_type> V = {makeValueType(1), makeValueType(2),
-                                 makeValueType(3)};
-    EXPECT_DEATH(C2.insert(it1, V.begin(), V.end())); // wrong container
+    std::vector<value_type> V = {
+        makeValueType(1),
+        makeValueType(2),
+        makeValueType(3)
+    };
+    EXPECT_DEATH( C2.insert(it1, V.begin(), V.end()) ); // wrong container
     C1.insert(it1_next, V.begin(), V.end());
-    if (CT == CT_List) {
+    if  (CT == CT_List) {
       C1.insert(it1_next, V.begin(), V.end());
       C1.insert(it1, V.begin(), V.end());
     } else {
-      EXPECT_DEATH(
-          C1.insert(it1_next, V.begin(), V.end()));     // invalidated iterator
-      EXPECT_DEATH(C1.insert(it1, V.begin(), V.end())); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1_next, V.begin(), V.end()) ); // invalidated iterator
+      EXPECT_DEATH( C1.insert(it1, V.begin(), V.end()) ); // invalidated iterator
     }
   }
 };
 
-int main(int, char**) {
+int main(int, char**)
+{
   using Alloc = test_allocator<int>;
   {
     SequenceContainerChecks<std::list<int, Alloc>, CT_List>::run();
@@ -320,11 +325,12 @@ int main(int, char**) {
   }
   // FIXME these containers don't support iterator debugging
   if ((false)) {
-    SequenceContainerChecks<std::vector<bool, test_allocator<bool> >,
-                            CT_VectorBool>::run();
-    SequenceContainerChecks<std::forward_list<int, Alloc>,
-                            CT_ForwardList>::run();
-    SequenceContainerChecks<std::deque<int, Alloc>, CT_Deque>::run();
+    SequenceContainerChecks<
+        std::vector<bool, test_allocator<bool>>, CT_VectorBool>::run();
+    SequenceContainerChecks<
+        std::forward_list<int, Alloc>, CT_ForwardList>::run();
+    SequenceContainerChecks<
+        std::deque<int, Alloc>, CT_Deque>::run();
   }
 
   return 0;

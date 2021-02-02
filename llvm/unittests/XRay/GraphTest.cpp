@@ -257,4 +257,4 @@ TEST(GraphTest, TestEdgeAccessOperator) {
   EXPECT_EQ(2u, G.inEdges(0u).begin()->second.EA);
   EXPECT_EQ(++(G.inEdges(0u).begin()), G.inEdges(0u).end());
 }
-} // namespace
+}

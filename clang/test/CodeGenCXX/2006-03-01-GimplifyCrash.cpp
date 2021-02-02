@@ -6,7 +6,7 @@ struct PrefMapElem {
 };
 
 int foo() {
-  PrefMapElem *fMap;
+  PrefMapElem* fMap;
   if (fMap[0].fPrefId == 1)
     return 1;
 

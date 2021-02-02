@@ -242,8 +242,7 @@ bool ThreadPlanNull::DoPlanExplainsStop(Event *event_ptr) {
   fprintf(stderr,
           "error: %s called on thread that has been destroyed (tid = 0x%" PRIx64
           ", ptid = 0x%" PRIx64 ")",
-          LLVM_PRETTY_FUNCTION, GetThread().GetID(),
-          GetThread().GetProtocolID());
+          LLVM_PRETTY_FUNCTION, GetThread().GetID(), GetThread().GetProtocolID());
 #else
   Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_THREAD));
   if (log)

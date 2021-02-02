@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+
 #include "lldb/Expression/ExpressionTypeSystemHelper.h"
 #include "lldb/lldb-forward.h"
 #include "lldb/lldb-private.h"
@@ -93,11 +94,11 @@ protected:
                                     /// it doesn't need to (e.g. calculator
                                     /// mode.)
   lldb::addr_t m_jit_start_addr; ///< The address of the JITted function within
-                                 /// the JIT allocation.  LLDB_INVALID_ADDRESS
-                                 /// if invalid.
-  lldb::addr_t m_jit_end_addr; ///< The address of the JITted function within
-                               /// the JIT allocation.  LLDB_INVALID_ADDRESS if
-                               /// invalid.
+                                 ///the JIT allocation.  LLDB_INVALID_ADDRESS if
+                                 ///invalid.
+  lldb::addr_t m_jit_end_addr;   ///< The address of the JITted function within
+                                 ///the JIT allocation.  LLDB_INVALID_ADDRESS if
+                                 ///invalid.
 };
 
 } // namespace lldb_private

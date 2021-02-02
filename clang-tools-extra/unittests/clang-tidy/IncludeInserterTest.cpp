@@ -7,9 +7,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "../clang-tidy/utils/IncludeInserter.h"
-#include "ClangTidyTest.h"
-#include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "ClangTidyTest.h"
 #include "gtest/gtest.h"
 
 // FIXME: Canonicalize paths correctly on windows.
@@ -67,8 +67,7 @@ public:
 
 class EarlyInAlphabetHeaderInserterCheck : public IncludeInserterCheckBase {
 public:
-  EarlyInAlphabetHeaderInserterCheck(StringRef CheckName,
-                                     ClangTidyContext *Context)
+  EarlyInAlphabetHeaderInserterCheck(StringRef CheckName, ClangTidyContext *Context)
       : IncludeInserterCheckBase(CheckName, Context) {}
 
   std::vector<StringRef> headersToInclude() const override {
@@ -719,8 +718,8 @@ void foo() {
   int a = 0;
 })";
   const char *PostCode = R"(
-#import "top_level_test_header+foo.h"
 #import "top_level_test_header.h"
+#import "top_level_test_header+foo.h"
 
 void foo() {
   int a = 0;

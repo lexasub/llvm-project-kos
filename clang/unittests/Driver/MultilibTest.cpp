@@ -242,12 +242,10 @@ TEST(MultilibTest, SetRegexFilter) {
   MS.Maybe(Multilib("two"));
   MS.Maybe(Multilib("three"));
   ASSERT_EQ(MS.size(), (unsigned)2 * 2 * 2)
-      << "Size before filter was incorrect. Contents:\n"
-      << MS;
+      << "Size before filter was incorrect. Contents:\n" << MS;
   MS.FilterOut("/one/two/three");
   ASSERT_EQ(MS.size(), (unsigned)2 * 2 * 2 - 1)
-      << "Size after filter was incorrect. Contents:\n"
-      << MS;
+      << "Size after filter was incorrect. Contents:\n" << MS;
   for (MultilibSet::const_iterator I = MS.begin(), E = MS.end(); I != E; ++I) {
     ASSERT_TRUE(I->gccSuffix() != "/one/two/three")
         << "The filter should have removed " << *I;
@@ -259,20 +257,24 @@ TEST(MultilibTest, SetFilterObject) {
   MS.Maybe(Multilib("orange"));
   MS.Maybe(Multilib("pear"));
   MS.Maybe(Multilib("plum"));
-  ASSERT_EQ((int)MS.size(), 1 /* Default */ + 1 /* pear */ + 1 /* plum */ +
-                                1 /* pear/plum */ + 1 /* orange */ +
-                                1 /* orange/pear */ + 1 /* orange/plum */ +
-                                1 /* orange/pear/plum */)
-      << "Size before filter was incorrect. Contents:\n"
-      << MS;
+  ASSERT_EQ((int)MS.size(), 1 /* Default */ +
+                            1 /* pear */ +
+                            1 /* plum */ +
+                            1 /* pear/plum */ +
+                            1 /* orange */ +
+                            1 /* orange/pear */ +
+                            1 /* orange/plum */ +
+                            1 /* orange/pear/plum */ )
+      << "Size before filter was incorrect. Contents:\n" << MS;
   MS.FilterOut([](const Multilib &M) {
     return StringRef(M.gccSuffix()).startswith("/p");
   });
-  ASSERT_EQ((int)MS.size(), 1 /* Default */ + 1 /* orange */ +
-                                1 /* orange/pear */ + 1 /* orange/plum */ +
-                                1 /* orange/pear/plum */)
-      << "Size after filter was incorrect. Contents:\n"
-      << MS;
+  ASSERT_EQ((int)MS.size(), 1 /* Default */ +
+                            1 /* orange */ +
+                            1 /* orange/pear */ +
+                            1 /* orange/plum */ + 
+                            1 /* orange/pear/plum */ )
+      << "Size after filter was incorrect. Contents:\n" << MS;
   for (MultilibSet::const_iterator I = MS.begin(), E = MS.end(); I != E; ++I) {
     ASSERT_FALSE(StringRef(I->gccSuffix()).startswith("/p"))
         << "The filter should have removed " << *I;
@@ -280,7 +282,8 @@ TEST(MultilibTest, SetFilterObject) {
 }
 
 TEST(MultilibTest, SetSelection1) {
-  MultilibSet MS1 = MultilibSet().Maybe(Multilib("64").flag("+m64"));
+  MultilibSet MS1 = MultilibSet()
+    .Maybe(Multilib("64").flag("+m64"));
 
   Multilib::flags_list FlagM64;
   FlagM64.push_back("+m64");
@@ -301,8 +304,8 @@ TEST(MultilibTest, SetSelection1) {
 
 TEST(MultilibTest, SetSelection2) {
   MultilibSet MS2 = MultilibSet()
-                        .Maybe(Multilib("el").flag("+EL"))
-                        .Maybe(Multilib("sf").flag("+SF"));
+    .Maybe(Multilib("el").flag("+EL"))
+    .Maybe(Multilib("sf").flag("+SF"));
 
   for (unsigned I = 0; I < 4; ++I) {
     bool IsEL = I & 0x1;
@@ -319,9 +322,9 @@ TEST(MultilibTest, SetSelection2) {
       Flags.push_back("-SF");
 
     Multilib Selection;
-    ASSERT_TRUE(MS2.select(Flags, Selection))
-        << "Selection failed for " << (IsEL ? "+EL" : "-EL") << " "
-        << (IsSF ? "+SF" : "-SF");
+    ASSERT_TRUE(MS2.select(Flags, Selection)) << "Selection failed for "
+                                              << (IsEL ? "+EL" : "-EL") << " "
+                                              << (IsSF ? "+SF" : "-SF");
 
     std::string Suffix;
     if (IsEL)
@@ -329,8 +332,8 @@ TEST(MultilibTest, SetSelection2) {
     if (IsSF)
       Suffix += "/sf";
 
-    ASSERT_EQ(Selection.gccSuffix(), Suffix)
-        << "Selection picked " << Selection << " which was not expected ";
+    ASSERT_EQ(Selection.gccSuffix(), Suffix) << "Selection picked " << Selection
+                                             << " which was not expected ";
   }
 }
 

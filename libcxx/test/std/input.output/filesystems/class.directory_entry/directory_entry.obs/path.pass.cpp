@@ -21,6 +21,7 @@
 
 #include "test_macros.h"
 
+
 void test_path_method() {
   using namespace fs;
   const path p("foo/bar/baz.exe");
@@ -28,7 +29,7 @@ void test_path_method() {
   {
     directory_entry nce;
     const directory_entry e("");
-    static_assert(std::is_same<decltype(e.path()), const path&>::value, "");
+    static_assert(std::is_same<decltype(e.path()),  const path&>::value, "");
     static_assert(std::is_same<decltype(nce.path()), const path&>::value, "");
     static_assert(noexcept(e.path()) && noexcept(nce.path()), "");
   }
@@ -51,25 +52,18 @@ void test_path_conversion() {
     directory_entry nce;
     const directory_entry e("");
     // Check conversions exist
-    static_assert(std::is_convertible<directory_entry&, path const&>::value,
-                  "");
-    static_assert(
-        std::is_convertible<directory_entry const&, path const&>::value, "");
-    static_assert(std::is_convertible<directory_entry&&, path const&>::value,
-                  "");
-    static_assert(
-        std::is_convertible<directory_entry const&&, path const&>::value, "");
+    static_assert(std::is_convertible<directory_entry&,        path const&>::value, "");
+    static_assert(std::is_convertible<directory_entry const&,  path const&>::value, "");
+    static_assert(std::is_convertible<directory_entry &&,      path const&>::value, "");
+    static_assert(std::is_convertible<directory_entry const&&, path const&>::value, "");
     // Not convertible to non-const
-    static_assert(!std::is_convertible<directory_entry&, path&>::value, "");
-    static_assert(!std::is_convertible<directory_entry const&, path&>::value,
-                  "");
-    static_assert(!std::is_convertible<directory_entry&&, path&>::value, "");
-    static_assert(!std::is_convertible<directory_entry const&&, path&>::value,
-                  "");
+    static_assert(!std::is_convertible<directory_entry&,        path&>::value, "");
+    static_assert(!std::is_convertible<directory_entry const&,  path&>::value, "");
+    static_assert(!std::is_convertible<directory_entry &&,      path&>::value, "");
+    static_assert(!std::is_convertible<directory_entry const&&, path&>::value, "");
     // conversions are noexcept
-    static_assert(noexcept(e.operator fs::path const &()) &&
-                      noexcept(e.operator fs::path const &()),
-                  "");
+    static_assert(noexcept(e.operator fs::path const&()) &&
+                  noexcept(e.operator fs::path const&()), "");
   }
   // const
   {

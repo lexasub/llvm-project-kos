@@ -17,7 +17,7 @@
  * Also fall back on Darwin to allow additional definitions and
  * implementation-defined values.
  */
-#if (defined(__APPLE__) || (defined(__MINGW32__) || defined(_MSC_VER))) &&     \
+#if (defined(__APPLE__) || (defined(__MINGW32__) || defined(_MSC_VER))) && \
     __STDC_HOSTED__ && __has_include_next(<float.h>)
 
 /* Prior to Apple's 10.7 SDK, float.h SDK header used to apply an extra level
@@ -28,55 +28,53 @@
 #define _FLOAT_H_
 #endif
 
-#include_next <float.h>
+#  include_next <float.h>
 
 /* Undefine anything that we'll be redefining below. */
-#undef FLT_EVAL_METHOD
-#undef FLT_ROUNDS
-#undef FLT_RADIX
-#undef FLT_MANT_DIG
-#undef DBL_MANT_DIG
-#undef LDBL_MANT_DIG
-#if __STDC_VERSION__ >= 199901L || !defined(__STRICT_ANSI__) ||                \
-    __cplusplus >= 201103L
-#undef DECIMAL_DIG
-#endif
-#undef FLT_DIG
-#undef DBL_DIG
-#undef LDBL_DIG
-#undef FLT_MIN_EXP
-#undef DBL_MIN_EXP
-#undef LDBL_MIN_EXP
-#undef FLT_MIN_10_EXP
-#undef DBL_MIN_10_EXP
-#undef LDBL_MIN_10_EXP
-#undef FLT_MAX_EXP
-#undef DBL_MAX_EXP
-#undef LDBL_MAX_EXP
-#undef FLT_MAX_10_EXP
-#undef DBL_MAX_10_EXP
-#undef LDBL_MAX_10_EXP
-#undef FLT_MAX
-#undef DBL_MAX
-#undef LDBL_MAX
-#undef FLT_EPSILON
-#undef DBL_EPSILON
-#undef LDBL_EPSILON
-#undef FLT_MIN
-#undef DBL_MIN
-#undef LDBL_MIN
-#if __STDC_VERSION__ >= 201112L || !defined(__STRICT_ANSI__) ||                \
-    __cplusplus >= 201703L
-#undef FLT_TRUE_MIN
-#undef DBL_TRUE_MIN
-#undef LDBL_TRUE_MIN
-#undef FLT_DECIMAL_DIG
-#undef DBL_DECIMAL_DIG
-#undef LDBL_DECIMAL_DIG
-#undef FLT_HAS_SUBNORM
-#undef DBL_HAS_SUBNORM
-#undef LDBL_HAS_SUBNORM
-#endif
+#  undef FLT_EVAL_METHOD
+#  undef FLT_ROUNDS
+#  undef FLT_RADIX
+#  undef FLT_MANT_DIG
+#  undef DBL_MANT_DIG
+#  undef LDBL_MANT_DIG
+#  if __STDC_VERSION__ >= 199901L || !defined(__STRICT_ANSI__) || __cplusplus >= 201103L
+#    undef DECIMAL_DIG
+#  endif
+#  undef FLT_DIG
+#  undef DBL_DIG
+#  undef LDBL_DIG
+#  undef FLT_MIN_EXP
+#  undef DBL_MIN_EXP
+#  undef LDBL_MIN_EXP
+#  undef FLT_MIN_10_EXP
+#  undef DBL_MIN_10_EXP
+#  undef LDBL_MIN_10_EXP
+#  undef FLT_MAX_EXP
+#  undef DBL_MAX_EXP
+#  undef LDBL_MAX_EXP
+#  undef FLT_MAX_10_EXP
+#  undef DBL_MAX_10_EXP
+#  undef LDBL_MAX_10_EXP
+#  undef FLT_MAX
+#  undef DBL_MAX
+#  undef LDBL_MAX
+#  undef FLT_EPSILON
+#  undef DBL_EPSILON
+#  undef LDBL_EPSILON
+#  undef FLT_MIN
+#  undef DBL_MIN
+#  undef LDBL_MIN
+#  if __STDC_VERSION__ >= 201112L || !defined(__STRICT_ANSI__) || __cplusplus >= 201703L
+#    undef FLT_TRUE_MIN
+#    undef DBL_TRUE_MIN
+#    undef LDBL_TRUE_MIN
+#    undef FLT_DECIMAL_DIG
+#    undef DBL_DECIMAL_DIG
+#    undef LDBL_DECIMAL_DIG
+#    undef FLT_HAS_SUBNORM
+#    undef DBL_HAS_SUBNORM
+#    undef LDBL_HAS_SUBNORM
+#  endif
 #endif
 
 /* Characteristics of floating point types, C99 5.2.4.2.2 */
@@ -89,9 +87,8 @@
 #define DBL_MANT_DIG __DBL_MANT_DIG__
 #define LDBL_MANT_DIG __LDBL_MANT_DIG__
 
-#if __STDC_VERSION__ >= 199901L || !defined(__STRICT_ANSI__) ||                \
-    __cplusplus >= 201103L
-#define DECIMAL_DIG __DECIMAL_DIG__
+#if __STDC_VERSION__ >= 199901L || !defined(__STRICT_ANSI__) || __cplusplus >= 201103L
+#  define DECIMAL_DIG __DECIMAL_DIG__
 #endif
 
 #define FLT_DIG __FLT_DIG__
@@ -126,31 +123,30 @@
 #define DBL_MIN __DBL_MIN__
 #define LDBL_MIN __LDBL_MIN__
 
-#if __STDC_VERSION__ >= 201112L || !defined(__STRICT_ANSI__) ||                \
-    __cplusplus >= 201703L
-#define FLT_TRUE_MIN __FLT_DENORM_MIN__
-#define DBL_TRUE_MIN __DBL_DENORM_MIN__
-#define LDBL_TRUE_MIN __LDBL_DENORM_MIN__
-#define FLT_DECIMAL_DIG __FLT_DECIMAL_DIG__
-#define DBL_DECIMAL_DIG __DBL_DECIMAL_DIG__
-#define LDBL_DECIMAL_DIG __LDBL_DECIMAL_DIG__
-#define FLT_HAS_SUBNORM __FLT_HAS_DENORM__
-#define DBL_HAS_SUBNORM __DBL_HAS_DENORM__
-#define LDBL_HAS_SUBNORM __LDBL_HAS_DENORM__
+#if __STDC_VERSION__ >= 201112L || !defined(__STRICT_ANSI__) || __cplusplus >= 201703L
+#  define FLT_TRUE_MIN __FLT_DENORM_MIN__
+#  define DBL_TRUE_MIN __DBL_DENORM_MIN__
+#  define LDBL_TRUE_MIN __LDBL_DENORM_MIN__
+#  define FLT_DECIMAL_DIG __FLT_DECIMAL_DIG__
+#  define DBL_DECIMAL_DIG __DBL_DECIMAL_DIG__
+#  define LDBL_DECIMAL_DIG __LDBL_DECIMAL_DIG__
+#  define FLT_HAS_SUBNORM __FLT_HAS_DENORM__
+#  define DBL_HAS_SUBNORM __DBL_HAS_DENORM__
+#  define LDBL_HAS_SUBNORM __LDBL_HAS_DENORM__
 #endif
 
 #ifdef __STDC_WANT_IEC_60559_TYPES_EXT__
-#define FLT16_MANT_DIG __FLT16_MANT_DIG__
-#define FLT16_DECIMAL_DIG __FLT16_DECIMAL_DIG__
-#define FLT16_DIG __FLT16_DIG__
-#define FLT16_MIN_EXP __FLT16_MIN_EXP__
-#define FLT16_MIN_10_EXP __FLT16_MIN_10_EXP__
-#define FLT16_MAX_EXP __FLT16_MAX_EXP__
-#define FLT16_MAX_10_EXP __FLT16_MAX_10_EXP__
-#define FLT16_MAX __FLT16_MAX__
-#define FLT16_EPSILON __FLT16_EPSILON__
-#define FLT16_MIN __FLT16_MIN__
-#define FLT16_TRUE_MIN __FLT16_TRUE_MIN__
+#  define FLT16_MANT_DIG    __FLT16_MANT_DIG__
+#  define FLT16_DECIMAL_DIG __FLT16_DECIMAL_DIG__
+#  define FLT16_DIG         __FLT16_DIG__
+#  define FLT16_MIN_EXP     __FLT16_MIN_EXP__
+#  define FLT16_MIN_10_EXP  __FLT16_MIN_10_EXP__
+#  define FLT16_MAX_EXP     __FLT16_MAX_EXP__
+#  define FLT16_MAX_10_EXP  __FLT16_MAX_10_EXP__
+#  define FLT16_MAX         __FLT16_MAX__
+#  define FLT16_EPSILON     __FLT16_EPSILON__
+#  define FLT16_MIN         __FLT16_MIN__
+#  define FLT16_TRUE_MIN    __FLT16_TRUE_MIN__
 #endif /* __STDC_WANT_IEC_60559_TYPES_EXT__ */
 
 #endif /* __CLANG_FLOAT_H */

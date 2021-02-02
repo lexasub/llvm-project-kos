@@ -5,8 +5,8 @@
 // RUN: %run %t -1 2>&1 | FileCheck %s --implicit-check-not="error:" --check-prefix=SAFE
 // RUN: %run %t -2 2>&1 | FileCheck %s --implicit-check-not="error:" --check-prefix=SAFE
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {

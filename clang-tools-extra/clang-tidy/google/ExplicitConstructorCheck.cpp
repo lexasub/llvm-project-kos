@@ -85,7 +85,7 @@ void ExplicitConstructorCheck::check(const MatchFinder::MatchResult &Result) {
       "%0 must be marked explicit to avoid unintentional implicit conversions";
 
   if (const auto *Conversion =
-          Result.Nodes.getNodeAs<CXXConversionDecl>("conversion")) {
+      Result.Nodes.getNodeAs<CXXConversionDecl>("conversion")) {
     if (Conversion->isOutOfLine())
       return;
     SourceLocation Loc = Conversion->getLocation();

@@ -17,9 +17,10 @@
 
 #include <chrono>
 
-int main(int, char**) {
-  std::chrono::duration<double> d;
-  std::chrono::duration<int> i = d;
+int main(int, char**)
+{
+    std::chrono::duration<double> d;
+    std::chrono::duration<int> i = d;
 
   return 0;
 }

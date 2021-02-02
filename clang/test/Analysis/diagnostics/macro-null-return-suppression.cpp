@@ -4,11 +4,11 @@
 
 int test_noparammacro() {
   int *x = NULL; // expected-note{{'x' initialized to a null pointer value}}
-  return *x;     // expected-warning{{Dereference of null pointer (loaded from variable 'x')}}
-                 // expected-note@-1{{Dereference of null pointer (loaded from variable 'x')}}
+  return *x; // expected-warning{{Dereference of null pointer (loaded from variable 'x')}}
+             // expected-note@-1{{Dereference of null pointer (loaded from variable 'x')}}
 }
 
-#define DYN_CAST(X) (X ? (char *)X : 0)
+#define DYN_CAST(X) (X ? (char*)X : 0)
 #define GENERATE_NUMBER(X) (0)
 
 char test_assignment(int *param) {
@@ -33,16 +33,12 @@ int test_multi_decl(int *paramA, int *paramB) {
 
 int testDivision(int a) {
   int divider = GENERATE_NUMBER(2); // expected-note{{'divider' initialized to 0}}
-  return 1 / divider;               // expected-warning{{Division by zero}}
-                                    // expected-note@-1{{Division by zero}}
+  return 1/divider; // expected-warning{{Division by zero}}
+                    // expected-note@-1{{Division by zero}}
 }
 
 // Warning should not be suppressed if it happens in the same macro.
-#define DEREF_IN_MACRO(X) \
-  int fn() {              \
-    int *p = 0;           \
-    return *p;            \
-  }
+#define DEREF_IN_MACRO(X) int fn() {int *p = 0; return *p; }
 
 DEREF_IN_MACRO(0) // expected-warning{{Dereference of null pointer}}
                   // expected-note@-1{{'p' initialized to a null}}
@@ -51,13 +47,12 @@ DEREF_IN_MACRO(0) // expected-warning{{Dereference of null pointer}}
 // Warning should not be suppressed if the null returned by the macro
 // is not related to the warning.
 #define RETURN_NULL() (0)
-extern int *returnFreshPointer();
+extern int* returnFreshPointer();
 int noSuppressMacroUnrelated() {
   int *x = RETURN_NULL();
-  x = returnFreshPointer(); // expected-note{{Value assigned to 'x'}}
-  if (x) {
-  }          // expected-note{{Taking false branch}}
-             // expected-note@-1{{Assuming 'x' is null}}
+  x = returnFreshPointer();  // expected-note{{Value assigned to 'x'}}
+  if (x) {} // expected-note{{Taking false branch}}
+            // expected-note@-1{{Assuming 'x' is null}}
   return *x; // expected-warning{{Dereference of null pointer}}
              // expected-note@-1{{Dereference}}
 }
@@ -66,8 +61,8 @@ int noSuppressMacroUnrelated() {
 // did not come from the macro.
 int noSuppressMacroUnrelatedOtherReason() {
   int *x = RETURN_NULL();
-  x = returnFreshPointer();
-  x = 0;     // expected-note{{Null pointer value stored to 'x'}}
+  x = returnFreshPointer();  
+  x = 0; // expected-note{{Null pointer value stored to 'x'}}
   return *x; // expected-warning{{Dereference of null pointer}}
              // expected-note@-1{{Dereference}}
 }

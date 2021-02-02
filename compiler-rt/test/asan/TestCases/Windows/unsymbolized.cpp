@@ -7,8 +7,8 @@
 // RUN: link /nologo /OUT:%t.exe %t.obj %asan_lib %asan_cxx_lib
 // RUN: not %run %t.exe 2>&1 | FileCheck %s
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 int __attribute__((noinline)) do_uaf(void);
 int main() {
   int r = do_uaf();
@@ -16,7 +16,7 @@ int main() {
   return r;
 }
 int do_uaf(void) {
-  char *x = (char *)malloc(10 * sizeof(char));
+  char *x = (char*)malloc(10 * sizeof(char));
   free(x);
   return x[5];
   // CHECK: AddressSanitizer: heap-use-after-free

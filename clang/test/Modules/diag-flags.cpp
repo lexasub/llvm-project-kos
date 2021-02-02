@@ -48,10 +48,7 @@ int arr[sizeof(Padded)];
 #elif LOCAL_WARNING
 // expected-warning@+2 {{padding struct}}
 #endif
-struct Padded2 {
-  char x;
-  int y;
-};
+struct Padded2 { char x; int y; };
 int arr2[sizeof(Padded2)];
 
 #if !ERROR && !WARNING && !LOCAL_ERROR && !LOCAL_WARNING

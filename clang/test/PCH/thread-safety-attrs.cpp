@@ -8,29 +8,30 @@
 #ifndef HEADER
 #define HEADER
 
-#define LOCKABLE __attribute__((lockable))
-#define SCOPED_LOCKABLE __attribute__((scoped_lockable))
-#define GUARDED_BY(x) __attribute__((guarded_by(x)))
-#define GUARDED_VAR __attribute__((guarded_var))
-#define PT_GUARDED_BY(x) __attribute__((pt_guarded_by(x)))
-#define PT_GUARDED_VAR __attribute__((pt_guarded_var))
-#define ACQUIRED_AFTER(...) __attribute__((acquired_after(__VA_ARGS__)))
-#define ACQUIRED_BEFORE(...) __attribute__((acquired_before(__VA_ARGS__)))
-#define EXCLUSIVE_LOCK_FUNCTION(...) __attribute__((exclusive_lock_function(__VA_ARGS__)))
-#define SHARED_LOCK_FUNCTION(...) __attribute__((shared_lock_function(__VA_ARGS__)))
-#define EXCLUSIVE_TRYLOCK_FUNCTION(...) __attribute__((exclusive_trylock_function(__VA_ARGS__)))
-#define SHARED_TRYLOCK_FUNCTION(...) __attribute__((shared_trylock_function(__VA_ARGS__)))
-#define UNLOCK_FUNCTION(...) __attribute__((unlock_function(__VA_ARGS__)))
-#define LOCK_RETURNED(x) __attribute__((lock_returned(x)))
-#define LOCKS_EXCLUDED(...) __attribute__((locks_excluded(__VA_ARGS__)))
+#define LOCKABLE            __attribute__ ((lockable))
+#define SCOPED_LOCKABLE     __attribute__ ((scoped_lockable))
+#define GUARDED_BY(x)       __attribute__ ((guarded_by(x)))
+#define GUARDED_VAR         __attribute__ ((guarded_var))
+#define PT_GUARDED_BY(x)    __attribute__ ((pt_guarded_by(x)))
+#define PT_GUARDED_VAR      __attribute__ ((pt_guarded_var))
+#define ACQUIRED_AFTER(...) __attribute__ ((acquired_after(__VA_ARGS__)))
+#define ACQUIRED_BEFORE(...) __attribute__ ((acquired_before(__VA_ARGS__)))
+#define EXCLUSIVE_LOCK_FUNCTION(...)   __attribute__ ((exclusive_lock_function(__VA_ARGS__)))
+#define SHARED_LOCK_FUNCTION(...)      __attribute__ ((shared_lock_function(__VA_ARGS__)))
+#define EXCLUSIVE_TRYLOCK_FUNCTION(...) __attribute__ ((exclusive_trylock_function(__VA_ARGS__)))
+#define SHARED_TRYLOCK_FUNCTION(...)    __attribute__ ((shared_trylock_function(__VA_ARGS__)))
+#define UNLOCK_FUNCTION(...)            __attribute__ ((unlock_function(__VA_ARGS__)))
+#define LOCK_RETURNED(x)    __attribute__ ((lock_returned(x)))
+#define LOCKS_EXCLUDED(...) __attribute__ ((locks_excluded(__VA_ARGS__)))
 #define EXCLUSIVE_LOCKS_REQUIRED(...) \
-  __attribute__((exclusive_locks_required(__VA_ARGS__)))
+  __attribute__ ((exclusive_locks_required(__VA_ARGS__)))
 #define SHARED_LOCKS_REQUIRED(...) \
-  __attribute__((shared_locks_required(__VA_ARGS__)))
-#define NO_THREAD_SAFETY_ANALYSIS __attribute__((no_thread_safety_analysis))
+  __attribute__ ((shared_locks_required(__VA_ARGS__)))
+#define NO_THREAD_SAFETY_ANALYSIS  __attribute__ ((no_thread_safety_analysis))
 
-class __attribute__((lockable)) Mutex {
-public:
+
+class  __attribute__((lockable)) Mutex {
+ public:
   void Lock() __attribute__((exclusive_lock_function));
   void ReaderLock() __attribute__((shared_lock_function));
   void Unlock() __attribute__((unlock_function));
@@ -40,54 +41,59 @@ public:
 };
 
 class __attribute__((scoped_lockable)) MutexLock {
-public:
+ public:
   MutexLock(Mutex *mu) __attribute__((exclusive_lock_function(mu)));
   ~MutexLock() __attribute__((unlock_function));
 };
 
 class __attribute__((scoped_lockable)) ReaderMutexLock {
-public:
+ public:
   ReaderMutexLock(Mutex *mu) __attribute__((exclusive_lock_function(mu)));
   ~ReaderMutexLock() __attribute__((unlock_function));
 };
 
 class SCOPED_LOCKABLE ReleasableMutexLock {
-public:
+ public:
   ReleasableMutexLock(Mutex *mu) EXCLUSIVE_LOCK_FUNCTION(mu);
   ~ReleasableMutexLock() UNLOCK_FUNCTION();
 
   void Release() UNLOCK_FUNCTION();
 };
 
+
 // The universal lock, written "*", allows checking to be selectively turned
 // off for a particular piece of code.
-void beginNoWarnOnReads() SHARED_LOCK_FUNCTION("*");
-void endNoWarnOnReads() UNLOCK_FUNCTION("*");
+void beginNoWarnOnReads()  SHARED_LOCK_FUNCTION("*");
+void endNoWarnOnReads()    UNLOCK_FUNCTION("*");
 void beginNoWarnOnWrites() EXCLUSIVE_LOCK_FUNCTION("*");
-void endNoWarnOnWrites() UNLOCK_FUNCTION("*");
+void endNoWarnOnWrites()   UNLOCK_FUNCTION("*");
+
 
 // For testing handling of smart pointers.
-template <class T>
+template<class T>
 class SmartPtr {
 public:
-  SmartPtr(T *p) : ptr_(p) {}
-  SmartPtr(const SmartPtr<T> &p) : ptr_(p.ptr_) {}
+  SmartPtr(T* p) : ptr_(p) { }
+  SmartPtr(const SmartPtr<T>& p) : ptr_(p.ptr_) { }
   ~SmartPtr();
 
-  T *get() const { return ptr_; }
-  T *operator->() const { return ptr_; }
-  T &operator*() const { return *ptr_; }
+  T* get()        const { return ptr_; }
+  T* operator->() const { return ptr_; }
+  T& operator*()  const { return *ptr_; }
 
 private:
-  T *ptr_;
+  T* ptr_;
 };
+
 
 // For testing destructor calls and cleanup.
 class MyString {
 public:
-  MyString(const char *s);
+  MyString(const char* s);
   ~MyString();
 };
+
+
 
 Mutex sls_mu;
 
@@ -99,9 +105,9 @@ bool getBool();
 
 class MutexWrapper {
 public:
-  Mutex mu;
-  int x __attribute__((guarded_by(mu)));
-  void MyLock() __attribute__((exclusive_lock_function(mu)));
+   Mutex mu;
+   int x __attribute__((guarded_by(mu)));
+   void MyLock() __attribute__((exclusive_lock_function(mu)));
 };
 
 #else
@@ -219,7 +225,7 @@ void sls_fun_bad_3() {
 
 void sls_fun_bad_4() {
   if (getBool())
-    sls_mu.Lock(); // expected-note{{mutex acquired here}}
+    sls_mu.Lock();  // expected-note{{mutex acquired here}}
   else
     sls_mu2.Lock(); // expected-note{{mutex acquired here}}
 } // expected-warning{{mutex 'sls_mu' is not held on every path through here}}  \
@@ -271,7 +277,7 @@ void sls_fun_bad_8() {
 
 void sls_fun_bad_9() {
   do {
-    sls_mu.Lock(); // \
+    sls_mu.Lock();  // \
       // expected-warning{{expecting mutex 'sls_mu' to be held at start of each loop}} \
       // expected-note{{mutex acquired here}}
   } while (getBool());
@@ -279,8 +285,8 @@ void sls_fun_bad_9() {
 }
 
 void sls_fun_bad_10() {
-  sls_mu.Lock();      // expected-note 2{{mutex acquired here}}
-  while (getBool()) { // expected-warning{{expecting mutex 'sls_mu' to be held at start of each loop}}
+  sls_mu.Lock();  // expected-note 2{{mutex acquired here}}
+  while(getBool()) {  // expected-warning{{expecting mutex 'sls_mu' to be held at start of each loop}}
     sls_mu.Unlock();
   }
 } // expected-warning{{mutex 'sls_mu' is still held at the end of function}}
@@ -288,7 +294,7 @@ void sls_fun_bad_10() {
 void sls_fun_bad_11() {
   while (getBool()) { // \
       expected-warning{{expecting mutex 'sls_mu' to be held at start of each loop}}
-    sls_mu.Lock();    // expected-note {{mutex acquired here}}
+    sls_mu.Lock(); // expected-note {{mutex acquired here}}
   }
   sls_mu.Unlock(); // \
     // expected-warning{{releasing mutex 'sls_mu' that was not held}}

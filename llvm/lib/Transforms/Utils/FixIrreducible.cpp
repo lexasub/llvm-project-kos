@@ -174,10 +174,12 @@ static void createNaturalLoopInternal(LoopInfo &LI, DominatorTree &DT,
     }
   }
 
-  LLVM_DEBUG(dbgs() << "Found predecessors:"; for (auto P
-                                                   : Predecessors) {
-    dbgs() << " " << P->getName();
-  } dbgs() << "\n");
+  LLVM_DEBUG(
+      dbgs() << "Found predecessors:";
+      for (auto P : Predecessors) {
+        dbgs() << " " << P->getName();
+      }
+      dbgs() << "\n");
 
   // Redirect all the backedges through a "hub" consisting of a series
   // of guard blocks that manage the flow of control from the

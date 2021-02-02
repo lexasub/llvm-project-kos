@@ -39,39 +39,45 @@ int DefinedInDifferentFile(int *a);
 // BLFILE:  NoAddressSafety1{{.*}}) [[NOATTR:#[0-9]+]]
 // BLFUNC:  NoAddressSafety1{{.*}}) [[NOATTR:#[0-9]+]]
 // ASAN:  NoAddressSafety1{{.*}}) [[NOATTR:#[0-9]+]]
-__attribute__((no_sanitize_address)) int NoAddressSafety1(int *a) { return *a; }
+__attribute__((no_sanitize_address))
+int NoAddressSafety1(int *a) { return *a; }
 
 // WITHOUT:  NoAddressSafety2{{.*}}) [[NOATTR]]
 // BLFILE:  NoAddressSafety2{{.*}}) [[NOATTR]]
 // BLFUNC:  NoAddressSafety2{{.*}}) [[NOATTR]]
 // ASAN:  NoAddressSafety2{{.*}}) [[NOATTR]]
-__attribute__((no_sanitize_address)) int NoAddressSafety2(int *a);
+__attribute__((no_sanitize_address))
+int NoAddressSafety2(int *a);
 int NoAddressSafety2(int *a) { return *a; }
 
 // WITHOUT:  NoAddressSafety3{{.*}}) [[NOATTR]]
 // BLFILE:  NoAddressSafety3{{.*}}) [[NOATTR]]
 // BLFUNC:  NoAddressSafety3{{.*}}) [[NOATTR]]
 // ASAN:  NoAddressSafety3{{.*}}) [[NOATTR]]
-[[gnu::no_sanitize_address]] int NoAddressSafety3(int *a) { return *a; }
+[[gnu::no_sanitize_address]]
+int NoAddressSafety3(int *a) { return *a; }
 
 // WITHOUT:  NoAddressSafety4{{.*}}) [[NOATTR]]
 // BLFILE:  NoAddressSafety4{{.*}}) [[NOATTR]]
 // BLFUNC:  NoAddressSafety4{{.*}}) [[NOATTR]]
 // ASAN:  NoAddressSafety4{{.*}}) [[NOATTR]]
-[[gnu::no_sanitize_address]] int NoAddressSafety4(int *a);
+[[gnu::no_sanitize_address]]
+int NoAddressSafety4(int *a);
 int NoAddressSafety4(int *a) { return *a; }
 
 // WITHOUT:  NoAddressSafety5{{.*}}) [[NOATTR]]
 // BLFILE:  NoAddressSafety5{{.*}}) [[NOATTR]]
 // BLFUNC:  NoAddressSafety5{{.*}}) [[NOATTR]]
 // ASAN:  NoAddressSafety5{{.*}}) [[NOATTR]]
-__attribute__((no_sanitize("address"))) int NoAddressSafety5(int *a) { return *a; }
+__attribute__((no_sanitize("address")))
+int NoAddressSafety5(int *a) { return *a; }
 
 // WITHOUT:  NoAddressSafety6{{.*}}) [[NOATTR]]
 // BLFILE:  NoAddressSafety6{{.*}}) [[NOATTR]]
 // BLFUNC:  NoAddressSafety6{{.*}}) [[NOATTR]]
 // ASAN:  NoAddressSafety6{{.*}}) [[NOATTR]]
-__attribute__((no_sanitize("address"))) int NoAddressSafety6(int *a);
+__attribute__((no_sanitize("address")))
+int NoAddressSafety6(int *a);
 int NoAddressSafety6(int *a) { return *a; }
 
 // WITHOUT:  AddressSafetyOk{{.*}}) [[NOATTR]]
@@ -87,7 +93,7 @@ int AddressSafetyOk(int *a) { return *a; }
 int BlacklistedFunction(int *a) { return *a; }
 
 #define GENERATE_FUNC(name) \
-  int name(int *a) { return *a; }
+    int name(int *a) { return *a; }
 // WITHOUT: GeneratedFunction{{.*}}) [[NOATTR]]
 // BLFILE:  GeneratedFunction{{.*}}) [[NOATTR]]
 // BLFUNC:  GeneratedFunction{{.*}}) [[WITH]]
@@ -105,28 +111,32 @@ int GENERATE_NAME(Function)(int *a) { return *a; }
 // BLFILE:  TemplateAddressSafetyOk{{.*}}) [[NOATTR]]
 // BLFUNC:  TemplateAddressSafetyOk{{.*}}) [[WITH]]
 // ASAN: TemplateAddressSafetyOk{{.*}}) [[WITH]]
-template <int i>
+template<int i>
 int TemplateAddressSafetyOk() { return i; }
 
 // WITHOUT:  TemplateNoAddressSafety1{{.*}}) [[NOATTR]]
 // BLFILE:  TemplateNoAddressSafety1{{.*}}) [[NOATTR]]
 // BLFUNC:  TemplateNoAddressSafety1{{.*}}) [[NOATTR]]
 // ASAN: TemplateNoAddressSafety1{{.*}}) [[NOATTR]]
-template <int i>
-__attribute__((no_sanitize_address)) int TemplateNoAddressSafety1() { return i; }
+template<int i>
+__attribute__((no_sanitize_address))
+int TemplateNoAddressSafety1() { return i; }
 
 // WITHOUT:  TemplateNoAddressSafety2{{.*}}) [[NOATTR]]
 // BLFILE:  TemplateNoAddressSafety2{{.*}}) [[NOATTR]]
 // BLFUNC:  TemplateNoAddressSafety2{{.*}}) [[NOATTR]]
 // ASAN: TemplateNoAddressSafety2{{.*}}) [[NOATTR]]
-template <int i>
-__attribute__((no_sanitize("address"))) int TemplateNoAddressSafety2() { return i; }
+template<int i>
+__attribute__((no_sanitize("address")))
+int TemplateNoAddressSafety2() { return i; }
 
-int force_instance = TemplateAddressSafetyOk<42>() + TemplateNoAddressSafety1<42>() + TemplateNoAddressSafety2<42>();
+int force_instance = TemplateAddressSafetyOk<42>()
+                   + TemplateNoAddressSafety1<42>()
+                   + TemplateNoAddressSafety2<42>();
 
 // Check that __cxx_global_var_init* get the sanitize_address attribute.
 int global1 = 0;
-int global2 = *(int *)((char *)&global1 + 1);
+int global2 = *(int*)((char*)&global1+1);
 // WITHOUT: @__cxx_global_var_init{{.*}}[[NOATTR:#[0-9]+]]
 // BLFILE: @__cxx_global_var_init{{.*}}[[NOATTR:#[0-9]+]]
 // BLFUNC: @__cxx_global_var_init{{.*}}[[WITH:#[0-9]+]]

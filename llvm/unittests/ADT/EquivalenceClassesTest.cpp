@@ -81,4 +81,4 @@ TEST(EquivalenceClassesTest, MultipleSets) {
         EXPECT_FALSE(EqClasses.isEquivalent(i, j));
 }
 
-} // namespace llvm
+} // llvm

@@ -91,7 +91,7 @@ float func_10(float x, float y) {
 
 float func_11(float x, float y) {
   if (x < 0) {
-#pragma STDC FENV_ROUND FE_UPWARD
+    #pragma STDC FENV_ROUND FE_UPWARD
     return x + y;
   }
   return x - y;
@@ -100,6 +100,7 @@ float func_11(float x, float y) {
 // CHECK-LABEL: FunctionDecl {{.*}} func_11 'float (float, float)'
 // CHECK:         BinaryOperator {{.*}} 'float' '+' RoundingMode=upward
 // CHECK:         BinaryOperator {{.*}} 'float' '-' RoundingMode=downward
+
 
 #pragma STDC FENV_ROUND FE_DYNAMIC
 
@@ -118,6 +119,7 @@ float func_13(float x, float y) {
 
 // CHECK-LABEL: FunctionDecl {{.*}} func_13 'float (float, float)'
 // CHECK:         BinaryOperator {{.*}} 'float' '+' RoundingMode=tonearest
+
 
 template <typename T>
 T func_14(T x, T y) {

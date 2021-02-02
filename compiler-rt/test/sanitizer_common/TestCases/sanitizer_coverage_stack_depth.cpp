@@ -6,9 +6,9 @@
 // RUN:     %s -o %t
 // RUN: %run %t 2>&1 | FileCheck %s --implicit-check-not Assertion{{.*}}failed
 
-#include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <cassert>
 
 thread_local uintptr_t __sancov_lowest_stack;
 uintptr_t last_stack;
@@ -16,8 +16,7 @@ uintptr_t last_stack;
 void foo(int recurse) {
   assert(__sancov_lowest_stack < last_stack);
   last_stack = __sancov_lowest_stack;
-  if (recurse <= 0)
-    return;
+  if (recurse <= 0) return;
   foo(recurse - 1);
 }
 

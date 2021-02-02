@@ -25,10 +25,11 @@ void omp_loop(int start, int end, F body) {
 }
 
 // CHECK: define {{.*}}[[MAIN:@.+]](
-int main() {
-  int *p = new int[100];
-  int *q = new int[100];
-  auto body = [=](int i) {
+int main()
+{
+  int* p = new int[100];
+  int* q = new int[100];
+  auto body = [=](int i){
     p[i] = q[i];
   };
 
@@ -37,47 +38,50 @@ int main() {
     body(i);
   }
 
-  // CHECK: [[BASE_PTRS:%.+]] = alloca [3 x i8*]{{.+}}
-  // CHECK: [[PTRS:%.+]] = alloca [3 x i8*]{{.+}}
+// CHECK: [[BASE_PTRS:%.+]] = alloca [3 x i8*]{{.+}}
+// CHECK: [[PTRS:%.+]] = alloca [3 x i8*]{{.+}}
 
-  // First gep of pointers inside lambdas to store the values across function call need to be ignored
-  // CHECK: {{%.+}} = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 0
-  // CHECK: {{%.+}} = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 1
+// First gep of pointers inside lambdas to store the values across function call need to be ignored
+// CHECK: {{%.+}} = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 0
+// CHECK: {{%.+}} = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 1
 
-  // access of pointers inside lambdas
-  // CHECK: [[BASE_PTR1:%.+]] = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 0
-  // CHECK: [[PTR1:%.+]] = load i32*, i32** [[BASE_PTR1]]
-  // CHECK: [[BASE_PTR2:%.+]] = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 1
-  // CHECK: [[PTR2:%.+]] = load i32*, i32** [[BASE_PTR2]]
+// access of pointers inside lambdas
+// CHECK: [[BASE_PTR1:%.+]] = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 0
+// CHECK: [[PTR1:%.+]] = load i32*, i32** [[BASE_PTR1]]
+// CHECK: [[BASE_PTR2:%.+]] = getelementptr inbounds [[ANON_T]], [[ANON_T]]* %{{.+}}, i{{.+}} 0, i{{.+}} 1
+// CHECK: [[PTR2:%.+]] = load i32*, i32** [[BASE_PTR2]]
 
-  // storage of pointers in baseptrs and ptrs arrays
-  // CHECK: [[LOC_LAMBDA:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 0
-  // CHECK: [[CAST_LAMBDA:%.+]] = bitcast i8** [[LOC_LAMBDA]] to [[ANON_T]]**
-  // CHECK: store [[ANON_T]]* %{{.+}}, [[ANON_T]]** [[CAST_LAMBDA]]{{.+}}
-  // CHECK: [[LOC_LAMBDA:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 0
-  // CHECK: [[CAST_LAMBDA:%.+]] = bitcast i8** [[LOC_LAMBDA]] to [[ANON_T]]**
-  // CHECK: store [[ANON_T]]* %{{.+}}, [[ANON_T]]** [[CAST_LAMBDA]]{{.+}}
+// storage of pointers in baseptrs and ptrs arrays
+// CHECK: [[LOC_LAMBDA:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 0
+// CHECK: [[CAST_LAMBDA:%.+]] = bitcast i8** [[LOC_LAMBDA]] to [[ANON_T]]**
+// CHECK: store [[ANON_T]]* %{{.+}}, [[ANON_T]]** [[CAST_LAMBDA]]{{.+}}
+// CHECK: [[LOC_LAMBDA:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 0
+// CHECK: [[CAST_LAMBDA:%.+]] = bitcast i8** [[LOC_LAMBDA]] to [[ANON_T]]**
+// CHECK: store [[ANON_T]]* %{{.+}}, [[ANON_T]]** [[CAST_LAMBDA]]{{.+}}
 
-  // CHECK: [[LOC_PTR1:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 1
-  // CHECK: [[CAST_PTR1:%.+]] = bitcast i8** [[LOC_PTR1]] to i32***
-  // CHECK: store i32** [[BASE_PTR1]], i32*** [[CAST_PTR1]]{{.+}}
-  // CHECK: [[LOC_PTR1:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 1
-  // CHECK: [[CAST_PTR1:%.+]] = bitcast i8** [[LOC_PTR1]] to i32**
-  // CHECK: store i32* [[PTR1]], i32** [[CAST_PTR1]]{{.+}}
+// CHECK: [[LOC_PTR1:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 1
+// CHECK: [[CAST_PTR1:%.+]] = bitcast i8** [[LOC_PTR1]] to i32***
+// CHECK: store i32** [[BASE_PTR1]], i32*** [[CAST_PTR1]]{{.+}}
+// CHECK: [[LOC_PTR1:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 1
+// CHECK: [[CAST_PTR1:%.+]] = bitcast i8** [[LOC_PTR1]] to i32**
+// CHECK: store i32* [[PTR1]], i32** [[CAST_PTR1]]{{.+}}
 
-  // CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 2
-  // CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32***
-  // CHECK: store i32** [[BASE_PTR2]], i32*** [[CAST_PTR2]]{{.+}}
-  // CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 2
-  // CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32**
-  // CHECK: store i32* [[PTR2]], i32** [[CAST_PTR2]]{{.+}}
 
-  // actual target invocation
-  // CHECK: [[BASES_GEP:%.+]] = getelementptr {{.+}} [3 x {{.+}}*], [3 x {{.+}}*]* [[BASE_PTRS]], {{.+}} 0, {{.+}} 0
-  // CHECK: [[PTRS_GEP:%.+]] = getelementptr {{.+}} [3 x {{.+}}*], [3 x {{.+}}*]* [[PTRS]], {{.+}} 0, {{.+}} 0
-  // CHECK: {{%.+}} = call{{.+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, {{.+}}, {{.+}}, {{.+}}, i8** [[BASES_GEP]], i8** [[PTRS_GEP]], i[[PTRSZ]]* getelementptr inbounds ([3 x i{{.+}}], [3 x i{{.+}}]* [[SIZES]], i{{.+}} 0, i{{.+}} 0), i64* getelementptr inbounds ([3 x i64], [3 x i64]* [[TYPES]], i{{.+}} 0, i{{.+}} 0), i8** null, i8** null, {{.+}}, {{.+}})
+// CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 2
+// CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32***
+// CHECK: store i32** [[BASE_PTR2]], i32*** [[CAST_PTR2]]{{.+}}
+// CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [3 x i8*], [3 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 2
+// CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32**
+// CHECK: store i32* [[PTR2]], i32** [[CAST_PTR2]]{{.+}}
 
-  omp_loop(0, 100, body);
+
+// actual target invocation
+// CHECK: [[BASES_GEP:%.+]] = getelementptr {{.+}} [3 x {{.+}}*], [3 x {{.+}}*]* [[BASE_PTRS]], {{.+}} 0, {{.+}} 0
+// CHECK: [[PTRS_GEP:%.+]] = getelementptr {{.+}} [3 x {{.+}}*], [3 x {{.+}}*]* [[PTRS]], {{.+}} 0, {{.+}} 0
+// CHECK: {{%.+}} = call{{.+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, {{.+}}, {{.+}}, {{.+}}, i8** [[BASES_GEP]], i8** [[PTRS_GEP]], i[[PTRSZ]]* getelementptr inbounds ([3 x i{{.+}}], [3 x i{{.+}}]* [[SIZES]], i{{.+}} 0, i{{.+}} 0), i64* getelementptr inbounds ([3 x i64], [3 x i64]* [[TYPES]], i{{.+}} 0, i{{.+}} 0), i8** null, i8** null, {{.+}}, {{.+}})
+
+
+  omp_loop(0,100,body);
 }
 
 // CHECK: [[BASE_PTRS:%.+]] = alloca [5 x i8*]{{.+}}
@@ -104,12 +108,14 @@ int main() {
 // CHECK: [[CAST_PTR1:%.+]] = bitcast i8** [[LOC_PTR1]] to i32**
 // CHECK: store i32* [[PTR1]], i32** [[CAST_PTR1]]{{.+}}
 
+
 // CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [5 x i8*], [5 x i8*]* [[BASE_PTRS]], i{{.+}} 0, i{{.+}} 4
 // CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32***
 // CHECK: store i32** [[BASE_PTR2]], i32*** [[CAST_PTR2]]{{.+}}
 // CHECK: [[LOC_PTR2:%.+]] = getelementptr inbounds [5 x i8*], [5 x i8*]* [[PTRS]], i{{.+}} 0, i{{.+}} 4
 // CHECK: [[CAST_PTR2:%.+]] = bitcast i8** [[LOC_PTR2]] to i32**
 // CHECK: store i32* [[PTR2]], i32** [[CAST_PTR2]]{{.+}}
+
 
 // actual target invocation
 // CHECK: [[BASES_GEP:%.+]] = getelementptr {{.+}} [5 x {{.+}}*], [5 x {{.+}}*]* [[BASE_PTRS]], {{.+}} 0, {{.+}} 0

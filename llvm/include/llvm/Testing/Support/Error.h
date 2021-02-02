@@ -66,7 +66,8 @@ private:
   testing::Matcher<T> Matcher;
 };
 
-template <typename M> class ValueMatchesPoly {
+template<typename M>
+class ValueMatchesPoly {
 public:
   explicit ValueMatchesPoly(const M &Matcher) : Matcher(Matcher) {}
 
@@ -138,7 +139,7 @@ public:
   bool MatchAndExplain(const ErrorHolder &Holder,
                        testing::MatchResultListener *listener) const override {
     std::vector<std::string> Messages;
-    for (const std::shared_ptr<ErrorInfoBase> &Info : Holder.Infos)
+    for (const std::shared_ptr<ErrorInfoBase> &Info: Holder.Infos)
       Messages.push_back(Info->message());
 
     return Matcher.MatchAndExplain(Messages, listener);
@@ -191,12 +192,12 @@ testing::Matcher<const detail::ErrorHolder &> FailedWithMessage(M... Matcher) {
 }
 
 template <typename M>
-testing::Matcher<const detail::ErrorHolder &>
-FailedWithMessageArray(M Matcher) {
+testing::Matcher<const detail::ErrorHolder &> FailedWithMessageArray(M Matcher) {
   return MakeMatcher(new detail::ErrorMessageMatches(Matcher));
 }
 
-template <typename M> detail::ValueMatchesPoly<M> HasValue(M Matcher) {
+template <typename M>
+detail::ValueMatchesPoly<M> HasValue(M Matcher) {
   return detail::ValueMatchesPoly<M>(Matcher);
 }
 

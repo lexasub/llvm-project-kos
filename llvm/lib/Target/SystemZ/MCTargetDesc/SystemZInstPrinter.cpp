@@ -46,7 +46,8 @@ void SystemZInstPrinter::printOperand(const MCOperand &MO, const MCAsmInfo *MAI,
       O << '0';
     else
       O << '%' << getRegisterName(MO.getReg());
-  } else if (MO.isImm())
+  }
+  else if (MO.isImm())
     O << MO.getImm();
   else if (MO.isExpr())
     MO.getExpr()->print(O, MAI);
@@ -165,14 +166,14 @@ void SystemZInstPrinter::printPCRelTLSOperand(const MCInst *MI,
     const MCOperand &MO = MI->getOperand(OpNum + 1);
     const MCSymbolRefExpr &refExp = cast<MCSymbolRefExpr>(*MO.getExpr());
     switch (refExp.getKind()) {
-    case MCSymbolRefExpr::VK_TLSGD:
-      O << ":tls_gdcall:";
-      break;
-    case MCSymbolRefExpr::VK_TLSLDM:
-      O << ":tls_ldcall:";
-      break;
-    default:
-      llvm_unreachable("Unexpected symbol kind");
+      case MCSymbolRefExpr::VK_TLSGD:
+        O << ":tls_gdcall:";
+        break;
+      case MCSymbolRefExpr::VK_TLSLDM:
+        O << ":tls_ldcall:";
+        break;
+      default:
+        llvm_unreachable("Unexpected symbol kind");
     }
     O << refExp.getSymbol().getName();
   }
@@ -227,9 +228,10 @@ void SystemZInstPrinter::printBDVAddrOperand(const MCInst *MI, int OpNum,
 
 void SystemZInstPrinter::printCond4Operand(const MCInst *MI, int OpNum,
                                            raw_ostream &O) {
-  static const char *const CondNames[] = {"o",  "h",  "nle", "l",   "nhe",
-                                          "lh", "ne", "e",   "nlh", "he",
-                                          "nl", "le", "nh",  "no"};
+  static const char *const CondNames[] = {
+    "o", "h", "nle", "l", "nhe", "lh", "ne",
+    "e", "nlh", "he", "nl", "le", "nh", "no"
+  };
   uint64_t Imm = MI->getOperand(OpNum).getImm();
   assert(Imm > 0 && Imm < 15 && "Invalid condition");
   O << CondNames[Imm - 1];

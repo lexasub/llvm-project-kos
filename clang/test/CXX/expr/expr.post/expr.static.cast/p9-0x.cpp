@@ -19,12 +19,12 @@ void test0(EC ec) {
 }
 
 namespace PR9107 {
-enum E {};
-template <class _Tp> inline _Tp *addressof(_Tp &__x) {
-  return (_Tp *)&(char &)__x;
+  enum E {};
+  template <class _Tp> inline _Tp* addressof(_Tp& __x) {
+    return (_Tp*)&(char&)__x;
+  }
+  void test() {
+    E a;
+    addressof(a);
+  }
 }
-void test() {
-  E a;
-  addressof(a);
-}
-} // namespace PR9107

@@ -39,7 +39,7 @@ void foo() {
 #pragma omp target teams distribute parallel for simd schedule(guided)
   for (int i = 0; i < 10; ++i)
     ;
-  int a;
+int a;
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
@@ -323,3 +323,4 @@ void foo() {
 }
 
 #endif
+

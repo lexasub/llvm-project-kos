@@ -12,8 +12,7 @@ struct B {
   int x;
 };
 
-struct __attribute__((__packed__)) C : A, B {
-} c;
+struct __attribute__((__packed__)) C : A, B {} c;
 
 int s = sizeof(c);
 

@@ -26,13 +26,15 @@ protected:
                         const MCFixup &Fixup, bool IsPCRel) const override;
 };
 
+
 } // end anonymous namespace
 
-AMDGPUELFObjectWriter::AMDGPUELFObjectWriter(bool Is64Bit, uint8_t OSABI,
+AMDGPUELFObjectWriter::AMDGPUELFObjectWriter(bool Is64Bit,
+                                             uint8_t OSABI,
                                              bool HasRelocationAddend,
                                              uint8_t ABIVersion)
-    : MCELFObjectTargetWriter(Is64Bit, OSABI, ELF::EM_AMDGPU,
-                              HasRelocationAddend, ABIVersion) {}
+  : MCELFObjectTargetWriter(Is64Bit, OSABI, ELF::EM_AMDGPU,
+                            HasRelocationAddend, ABIVersion) {}
 
 unsigned AMDGPUELFObjectWriter::getRelocType(MCContext &Ctx,
                                              const MCValue &Target,
@@ -64,8 +66,7 @@ unsigned AMDGPUELFObjectWriter::getRelocType(MCContext &Ctx,
   }
 
   switch (Fixup.getKind()) {
-  default:
-    break;
+  default: break;
   case FK_PCRel_4:
     return ELF::R_AMDGPU_REL32;
   case FK_Data_4:
@@ -79,16 +80,19 @@ unsigned AMDGPUELFObjectWriter::getRelocType(MCContext &Ctx,
     const auto *SymA = Target.getSymA();
     assert(SymA);
 
-    Ctx.reportError(Fixup.getLoc(), Twine("undefined label '") +
-                                        SymA->getSymbol().getName() + "'");
+    Ctx.reportError(Fixup.getLoc(),
+                    Twine("undefined label '") + SymA->getSymbol().getName() + "'");
     return ELF::R_AMDGPU_NONE;
   }
 
   llvm_unreachable("unhandled relocation type");
 }
 
-std::unique_ptr<MCObjectTargetWriter> llvm::createAMDGPUELFObjectWriter(
-    bool Is64Bit, uint8_t OSABI, bool HasRelocationAddend, uint8_t ABIVersion) {
-  return std::make_unique<AMDGPUELFObjectWriter>(
-      Is64Bit, OSABI, HasRelocationAddend, ABIVersion);
+std::unique_ptr<MCObjectTargetWriter>
+llvm::createAMDGPUELFObjectWriter(bool Is64Bit, uint8_t OSABI,
+                                  bool HasRelocationAddend,
+                                  uint8_t ABIVersion) {
+  return std::make_unique<AMDGPUELFObjectWriter>(Is64Bit, OSABI,
+                                                  HasRelocationAddend,
+                                                  ABIVersion);
 }

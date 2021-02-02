@@ -8,6 +8,7 @@
 // RUN:     -emit-llvm -O1 -o - |                                       \
 // RUN:     FileCheck --check-prefix=CHECK  --check-prefix=EXPORTINLINE %s
 
+
 struct __declspec(dllexport) ExportedClass {
 
   // NOEXPORTINLINE-DAG: define linkonce_odr dso_local void @"?InclassDefFunc@ExportedClass@@
@@ -54,7 +55,7 @@ void ExportedClassUser() {
   a.InlineOutclassDefFunc();
 }
 
-template <typename T>
+template<typename T>
 struct __declspec(dllexport) TemplateExportedClass {
   void InclassDefFunc() {}
 
@@ -64,8 +65,8 @@ struct __declspec(dllexport) TemplateExportedClass {
   }
 };
 
-class A11 {};
-class B22 {};
+class A11{};
+class B22{};
 
 // CHECK-DAG: define weak_odr dso_local dllexport void @"?InclassDefFunc@?$TemplateExportedClass@VA11@@@@QEAAXXZ"
 // CHECK-DAG: define weak_odr dso_local dllexport i32 @"?InclassDefFuncWithStaticVariable@?$TemplateExportedClass@VA11@@@@QEAAHXZ"
@@ -83,7 +84,8 @@ void TemplateExportedClassUser() {
   b22.InclassDefFuncWithStaticVariable();
 }
 
-template <typename T>
+
+template<typename T>
 struct TemplateNoAttributeClass {
   void InclassDefFunc() {}
   int InclassDefFuncWithStaticLocal() {

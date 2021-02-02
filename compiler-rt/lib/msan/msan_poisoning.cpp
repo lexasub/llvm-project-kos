@@ -25,8 +25,7 @@ namespace __msan {
 u32 GetOriginIfPoisoned(uptr addr, uptr size) {
   unsigned char *s = (unsigned char *)MEM_TO_SHADOW(addr);
   for (uptr i = 0; i < size; ++i)
-    if (s[i])
-      return *(u32 *)SHADOW_TO_ORIGIN(((uptr)s + i) & ~3UL);
+    if (s[i]) return *(u32 *)SHADOW_TO_ORIGIN(((uptr)s + i) & ~3UL);
   return 0;
 }
 
@@ -37,14 +36,12 @@ void SetOriginIfPoisoned(uptr addr, uptr src_shadow, uptr size,
   uptr src_s_end = src_s + size;
 
   for (; src_s < src_s_end; ++dst_s, ++src_s)
-    if (*(u8 *)src_s)
-      *(u32 *)SHADOW_TO_ORIGIN(dst_s & ~3UL) = src_origin;
+    if (*(u8 *)src_s) *(u32 *)SHADOW_TO_ORIGIN(dst_s & ~3UL) = src_origin;
 }
 
 void CopyOrigin(const void *dst, const void *src, uptr size,
                 StackTrace *stack) {
-  if (!MEM_IS_APP(dst) || !MEM_IS_APP(src))
-    return;
+  if (!MEM_IS_APP(dst) || !MEM_IS_APP(src)) return;
 
   uptr d = (uptr)dst;
   uptr beg = d & ~3UL;
@@ -52,8 +49,7 @@ void CopyOrigin(const void *dst, const void *src, uptr size,
   if (beg < d) {
     u32 o = GetOriginIfPoisoned((uptr)src, beg + 4 - d);
     if (o) {
-      if (__msan_get_track_origins() > 1)
-        o = ChainOrigin(o, stack);
+      if (__msan_get_track_origins() > 1) o = ChainOrigin(o, stack);
       *(u32 *)MEM_TO_ORIGIN(beg) = o;
     }
     beg += 4;
@@ -61,15 +57,13 @@ void CopyOrigin(const void *dst, const void *src, uptr size,
 
   uptr end = (d + size) & ~3UL;
   // If both ends fall into the same 4-byte slot, we are done.
-  if (end < beg)
-    return;
+  if (end < beg) return;
 
   // Copy right unaligned origin if that memory is poisoned.
   if (end < d + size) {
     u32 o = GetOriginIfPoisoned((uptr)src + (end - d), (d + size) - end);
     if (o) {
-      if (__msan_get_track_origins() > 1)
-        o = ChainOrigin(o, stack);
+      if (__msan_get_track_origins() > 1) o = ChainOrigin(o, stack);
       *(u32 *)MEM_TO_ORIGIN(end) = o;
     }
   }
@@ -86,8 +80,7 @@ void CopyOrigin(const void *dst, const void *src, uptr size,
       u32 src_o = 0;
       u32 dst_o = 0;
       for (; src < src_end; ++src, ++src_s, ++dst) {
-        if (!*src_s)
-          continue;
+        if (!*src_s) continue;
         if (*src != src_o) {
           src_o = *src;
           dst_o = ChainOrigin(src_o, stack);
@@ -95,8 +88,8 @@ void CopyOrigin(const void *dst, const void *src, uptr size,
         *dst = dst_o;
       }
     } else {
-      REAL(memcpy)
-      ((void *)MEM_TO_ORIGIN(beg), (void *)MEM_TO_ORIGIN(s), end - beg);
+      REAL(memcpy)((void *)MEM_TO_ORIGIN(beg), (void *)MEM_TO_ORIGIN(s),
+                   end - beg);
     }
   }
 }
@@ -172,30 +165,25 @@ void MoveOrigin(const void *dst, const void *src, uptr size,
 
 void MoveShadowAndOrigin(const void *dst, const void *src, uptr size,
                          StackTrace *stack) {
-  if (!MEM_IS_APP(dst))
-    return;
-  if (!MEM_IS_APP(src))
-    return;
-  if (src == dst)
-    return;
+  if (!MEM_IS_APP(dst)) return;
+  if (!MEM_IS_APP(src)) return;
+  if (src == dst) return;
   // MoveOrigin transfers origins by refering to their shadows. So we
   // need to move origins before moving shadows.
   if (__msan_get_track_origins())
     MoveOrigin(dst, src, size, stack);
-  REAL(memmove)
-  ((void *)MEM_TO_SHADOW((uptr)dst), (void *)MEM_TO_SHADOW((uptr)src), size);
+  REAL(memmove)((void *)MEM_TO_SHADOW((uptr)dst),
+                (void *)MEM_TO_SHADOW((uptr)src), size);
 }
 
 void CopyShadowAndOrigin(const void *dst, const void *src, uptr size,
                          StackTrace *stack) {
-  if (!MEM_IS_APP(dst))
-    return;
-  if (!MEM_IS_APP(src))
-    return;
+  if (!MEM_IS_APP(dst)) return;
+  if (!MEM_IS_APP(src)) return;
   // Because origin's range is slightly larger than app range, memcpy may also
   // cause overlapped origin ranges.
-  REAL(memcpy)
-  ((void *)MEM_TO_SHADOW((uptr)dst), (void *)MEM_TO_SHADOW((uptr)src), size);
+  REAL(memcpy)((void *)MEM_TO_SHADOW((uptr)dst),
+               (void *)MEM_TO_SHADOW((uptr)src), size);
   if (__msan_get_track_origins())
     MoveOrigin(dst, src, size, stack);
 }
@@ -246,8 +234,7 @@ void SetOrigin(const void *dst, uptr size, u32 origin) {
     beg += 4;
   }
   for (uptr addr = beg; addr < (end & ~7UL); addr += 8) *(u64 *)addr = origin64;
-  if (end & 7ULL)
-    *(u32 *)(end - 4) = origin;
+  if (end & 7ULL) *(u32 *)(end - 4) = origin;
 }
 
 void PoisonMemory(const void *dst, uptr size, StackTrace *stack) {

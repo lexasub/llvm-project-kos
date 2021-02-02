@@ -95,7 +95,7 @@ bool prefixedPropertyNameValid(llvm::StringRef PropertyName) {
   auto RegexExp = llvm::Regex(llvm::StringRef(validPropertyNameRegex(false)));
   return RegexExp.match(PropertyName.substr(Start + 1));
 }
-} // namespace
+}  // namespace
 
 void PropertyDeclarationCheck::registerMatchers(MatchFinder *Finder) {
   Finder->addMatcher(objcPropertyDecl(
@@ -133,6 +133,6 @@ void PropertyDeclarationCheck::check(const MatchFinder::MatchResult &Result) {
       << generateFixItHint(MatchedDecl, StandardProperty);
 }
 
-} // namespace objc
-} // namespace tidy
-} // namespace clang
+}  // namespace objc
+}  // namespace tidy
+}  // namespace clang

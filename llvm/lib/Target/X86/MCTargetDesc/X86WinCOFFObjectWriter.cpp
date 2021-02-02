@@ -51,9 +51,8 @@ unsigned X86WinCOFFObjectWriter::getRelocType(MCContext &Ctx,
     FixupKind = FK_PCRel_4;
   }
 
-  MCSymbolRefExpr::VariantKind Modifier = Target.isAbsolute()
-                                              ? MCSymbolRefExpr::VK_None
-                                              : Target.getSymA()->getKind();
+  MCSymbolRefExpr::VariantKind Modifier = Target.isAbsolute() ?
+    MCSymbolRefExpr::VK_None : Target.getSymA()->getKind();
 
   if (getMachine() == COFF::IMAGE_FILE_MACHINE_AMD64) {
     switch (FixupKind) {

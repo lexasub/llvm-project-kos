@@ -393,7 +393,7 @@ public:
 
     // If we've seen this callee before, then we access that node and place that
     // on the top of the stack.
-    auto *Callee = TopNode->Callees.find_element(
+    auto* Callee = TopNode->Callees.find_element(
         [FId](const NodeIdPair &NR) { return NR.FId == FId; });
     if (Callee != nullptr) {
       CHECK_NE(Callee->NodePtr, nullptr);
@@ -403,7 +403,7 @@ public:
     }
 
     // This means we've never seen this stack before, create a new node here.
-    auto *NewNode = Nodes.AppendEmplace(
+    auto* NewNode = Nodes.AppendEmplace(
         TopNode, NodeIdPairArray(*NodeIdPairAllocator), 0u, 0u, FId);
     if (UNLIKELY(NewNode == nullptr))
       return;

@@ -1,3 +1,3 @@
 extern "C" {
-void f(int arg);
+  void f(int arg);
 }

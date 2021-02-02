@@ -35,7 +35,7 @@ static cl::opt<bool, true> VerifyMachineDomInfoX(
 namespace llvm {
 template class DomTreeNodeBase<MachineBasicBlock>;
 template class DominatorTreeBase<MachineBasicBlock, false>; // DomTreeBase
-} // namespace llvm
+}
 
 char MachineDominatorTree::ID = 0;
 
@@ -61,7 +61,8 @@ void MachineDominatorTree::calculate(MachineFunction &F) {
   DT->recalculate(F);
 }
 
-MachineDominatorTree::MachineDominatorTree() : MachineFunctionPass(ID) {
+MachineDominatorTree::MachineDominatorTree()
+    : MachineFunctionPass(ID) {
   initializeMachineDominatorTreePass(*PassRegistry::getPassRegistry());
 }
 
@@ -78,7 +79,7 @@ void MachineDominatorTree::verifyAnalysis() const {
     }
 }
 
-void MachineDominatorTree::print(raw_ostream &OS, const Module *) const {
+void MachineDominatorTree::print(raw_ostream &OS, const Module*) const {
   if (DT)
     DT->print(OS);
 }

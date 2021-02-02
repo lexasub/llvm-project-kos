@@ -17,7 +17,7 @@ passthrough(char *x, unsigned long alignment) {
 
 unsigned long alignment;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   char *ptr = (char *)malloc(2);
 
   alignment = 0x8000;

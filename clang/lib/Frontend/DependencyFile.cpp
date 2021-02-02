@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Frontend/Utils.h"
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Frontend/DependencyOutputOptions.h"
 #include "clang/Frontend/FrontendDiagnostic.h"
-#include "clang/Frontend/Utils.h"
 #include "clang/Lex/DirectoryLookup.h"
 #include "clang/Lex/ModuleMap.h"
 #include "clang/Lex/PPCallbacks.h"
@@ -71,10 +71,9 @@ struct DepCollectorPPCallbacks : public PPCallbacks {
                           const Module *Imported,
                           SrcMgr::CharacteristicKind FileType) override {
     if (!File)
-      DepCollector.maybeAddDependency(FileName, /*FromModule*/ false,
-                                      /*IsSystem*/ false,
-                                      /*IsModuleFile*/ false,
-                                      /*IsMissing*/ true);
+      DepCollector.maybeAddDependency(FileName, /*FromModule*/false,
+                                     /*IsSystem*/false, /*IsModuleFile*/false,
+                                     /*IsMissing*/true);
     // Files that actually exist are handled by FileChanged.
   }
 
@@ -101,34 +100,33 @@ struct DepCollectorMMCallbacks : public ModuleMapCallbacks {
   void moduleMapFileRead(SourceLocation Loc, const FileEntry &Entry,
                          bool IsSystem) override {
     StringRef Filename = Entry.getName();
-    DepCollector.maybeAddDependency(Filename, /*FromModule*/ false,
-                                    /*IsSystem*/ IsSystem,
-                                    /*IsModuleFile*/ false,
-                                    /*IsMissing*/ false);
+    DepCollector.maybeAddDependency(Filename, /*FromModule*/false,
+                                    /*IsSystem*/IsSystem,
+                                    /*IsModuleFile*/false,
+                                    /*IsMissing*/false);
   }
 };
 
 struct DepCollectorASTListener : public ASTReaderListener {
   DependencyCollector &DepCollector;
-  DepCollectorASTListener(DependencyCollector &L) : DepCollector(L) {}
+  DepCollectorASTListener(DependencyCollector &L) : DepCollector(L) { }
   bool needsInputFileVisitation() override { return true; }
   bool needsSystemInputFileVisitation() override {
     return DepCollector.needSystemDependencies();
   }
   void visitModuleFile(StringRef Filename,
                        serialization::ModuleKind Kind) override {
-    DepCollector.maybeAddDependency(Filename, /*FromModule*/ true,
-                                    /*IsSystem*/ false, /*IsModuleFile*/ true,
-                                    /*IsMissing*/ false);
+    DepCollector.maybeAddDependency(Filename, /*FromModule*/true,
+                                   /*IsSystem*/false, /*IsModuleFile*/true,
+                                   /*IsMissing*/false);
   }
-  bool visitInputFile(StringRef Filename, bool IsSystem, bool IsOverridden,
-                      bool IsExplicitModule) override {
+  bool visitInputFile(StringRef Filename, bool IsSystem,
+                      bool IsOverridden, bool IsExplicitModule) override {
     if (IsOverridden || IsExplicitModule)
       return true;
 
-    DepCollector.maybeAddDependency(Filename, /*FromModule*/ true, IsSystem,
-                                    /*IsModuleFile*/ false,
-                                    /*IsMissing*/ false);
+    DepCollector.maybeAddDependency(Filename, /*FromModule*/true, IsSystem,
+                                   /*IsModuleFile*/false, /*IsMissing*/false);
     return true;
   }
 };
@@ -164,7 +162,7 @@ bool DependencyCollector::sawDependency(StringRef Filename, bool FromModule,
          (needSystemDependencies() || !IsSystem);
 }
 
-DependencyCollector::~DependencyCollector() {}
+DependencyCollector::~DependencyCollector() { }
 void DependencyCollector::attachToPreprocessor(Preprocessor &PP) {
   PP.addPPCallbacks(std::make_unique<DepCollectorPPCallbacks>(
       *this, PP.getSourceManager(), PP.getDiagnostics()));

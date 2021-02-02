@@ -6,7 +6,7 @@
 // RUN: link /nologo /DLL /OUT:%t.dll %t.obj %asan_dll_thunk
 // REQUIRES: asan-static-runtime
 
-void f(long *foo, long *bar) {
+void f(long* foo, long* bar) {
   // One load and one store
   *foo = *bar;
 }

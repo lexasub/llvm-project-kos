@@ -60,5 +60,5 @@ private:
   // bits.
   FCmpLibcallsList getFCmpLibcalls(CmpInst::Predicate, unsigned Size) const;
 };
-} // namespace llvm
+} // End llvm namespace.
 #endif

@@ -7,4 +7,4 @@ void system1(int *ptr);
 // expected-note@-4 {{insert '_Nonnull' if the pointer should never be null}}
 #endif
 
-void system2(int *_Nonnull);
+void system2(int * _Nonnull);

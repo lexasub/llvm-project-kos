@@ -11,7 +11,6 @@
 class A {
 public:
   int p;
-
 private:
   int pr;
 };

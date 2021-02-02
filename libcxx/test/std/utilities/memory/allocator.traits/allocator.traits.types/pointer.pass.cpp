@@ -24,35 +24,31 @@ template <class T>
 struct Ptr {};
 
 template <class T>
-struct A {
-  typedef T value_type;
-  typedef Ptr<T> pointer;
+struct A
+{
+    typedef T value_type;
+    typedef Ptr<T> pointer;
 };
 
 template <class T>
-struct B {
-  typedef T value_type;
+struct B
+{
+    typedef T value_type;
 };
 
 template <class T>
 struct C {
-  typedef T value_type;
-
+    typedef T value_type;
 private:
-  typedef void pointer;
+    typedef void pointer;
 };
 
-int main(int, char**) {
-  static_assert((std::is_same<std::allocator_traits<A<char> >::pointer,
-                              Ptr<char> >::value),
-                "");
-  static_assert(
-      (std::is_same<std::allocator_traits<B<char> >::pointer, char*>::value),
-      "");
+int main(int, char**)
+{
+    static_assert((std::is_same<std::allocator_traits<A<char> >::pointer, Ptr<char> >::value), "");
+    static_assert((std::is_same<std::allocator_traits<B<char> >::pointer, char*>::value), "");
 #if TEST_STD_VER >= 11
-  static_assert(
-      (std::is_same<std::allocator_traits<C<char> >::pointer, char*>::value),
-      "");
+    static_assert((std::is_same<std::allocator_traits<C<char> >::pointer, char*>::value), "");
 #endif
 
   return 0;

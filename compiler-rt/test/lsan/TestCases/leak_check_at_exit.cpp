@@ -6,9 +6,9 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"leak_check_at_exit=0" not %run %t foo 2>&1 | FileCheck %s --check-prefix=CHECK-do
 // RUN: %env_lsan_opts=$LSAN_BASE:"leak_check_at_exit=0" %run %t 2>&1 | FileCheck %s --check-prefix=CHECK-dont
 
-#include <sanitizer/lsan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sanitizer/lsan_interface.h>
 
 int main(int argc, char *argv[]) {
   fprintf(stderr, "Test alloc: %p.\n", malloc(1337));

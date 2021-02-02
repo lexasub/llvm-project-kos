@@ -34,6 +34,6 @@ public:
   DwarfFrameBase getDwarfFrameBase(const MachineFunction &MF) const override;
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

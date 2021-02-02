@@ -20,32 +20,38 @@
 #include "../cases.h"
 
 template <class T>
-void test(T x, typename std::enable_if<std::is_integral<T>::value>::type* = 0) {
-  static_assert((std::is_same<decltype(std::norm(x)), double>::value), "");
-  assert(std::norm(x) == norm(std::complex<double>(static_cast<double>(x), 0)));
+void
+test(T x, typename std::enable_if<std::is_integral<T>::value>::type* = 0)
+{
+    static_assert((std::is_same<decltype(std::norm(x)), double>::value), "");
+    assert(std::norm(x) == norm(std::complex<double>(static_cast<double>(x), 0)));
 }
 
 template <class T>
-void test(T x,
-          typename std::enable_if<!std::is_integral<T>::value>::type* = 0) {
-  static_assert((std::is_same<decltype(std::norm(x)), T>::value), "");
-  assert(std::norm(x) == norm(std::complex<T>(x, 0)));
+void
+test(T x, typename std::enable_if<!std::is_integral<T>::value>::type* = 0)
+{
+    static_assert((std::is_same<decltype(std::norm(x)), T>::value), "");
+    assert(std::norm(x) == norm(std::complex<T>(x, 0)));
 }
 
 template <class T>
-void test() {
-  test<T>(0);
-  test<T>(1);
-  test<T>(10);
+void
+test()
+{
+    test<T>(0);
+    test<T>(1);
+    test<T>(10);
 }
 
-int main(int, char**) {
-  test<float>();
-  test<double>();
-  test<long double>();
-  test<int>();
-  test<unsigned>();
-  test<long long>();
+int main(int, char**)
+{
+    test<float>();
+    test<double>();
+    test<long double>();
+    test<int>();
+    test<unsigned>();
+    test<long long>();
 
   return 0;
 }

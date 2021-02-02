@@ -21,7 +21,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-} // namespace std::experimental
+}
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -63,7 +63,7 @@ void f(T x) {  // checks coawait_expr and coroutine_body_stmt
 
 template <typename T>
 int f2(T x) {  // checks coawait_expr and coroutine_body_stmt
-  co_return x; // checks coreturn_stmt with expr
+  co_return x;   // checks coreturn_stmt with expr
 }
 
 struct S {};

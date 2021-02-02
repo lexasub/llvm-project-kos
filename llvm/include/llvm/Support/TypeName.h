@@ -23,7 +23,8 @@ namespace llvm {
 /// The returned StringRef will point into a static storage duration string.
 /// However, it may not be null terminated and may be some strangely aligned
 /// inner substring of a larger string.
-template <typename DesiredTypeName> inline StringRef getTypeName() {
+template <typename DesiredTypeName>
+inline StringRef getTypeName() {
 #if defined(__clang__) || defined(__GNUC__)
   StringRef Name = __PRETTY_FUNCTION__;
 
@@ -58,6 +59,6 @@ template <typename DesiredTypeName> inline StringRef getTypeName() {
 #endif
 }
 
-} // namespace llvm
+}
 
 #endif

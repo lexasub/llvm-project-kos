@@ -78,8 +78,7 @@ template <typename T> struct QueryParser::LexOrCompleteWord {
 
     if (WordCompletionPos == StringRef::npos)
       Switch.Case(CaseStr, Value);
-    else if (CaseStr.size() != 0 && IsCompletion &&
-             WordCompletionPos <= CaseStr.size() &&
+    else if (CaseStr.size() != 0 && IsCompletion && WordCompletionPos <= CaseStr.size() &&
              CaseStr.substr(0, WordCompletionPos) ==
                  Word.substr(0, WordCompletionPos))
       P->Completions.push_back(LineEditor::Completion(
@@ -217,7 +216,7 @@ QueryRef QueryParser::doParse() {
                               .Case("let", PQK_Let)
                               .Case("m", PQK_Match, /*IsCompletion=*/false)
                               .Case("match", PQK_Match)
-                              .Case("q", PQK_Quit, /*IsCompletion=*/false)
+                              .Case("q", PQK_Quit,  /*IsCompletion=*/false)
                               .Case("quit", PQK_Quit)
                               .Case("set", PQK_Set)
                               .Case("enable", PQK_Enable)

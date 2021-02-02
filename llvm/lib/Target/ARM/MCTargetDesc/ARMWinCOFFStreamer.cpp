@@ -35,7 +35,7 @@ void ARMWinCOFFStreamer::finishImpl() {
 
   MCWinCOFFStreamer::finishImpl();
 }
-} // namespace
+}
 
 MCStreamer *llvm::createARMWinCOFFStreamer(
     MCContext &Context, std::unique_ptr<MCAsmBackend> &&MAB,
@@ -47,3 +47,4 @@ MCStreamer *llvm::createARMWinCOFFStreamer(
   S->getAssembler().setIncrementalLinkerCompatible(IncrementalLinkerCompatible);
   return S;
 }
+

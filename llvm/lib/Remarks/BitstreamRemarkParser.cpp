@@ -281,8 +281,7 @@ static Error validateMagicNumber(StringRef MagicNumber) {
   if (MagicNumber != remarks::ContainerMagic)
     return createStringError(std::make_error_code(std::errc::invalid_argument),
                              "Unknown magic number: expecting %s, got %.4s.",
-                             remarks::ContainerMagic.data(),
-                             MagicNumber.data());
+                             remarks::ContainerMagic.data(), MagicNumber.data());
   return Error::success();
 }
 

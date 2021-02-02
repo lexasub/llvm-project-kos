@@ -111,7 +111,7 @@ public:
 
   StringRef getPassName() const override { return FIXUPBW_DESC; }
 
-  FixupBWInstPass() : MachineFunctionPass(ID) {}
+  FixupBWInstPass() : MachineFunctionPass(ID) { }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<MachineLoopInfo>(); // Machine loop info is used to
@@ -150,7 +150,7 @@ private:
   MachineBlockFrequencyInfo *MBFI;
 };
 char FixupBWInstPass::ID = 0;
-} // namespace
+}
 
 INITIALIZE_PASS(FixupBWInstPass, FIXUPBW_NAME, FIXUPBW_DESC, false, false)
 
@@ -164,9 +164,9 @@ bool FixupBWInstPass::runOnMachineFunction(MachineFunction &MF) {
   TII = MF.getSubtarget<X86Subtarget>().getInstrInfo();
   MLI = &getAnalysis<MachineLoopInfo>();
   PSI = &getAnalysis<ProfileSummaryInfoWrapperPass>().getPSI();
-  MBFI = (PSI && PSI->hasProfileSummary())
-             ? &getAnalysis<LazyMachineBlockFrequencyInfoPass>().getBFI()
-             : nullptr;
+  MBFI = (PSI && PSI->hasProfileSummary()) ?
+         &getAnalysis<LazyMachineBlockFrequencyInfoPass>().getBFI() :
+         nullptr;
   LiveRegs.init(TII->getRegisterInfo());
 
   LLVM_DEBUG(dbgs() << "Start X86FixupBWInsts\n";);
@@ -247,8 +247,7 @@ bool FixupBWInstPass::getSuperRegDestIfDead(MachineInstr *OrigMI,
   //   Predecessors according to CFG: %bb.2 %bb.1
   //   %ax = KILL %ax, implicit killed %eax
   //   RET 0, %ax
-  unsigned Opc = OrigMI->getOpcode();
-  (void)Opc;
+  unsigned Opc = OrigMI->getOpcode(); (void)Opc;
   // These are the opcodes currently known to work with the code below, if
   // something // else will be added we need to ensure that new opcode has the
   // same properties.
@@ -257,7 +256,7 @@ bool FixupBWInstPass::getSuperRegDestIfDead(MachineInstr *OrigMI,
     return false;
 
   bool IsDefined = false;
-  for (auto &MO : OrigMI->implicit_operands()) {
+  for (auto &MO: OrigMI->implicit_operands()) {
     if (!MO.isReg())
       continue;
 

@@ -328,11 +328,10 @@ static void LoadObjCFormatters(TypeCategoryImplSP objc_category_sp) {
   AddStringSummary(objc_category_sp, "${var.__FuncPtr%A}",
                    ConstString("__block_literal_generic"), objc_flags);
 
-  AddStringSummary(objc_category_sp,
-                   "${var.years} years, ${var.months} "
-                   "months, ${var.days} days, ${var.hours} "
-                   "hours, ${var.minutes} minutes "
-                   "${var.seconds} seconds",
+  AddStringSummary(objc_category_sp, "${var.years} years, ${var.months} "
+                                     "months, ${var.days} days, ${var.hours} "
+                                     "hours, ${var.minutes} minutes "
+                                     "${var.seconds} seconds",
                    ConstString("CFGregorianUnits"), objc_flags);
   AddStringSummary(objc_category_sp,
                    "location=${var.location} length=${var.length}",
@@ -365,11 +364,10 @@ static void LoadObjCFormatters(TypeCategoryImplSP objc_category_sp) {
                    "${var.month}/${var.day}/${var.year}  ${var.hour} "
                    ":${var.minute} :${var.second} dayOfWeek:${var.dayOfWeek}",
                    ConstString("DateTimeRect *"), objc_flags);
-  AddStringSummary(objc_category_sp,
-                   "${var.ld.month}/${var.ld.day}/"
-                   "${var.ld.year} ${var.ld.hour} "
-                   ":${var.ld.minute} :${var.ld.second} "
-                   "dayOfWeek:${var.ld.dayOfWeek}",
+  AddStringSummary(objc_category_sp, "${var.ld.month}/${var.ld.day}/"
+                                     "${var.ld.year} ${var.ld.hour} "
+                                     ":${var.ld.minute} :${var.ld.second} "
+                                     "dayOfWeek:${var.ld.dayOfWeek}",
                    ConstString("LongDateRect"), objc_flags);
   AddStringSummary(objc_category_sp, "(x=${var.x}, y=${var.y})",
                    ConstString("HIPoint"), objc_flags);
@@ -409,10 +407,9 @@ static void LoadObjCFormatters(TypeCategoryImplSP objc_category_sp) {
   AddCXXSummary(
       objc_category_sp, lldb_private::formatters::NSArraySummaryProvider,
       "NSArray summary provider", ConstString("__NSCFArray"), appkit_flags);
-  AddCXXSummary(objc_category_sp,
-                lldb_private::formatters::NSArraySummaryProvider,
-                "NSArray summary provider", ConstString("_NSCallStackArray"),
-                appkit_flags);
+  AddCXXSummary(
+      objc_category_sp, lldb_private::formatters::NSArraySummaryProvider,
+      "NSArray summary provider", ConstString("_NSCallStackArray"), appkit_flags);
   AddCXXSummary(
       objc_category_sp, lldb_private::formatters::NSArraySummaryProvider,
       "NSArray summary provider", ConstString("CFArrayRef"), appkit_flags);
@@ -541,8 +538,7 @@ static void LoadObjCFormatters(TypeCategoryImplSP objc_category_sp) {
                   ScriptedSyntheticChildren::Flags());
   AddCXXSynthetic(objc_category_sp,
                   lldb_private::formatters::NSArraySyntheticFrontEndCreator,
-                  "NSArray synthetic children",
-                  ConstString("_NSCallStackArray"),
+                  "NSArray synthetic children", ConstString("_NSCallStackArray"),
                   ScriptedSyntheticChildren::Flags());
   AddCXXSynthetic(objc_category_sp,
                   lldb_private::formatters::NSArraySyntheticFrontEndCreator,
@@ -1013,7 +1009,7 @@ std::unique_ptr<Language::TypeScavenger> ObjCLanguage::GetTypeScavenger() {
 
     friend class lldb_private::ObjCLanguage;
   };
-
+  
   class ObjCDebugInfoScavenger : public Language::ImageListTypeScavenger {
   public:
     CompilerType AdjustForInclusion(CompilerType &candidate) override {

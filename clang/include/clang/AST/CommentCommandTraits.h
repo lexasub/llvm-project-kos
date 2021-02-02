@@ -11,6 +11,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #ifndef LLVM_CLANG_AST_COMMENTCOMMANDTRAITS_H
 #define LLVM_CLANG_AST_COMMENTCOMMANDTRAITS_H
 
@@ -29,7 +30,9 @@ namespace comments {
 /// When reordering, adding or removing members please update the corresponding
 /// TableGen backend.
 struct CommandInfo {
-  unsigned getID() const { return ID; }
+  unsigned getID() const {
+    return ID;
+  }
 
   const char *Name;
 
@@ -182,3 +185,4 @@ private:
 } // end namespace clang
 
 #endif
+

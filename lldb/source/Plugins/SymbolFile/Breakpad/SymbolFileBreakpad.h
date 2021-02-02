@@ -202,6 +202,7 @@ private:
     Bookmark bookmark;
     llvm::Optional<FileSpecList> support_files;
     std::unique_ptr<LineTable> line_table_up;
+
   };
 
   uint32_t CalculateNumCompileUnits() override;

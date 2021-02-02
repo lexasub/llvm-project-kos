@@ -17,28 +17,29 @@
 
 #include "test_macros.h"
 
-class A {
-  int data_;
-
+class A
+{
+    int data_;
 public:
-  A(int data) : data_(data) {}
+    A(int data) : data_(data) {}
 
-  bool operator==(const A& a) const { return data_ == a.data_; }
+    bool operator==(const A& a) const {return data_ == a.data_;}
 };
 
-int main(int, char**) {
-  {
-    typedef std::pair<float, short*> P;
-    P p(3.5f, 0);
-    assert(p.first == 3.5f);
-    assert(p.second == nullptr);
-  }
-  {
-    typedef std::pair<A, int> P;
-    P p(1, 2);
-    assert(p.first == A(1));
-    assert(p.second == 2);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::pair<float, short*> P;
+        P p(3.5f, 0);
+        assert(p.first == 3.5f);
+        assert(p.second == nullptr);
+    }
+    {
+        typedef std::pair<A, int> P;
+        P p(1, 2);
+        assert(p.first == A(1));
+        assert(p.second == 2);
+    }
 
   return 0;
 }

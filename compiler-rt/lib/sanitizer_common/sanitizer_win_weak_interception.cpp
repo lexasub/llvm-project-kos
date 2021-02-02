@@ -13,11 +13,11 @@
 
 #include "sanitizer_platform.h"
 #if SANITIZER_WINDOWS && SANITIZER_DYNAMIC
-#include "interception/interception.h"
+#include "sanitizer_win_weak_interception.h"
 #include "sanitizer_allocator_interface.h"
 #include "sanitizer_interface_internal.h"
 #include "sanitizer_win_defs.h"
-#include "sanitizer_win_weak_interception.h"
+#include "interception/interception.h"
 
 extern "C" {
 void *WINAPI GetModuleHandleA(const char *module_name);
@@ -34,7 +34,7 @@ int interceptWhenPossible(uptr dll_function, const char *real_function) {
     abort();
   return 0;
 }
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 // Declare weak hooks.
 extern "C" {
@@ -66,8 +66,7 @@ __declspec(allocate(".WEAK$Z")) InterceptCB __stop_weak_list;
 static int weak_intercept_init() {
   static bool flag = false;
   // weak_interception_init is expected to be called by only one thread.
-  if (flag)
-    return 0;
+  if (flag) return 0;
   flag = true;
 
   for (InterceptCB *it = &__start_weak_list; it < &__stop_weak_list; ++it)
@@ -85,12 +84,11 @@ __declspec(allocate(".CRT$XIB")) int (*__weak_intercept_preinit)() =
 
 static void WINAPI weak_intercept_thread_init(void *mod, unsigned long reason,
                                               void *reserved) {
-  if (reason == /*DLL_PROCESS_ATTACH=*/1)
-    weak_intercept_init();
+  if (reason == /*DLL_PROCESS_ATTACH=*/1) weak_intercept_init();
 }
 
 #pragma section(".CRT$XLAB", long, read)
 __declspec(allocate(".CRT$XLAB")) void(WINAPI *__weak_intercept_tls_init)(
     void *, unsigned long, void *) = weak_intercept_thread_init;
 
-#endif  // SANITIZER_WINDOWS && SANITIZER_DYNAMIC
+#endif // SANITIZER_WINDOWS && SANITIZER_DYNAMIC

@@ -113,6 +113,6 @@ private:
   bool m_added_breakpoint;
   lldb::user_id_t m_breakpoint_id;
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_STRUCTUREDDATA_DARWINLOG_STRUCTUREDDATADARWINLOG_H

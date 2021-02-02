@@ -12,24 +12,18 @@
 
 using namespace llvm;
 
-static std::string ShadowBytesToString(ArrayRef<uint8_t> ShadowBytes) {
+static std::string
+ShadowBytesToString(ArrayRef<uint8_t> ShadowBytes) {
   std::ostringstream os;
   for (size_t i = 0, n = ShadowBytes.size(); i < n; i++) {
     switch (ShadowBytes[i]) {
-    case kAsanStackLeftRedzoneMagic:
-      os << "L";
-      break;
-    case kAsanStackRightRedzoneMagic:
-      os << "R";
-      break;
-    case kAsanStackMidRedzoneMagic:
-      os << "M";
-      break;
-    case kAsanStackUseAfterScopeMagic:
-      os << "S";
-      break;
-    default:
-      os << (unsigned)ShadowBytes[i];
+      case kAsanStackLeftRedzoneMagic:    os << "L"; break;
+      case kAsanStackRightRedzoneMagic:   os << "R"; break;
+      case kAsanStackMidRedzoneMagic:     os << "M"; break;
+      case kAsanStackUseAfterScopeMagic:
+        os << "S";
+        break;
+      default:                            os << (unsigned)ShadowBytes[i];
     }
   }
   return os.str();
@@ -52,7 +46,13 @@ static std::string ShadowBytesToString(ArrayRef<uint8_t> ShadowBytes) {
 TEST(ASanStackFrameLayout, Test) {
 #define VAR(name, size, lifetime, alignment, line)                             \
   ASanStackVariableDescription name##size##_##alignment = {                    \
-      #name #size "_" #alignment, size, lifetime, alignment, 0, 0, line,       \
+    #name #size "_" #alignment,                                                \
+    size,                                                                      \
+    lifetime,                                                                  \
+    alignment,                                                                 \
+    0,                                                                         \
+    0,                                                                         \
+    line,                                                                      \
   }
 
   VAR(a, 1, 0, 1, 0);
@@ -109,10 +109,12 @@ TEST(ASanStackFrameLayout, Test) {
   TEST_LAYOUT({a2_1}, 32, 32, "1 32 2 4 a2_1", "L2R", "L2R");
   TEST_LAYOUT({a9_1}, 32, 32, "1 32 9 4 a9_1", "L9R", "L9R");
   TEST_LAYOUT({a16_1}, 32, 32, "1 32 16 5 a16_1", "L16R", "LSR");
-  TEST_LAYOUT({p1_256}, 32, 32, "1 256 1 11 p1_256:2700", "LLLLLLLL1R",
-              "LLLLLLLL1R");
-  TEST_LAYOUT({a41_1}, 32, 32, "1 32 41 7 a41_1:7", "L09R", "LS9R");
-  TEST_LAYOUT({a105_1}, 32, 32, "1 32 105 6 a105_1", "L0009R", "LSSSSR");
+  TEST_LAYOUT({p1_256}, 32, 32, "1 256 1 11 p1_256:2700",
+              "LLLLLLLL1R", "LLLLLLLL1R");
+  TEST_LAYOUT({a41_1}, 32, 32, "1 32 41 7 a41_1:7", "L09R",
+              "LS9R");
+  TEST_LAYOUT({a105_1}, 32, 32, "1 32 105 6 a105_1", "L0009R",
+              "LSSSSR");
   TEST_LAYOUT({a200_1}, 32, 32, "1 32 200 6 a200_1", "L0000008RR",
               "LSSSS008RR");
 

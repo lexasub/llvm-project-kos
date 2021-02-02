@@ -18,11 +18,8 @@ using namespace std::experimental;
 
 // This file tests, multishot, movable std::function like thing using coroutine
 // for compile-time type erasure and unerasure.
-template <typename R>
-struct func {
-  struct Input {
-    R a, b;
-  };
+template <typename R> struct func {
+  struct Input {R a, b;};
 
   struct promise_type {
     Input* I;
@@ -47,10 +44,10 @@ struct func {
   };
 
   func() {}
-  func(func&& rhs) : h(rhs.h) { rhs.h = nullptr; }
-  func(func const&) = delete;
+  func(func &&rhs) : h(rhs.h) { rhs.h = nullptr; }
+  func(func const &) = delete;
 
-  func& operator=(func&& rhs) {
+  func &operator=(func &&rhs) {
     if (this != &rhs) {
       if (h)
         h.destroy();
@@ -60,15 +57,13 @@ struct func {
     return *this;
   }
 
-  template <typename F>
-  static func Create(F f) {
+  template <typename F> static func Create(F f) {
     for (;;) {
       co_yield f;
     }
   }
 
-  template <typename F>
-  func(F f) : func(Create(f)) {}
+  template <typename F> func(F f) : func(Create(f)) {}
 
   ~func() {
     if (h)
@@ -76,7 +71,7 @@ struct func {
   }
 
 private:
-  func(promise_type* promise)
+  func(promise_type *promise)
       : h(coroutine_handle<promise_type>::from_promise(*promise)) {}
   coroutine_handle<promise_type> h;
 };
@@ -88,7 +83,7 @@ int Do(int acc, int n, func<int> f) {
 }
 
 int main(int, char**) {
-  int result = Do(1, 10, [](int a, int b) { return a + b; });
+  int result = Do(1, 10, [](int a, int b) {return a + b;});
   assert(result == 46);
 
   return 0;

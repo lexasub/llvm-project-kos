@@ -2,4 +2,4 @@
 // RUN:   | FileCheck -strict-whitespace %s
 
 // CHECK: {{^int\ \*i;}}
-int *i;
+ int   *  i  ;

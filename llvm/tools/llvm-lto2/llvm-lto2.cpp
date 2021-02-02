@@ -36,9 +36,8 @@ using namespace lto;
 static codegen::RegisterCodeGenFlags CGF;
 
 static cl::opt<char>
-    OptLevel("O",
-             cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
-                      "(default = '-O2')"),
+    OptLevel("O", cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
+                           "(default = '-O2')"),
              cl::Prefix, cl::ZeroOrMore, cl::init('2'));
 
 static cl::opt<char> CGOptLevel(
@@ -452,8 +451,7 @@ static int dumpSymtab(int argc, char **argv) {
         outs() << "         comdat " << ComdatTable[Comdat] << '\n';
 
       if (TT.isOSBinFormatCOFF() && Sym.isWeak() && Sym.isIndirect())
-        outs() << "         fallback " << Sym.getCOFFWeakExternalFallback()
-               << '\n';
+        outs() << "         fallback " << Sym.getCOFFWeakExternalFallback() << '\n';
 
       if (!Sym.getSectionName().empty())
         outs() << "         section " << Sym.getSectionName() << "\n";

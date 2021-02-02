@@ -8,18 +8,19 @@ struct A {
 struct B : public A {};
 struct C : public B {};
 
-const char *f(int C::*) { return ""; }
+const char * f(int C::*){ return ""; }
 int f(int B::*) { return 1; }
 
 struct D : public C {};
 
-const char *g(int B::*) { return ""; }
+const char * g(int B::*){ return ""; }
 int g(int D::*) { return 1; }
 
-void test() {
+void test()
+{
   int i = f(&A::Ai);
 
-  const char *str = g(&A::Ai);
+  const char * str = g(&A::Ai);
 }
 
 // conversion of B::* to C::* is better than conversion of A::* to C::*
@@ -32,8 +33,10 @@ struct X {
   operator pmfb();
 };
 
+
 void g(pmfc);
 
-void test2(X x) {
+void test2(X x)
+{
   g(x);
 }

@@ -123,8 +123,7 @@ bool ByteCodeEmitter::bail(const SourceLocation &Loc) {
 }
 
 template <typename... Tys>
-bool ByteCodeEmitter::emitOp(Opcode Op, const Tys &...Args,
-                             const SourceInfo &SI) {
+bool ByteCodeEmitter::emitOp(Opcode Op, const Tys &... Args, const SourceInfo &SI) {
   bool Success = true;
 
   /// Helper to write bytecode and bail out if 32-bit offsets become invalid.

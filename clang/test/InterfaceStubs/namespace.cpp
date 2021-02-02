@@ -7,5 +7,5 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-namespace NS1 {}
+namespace NS1 { }
 using namespace NS1;

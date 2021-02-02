@@ -82,7 +82,9 @@ protected:
   ///
   /// \return True on success; on failure ExecutionAction() and
   /// EndSourceFileAction() will not be called.
-  virtual bool BeginSourceFileAction(CompilerInstance &CI) { return true; }
+  virtual bool BeginSourceFileAction(CompilerInstance &CI) {
+    return true;
+  }
 
   /// Callback to run the program action, using the initialized
   /// compiler instance.
@@ -130,7 +132,9 @@ public:
     return (bool)CurrentASTUnit;
   }
 
-  const FrontendInputFile &getCurrentInput() const { return CurrentInput; }
+  const FrontendInputFile &getCurrentInput() const {
+    return CurrentInput;
+  }
 
   StringRef getCurrentFile() const {
     assert(!CurrentInput.isEmpty() && "No current file!");
@@ -252,7 +256,6 @@ public:
 
 class PluginASTAction : public ASTFrontendAction {
   virtual void anchor();
-
 public:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef InFile) override = 0;
@@ -324,6 +327,6 @@ public:
   bool hasCodeCompletionSupport() const override;
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

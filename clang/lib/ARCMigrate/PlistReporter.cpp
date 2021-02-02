@@ -42,15 +42,14 @@ void arcmt::writeARCDiagsToPlist(const std::string &outPath,
   FIDMap FM;
   SmallVector<FileID, 10> Fids;
 
-  for (ArrayRef<StoredDiagnostic>::iterator I = diags.begin(), E = diags.end();
-       I != E; ++I) {
+  for (ArrayRef<StoredDiagnostic>::iterator
+         I = diags.begin(), E = diags.end(); I != E; ++I) {
     const StoredDiagnostic &D = *I;
 
     AddFID(FM, Fids, SM, D.getLocation());
 
-    for (StoredDiagnostic::range_iterator RI = D.range_begin(),
-                                          RE = D.range_end();
-         RI != RE; ++RI) {
+    for (StoredDiagnostic::range_iterator
+           RI = D.range_begin(), RE = D.range_end(); RI != RE; ++RI) {
       AddFID(FM, Fids, SM, RI->getBegin());
       AddFID(FM, Fids, SM, RI->getEnd());
     }
@@ -79,9 +78,8 @@ void arcmt::writeARCDiagsToPlist(const std::string &outPath,
        " <key>diagnostics</key>\n"
        " <array>\n";
 
-  for (ArrayRef<StoredDiagnostic>::iterator DI = diags.begin(),
-                                            DE = diags.end();
-       DI != DE; ++DI) {
+  for (ArrayRef<StoredDiagnostic>::iterator
+         DI = diags.begin(), DE = diags.end(); DI != DE; ++DI) {
 
     const StoredDiagnostic &D = *DI;
 
@@ -95,8 +93,7 @@ void arcmt::writeARCDiagsToPlist(const std::string &outPath,
     EmitString(o, D.getMessage()) << '\n';
     o << "   <key>category</key>";
     EmitString(o, DiagIDs.getCategoryNameFromID(
-                      DiagIDs.getCategoryNumberForDiag(D.getID())))
-        << '\n';
+                          DiagIDs.getCategoryNumberForDiag(D.getID()))) << '\n';
     o << "   <key>type</key>";
     EmitString(o, getLevelName(D.getLevel())) << '\n';
 

@@ -80,7 +80,7 @@ GDBRemoteCommunication::~GDBRemoteCommunication() {
 
 #if defined(HAVE_LIBCOMPRESSION)
   if (m_decompression_scratch)
-    free(m_decompression_scratch);
+    free (m_decompression_scratch);
 #endif
 
   // Stop the communications read thread which is used to parse all incoming
@@ -553,27 +553,22 @@ bool GDBRemoteCommunication::DecompressPacket() {
 
     if (m_decompression_scratch_type != m_compression_type) {
       if (m_decompression_scratch) {
-        free(m_decompression_scratch);
+        free (m_decompression_scratch);
         m_decompression_scratch = nullptr;
       }
       size_t scratchbuf_size = 0;
       if (m_compression_type == CompressionType::LZFSE)
-        scratchbuf_size =
-            compression_decode_scratch_buffer_size(COMPRESSION_LZFSE);
+        scratchbuf_size = compression_decode_scratch_buffer_size (COMPRESSION_LZFSE);
       else if (m_compression_type == CompressionType::LZ4)
-        scratchbuf_size =
-            compression_decode_scratch_buffer_size(COMPRESSION_LZ4_RAW);
+        scratchbuf_size = compression_decode_scratch_buffer_size (COMPRESSION_LZ4_RAW);
       else if (m_compression_type == CompressionType::ZlibDeflate)
-        scratchbuf_size =
-            compression_decode_scratch_buffer_size(COMPRESSION_ZLIB);
+        scratchbuf_size = compression_decode_scratch_buffer_size (COMPRESSION_ZLIB);
       else if (m_compression_type == CompressionType::LZMA)
-        scratchbuf_size =
-            compression_decode_scratch_buffer_size(COMPRESSION_LZMA);
+        scratchbuf_size = compression_decode_scratch_buffer_size (COMPRESSION_LZMA);
       else if (m_compression_type == CompressionType::LZFSE)
-        scratchbuf_size =
-            compression_decode_scratch_buffer_size(COMPRESSION_LZFSE);
+        scratchbuf_size = compression_decode_scratch_buffer_size (COMPRESSION_LZFSE);
       if (scratchbuf_size > 0) {
-        m_decompression_scratch = (void *)malloc(scratchbuf_size);
+        m_decompression_scratch = (void*) malloc (scratchbuf_size);
         m_decompression_scratch_type = m_compression_type;
       }
     }

@@ -9,10 +9,10 @@
 #ifndef LLVM_CLANG_LIB_CODEGEN_CGBUILDER_H
 #define LLVM_CLANG_LIB_CODEGEN_CGBUILDER_H
 
-#include "Address.h"
-#include "CodeGenTypeCache.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IRBuilder.h"
+#include "Address.h"
+#include "CodeGenTypeCache.h"
 
 namespace clang {
 namespace CodeGen {
@@ -31,7 +31,6 @@ public:
   void InsertHelper(llvm::Instruction *I, const llvm::Twine &Name,
                     llvm::BasicBlock *BB,
                     llvm::BasicBlock::iterator InsertPt) const override;
-
 private:
   CodeGenFunction *CGF = nullptr;
 };
@@ -45,18 +44,17 @@ class CGBuilderTy : public CGBuilderBaseTy {
   /// Storing a reference to the type cache here makes it a lot easier
   /// to build natural-feeling, target-specific IR.
   const CodeGenTypeCache &TypeCache;
-
 public:
   CGBuilderTy(const CodeGenTypeCache &TypeCache, llvm::LLVMContext &C)
-      : CGBuilderBaseTy(C), TypeCache(TypeCache) {}
-  CGBuilderTy(const CodeGenTypeCache &TypeCache, llvm::LLVMContext &C,
-              const llvm::ConstantFolder &F,
+    : CGBuilderBaseTy(C), TypeCache(TypeCache) {}
+  CGBuilderTy(const CodeGenTypeCache &TypeCache,
+              llvm::LLVMContext &C, const llvm::ConstantFolder &F,
               const CGBuilderInserterTy &Inserter)
-      : CGBuilderBaseTy(C, F, Inserter), TypeCache(TypeCache) {}
+    : CGBuilderBaseTy(C, F, Inserter), TypeCache(TypeCache) {}
   CGBuilderTy(const CodeGenTypeCache &TypeCache, llvm::Instruction *I)
-      : CGBuilderBaseTy(I), TypeCache(TypeCache) {}
+    : CGBuilderBaseTy(I), TypeCache(TypeCache) {}
   CGBuilderTy(const CodeGenTypeCache &TypeCache, llvm::BasicBlock *BB)
-      : CGBuilderBaseTy(BB), TypeCache(TypeCache) {}
+    : CGBuilderBaseTy(BB), TypeCache(TypeCache) {}
 
   llvm::ConstantInt *getSize(CharUnits N) {
     return llvm::ConstantInt::get(TypeCache.SizeTy, N.getQuantity());
@@ -109,8 +107,7 @@ public:
 
   using CGBuilderBaseTy::CreateAlignedStore;
   llvm::StoreInst *CreateAlignedStore(llvm::Value *Val, llvm::Value *Addr,
-                                      CharUnits Align,
-                                      bool IsVolatile = false) {
+                                      CharUnits Align, bool IsVolatile = false) {
     return CreateAlignedStore(Val, Addr, Align.getAsAlign(), IsVolatile);
   }
 
@@ -161,7 +158,7 @@ public:
   Address CreatePointerBitCastOrAddrSpaceCast(Address Addr, llvm::Type *Ty,
                                               const llvm::Twine &Name = "") {
     llvm::Value *Ptr =
-        CreatePointerBitCastOrAddrSpaceCast(Addr.getPointer(), Ty, Name);
+      CreatePointerBitCastOrAddrSpaceCast(Addr.getPointer(), Ty, Name);
     return Address(Ptr, Addr.getAlignment());
   }
 
@@ -180,9 +177,9 @@ public:
     const llvm::StructLayout *Layout = DL.getStructLayout(ElTy);
     auto Offset = CharUnits::fromQuantity(Layout->getElementOffset(Index));
 
-    return Address(
-        CreateStructGEP(Addr.getElementType(), Addr.getPointer(), Index, Name),
-        Addr.getAlignment().alignmentAtOffset(Offset));
+    return Address(CreateStructGEP(Addr.getElementType(),
+                                   Addr.getPointer(), Index, Name),
+                   Addr.getAlignment().alignmentAtOffset(Offset));
   }
 
   /// Given
@@ -305,7 +302,8 @@ public:
   }
 
   using CGBuilderBaseTy::CreatePreserveStructAccessIndex;
-  Address CreatePreserveStructAccessIndex(Address Addr, unsigned Index,
+  Address CreatePreserveStructAccessIndex(Address Addr,
+                                          unsigned Index,
                                           unsigned FieldIndex,
                                           llvm::MDNode *DbgInfo) {
     llvm::StructType *ElTy = cast<llvm::StructType>(Addr.getElementType());
@@ -319,7 +317,7 @@ public:
   }
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

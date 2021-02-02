@@ -43,8 +43,8 @@ void IntervalPartition::releaseMemory() {
   RootInterval = nullptr;
 }
 
-void IntervalPartition::print(raw_ostream &O, const Module *) const {
-  for (unsigned i = 0, e = Intervals.size(); i != e; ++i)
+void IntervalPartition::print(raw_ostream &O, const Module*) const {
+  for(unsigned i = 0, e = Intervals.size(); i != e; ++i)
     Intervals[i]->print(O);
 }
 
@@ -79,7 +79,7 @@ bool IntervalPartition::runOnFunction(Function &F) {
 
   addIntervalToPartition(RootInterval = *I);
 
-  ++I; // After the first one...
+  ++I;  // After the first one...
 
   // Add the rest of the intervals to the partition.
   for (function_interval_iterator E = intervals_end(&F); I != E; ++I)
@@ -96,7 +96,7 @@ bool IntervalPartition::runOnFunction(Function &F) {
 // existing interval graph.  This takes an additional boolean parameter to
 // distinguish it from a copy constructor.  Always pass in false for now.
 IntervalPartition::IntervalPartition(IntervalPartition &IP, bool)
-    : FunctionPass(ID) {
+  : FunctionPass(ID) {
   assert(IP.getRootInterval() && "Cannot operate on empty IntervalPartitions!");
 
   // Pass false to intervals_begin because we take ownership of it's memory
@@ -105,7 +105,7 @@ IntervalPartition::IntervalPartition(IntervalPartition &IP, bool)
 
   addIntervalToPartition(RootInterval = *I);
 
-  ++I; // After the first one...
+  ++I;  // After the first one...
 
   // Add the rest of the intervals to the partition.
   for (interval_part_interval_iterator E = intervals_end(IP); I != E; ++I)

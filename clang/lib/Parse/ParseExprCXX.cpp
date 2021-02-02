@@ -9,6 +9,7 @@
 // This file implements the Expression parsing implementation for C++.
 //
 //===----------------------------------------------------------------------===//
+#include "clang/Parse/Parser.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclTemplate.h"
@@ -16,7 +17,6 @@
 #include "clang/Basic/PrettyStackTrace.h"
 #include "clang/Lex/LiteralSupport.h"
 #include "clang/Parse/ParseDiagnostic.h"
-#include "clang/Parse/Parser.h"
 #include "clang/Parse/RAIIObjectsForParser.h"
 #include "clang/Sema/DeclSpec.h"
 #include "clang/Sema/ParsedTemplate.h"
@@ -28,22 +28,16 @@ using namespace clang;
 
 static int SelectDigraphErrorMessage(tok::TokenKind Kind) {
   switch (Kind) {
-  // template name
-  case tok::unknown:
-    return 0;
-  // casts
-  case tok::kw_addrspace_cast:
-    return 1;
-  case tok::kw_const_cast:
-    return 2;
-  case tok::kw_dynamic_cast:
-    return 3;
-  case tok::kw_reinterpret_cast:
-    return 4;
-  case tok::kw_static_cast:
-    return 5;
-  default:
-    llvm_unreachable("Unknown type for digraph error message.");
+    // template name
+    case tok::unknown:             return 0;
+    // casts
+    case tok::kw_addrspace_cast:   return 1;
+    case tok::kw_const_cast:       return 2;
+    case tok::kw_dynamic_cast:     return 3;
+    case tok::kw_reinterpret_cast: return 4;
+    case tok::kw_static_cast:      return 5;
+    default:
+      llvm_unreachable("Unknown type for digraph error message.");
   }
 }
 
@@ -105,7 +99,7 @@ void Parser::CheckForTemplateAndDigraph(Token &Next, ParsedType ObjectType,
     return;
 
   FixDigraph(*this, PP, Next, SecondToken, tok::unknown,
-             /*AtDigraph*/ false);
+             /*AtDigraph*/false);
 }
 
 /// Parse global scope or nested-name-specifier if present.
@@ -168,7 +162,8 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
     assert(!LastII && "want last identifier but have already annotated scope");
     assert(!MayBePseudoDestructor && "unexpected annot_cxxscope");
     Actions.RestoreNestedNameSpecifierAnnotation(Tok.getAnnotationValue(),
-                                                 Tok.getAnnotationRange(), SS);
+                                                 Tok.getAnnotationRange(),
+                                                 SS);
     ConsumeAnnotationToken();
     return false;
   }
@@ -218,7 +213,7 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
       Tok.isOneOf(tok::kw_decltype, tok::annot_decltype)) {
     DeclSpec DS(AttrFactory);
     SourceLocation DeclLoc = Tok.getLocation();
-    SourceLocation EndLoc = ParseDecltypeSpecifier(DS);
+    SourceLocation EndLoc  = ParseDecltypeSpecifier(DS);
 
     SourceLocation CCLoc;
     // Work around a standard defect: 'decltype(auto)::' is not a
@@ -298,12 +293,11 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
           break;
         }
 
-        if (TemplateName.getKind() !=
-                UnqualifiedIdKind::IK_OperatorFunctionId &&
+        if (TemplateName.getKind() != UnqualifiedIdKind::IK_OperatorFunctionId &&
             TemplateName.getKind() != UnqualifiedIdKind::IK_LiteralOperatorId) {
           Diag(TemplateName.getSourceRange().getBegin(),
                diag::err_id_after_template_in_nested_name_spec)
-              << TemplateName.getSourceRange();
+            << TemplateName.getSourceRange();
           TPA.Commit();
           break;
         }
@@ -362,13 +356,18 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
                                          TemplateId->NumArgs);
 
       if (TemplateId->isInvalid() ||
-          Actions.ActOnCXXNestedNameSpecifier(
-              getCurScope(), SS, TemplateId->TemplateKWLoc,
-              TemplateId->Template, TemplateId->TemplateNameLoc,
-              TemplateId->LAngleLoc, TemplateArgsPtr, TemplateId->RAngleLoc,
-              CCLoc, EnteringContext)) {
-        SourceLocation StartLoc = SS.getBeginLoc().isValid()
-                                      ? SS.getBeginLoc()
+          Actions.ActOnCXXNestedNameSpecifier(getCurScope(),
+                                              SS,
+                                              TemplateId->TemplateKWLoc,
+                                              TemplateId->Template,
+                                              TemplateId->TemplateNameLoc,
+                                              TemplateId->LAngleLoc,
+                                              TemplateArgsPtr,
+                                              TemplateId->RAngleLoc,
+                                              CCLoc,
+                                              EnteringContext)) {
+        SourceLocation StartLoc
+          = SS.getBeginLoc().isValid()? SS.getBeginLoc()
                                       : TemplateId->TemplateNameLoc;
         SS.SetInvalid(SourceRange(StartLoc, CCLoc));
       }
@@ -401,7 +400,7 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
           // recover like this.
           PP.LookAhead(1).is(tok::identifier)) {
         Diag(Next, diag::err_unexpected_colon_in_nested_name_spec)
-            << FixItHint::CreateReplacement(Next.getLocation(), "::");
+          << FixItHint::CreateReplacement(Next.getLocation(), "::");
         // Recover as if the user wrote '::'.
         Next.setKind(tok::coloncolon);
       }
@@ -481,10 +480,13 @@ bool Parser::ParseOptionalCXXScopeSpecifier(
       UnqualifiedId TemplateName;
       TemplateName.setIdentifier(&II, Tok.getLocation());
       bool MemberOfUnknownSpecialization;
-      if (TemplateNameKind TNK = Actions.isTemplateName(
-              getCurScope(), SS,
-              /*hasTemplateKeyword=*/false, TemplateName, ObjectType,
-              EnteringContext, Template, MemberOfUnknownSpecialization)) {
+      if (TemplateNameKind TNK = Actions.isTemplateName(getCurScope(), SS,
+                                              /*hasTemplateKeyword=*/false,
+                                                        TemplateName,
+                                                        ObjectType,
+                                                        EnteringContext,
+                                                        Template,
+                                              MemberOfUnknownSpecialization)) {
         // If lookup didn't find anything, we treat the name as a template-name
         // anyway. C++20 requires this, and in prior language modes it improves
         // error recovery. But before we commit to this, check that we actually
@@ -742,8 +744,9 @@ ExprResult Parser::ParseLambdaExpression() {
 ///
 /// If we are not looking at a lambda expression, returns ExprError().
 ExprResult Parser::TryParseLambdaExpression() {
-  assert(getLangOpts().CPlusPlus11 && Tok.is(tok::l_square) &&
-         "Not at the start of a possible lambda expression.");
+  assert(getLangOpts().CPlusPlus11
+         && Tok.is(tok::l_square)
+         && "Not at the start of a possible lambda expression.");
 
   const Token Next = NextToken();
   if (Next.is(tok::eof)) // Nothing else to lookup here...
@@ -751,13 +754,13 @@ ExprResult Parser::TryParseLambdaExpression() {
 
   const Token After = GetLookAheadToken(2);
   // If lookahead indicates this is a lambda...
-  if (Next.is(tok::r_square) || // []
-      Next.is(tok::equal) ||    // [=
-      (Next.is(tok::amp) &&     // [&] or [&,
+  if (Next.is(tok::r_square) ||     // []
+      Next.is(tok::equal) ||        // [=
+      (Next.is(tok::amp) &&         // [&] or [&,
        After.isOneOf(tok::r_square, tok::comma)) ||
-      (Next.is(tok::identifier) && // [identifier]
+      (Next.is(tok::identifier) &&  // [identifier]
        After.is(tok::r_square)) ||
-      Next.is(tok::ellipsis)) { // [...
+      Next.is(tok::ellipsis)) {     // [...
     return ParseLambdaExpression();
   }
 
@@ -958,8 +961,9 @@ bool Parser::ParseLambdaIntroducer(LambdaIntroducer &Intro,
           Diag(Tok.getLocation(), diag::err_this_captured_by_reference);
         });
       } else {
-        return Invalid(
-            [&] { Diag(Tok.getLocation(), diag::err_expected_capture); });
+        return Invalid([&] {
+          Diag(Tok.getLocation(), diag::err_expected_capture);
+        });
       }
 
       TryConsumeToken(tok::ellipsis, EllipsisLocs[2]);
@@ -981,7 +985,8 @@ bool Parser::ParseLambdaIntroducer(LambdaIntroducer &Intro,
         } else {
           Parens.consumeClose();
           Init = Actions.ActOnParenListExpr(Parens.getOpenLocation(),
-                                            Parens.getCloseLocation(), Exprs);
+                                            Parens.getCloseLocation(),
+                                            Exprs);
         }
       } else if (Tok.isOneOf(tok::l_brace, tok::equal)) {
         // Each lambda init-capture forms its own full expression, which clears
@@ -1064,10 +1069,10 @@ bool Parser::ParseLambdaIntroducer(LambdaIntroducer &Intro,
       // The '...' should appear before the identifier in an init-capture, and
       // after the identifier otherwise.
       bool InitCapture = InitKind != LambdaCaptureInitKind::NoInit;
-      SourceLocation *ExpectedEllipsisLoc = !InitCapture ? &EllipsisLocs[2]
-                                            : Kind == LCK_ByRef
-                                                ? &EllipsisLocs[1]
-                                                : &EllipsisLocs[0];
+      SourceLocation *ExpectedEllipsisLoc =
+          !InitCapture      ? &EllipsisLocs[2] :
+          Kind == LCK_ByRef ? &EllipsisLocs[1] :
+                              &EllipsisLocs[0];
       EllipsisLoc = *ExpectedEllipsisLoc;
 
       unsigned DiagID = 0;
@@ -1192,9 +1197,9 @@ static void tryConsumeLambdaSpecifierToken(Parser &P,
   }
 }
 
-static void addConstexprToLambdaDeclSpecifier(Parser &P,
-                                              SourceLocation ConstexprLoc,
-                                              DeclSpec &DS) {
+static void
+addConstexprToLambdaDeclSpecifier(Parser &P, SourceLocation ConstexprLoc,
+                                  DeclSpec &DS) {
   if (ConstexprLoc.isValid()) {
     P.Diag(ConstexprLoc, !P.getLangOpts().CPlusPlus17
                              ? diag::ext_constexpr_on_lambda_cxx17
@@ -1224,13 +1229,15 @@ static void addConstevalToLambdaDeclSpecifier(Parser &P,
 
 /// ParseLambdaExpressionAfterIntroducer - Parse the rest of a lambda
 /// expression.
-ExprResult
-Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
+ExprResult Parser::ParseLambdaExpressionAfterIntroducer(
+                     LambdaIntroducer &Intro) {
   SourceLocation LambdaBeginLoc = Intro.Range.getBegin();
   Diag(LambdaBeginLoc, diag::warn_cxx98_compat_lambda);
 
   PrettyStackTraceLoc CrashInfo(PP.getSourceManager(), LambdaBeginLoc,
                                 "lambda expression parsing");
+
+
 
   // FIXME: Call into Actions to add any init-capture declarations to the
   // scope while parsing the lambda-declarator and compound-statement.
@@ -1267,7 +1274,7 @@ Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
                   ? diag::warn_cxx17_compat_lambda_template_parameter_list
                   : diag::ext_lambda_template_parameter_list);
 
-    SmallVector<NamedDecl *, 4> TemplateParams;
+    SmallVector<NamedDecl*, 4> TemplateParams;
     SourceLocation LAngleLoc, RAngleLoc;
     if (ParseTemplateParameters(TemplateParamScope,
                                 CurTemplateDepthTracker.getDepth(),
@@ -1277,7 +1284,8 @@ Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
     }
 
     if (TemplateParams.empty()) {
-      Diag(RAngleLoc, diag::err_lambda_template_parameter_list_empty);
+      Diag(RAngleLoc,
+           diag::err_lambda_template_parameter_list_empty);
     } else {
       ExprResult RequiresClause;
       if (TryConsumeToken(tok::kw_requires)) {
@@ -1297,9 +1305,10 @@ Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
   TypeResult TrailingReturnType;
   SourceLocation TrailingReturnTypeLoc;
   if (Tok.is(tok::l_paren)) {
-    ParseScope PrototypeScope(this, Scope::FunctionPrototypeScope |
-                                        Scope::FunctionDeclarationScope |
-                                        Scope::DeclScope);
+    ParseScope PrototypeScope(this,
+                              Scope::FunctionPrototypeScope |
+                              Scope::FunctionDeclarationScope |
+                              Scope::DeclScope);
 
     BalancedDelimiterTracker T(*this, tok::l_paren);
     T.consumeOpen();
@@ -1350,9 +1359,12 @@ Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
     SmallVector<SourceRange, 2> DynamicExceptionRanges;
     ExprResult NoexceptExpr;
     CachedTokens *ExceptionSpecTokens;
-    ESpecType = tryParseExceptionSpecification(
-        /*Delayed=*/false, ESpecRange, DynamicExceptions,
-        DynamicExceptionRanges, NoexceptExpr, ExceptionSpecTokens);
+    ESpecType = tryParseExceptionSpecification(/*Delayed=*/false,
+                                               ESpecRange,
+                                               DynamicExceptions,
+                                               DynamicExceptionRanges,
+                                               NoexceptExpr,
+                                               ExceptionSpecTokens);
 
     if (ESpecType != EST_None)
       DeclEndLoc = ESpecRange.getEnd();
@@ -1412,36 +1424,24 @@ Parser::ParseLambdaExpressionAfterIntroducer(LambdaIntroducer &Intro) {
     // specifier, the result type, or the requires clause. Deal with this.
     unsigned TokKind = 0;
     switch (Tok.getKind()) {
-    case tok::kw_mutable:
-      TokKind = 0;
-      break;
-    case tok::arrow:
-      TokKind = 1;
-      break;
+    case tok::kw_mutable: TokKind = 0; break;
+    case tok::arrow: TokKind = 1; break;
     case tok::kw___attribute:
     case tok::kw___private:
     case tok::kw___global:
     case tok::kw___local:
     case tok::kw___constant:
     case tok::kw___generic:
-    case tok::l_square:
-      TokKind = 2;
-      break;
-    case tok::kw_constexpr:
-      TokKind = 3;
-      break;
-    case tok::kw_consteval:
-      TokKind = 4;
-      break;
-    case tok::kw_requires:
-      TokKind = 5;
-      break;
-    default:
-      llvm_unreachable("Unknown token kind");
+    case tok::l_square: TokKind = 2; break;
+    case tok::kw_constexpr: TokKind = 3; break;
+    case tok::kw_consteval: TokKind = 4; break;
+    case tok::kw_requires: TokKind = 5; break;
+    default: llvm_unreachable("Unknown token kind");
     }
 
     Diag(Tok, diag::err_lambda_missing_parens)
-        << TokKind << FixItHint::CreateInsertion(Tok.getLocation(), "() ");
+      << TokKind
+      << FixItHint::CreateInsertion(Tok.getLocation(), "() ");
     SourceLocation DeclEndLoc = DeclLoc;
 
     // GNU-style attributes must be parsed before the mutable specifier to be
@@ -1537,23 +1537,12 @@ ExprResult Parser::ParseCXXCasts() {
   const char *CastName = nullptr; // For error messages
 
   switch (Kind) {
-  default:
-    llvm_unreachable("Unknown C++ cast!");
-  case tok::kw_addrspace_cast:
-    CastName = "addrspace_cast";
-    break;
-  case tok::kw_const_cast:
-    CastName = "const_cast";
-    break;
-  case tok::kw_dynamic_cast:
-    CastName = "dynamic_cast";
-    break;
-  case tok::kw_reinterpret_cast:
-    CastName = "reinterpret_cast";
-    break;
-  case tok::kw_static_cast:
-    CastName = "static_cast";
-    break;
+  default: llvm_unreachable("Unknown C++ cast!");
+  case tok::kw_addrspace_cast:   CastName = "addrspace_cast";   break;
+  case tok::kw_const_cast:       CastName = "const_cast";       break;
+  case tok::kw_dynamic_cast:     CastName = "dynamic_cast";     break;
+  case tok::kw_reinterpret_cast: CastName = "reinterpret_cast"; break;
+  case tok::kw_static_cast:      CastName = "static_cast";      break;
   }
 
   SourceLocation OpLoc = ConsumeToken();
@@ -1564,7 +1553,7 @@ ExprResult Parser::ParseCXXCasts() {
   if (Tok.is(tok::l_square) && Tok.getLength() == 2) {
     Token Next = NextToken();
     if (Next.is(tok::colon) && areTokensAdjacent(Tok, Next))
-      FixDigraph(*this, PP, Tok, Next, Kind, /*AtDigraph*/ true);
+      FixDigraph(*this, PP, Tok, Next, Kind, /*AtDigraph*/true);
   }
 
   if (ExpectAndConsume(tok::less, diag::err_expected_less_after, CastName))
@@ -1594,9 +1583,11 @@ ExprResult Parser::ParseCXXCasts() {
   T.consumeClose();
 
   if (!Result.isInvalid() && !DeclaratorInfo.isInvalidType())
-    Result = Actions.ActOnCXXNamedCast(
-        OpLoc, Kind, LAngleBracketLoc, DeclaratorInfo, RAngleBracketLoc,
-        T.getOpenLocation(), Result.get(), T.getCloseLocation());
+    Result = Actions.ActOnCXXNamedCast(OpLoc, Kind,
+                                       LAngleBracketLoc, DeclaratorInfo,
+                                       RAngleBracketLoc,
+                                       T.getOpenLocation(), Result.get(),
+                                       T.getCloseLocation());
 
   return Result;
 }
@@ -1695,9 +1686,9 @@ ExprResult Parser::ParseCXXUuidof() {
     if (Ty.isInvalid())
       return ExprError();
 
-    Result =
-        Actions.ActOnCXXUuidof(OpLoc, T.getOpenLocation(), /*isType=*/true,
-                               Ty.get().getAsOpaquePtr(), T.getCloseLocation());
+    Result = Actions.ActOnCXXUuidof(OpLoc, T.getOpenLocation(), /*isType=*/true,
+                                    Ty.get().getAsOpaquePtr(),
+                                    T.getCloseLocation());
   } else {
     EnterExpressionEvaluationContext Unevaluated(
         Actions, Sema::ExpressionEvaluationContext::Unevaluated);
@@ -1710,8 +1701,8 @@ ExprResult Parser::ParseCXXUuidof() {
       T.consumeClose();
 
       Result = Actions.ActOnCXXUuidof(OpLoc, T.getOpenLocation(),
-                                      /*isType=*/false, Result.get(),
-                                      T.getCloseLocation());
+                                      /*isType=*/false,
+                                      Result.get(), T.getCloseLocation());
     }
   }
 
@@ -1749,10 +1740,11 @@ ExprResult Parser::ParseCXXUuidof() {
 /// ... where the all but the last component of the nested-name-specifier
 /// has already been parsed, and the base expression is not of a non-dependent
 /// class type.
-ExprResult Parser::ParseCXXPseudoDestructor(Expr *Base, SourceLocation OpLoc,
-                                            tok::TokenKind OpKind,
-                                            CXXScopeSpec &SS,
-                                            ParsedType ObjectType) {
+ExprResult
+Parser::ParseCXXPseudoDestructor(Expr *Base, SourceLocation OpLoc,
+                                 tok::TokenKind OpKind,
+                                 CXXScopeSpec &SS,
+                                 ParsedType ObjectType) {
   // If the last component of the (optional) nested-name-specifier is
   // template[opt] simple-template-id, it has already been annotated.
   UnqualifiedId FirstTypeName;
@@ -1760,7 +1752,7 @@ ExprResult Parser::ParseCXXPseudoDestructor(Expr *Base, SourceLocation OpLoc,
   if (Tok.is(tok::identifier)) {
     FirstTypeName.setIdentifier(Tok.getIdentifierInfo(), Tok.getLocation());
     ConsumeToken();
-    assert(Tok.is(tok::coloncolon) && "ParseOptionalCXXScopeSpecifier fail");
+    assert(Tok.is(tok::coloncolon) &&"ParseOptionalCXXScopeSpecifier fail");
     CCLoc = ConsumeToken();
   } else if (Tok.is(tok::annot_template_id)) {
     TemplateIdAnnotation *TemplateId = takeTemplateIdAnnotation(Tok);
@@ -1769,7 +1761,7 @@ ExprResult Parser::ParseCXXPseudoDestructor(Expr *Base, SourceLocation OpLoc,
       return ExprError();
     FirstTypeName.setTemplateId(TemplateId);
     ConsumeAnnotationToken();
-    assert(Tok.is(tok::coloncolon) && "ParseOptionalCXXScopeSpecifier fail");
+    assert(Tok.is(tok::coloncolon) &&"ParseOptionalCXXScopeSpecifier fail");
     CCLoc = ConsumeToken();
   } else {
     assert(SS.isEmpty() && "missing last component of nested name specifier");
@@ -1836,12 +1828,12 @@ ExprResult Parser::ParseCXXBoolLiteral() {
 ///         'throw' assignment-expression[opt]
 ExprResult Parser::ParseThrowExpression() {
   assert(Tok.is(tok::kw_throw) && "Not throw!");
-  SourceLocation ThrowLoc = ConsumeToken(); // Eat the throw token.
+  SourceLocation ThrowLoc = ConsumeToken();           // Eat the throw token.
 
   // If the current token isn't the start of an assignment-expression,
   // then the expression is not present.  This handles things like:
   //   "C ? throw : (void)42", which is crazy but legal.
-  switch (Tok.getKind()) { // FIXME: move this predicate somewhere common.
+  switch (Tok.getKind()) {  // FIXME: move this predicate somewhere common.
   case tok::semi:
   case tok::r_paren:
   case tok::r_square:
@@ -1852,8 +1844,7 @@ ExprResult Parser::ParseThrowExpression() {
 
   default:
     ExprResult Expr(ParseAssignmentExpression());
-    if (Expr.isInvalid())
-      return Expr;
+    if (Expr.isInvalid()) return Expr;
     return Actions.ActOnCXXThrow(getCurScope(), ThrowLoc, Expr.get());
   }
 }
@@ -1897,14 +1888,14 @@ ExprResult Parser::ParseCXXThis() {
 /// [C++0x] typename-specifier braced-init-list
 ///
 /// In C++1z onwards, the type specifier can also be a template-name.
-ExprResult Parser::ParseCXXTypeConstructExpression(const DeclSpec &DS) {
+ExprResult
+Parser::ParseCXXTypeConstructExpression(const DeclSpec &DS) {
   Declarator DeclaratorInfo(DS, DeclaratorContext::FunctionalCast);
-  ParsedType TypeRep =
-      Actions.ActOnTypeName(getCurScope(), DeclaratorInfo).get();
+  ParsedType TypeRep = Actions.ActOnTypeName(getCurScope(), DeclaratorInfo).get();
 
   assert((Tok.is(tok::l_paren) ||
-          (getLangOpts().CPlusPlus11 && Tok.is(tok::l_brace))) &&
-         "Expected '(' or '{'!");
+          (getLangOpts().CPlusPlus11 && Tok.is(tok::l_brace)))
+         && "Expected '(' or '{'!");
 
   if (Tok.is(tok::l_brace)) {
     PreferredType.enterTypeCast(Tok.getLocation(), TypeRep.get());
@@ -1953,7 +1944,7 @@ ExprResult Parser::ParseCXXTypeConstructExpression(const DeclSpec &DS) {
     if (!TypeRep)
       return ExprError();
 
-    assert((Exprs.size() == 0 || Exprs.size() - 1 == CommaLocs.size()) &&
+    assert((Exprs.size() == 0 || Exprs.size()-1 == CommaLocs.size())&&
            "Unexpected number of commas!");
     return Actions.ActOnCXXTypeConstructExpr(TypeRep, T.getOpenLocation(),
                                              Exprs, T.getCloseLocation(),
@@ -2092,8 +2083,8 @@ Sema::ConditionResult Parser::ParseCXXCondition(StmtResult *InitStmt,
   MaybeParseGNUAttributes(DeclaratorInfo);
 
   // Type-check the declaration itself.
-  DeclResult Dcl =
-      Actions.ActOnCXXConditionDeclaration(getCurScope(), DeclaratorInfo);
+  DeclResult Dcl = Actions.ActOnCXXConditionDeclaration(getCurScope(),
+                                                        DeclaratorInfo);
   if (Dcl.isInvalid())
     return Sema::ConditionError();
   Decl *DeclOut = Dcl.get();
@@ -2117,8 +2108,9 @@ Sema::ConditionResult Parser::ParseCXXCondition(StmtResult *InitStmt,
     SourceLocation LParen = ConsumeParen(), RParen = LParen;
     if (SkipUntil(tok::r_paren, StopAtSemi | StopBeforeMatch))
       RParen = ConsumeParen();
-    Diag(DeclOut->getLocation(), diag::err_expected_init_in_condition_lparen)
-        << SourceRange(LParen, RParen);
+    Diag(DeclOut->getLocation(),
+         diag::err_expected_init_in_condition_lparen)
+      << SourceRange(LParen, RParen);
   } else {
     Diag(DeclOut->getLocation(), diag::err_expected_init_in_condition);
   }
@@ -2167,8 +2159,8 @@ void Parser::ParseCXXSimpleTypeSpecifier(DeclSpec &DS) {
       Actions.getASTContext().getPrintingPolicy();
 
   switch (Tok.getKind()) {
-  case tok::identifier: // foo::bar
-  case tok::coloncolon: // ::foo::bar
+  case tok::identifier:   // foo::bar
+  case tok::coloncolon:   // ::foo::bar
     llvm_unreachable("Annotation token should already be formed!");
   default:
     llvm_unreachable("Not a simple-type-specifier token!");
@@ -2356,8 +2348,9 @@ bool Parser::ParseUnqualifiedIdTemplateId(
                                       /*AllowInjectedClassName*/ true);
     } else {
       bool MemberOfUnknownSpecialization;
-      TNK = Actions.isTemplateName(getCurScope(), SS, TemplateKWLoc.isValid(),
-                                   Id, ObjectType, EnteringContext, Template,
+      TNK = Actions.isTemplateName(getCurScope(), SS,
+                                   TemplateKWLoc.isValid(), Id,
+                                   ObjectType, EnteringContext, Template,
                                    MemberOfUnknownSpecialization);
       // If lookup found nothing but we're assuming that this is a template
       // name, double-check that makes sense syntactically before committing
@@ -2389,9 +2382,9 @@ bool Parser::ParseUnqualifiedIdTemplateId(
               << Name
               << FixItHint::CreateInsertion(Id.StartLocation, "template ");
         }
-        TNK = Actions.ActOnTemplateName(getCurScope(), SS, TemplateKWLoc, Id,
-                                        ObjectType, EnteringContext, Template,
-                                        /*AllowInjectedClassName*/ true);
+        TNK = Actions.ActOnTemplateName(
+            getCurScope(), SS, TemplateKWLoc, Id, ObjectType, EnteringContext,
+            Template, /*AllowInjectedClassName*/ true);
       } else if (TNK == TNK_Non_template) {
         return false;
       }
@@ -2403,8 +2396,9 @@ bool Parser::ParseUnqualifiedIdTemplateId(
     bool MemberOfUnknownSpecialization;
     TemplateName.setIdentifier(Name, NameLoc);
     TNK = Actions.isTemplateName(getCurScope(), SS, TemplateKWLoc.isValid(),
-                                 TemplateName, ObjectType, EnteringContext,
-                                 Template, MemberOfUnknownSpecialization);
+                                 TemplateName, ObjectType,
+                                 EnteringContext, Template,
+                                 MemberOfUnknownSpecialization);
     if (TNK == TNK_Non_template)
       return false;
     break;
@@ -2420,12 +2414,13 @@ bool Parser::ParseUnqualifiedIdTemplateId(
           EnteringContext, Template, /*AllowInjectedClassName*/ true);
     } else {
       TNK = Actions.isTemplateName(getCurScope(), SS, TemplateKWLoc.isValid(),
-                                   TemplateName, ObjectType, EnteringContext,
-                                   Template, MemberOfUnknownSpecialization);
+                                   TemplateName, ObjectType,
+                                   EnteringContext, Template,
+                                   MemberOfUnknownSpecialization);
 
       if (TNK == TNK_Non_template && !Id.DestructorName.get()) {
         Diag(NameLoc, diag::err_destructor_template_id)
-            << Name << SS.getRange();
+          << Name << SS.getRange();
         // Carry on to parse the template arguments before bailing out.
       }
     }
@@ -2464,7 +2459,7 @@ bool Parser::ParseUnqualifiedIdTemplateId(
 
     TemplateIdAnnotation *TemplateId = TemplateIdAnnotation::Create(
         TemplateKWLoc, Id.StartLocation, TemplateII, OpKind, Template, TNK,
-        LAngleLoc, RAngleLoc, TemplateArgs, /*ArgsInvalid*/ false, TemplateIds);
+        LAngleLoc, RAngleLoc, TemplateArgs, /*ArgsInvalid*/false, TemplateIds);
 
     Id.setTemplateId(TemplateId);
     return false;
@@ -2541,14 +2536,53 @@ bool Parser::ParseUnqualifiedIdOperator(CXXScopeSpec &SS, bool EnteringContext,
   SourceLocation SymbolLocations[3];
   OverloadedOperatorKind Op = OO_None;
   switch (Tok.getKind()) {
-  case tok::kw_new:
-  case tok::kw_delete: {
-    bool isNew = Tok.getKind() == tok::kw_new;
-    // Consume the 'new' or 'delete'.
-    SymbolLocations[SymbolIdx++] = ConsumeToken();
-    // Check for array new/delete.
-    if (Tok.is(tok::l_square) &&
-        (!getLangOpts().CPlusPlus11 || NextToken().isNot(tok::l_square))) {
+    case tok::kw_new:
+    case tok::kw_delete: {
+      bool isNew = Tok.getKind() == tok::kw_new;
+      // Consume the 'new' or 'delete'.
+      SymbolLocations[SymbolIdx++] = ConsumeToken();
+      // Check for array new/delete.
+      if (Tok.is(tok::l_square) &&
+          (!getLangOpts().CPlusPlus11 || NextToken().isNot(tok::l_square))) {
+        // Consume the '[' and ']'.
+        BalancedDelimiterTracker T(*this, tok::l_square);
+        T.consumeOpen();
+        T.consumeClose();
+        if (T.getCloseLocation().isInvalid())
+          return true;
+
+        SymbolLocations[SymbolIdx++] = T.getOpenLocation();
+        SymbolLocations[SymbolIdx++] = T.getCloseLocation();
+        Op = isNew? OO_Array_New : OO_Array_Delete;
+      } else {
+        Op = isNew? OO_New : OO_Delete;
+      }
+      break;
+    }
+
+#define OVERLOADED_OPERATOR(Name,Spelling,Token,Unary,Binary,MemberOnly) \
+    case tok::Token:                                                     \
+      SymbolLocations[SymbolIdx++] = ConsumeToken();                     \
+      Op = OO_##Name;                                                    \
+      break;
+#define OVERLOADED_OPERATOR_MULTI(Name,Spelling,Unary,Binary,MemberOnly)
+#include "clang/Basic/OperatorKinds.def"
+
+    case tok::l_paren: {
+      // Consume the '(' and ')'.
+      BalancedDelimiterTracker T(*this, tok::l_paren);
+      T.consumeOpen();
+      T.consumeClose();
+      if (T.getCloseLocation().isInvalid())
+        return true;
+
+      SymbolLocations[SymbolIdx++] = T.getOpenLocation();
+      SymbolLocations[SymbolIdx++] = T.getCloseLocation();
+      Op = OO_Call;
+      break;
+    }
+
+    case tok::l_square: {
       // Consume the '[' and ']'.
       BalancedDelimiterTracker T(*this, tok::l_square);
       T.consumeOpen();
@@ -2558,59 +2592,20 @@ bool Parser::ParseUnqualifiedIdOperator(CXXScopeSpec &SS, bool EnteringContext,
 
       SymbolLocations[SymbolIdx++] = T.getOpenLocation();
       SymbolLocations[SymbolIdx++] = T.getCloseLocation();
-      Op = isNew ? OO_Array_New : OO_Array_Delete;
-    } else {
-      Op = isNew ? OO_New : OO_Delete;
+      Op = OO_Subscript;
+      break;
     }
-    break;
-  }
 
-#define OVERLOADED_OPERATOR(Name, Spelling, Token, Unary, Binary, MemberOnly)  \
-  case tok::Token:                                                             \
-    SymbolLocations[SymbolIdx++] = ConsumeToken();                             \
-    Op = OO_##Name;                                                            \
-    break;
-#define OVERLOADED_OPERATOR_MULTI(Name, Spelling, Unary, Binary, MemberOnly)
-#include "clang/Basic/OperatorKinds.def"
-
-  case tok::l_paren: {
-    // Consume the '(' and ')'.
-    BalancedDelimiterTracker T(*this, tok::l_paren);
-    T.consumeOpen();
-    T.consumeClose();
-    if (T.getCloseLocation().isInvalid())
+    case tok::code_completion: {
+      // Code completion for the operator name.
+      Actions.CodeCompleteOperatorName(getCurScope());
+      cutOffParsing();
+      // Don't try to parse any further.
       return true;
+    }
 
-    SymbolLocations[SymbolIdx++] = T.getOpenLocation();
-    SymbolLocations[SymbolIdx++] = T.getCloseLocation();
-    Op = OO_Call;
-    break;
-  }
-
-  case tok::l_square: {
-    // Consume the '[' and ']'.
-    BalancedDelimiterTracker T(*this, tok::l_square);
-    T.consumeOpen();
-    T.consumeClose();
-    if (T.getCloseLocation().isInvalid())
-      return true;
-
-    SymbolLocations[SymbolIdx++] = T.getOpenLocation();
-    SymbolLocations[SymbolIdx++] = T.getCloseLocation();
-    Op = OO_Subscript;
-    break;
-  }
-
-  case tok::code_completion: {
-    // Code completion for the operator name.
-    Actions.CodeCompleteOperatorName(getCurScope());
-    cutOffParsing();
-    // Don't try to parse any further.
-    return true;
-  }
-
-  default:
-    break;
+    default:
+      break;
   }
 
   if (Op != OO_None) {
@@ -2657,9 +2652,10 @@ bool Parser::ParseUnqualifiedIdOperator(CXXScopeSpec &SS, bool EnteringContext,
     SourceLocation SuffixLoc;
     if (!Literal.getUDSuffix().empty()) {
       II = &PP.getIdentifierTable().get(Literal.getUDSuffix());
-      SuffixLoc = Lexer::AdvanceToTokenCharacter(
-          TokLocs[Literal.getUDSuffixToken()], Literal.getUDSuffixOffset(),
-          PP.getSourceManager(), getLangOpts());
+      SuffixLoc =
+        Lexer::AdvanceToTokenCharacter(TokLocs[Literal.getUDSuffixToken()],
+                                       Literal.getUDSuffixOffset(),
+                                       PP.getSourceManager(), getLangOpts());
     } else if (Tok.is(tok::identifier)) {
       II = Tok.getIdentifierInfo();
       SuffixLoc = ConsumeToken();
@@ -2782,7 +2778,7 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
     } else {
       SourceLocation TemplateLoc = ConsumeToken();
       Diag(TemplateLoc, diag::err_unexpected_template_in_unqualified_id)
-          << FixItHint::CreateRemoval(TemplateLoc);
+        << FixItHint::CreateRemoval(TemplateLoc);
     }
   }
 
@@ -2810,8 +2806,8 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
       if (!Ty)
         return true;
       Result.setConstructorName(Ty, IdLoc, IdLoc);
-    } else if (getLangOpts().CPlusPlus17 && AllowDeductionGuide &&
-               SS.isEmpty() &&
+    } else if (getLangOpts().CPlusPlus17 &&
+               AllowDeductionGuide && SS.isEmpty() &&
                Actions.isDeductionGuideName(getCurScope(), *Id, IdLoc,
                                             &TemplateName)) {
       // We have parsed a template-name naming a deduction guide.
@@ -2860,9 +2856,9 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
         // complain about them and remove them entirely.
         Diag(TemplateId->TemplateNameLoc,
              diag::err_out_of_line_constructor_template_id)
-            << TemplateId->Name
-            << FixItHint::CreateRemoval(
-                   SourceRange(TemplateId->LAngleLoc, TemplateId->RAngleLoc));
+          << TemplateId->Name
+          << FixItHint::CreateRemoval(
+                    SourceRange(TemplateId->LAngleLoc, TemplateId->RAngleLoc));
         ParsedType Ty = Actions.getConstructorName(
             *TemplateId->Name, TemplateId->TemplateNameLoc, getCurScope(), SS,
             EnteringContext);
@@ -2924,8 +2920,8 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
     return false;
   }
 
-  if (getLangOpts().CPlusPlus && (AllowDestructorName || SS.isSet()) &&
-      Tok.is(tok::tilde)) {
+  if (getLangOpts().CPlusPlus &&
+      (AllowDestructorName || SS.isSet()) && Tok.is(tok::tilde)) {
     // C++ [expr.unary.op]p10:
     //   There is an ambiguity in the unary-expression ~X(), where X is a
     //   class-name. The ambiguity is resolved in favor of treating ~ as a
@@ -2946,7 +2942,7 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
       // destructor name and recover. (This is not trivial if this would become
       // a pseudo-destructor name).
       Diag(*TemplateKWLoc, diag::err_unexpected_template_in_destructor_name)
-          << Tok.getLocation();
+        << Tok.getLocation();
       return true;
     }
 
@@ -2976,7 +2972,7 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
       ColonProtectionRAIIObject ColonRAII(*this, false);
 
       if (SS.isSet()) {
-        AnnotateScopeToken(SS, /*NewAnnotation*/ true);
+        AnnotateScopeToken(SS, /*NewAnnotation*/true);
         SS.clear();
       }
       if (ParseOptionalCXXScopeSpecifier(SS, ObjectType, ObjectHadErrors,
@@ -2992,8 +2988,8 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
 
       // Recover as if the tilde had been written before the identifier.
       Diag(TildeLoc, diag::err_destructor_tilde_scope)
-          << FixItHint::CreateRemoval(TildeLoc)
-          << FixItHint::CreateInsertion(Tok.getLocation(), "~");
+        << FixItHint::CreateRemoval(TildeLoc)
+        << FixItHint::CreateInsertion(Tok.getLocation(), "~");
 
       // Temporarily enter the scope for the rest of this function.
       if (Actions.ShouldEnterDeclaratorScope(getCurScope(), SS))
@@ -3014,8 +3010,9 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
 
     // Note that this is a destructor name.
     ParsedType Ty = Actions.getDestructorName(TildeLoc, *ClassName,
-                                              ClassNameLoc, getCurScope(), SS,
-                                              ObjectType, EnteringContext);
+                                              ClassNameLoc, getCurScope(),
+                                              SS, ObjectType,
+                                              EnteringContext);
     if (!Ty)
       return true;
 
@@ -3023,7 +3020,8 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
     return false;
   }
 
-  Diag(Tok, diag::err_expected_unqualified_id) << getLangOpts().CPlusPlus;
+  Diag(Tok, diag::err_expected_unqualified_id)
+    << getLangOpts().CPlusPlus;
   return true;
 }
 
@@ -3055,9 +3053,10 @@ bool Parser::ParseUnqualifiedId(CXXScopeSpec &SS, ParsedType ObjectType,
 ///                   '(' expression-list[opt] ')'
 /// [C++0x]           braced-init-list
 ///
-ExprResult Parser::ParseCXXNewExpression(bool UseGlobal, SourceLocation Start) {
+ExprResult
+Parser::ParseCXXNewExpression(bool UseGlobal, SourceLocation Start) {
   assert(Tok.is(tok::kw_new) && "expected 'new' token");
-  ConsumeToken(); // Consume 'new'
+  ConsumeToken();   // Consume 'new'
 
   // A '(' now can be a new-placement or the '(' wrapping the type-id in the
   // second form of new-expression. It can't be a new-type-id.
@@ -3168,8 +3167,9 @@ ExprResult Parser::ParseCXXNewExpression(bool UseGlobal, SourceLocation Start) {
       SkipUntil(tok::semi, StopAtSemi | StopBeforeMatch);
       return ExprError();
     }
-    Initializer = Actions.ActOnParenListExpr(
-        ConstructorLParen, ConstructorRParen, ConstructorArgs);
+    Initializer = Actions.ActOnParenListExpr(ConstructorLParen,
+                                             ConstructorRParen,
+                                             ConstructorArgs);
   } else if (Tok.is(tok::l_brace) && getLangOpts().CPlusPlus11) {
     Diag(Tok.getLocation(),
          diag::warn_cxx98_compat_generalized_initializer_lists);
@@ -3178,9 +3178,9 @@ ExprResult Parser::ParseCXXNewExpression(bool UseGlobal, SourceLocation Start) {
   if (Initializer.isInvalid())
     return Initializer;
 
-  return Actions.ActOnCXXNew(Start, UseGlobal, PlacementLParen, PlacementArgs,
-                             PlacementRParen, TypeIdParens, DeclaratorInfo,
-                             Initializer.get());
+  return Actions.ActOnCXXNew(Start, UseGlobal, PlacementLParen,
+                             PlacementArgs, PlacementRParen,
+                             TypeIdParens, DeclaratorInfo, Initializer.get());
 }
 
 /// ParseDirectNewDeclarator - Parses a direct-new-declarator. Intended to be
@@ -3217,10 +3217,10 @@ void Parser::ParseDirectNewDeclarator(Declarator &D) {
     ParsedAttributes Attrs(AttrFactory);
     MaybeParseCXX11Attributes(Attrs);
 
-    D.AddTypeInfo(DeclaratorChunk::getArray(
-                      0,
-                      /*isStatic=*/false, /*isStar=*/false, Size.get(),
-                      T.getOpenLocation(), T.getCloseLocation()),
+    D.AddTypeInfo(DeclaratorChunk::getArray(0,
+                                            /*isStatic=*/false, /*isStar=*/false,
+                                            Size.get(), T.getOpenLocation(),
+                                            T.getCloseLocation()),
                   std::move(Attrs), T.getCloseLocation());
 
     if (T.getCloseLocation().isInvalid())
@@ -3238,7 +3238,8 @@ void Parser::ParseDirectNewDeclarator(Declarator &D) {
 ///        new-placement:
 ///                   '(' expression-list ')'
 ///
-bool Parser::ParseExpressionListOrTypeId(SmallVectorImpl<Expr *> &PlacementArgs,
+bool Parser::ParseExpressionListOrTypeId(
+                                   SmallVectorImpl<Expr*> &PlacementArgs,
                                          Declarator &D) {
   // The '(' was already consumed.
   if (isTypeIdInParens()) {
@@ -3265,8 +3266,8 @@ bool Parser::ParseExpressionListOrTypeId(SmallVectorImpl<Expr *> &PlacementArgs,
 ///        delete-expression:
 ///                   '::'[opt] 'delete' cast-expression
 ///                   '::'[opt] 'delete' '[' ']' cast-expression
-ExprResult Parser::ParseCXXDeleteExpression(bool UseGlobal,
-                                            SourceLocation Start) {
+ExprResult
+Parser::ParseCXXDeleteExpression(bool UseGlobal, SourceLocation Start) {
   assert(Tok.is(tok::kw_delete) && "Expected 'delete' keyword");
   ConsumeToken(); // Consume 'delete'
 
@@ -3380,7 +3381,7 @@ ExprResult Parser::ParseRequiresExpression() {
   if (Tok.is(tok::l_paren)) {
     // requirement parameter list is present.
     ParseScope LocalParametersScope(this, Scope::FunctionPrototypeScope |
-                                              Scope::DeclScope);
+                                    Scope::DeclScope);
     BalancedDelimiterTracker Parens(*this, tok::l_paren);
     Parens.consumeOpen();
     if (!Tok.is(tok::r_paren)) {
@@ -3473,8 +3474,9 @@ ExprResult Parser::ParseRequiresExpression() {
         }
         CXXScopeSpec SS;
         if (Tok.is(tok::annot_cxxscope)) {
-          Actions.RestoreNestedNameSpecifierAnnotation(
-              Tok.getAnnotationValue(), Tok.getAnnotationRange(), SS);
+          Actions.RestoreNestedNameSpecifierAnnotation(Tok.getAnnotationValue(),
+                                                       Tok.getAnnotationRange(),
+                                                       SS);
           ConsumeAnnotationToken();
         }
 
@@ -3590,8 +3592,9 @@ ExprResult Parser::ParseRequiresExpression() {
                 break;
             }
 
-            if (auto *Req = Actions.ActOnTypeRequirement(
-                    TypenameKWLoc, SS, NameLoc, II, TemplateId)) {
+            if (auto *Req = Actions.ActOnTypeRequirement(TypenameKWLoc, SS,
+                                                         NameLoc, II,
+                                                         TemplateId)) {
               Requirements.push_back(Req);
             }
             break;
@@ -3652,18 +3655,14 @@ ExprResult Parser::ParseRequiresExpression() {
 
 static TypeTrait TypeTraitFromTokKind(tok::TokenKind kind) {
   switch (kind) {
-  default:
-    llvm_unreachable("Not a known type trait");
-#define TYPE_TRAIT_1(Spelling, Name, Key)                                      \
-  case tok::kw_##Spelling:                                                     \
-    return UTT_##Name;
-#define TYPE_TRAIT_2(Spelling, Name, Key)                                      \
-  case tok::kw_##Spelling:                                                     \
-    return BTT_##Name;
+  default: llvm_unreachable("Not a known type trait");
+#define TYPE_TRAIT_1(Spelling, Name, Key) \
+case tok::kw_ ## Spelling: return UTT_ ## Name;
+#define TYPE_TRAIT_2(Spelling, Name, Key) \
+case tok::kw_ ## Spelling: return BTT_ ## Name;
 #include "clang/Basic/TokenKinds.def"
-#define TYPE_TRAIT_N(Spelling, Name, Key)                                      \
-  case tok::kw_##Spelling:                                                     \
-    return TT_##Name;
+#define TYPE_TRAIT_N(Spelling, Name, Key) \
+  case tok::kw_ ## Spelling: return TT_ ## Name;
 #include "clang/Basic/TokenKinds.def"
   }
 }
@@ -3692,11 +3691,8 @@ static ExpressionTrait ExpressionTraitFromTokKind(tok::TokenKind kind) {
 
 static unsigned TypeTraitArity(tok::TokenKind kind) {
   switch (kind) {
-  default:
-    llvm_unreachable("Not a known type trait");
-#define TYPE_TRAIT(N, Spelling, K)                                             \
-  case tok::kw_##Spelling:                                                     \
-    return N;
+    default: llvm_unreachable("Not a known type trait");
+#define TYPE_TRAIT(N,Spelling,K) case tok::kw_##Spelling: return N;
 #include "clang/Basic/TokenKinds.def"
   }
 }
@@ -3751,13 +3747,13 @@ ExprResult Parser::ParseTypeTrait() {
 
   if (Arity && Args.size() != Arity) {
     Diag(EndLoc, diag::err_type_trait_arity)
-        << Arity << 0 << (Arity > 1) << (int)Args.size() << SourceRange(Loc);
+      << Arity << 0 << (Arity > 1) << (int)Args.size() << SourceRange(Loc);
     return ExprError();
   }
 
   if (!Arity && Args.empty()) {
     Diag(EndLoc, diag::err_type_trait_arity)
-        << 1 << 1 << 1 << (int)Args.size() << SourceRange(Loc);
+      << 1 << 1 << 1 << (int)Args.size() << SourceRange(Loc);
     return ExprError();
   }
 
@@ -3830,12 +3826,15 @@ ExprResult Parser::ParseExpressionTrait() {
                                       T.getCloseLocation());
 }
 
+
 /// ParseCXXAmbiguousParenExpression - We have parsed the left paren of a
 /// parenthesized ambiguous type-id. This uses tentative parsing to disambiguate
 /// based on the context past the parens.
-ExprResult Parser::ParseCXXAmbiguousParenExpression(
-    ParenParseOption &ExprType, ParsedType &CastTy,
-    BalancedDelimiterTracker &Tracker, ColonProtectionRAIIObject &ColonProt) {
+ExprResult
+Parser::ParseCXXAmbiguousParenExpression(ParenParseOption &ExprType,
+                                         ParsedType &CastTy,
+                                         BalancedDelimiterTracker &Tracker,
+                                         ColonProtectionRAIIObject &ColonProt) {
   assert(getLangOpts().CPlusPlus && "Should only be called for C++!");
   assert(ExprType == CastExpr && "Compound literals are not ambiguous!");
   assert(isTypeIdInParens() && "Not a type-id!");
@@ -3884,7 +3883,8 @@ ExprResult Parser::ParseCXXAmbiguousParenExpression(
       // If it is not a cast-expression, NotCastExpr will be true and no token
       // will be consumed.
       ColonProt.restore();
-      Result = ParseCastExpression(AnyCastExpr, false /*isAddressofOperand*/,
+      Result = ParseCastExpression(AnyCastExpr,
+                                   false/*isAddressofOperand*/,
                                    NotCastExpr,
                                    // type-id has priority.
                                    IsTypeCast);
@@ -3937,7 +3937,8 @@ ExprResult Parser::ParseCXXAmbiguousParenExpression(
         return ExprError();
 
       TypeResult Ty = Actions.ActOnTypeName(getCurScope(), DeclaratorInfo);
-      return ParseCompoundLiteralExpression(Ty.get(), Tracker.getOpenLocation(),
+      return ParseCompoundLiteralExpression(Ty.get(),
+                                            Tracker.getOpenLocation(),
                                             Tracker.getCloseLocation());
     }
 
@@ -3950,8 +3951,8 @@ ExprResult Parser::ParseCXXAmbiguousParenExpression(
     // Result is what ParseCastExpression returned earlier.
     if (!Result.isInvalid())
       Result = Actions.ActOnCastExpr(getCurScope(), Tracker.getOpenLocation(),
-                                     DeclaratorInfo, CastTy,
-                                     Tracker.getCloseLocation(), Result.get());
+                                    DeclaratorInfo, CastTy,
+                                    Tracker.getCloseLocation(), Result.get());
     return Result;
   }
 

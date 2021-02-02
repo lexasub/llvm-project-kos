@@ -69,12 +69,12 @@ using namespace llvm;
 #define DEBUG_TYPE "sccp"
 
 STATISTIC(NumInstRemoved, "Number of instructions removed");
-STATISTIC(NumDeadBlocks, "Number of basic blocks unreachable");
+STATISTIC(NumDeadBlocks , "Number of basic blocks unreachable");
 STATISTIC(NumInstReplaced,
           "Number of instructions replaced with (simpler) instruction");
 
 STATISTIC(IPNumInstRemoved, "Number of instructions removed by IPSCCP");
-STATISTIC(IPNumArgsElimed, "Number of arguments constant propagated by IPSCCP");
+STATISTIC(IPNumArgsElimed ,"Number of arguments constant propagated by IPSCCP");
 STATISTIC(IPNumGlobalConst, "Number of globals found to be constant by IPSCCP");
 STATISTIC(
     IPNumInstReplaced,
@@ -164,7 +164,7 @@ class SCCPSolver : public InstVisitor<SCCPSolver> {
   SmallVector<Value *, 64> InstWorkList;
 
   // The BasicBlock work list
-  SmallVector<BasicBlock *, 64> BBWorkList;
+  SmallVector<BasicBlock *, 64>  BBWorkList;
 
   /// KnownFeasibleEdges - Entries in this set are edges which have already had
   /// PHI nodes retriggered.
@@ -207,7 +207,7 @@ public:
     if (!BBExecutable.insert(BB).second)
       return false;
     LLVM_DEBUG(dbgs() << "Marking Block Executable: " << BB->getName() << '\n');
-    BBWorkList.push_back(BB); // Add the block to the work list!
+    BBWorkList.push_back(BB);  // Add the block to the work list!
     return true;
   }
 
@@ -240,11 +240,15 @@ public:
 
   /// AddMustTailCallee - If the SCCP solver finds that this function is called
   /// from non-removable musttail call site.
-  void AddMustTailCallee(Function *F) { MustTailCallees.insert(F); }
+  void AddMustTailCallee(Function *F) {
+    MustTailCallees.insert(F);
+  }
 
   /// Returns true if the given function is called from non-removable musttail
   /// call site.
-  bool isMustTailCallee(Function *F) { return MustTailCallees.count(F); }
+  bool isMustTailCallee(Function *F) {
+    return MustTailCallees.count(F);
+  }
 
   void AddArgumentTrackedFunction(Function *F) {
     TrackingIncomingArguments.insert(F);
@@ -399,8 +403,7 @@ private:
   // value is not already overdefined, add it to the overdefined instruction
   // work list so that the users of the instruction are updated later.
   bool markOverdefined(ValueLatticeElement &IV, Value *V) {
-    if (!IV.markOverdefined())
-      return false;
+    if (!IV.markOverdefined()) return false;
 
     LLVM_DEBUG(dbgs() << "markOverdefined: ";
                if (auto *F = dyn_cast<Function>(V)) dbgs()
@@ -444,10 +447,10 @@ private:
     ValueLatticeElement &LV = I.first->second;
 
     if (!I.second)
-      return LV; // Common case, already in the map.
+      return LV;  // Common case, already in the map.
 
     if (auto *C = dyn_cast<Constant>(V))
-      LV.markConstant(C); // Constants are constant
+      LV.markConstant(C);          // Constants are constant
 
     // All others are unknown by default.
     return LV;
@@ -466,17 +469,17 @@ private:
     ValueLatticeElement &LV = I.first->second;
 
     if (!I.second)
-      return LV; // Common case, already in the map.
+      return LV;  // Common case, already in the map.
 
     if (auto *C = dyn_cast<Constant>(V)) {
       Constant *Elt = C->getAggregateElement(i);
 
       if (!Elt)
-        LV.markOverdefined(); // Unknown sort of constant.
+        LV.markOverdefined();      // Unknown sort of constant.
       else if (isa<UndefValue>(Elt))
         ; // Undef values remain unknown.
       else
-        LV.markConstant(Elt); // Constants are constant.
+        LV.markConstant(Elt);      // Constants are constant.
     }
 
     // All others are underdefined by default.
@@ -487,7 +490,7 @@ private:
   /// work list if it is not already executable.
   bool markEdgeExecutable(BasicBlock *Source, BasicBlock *Dest) {
     if (!KnownFeasibleEdges.insert(Edge(Source, Dest)).second)
-      return false; // This edge is already known to be executable!
+      return false;  // This edge is already known to be executable!
 
     if (!MarkBlockExecutable(Dest)) {
       // If the destination is already executable, we just made an *edge*
@@ -510,7 +513,7 @@ private:
   // instruction that was just changed state somehow.  Based on this
   // information, we need to update the specified user of this instruction.
   void OperandChangedState(Instruction *I) {
-    if (BBExecutable.count(I->getParent())) // Inst is executable?
+    if (BBExecutable.count(I->getParent()))   // Inst is executable?
       visit(*I);
   }
 
@@ -576,29 +579,28 @@ private:
 
   // Instructions that cannot be folded away.
 
-  void visitStoreInst(StoreInst &I);
-  void visitLoadInst(LoadInst &I);
+  void visitStoreInst     (StoreInst &I);
+  void visitLoadInst      (LoadInst &I);
   void visitGetElementPtrInst(GetElementPtrInst &I);
 
-  void visitCallInst(CallInst &I) { visitCallBase(I); }
+  void visitCallInst      (CallInst &I) {
+    visitCallBase(I);
+  }
 
-  void visitInvokeInst(InvokeInst &II) {
+  void visitInvokeInst    (InvokeInst &II) {
     visitCallBase(II);
     visitTerminator(II);
   }
 
-  void visitCallBrInst(CallBrInst &CBI) {
+  void visitCallBrInst    (CallBrInst &CBI) {
     visitCallBase(CBI);
     visitTerminator(CBI);
   }
 
-  void visitCallBase(CallBase &CB);
-  void visitResumeInst(ResumeInst &I) { /*returns void*/
-  }
-  void visitUnreachableInst(UnreachableInst &I) { /*returns void*/
-  }
-  void visitFenceInst(FenceInst &I) { /*returns void*/
-  }
+  void visitCallBase      (CallBase &CB);
+  void visitResumeInst    (ResumeInst &I) { /*returns void*/ }
+  void visitUnreachableInst(UnreachableInst &I) { /*returns void*/ }
+  void visitFenceInst     (FenceInst &I) { /*returns void*/ }
 
   void visitInstruction(Instruction &I) {
     // All the instructions we don't do any special handling for just
@@ -680,14 +682,14 @@ void SCCPSolver::getFeasibleSuccessors(Instruction &TI,
     // Casts are folded by visitCastInst.
     ValueLatticeElement IBRValue = getValueState(IBR->getAddress());
     BlockAddress *Addr = dyn_cast_or_null<BlockAddress>(getConstant(IBRValue));
-    if (!Addr) { // Overdefined or unknown condition?
+    if (!Addr) {   // Overdefined or unknown condition?
       // All destinations are executable!
       if (!IBRValue.isUnknownOrUndef())
         Succs.assign(TI.getNumSuccessors(), true);
       return;
     }
 
-    BasicBlock *T = Addr->getBasicBlock();
+    BasicBlock* T = Addr->getBasicBlock();
     assert(Addr->getFunction() == T->getParent() &&
            "Block address of a different function ?");
     for (unsigned i = 0; i < IBR->getNumSuccessors(); ++i) {
@@ -787,8 +789,7 @@ void SCCPSolver::visitPHINode(PHINode &PN) {
 }
 
 void SCCPSolver::visitReturnInst(ReturnInst &I) {
-  if (I.getNumOperands() == 0)
-    return; // ret void
+  if (I.getNumOperands() == 0) return;  // ret void
 
   Function *F = I.getParent()->getParent();
   Value *ResultOp = I.getOperand(0);
@@ -1079,13 +1080,13 @@ void SCCPSolver::visitGetElementPtrInst(GetElementPtrInst &I) {
   if (isOverdefined(ValueState[&I]))
     return (void)markOverdefined(&I);
 
-  SmallVector<Constant *, 8> Operands;
+  SmallVector<Constant*, 8> Operands;
   Operands.reserve(I.getNumOperands());
 
   for (unsigned i = 0, e = I.getNumOperands(); i != e; ++i) {
     ValueLatticeElement State = getValueState(I.getOperand(i));
     if (State.isUnknownOrUndef())
-      return; // Operands are not resolved yet.
+      return;  // Operands are not resolved yet.
 
     if (isOverdefined(State))
       return (void)markOverdefined(&I);
@@ -1103,7 +1104,7 @@ void SCCPSolver::visitGetElementPtrInst(GetElementPtrInst &I) {
   Constant *C =
       ConstantExpr::getGetElementPtr(I.getSourceElementType(), Ptr, Indices);
   if (isa<UndefValue>(C))
-    return;
+      return;
   markConstant(&I, C);
 }
 
@@ -1124,7 +1125,7 @@ void SCCPSolver::visitStoreInst(StoreInst &SI) {
   mergeInValue(I->second, GV, getValueState(SI.getOperand(0)),
                ValueLatticeElement::MergeOptions().setCheckWiden(false));
   if (I->second.isOverdefined())
-    TrackedGlobals.erase(I); // No need to keep tracking this!
+    TrackedGlobals.erase(I);      // No need to keep tracking this!
 }
 
 static ValueLatticeElement getValueFromMetadata(const Instruction *I) {
@@ -1338,8 +1339,9 @@ void SCCPSolver::handleCallResult(CallBase &CB) {
           NewCR = CopyOfCR;
 
         addAdditionalUser(OtherOp, &CB);
-        mergeInValue(IV, &CB,
-                     ValueLatticeElement::getRange(NewCR, MayIncludeUndef));
+        mergeInValue(
+            IV, &CB,
+            ValueLatticeElement::getRange(NewCR, MayIncludeUndef));
         return;
       } else if (Pred == CmpInst::ICMP_EQ && CondVal.isConstant()) {
         // For non-integer values or integer constant expressions, only
@@ -1481,8 +1483,7 @@ bool SCCPSolver::ResolvedUndefsIn(Function &F) {
 
     for (Instruction &I : BB) {
       // Look for instructions which produce undef values.
-      if (I.getType()->isVoidTy())
-        continue;
+      if (I.getType()->isVoidTy()) continue;
 
       if (auto *STy = dyn_cast<StructType>(I.getType())) {
         // Only a few things that can be structs matter for undef.
@@ -1539,8 +1540,7 @@ bool SCCPSolver::ResolvedUndefsIn(Function &F) {
     // values live.  It doesn't really matter which way we force it.
     Instruction *TI = BB.getTerminator();
     if (auto *BI = dyn_cast<BranchInst>(TI)) {
-      if (!BI->isConditional())
-        continue;
+      if (!BI->isConditional()) continue;
       if (!getValueState(BI->getCondition()).isUnknownOrUndef())
         continue;
 
@@ -1564,7 +1564,7 @@ bool SCCPSolver::ResolvedUndefsIn(Function &F) {
       continue;
     }
 
-    if (auto *IBR = dyn_cast<IndirectBrInst>(TI)) {
+   if (auto *IBR = dyn_cast<IndirectBrInst>(TI)) {
       // Indirect branch with no successor ?. Its ok to assume it branches
       // to no target.
       if (IBR->getNumSuccessors() < 1)
@@ -1882,9 +1882,9 @@ static bool removeNonFeasibleEdges(const SCCPSolver &Solver, BasicBlock *BB,
 
   // SCCP can only determine non-feasible edges for br, switch and indirectbr.
   Instruction *TI = BB->getTerminator();
-  assert(
-      (isa<BranchInst>(TI) || isa<SwitchInst>(TI) || isa<IndirectBrInst>(TI)) &&
-      "Terminator must be a br, switch or indirectbr");
+  assert((isa<BranchInst>(TI) || isa<SwitchInst>(TI) ||
+          isa<IndirectBrInst>(TI)) &&
+         "Terminator must be a br, switch or indirectbr");
 
   if (FeasibleSuccessors.size() == 1) {
     // Replace with an unconditional branch to the only feasible successor.
@@ -2090,7 +2090,7 @@ bool llvm::runIPSCCP(
   // if the address of the function isn't taken.  In cases where a return is the
   // last use of a function, the order of processing functions would affect
   // whether other functions are optimizable.
-  SmallVector<ReturnInst *, 8> ReturnsToZap;
+  SmallVector<ReturnInst*, 8> ReturnsToZap;
 
   for (const auto &I : Solver.getTrackedRetVals()) {
     Function *F = I.first;

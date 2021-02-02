@@ -15,12 +15,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::streamoff o(5);
-  std::streamsize sz(o);
-  assert(sz == 5);
-  std::streamoff o2(sz);
-  assert(o == o2);
+int main(int, char**)
+{
+    std::streamoff o(5);
+    std::streamsize sz(o);
+    assert(sz == 5);
+    std::streamoff o2(sz);
+    assert(o == o2);
 
   return 0;
 }

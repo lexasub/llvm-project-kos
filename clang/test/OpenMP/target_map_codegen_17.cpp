@@ -38,16 +38,16 @@
 // - OMP_MAP_PRIVATE_VAL + OMP_MAP_TARGET_PARAM | OMP_MAP_IMPLICIT = 800
 // CK18-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 800]
 
-template <typename T>
+template<typename T>
 int foo(T d) {
-#pragma omp target
+  #pragma omp target
   {
     d += (T)1;
   }
   return d;
 }
 // CK18-LABEL: implicit_maps_template_type_capture{{.*}}(
-void implicit_maps_template_type_capture(int a) {
+void implicit_maps_template_type_capture (int a){
   int i = a;
 
   // CK18: define {{.*}}i32 @{{.+}}foo{{.+}}(i32 {{[^,]+}})

@@ -35,7 +35,7 @@ using namespace llvm;
 
 #define DEBUG_TYPE "regalloc"
 
-STATISTIC(NumNewQueued, "Number of new live ranges queued");
+STATISTIC(NumNewQueued    , "Number of new live ranges queued");
 
 // Temporary verification option until we can put verification inside
 // MachineVerifier.
@@ -54,7 +54,8 @@ bool RegAllocBase::VerifyEnabled = false;
 // Pin the vtable to this file.
 void RegAllocBase::anchor() {}
 
-void RegAllocBase::init(VirtRegMap &vrm, LiveIntervals &lis,
+void RegAllocBase::init(VirtRegMap &vrm,
+                        LiveIntervals &lis,
                         LiveRegMatrix &mat) {
   TRI = &vrm.getTargetRegInfo();
   MRI = &vrm.getRegInfo();

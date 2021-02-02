@@ -6,8 +6,8 @@
 // initialization failure.
 // REQUIRES: asan-dynamic-runtime
 
-#include <stdio.h>
 #include <windows.h>
+#include <stdio.h>
 
 extern "C" {
 #if defined(EXE)
@@ -16,10 +16,10 @@ __declspec(dllimport) int foo_from_dll();
 // CHECK: in DLL(reason=1)
 int main(int argc, char **argv) {
   foo_from_dll();
-  // CHECK: hello!
+// CHECK: hello!
   printf("hello!\n");
   fflush(0);
-  // CHECK: in DLL(reason=0)
+// CHECK: in DLL(reason=0)
 }
 #elif defined(DLL)
 // This global is registered at startup.
@@ -35,6 +35,6 @@ BOOL WINAPI DllMain(HMODULE, DWORD reason, LPVOID) {
   return TRUE;
 }
 #else
-#error oops!
+# error oops!
 #endif
 }

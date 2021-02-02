@@ -114,11 +114,11 @@ TEST(SwapIndexTest, OldIndexRecycled) {
   std::weak_ptr<int> WeakToken = Token;
 
   SwapIndex S(std::make_unique<MemIndex>(SymbolSlab(), RefSlab(),
-                                         RelationSlab(), std::move(Token),
-                                         /*BackingDataSize=*/0));
-  EXPECT_FALSE(WeakToken.expired());     // Current MemIndex keeps it alive.
+                                          RelationSlab(), std::move(Token),
+                                          /*BackingDataSize=*/0));
+  EXPECT_FALSE(WeakToken.expired());      // Current MemIndex keeps it alive.
   S.reset(std::make_unique<MemIndex>()); // Now the MemIndex is destroyed.
-  EXPECT_TRUE(WeakToken.expired());      // So the token is too.
+  EXPECT_TRUE(WeakToken.expired());       // So the token is too.
 }
 
 TEST(MemIndexTest, MemIndexDeduplicate) {

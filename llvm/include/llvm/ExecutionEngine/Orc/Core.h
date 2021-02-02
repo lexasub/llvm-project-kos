@@ -452,12 +452,11 @@ public:
   static char ID;
 
   MissingSymbolDefinitions(std::string ModuleName, SymbolNameVector Symbols)
-      : ModuleName(std::move(ModuleName)), Symbols(std::move(Symbols)) {}
+    : ModuleName(std::move(ModuleName)), Symbols(std::move(Symbols)) {}
   std::error_code convertToErrorCode() const override;
   void log(raw_ostream &OS) const override;
   const std::string &getModuleName() const { return ModuleName; }
   const SymbolNameVector &getSymbols() const { return Symbols; }
-
 private:
   std::string ModuleName;
   SymbolNameVector Symbols;
@@ -467,18 +466,16 @@ private:
 /// symbols that are not claimed by the module's associated
 /// MaterializationResponsibility. If this error is returned it is indicative of
 /// a broken transformation / compiler / object cache.
-class UnexpectedSymbolDefinitions
-    : public ErrorInfo<UnexpectedSymbolDefinitions> {
+class UnexpectedSymbolDefinitions : public ErrorInfo<UnexpectedSymbolDefinitions> {
 public:
   static char ID;
 
   UnexpectedSymbolDefinitions(std::string ModuleName, SymbolNameVector Symbols)
-      : ModuleName(std::move(ModuleName)), Symbols(std::move(Symbols)) {}
+    : ModuleName(std::move(ModuleName)), Symbols(std::move(Symbols)) {}
   std::error_code convertToErrorCode() const override;
   void log(raw_ostream &OS) const override;
   const std::string &getModuleName() const { return ModuleName; }
   const SymbolNameVector &getSymbols() const { return Symbols; }
-
 private:
   std::string ModuleName;
   SymbolNameVector Symbols;
@@ -900,10 +897,10 @@ class JITDylib : public ThreadSafeRefCountedBase<JITDylib>,
   friend class ExecutionSession;
   friend class Platform;
   friend class MaterializationResponsibility;
-
 public:
+
   using AsynchronousSymbolQuerySet =
-      std::set<std::shared_ptr<AsynchronousSymbolQuery>>;
+    std::set<std::shared_ptr<AsynchronousSymbolQuery>>;
 
   JITDylib(const JITDylib &) = delete;
   JITDylib &operator=(const JITDylib &) = delete;
@@ -1077,7 +1074,6 @@ private:
     const AsynchronousSymbolQueryList &pendingQueries() const {
       return PendingQueries;
     }
-
   private:
     AsynchronousSymbolQueryList PendingQueries;
   };
@@ -1458,8 +1454,8 @@ private:
       unique_function<void(Expected<SymbolFlagsMap>)> OnComplete);
 
   // State machine functions for MaterializationResponsibility.
-  void
-  OL_destroyMaterializationResponsibility(MaterializationResponsibility &MR);
+  void OL_destroyMaterializationResponsibility(
+      MaterializationResponsibility &MR);
   SymbolNameSet OL_getRequestedSymbols(const MaterializationResponsibility &MR);
   Error OL_notifyResolved(MaterializationResponsibility &MR,
                           const SymbolMap &Symbols);
@@ -1644,13 +1640,12 @@ inline MaterializationResponsibility::~MaterializationResponsibility() {
   JD->getExecutionSession().OL_destroyMaterializationResponsibility(*this);
 }
 
-inline SymbolNameSet
-MaterializationResponsibility::getRequestedSymbols() const {
+inline SymbolNameSet MaterializationResponsibility::getRequestedSymbols() const {
   return JD->getExecutionSession().OL_getRequestedSymbols(*this);
 }
 
-inline Error
-MaterializationResponsibility::notifyResolved(const SymbolMap &Symbols) {
+inline Error MaterializationResponsibility::notifyResolved(
+    const SymbolMap &Symbols) {
   return JD->getExecutionSession().OL_notifyResolved(*this, Symbols);
 }
 
@@ -1658,8 +1653,8 @@ inline Error MaterializationResponsibility::notifyEmitted() {
   return JD->getExecutionSession().OL_notifyEmitted(*this);
 }
 
-inline Error
-MaterializationResponsibility::defineMaterializing(SymbolFlagsMap SymbolFlags) {
+inline Error MaterializationResponsibility::defineMaterializing(
+    SymbolFlagsMap SymbolFlags) {
   return JD->getExecutionSession().OL_defineMaterializing(
       *this, std::move(SymbolFlags));
 }

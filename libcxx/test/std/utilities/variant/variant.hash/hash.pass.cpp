@@ -24,14 +24,13 @@
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
 namespace std {
-template <>
-struct hash< ::MakeEmptyT> {
-  size_t operator()(const ::MakeEmptyT&) const {
+template <> struct hash<::MakeEmptyT> {
+  size_t operator()(const ::MakeEmptyT &) const {
     assert(false);
     return 0;
   }
 };
-} // namespace std
+}
 #endif
 
 void test_hash_variant() {
@@ -51,9 +50,9 @@ void test_hash_variant() {
     }
   }
   {
-    using V = std::variant<std::monostate, int, long, const char*>;
+    using V = std::variant<std::monostate, int, long, const char *>;
     using H = std::hash<V>;
-    const char* str = "hello";
+    const char *str = "hello";
     const V v0;
     const V v0_other;
     const V v1(42);
@@ -105,19 +104,21 @@ void test_hash_monostate() {
     ASSERT_NOEXCEPT(h(m1));
     static_assert(std::is_copy_constructible<H>::value, "");
   }
-  { test_hash_enabled_for_type<std::monostate>(); }
+  {
+    test_hash_enabled_for_type<std::monostate>();
+  }
 }
 
 void test_hash_variant_duplicate_elements() {
-  // Test that the index of the alternative participates in the hash value.
-  using V = std::variant<std::monostate, std::monostate>;
-  using H = std::hash<V>;
-  H h{};
-  const V v1(std::in_place_index<0>);
-  const V v2(std::in_place_index<1>);
-  assert(h(v1) == h(v1));
-  assert(h(v2) == h(v2));
-  LIBCPP_ASSERT(h(v1) != h(v2));
+    // Test that the index of the alternative participates in the hash value.
+    using V = std::variant<std::monostate, std::monostate>;
+    using H = std::hash<V>;
+    H h{};
+    const V v1(std::in_place_index<0>);
+    const V v2(std::in_place_index<1>);
+    assert(h(v1) == h(v1));
+    assert(h(v2) == h(v2));
+    LIBCPP_ASSERT(h(v1) != h(v2));
 }
 
 struct A {};
@@ -127,10 +128,12 @@ namespace std {
 
 template <>
 struct hash<B> {
-  size_t operator()(B const&) const { return 0; }
+  size_t operator()(B const&) const {
+    return 0;
+  }
 };
 
-} // namespace std
+}
 
 void test_hash_variant_enabled() {
   {
@@ -138,12 +141,12 @@ void test_hash_variant_enabled() {
     test_hash_enabled_for_type<std::variant<int*, long, double, const int> >();
   }
   {
-    test_hash_disabled_for_type<std::variant<int, A> >();
-    test_hash_disabled_for_type<std::variant<const A, void*> >();
+    test_hash_disabled_for_type<std::variant<int, A>>();
+    test_hash_disabled_for_type<std::variant<const A, void*>>();
   }
   {
-    test_hash_enabled_for_type<std::variant<int, B> >();
-    test_hash_enabled_for_type<std::variant<const B, int> >();
+    test_hash_enabled_for_type<std::variant<int, B>>();
+    test_hash_enabled_for_type<std::variant<const B, int>>();
   }
 }
 

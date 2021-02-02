@@ -1,9 +1,7 @@
 // RUN: %clang_cc1 -emit-llvm-only -verify %s
 // expected-no-diagnostics
 
-struct A {
-  int a();
-};
+struct A { int a(); };
 typedef int B;
 void a() {
   A x;

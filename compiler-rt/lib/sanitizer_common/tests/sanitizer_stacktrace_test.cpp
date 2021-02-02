@@ -10,10 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_stacktrace.h"
-
-#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_stacktrace.h"
+#include "gtest/gtest.h"
 
 namespace __sanitizer {
 
@@ -43,7 +42,9 @@ class FastUnwindTest : public ::testing::Test {
 #endif
 };
 
-static uptr PC(uptr idx) { return (1 << 20) + idx; }
+static uptr PC(uptr idx) {
+  return (1<<20) + idx;
+}
 
 void FastUnwindTest::SetUp() {
   size_t ps = GetPageSize();
@@ -57,7 +58,7 @@ void FastUnwindTest::SetUp() {
   // even indices.
   for (uptr i = 0; i + 1 < fake_stack_size; i += 2) {
     fake_stack[i] = (uptr)&fake_stack[i + kFpOffset];  // fp
-    fake_stack[i + 1] = PC(i + 1);                     // retaddr
+    fake_stack[i+1] = PC(i + 1); // retaddr
   }
   // Mark the last fp point back up to terminate the stack trace.
   fake_stack[RoundDownTo(fake_stack_size - 1, 2)] = (uhwptr)&fake_stack[0];
@@ -94,7 +95,7 @@ TEST_F(FastUnwindTest, SKIP_ON_SPARC(Basic)) {
   EXPECT_EQ(6U, trace.size);
   EXPECT_EQ(start_pc, trace.trace[0]);
   for (uptr i = 1; i <= 5; i++) {
-    EXPECT_EQ(PC(i * 2 - 1), trace.trace[i]);
+    EXPECT_EQ(PC(i*2 - 1), trace.trace[i]);
   }
 }
 
@@ -107,7 +108,7 @@ TEST_F(FastUnwindTest, SKIP_ON_SPARC(FramePointerLoop)) {
   EXPECT_EQ(4U, trace.size);
   EXPECT_EQ(start_pc, trace.trace[0]);
   for (uptr i = 1; i <= 3; i++) {
-    EXPECT_EQ(PC(i * 2 - 1), trace.trace[i]);
+    EXPECT_EQ(PC(i*2 - 1), trace.trace[i]);
   }
 }
 
@@ -119,7 +120,7 @@ TEST_F(FastUnwindTest, SKIP_ON_SPARC(MisalignedFramePointer)) {
   EXPECT_EQ(4U, trace.size);
   EXPECT_EQ(start_pc, trace.trace[0]);
   for (uptr i = 1; i < 4U; i++) {
-    EXPECT_EQ(PC(i * 2 - 1), trace.trace[i]);
+    EXPECT_EQ(PC(i*2 - 1), trace.trace[i]);
   }
 }
 
@@ -155,11 +156,11 @@ TEST_F(FastUnwindTest, SKIP_ON_SPARC(CloseToZeroFrame)) {
   EXPECT_EQ(3U, trace.size);
   EXPECT_EQ(start_pc, trace.trace[0]);
   for (uptr i = 1; i < 3U; i++) {
-    EXPECT_EQ(PC(i * 2 - 1), trace.trace[i]);
+    EXPECT_EQ(PC(i*2 - 1), trace.trace[i]);
   }
 }
 
-#endif  // SANITIZER_CAN_FAST_UNWIND
+#endif // SANITIZER_CAN_FAST_UNWIND
 
 TEST(SlowUnwindTest, ShortStackTrace) {
   BufferedStackTrace stack;

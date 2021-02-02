@@ -32,7 +32,7 @@ class RegisterScheduler
     : public MachinePassRegistryNode<
           ScheduleDAGSDNodes *(*)(SelectionDAGISel *, CodeGenOpt::Level)> {
 public:
-  using FunctionPassCtor = ScheduleDAGSDNodes *(*)(SelectionDAGISel *,
+  using FunctionPassCtor = ScheduleDAGSDNodes *(*)(SelectionDAGISel*,
                                                    CodeGenOpt::Level);
 
   static MachinePassRegistry<FunctionPassCtor> Registry;
@@ -42,6 +42,7 @@ public:
     Registry.Add(this);
   }
   ~RegisterScheduler() { Registry.Remove(this); }
+
 
   // Accessors.
   RegisterScheduler *getNext() const {

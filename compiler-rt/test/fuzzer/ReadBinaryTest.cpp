@@ -9,8 +9,8 @@
 #include <iostream>
 #include <string>
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  std::string InputStr(reinterpret_cast<const char *>(Data), Size);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* Data, size_t Size) {
+  std::string InputStr(reinterpret_cast<const char*>(Data), Size);
   std::string MagicStr("Hello\r\nWorld\r\n");
   if (InputStr == MagicStr) {
     std::cout << "BINGO!";

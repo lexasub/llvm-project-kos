@@ -28,11 +28,12 @@ namespace {
 class UncountedCallArgsChecker
     : public Checker<check::ASTDecl<TranslationUnitDecl>> {
   BugType Bug{this,
-              "Uncounted call argument for a raw pointer/reference parameter",
-              "WebKit coding guidelines"};
+            "Uncounted call argument for a raw pointer/reference parameter",
+            "WebKit coding guidelines"};
   mutable BugReporter *BR;
 
 public:
+
   void checkASTDecl(const TranslationUnitDecl *TUD, AnalysisManager &MGR,
                     BugReporter &BRArg) const {
     BR = &BRArg;

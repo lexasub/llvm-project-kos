@@ -5,9 +5,7 @@
 module A {}
 #pragma clang module contents
 #pragma clang module begin A
-namespace N {
-class X;
-}
+namespace N { class X; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -15,11 +13,7 @@ class X;
 module B {}
 #pragma clang module contents
 #pragma clang module begin B
-namespace N {
-class Friendly {
-  friend class X;
-};
-} // namespace N
+namespace N { class Friendly { friend class X; }; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -36,11 +30,7 @@ using N::X;
 #pragma clang module endbuild
 
 #pragma clang module import B
-namespace N {
-class AlsoFriendly {
-  friend class X;
-};
-} // namespace N
+namespace N { class AlsoFriendly { friend class X; }; }
 #pragma clang module import A
 #pragma clang module import C
 // The friend declaration from N::Friendly is now the first in the redecl

@@ -3,36 +3,36 @@
 #include "system-header-simulation.h"
 
 namespace A {
-namespace B {
-int b;
+  namespace B {
+    int b;
+  }
 }
-} // namespace A
 
 namespace A {
-namespace B {
-int c;
+  namespace B {
+    int c;
+  }
 }
-} // namespace A
 
 namespace posix {
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'posix' namespace can result in undefined behavior [cert-dcl58-cpp]
-namespace vmi {
+  namespace vmi {
+  }
 }
-} // namespace posix
 
 namespace std {
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'std' namespace can
-int stdInt;
-} // namespace std
+  int stdInt;
+}
 
 namespace foobar {
-namespace std {
-int bar;
+  namespace std {
+    int bar;
+  }
 }
-} // namespace foobar
 
 namespace posix::a {
-// CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'posix' namespace
+// CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'posix' namespace 
 }
 
 enum class MyError {
@@ -44,9 +44,9 @@ namespace std {
 template <>
 struct is_error_code_enum<MyError> : std::true_type {};
 
-template <>
+template<>
 void swap<MyError>(MyError &a, MyError &b);
-} // namespace std
+}
 
 enum class MyError2 {
   Error2A,
@@ -54,13 +54,14 @@ enum class MyError2 {
 };
 
 namespace std {
-// CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'std' namespace
+// CHECK-MESSAGES: :[[@LINE-1]]:11: warning: modification of 'std' namespace 
 template <>
 struct is_error_code_enum<MyError2> : std::true_type {};
 
 int foobar;
-} // namespace std
+}
 
 using namespace std;
 
 int x;
+

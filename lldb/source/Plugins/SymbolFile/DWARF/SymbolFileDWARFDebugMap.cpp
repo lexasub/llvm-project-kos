@@ -1109,7 +1109,8 @@ bool SymbolFileDWARFDebugMap::Supports_DW_AT_APPLE_objc_complete_type(
 }
 
 TypeSP SymbolFileDWARFDebugMap::FindCompleteObjCDefinitionTypeForDIE(
-    const DWARFDIE &die, ConstString type_name, bool must_be_implementation) {
+    const DWARFDIE &die, ConstString type_name,
+    bool must_be_implementation) {
   // If we have a debug map, we will have an Objective-C symbol whose name is
   // the type name and whose type is eSymbolTypeObjCClass. If we can find that
   // symbol and find its containing parent, we can locate the .o file that will

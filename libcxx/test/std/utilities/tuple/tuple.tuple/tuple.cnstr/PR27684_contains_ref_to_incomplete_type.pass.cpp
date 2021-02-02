@@ -32,19 +32,19 @@ IncompleteType const& cinc1 = inc1;
 IncompleteType const& cinc2 = inc2;
 
 int main(int, char**) {
-  using IT = IncompleteType;
-  { // try calling tuple(Tp const&...)
-    using Tup = std::tuple<const IT&, const IT&>;
-    Tup t(cinc1, cinc2);
-    assert(&std::get<0>(t) == &inc1);
-    assert(&std::get<1>(t) == &inc2);
-  }
-  { // try calling tuple(Up&&...)
-    using Tup = std::tuple<const IT&, const IT&>;
-    Tup t(inc1, inc2);
-    assert(&std::get<0>(t) == &inc1);
-    assert(&std::get<1>(t) == &inc2);
-  }
+    using IT = IncompleteType;
+    { // try calling tuple(Tp const&...)
+        using Tup = std::tuple<const IT&, const IT&>;
+        Tup t(cinc1, cinc2);
+        assert(&std::get<0>(t) == &inc1);
+        assert(&std::get<1>(t) == &inc2);
+    }
+    { // try calling tuple(Up&&...)
+        using Tup = std::tuple<const IT&, const IT&>;
+        Tup t(inc1, inc2);
+        assert(&std::get<0>(t) == &inc1);
+        assert(&std::get<1>(t) == &inc2);
+    }
 
   return 0;
 }

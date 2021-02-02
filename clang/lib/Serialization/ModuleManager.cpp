@@ -99,12 +99,15 @@ static void updateModuleImports(ModuleFile &MF, ModuleFile *ImportedBy,
   }
 }
 
-ModuleManager::AddModuleResult ModuleManager::addModule(
-    StringRef FileName, ModuleKind Type, SourceLocation ImportLoc,
-    ModuleFile *ImportedBy, unsigned Generation, off_t ExpectedSize,
-    time_t ExpectedModTime, ASTFileSignature ExpectedSignature,
-    ASTFileSignatureReader ReadSignature, ModuleFile *&Module,
-    std::string &ErrorStr) {
+ModuleManager::AddModuleResult
+ModuleManager::addModule(StringRef FileName, ModuleKind Type,
+                         SourceLocation ImportLoc, ModuleFile *ImportedBy,
+                         unsigned Generation,
+                         off_t ExpectedSize, time_t ExpectedModTime,
+                         ASTFileSignature ExpectedSignature,
+                         ASTFileSignatureReader ReadSignature,
+                         ModuleFile *&Module,
+                         std::string &ErrorStr) {
   Module = nullptr;
 
   // Look for the file entry. This only fails if the expected size or
@@ -259,7 +262,9 @@ void ModuleManager::removeModules(ModuleIterator First, ModuleMap *modMap) {
       (llvm::pointer_iterator<ModuleIterator>(First)),
       (llvm::pointer_iterator<ModuleIterator>(Last)));
 
-  auto IsVictim = [&](ModuleFile *MF) { return victimSet.count(MF); };
+  auto IsVictim = [&](ModuleFile *MF) {
+    return victimSet.count(MF);
+  };
   // Remove any references to the now-destroyed modules.
   for (auto I = begin(); I != First; ++I) {
     I->Imports.remove_if(IsVictim);
@@ -292,8 +297,9 @@ void ModuleManager::removeModules(ModuleIterator First, ModuleMap *modMap) {
   Chain.erase(Chain.begin() + (First - begin()), Chain.end());
 }
 
-void ModuleManager::addInMemoryBuffer(
-    StringRef FileName, std::unique_ptr<llvm::MemoryBuffer> Buffer) {
+void
+ModuleManager::addInMemoryBuffer(StringRef FileName,
+                                 std::unique_ptr<llvm::MemoryBuffer> Buffer) {
   const FileEntry *Entry =
       FileMgr.getVirtualFile(FileName, Buffer->getBufferSize(), 0);
   InMemoryBuffers[Entry] = std::move(Buffer);
@@ -404,8 +410,8 @@ void ModuleManager::visit(llvm::function_ref<bool(ModuleFile &M)> Visitor,
   // module index, mark every module file in common with the global module
   // index that is *not* in that set as 'visited'.
   if (ModuleFilesHit && !ModulesInCommonWithGlobalIndex.empty()) {
-    for (unsigned I = 0, N = ModulesInCommonWithGlobalIndex.size(); I != N;
-         ++I) {
+    for (unsigned I = 0, N = ModulesInCommonWithGlobalIndex.size(); I != N; ++I)
+    {
       ModuleFile *M = ModulesInCommonWithGlobalIndex[I];
       if (!ModuleFilesHit->count(M))
         State->VisitNumber[M->Index] = VisitNumber;
@@ -432,8 +438,8 @@ void ModuleManager::visit(llvm::function_ref<bool(ModuleFile &M)> Visitor,
       // For any module that this module depends on, push it on the
       // stack (if it hasn't already been marked as visited).
       for (llvm::SetVector<ModuleFile *>::iterator
-               M = NextModule->Imports.begin(),
-               MEnd = NextModule->Imports.end();
+             M = NextModule->Imports.begin(),
+             MEnd = NextModule->Imports.end();
            M != MEnd; ++M) {
         if (State->VisitNumber[(*M)->Index] != VisitNumber) {
           State->Stack.push_back(*M);
@@ -481,41 +487,44 @@ bool ModuleManager::lookupModuleFile(StringRef FileName, off_t ExpectedSize,
 #ifndef NDEBUG
 namespace llvm {
 
-template <> struct GraphTraits<ModuleManager> {
-  using NodeRef = ModuleFile *;
-  using ChildIteratorType = llvm::SetVector<ModuleFile *>::const_iterator;
-  using nodes_iterator = pointer_iterator<ModuleManager::ModuleConstIterator>;
+  template<>
+  struct GraphTraits<ModuleManager> {
+    using NodeRef = ModuleFile *;
+    using ChildIteratorType = llvm::SetVector<ModuleFile *>::const_iterator;
+    using nodes_iterator = pointer_iterator<ModuleManager::ModuleConstIterator>;
 
-  static ChildIteratorType child_begin(NodeRef Node) {
-    return Node->Imports.begin();
-  }
+    static ChildIteratorType child_begin(NodeRef Node) {
+      return Node->Imports.begin();
+    }
 
-  static ChildIteratorType child_end(NodeRef Node) {
-    return Node->Imports.end();
-  }
+    static ChildIteratorType child_end(NodeRef Node) {
+      return Node->Imports.end();
+    }
 
-  static nodes_iterator nodes_begin(const ModuleManager &Manager) {
-    return nodes_iterator(Manager.begin());
-  }
+    static nodes_iterator nodes_begin(const ModuleManager &Manager) {
+      return nodes_iterator(Manager.begin());
+    }
 
-  static nodes_iterator nodes_end(const ModuleManager &Manager) {
-    return nodes_iterator(Manager.end());
-  }
-};
+    static nodes_iterator nodes_end(const ModuleManager &Manager) {
+      return nodes_iterator(Manager.end());
+    }
+  };
 
-template <>
-struct DOTGraphTraits<ModuleManager> : public DefaultDOTGraphTraits {
-  explicit DOTGraphTraits(bool IsSimple = false)
-      : DefaultDOTGraphTraits(IsSimple) {}
+  template<>
+  struct DOTGraphTraits<ModuleManager> : public DefaultDOTGraphTraits {
+    explicit DOTGraphTraits(bool IsSimple = false)
+        : DefaultDOTGraphTraits(IsSimple) {}
 
-  static bool renderGraphFromBottomUp() { return true; }
+    static bool renderGraphFromBottomUp() { return true; }
 
-  std::string getNodeLabel(ModuleFile *M, const ModuleManager &) {
-    return M->ModuleName;
-  }
-};
+    std::string getNodeLabel(ModuleFile *M, const ModuleManager&) {
+      return M->ModuleName;
+    }
+  };
 
 } // namespace llvm
 
-void ModuleManager::viewGraph() { llvm::ViewGraph(*this, "Modules"); }
+void ModuleManager::viewGraph() {
+  llvm::ViewGraph(*this, "Modules");
+}
 #endif

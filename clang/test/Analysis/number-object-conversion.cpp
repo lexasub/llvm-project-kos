@@ -26,44 +26,34 @@ void takes_bool(bool);
 
 void bad_boolean(const OSBoolean *p) {
 #ifdef PEDANTIC
-  if (p) {
-  } // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive boolean value; instead, either compare the pointer to nullptr or call getValue()}}
-  if (!p) {
-  }          // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive boolean value; instead, either compare the pointer to nullptr or call getValue()}}
+  if (p) {} // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive boolean value; instead, either compare the pointer to nullptr or call getValue()}}
+  if (!p) {} // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive boolean value; instead, either compare the pointer to nullptr or call getValue()}}
   p ? 1 : 2; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive boolean value; instead, either compare the pointer to nullptr or call getValue()}}
 #else
-  if (p) {
-  } // no-warning
-  if (!p) {
-  }          // no-warning
+  if (p) {} // no-warning
+  if (!p) {} // no-warning
   p ? 1 : 2; // no-warning
 #endif
-  (bool)p;       // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
-  bool x = p;    // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
-  x = p;         // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
+  (bool)p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
+  bool x = p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
+  x = p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
   takes_bool(p); // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive bool value; did you mean to call getValue()?}}
   takes_bool(x); // no-warning
 }
 
 void bad_number(const OSNumber *p) {
 #ifdef PEDANTIC
-  if (p) {
-  } // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar boolean value; instead, either compare the pointer to nullptr or call a method on 'class OSNumber *' to get the scalar value}}
-  if (!p) {
-  }          // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar boolean value; instead, either compare the pointer to nullptr or call a method on 'class OSNumber *' to get the scalar value}}
+  if (p) {} // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar boolean value; instead, either compare the pointer to nullptr or call a method on 'class OSNumber *' to get the scalar value}}
+  if (!p) {} // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar boolean value; instead, either compare the pointer to nullptr or call a method on 'class OSNumber *' to get the scalar value}}
   p ? 1 : 2; // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar boolean value; instead, either compare the pointer to nullptr or call a method on 'class OSNumber *' to get the scalar value}}
-  if (p == 0) {
-  } // expected-warning{{Comparing a pointer value of type 'class OSNumber *' to a scalar integer value; instead, either compare the pointer to nullptr or compare the result of calling a method on 'class OSNumber *' to get the scalar value}}
+  if (p == 0) {} // expected-warning{{Comparing a pointer value of type 'class OSNumber *' to a scalar integer value; instead, either compare the pointer to nullptr or compare the result of calling a method on 'class OSNumber *' to get the scalar value}}
 #else
-  if (p) {
-  } // no-warning
-  if (!p) {
-  }          // no-warning
+  if (p) {} // no-warning
+  if (!p) {} // no-warning
   p ? 1 : 2; // no-warning
-  if (p == 0) {
-  } // no-warning
+  if (p == 0) {} // no-warning
 #endif
-  (int)p;        // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar integer value; did you mean to call a method on 'class OSNumber *' to get the scalar value?}}
+  (int)p; // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar integer value; did you mean to call a method on 'class OSNumber *' to get the scalar value?}}
   takes_bool(p); // expected-warning{{Converting a pointer value of type 'class OSNumber *' to a scalar bool value; did you mean to call a method on 'class OSNumber *' to get the scalar value?}}
 }
 
@@ -75,14 +65,12 @@ void bad_sugared(sugared_OSBoolean p) {
 
 void good(const OSBoolean *p) {
   bool x = p->isTrue(); // no-warning
-  (bool)p->isFalse();   // no-warning
-  if (p == kOSBooleanTrue) {
-  } // no-warning
+  (bool)p->isFalse(); // no-warning
+  if (p == kOSBooleanTrue) {} // no-warning
 }
 
 void suppression(const OSBoolean *p) {
-  if (p == NULL) {
-  }                        // no-warning
+  if (p == NULL) {} // no-warning
   bool y = (p == nullptr); // no-warning
 }
 
@@ -91,17 +79,16 @@ typedef long intptr_t;
 typedef unsigned long uintptr_t;
 typedef long fintptr_t; // Fake, for testing the regex.
 void test_intptr_t(const OSBoolean *p) {
-  (long)p;          // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive integer value; did you mean to call getValue()?}}
-  (intptr_t) p;     // no-warning
+  (long)p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive integer value; did you mean to call getValue()?}}
+  (intptr_t)p; // no-warning
   (unsigned long)p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive integer value; did you mean to call getValue()?}}
-  (uintptr_t) p;    // no-warning
-  (fintptr_t) p;    // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive integer value; did you mean to call getValue()?}}
+  (uintptr_t)p; // no-warning
+  (fintptr_t)p; // expected-warning{{Converting a pointer value of type 'class OSBoolean *' to a primitive integer value; did you mean to call getValue()?}}
 }
 
 // Test a different definition of NULL.
 #undef NULL
 #define NULL 0
 void test_non_pointer_NULL(const OSBoolean *p) {
-  if (p == NULL) {
-  } // no-warning
+  if (p == NULL) {} // no-warning
 }

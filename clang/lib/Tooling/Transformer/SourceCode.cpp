@@ -72,8 +72,8 @@ llvm::Error clang::tooling::validateEditRange(const CharSourceRange &Range,
         errc::invalid_argument, "Range begins and ends in different files");
 
   if (BeginInfo.second > EndInfo.second)
-    return llvm::make_error<StringError>(errc::invalid_argument,
-                                         "Range's begin is past its end");
+    return llvm::make_error<StringError>(
+        errc::invalid_argument, "Range's begin is past its end");
 
   return llvm::Error::success();
 }
@@ -98,6 +98,7 @@ clang::tooling::getRangeForEdit(const CharSourceRange &EditRange,
   if (IsInvalid)
     return llvm::None;
   return Range;
+
 }
 
 static bool startsWithNewline(const SourceManager &SM, const Token &Tok) {

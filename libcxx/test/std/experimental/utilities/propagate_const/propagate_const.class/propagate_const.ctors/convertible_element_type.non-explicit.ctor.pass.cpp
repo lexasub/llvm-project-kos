@@ -21,7 +21,10 @@ using std::experimental::propagate_const;
 
 typedef propagate_const<CopyConstructibleFromX> P;
 
-void f(const P& p) { assert(*p == 2); }
+void f(const P& p)
+{
+  assert(*p==2);
+}
 
 int main(int, char**) {
   f(X(2));

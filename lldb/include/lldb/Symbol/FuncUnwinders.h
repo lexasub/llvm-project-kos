@@ -137,7 +137,8 @@ private:
   // Fetching the UnwindPlans can be expensive - if we've already attempted to
   // get one & failed, don't try again.
   bool m_tried_unwind_plan_assembly : 1, m_tried_unwind_plan_eh_frame : 1,
-      m_tried_unwind_plan_object_file : 1, m_tried_unwind_plan_debug_frame : 1,
+      m_tried_unwind_plan_object_file : 1,
+      m_tried_unwind_plan_debug_frame : 1,
       m_tried_unwind_plan_object_file_augmented : 1,
       m_tried_unwind_plan_eh_frame_augmented : 1,
       m_tried_unwind_plan_debug_frame_augmented : 1,

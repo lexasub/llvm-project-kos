@@ -28,14 +28,14 @@
 #include "filesystem_common.h"
 
 #if defined(_LIBCPP_WIN32API)
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <io.h>
+# define WIN32_LEAN_AND_MEAN
+# define NOMINMAX
+# include <windows.h>
+# include <io.h>
 #else
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
+# include <unistd.h>
+# include <sys/stat.h>
+# include <sys/statvfs.h>
 #endif
 #include <time.h>
 
@@ -59,13 +59,13 @@ namespace {
 #undef _S_IFLNK
 #undef _S_IFSOCK
 
-#define _S_IFMT 0xF000
-#define _S_IFDIR 0x4000
-#define _S_IFCHR 0x2000
-#define _S_IFIFO 0x1000
-#define _S_IFREG 0x8000
-#define _S_IFBLK 0x6000
-#define _S_IFLNK 0xA000
+#define _S_IFMT   0xF000
+#define _S_IFDIR  0x4000
+#define _S_IFCHR  0x2000
+#define _S_IFIFO  0x1000
+#define _S_IFREG  0x8000
+#define _S_IFBLK  0x6000
+#define _S_IFLNK  0xA000
 #define _S_IFSOCK 0xC000
 
 #undef S_ISDIR
@@ -76,15 +76,16 @@ namespace {
 #undef S_ISBLK
 #undef S_ISSOCK
 
-#define S_ISDIR(m) (((m)&_S_IFMT) == _S_IFDIR)
-#define S_ISCHR(m) (((m)&_S_IFMT) == _S_IFCHR)
-#define S_ISFIFO(m) (((m)&_S_IFMT) == _S_IFIFO)
-#define S_ISREG(m) (((m)&_S_IFMT) == _S_IFREG)
-#define S_ISBLK(m) (((m)&_S_IFMT) == _S_IFBLK)
-#define S_ISLNK(m) (((m)&_S_IFMT) == _S_IFLNK)
-#define S_ISSOCK(m) (((m)&_S_IFMT) == _S_IFSOCK)
+#define S_ISDIR(m)      (((m) & _S_IFMT) == _S_IFDIR)
+#define S_ISCHR(m)      (((m) & _S_IFMT) == _S_IFCHR)
+#define S_ISFIFO(m)     (((m) & _S_IFMT) == _S_IFIFO)
+#define S_ISREG(m)      (((m) & _S_IFMT) == _S_IFREG)
+#define S_ISBLK(m)      (((m) & _S_IFMT) == _S_IFBLK)
+#define S_ISLNK(m)      (((m) & _S_IFMT) == _S_IFLNK)
+#define S_ISSOCK(m)     (((m) & _S_IFMT) == _S_IFSOCK)
 
 #define O_NONBLOCK 0
+
 
 // There were 369 years and 89 leap days from the Windows epoch
 // (1601) to the Unix epoch (1970).
@@ -121,7 +122,7 @@ int set_errno(int e = GetLastError()) {
 
 class WinHandle {
 public:
-  WinHandle(const wchar_t* p, DWORD access, DWORD flags) {
+  WinHandle(const wchar_t *p, DWORD access, DWORD flags) {
     h = CreateFileW(
         p, access, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | flags, nullptr);
@@ -137,7 +138,7 @@ private:
   HANDLE h;
 };
 
-int stat_handle(HANDLE h, StatT* buf) {
+int stat_handle(HANDLE h, StatT *buf) {
   FILE_BASIC_INFO basic;
   if (!GetFileInformationByHandleEx(h, FileBasicInfo, &basic, sizeof(basic)))
     return set_errno();
@@ -175,7 +176,7 @@ int stat_handle(HANDLE h, StatT* buf) {
   return 0;
 }
 
-int stat_file(const wchar_t* path, StatT* buf, DWORD flags) {
+int stat_file(const wchar_t *path, StatT *buf, DWORD flags) {
   WinHandle h(path, FILE_READ_ATTRIBUTES, flags);
   if (!h)
     return set_errno();
@@ -183,23 +184,23 @@ int stat_file(const wchar_t* path, StatT* buf, DWORD flags) {
   return ret;
 }
 
-int stat(const wchar_t* path, StatT* buf) { return stat_file(path, buf, 0); }
+int stat(const wchar_t *path, StatT *buf) { return stat_file(path, buf, 0); }
 
-int lstat(const wchar_t* path, StatT* buf) {
+int lstat(const wchar_t *path, StatT *buf) {
   return stat_file(path, buf, FILE_FLAG_OPEN_REPARSE_POINT);
 }
 
-int fstat(int fd, StatT* buf) {
+int fstat(int fd, StatT *buf) {
   HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
   return stat_handle(h, buf);
 }
 
-int mkdir(const wchar_t* path, int permissions) {
+int mkdir(const wchar_t *path, int permissions) {
   (void)permissions;
   return _wmkdir(path);
 }
 
-int symlink_file_dir(const wchar_t* oldname, const wchar_t* newname,
+int symlink_file_dir(const wchar_t *oldname, const wchar_t *newname,
                      bool is_dir) {
   path dest(oldname);
   dest.make_preferred();
@@ -216,21 +217,21 @@ int symlink_file_dir(const wchar_t* oldname, const wchar_t* newname,
   return set_errno();
 }
 
-int symlink_file(const wchar_t* oldname, const wchar_t* newname) {
+int symlink_file(const wchar_t *oldname, const wchar_t *newname) {
   return symlink_file_dir(oldname, newname, false);
 }
 
-int symlink_dir(const wchar_t* oldname, const wchar_t* newname) {
+int symlink_dir(const wchar_t *oldname, const wchar_t *newname) {
   return symlink_file_dir(oldname, newname, true);
 }
 
-int link(const wchar_t* oldname, const wchar_t* newname) {
+int link(const wchar_t *oldname, const wchar_t *newname) {
   if (CreateHardLinkW(newname, oldname, nullptr))
     return 0;
   return set_errno();
 }
 
-int remove(const wchar_t* path) {
+int remove(const wchar_t *path) {
   detail::WinHandle h(path, DELETE, FILE_FLAG_OPEN_REPARSE_POINT);
   if (!h)
     return set_errno();
@@ -256,14 +257,14 @@ int ftruncate(int fd, off_t length) {
   return truncate_handle(h, length);
 }
 
-int truncate(const wchar_t* path, off_t length) {
+int truncate(const wchar_t *path, off_t length) {
   detail::WinHandle h(path, GENERIC_WRITE, 0);
   if (!h)
     return set_errno();
   return truncate_handle(h, length);
 }
 
-int rename(const wchar_t* from, const wchar_t* to) {
+int rename(const wchar_t *from, const wchar_t *to) {
   if (!(MoveFileExW(from, to,
                     MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING |
                         MOVEFILE_WRITE_THROUGH)))
@@ -271,17 +272,16 @@ int rename(const wchar_t* from, const wchar_t* to) {
   return 0;
 }
 
-template <class... Args>
-int open(const wchar_t* filename, Args... args) {
+template <class... Args> int open(const wchar_t *filename, Args... args) {
   return _wopen(filename, args...);
 }
 int close(int fd) { return _close(fd); }
-int chdir(const wchar_t* path) { return _wchdir(path); }
+int chdir(const wchar_t *path) { return _wchdir(path); }
 #else
-int symlink_file(const char* oldname, const char* newname) {
+int symlink_file(const char *oldname, const char *newname) {
   return ::symlink(oldname, newname);
 }
-int symlink_dir(const char* oldname, const char* newname) {
+int symlink_dir(const char *oldname, const char *newname) {
   return ::symlink(oldname, newname);
 }
 using ::chdir;

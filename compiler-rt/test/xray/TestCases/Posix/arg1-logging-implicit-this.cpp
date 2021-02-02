@@ -10,7 +10,7 @@
 #include <cassert>
 
 class A {
-public:
+ public:
   [[clang::xray_always_instrument, clang::xray_log_args(1)]] void f() {
     // does nothing.
   }

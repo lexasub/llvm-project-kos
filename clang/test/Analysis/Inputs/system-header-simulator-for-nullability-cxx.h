@@ -1,7 +1,7 @@
 #pragma clang system_header
 
 struct S {
-  ~S() {}
+  ~S(){}
 };
 
 void foo() {

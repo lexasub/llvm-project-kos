@@ -14,26 +14,38 @@
 
 struct A {};
 
-void test1() {
-  try {
-    throw nullptr;
-    assert(false);
-  } catch (int* p) {
-    assert(!p);
-  } catch (long*) {
-    assert(false);
-  }
+void test1()
+{
+    try
+    {
+        throw nullptr;
+        assert(false);
+    }
+    catch (int* p)
+    {
+        assert(!p);
+    }
+    catch (long*)
+    {
+        assert(false);
+    }
 }
 
-void test2() {
-  try {
-    throw nullptr;
-    assert(false);
-  } catch (A* p) {
-    assert(!p);
-  } catch (int*) {
-    assert(false);
-  }
+void test2()
+{
+    try
+    {
+        throw nullptr;
+        assert(false);
+    }
+    catch (A* p)
+    {
+        assert(!p);
+    }
+    catch (int*)
+    {
+        assert(false);
+    }
 }
 
 template <class Catch>
@@ -48,7 +60,9 @@ void catch_nullptr_test() {
   }
 }
 
-int main(int, char**) {
+
+int main(int, char**)
+{
   // catch naked nullptrs
   test1();
   test2();

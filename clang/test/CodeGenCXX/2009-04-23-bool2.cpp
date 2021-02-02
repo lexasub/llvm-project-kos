@@ -6,9 +6,10 @@ struct F {
   bool b2 : 7;
 };
 
-int main() {
-  F f = {true, true};
+int main()
+{
+  F f = { true, true };
 
-  if (int(f.b1) != 1)
+  if (int (f.b1) != 1)
     return 1;
 }

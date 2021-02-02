@@ -7,8 +7,10 @@ using namespace clang;
 using namespace clang::tooling;
 
 // FIXME: do something more useful with the error message
-CXCompilationDatabase clang_CompilationDatabase_fromDirectory(
-    const char *BuildDir, CXCompilationDatabase_Error *ErrorCode) {
+CXCompilationDatabase
+clang_CompilationDatabase_fromDirectory(const char *BuildDir,
+                                        CXCompilationDatabase_Error *ErrorCode)
+{
   std::string ErrorMsg;
   CXCompilationDatabase_Error Err = CXCompilationDatabase_NoError;
 
@@ -26,11 +28,14 @@ CXCompilationDatabase clang_CompilationDatabase_fromDirectory(
   return db.release();
 }
 
-void clang_CompilationDatabase_dispose(CXCompilationDatabase CDb) {
+void
+clang_CompilationDatabase_dispose(CXCompilationDatabase CDb)
+{
   delete static_cast<CompilationDatabase *>(CDb);
 }
 
-struct AllocatedCXCompileCommands {
+struct AllocatedCXCompileCommands
+{
   std::vector<CompileCommand> CCmd;
 
   AllocatedCXCompileCommands(std::vector<CompileCommand> Cmd)
@@ -39,7 +44,8 @@ struct AllocatedCXCompileCommands {
 
 CXCompileCommands
 clang_CompilationDatabase_getCompileCommands(CXCompilationDatabase CDb,
-                                             const char *CompleteFileName) {
+                                             const char *CompleteFileName)
+{
   if (CompilationDatabase *db = static_cast<CompilationDatabase *>(CDb)) {
     std::vector<CompileCommand> CCmd(db->getCompileCommands(CompleteFileName));
     if (!CCmd.empty())
@@ -60,27 +66,32 @@ clang_CompilationDatabase_getAllCompileCommands(CXCompilationDatabase CDb) {
   return nullptr;
 }
 
-void clang_CompileCommands_dispose(CXCompileCommands Cmds) {
+void
+clang_CompileCommands_dispose(CXCompileCommands Cmds)
+{
   delete static_cast<AllocatedCXCompileCommands *>(Cmds);
 }
 
-unsigned clang_CompileCommands_getSize(CXCompileCommands Cmds) {
+unsigned
+clang_CompileCommands_getSize(CXCompileCommands Cmds)
+{
   if (!Cmds)
     return 0;
 
   AllocatedCXCompileCommands *ACC =
-      static_cast<AllocatedCXCompileCommands *>(Cmds);
+    static_cast<AllocatedCXCompileCommands *>(Cmds);
 
   return ACC->CCmd.size();
 }
 
-CXCompileCommand clang_CompileCommands_getCommand(CXCompileCommands Cmds,
-                                                  unsigned I) {
+CXCompileCommand
+clang_CompileCommands_getCommand(CXCompileCommands Cmds, unsigned I)
+{
   if (!Cmds)
     return nullptr;
 
   AllocatedCXCompileCommands *ACC =
-      static_cast<AllocatedCXCompileCommands *>(Cmds);
+    static_cast<AllocatedCXCompileCommands *>(Cmds);
 
   if (I >= ACC->CCmd.size())
     return nullptr;
@@ -88,7 +99,9 @@ CXCompileCommand clang_CompileCommands_getCommand(CXCompileCommands Cmds,
   return &ACC->CCmd[I];
 }
 
-CXString clang_CompileCommand_getDirectory(CXCompileCommand CCmd) {
+CXString
+clang_CompileCommand_getDirectory(CXCompileCommand CCmd)
+{
   if (!CCmd)
     return cxstring::createNull();
 
@@ -96,7 +109,9 @@ CXString clang_CompileCommand_getDirectory(CXCompileCommand CCmd) {
   return cxstring::createRef(cmd->Directory.c_str());
 }
 
-CXString clang_CompileCommand_getFilename(CXCompileCommand CCmd) {
+CXString
+clang_CompileCommand_getFilename(CXCompileCommand CCmd)
+{
   if (!CCmd)
     return cxstring::createNull();
 
@@ -104,14 +119,18 @@ CXString clang_CompileCommand_getFilename(CXCompileCommand CCmd) {
   return cxstring::createRef(cmd->Filename.c_str());
 }
 
-unsigned clang_CompileCommand_getNumArgs(CXCompileCommand CCmd) {
+unsigned
+clang_CompileCommand_getNumArgs(CXCompileCommand CCmd)
+{
   if (!CCmd)
     return 0;
 
   return static_cast<CompileCommand *>(CCmd)->CommandLine.size();
 }
 
-CXString clang_CompileCommand_getArg(CXCompileCommand CCmd, unsigned Arg) {
+CXString
+clang_CompileCommand_getArg(CXCompileCommand CCmd, unsigned Arg)
+{
   if (!CCmd)
     return cxstring::createNull();
 
@@ -123,21 +142,25 @@ CXString clang_CompileCommand_getArg(CXCompileCommand CCmd, unsigned Arg) {
   return cxstring::createRef(Cmd->CommandLine[Arg].c_str());
 }
 
-unsigned clang_CompileCommand_getNumMappedSources(CXCompileCommand CCmd) {
+unsigned
+clang_CompileCommand_getNumMappedSources(CXCompileCommand CCmd)
+{
   // Left here for backward compatibility. No mapped sources exists in the C++
   // backend anymore.
   return 0;
 }
 
-CXString clang_CompileCommand_getMappedSourcePath(CXCompileCommand CCmd,
-                                                  unsigned I) {
+CXString
+clang_CompileCommand_getMappedSourcePath(CXCompileCommand CCmd, unsigned I)
+{
   // Left here for backward compatibility. No mapped sources exists in the C++
   // backend anymore.
   return cxstring::createNull();
 }
 
-CXString clang_CompileCommand_getMappedSourceContent(CXCompileCommand CCmd,
-                                                     unsigned I) {
+CXString
+clang_CompileCommand_getMappedSourceContent(CXCompileCommand CCmd, unsigned I)
+{
   // Left here for backward compatibility. No mapped sources exists in the C++
   // backend anymore.
   return cxstring::createNull();

@@ -16,24 +16,24 @@ void operator<=>(A, A);
 #endif
 #endif
 
-template <auto> struct X {};
-X < operator<=>
+template<auto> struct X {};
+X<operator<=>
 #if __cplusplus <= 201703L
-// expected-warning@-2 {{'<=>' is a single token in C++20; add a space to avoid a change in behavior}}
+  // expected-warning@-2 {{'<=>' is a single token in C++20; add a space to avoid a change in behavior}}
 #else
-    >
+  >
 #endif
 #ifdef COMPAT
 // expected-warning@-7 {{'<=>' operator is incompatible with C++ standards before C++20}}
 #endif
-    x;
-} // namespace N
+  x;
+}
 
 // <=> can be formed by pasting other comparison operators.
 #if __cplusplus > 201703L
 #define STR(x) #x
 #define STR_EXPANDED(x) STR(x)
-#define PASTE(x, y) x##y
+#define PASTE(x, y) x ## y
 constexpr char a[] = STR_EXPANDED(PASTE(<, =>));
 constexpr char b[] = STR_EXPANDED(PASTE(<=, >));
 static_assert(__builtin_strcmp(a, "<=>") == 0);
@@ -62,20 +62,12 @@ static_assert(__builtin_strcmp(b, "<=>") == 0);
 
 #define ID(x) x
 [[some_vendor::some_attribute( // expected-warning {{unknown attribute}}
-    preprocess1
-    : ID(<) ID(= >),
-      preprocess2
-    : ID(<=) ID(>),
-      preprocess3
-    : ID(<) ID(=) ID(>),
-      preprocess4
-    : ID(<=) ID(>=),
-      preprocess5
-    : ID(<=) ID(>>),
-      preprocess6
-    : ID(<=) ID(>>=),
-      preprocess7
-    : ID(<=>) // expected-warning 0-1{{'<=>'}}
-    preprocess8
-    : ID(<=> =) // expected-warning 0-1{{'<=>'}}
-    )]];
+preprocess1: ID(<)ID(=>),
+preprocess2: ID(<=)ID(>),
+preprocess3: ID(<)ID(=)ID(>),
+preprocess4: ID(<=)ID(>=),
+preprocess5: ID(<=)ID(>>),
+preprocess6: ID(<=)ID(>>=),
+preprocess7: ID(<=>) // expected-warning 0-1{{'<=>'}}
+preprocess8: ID(<=>=) // expected-warning 0-1{{'<=>'}}
+)]];

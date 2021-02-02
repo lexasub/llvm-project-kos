@@ -51,6 +51,7 @@ void foo4() {
 template void foo4<float>();
 // expected-note@-1{{in instantiation of function template specialization 'foo4<float>' requested here}}
 
+
 template <typename U, typename V>
 void foo5() {
   static_assert(!!(global_inline_var<U, V>));

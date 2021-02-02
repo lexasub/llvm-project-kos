@@ -24,8 +24,7 @@
 
 #include "test_macros.h"
 
-template <class V, size_t E>
-void test() {
+template <class V, size_t E> void test() {
   static_assert(std::variant_size<V>::value == E, "");
   static_assert(std::variant_size<const V>::value == E, "");
   static_assert(std::variant_size<volatile V>::value == E, "");
@@ -35,14 +34,14 @@ void test() {
   static_assert(std::variant_size_v<volatile V> == E, "");
   static_assert(std::variant_size_v<const volatile V> == E, "");
   static_assert(std::is_base_of<std::integral_constant<std::size_t, E>,
-                                std::variant_size<V> >::value,
+                                std::variant_size<V>>::value,
                 "");
 };
 
 int main(int, char**) {
   test<std::variant<>, 0>();
-  test<std::variant<void*>, 1>();
-  test<std::variant<long, long, void*, double>, 4>();
+  test<std::variant<void *>, 1>();
+  test<std::variant<long, long, void *, double>, 4>();
 
   return 0;
 }

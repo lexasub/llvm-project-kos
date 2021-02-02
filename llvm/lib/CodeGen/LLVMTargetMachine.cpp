@@ -34,10 +34,9 @@
 #include "llvm/Target/TargetOptions.h"
 using namespace llvm;
 
-static cl::opt<bool>
-    EnableTrapUnreachable("trap-unreachable", cl::Hidden, cl::ZeroOrMore,
-                          cl::init(false),
-                          cl::desc("Enable generating trap for unreachable"));
+static cl::opt<bool> EnableTrapUnreachable("trap-unreachable",
+  cl::Hidden, cl::ZeroOrMore, cl::init(false),
+  cl::desc("Enable generating trap for unreachable"));
 
 void LLVMTargetMachine::initAsmInfo() {
   MRI.reset(TheTarget.createMCRegInfo(getTargetTriple().str()));
@@ -59,8 +58,8 @@ void LLVMTargetMachine::initAsmInfo() {
   // we'll crash later.
   // Provide the user with a useful error message about what's wrong.
   assert(TmpAsmInfo && "MCAsmInfo not initialized. "
-                       "Make sure you include the correct TargetSelect.h"
-                       "and that InitializeAllTargetMCs() is being invoked!");
+         "Make sure you include the correct TargetSelect.h"
+         "and that InitializeAllTargetMCs() is being invoked!");
 
   if (Options.BinutilsVersion.first > 0)
     TmpAsmInfo->setBinutilsVersion(Options.BinutilsVersion);

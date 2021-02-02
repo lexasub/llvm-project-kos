@@ -1,2 +1,2 @@
-template <typename T> struct DeductionGuide {};
-DeductionGuide()->DeductionGuide<int>;
+template<typename T> struct DeductionGuide {};
+DeductionGuide() -> DeductionGuide<int>;

@@ -25,19 +25,19 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  {
-    typedef CountingAllocator<char> AllocT; // Not default constructible
-    typedef ex::resource_adaptor<AllocT> R;
-    static_assert(!std::is_default_constructible<R>::value, "");
-  }
-  {
-    typedef std::allocator<char> AllocT; // Is default constructible
-    typedef ex::resource_adaptor<AllocT> R;
-    static_assert(std::is_default_constructible<R>::value, "");
-    R r;
-    ((void)r);
-  }
+int main(int, char**)
+{
+    {
+        typedef CountingAllocator<char> AllocT; // Not default constructible
+        typedef ex::resource_adaptor<AllocT> R;
+        static_assert(!std::is_default_constructible<R>::value, "");
+    }
+    {
+        typedef std::allocator<char> AllocT; // Is default constructible
+        typedef ex::resource_adaptor<AllocT> R;
+        static_assert(std::is_default_constructible<R>::value, "");
+        R r; ((void)r);
+    }
 
   return 0;
 }

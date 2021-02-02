@@ -67,12 +67,12 @@ StackProtector::StackProtector() : FunctionPass(ID), SSPBufferSize(8) {
   initializeStackProtectorPass(*PassRegistry::getPassRegistry());
 }
 
-INITIALIZE_PASS_BEGIN(StackProtector, DEBUG_TYPE, "Insert stack protectors",
-                      false, true)
+INITIALIZE_PASS_BEGIN(StackProtector, DEBUG_TYPE,
+                      "Insert stack protectors", false, true)
 INITIALIZE_PASS_DEPENDENCY(TargetPassConfig)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
-INITIALIZE_PASS_END(StackProtector, DEBUG_TYPE, "Insert stack protectors",
-                    false, true)
+INITIALIZE_PASS_END(StackProtector, DEBUG_TYPE,
+                    "Insert stack protectors", false, true)
 
 FunctionPass *llvm::createStackProtectorPass() { return new StackProtector(); }
 
@@ -314,21 +314,21 @@ bool StackProtector::RequiresStackProtector() {
             if (CI->getLimitedValue(SSPBufferSize) >= SSPBufferSize) {
               // A call to alloca with size >= SSPBufferSize requires
               // stack protectors.
-              Layout.insert(
-                  std::make_pair(AI, MachineFrameInfo::SSPLK_LargeArray));
+              Layout.insert(std::make_pair(AI,
+                                           MachineFrameInfo::SSPLK_LargeArray));
               ORE.emit(RemarkBuilder);
               NeedsProtector = true;
             } else if (Strong) {
               // Require protectors for all alloca calls in strong mode.
-              Layout.insert(
-                  std::make_pair(AI, MachineFrameInfo::SSPLK_SmallArray));
+              Layout.insert(std::make_pair(AI,
+                                           MachineFrameInfo::SSPLK_SmallArray));
               ORE.emit(RemarkBuilder);
               NeedsProtector = true;
             }
           } else {
             // A call to alloca with a variable size requires protectors.
-            Layout.insert(
-                std::make_pair(AI, MachineFrameInfo::SSPLK_LargeArray));
+            Layout.insert(std::make_pair(AI,
+                                         MachineFrameInfo::SSPLK_LargeArray));
             ORE.emit(RemarkBuilder);
             NeedsProtector = true;
           }
@@ -337,9 +337,9 @@ bool StackProtector::RequiresStackProtector() {
 
         bool IsLarge = false;
         if (ContainsProtectableArray(AI->getAllocatedType(), IsLarge, Strong)) {
-          Layout.insert(
-              std::make_pair(AI, IsLarge ? MachineFrameInfo::SSPLK_LargeArray
-                                         : MachineFrameInfo::SSPLK_SmallArray));
+          Layout.insert(std::make_pair(AI, IsLarge
+                                       ? MachineFrameInfo::SSPLK_LargeArray
+                                       : MachineFrameInfo::SSPLK_SmallArray));
           ORE.emit([&]() {
             return OptimizationRemark(DEBUG_TYPE, "StackProtectorBuffer", &I)
                    << "Stack protection applied to function "
@@ -382,8 +382,7 @@ static Value *getStackGuard(const TargetLoweringBase *TLI, Module *M,
   Value *Guard = TLI->getIRStackGuard(B);
   auto GuardMode = TLI->getTargetMachine().Options.StackProtectorGuard;
   if ((GuardMode == llvm::StackProtectorGuards::TLS ||
-       GuardMode == llvm::StackProtectorGuards::None) &&
-      Guard)
+       GuardMode == llvm::StackProtectorGuards::None) && Guard)
     return B.CreateLoad(B.getInt8PtrTy(), Guard, true, "StackGuard");
 
   // Use SelectionDAG SSP handling, since there isn't an IR guard.
@@ -440,7 +439,7 @@ bool StackProtector::InsertStackProtectors() {
       TLI->useStackGuardXorFP() ||
       (EnableSelectionDAGSP && !TM->Options.EnableFastISel &&
        !TM->Options.EnableGlobalISel);
-  AllocaInst *AI = nullptr; // Place on stack that stores the stack guard.
+  AllocaInst *AI = nullptr;       // Place on stack that stores the stack guard.
 
   for (Function::iterator I = F->begin(), E = F->end(); I != E;) {
     BasicBlock *BB = &*I++;

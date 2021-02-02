@@ -21,7 +21,7 @@ int main() {
   __asan_get_shadow_mapping(&scale, &offset);
 
   fprintf(stderr, "scale: %d\n", (int)scale);
-  fprintf(stderr, "offset: 0x" PTR "\n", (void *)offset);
+  fprintf(stderr, "offset: 0x" PTR "\n", (void*)offset);
 
   // CHECK: scale: [[SCALE]]
   // CHECK: offset: [[OFFSET]]

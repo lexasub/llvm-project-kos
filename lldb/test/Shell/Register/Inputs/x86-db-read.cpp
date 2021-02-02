@@ -1,5 +1,5 @@
-#include <csignal>
 #include <cstdint>
+#include <csignal>
 
 uint8_t g_8w;
 uint16_t g_16rw;

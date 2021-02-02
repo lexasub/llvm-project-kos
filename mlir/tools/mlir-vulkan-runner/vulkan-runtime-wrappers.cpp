@@ -65,8 +65,7 @@ private:
 
 } // namespace
 
-template <typename T, int N>
-struct MemRefDescriptor {
+template <typename T, int N> struct MemRefDescriptor {
   T *allocated;
   T *aligned;
   int64_t offset;

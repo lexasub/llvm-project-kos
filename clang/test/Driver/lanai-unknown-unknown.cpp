@@ -27,7 +27,7 @@ int align_l = __alignof(long);
 int align_ll = __alignof(long long);
 
 // CHECK: @align_p = dso_local global i32 4
-int align_p = __alignof(void *);
+int align_p = __alignof(void*);
 
 // CHECK: @align_vl = dso_local global i32 4
 int align_vl = __alignof(va_list);
@@ -66,16 +66,17 @@ unsigned long long check_ulonglong() { return 0; }
 
 // CHECK: i32 @check_size_t()
 size_t check_size_t() { return 0; }
+
 }
 
-template <int> void Switch();
-template <> void Switch<4>();
-template <> void Switch<8>();
-template <> void Switch<16>();
+template<int> void Switch();
+template<> void Switch<4>();
+template<> void Switch<8>();
+template<> void Switch<16>();
 
 void check_pointer_size() {
   // CHECK: SwitchILi4
-  Switch<sizeof(void *)>();
+  Switch<sizeof(void*)>();
 
   // CHECK: SwitchILi8
   Switch<sizeof(long long)>();

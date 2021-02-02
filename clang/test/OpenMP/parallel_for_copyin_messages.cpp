@@ -55,7 +55,7 @@ S5 m(4);
 namespace A {
 double x;
 #pragma omp threadprivate(x)
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 #pragma omp parallel for copyin(m) // expected-error {{'operator=' is a private member of 'S5'}}
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel for copyin(ST <int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
+#pragma omp parallel for copyin(ST<int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
   for (i = 0; i < argc; ++i)
     foo();
 

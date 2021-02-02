@@ -15,9 +15,7 @@
 #define __WMMINTRIN_AES_H
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("aes"),            \
-                 __min_vector_width__(128)))
+#define __DEFAULT_FN_ATTRS __attribute__((__always_inline__, __nodebug__, __target__("aes"), __min_vector_width__(128)))
 
 /// Performs a single round of AES encryption using the Equivalent
 ///    Inverse Cipher, transforming the state value from the first source
@@ -33,8 +31,9 @@
 /// \param __R
 ///    A 128-bit integer vector containing the round key value.
 /// \returns A 128-bit integer vector containing the encrypted value.
-static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesenc_si128(__m128i __V,
-                                                              __m128i __R) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS
+_mm_aesenc_si128(__m128i __V, __m128i __R)
+{
   return (__m128i)__builtin_ia32_aesenc128((__v2di)__V, (__v2di)__R);
 }
 
@@ -52,8 +51,9 @@ static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesenc_si128(__m128i __V,
 /// \param __R
 ///    A 128-bit integer vector containing the round key value.
 /// \returns A 128-bit integer vector containing the encrypted value.
-static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesenclast_si128(__m128i __V,
-                                                                  __m128i __R) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS
+_mm_aesenclast_si128(__m128i __V, __m128i __R)
+{
   return (__m128i)__builtin_ia32_aesenclast128((__v2di)__V, (__v2di)__R);
 }
 
@@ -71,8 +71,9 @@ static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesenclast_si128(__m128i __V,
 /// \param __R
 ///    A 128-bit integer vector containing the round key value.
 /// \returns A 128-bit integer vector containing the decrypted value.
-static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesdec_si128(__m128i __V,
-                                                              __m128i __R) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS
+_mm_aesdec_si128(__m128i __V, __m128i __R)
+{
   return (__m128i)__builtin_ia32_aesdec128((__v2di)__V, (__v2di)__R);
 }
 
@@ -90,8 +91,9 @@ static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesdec_si128(__m128i __V,
 /// \param __R
 ///    A 128-bit integer vector containing the round key value.
 /// \returns A 128-bit integer vector containing the decrypted value.
-static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesdeclast_si128(__m128i __V,
-                                                                  __m128i __R) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS
+_mm_aesdeclast_si128(__m128i __V, __m128i __R)
+{
   return (__m128i)__builtin_ia32_aesdeclast128((__v2di)__V, (__v2di)__R);
 }
 
@@ -106,7 +108,9 @@ static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesdeclast_si128(__m128i __V,
 /// \param __V
 ///    A 128-bit integer vector containing the expanded key.
 /// \returns A 128-bit integer vector containing the transformed value.
-static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesimc_si128(__m128i __V) {
+static __inline__ __m128i __DEFAULT_FN_ATTRS
+_mm_aesimc_si128(__m128i __V)
+{
   return (__m128i)__builtin_ia32_aesimc128((__v2di)__V);
 }
 
@@ -128,9 +132,9 @@ static __inline__ __m128i __DEFAULT_FN_ATTRS _mm_aesimc_si128(__m128i __V) {
 /// \param R
 ///    An 8-bit round constant used to generate the AES encryption key.
 /// \returns A 128-bit round key for AES encryption.
-#define _mm_aeskeygenassist_si128(C, R)                                        \
-  (__m128i) __builtin_ia32_aeskeygenassist128((__v2di)(__m128i)(C), (int)(R))
+#define _mm_aeskeygenassist_si128(C, R) \
+  (__m128i)__builtin_ia32_aeskeygenassist128((__v2di)(__m128i)(C), (int)(R))
 
 #undef __DEFAULT_FN_ATTRS
 
-#endif /* __WMMINTRIN_AES_H */
+#endif  /* __WMMINTRIN_AES_H */

@@ -1,10 +1,10 @@
 // Header for PCH test cxx-namespaces.cpp
 
 namespace N {
-namespace {
-int x;
-}
+    namespace {
+        int x;
+    }
 
-void f();
-void f(int);
-} // namespace N
+    void f();
+    void f(int);
+}

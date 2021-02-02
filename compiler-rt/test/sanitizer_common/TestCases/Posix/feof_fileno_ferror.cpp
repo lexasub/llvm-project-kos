@@ -17,8 +17,7 @@ int main(int argc, char **argv) {
 
   // read until EOF
   char buf[BUFSIZ];
-  while (fread(buf, 1, sizeof buf, fp) != 0) {
-  }
+  while (fread(buf, 1, sizeof buf, fp) != 0) {}
   assert(feof(fp));
 
   // clear EOF

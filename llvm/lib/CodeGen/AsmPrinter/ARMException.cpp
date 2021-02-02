@@ -64,12 +64,12 @@ void ARMException::endFunction(const MachineFunction *MF) {
   if (F.hasPersonalityFn())
     Per = dyn_cast<Function>(F.getPersonalityFn()->stripPointerCasts());
   bool forceEmitPersonality =
-      F.hasPersonalityFn() &&
-      !isNoOpWithoutInvoke(classifyEHPersonality(Per)) &&
-      F.needsUnwindTableEntry();
-  bool shouldEmitPersonality =
-      forceEmitPersonality || !MF->getLandingPads().empty();
-  if (!Asm->MF->getFunction().needsUnwindTableEntry() && !shouldEmitPersonality)
+    F.hasPersonalityFn() && !isNoOpWithoutInvoke(classifyEHPersonality(Per)) &&
+    F.needsUnwindTableEntry();
+  bool shouldEmitPersonality = forceEmitPersonality ||
+    !MF->getLandingPads().empty();
+  if (!Asm->MF->getFunction().needsUnwindTableEntry() &&
+      !shouldEmitPersonality)
     ATS.emitCantUnwind();
   else if (shouldEmitPersonality) {
     // Emit references to personality.
@@ -120,9 +120,8 @@ void ARMException::emitTypeInfos(unsigned TTypeEncoding,
     Asm->OutStreamer->AddBlankLine();
     Entry = 0;
   }
-  for (std::vector<unsigned>::const_iterator I = FilterIds.begin(),
-                                             E = FilterIds.end();
-       I < E; ++I) {
+  for (std::vector<unsigned>::const_iterator
+         I = FilterIds.begin(), E = FilterIds.end(); I < E; ++I) {
     unsigned TypeID = *I;
     if (VerboseAsm) {
       --Entry;

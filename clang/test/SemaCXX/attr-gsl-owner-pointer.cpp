@@ -67,11 +67,11 @@ class [[gsl::Owner(int &)]] ReferenceType{};
 class [[gsl::Pointer(int[])]] ArrayType{};
 // expected-error@-1 {{an array type is an invalid argument to attribute 'Pointer'}}
 
-class [[gsl::Owner]] OwnerMissingParameter {};
+class [[gsl::Owner]] OwnerMissingParameter{};
 // CHECK: CXXRecordDecl {{.*}} OwnerMissingParameter
 // CHECK: OwnerAttr
 
-class [[gsl::Pointer]] PointerMissingParameter {};
+class [[gsl::Pointer]] PointerMissingParameter{};
 // CHECK: CXXRecordDecl {{.*}} PointerMissingParameter
 // CHECK: PointerAttr
 
@@ -118,9 +118,9 @@ class [[gsl::Owner]] ForwardDeclared;
 
 template <class T>
 class [[gsl::Owner]] ForwardDeclared {
-  // CHECK: ClassTemplateDecl {{.*}} ForwardDeclared
-  // CHECK: CXXRecordDecl {{.*}} ForwardDeclared definition
-  // CHECK: OwnerAttr {{.*}}
+// CHECK: ClassTemplateDecl {{.*}} ForwardDeclared
+// CHECK: CXXRecordDecl {{.*}} ForwardDeclared definition
+// CHECK: OwnerAttr {{.*}}
 };
 
 static_assert(sizeof(ForwardDeclared<int>), ""); // Force instantiation.

@@ -46,57 +46,57 @@ void DAGTypeLegalizer::ExpandRes_BITCAST(SDNode *N, SDValue &Lo, SDValue &Hi) {
 
   // Handle some special cases efficiently.
   switch (getTypeAction(InVT)) {
-  case TargetLowering::TypeLegal:
-  case TargetLowering::TypePromoteInteger:
-    break;
-  case TargetLowering::TypePromoteFloat:
-  case TargetLowering::TypeSoftPromoteHalf:
-    llvm_unreachable("Bitcast of a promotion-needing float should never need"
-                     "expansion");
-  case TargetLowering::TypeSoftenFloat:
-    SplitInteger(GetSoftenedFloat(InOp), Lo, Hi);
-    Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
-    Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
-    return;
-  case TargetLowering::TypeExpandInteger:
-  case TargetLowering::TypeExpandFloat: {
-    auto &DL = DAG.getDataLayout();
-    // Convert the expanded pieces of the input.
-    GetExpandedOp(InOp, Lo, Hi);
-    if (TLI.hasBigEndianPartOrdering(InVT, DL) !=
-        TLI.hasBigEndianPartOrdering(OutVT, DL))
-      std::swap(Lo, Hi);
-    Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
-    Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
-    return;
-  }
-  case TargetLowering::TypeSplitVector:
-    GetSplitVector(InOp, Lo, Hi);
-    if (TLI.hasBigEndianPartOrdering(OutVT, DAG.getDataLayout()))
-      std::swap(Lo, Hi);
-    Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
-    Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
-    return;
-  case TargetLowering::TypeScalarizeVector:
-    // Convert the element instead.
-    SplitInteger(BitConvertToInteger(GetScalarizedVector(InOp)), Lo, Hi);
-    Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
-    Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
-    return;
-  case TargetLowering::TypeScalarizeScalableVector:
-    report_fatal_error("Scalarization of scalable vectors is not supported.");
-  case TargetLowering::TypeWidenVector: {
-    assert(!(InVT.getVectorNumElements() & 1) && "Unsupported BITCAST");
-    InOp = GetWidenedVector(InOp);
-    EVT LoVT, HiVT;
-    std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(InVT);
-    std::tie(Lo, Hi) = DAG.SplitVector(InOp, dl, LoVT, HiVT);
-    if (TLI.hasBigEndianPartOrdering(OutVT, DAG.getDataLayout()))
-      std::swap(Lo, Hi);
-    Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
-    Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
-    return;
-  }
+    case TargetLowering::TypeLegal:
+    case TargetLowering::TypePromoteInteger:
+      break;
+    case TargetLowering::TypePromoteFloat:
+    case TargetLowering::TypeSoftPromoteHalf:
+      llvm_unreachable("Bitcast of a promotion-needing float should never need"
+                       "expansion");
+    case TargetLowering::TypeSoftenFloat:
+      SplitInteger(GetSoftenedFloat(InOp), Lo, Hi);
+      Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
+      Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
+      return;
+    case TargetLowering::TypeExpandInteger:
+    case TargetLowering::TypeExpandFloat: {
+      auto &DL = DAG.getDataLayout();
+      // Convert the expanded pieces of the input.
+      GetExpandedOp(InOp, Lo, Hi);
+      if (TLI.hasBigEndianPartOrdering(InVT, DL) !=
+          TLI.hasBigEndianPartOrdering(OutVT, DL))
+        std::swap(Lo, Hi);
+      Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
+      Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
+      return;
+    }
+    case TargetLowering::TypeSplitVector:
+      GetSplitVector(InOp, Lo, Hi);
+      if (TLI.hasBigEndianPartOrdering(OutVT, DAG.getDataLayout()))
+        std::swap(Lo, Hi);
+      Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
+      Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
+      return;
+    case TargetLowering::TypeScalarizeVector:
+      // Convert the element instead.
+      SplitInteger(BitConvertToInteger(GetScalarizedVector(InOp)), Lo, Hi);
+      Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
+      Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
+      return;
+    case TargetLowering::TypeScalarizeScalableVector:
+      report_fatal_error("Scalarization of scalable vectors is not supported.");
+    case TargetLowering::TypeWidenVector: {
+      assert(!(InVT.getVectorNumElements() & 1) && "Unsupported BITCAST");
+      InOp = GetWidenedVector(InOp);
+      EVT LoVT, HiVT;
+      std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(InVT);
+      std::tie(Lo, Hi) = DAG.SplitVector(InOp, dl, LoVT, HiVT);
+      if (TLI.hasBigEndianPartOrdering(OutVT, DAG.getDataLayout()))
+        std::swap(Lo, Hi);
+      Lo = DAG.getNode(ISD::BITCAST, dl, NOutVT, Lo);
+      Hi = DAG.getNode(ISD::BITCAST, dl, NOutVT, Hi);
+      return;
+    }
   }
 
   if (InVT.isVector() && OutVT.isInteger()) {
@@ -197,8 +197,8 @@ void DAGTypeLegalizer::ExpandRes_BUILD_PAIR(SDNode *N, SDValue &Lo,
 void DAGTypeLegalizer::ExpandRes_EXTRACT_ELEMENT(SDNode *N, SDValue &Lo,
                                                  SDValue &Hi) {
   GetExpandedOp(N->getOperand(0), Lo, Hi);
-  SDValue Part =
-      cast<ConstantSDNode>(N->getOperand(1))->getZExtValue() ? Hi : Lo;
+  SDValue Part = cast<ConstantSDNode>(N->getOperand(1))->getZExtValue() ?
+                   Hi : Lo;
 
   assert(Part.getValueType() == N->getValueType(0) &&
          "Type twice as big as expanded type not itself expanded!");
@@ -227,9 +227,10 @@ void DAGTypeLegalizer::ExpandRes_EXTRACT_VECTOR_ELT(SDNode *N, SDValue &Lo,
     OldVec = DAG.getNode(ISD::ANY_EXTEND, dl, NVecVT, N->getOperand(0));
   }
 
-  SDValue NewVec = DAG.getNode(
-      ISD::BITCAST, dl, EVT::getVectorVT(*DAG.getContext(), NewVT, 2 * OldElts),
-      OldVec);
+  SDValue NewVec = DAG.getNode(ISD::BITCAST, dl,
+                               EVT::getVectorVT(*DAG.getContext(),
+                                                NewVT, 2*OldElts),
+                               OldVec);
 
   // Extract the elements at 2 * Idx and 2 * Idx + 1 from the new vector.
   SDValue Idx = N->getOperand(1);
@@ -306,6 +307,7 @@ void DAGTypeLegalizer::ExpandRes_VAARG(SDNode *N, SDValue &Lo, SDValue &Hi) {
   ReplaceValueWith(SDValue(N, 1), Chain);
 }
 
+
 //===--------------------------------------------------------------------===//
 // Generic Operand Expansion.
 //===--------------------------------------------------------------------===//
@@ -380,7 +382,7 @@ SDValue DAGTypeLegalizer::ExpandOp_BUILD_VECTOR(SDNode *N) {
   // Build a vector of twice the length out of the expanded elements.
   // For example <3 x i64> -> <6 x i32>.
   SmallVector<SDValue, 16> NewElts;
-  NewElts.reserve(NumElts * 2);
+  NewElts.reserve(NumElts*2);
 
   for (unsigned i = 0; i < NumElts; ++i) {
     SDValue Lo, Hi;
@@ -419,8 +421,9 @@ SDValue DAGTypeLegalizer::ExpandOp_INSERT_VECTOR_ELT(SDNode *N) {
 
   // Bitconvert to a vector of twice the length with elements of the expanded
   // type, insert the expanded vector elements, and then convert back.
-  EVT NewVecVT = EVT::getVectorVT(*DAG.getContext(), NewEVT, NumElts * 2);
-  SDValue NewVec = DAG.getNode(ISD::BITCAST, dl, NewVecVT, N->getOperand(0));
+  EVT NewVecVT = EVT::getVectorVT(*DAG.getContext(), NewEVT, NumElts*2);
+  SDValue NewVec = DAG.getNode(ISD::BITCAST, dl,
+                               NewVecVT, N->getOperand(0));
 
   SDValue Lo, Hi;
   GetExpandedOp(Val, Lo, Hi);
@@ -430,9 +433,10 @@ SDValue DAGTypeLegalizer::ExpandOp_INSERT_VECTOR_ELT(SDNode *N) {
   SDValue Idx = N->getOperand(2);
   Idx = DAG.getNode(ISD::ADD, dl, Idx.getValueType(), Idx, Idx);
   NewVec = DAG.getNode(ISD::INSERT_VECTOR_ELT, dl, NewVecVT, NewVec, Lo, Idx);
-  Idx = DAG.getNode(ISD::ADD, dl, Idx.getValueType(), Idx,
+  Idx = DAG.getNode(ISD::ADD, dl,
+                    Idx.getValueType(), Idx,
                     DAG.getConstant(1, dl, Idx.getValueType()));
-  NewVec = DAG.getNode(ISD::INSERT_VECTOR_ELT, dl, NewVecVT, NewVec, Hi, Idx);
+  NewVec =  DAG.getNode(ISD::INSERT_VECTOR_ELT, dl, NewVecVT, NewVec, Hi, Idx);
 
   // Convert the new vector to the old vector type.
   return DAG.getNode(ISD::BITCAST, dl, VecVT, NewVec);
@@ -486,6 +490,7 @@ SDValue DAGTypeLegalizer::ExpandOp_NormalStore(SDNode *N, unsigned OpNo) {
   return DAG.getNode(ISD::TokenFactor, dl, MVT::Other, Lo, Hi);
 }
 
+
 //===--------------------------------------------------------------------===//
 // Generic Result Splitting.
 //===--------------------------------------------------------------------===//
@@ -538,7 +543,8 @@ void DAGTypeLegalizer::SplitRes_SELECT(SDNode *N, SDValue &Lo, SDValue &Hi) {
   Hi = DAG.getNode(N->getOpcode(), dl, LH.getValueType(), CH, LH, RH);
 }
 
-void DAGTypeLegalizer::SplitRes_SELECT_CC(SDNode *N, SDValue &Lo, SDValue &Hi) {
+void DAGTypeLegalizer::SplitRes_SELECT_CC(SDNode *N, SDValue &Lo,
+                                          SDValue &Hi) {
   SDValue LL, LH, RL, RH;
   SDLoc dl(N);
   GetSplitOp(N->getOperand(2), LL, LH);

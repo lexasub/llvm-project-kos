@@ -34,7 +34,7 @@ class raw_ostream;
 
 extern template class DomTreeNodeBase<BasicBlock>;
 extern template class DominatorTreeBase<BasicBlock, false>; // DomTree
-extern template class DominatorTreeBase<BasicBlock, true>;  // PostDomTree
+extern template class DominatorTreeBase<BasicBlock, true>; // PostDomTree
 
 extern template class cfg::Update<BasicBlock *>;
 
@@ -55,13 +55,15 @@ extern template void Calculate<BBPostDomTree>(BBPostDomTree &DT);
 
 extern template void InsertEdge<BBDomTree>(BBDomTree &DT, BasicBlock *From,
                                            BasicBlock *To);
-extern template void
-InsertEdge<BBPostDomTree>(BBPostDomTree &DT, BasicBlock *From, BasicBlock *To);
+extern template void InsertEdge<BBPostDomTree>(BBPostDomTree &DT,
+                                               BasicBlock *From,
+                                               BasicBlock *To);
 
 extern template void DeleteEdge<BBDomTree>(BBDomTree &DT, BasicBlock *From,
                                            BasicBlock *To);
-extern template void
-DeleteEdge<BBPostDomTree>(BBPostDomTree &DT, BasicBlock *From, BasicBlock *To);
+extern template void DeleteEdge<BBPostDomTree>(BBPostDomTree &DT,
+                                               BasicBlock *From,
+                                               BasicBlock *To);
 
 extern template void ApplyUpdates<BBDomTree>(BBDomTree &DT,
                                              BBDomTreeGraphDiff &,
@@ -74,7 +76,7 @@ extern template bool Verify<BBDomTree>(const BBDomTree &DT,
                                        BBDomTree::VerificationLevel VL);
 extern template bool Verify<BBPostDomTree>(const BBPostDomTree &DT,
                                            BBPostDomTree::VerificationLevel VL);
-} // namespace DomTreeBuilder
+}  // namespace DomTreeBuilder
 
 using DomTreeNode = DomTreeNodeBase<BasicBlock>;
 
@@ -83,8 +85,8 @@ class BasicBlockEdge {
   const BasicBlock *End;
 
 public:
-  BasicBlockEdge(const BasicBlock *Start_, const BasicBlock *End_)
-      : Start(Start_), End(End_) {}
+  BasicBlockEdge(const BasicBlock *Start_, const BasicBlock *End_) :
+    Start(Start_), End(End_) {}
 
   BasicBlockEdge(const std::pair<BasicBlock *, BasicBlock *> &Pair)
       : Start(Pair.first), End(Pair.second) {}
@@ -92,9 +94,13 @@ public:
   BasicBlockEdge(const std::pair<const BasicBlock *, const BasicBlock *> &Pair)
       : Start(Pair.first), End(Pair.second) {}
 
-  const BasicBlock *getStart() const { return Start; }
+  const BasicBlock *getStart() const {
+    return Start;
+  }
 
-  const BasicBlock *getEnd() const { return End; }
+  const BasicBlock *getEnd() const {
+    return End;
+  }
 
   /// Check if this is the only edge between Start and End.
   bool isSingleEdge() const;
@@ -143,7 +149,7 @@ template <> struct DenseMapInfo<BasicBlockEdge> {
 /// even if the tree is properly updated. Calling code should not rely on the
 /// preceding statements; this is stated only to assist human understanding.
 class DominatorTree : public DominatorTreeBase<BasicBlock, false> {
-public:
+ public:
   using Base = DominatorTreeBase<BasicBlock, false>;
 
   DominatorTree() = default;
@@ -203,7 +209,7 @@ public:
 template <class Node, class ChildIterator> struct DomTreeGraphTraitsBase {
   using NodeRef = Node *;
   using ChildIteratorType = ChildIterator;
-  using nodes_iterator = df_iterator<Node *, df_iterator_default_set<Node *>>;
+  using nodes_iterator = df_iterator<Node *, df_iterator_default_set<Node*>>;
 
   static NodeRef getEntryNode(NodeRef N) { return N; }
   static ChildIteratorType child_begin(NodeRef N) { return N->begin(); }
@@ -226,8 +232,8 @@ struct GraphTraits<const DomTreeNode *>
     : public DomTreeGraphTraitsBase<const DomTreeNode,
                                     DomTreeNode::const_iterator> {};
 
-template <>
-struct GraphTraits<DominatorTree *> : public GraphTraits<DomTreeNode *> {
+template <> struct GraphTraits<DominatorTree*>
+  : public GraphTraits<DomTreeNode*> {
   static NodeRef getEntryNode(DominatorTree *DT) { return DT->getRootNode(); }
 
   static nodes_iterator nodes_begin(DominatorTree *N) {

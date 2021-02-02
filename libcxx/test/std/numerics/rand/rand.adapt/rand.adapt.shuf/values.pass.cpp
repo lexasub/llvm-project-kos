@@ -27,23 +27,26 @@
 #include "test_macros.h"
 
 template <class T>
-void where(const T&) {}
+void where(const T &) {}
 
-void test1() {
-  typedef std::knuth_b E;
-  static_assert(E::table_size == 256, "");
+void
+test1()
+{
+    typedef std::knuth_b E;
+    static_assert(E::table_size == 256, "");
 #if TEST_STD_VER >= 11
-  static_assert((E::min() == 1), "");
-  static_assert((E::max() == 2147483646), "");
+    static_assert((E::min() == 1), "");
+    static_assert((E::max() == 2147483646), "");
 #else
-  assert((E::min() == 1));
-  assert((E::max() == 2147483646));
+    assert((E::min() == 1));
+    assert((E::max() == 2147483646));
 #endif
-  where(E::table_size);
+    where(E::table_size);
 }
 
-int main(int, char**) {
-  test1();
+int main(int, char**)
+{
+    test1();
 
   return 0;
 }

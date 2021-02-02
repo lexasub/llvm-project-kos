@@ -160,7 +160,7 @@ bool SpeculativeExecutionPass::runImpl(Function &F, TargetTransformInfo *TTI) {
 
   this->TTI = TTI;
   bool Changed = false;
-  for (auto &B : F) {
+  for (auto& B : F) {
     Changed |= runOnBasicBlock(B);
   }
   return Changed;
@@ -213,55 +213,55 @@ bool SpeculativeExecutionPass::runOnBasicBlock(BasicBlock &B) {
 static InstructionCost ComputeSpeculationCost(const Instruction *I,
                                               const TargetTransformInfo &TTI) {
   switch (Operator::getOpcode(I)) {
-  case Instruction::GetElementPtr:
-  case Instruction::Add:
-  case Instruction::Mul:
-  case Instruction::And:
-  case Instruction::Or:
-  case Instruction::Select:
-  case Instruction::Shl:
-  case Instruction::Sub:
-  case Instruction::LShr:
-  case Instruction::AShr:
-  case Instruction::Xor:
-  case Instruction::ZExt:
-  case Instruction::SExt:
-  case Instruction::Call:
-  case Instruction::BitCast:
-  case Instruction::PtrToInt:
-  case Instruction::IntToPtr:
-  case Instruction::AddrSpaceCast:
-  case Instruction::FPToUI:
-  case Instruction::FPToSI:
-  case Instruction::UIToFP:
-  case Instruction::SIToFP:
-  case Instruction::FPExt:
-  case Instruction::FPTrunc:
-  case Instruction::FAdd:
-  case Instruction::FSub:
-  case Instruction::FMul:
-  case Instruction::FDiv:
-  case Instruction::FRem:
-  case Instruction::FNeg:
-  case Instruction::ICmp:
-  case Instruction::FCmp:
-  case Instruction::Trunc:
-  case Instruction::Freeze:
-  case Instruction::ExtractElement:
-  case Instruction::InsertElement:
-  case Instruction::ShuffleVector:
-  case Instruction::ExtractValue:
-  case Instruction::InsertValue:
-    return TTI.getUserCost(I, TargetTransformInfo::TCK_SizeAndLatency);
+    case Instruction::GetElementPtr:
+    case Instruction::Add:
+    case Instruction::Mul:
+    case Instruction::And:
+    case Instruction::Or:
+    case Instruction::Select:
+    case Instruction::Shl:
+    case Instruction::Sub:
+    case Instruction::LShr:
+    case Instruction::AShr:
+    case Instruction::Xor:
+    case Instruction::ZExt:
+    case Instruction::SExt:
+    case Instruction::Call:
+    case Instruction::BitCast:
+    case Instruction::PtrToInt:
+    case Instruction::IntToPtr:
+    case Instruction::AddrSpaceCast:
+    case Instruction::FPToUI:
+    case Instruction::FPToSI:
+    case Instruction::UIToFP:
+    case Instruction::SIToFP:
+    case Instruction::FPExt:
+    case Instruction::FPTrunc:
+    case Instruction::FAdd:
+    case Instruction::FSub:
+    case Instruction::FMul:
+    case Instruction::FDiv:
+    case Instruction::FRem:
+    case Instruction::FNeg:
+    case Instruction::ICmp:
+    case Instruction::FCmp:
+    case Instruction::Trunc:
+    case Instruction::Freeze:
+    case Instruction::ExtractElement:
+    case Instruction::InsertElement:
+    case Instruction::ShuffleVector:
+    case Instruction::ExtractValue:
+    case Instruction::InsertValue:
+      return TTI.getUserCost(I, TargetTransformInfo::TCK_SizeAndLatency);
 
-  default:
-    return InstructionCost::getInvalid(); // Disallow anything not explicitly
-                                          // listed.
+    default:
+      return InstructionCost::getInvalid(); // Disallow anything not explicitly
+                                            // listed.
   }
 }
 
-bool SpeculativeExecutionPass::considerHoistingFromTo(BasicBlock &FromBlock,
-                                                      BasicBlock &ToBlock) {
+bool SpeculativeExecutionPass::considerHoistingFromTo(
+    BasicBlock &FromBlock, BasicBlock &ToBlock) {
   SmallPtrSet<const Instruction *, 8> NotHoisted;
   const auto AllPrecedingUsesFromBlockHoisted = [&NotHoisted](const User *U) {
     // Debug variable has special operand to check it's not hoisted.
@@ -297,7 +297,7 @@ bool SpeculativeExecutionPass::considerHoistingFromTo(BasicBlock &FromBlock,
         AllPrecedingUsesFromBlockHoisted(&I)) {
       TotalSpeculationCost += Cost;
       if (TotalSpeculationCost > SpecExecMaxSpeculationCost)
-        return false; // too much to hoist
+        return false;  // too much to hoist
     } else {
       // Debug info instrinsics should not be counted for threshold.
       if (!isa<DbgInfoIntrinsic>(I))
@@ -345,4 +345,4 @@ PreservedAnalyses SpeculativeExecutionPass::run(Function &F,
   PA.preserveSet<CFGAnalyses>();
   return PA;
 }
-} // namespace llvm
+}  // namespace llvm

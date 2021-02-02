@@ -15,7 +15,7 @@
 #define __ENQCMDINTRIN_H
 
 /* Define the default attributes for the functions in this file */
-#define _DEFAULT_FN_ATTRS                                                      \
+#define _DEFAULT_FN_ATTRS \
   __attribute__((__always_inline__, __nodebug__, __target__("enqcmd")))
 
 /// Reads 64-byte command pointed by \a __src, formats 64-byte enqueue store
@@ -32,8 +32,9 @@
 ///    Pointer to 64-byte command data.
 /// \returns If the command data is successfully written to \a __dst then 0 is
 ///    returned. Otherwise 1 is returned.
-static __inline__ int _DEFAULT_FN_ATTRS _enqcmd(void *__dst,
-                                                const void *__src) {
+static __inline__ int _DEFAULT_FN_ATTRS
+_enqcmd (void *__dst, const void *__src)
+{
   return __builtin_ia32_enqcmd(__dst, __src);
 }
 
@@ -51,8 +52,9 @@ static __inline__ int _DEFAULT_FN_ATTRS _enqcmd(void *__dst,
 ///    Pointer to 64-byte command data.
 /// \returns If the command data is successfully written to \a __dst then 0 is
 ///    returned. Otherwise 1 is returned.
-static __inline__ int _DEFAULT_FN_ATTRS _enqcmds(void *__dst,
-                                                 const void *__src) {
+static __inline__ int _DEFAULT_FN_ATTRS
+_enqcmds (void *__dst, const void *__src)
+{
   return __builtin_ia32_enqcmds(__dst, __src);
 }
 

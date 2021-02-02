@@ -2,7 +2,7 @@
 
 struct X {
   X();
-  X(const X &);
+  X(const X&);
   ~X();
 };
 

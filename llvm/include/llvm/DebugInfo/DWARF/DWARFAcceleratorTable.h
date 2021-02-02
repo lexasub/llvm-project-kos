@@ -48,6 +48,7 @@ public:
     Entry &operator=(Entry &&) = default;
     ~Entry() = default;
 
+
   public:
     /// Returns the Offset of the Compilation Unit associated with this
     /// Accelerator Entry or None if the Compilation Unit offset is not recorded
@@ -143,12 +144,11 @@ public:
     const AppleAcceleratorTable *AccelTable = nullptr;
     Entry Current;           ///< The current entry.
     uint64_t DataOffset = 0; ///< Offset into the section.
-    unsigned Data = 0;       ///< Current data entry.
-    unsigned NumData = 0;    ///< Number of data entries.
+    unsigned Data = 0; ///< Current data entry.
+    unsigned NumData = 0; ///< Number of data entries.
 
     /// Advance the iterator.
     void Next();
-
   public:
     /// Construct a new iterator for the entries at \p DataOffset.
     ValueIterator(const AppleAcceleratorTable &AccelTable, uint64_t DataOffset);
@@ -156,10 +156,7 @@ public:
     ValueIterator() = default;
 
     const Entry &operator*() const { return Current; }
-    ValueIterator &operator++() {
-      Next();
-      return *this;
-    }
+    ValueIterator &operator++() { Next(); return *this; }
     ValueIterator operator++(int) {
       ValueIterator I = *this;
       Next();

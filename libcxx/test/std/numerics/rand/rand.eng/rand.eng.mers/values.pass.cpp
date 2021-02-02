@@ -42,89 +42,94 @@
 #include "test_macros.h"
 
 template <class T>
-void where(const T&) {}
+void where(const T &) {}
 
-void test1() {
-  typedef std::mt19937 E;
-  static_assert((E::word_size == 32), "");
-  static_assert((E::state_size == 624), "");
-  static_assert((E::shift_size == 397), "");
-  static_assert((E::mask_bits == 31), "");
-  static_assert((E::xor_mask == 0x9908b0df), "");
-  static_assert((E::tempering_u == 11), "");
-  static_assert((E::tempering_d == 0xffffffff), "");
-  static_assert((E::tempering_s == 7), "");
-  static_assert((E::tempering_b == 0x9d2c5680), "");
-  static_assert((E::tempering_t == 15), "");
-  static_assert((E::tempering_c == 0xefc60000), "");
-  static_assert((E::tempering_l == 18), "");
-  static_assert((E::initialization_multiplier == 1812433253), "");
+void
+test1()
+{
+    typedef std::mt19937 E;
+    static_assert((E::word_size == 32), "");
+    static_assert((E::state_size == 624), "");
+    static_assert((E::shift_size == 397), "");
+    static_assert((E::mask_bits == 31), "");
+    static_assert((E::xor_mask == 0x9908b0df), "");
+    static_assert((E::tempering_u == 11), "");
+    static_assert((E::tempering_d == 0xffffffff), "");
+    static_assert((E::tempering_s == 7), "");
+    static_assert((E::tempering_b == 0x9d2c5680), "");
+    static_assert((E::tempering_t == 15), "");
+    static_assert((E::tempering_c == 0xefc60000), "");
+    static_assert((E::tempering_l == 18), "");
+    static_assert((E::initialization_multiplier == 1812433253), "");
 #if TEST_STD_VER >= 11
-  static_assert((E::min() == 0), "");
-  static_assert((E::max() == 0xFFFFFFFF), "");
+    static_assert((E::min() == 0), "");
+    static_assert((E::max() == 0xFFFFFFFF), "");
 #else
-  assert((E::min() == 0));
-  assert((E::max() == 0xFFFFFFFF));
+    assert((E::min() == 0));
+    assert((E::max() == 0xFFFFFFFF));
 #endif
-  static_assert((E::default_seed == 5489u), "");
-  where(E::word_size);
-  where(E::state_size);
-  where(E::shift_size);
-  where(E::mask_bits);
-  where(E::xor_mask);
-  where(E::tempering_u);
-  where(E::tempering_d);
-  where(E::tempering_s);
-  where(E::tempering_b);
-  where(E::tempering_t);
-  where(E::tempering_c);
-  where(E::tempering_l);
-  where(E::initialization_multiplier);
-  where(E::default_seed);
+    static_assert((E::default_seed == 5489u), "");
+    where(E::word_size);
+    where(E::state_size);
+    where(E::shift_size);
+    where(E::mask_bits);
+    where(E::xor_mask);
+    where(E::tempering_u);
+    where(E::tempering_d);
+    where(E::tempering_s);
+    where(E::tempering_b);
+    where(E::tempering_t);
+    where(E::tempering_c);
+    where(E::tempering_l);
+    where(E::initialization_multiplier);
+    where(E::default_seed);
 }
 
-void test2() {
-  typedef std::mt19937_64 E;
-  static_assert((E::word_size == 64), "");
-  static_assert((E::state_size == 312), "");
-  static_assert((E::shift_size == 156), "");
-  static_assert((E::mask_bits == 31), "");
-  static_assert((E::xor_mask == 0xb5026f5aa96619e9ull), "");
-  static_assert((E::tempering_u == 29), "");
-  static_assert((E::tempering_d == 0x5555555555555555ull), "");
-  static_assert((E::tempering_s == 17), "");
-  static_assert((E::tempering_b == 0x71d67fffeda60000ull), "");
-  static_assert((E::tempering_t == 37), "");
-  static_assert((E::tempering_c == 0xfff7eee000000000ull), "");
-  static_assert((E::tempering_l == 43), "");
-  static_assert((E::initialization_multiplier == 6364136223846793005ull), "");
+void
+test2()
+{
+    typedef std::mt19937_64 E;
+    static_assert((E::word_size == 64), "");
+    static_assert((E::state_size == 312), "");
+    static_assert((E::shift_size == 156), "");
+    static_assert((E::mask_bits == 31), "");
+    static_assert((E::xor_mask == 0xb5026f5aa96619e9ull), "");
+    static_assert((E::tempering_u == 29), "");
+    static_assert((E::tempering_d == 0x5555555555555555ull), "");
+    static_assert((E::tempering_s == 17), "");
+    static_assert((E::tempering_b == 0x71d67fffeda60000ull), "");
+    static_assert((E::tempering_t == 37), "");
+    static_assert((E::tempering_c == 0xfff7eee000000000ull), "");
+    static_assert((E::tempering_l == 43), "");
+    static_assert((E::initialization_multiplier == 6364136223846793005ull), "");
 #if TEST_STD_VER >= 11
-  static_assert((E::min() == 0), "");
-  static_assert((E::max() == 0xFFFFFFFFFFFFFFFFull), "");
+    static_assert((E::min() == 0), "");
+    static_assert((E::max() == 0xFFFFFFFFFFFFFFFFull), "");
 #else
-  assert((E::min() == 0));
-  assert((E::max() == 0xFFFFFFFFFFFFFFFFull));
+    assert((E::min() == 0));
+    assert((E::max() == 0xFFFFFFFFFFFFFFFFull));
 #endif
-  static_assert((E::default_seed == 5489u), "");
-  where(E::word_size);
-  where(E::state_size);
-  where(E::shift_size);
-  where(E::mask_bits);
-  where(E::xor_mask);
-  where(E::tempering_u);
-  where(E::tempering_d);
-  where(E::tempering_s);
-  where(E::tempering_b);
-  where(E::tempering_t);
-  where(E::tempering_c);
-  where(E::tempering_l);
-  where(E::initialization_multiplier);
-  where(E::default_seed);
+    static_assert((E::default_seed == 5489u), "");
+    where(E::word_size);
+    where(E::state_size);
+    where(E::shift_size);
+    where(E::mask_bits);
+    where(E::xor_mask);
+    where(E::tempering_u);
+    where(E::tempering_d);
+    where(E::tempering_s);
+    where(E::tempering_b);
+    where(E::tempering_t);
+    where(E::tempering_c);
+    where(E::tempering_l);
+    where(E::initialization_multiplier);
+    where(E::default_seed);
 }
 
-int main(int, char**) {
-  test1();
-  test2();
+int main(int, char**)
+{
+    test1();
+    test2();
 
   return 0;
 }

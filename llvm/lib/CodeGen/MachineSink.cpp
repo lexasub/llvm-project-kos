@@ -61,14 +61,14 @@ using namespace llvm;
 #define DEBUG_TYPE "machine-sink"
 
 static cl::opt<bool>
-    SplitEdges("machine-sink-split",
-               cl::desc("Split critical edges during machine sinking"),
-               cl::init(true), cl::Hidden);
+SplitEdges("machine-sink-split",
+           cl::desc("Split critical edges during machine sinking"),
+           cl::init(true), cl::Hidden);
 
-static cl::opt<bool> UseBlockFreqInfo(
-    "machine-sink-bfi",
-    cl::desc("Use block frequency info to find successors to sink"),
-    cl::init(true), cl::Hidden);
+static cl::opt<bool>
+UseBlockFreqInfo("machine-sink-bfi",
+           cl::desc("Use block frequency info to find successors to sink"),
+           cl::init(true), cl::Hidden);
 
 static cl::opt<unsigned> SplitEdgeProbabilityThreshold(
     "machine-sink-split-probability-threshold",
@@ -92,152 +92,156 @@ static cl::opt<unsigned> SinkLoadBlocksThreshold(
     cl::init(20), cl::Hidden);
 
 static cl::opt<bool>
-    SinkInstsIntoLoop("sink-insts-to-avoid-spills",
-                      cl::desc("Sink instructions into loops to avoid "
-                               "register spills"),
-                      cl::init(false), cl::Hidden);
+SinkInstsIntoLoop("sink-insts-to-avoid-spills",
+                  cl::desc("Sink instructions into loops to avoid "
+                           "register spills"),
+                  cl::init(false), cl::Hidden);
 
-STATISTIC(NumSunk, "Number of machine instructions sunk");
-STATISTIC(NumLoopSunk, "Number of machine instructions sunk into a loop");
-STATISTIC(NumSplit, "Number of critical edges split");
+STATISTIC(NumSunk,      "Number of machine instructions sunk");
+STATISTIC(NumLoopSunk,  "Number of machine instructions sunk into a loop");
+STATISTIC(NumSplit,     "Number of critical edges split");
 STATISTIC(NumCoalesces, "Number of copies coalesced");
 STATISTIC(NumPostRACopySink, "Number of copies sunk after RA");
 
 namespace {
 
-class MachineSinking : public MachineFunctionPass {
-  const TargetInstrInfo *TII;
-  const TargetRegisterInfo *TRI;
-  MachineRegisterInfo *MRI;      // Machine register information
-  MachineDominatorTree *DT;      // Machine dominator tree
-  MachinePostDominatorTree *PDT; // Machine post dominator tree
-  MachineLoopInfo *LI;
-  MachineBlockFrequencyInfo *MBFI;
-  const MachineBranchProbabilityInfo *MBPI;
-  AliasAnalysis *AA;
-  RegisterClassInfo RegClassInfo;
+  class MachineSinking : public MachineFunctionPass {
+    const TargetInstrInfo *TII;
+    const TargetRegisterInfo *TRI;
+    MachineRegisterInfo  *MRI;     // Machine register information
+    MachineDominatorTree *DT;      // Machine dominator tree
+    MachinePostDominatorTree *PDT; // Machine post dominator tree
+    MachineLoopInfo *LI;
+    MachineBlockFrequencyInfo *MBFI;
+    const MachineBranchProbabilityInfo *MBPI;
+    AliasAnalysis *AA;
+    RegisterClassInfo RegClassInfo;
 
-  // Remember which edges have been considered for breaking.
-  SmallSet<std::pair<MachineBasicBlock *, MachineBasicBlock *>, 8>
-      CEBCandidates;
-  // Remember which edges we are about to split.
-  // This is different from CEBCandidates since those edges
-  // will be split.
-  SetVector<std::pair<MachineBasicBlock *, MachineBasicBlock *>> ToSplit;
+    // Remember which edges have been considered for breaking.
+    SmallSet<std::pair<MachineBasicBlock*, MachineBasicBlock*>, 8>
+    CEBCandidates;
+    // Remember which edges we are about to split.
+    // This is different from CEBCandidates since those edges
+    // will be split.
+    SetVector<std::pair<MachineBasicBlock *, MachineBasicBlock *>> ToSplit;
 
-  SparseBitVector<> RegsToClearKillFlags;
+    SparseBitVector<> RegsToClearKillFlags;
 
-  using AllSuccsCache =
-      std::map<MachineBasicBlock *, SmallVector<MachineBasicBlock *, 4>>;
+    using AllSuccsCache =
+        std::map<MachineBasicBlock *, SmallVector<MachineBasicBlock *, 4>>;
 
-  /// DBG_VALUE pointer and flag. The flag is true if this DBG_VALUE is
-  /// post-dominated by another DBG_VALUE of the same variable location.
-  /// This is necessary to detect sequences such as:
-  ///     %0 = someinst
-  ///     DBG_VALUE %0, !123, !DIExpression()
-  ///     %1 = anotherinst
-  ///     DBG_VALUE %1, !123, !DIExpression()
-  /// Where if %0 were to sink, the DBG_VAUE should not sink with it, as that
-  /// would re-order assignments.
-  using SeenDbgUser = PointerIntPair<MachineInstr *, 1>;
+    /// DBG_VALUE pointer and flag. The flag is true if this DBG_VALUE is
+    /// post-dominated by another DBG_VALUE of the same variable location.
+    /// This is necessary to detect sequences such as:
+    ///     %0 = someinst
+    ///     DBG_VALUE %0, !123, !DIExpression()
+    ///     %1 = anotherinst
+    ///     DBG_VALUE %1, !123, !DIExpression()
+    /// Where if %0 were to sink, the DBG_VAUE should not sink with it, as that
+    /// would re-order assignments.
+    using SeenDbgUser = PointerIntPair<MachineInstr *, 1>;
 
-  /// Record of DBG_VALUE uses of vregs in a block, so that we can identify
-  /// debug instructions to sink.
-  SmallDenseMap<unsigned, TinyPtrVector<SeenDbgUser>> SeenDbgUsers;
+    /// Record of DBG_VALUE uses of vregs in a block, so that we can identify
+    /// debug instructions to sink.
+    SmallDenseMap<unsigned, TinyPtrVector<SeenDbgUser>> SeenDbgUsers;
 
-  /// Record of debug variables that have had their locations set in the
-  /// current block.
-  DenseSet<DebugVariable> SeenDbgVars;
+    /// Record of debug variables that have had their locations set in the
+    /// current block.
+    DenseSet<DebugVariable> SeenDbgVars;
 
-  std::map<std::pair<MachineBasicBlock *, MachineBasicBlock *>, bool>
-      HasStoreCache;
-  std::map<std::pair<MachineBasicBlock *, MachineBasicBlock *>,
-           std::vector<MachineInstr *>>
-      StoreInstrCache;
+    std::map<std::pair<MachineBasicBlock *, MachineBasicBlock *>, bool>
+        HasStoreCache;
+    std::map<std::pair<MachineBasicBlock *, MachineBasicBlock *>,
+             std::vector<MachineInstr *>>
+        StoreInstrCache;
 
-  /// Cached BB's register pressure.
-  std::map<MachineBasicBlock *, std::vector<unsigned>> CachedRegisterPressure;
+    /// Cached BB's register pressure.
+    std::map<MachineBasicBlock *, std::vector<unsigned>> CachedRegisterPressure;
 
-public:
-  static char ID; // Pass identification
+  public:
+    static char ID; // Pass identification
 
-  MachineSinking() : MachineFunctionPass(ID) {
-    initializeMachineSinkingPass(*PassRegistry::getPassRegistry());
-  }
+    MachineSinking() : MachineFunctionPass(ID) {
+      initializeMachineSinkingPass(*PassRegistry::getPassRegistry());
+    }
 
-  bool runOnMachineFunction(MachineFunction &MF) override;
+    bool runOnMachineFunction(MachineFunction &MF) override;
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    MachineFunctionPass::getAnalysisUsage(AU);
-    AU.addRequired<AAResultsWrapperPass>();
-    AU.addRequired<MachineDominatorTree>();
-    AU.addRequired<MachinePostDominatorTree>();
-    AU.addRequired<MachineLoopInfo>();
-    AU.addRequired<MachineBranchProbabilityInfo>();
-    AU.addPreserved<MachineLoopInfo>();
-    if (UseBlockFreqInfo)
-      AU.addRequired<MachineBlockFrequencyInfo>();
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      MachineFunctionPass::getAnalysisUsage(AU);
+      AU.addRequired<AAResultsWrapperPass>();
+      AU.addRequired<MachineDominatorTree>();
+      AU.addRequired<MachinePostDominatorTree>();
+      AU.addRequired<MachineLoopInfo>();
+      AU.addRequired<MachineBranchProbabilityInfo>();
+      AU.addPreserved<MachineLoopInfo>();
+      if (UseBlockFreqInfo)
+        AU.addRequired<MachineBlockFrequencyInfo>();
+    }
 
-  void releaseMemory() override { CEBCandidates.clear(); }
+    void releaseMemory() override {
+      CEBCandidates.clear();
+    }
 
-private:
-  bool ProcessBlock(MachineBasicBlock &MBB);
-  void ProcessDbgInst(MachineInstr &MI);
-  bool isWorthBreakingCriticalEdge(MachineInstr &MI, MachineBasicBlock *From,
-                                   MachineBasicBlock *To);
+  private:
+    bool ProcessBlock(MachineBasicBlock &MBB);
+    void ProcessDbgInst(MachineInstr &MI);
+    bool isWorthBreakingCriticalEdge(MachineInstr &MI,
+                                     MachineBasicBlock *From,
+                                     MachineBasicBlock *To);
 
-  bool hasStoreBetween(MachineBasicBlock *From, MachineBasicBlock *To,
-                       MachineInstr &MI);
+    bool hasStoreBetween(MachineBasicBlock *From, MachineBasicBlock *To,
+                         MachineInstr &MI);
 
-  /// Postpone the splitting of the given critical
-  /// edge (\p From, \p To).
-  ///
-  /// We do not split the edges on the fly. Indeed, this invalidates
-  /// the dominance information and thus triggers a lot of updates
-  /// of that information underneath.
-  /// Instead, we postpone all the splits after each iteration of
-  /// the main loop. That way, the information is at least valid
-  /// for the lifetime of an iteration.
-  ///
-  /// \return True if the edge is marked as toSplit, false otherwise.
-  /// False can be returned if, for instance, this is not profitable.
-  bool PostponeSplitCriticalEdge(MachineInstr &MI, MachineBasicBlock *From,
-                                 MachineBasicBlock *To, bool BreakPHIEdge);
-  bool SinkInstruction(MachineInstr &MI, bool &SawStore,
-                       AllSuccsCache &AllSuccessors);
+    /// Postpone the splitting of the given critical
+    /// edge (\p From, \p To).
+    ///
+    /// We do not split the edges on the fly. Indeed, this invalidates
+    /// the dominance information and thus triggers a lot of updates
+    /// of that information underneath.
+    /// Instead, we postpone all the splits after each iteration of
+    /// the main loop. That way, the information is at least valid
+    /// for the lifetime of an iteration.
+    ///
+    /// \return True if the edge is marked as toSplit, false otherwise.
+    /// False can be returned if, for instance, this is not profitable.
+    bool PostponeSplitCriticalEdge(MachineInstr &MI,
+                                   MachineBasicBlock *From,
+                                   MachineBasicBlock *To,
+                                   bool BreakPHIEdge);
+    bool SinkInstruction(MachineInstr &MI, bool &SawStore,
+                         AllSuccsCache &AllSuccessors);
 
-  /// If we sink a COPY inst, some debug users of it's destination may no
-  /// longer be dominated by the COPY, and will eventually be dropped.
-  /// This is easily rectified by forwarding the non-dominated debug uses
-  /// to the copy source.
-  void SalvageUnsunkDebugUsersOfCopy(MachineInstr &,
-                                     MachineBasicBlock *TargetBlock);
-  bool AllUsesDominatedByBlock(Register Reg, MachineBasicBlock *MBB,
-                               MachineBasicBlock *DefMBB, bool &BreakPHIEdge,
-                               bool &LocalUse) const;
-  MachineBasicBlock *FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
-                                      bool &BreakPHIEdge,
-                                      AllSuccsCache &AllSuccessors);
+    /// If we sink a COPY inst, some debug users of it's destination may no
+    /// longer be dominated by the COPY, and will eventually be dropped.
+    /// This is easily rectified by forwarding the non-dominated debug uses
+    /// to the copy source.
+    void SalvageUnsunkDebugUsersOfCopy(MachineInstr &,
+                                       MachineBasicBlock *TargetBlock);
+    bool AllUsesDominatedByBlock(Register Reg, MachineBasicBlock *MBB,
+                                 MachineBasicBlock *DefMBB, bool &BreakPHIEdge,
+                                 bool &LocalUse) const;
+    MachineBasicBlock *FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
+               bool &BreakPHIEdge, AllSuccsCache &AllSuccessors);
 
-  void FindLoopSinkCandidates(MachineLoop *L, MachineBasicBlock *BB,
-                              SmallVectorImpl<MachineInstr *> &Candidates);
-  bool SinkIntoLoop(MachineLoop *L, MachineInstr &I);
+    void FindLoopSinkCandidates(MachineLoop *L, MachineBasicBlock *BB,
+                                SmallVectorImpl<MachineInstr *> &Candidates);
+    bool SinkIntoLoop(MachineLoop *L, MachineInstr &I);
 
-  bool isProfitableToSinkTo(Register Reg, MachineInstr &MI,
-                            MachineBasicBlock *MBB,
-                            MachineBasicBlock *SuccToSinkTo,
-                            AllSuccsCache &AllSuccessors);
+    bool isProfitableToSinkTo(Register Reg, MachineInstr &MI,
+                              MachineBasicBlock *MBB,
+                              MachineBasicBlock *SuccToSinkTo,
+                              AllSuccsCache &AllSuccessors);
 
-  bool PerformTrivialForwardCoalescing(MachineInstr &MI,
-                                       MachineBasicBlock *MBB);
+    bool PerformTrivialForwardCoalescing(MachineInstr &MI,
+                                         MachineBasicBlock *MBB);
 
-  SmallVector<MachineBasicBlock *, 4> &
-  GetAllSortedSuccessors(MachineInstr &MI, MachineBasicBlock *MBB,
-                         AllSuccsCache &AllSuccessors) const;
+    SmallVector<MachineBasicBlock *, 4> &
+    GetAllSortedSuccessors(MachineInstr &MI, MachineBasicBlock *MBB,
+                           AllSuccsCache &AllSuccessors) const;
 
-  std::vector<unsigned> &getBBRegisterPressure(MachineBasicBlock &MBB);
-};
+    std::vector<unsigned> &getBBRegisterPressure(MachineBasicBlock &MBB);
+  };
 
 } // end anonymous namespace
 
@@ -245,14 +249,14 @@ char MachineSinking::ID = 0;
 
 char &llvm::MachineSinkingID = MachineSinking::ID;
 
-INITIALIZE_PASS_BEGIN(MachineSinking, DEBUG_TYPE, "Machine code sinking", false,
-                      false)
+INITIALIZE_PASS_BEGIN(MachineSinking, DEBUG_TYPE,
+                      "Machine code sinking", false, false)
 INITIALIZE_PASS_DEPENDENCY(MachineBranchProbabilityInfo)
 INITIALIZE_PASS_DEPENDENCY(MachineDominatorTree)
 INITIALIZE_PASS_DEPENDENCY(MachineLoopInfo)
 INITIALIZE_PASS_DEPENDENCY(AAResultsWrapperPass)
-INITIALIZE_PASS_END(MachineSinking, DEBUG_TYPE, "Machine code sinking", false,
-                    false)
+INITIALIZE_PASS_END(MachineSinking, DEBUG_TYPE,
+                    "Machine code sinking", false, false)
 
 bool MachineSinking::PerformTrivialForwardCoalescing(MachineInstr &MI,
                                                      MachineBasicBlock *MBB) {
@@ -334,7 +338,7 @@ bool MachineSinking::AllUsesDominatedByBlock(Register Reg,
     if (UseInst->isPHI()) {
       // PHI nodes use the operand in the predecessor block, not the block with
       // the PHI.
-      UseBlock = UseInst->getOperand(OpNo + 1).getMBB();
+      UseBlock = UseInst->getOperand(OpNo+1).getMBB();
     } else if (UseBlock == DefMBB) {
       LocalUse = true;
       return false;
@@ -366,8 +370,7 @@ static bool mayLoadFromGOTOrConstantPool(MachineInstr &MI) {
   return false;
 }
 
-void MachineSinking::FindLoopSinkCandidates(
-    MachineLoop *L, MachineBasicBlock *BB,
+void MachineSinking::FindLoopSinkCandidates(MachineLoop *L, MachineBasicBlock *BB,
     SmallVectorImpl<MachineInstr *> &Candidates) {
   for (auto &MI : *BB) {
     LLVM_DEBUG(dbgs() << "LoopSink: Analysing candidate: " << MI);
@@ -428,7 +431,7 @@ bool MachineSinking::runOnMachineFunction(MachineFunction &MF) {
     // Process all basic blocks.
     CEBCandidates.clear();
     ToSplit.clear();
-    for (auto &MBB : MF)
+    for (auto &MBB: MF)
       MadeChange |= ProcessBlock(MBB);
 
     // If we have anything we marked as toSplit, split it now.
@@ -448,8 +451,7 @@ bool MachineSinking::runOnMachineFunction(MachineFunction &MF) {
         LLVM_DEBUG(dbgs() << " *** Not legal to break critical edge\n");
     }
     // If this iteration over the code changed anything, keep iterating.
-    if (!MadeChange)
-      break;
+    if (!MadeChange) break;
     EverMadeChange = true;
   }
 
@@ -489,14 +491,12 @@ bool MachineSinking::runOnMachineFunction(MachineFunction &MF) {
 
 bool MachineSinking::ProcessBlock(MachineBasicBlock &MBB) {
   // Can't sink anything out of a block that has less than two successors.
-  if (MBB.succ_size() <= 1 || MBB.empty())
-    return false;
+  if (MBB.succ_size() <= 1 || MBB.empty()) return false;
 
   // Don't bother sinking code out of unreachable blocks. In addition to being
   // unprofitable, it can also lead to infinite looping, because in an
   // unreachable loop there may be nowhere to stop.
-  if (!DT->isReachableFromEntry(&MBB))
-    return false;
+  if (!DT->isReachableFromEntry(&MBB)) return false;
 
   bool MadeChange = false;
 
@@ -508,7 +508,7 @@ bool MachineSinking::ProcessBlock(MachineBasicBlock &MBB) {
   --I;
   bool ProcessedBegin, SawStore = false;
   do {
-    MachineInstr &MI = *I; // The instruction to sink.
+    MachineInstr &MI = *I;  // The instruction to sink.
 
     // Predecrement I (if it's not begin) so that it isn't invalidated by
     // sinking.
@@ -575,9 +575,8 @@ bool MachineSinking::isWorthBreakingCriticalEdge(MachineInstr &MI,
   if (!MI.isCopy() && !TII->isAsCheapAsAMove(MI))
     return true;
 
-  if (From->isSuccessor(To) &&
-      MBPI->getEdgeProbability(From, To) <=
-          BranchProbability(SplitEdgeProbabilityThreshold, 100))
+  if (From->isSuccessor(To) && MBPI->getEdgeProbability(From, To) <=
+      BranchProbability(SplitEdgeProbabilityThreshold, 100))
     return true;
 
   // MI is cheap, we probably don't want to break the critical edge for it.
@@ -625,7 +624,8 @@ bool MachineSinking::PostponeSplitCriticalEdge(MachineInstr &MI,
     return false;
 
   // Check for backedges of more "complex" loops.
-  if (LI->getLoopFor(FromBB) == LI->getLoopFor(ToBB) && LI->isLoopHeader(ToBB))
+  if (LI->getLoopFor(FromBB) == LI->getLoopFor(ToBB) &&
+      LI->isLoopHeader(ToBB))
     return false;
 
   // It's not always legal to break critical edges and sink the computation
@@ -669,8 +669,7 @@ bool MachineSinking::PostponeSplitCriticalEdge(MachineInstr &MI,
   // sources are only defined on the specific predecessor edges.
   if (!BreakPHIEdge) {
     for (MachineBasicBlock::pred_iterator PI = ToBB->pred_begin(),
-                                          E = ToBB->pred_end();
-         PI != E; ++PI) {
+           E = ToBB->pred_end(); PI != E; ++PI) {
       if (*PI == FromBB)
         continue;
       if (!DT->dominates(ToBB, *PI))
@@ -724,7 +723,7 @@ bool MachineSinking::isProfitableToSinkTo(Register Reg, MachineInstr &MI,
                                           MachineBasicBlock *MBB,
                                           MachineBasicBlock *SuccToSinkTo,
                                           AllSuccsCache &AllSuccessors) {
-  assert(SuccToSinkTo && "Invalid SinkTo Candidate BB");
+  assert (SuccToSinkTo && "Invalid SinkTo Candidate BB");
 
   if (MBB == SuccToSinkTo)
     return false;
@@ -872,7 +871,7 @@ MachineBasicBlock *
 MachineSinking::FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
                                  bool &BreakPHIEdge,
                                  AllSuccsCache &AllSuccessors) {
-  assert(MBB && "Invalid MachineBasicBlock!");
+  assert (MBB && "Invalid MachineBasicBlock!");
 
   // Loop over all the operands of the specified instruction.  If there is
   // anything we can't handle, bail out.
@@ -882,12 +881,10 @@ MachineSinking::FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
   MachineBasicBlock *SuccToSinkTo = nullptr;
   for (unsigned i = 0, e = MI.getNumOperands(); i != e; ++i) {
     const MachineOperand &MO = MI.getOperand(i);
-    if (!MO.isReg())
-      continue; // Ignore non-register operands.
+    if (!MO.isReg()) continue;  // Ignore non-register operands.
 
     Register Reg = MO.getReg();
-    if (Reg == 0)
-      continue;
+    if (Reg == 0) continue;
 
     if (Register::isPhysicalRegister(Reg)) {
       if (MO.isUse()) {
@@ -902,8 +899,7 @@ MachineSinking::FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
       }
     } else {
       // Virtual register uses are always safe to sink.
-      if (MO.isUse())
-        continue;
+      if (MO.isUse()) continue;
 
       // If it's not safe to move defs of the register class, then abort.
       if (!TII->isSafeToMoveRegClassDefs(MRI->getRegClass(Reg)))
@@ -915,8 +911,8 @@ MachineSinking::FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
         // If a previous operand picked a block to sink to, then this operand
         // must be sinkable to the same block.
         bool LocalUse = false;
-        if (!AllUsesDominatedByBlock(Reg, SuccToSinkTo, MBB, BreakPHIEdge,
-                                     LocalUse))
+        if (!AllUsesDominatedByBlock(Reg, SuccToSinkTo, MBB,
+                                     BreakPHIEdge, LocalUse))
           return nullptr;
 
         continue;
@@ -929,8 +925,8 @@ MachineSinking::FindSuccToSinkTo(MachineInstr &MI, MachineBasicBlock *MBB,
       for (MachineBasicBlock *SuccBlock :
            GetAllSortedSuccessors(MI, MBB, AllSuccessors)) {
         bool LocalUse = false;
-        if (AllUsesDominatedByBlock(Reg, SuccBlock, MBB, BreakPHIEdge,
-                                    LocalUse)) {
+        if (AllUsesDominatedByBlock(Reg, SuccBlock, MBB,
+                                    BreakPHIEdge, LocalUse)) {
           SuccToSinkTo = SuccBlock;
           break;
         }
@@ -1151,7 +1147,7 @@ bool MachineSinking::hasStoreBetween(MachineBasicBlock *From,
         for (auto *DomBB : HandledDomBlocks) {
           if (DomBB != BB && DT->dominates(DomBB, BB))
             HasStoreCache[std::make_pair(DomBB, To)] = true;
-          else if (DomBB != BB && DT->dominates(BB, DomBB))
+          else if(DomBB != BB && DT->dominates(BB, DomBB))
             HasStoreCache[std::make_pair(From, DomBB)] = true;
         }
         HasStoreCache[BlockPair] = true;
@@ -1165,7 +1161,7 @@ bool MachineSinking::hasStoreBetween(MachineBasicBlock *From,
           for (auto *DomBB : HandledDomBlocks) {
             if (DomBB != BB && DT->dominates(DomBB, BB))
               HasStoreCache[std::make_pair(DomBB, To)] = true;
-            else if (DomBB != BB && DT->dominates(BB, DomBB))
+            else if(DomBB != BB && DT->dominates(BB, DomBB))
               HasStoreCache[std::make_pair(From, DomBB)] = true;
           }
           HasStoreCache[BlockPair] = true;
@@ -1231,8 +1227,8 @@ bool MachineSinking::SinkIntoLoop(MachineLoop *L, MachineInstr &I) {
       CanSink = false;
       break;
     }
-    LLVM_DEBUG(dbgs() << "LoopSink:   Setting nearest common dom block: "
-                      << printMBBReference(*SinkBlock) << "\n");
+    LLVM_DEBUG(dbgs() << "LoopSink:   Setting nearest common dom block: " <<
+               printMBBReference(*SinkBlock) << "\n");
   }
 
   if (!CanSink) {
@@ -1244,8 +1240,7 @@ bool MachineSinking::SinkIntoLoop(MachineLoop *L, MachineInstr &I) {
     return false;
   }
   if (SinkBlock == Preheader) {
-    LLVM_DEBUG(
-        dbgs() << "LoopSink: Not sinking, sink block is the preheader\n");
+    LLVM_DEBUG(dbgs() << "LoopSink: Not sinking, sink block is the preheader\n");
     return false;
   }
 
@@ -1303,8 +1298,7 @@ bool MachineSinking::SinkInstruction(MachineInstr &MI, bool &SawStore,
   // "zombie" define of that preg. E.g., EFLAGS. (<rdar://problem/8030636>)
   for (unsigned I = 0, E = MI.getNumOperands(); I != E; ++I) {
     const MachineOperand &MO = MI.getOperand(I);
-    if (!MO.isReg())
-      continue;
+    if (!MO.isReg()) continue;
     Register Reg = MO.getReg();
     if (Reg == 0 || !Register::isPhysicalRegister(Reg))
       continue;
@@ -1347,8 +1341,8 @@ bool MachineSinking::SinkInstruction(MachineInstr &MI, bool &SawStore,
       // Mark this edge as to be split.
       // If the edge can actually be split, the next iteration of the main loop
       // will sink MI in the newly created block.
-      bool Status = PostponeSplitCriticalEdge(MI, ParentBlock, SuccToSinkTo,
-                                              BreakPHIEdge);
+      bool Status =
+        PostponeSplitCriticalEdge(MI, ParentBlock, SuccToSinkTo, BreakPHIEdge);
       if (!Status)
         LLVM_DEBUG(dbgs() << " *** PUNTING: Not legal or profitable to "
                              "break critical edge\n");
@@ -1361,8 +1355,8 @@ bool MachineSinking::SinkInstruction(MachineInstr &MI, bool &SawStore,
     // BreakPHIEdge is true if all the uses are in the successor MBB being
     // sunken into and they are all PHI nodes. In this case, machine-sink must
     // break the critical edge first.
-    bool Status =
-        PostponeSplitCriticalEdge(MI, ParentBlock, SuccToSinkTo, BreakPHIEdge);
+    bool Status = PostponeSplitCriticalEdge(MI, ParentBlock,
+                                            SuccToSinkTo, BreakPHIEdge);
     if (!Status)
       LLVM_DEBUG(dbgs() << " *** PUNTING: Not legal or profitable to "
                            "break critical edge\n");

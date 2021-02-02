@@ -169,7 +169,7 @@ protected:
   IPDBRawSymbol *RawSymbol = nullptr;
 };
 
-} // namespace pdb
 } // namespace llvm
+}
 
 #endif

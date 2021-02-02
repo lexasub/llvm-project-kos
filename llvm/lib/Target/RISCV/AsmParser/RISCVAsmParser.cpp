@@ -528,7 +528,8 @@ public:
     RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
     int64_t Imm;
     bool IsConstantImm = evaluateConstantImm(getImm(), Imm, VK);
-    return IsConstantImm && isInt<6>(Imm) && VK == RISCVMCExpr::VK_RISCV_None;
+    return IsConstantImm && isInt<6>(Imm) &&
+           VK == RISCVMCExpr::VK_RISCV_None;
   }
 
   bool isSImm6NonZero() const {
@@ -840,18 +841,10 @@ public:
       switch (c) {
       default:
         llvm_unreachable("FenceArg must contain only [iorw]");
-      case 'i':
-        Imm |= RISCVFenceField::I;
-        break;
-      case 'o':
-        Imm |= RISCVFenceField::O;
-        break;
-      case 'r':
-        Imm |= RISCVFenceField::R;
-        break;
-      case 'w':
-        Imm |= RISCVFenceField::W;
-        break;
+      case 'i': Imm |= RISCVFenceField::I; break;
+      case 'o': Imm |= RISCVFenceField::O; break;
+      case 'r': Imm |= RISCVFenceField::R; break;
+      case 'w': Imm |= RISCVFenceField::W; break;
       }
     }
     Inst.addOperand(MCOperand::createImm(Imm));
@@ -937,8 +930,8 @@ bool RISCVAsmParser::generateImmOutOfRangeError(
 }
 
 static std::string RISCVMnemonicSpellCheck(StringRef S,
-                                           const FeatureBitset &FBS,
-                                           unsigned VariantID = 0);
+                                          const FeatureBitset &FBS,
+                                          unsigned VariantID = 0);
 
 bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                              OperandVector &Operands,
@@ -948,8 +941,9 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   MCInst Inst;
   FeatureBitset MissingFeatures;
 
-  auto Result = MatchInstructionImpl(Operands, Inst, ErrorInfo, MissingFeatures,
-                                     MatchingInlineAsm);
+  auto Result =
+    MatchInstructionImpl(Operands, Inst, ErrorInfo, MissingFeatures,
+                         MatchingInlineAsm);
   switch (Result) {
   default:
     break;
@@ -972,8 +966,8 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   }
   case Match_MnemonicFail: {
     FeatureBitset FBS = ComputeAvailableFeatures(getSTI().getFeatureBits());
-    std::string Suggestion =
-        RISCVMnemonicSpellCheck(((RISCVOperand &)*Operands[0]).getToken(), FBS);
+    std::string Suggestion = RISCVMnemonicSpellCheck(
+      ((RISCVOperand &)*Operands[0]).getToken(), FBS);
     return Error(IDLoc, "unrecognized instruction mnemonic" + Suggestion);
   }
   case Match_InvalidOperand: {
@@ -996,10 +990,10 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   if (Result > FIRST_TARGET_MATCH_RESULT_TY) {
     SMLoc ErrorLoc = IDLoc;
     if (ErrorInfo != ~0U && ErrorInfo >= Operands.size())
-      return Error(ErrorLoc, "too few operands for instruction");
+        return Error(ErrorLoc, "too few operands for instruction");
   }
 
-  switch (Result) {
+  switch(Result) {
   default:
     break;
   case Match_InvalidImmXLenLI:

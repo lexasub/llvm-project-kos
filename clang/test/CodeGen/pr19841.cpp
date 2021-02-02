@@ -22,8 +22,8 @@ A::A() {
   0 == Common::kRenderCGA || _vm->_configRenderMode == Common::kRenderEGA
       ? b
       : _highlightColorTableVGA;
-  // Make sure the PHI value is casted correctly to the PHI type
-  // CHECK: %{{.*}} = phi [0 x i8]* [ bitcast ([1 x i8]* [[Common_A_b]] to [0 x i8]*), %{{.*}} ], [ %{{.*}}, %{{.*}} ]
+// Make sure the PHI value is casted correctly to the PHI type
+// CHECK: %{{.*}} = phi [0 x i8]* [ bitcast ([1 x i8]* [[Common_A_b]] to [0 x i8]*), %{{.*}} ], [ %{{.*}}, %{{.*}} ]
 }
-const unsigned char A::b[] = {0};
-} // namespace Common
+const unsigned char A::b[] = { 0 };
+}

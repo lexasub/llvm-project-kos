@@ -7,7 +7,7 @@
 #include <string.h>
 
 int main(int argc, char **argv) {
-  char *volatile x = (char *)malloc(50 * sizeof(char));
+  char *volatile x = (char*)malloc(50 * sizeof(char));
   memset(x, 0, 50);
   free(x);
   return x[25];

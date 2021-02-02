@@ -10,22 +10,22 @@
 #ifndef HEADER
 #define HEADER
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(
 #pragma omp parallel
-  {
+{
 #pragma omp cancellation point parallel
 #pragma omp cancel parallel
-    argv[0][0] = argc;
-  }
+  argv[0][0] = argc;
+}
 // CHECK: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
 #pragma omp sections
+{
   {
-    {
 #pragma omp cancellation point sections
 #pragma omp cancel sections
-    }
   }
+}
 // CHECK: call void @__kmpc_for_static_init_4(
 // CHECK: [[RES:%.+]] = call i32 @__kmpc_cancellationpoint(%struct.ident_t* {{[^,]+}}, i32 [[GTID]], i32 3)
 // CHECK: [[CMP:%.+]] = icmp ne i32 [[RES]], 0
@@ -37,14 +37,14 @@ int main(int argc, char **argv) {
 // CHECK: call void @__kmpc_for_static_fini(
 // CHECK: call void @__kmpc_barrier(%struct.ident_t*
 #pragma omp sections
-  {
+{
 #pragma omp cancellation point sections
 #pragma omp section
-    {
+  {
 #pragma omp cancellation point sections
 #pragma omp cancel sections
-    }
   }
+}
 // CHECK: call void @__kmpc_for_static_init_4(
 // CHECK: [[RES:%.+]] = call i32 @__kmpc_cancellationpoint(%struct.ident_t* {{[^,]+}}, i32 [[GTID]], i32 3)
 // CHECK: [[CMP:%.+]] = icmp ne i32 [[RES]], 0
@@ -62,10 +62,10 @@ int main(int argc, char **argv) {
 // CHECK: br label
 // CHECK: call void @__kmpc_for_static_fini(
 #pragma omp for
-  for (int i = 0; i < argc; ++i) {
+for (int i = 0; i < argc; ++i) {
 #pragma omp cancellation point for
 #pragma omp cancel for
-  }
+}
 // CHECK: call void @__kmpc_for_static_init_4(
 // CHECK: [[RES:%.+]] = call i32 @__kmpc_cancellationpoint(%struct.ident_t* {{[^,]+}}, i32 [[GTID]], i32 2)
 // CHECK: [[CMP:%.+]] = icmp ne i32 [[RES]], 0
@@ -77,44 +77,44 @@ int main(int argc, char **argv) {
 // CHECK: call void @__kmpc_for_static_fini(
 // CHECK: call void @__kmpc_barrier(%struct.ident_t*
 #pragma omp task
-  {
+{
 #pragma omp cancellation point taskgroup
 #pragma omp cancel taskgroup
-  }
+}
 // CHECK: call i8* @__kmpc_omp_task_alloc(
 // CHECK: call i32 @__kmpc_omp_task(
 #pragma omp task
-  {
+{
 #pragma omp cancellation point taskgroup
-  }
+}
 // CHECK: call i8* @__kmpc_omp_task_alloc(
 // CHECK: call i32 @__kmpc_omp_task(
 #pragma omp parallel sections
+{
   {
-    {
 #pragma omp cancellation point sections
 #pragma omp cancel sections
-    }
   }
+}
 // CHECK: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
 #pragma omp parallel sections
+{
   {
-    {
 #pragma omp cancellation point sections
 #pragma omp cancel sections
-    }
-#pragma omp section
-    {
-#pragma omp cancellation point sections
-    }
   }
+#pragma omp section
+  {
+#pragma omp cancellation point sections
+  }
+}
 // CHECK: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
 #pragma omp parallel for
-  for (int i = 0; i < argc; ++i) {
+for (int i = 0; i < argc; ++i) {
 #pragma omp cancellation point for
 #pragma omp cancel for
-  }
-  // CHECK: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
+}
+// CHECK: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
   return argc;
 }
 

@@ -14,9 +14,9 @@
 #ifndef LLVM_LIB_TARGET_AMDGPU_AMDGPUMACHINELEGALIZER_H
 #define LLVM_LIB_TARGET_AMDGPU_AMDGPUMACHINELEGALIZER_H
 
+#include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
 #include "AMDGPUArgumentUsageInfo.h"
 #include "SIInstrInfo.h"
-#include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
 
 namespace llvm {
 
@@ -33,11 +33,13 @@ class AMDGPULegalizerInfo final : public LegalizerInfo {
   const GCNSubtarget &ST;
 
 public:
-  AMDGPULegalizerInfo(const GCNSubtarget &ST, const GCNTargetMachine &TM);
+  AMDGPULegalizerInfo(const GCNSubtarget &ST,
+                      const GCNTargetMachine &TM);
 
   bool legalizeCustom(LegalizerHelper &Helper, MachineInstr &MI) const override;
 
-  Register getSegmentAperture(unsigned AddrSpace, MachineRegisterInfo &MRI,
+  Register getSegmentAperture(unsigned AddrSpace,
+                              MachineRegisterInfo &MRI,
                               MachineIRBuilder &B) const;
 
   bool legalizeAddrSpaceCast(MachineInstr &MI, MachineRegisterInfo &MRI,
@@ -94,21 +96,22 @@ public:
   bool loadInputValue(Register DstReg, MachineIRBuilder &B,
                       AMDGPUFunctionArgInfo::PreloadedValue ArgType) const;
   bool legalizePreloadedArgIntrin(
-      MachineInstr &MI, MachineRegisterInfo &MRI, MachineIRBuilder &B,
-      AMDGPUFunctionArgInfo::PreloadedValue ArgType) const;
+    MachineInstr &MI, MachineRegisterInfo &MRI, MachineIRBuilder &B,
+    AMDGPUFunctionArgInfo::PreloadedValue ArgType) const;
 
   bool legalizeUDIV_UREM(MachineInstr &MI, MachineRegisterInfo &MRI,
                          MachineIRBuilder &B) const;
 
-  void legalizeUDIV_UREM32Impl(MachineIRBuilder &B, Register DstReg,
-                               Register Num, Register Den, bool IsRem) const;
+  void legalizeUDIV_UREM32Impl(MachineIRBuilder &B,
+                               Register DstReg, Register Num, Register Den,
+                               bool IsRem) const;
   bool legalizeUDIV_UREM32(MachineInstr &MI, MachineRegisterInfo &MRI,
                            MachineIRBuilder &B) const;
   bool legalizeSDIV_SREM32(MachineInstr &MI, MachineRegisterInfo &MRI,
                            MachineIRBuilder &B) const;
 
-  void legalizeUDIV_UREM64Impl(MachineIRBuilder &B, Register DstReg,
-                               Register Numer, Register Denom,
+  void legalizeUDIV_UREM64Impl(MachineIRBuilder &B,
+                               Register DstReg, Register Numer, Register Denom,
                                bool IsDiv) const;
 
   bool legalizeUDIV_UREM64(MachineInstr &MI, MachineRegisterInfo &MRI,
@@ -134,8 +137,8 @@ public:
   bool legalizeRsqClampIntrinsic(MachineInstr &MI, MachineRegisterInfo &MRI,
                                  MachineIRBuilder &B) const;
 
-  bool legalizeDSAtomicFPIntrinsic(LegalizerHelper &Helper, MachineInstr &MI,
-                                   Intrinsic::ID IID) const;
+  bool legalizeDSAtomicFPIntrinsic(LegalizerHelper &Helper,
+                                   MachineInstr &MI, Intrinsic::ID IID) const;
 
   bool getImplicitArgPtr(Register DstReg, MachineRegisterInfo &MRI,
                          MachineIRBuilder &B) const;
@@ -169,12 +172,13 @@ public:
   bool legalizeBVHIntrinsic(MachineInstr &MI, MachineIRBuilder &B) const;
 
   bool legalizeImageIntrinsic(
-      MachineInstr &MI, MachineIRBuilder &B, GISelChangeObserver &Observer,
+      MachineInstr &MI, MachineIRBuilder &B,
+      GISelChangeObserver &Observer,
       const AMDGPU::ImageDimIntrinsicInfo *ImageDimIntr) const;
 
   bool legalizeSBufferLoad(LegalizerHelper &Helper, MachineInstr &MI) const;
 
-  bool legalizeAtomicIncDec(MachineInstr &MI, MachineIRBuilder &B,
+  bool legalizeAtomicIncDec(MachineInstr &MI,  MachineIRBuilder &B,
                             bool IsInc) const;
 
   bool legalizeTrapIntrinsic(MachineInstr &MI, MachineRegisterInfo &MRI,
@@ -185,5 +189,5 @@ public:
   bool legalizeIntrinsic(LegalizerHelper &Helper,
                          MachineInstr &MI) const override;
 };
-} // namespace llvm
+} // End llvm namespace.
 #endif

@@ -31,8 +31,7 @@ static int sum;
 TEST(LlvmLibcSignal, Basic) {
   // In case test get run multiple times.
   sum = 0;
-  ASSERT_NE(__llvm_libc::signal(
-                SIGUSR1, +[](int) { sum++; }),
+  ASSERT_NE(__llvm_libc::signal(SIGUSR1, +[](int) { sum++; }),
             SIG_ERR);
   ASSERT_THAT(__llvm_libc::raise(SIGUSR1), Succeeds());
   EXPECT_EQ(sum, 1);

@@ -15,8 +15,8 @@ inline namespace complex_literals {
 }
 inline namespace string_literals {
 }
-} // namespace literals
-} // namespace std
+}
+}
 
 using namespace std::chrono_literals;            // no-warning
 using namespace std::complex_literals;           // no-warning
@@ -34,8 +34,8 @@ using namespace literals;
 namespace foo {
 inline namespace literals {
 inline namespace bar_literals {}
-} // namespace literals
-} // namespace foo
+}
+}
 
 using namespace foo::literals;
 // CHECK: :[[@LINE-1]]:1: warning: do not use namespace using-directives; use using-declarations instead [google-build-using-namespace]

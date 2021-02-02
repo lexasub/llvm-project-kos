@@ -20,9 +20,9 @@ int main(int argc, char **argv) {
   foo();
 #pragma omp target teams default() // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
   foo();
-#pragma omp target teams default(none // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp target teams default (none // expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
-#pragma omp target teams default(shared), default(shared) // expected-error {{directive '#pragma omp target teams' cannot contain more than one 'default' clause}}
+#pragma omp target teams default (shared), default(shared) // expected-error {{directive '#pragma omp target teams' cannot contain more than one 'default' clause}}
   foo();
 #pragma omp target teams default(x) // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
   foo();

@@ -4,16 +4,16 @@
 // First argument is access size (1, 2, 4, 8). Second optional arg switches
 // from writes to reads.
 
-#include <linux/futex.h>
 #include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <linux/futex.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
-#include <unistd.h>
 
-template <typename T, bool write>
-void* thread(void* arg) {
+template<typename T, bool write>
+void* thread(void *arg) {
   const int kSize = 2 << 10;
   static volatile long data[kSize];
   static volatile long turn;
@@ -43,25 +43,21 @@ void* thread(void* arg) {
   return 0;
 }
 
-template <typename T, bool write>
+template<typename T, bool write>
 void test() {
   pthread_t th;
   pthread_create(&th, 0, thread<T, write>, (void*)1);
   thread<T, write>(0);
-  pthread_join(th, 0);
+  pthread_join(th, 0);  
 }
 
-template <bool write>
+template<bool write>
 void testw(int size) {
   switch (size) {
-    case 1:
-      return test<char, write>();
-    case 2:
-      return test<short, write>();
-    case 4:
-      return test<int, write>();
-    case 8:
-      return test<long long, write>();
+  case 1: return test<char, write>();
+  case 2: return test<short, write>();
+  case 4: return test<int, write>();
+  case 8: return test<long long, write>();
   }
 }
 

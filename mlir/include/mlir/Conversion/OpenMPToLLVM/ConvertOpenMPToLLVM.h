@@ -8,7 +8,7 @@
 #ifndef MLIR_CONVERSION_OPENMPTOLLVM_OPENMPTOLLVM_H_
 #define MLIR_CONVERSION_OPENMPTOLLVM_OPENMPTOLLVM_H_
 
-#include <memory>
+#include<memory>
 
 namespace mlir {
 class LLVMTypeConverter;

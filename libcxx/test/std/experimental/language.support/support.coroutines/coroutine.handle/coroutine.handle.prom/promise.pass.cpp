@@ -43,7 +43,7 @@ struct MyCoro {
       // coroutine_handle<T>
       using CH = coro::coroutine_handle<promise_type>;
       using CCH = coro::coroutine_handle<const promise_type>;
-      const auto& cthis = *this;
+      const auto &cthis = *this;
       CH h = CH::from_promise(*this);
       CCH h2 = CCH::from_promise(*this);
       CCH h3 = CCH::from_promise(cthis);
@@ -56,7 +56,9 @@ struct MyCoro {
   };
 };
 
-MyCoro do_runtime_test() { co_await coro::suspend_never{}; }
+MyCoro do_runtime_test() {
+  co_await coro::suspend_never{};
+}
 
 template <class Promise>
 void do_test(coro::coroutine_handle<Promise>&& H) {
@@ -73,7 +75,8 @@ void do_test(coro::coroutine_handle<Promise>&& H) {
   }
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   do_test(coro::coroutine_handle<int>{});
   do_test(coro::coroutine_handle<const int>{});
   do_runtime_test();

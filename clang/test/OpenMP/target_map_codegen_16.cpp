@@ -46,21 +46,21 @@ public:
 };
 
 // CK17-LABEL: implicit_maps_struct{{.*}}(
-void implicit_maps_struct(int a) {
+void implicit_maps_struct (int a){
   SSS s = {a, (double)a};
 
-// CK17-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-// CK17-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-// CK17-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-// CK17-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-// CK17-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-// CK17-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [[ST]]**
-// CK17-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [[ST]]**
-// CK17-DAG: store [[ST]]* [[DECL:%.+]], [[ST]]** [[CBP1]]
-// CK17-DAG: store [[ST]]* [[DECL]], [[ST]]** [[CP1]]
+  // CK17-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+  // CK17-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+  // CK17-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+  // CK17-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+  // CK17-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+  // CK17-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [[ST]]**
+  // CK17-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [[ST]]**
+  // CK17-DAG: store [[ST]]* [[DECL:%.+]], [[ST]]** [[CBP1]]
+  // CK17-DAG: store [[ST]]* [[DECL]], [[ST]]** [[CP1]]
 
-// CK17: call void [[KERNEL:@.+]]([[ST]]* [[DECL]])
-#pragma omp target
+  // CK17: call void [[KERNEL:@.+]]([[ST]]* [[DECL]])
+  #pragma omp target
   {
     s.a += 1;
     s.b += 1.0;

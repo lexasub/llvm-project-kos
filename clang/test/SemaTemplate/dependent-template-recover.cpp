@@ -1,46 +1,46 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
-template <typename T, typename U, int N>
+template<typename T, typename U, int N>
 struct X {
-  void f(T *t) {
-    t->f0<U>();   // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
+  void f(T* t) {
+    t->f0<U>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
     t->f0<int>(); // expected-error{{use 'template' keyword to treat 'f0' as a dependent template name}}
 
     t->operator+<U const, 1>(1); // expected-error{{use 'template' keyword to treat 'operator +' as a dependent template name}}
-    t->f1<int const, 2>(1);      // expected-error{{use 'template' keyword to treat 'f1' as a dependent template name}}
-    t->f1<3, int const>(1);      // expected-error{{missing 'template' keyword prior to dependent template name 'f1'}}
+    t->f1<int const, 2>(1); // expected-error{{use 'template' keyword to treat 'f1' as a dependent template name}}
+    t->f1<3, int const>(1); // expected-error{{missing 'template' keyword prior to dependent template name 'f1'}}
 
-    T::getAs<U>();    // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
+    T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
     t->T::getAs<U>(); // expected-error{{use 'template' keyword to treat 'getAs' as a dependent template name}}
 
-    (*t).f2<N>();     // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
-    (*t).f2<0>();     // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
-    T::f2<0>();       // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+    (*t).f2<N>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+    (*t).f2<0>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
+    T::f2<0>(); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
     T::f2<0, int>(0); // expected-error{{missing 'template' keyword prior to dependent template name 'f2'}}
 
-    T::foo < N<2 || N >= 4>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    T::foo<N < 2 || N >= 4>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
 
     // If there are multiple potential template names, pick the one where there
     // is no whitespace between the name and the '<'.
-    T::foo < T::bar<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    T::foo<T::bar < 1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
     T::foo < T::bar<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'bar'}}
 
     // Prefer to diagnose a missing 'template' keyword rather than finding a non-template name.
-    xyz < T::foo<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
-    T::foo < xyz<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    xyz < T::foo < 1 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    T::foo < xyz < 1 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
 
     // ... even if the whitespace suggests the other name is the template name.
     // FIXME: Is this the right heuristic?
-    xyz < T::foo<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    xyz<T::foo < 1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
     T::foo < xyz<1>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
 
-    sizeof T::foo<123>(); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
-    f(t->foo<1, 2>(),     // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
-      t->bar<3, 4>());    // expected-error{{missing 'template' keyword prior to dependent template name 'bar'}}
+    sizeof T::foo < 123 > (); // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+    f(t->foo<1, 2>(), // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+      t->bar<3, 4>()); // expected-error{{missing 'template' keyword prior to dependent template name 'bar'}}
 
     int arr[] = {
-        t->baz<1, 2>(1 + 1), // ok, two comparisons
-        t->foo<1, 2>(),      // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
-        t->bar<3, 4>()       // FIXME: we don't recover from the previous error so don't diagnose this
+      t->baz<1, 2>(1 + 1), // ok, two comparisons
+      t->foo<1, 2>(), // expected-error{{missing 'template' keyword prior to dependent template name 'foo'}}
+      t->bar<3, 4>()  // FIXME: we don't recover from the previous error so don't diagnose this
     };
   }
 
@@ -48,8 +48,9 @@ struct X {
 };
 
 template <typename T> void not_missing_template(T t) {
-  (T::n < 0) > () // expected-error {{expected expression}}
-      ;
+  (T::n < 0) > (
+     ) // expected-error {{expected expression}}
+    ;
 
   int a = T::x < 3;
   int b = T::y > (); // expected-error {{expected expression}}
@@ -72,10 +73,10 @@ struct MrsBadcrumble {
   friend void operator>(MrsBadcrumble, int);
 } mb;
 
-template <int N, typename T> void f(T t) {
-  t.f<N>(0);    // expected-error {{missing 'template' keyword prior to dependent template name 'f'}}
+template<int N, typename T> void f(T t) {
+  t.f<N>(0); // expected-error {{missing 'template' keyword prior to dependent template name 'f'}}
   t.T::f<N>(0); // expected-error {{missing 'template' keyword prior to dependent template name 'f'}}
-  T::g<N>(0);   // expected-error {{missing 'template' keyword prior to dependent template name 'g'}}
+  T::g<N>(0); // expected-error {{missing 'template' keyword prior to dependent template name 'g'}}
 
   // Note: no diagnostic here, this is actually valid as a comparison between
   // the decayed pointer to Y::g<> and mb!
@@ -93,37 +94,43 @@ void q() { void (*p)(int) = Y::g; }
 template void f<0>(Y); // expected-note {{in instantiation of}}
 
 namespace PR9401 {
-// From GCC PR c++/45558
-template <typename S, typename T>
-struct C {
-  template <typename U>
-  struct B {
-    template <typename W>
-    struct E {
-      explicit E(const W &x) : w(x) {}
-      const W &w;
+  // From GCC PR c++/45558
+  template <typename S, typename T>
+  struct C
+  {
+    template <typename U>
+    struct B
+    {
+      template <typename W>
+      struct E
+      {
+        explicit E(const W &x) : w(x) {}
+        const W &w;
+      };
     };
   };
-};
 
-struct F;
-template <typename X>
-struct D {
-  D() {}
-};
-
-const D<F> g;
-template <typename S, typename T>
-struct A {
-  template <typename U>
-  struct B : C<S, T>::template B<U> {
-    typedef typename C<S, T>::template B<U> V;
-    static const D<typename V::template E<D<F>>> a;
+  struct F;
+  template <typename X>
+  struct D
+  {
+    D() {}
   };
-};
 
-template <typename S, typename T>
-template <typename U>
-const D<typename C<S, T>::template B<U>::template E<D<F>>>
-    A<S, T>::B<U>::a = typename C<S, T>::template B<U>::template E<D<F>>(g);
-} // namespace PR9401
+  const D<F> g;
+  template <typename S, typename T>
+  struct A
+  {
+    template <typename U>
+    struct B : C<S, T>::template B<U>
+    {
+      typedef typename C<S, T>::template B<U> V;
+      static const D<typename V::template E<D<F> > > a;
+    };
+  };
+
+  template <typename S, typename T>
+  template <typename U>
+  const D<typename C<S, T>::template B<U>::template E<D<F> > >
+  A<S, T>::B<U>::a = typename C<S, T>::template B<U>::template E<D<F> >(g);
+}

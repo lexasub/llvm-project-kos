@@ -15,14 +15,13 @@
 
 #include "fuzz.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data,
-                                      std::size_t size) {
-  std::vector<std::uint8_t> working(data, data + size);
-  std::make_heap(working.begin(), working.end());
+extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t *data, std::size_t size) {
+    std::vector<std::uint8_t> working(data, data + size);
+    std::make_heap(working.begin(), working.end());
 
-  if (!std::is_heap(working.begin(), working.end()))
-    return 1;
-  if (!fast_is_permutation(data, data + size, working.cbegin()))
-    return 99;
-  return 0;
+    if (!std::is_heap(working.begin(), working.end()))
+        return 1;
+    if (!fast_is_permutation(data, data + size, working.cbegin()))
+        return 99;
+    return 0;
 }

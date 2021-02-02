@@ -75,8 +75,8 @@ public:
   std::string RewriteFilename(const std::string &Filename, int &fd) override {
     fd = -1;
     SmallString<128> Path(Filename);
-    llvm::sys::path::replace_extension(
-        Path, NewSuffix + llvm::sys::path::extension(Path));
+    llvm::sys::path::replace_extension(Path,
+      NewSuffix + llvm::sys::path::extension(Path));
     return std::string(Path.str());
   }
 };
@@ -85,9 +85,9 @@ class FixItRewriteToTemp : public FixItOptions {
 public:
   std::string RewriteFilename(const std::string &Filename, int &fd) override {
     SmallString<128> Path;
-    llvm::sys::fs::createTemporaryFile(
-        llvm::sys::path::filename(Filename),
-        llvm::sys::path::extension(Filename).drop_front(), fd, Path);
+    llvm::sys::fs::createTemporaryFile(llvm::sys::path::filename(Filename),
+                                       llvm::sys::path::extension(Filename).drop_front(), fd,
+                                       Path);
     return std::string(Path.str());
   }
 };
@@ -114,7 +114,7 @@ void FixItAction::EndSourceFileAction() {
 
 bool FixItRecompile::BeginInvocation(CompilerInstance &CI) {
 
-  std::vector<std::pair<std::string, std::string>> RewrittenFiles;
+  std::vector<std::pair<std::string, std::string> > RewrittenFiles;
   bool err = false;
   {
     const FrontendOptions &FEOpts = CI.getFrontendOpts();
@@ -186,8 +186,7 @@ void RewriteMacrosAction::ExecuteAction() {
   CompilerInstance &CI = getCompilerInstance();
   std::unique_ptr<raw_ostream> OS =
       CI.createDefaultOutputFile(true, getCurrentFileOrBufferName());
-  if (!OS)
-    return;
+  if (!OS) return;
 
   RewriteMacrosInInput(CI.getPreprocessor(), OS.get());
 }
@@ -196,8 +195,7 @@ void RewriteTestAction::ExecuteAction() {
   CompilerInstance &CI = getCompilerInstance();
   std::unique_ptr<raw_ostream> OS =
       CI.createDefaultOutputFile(false, getCurrentFileOrBufferName());
-  if (!OS)
-    return;
+  if (!OS) return;
 
   DoRewriteTest(CI.getPreprocessor(), OS.get());
 }
@@ -206,7 +204,7 @@ class RewriteIncludesAction::RewriteImportsListener : public ASTReaderListener {
   CompilerInstance &CI;
   std::weak_ptr<raw_ostream> Out;
 
-  llvm::DenseSet<const FileEntry *> Rewritten;
+  llvm::DenseSet<const FileEntry*> Rewritten;
 
 public:
   RewriteImportsListener(CompilerInstance &CI, std::shared_ptr<raw_ostream> Out)

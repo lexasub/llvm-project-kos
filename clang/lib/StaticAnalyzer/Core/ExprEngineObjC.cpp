@@ -66,8 +66,8 @@ static void populateObjCForDestinationSet(
 
         SVal V;
         if (hasElements) {
-          SymbolRef Sym =
-              SymMgr.conjureSymbol(elem, LCtx, T, currBldrCtx->blockCount());
+          SymbolRef Sym = SymMgr.conjureSymbol(elem, LCtx, T,
+                                               currBldrCtx->blockCount());
           V = svalBuilder.makeLoc(Sym);
         } else {
           V = svalBuilder.makeIntVal(0, T);
@@ -144,11 +144,12 @@ void ExprEngine::VisitObjCForCollectionStmt(const ObjCForCollectionStmt *S,
   getCheckerManager().runCheckersForPostStmt(Dst, Tmp, S, *this);
 }
 
-void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME, ExplodedNode *Pred,
+void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME,
+                                  ExplodedNode *Pred,
                                   ExplodedNodeSet &Dst) {
   CallEventManager &CEMgr = getStateManager().getCallEventManager();
   CallEventRef<ObjCMethodCall> Msg =
-      CEMgr.getObjCMethodCall(ME, Pred->getState(), Pred->getLocationContext());
+    CEMgr.getObjCMethodCall(ME, Pred->getState(), Pred->getLocationContext());
 
   // There are three cases for the receiver:
   //   (1) it is definitely nil,
@@ -183,7 +184,8 @@ void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME, ExplodedNode *Pred,
     SVal recVal = Msg->getReceiverSVal();
     if (!recVal.isUndef()) {
       // Bifurcate the state into nil and non-nil ones.
-      DefinedOrUnknownSVal receiverVal = recVal.castAs<DefinedOrUnknownSVal>();
+      DefinedOrUnknownSVal receiverVal =
+          recVal.castAs<DefinedOrUnknownSVal>();
       ProgramStateRef State = Pred->getState();
 
       ProgramStateRef notNilState, nilState;
@@ -226,8 +228,8 @@ void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME, ExplodedNode *Pred,
 
   // Handle the previsits checks.
   ExplodedNodeSet dstPrevisit;
-  getCheckerManager().runCheckersForPreObjCMessage(dstPrevisit, Pred, *Msg,
-                                                   *this);
+  getCheckerManager().runCheckersForPreObjCMessage(dstPrevisit, Pred,
+                                                   *Msg, *this);
   ExplodedNodeSet dstGenericPrevisit;
   getCheckerManager().runCheckersForPreCall(dstGenericPrevisit, dstPrevisit,
                                             *Msg, *this);
@@ -237,8 +239,7 @@ void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME, ExplodedNode *Pred,
   StmtNodeBuilder Bldr(dstGenericPrevisit, dstEval, *currBldrCtx);
 
   for (ExplodedNodeSet::iterator DI = dstGenericPrevisit.begin(),
-                                 DE = dstGenericPrevisit.end();
-       DI != DE; ++DI) {
+       DE = dstGenericPrevisit.end(); DI != DE; ++DI) {
     ExplodedNode *Pred = *DI;
     ProgramStateRef State = Pred->getState();
     CallEventRef<ObjCMethodCall> UpdatedMsg = Msg.cloneWithState(State);
@@ -273,11 +274,11 @@ void ExprEngine::VisitObjCMessage(const ObjCMessageExpr *ME, ExplodedNode *Pred,
     finishArgumentConstruction(dstArgCleanup, I, *Msg);
 
   ExplodedNodeSet dstPostvisit;
-  getCheckerManager().runCheckersForPostCall(dstPostvisit, dstArgCleanup, *Msg,
-                                             *this);
+  getCheckerManager().runCheckersForPostCall(dstPostvisit, dstArgCleanup,
+                                             *Msg, *this);
 
   // Finally, perform the post-condition check of the ObjCMessageExpr and store
   // the created nodes in 'Dst'.
-  getCheckerManager().runCheckersForPostObjCMessage(Dst, dstPostvisit, *Msg,
-                                                    *this);
+  getCheckerManager().runCheckersForPostObjCMessage(Dst, dstPostvisit,
+                                                    *Msg, *this);
 }

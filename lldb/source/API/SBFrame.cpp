@@ -73,8 +73,8 @@ SBFrame::SBFrame(const SBFrame &rhs) : m_opaque_sp() {
 SBFrame::~SBFrame() = default;
 
 const SBFrame &SBFrame::operator=(const SBFrame &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBFrame &, SBFrame, operator=,
-                     (const lldb::SBFrame &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBFrame &,
+                     SBFrame, operator=,(const lldb::SBFrame &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = clone(rhs.m_opaque_sp);
@@ -701,14 +701,14 @@ bool SBFrame::IsEqual(const SBFrame &that) const {
 }
 
 bool SBFrame::operator==(const SBFrame &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFrame, operator==, (const lldb::SBFrame &),
+  LLDB_RECORD_METHOD_CONST(bool, SBFrame, operator==,(const lldb::SBFrame &),
                            rhs);
 
   return IsEqual(rhs);
 }
 
 bool SBFrame::operator!=(const SBFrame &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFrame, operator!=, (const lldb::SBFrame &),
+  LLDB_RECORD_METHOD_CONST(bool, SBFrame, operator!=,(const lldb::SBFrame &),
                            rhs);
 
   return !IsEqual(rhs);
@@ -817,12 +817,13 @@ SBValueList SBFrame::GetVariables(const lldb::SBVariablesOptions &options) {
   const bool statics = options.GetIncludeStatics();
   const bool arguments = options.GetIncludeArguments();
   const bool recognized_arguments =
-      options.GetIncludeRecognizedArguments(SBTarget(exe_ctx.GetTargetSP()));
+        options.GetIncludeRecognizedArguments(SBTarget(exe_ctx.GetTargetSP()));
   const bool locals = options.GetIncludeLocals();
   const bool in_scope_only = options.GetInScopeOnly();
   const bool include_runtime_support_values =
       options.GetIncludeRuntimeSupportValues();
   const lldb::DynamicValueType use_dynamic = options.GetUseDynamic();
+
 
   std::set<VariableSP> variable_set;
   Process *process = exe_ctx.GetProcessPtr();
@@ -1091,6 +1092,7 @@ lldb::SBValue SBFrame::EvaluateExpression(const char *expr,
   std::unique_lock<std::recursive_mutex> lock;
   ExecutionContext exe_ctx(m_opaque_sp.get(), lock);
 
+
   StackFrame *frame = nullptr;
   Target *target = exe_ctx.GetTargetPtr();
   Process *process = exe_ctx.GetProcessPtr();
@@ -1289,18 +1291,20 @@ const char *SBFrame::GetDisplayFunctionName() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBFrame>(Registry &R) {
+template <>
+void RegisterMethods<SBFrame>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBFrame, ());
   LLDB_REGISTER_CONSTRUCTOR(SBFrame, (const lldb::StackFrameSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBFrame, (const lldb::SBFrame &));
-  LLDB_REGISTER_METHOD(const lldb::SBFrame &, SBFrame, operator=,
-                       (const lldb::SBFrame &));
+  LLDB_REGISTER_METHOD(const lldb::SBFrame &,
+                       SBFrame, operator=,(const lldb::SBFrame &));
   LLDB_REGISTER_METHOD_CONST(bool, SBFrame, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBFrame, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(lldb::SBSymbolContext, SBFrame, GetSymbolContext,
                              (uint32_t));
   LLDB_REGISTER_METHOD_CONST(lldb::SBModule, SBFrame, GetModule, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBCompileUnit, SBFrame, GetCompileUnit, ());
+  LLDB_REGISTER_METHOD_CONST(lldb::SBCompileUnit, SBFrame, GetCompileUnit,
+                             ());
   LLDB_REGISTER_METHOD_CONST(lldb::SBFunction, SBFrame, GetFunction, ());
   LLDB_REGISTER_METHOD_CONST(lldb::SBSymbol, SBFrame, GetSymbol, ());
   LLDB_REGISTER_METHOD_CONST(lldb::SBBlock, SBFrame, GetBlock, ());
@@ -1323,13 +1327,14 @@ template <> void RegisterMethods<SBFrame>(Registry &R) {
                        (const char *, lldb::DynamicValueType));
   LLDB_REGISTER_METHOD(lldb::SBValue, SBFrame, FindValue,
                        (const char *, lldb::ValueType));
-  LLDB_REGISTER_METHOD(lldb::SBValue, SBFrame, FindValue,
-                       (const char *, lldb::ValueType, lldb::DynamicValueType));
+  LLDB_REGISTER_METHOD(
+      lldb::SBValue, SBFrame, FindValue,
+      (const char *, lldb::ValueType, lldb::DynamicValueType));
   LLDB_REGISTER_METHOD_CONST(bool, SBFrame, IsEqual, (const lldb::SBFrame &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBFrame, operator==,
-                             (const lldb::SBFrame &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBFrame, operator!=,
-                             (const lldb::SBFrame &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBFrame, operator==,(const lldb::SBFrame &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBFrame, operator!=,(const lldb::SBFrame &));
   LLDB_REGISTER_METHOD_CONST(lldb::SBThread, SBFrame, GetThread, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBFrame, Disassemble, ());
   LLDB_REGISTER_METHOD(lldb::SBValueList, SBFrame, GetVariables,
@@ -1359,5 +1364,5 @@ template <> void RegisterMethods<SBFrame>(Registry &R) {
   LLDB_REGISTER_METHOD(const char *, SBFrame, GetDisplayFunctionName, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

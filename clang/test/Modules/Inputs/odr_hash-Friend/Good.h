@@ -1,6 +1,6 @@
 template <class T>
 struct iterator {
-  void Compare(const iterator &x) {}
+  void Compare(const iterator &x) { }
   friend void Check(iterator) {}
 };
 

@@ -29,13 +29,14 @@
 
 #include "test_macros.h"
 
+
 static int worker(std::vector<int> const& data) {
   return std::accumulate(data.begin(), data.end(), 0);
 }
 
 static int& worker_ref(int& i) { return i; }
 
-static void worker_void() {}
+static void worker_void() { }
 
 int main(int, char**) {
   // future<T>
@@ -51,8 +52,7 @@ int main(int, char**) {
   // future<T&>
   {
     for (int i = 0; i != 20; ++i) {
-      std::future<int&> fut =
-          std::async(std::launch::async, worker_ref, std::ref(i));
+      std::future<int&> fut = std::async(std::launch::async, worker_ref, std::ref(i));
       int& answer = fut.get();
       assert(answer == i);
     }

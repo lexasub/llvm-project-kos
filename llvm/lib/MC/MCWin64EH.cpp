@@ -126,14 +126,16 @@ static void EmitUnwindCode(MCStreamer &streamer, const MCSymbol *begin,
   }
 }
 
-static void EmitSymbolRefWithOfs(MCStreamer &streamer, const MCSymbol *Base,
+static void EmitSymbolRefWithOfs(MCStreamer &streamer,
+                                 const MCSymbol *Base,
                                  const MCSymbol *Other) {
   MCContext &Context = streamer.getContext();
   const MCSymbolRefExpr *BaseRef = MCSymbolRefExpr::create(Base, Context);
   const MCSymbolRefExpr *OtherRef = MCSymbolRefExpr::create(Other, Context);
   const MCExpr *Ofs = MCBinaryExpr::createSub(OtherRef, BaseRef, Context);
-  const MCSymbolRefExpr *BaseRefRel =
-      MCSymbolRefExpr::create(Base, MCSymbolRefExpr::VK_COFF_IMGREL32, Context);
+  const MCSymbolRefExpr *BaseRefRel = MCSymbolRefExpr::create(Base,
+                                              MCSymbolRefExpr::VK_COFF_IMGREL32,
+                                              Context);
   streamer.emitValue(MCBinaryExpr::createAdd(BaseRefRel, Ofs, Context), 4);
 }
 
@@ -146,8 +148,7 @@ static void EmitRuntimeFunction(MCStreamer &streamer,
   EmitSymbolRefWithOfs(streamer, info->Function, info->End);
   streamer.emitValue(MCSymbolRefExpr::create(info->Symbol,
                                              MCSymbolRefExpr::VK_COFF_IMGREL32,
-                                             context),
-                     4);
+                                             context), 4);
 }
 
 static void EmitUnwindInfo(MCStreamer &streamer, WinEH::FrameInfo *info) {
@@ -209,12 +210,10 @@ static void EmitUnwindInfo(MCStreamer &streamer, WinEH::FrameInfo *info) {
   if (flags & (Win64EH::UNW_ChainInfo << 3))
     EmitRuntimeFunction(streamer, info->ChainedParent);
   else if (flags &
-           ((Win64EH::UNW_TerminateHandler | Win64EH::UNW_ExceptionHandler)
-            << 3))
-    streamer.emitValue(
-        MCSymbolRefExpr::create(info->ExceptionHandler,
-                                MCSymbolRefExpr::VK_COFF_IMGREL32, context),
-        4);
+           ((Win64EH::UNW_TerminateHandler|Win64EH::UNW_ExceptionHandler) << 3))
+    streamer.emitValue(MCSymbolRefExpr::create(info->ExceptionHandler,
+                                              MCSymbolRefExpr::VK_COFF_IMGREL32,
+                                              context), 4);
   else if (numCodes == 0) {
     // The minimum size of an UNWIND_INFO struct is 8 bytes. If we're not
     // a chained unwind info, if there is no handler, and if there are fewer
@@ -517,9 +516,9 @@ static void ARM64EmitUnwindCode(MCStreamer &streamer, const MCSymbol *begin,
 // sequence, if it exists.  Otherwise, returns nulltpr.
 // EpilogInstrs - Unwind codes for the current epilog.
 // Epilogs - Epilogs that potentialy match the current epilog.
-static MCSymbol *
-FindMatchingEpilog(const std::vector<WinEH::Instruction> &EpilogInstrs,
-                   const std::vector<MCSymbol *> &Epilogs,
+static MCSymbol*
+FindMatchingEpilog(const std::vector<WinEH::Instruction>& EpilogInstrs,
+                   const std::vector<MCSymbol *>& Epilogs,
                    const WinEH::FrameInfo *info) {
   for (auto *EpilogStart : Epilogs) {
     auto InstrsIter = info->EpilogMap.find(EpilogStart);
@@ -535,8 +534,8 @@ FindMatchingEpilog(const std::vector<WinEH::Instruction> &EpilogInstrs,
       if (Instrs[i].Operation != EpilogInstrs[i].Operation ||
           Instrs[i].Offset != EpilogInstrs[i].Offset ||
           Instrs[i].Register != EpilogInstrs[i].Register) {
-        Match = false;
-        break;
+         Match = false;
+         break;
       }
 
     if (Match)
@@ -943,8 +942,8 @@ static void ARM64EmitUnwindInfo(MCStreamer &streamer, WinEH::FrameInfo *info,
     // here, but we'd have to emit the pdata, the xdata header, and the
     // epilogue scopes later, since they depend on whether the we need to
     // split the unwind data.
-    RawFuncLength =
-        GetAbsDifference(streamer, info->FuncletOrFuncEnd, info->Begin);
+    RawFuncLength = GetAbsDifference(streamer, info->FuncletOrFuncEnd,
+                                     info->Begin);
   }
   if (RawFuncLength > 0xFFFFF)
     report_fatal_error("SEH unwind data splitting not yet implemented");
@@ -978,8 +977,8 @@ static void ARM64EmitUnwindInfo(MCStreamer &streamer, WinEH::FrameInfo *info,
     auto &EpilogInstrs = I.second;
     uint32_t CodeBytes = ARM64CountOfUnwindCodes(EpilogInstrs);
 
-    MCSymbol *MatchingEpilog =
-        FindMatchingEpilog(EpilogInstrs, AddedEpilogs, info);
+    MCSymbol* MatchingEpilog =
+      FindMatchingEpilog(EpilogInstrs, AddedEpilogs, info);
     if (MatchingEpilog) {
       assert(EpilogInfo.find(MatchingEpilog) != EpilogInfo.end() &&
              "Duplicate epilog not found");

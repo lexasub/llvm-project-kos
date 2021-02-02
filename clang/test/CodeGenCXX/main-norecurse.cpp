@@ -2,7 +2,7 @@
 
 // CHECK: define {{.*}} @main({{.*}}) #0
 int main(int argc, char **argv) {
-  return 1;
+    return 1;
 }
 
 // CHECK: attributes #0 = { noinline norecurse{{.*}} }

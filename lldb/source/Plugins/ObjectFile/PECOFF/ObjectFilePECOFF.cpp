@@ -81,10 +81,12 @@ const char *ObjectFilePECOFF::GetPluginDescriptionStatic() {
          "(32 and 64 bit)";
 }
 
-ObjectFile *ObjectFilePECOFF::CreateInstance(
-    const lldb::ModuleSP &module_sp, DataBufferSP &data_sp,
-    lldb::offset_t data_offset, const lldb_private::FileSpec *file_p,
-    lldb::offset_t file_offset, lldb::offset_t length) {
+ObjectFile *ObjectFilePECOFF::CreateInstance(const lldb::ModuleSP &module_sp,
+                                             DataBufferSP &data_sp,
+                                             lldb::offset_t data_offset,
+                                             const lldb_private::FileSpec *file_p,
+                                             lldb::offset_t file_offset,
+                                             lldb::offset_t length) {
   FileSpec file = file_p ? *file_p : FileSpec();
   if (!data_sp) {
     data_sp = MapFileData(file, length, file_offset);
@@ -119,8 +121,8 @@ ObjectFile *ObjectFilePECOFF::CreateMemoryInstance(
     const lldb::ProcessSP &process_sp, lldb::addr_t header_addr) {
   if (!data_sp || !ObjectFilePECOFF::MagicBytesMatch(data_sp))
     return nullptr;
-  auto objfile_up = std::make_unique<ObjectFilePECOFF>(module_sp, data_sp,
-                                                       process_sp, header_addr);
+  auto objfile_up = std::make_unique<ObjectFilePECOFF>(
+      module_sp, data_sp, process_sp, header_addr);
   if (objfile_up.get() && objfile_up->ParseHeader()) {
     return objfile_up.release();
   }
@@ -761,16 +763,16 @@ SectionType ObjectFilePECOFF::GetSectionType(llvm::StringRef sect_name,
     return eSectionTypeCode;
   }
   if (sect.flags & llvm::COFF::IMAGE_SCN_CNT_INITIALIZED_DATA &&
-      ((const_sect_name == g_data_sect_name) ||
-       (const_sect_name == g_DATA_sect_name))) {
+             ((const_sect_name == g_data_sect_name) ||
+              (const_sect_name == g_DATA_sect_name))) {
     if (sect.size == 0 && sect.offset == 0)
       return eSectionTypeZeroFill;
     else
       return eSectionTypeData;
   }
   if (sect.flags & llvm::COFF::IMAGE_SCN_CNT_UNINITIALIZED_DATA &&
-      ((const_sect_name == g_bss_sect_name) ||
-       (const_sect_name == g_BSS_sect_name))) {
+             ((const_sect_name == g_bss_sect_name) ||
+              (const_sect_name == g_BSS_sect_name))) {
     if (sect.size == 0)
       return eSectionTypeZeroFill;
     else

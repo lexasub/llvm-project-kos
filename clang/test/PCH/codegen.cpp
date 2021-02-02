@@ -26,6 +26,7 @@
 // RUN: %clang_cc1 -triple x86_64-linux-gnu -emit-llvm -debug-info-kind=limited -o - -include-pch %t/foo-cg.pch %S/../Modules/Inputs/codegen-flags/use.cpp | FileCheck --check-prefix=CG-USE %s
 // RUN: %clang_cc1 -triple x86_64-linux-gnu -emit-llvm -debug-info-kind=limited -o - -include-pch %t/foo-di.pch %S/../Modules/Inputs/codegen-flags/use.cpp | FileCheck --check-prefix=DI-USE %s
 
+
 // CG: define weak_odr void @_Z2f1v
 // CG: DICompileUnit
 // CG-NOT: DICompositeType

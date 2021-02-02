@@ -176,13 +176,13 @@ private:
 
   class LLDBPreprocessorCallbacks;
   LLDBPreprocessorCallbacks *m_pp_callbacks; ///< Called when the preprocessor
-                                             /// encounters module imports
+                                             ///encounters module imports
   std::unique_ptr<TypeSystemClang> m_ast_context;
 
   std::vector<std::string> m_include_directories;
   /// File name used for the user expression.
   std::string m_filename;
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_EXPRESSIONPARSER_CLANG_CLANGEXPRESSIONPARSER_H

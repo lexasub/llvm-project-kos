@@ -9,8 +9,7 @@
 
 #include <sanitizer/hwasan_interface.h>
 
-#define F(T) \
-  void f_##T(T *a, T *b) { *a = *b; }
+#define F(T) void f_##T(T *a, T *b) { *a = *b; }
 
 F(uint8_t)
 F(uint16_t)

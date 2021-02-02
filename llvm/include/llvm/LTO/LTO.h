@@ -135,22 +135,22 @@ public:
   public:
     Symbol(const irsymtab::Symbol &S) : irsymtab::Symbol(S) {}
 
-    using irsymtab::Symbol::canBeOmittedFromSymbolTable;
-    using irsymtab::Symbol::getCOFFWeakExternalFallback;
-    using irsymtab::Symbol::getComdatIndex;
-    using irsymtab::Symbol::getCommonAlignment;
-    using irsymtab::Symbol::getCommonSize;
-    using irsymtab::Symbol::getIRName;
-    using irsymtab::Symbol::getName;
-    using irsymtab::Symbol::getSectionName;
-    using irsymtab::Symbol::getVisibility;
-    using irsymtab::Symbol::isCommon;
-    using irsymtab::Symbol::isExecutable;
-    using irsymtab::Symbol::isIndirect;
-    using irsymtab::Symbol::isTLS;
     using irsymtab::Symbol::isUndefined;
-    using irsymtab::Symbol::isUsed;
+    using irsymtab::Symbol::isCommon;
     using irsymtab::Symbol::isWeak;
+    using irsymtab::Symbol::isIndirect;
+    using irsymtab::Symbol::getName;
+    using irsymtab::Symbol::getIRName;
+    using irsymtab::Symbol::getVisibility;
+    using irsymtab::Symbol::canBeOmittedFromSymbolTable;
+    using irsymtab::Symbol::isTLS;
+    using irsymtab::Symbol::getComdatIndex;
+    using irsymtab::Symbol::getCommonSize;
+    using irsymtab::Symbol::getCommonAlignment;
+    using irsymtab::Symbol::getCOFFWeakExternalFallback;
+    using irsymtab::Symbol::getSectionName;
+    using irsymtab::Symbol::isExecutable;
+    using irsymtab::Symbol::isUsed;
   };
 
   /// A range over the symbols in this InputFile.
@@ -160,9 +160,7 @@ public:
   StringRef getCOFFLinkerOpts() const { return COFFLinkerOpts; }
 
   /// Returns dependent library specifiers from the input file.
-  ArrayRef<StringRef> getDependentLibraries() const {
-    return DependentLibraries;
-  }
+  ArrayRef<StringRef> getDependentLibraries() const { return DependentLibraries; }
 
   /// Returns the path to the InputFile.
   StringRef getName() const;
@@ -193,8 +191,7 @@ private:
 /// destructor.
 class NativeObjectStream {
 public:
-  NativeObjectStream(std::unique_ptr<raw_pwrite_stream> OS)
-      : OS(std::move(OS)) {}
+  NativeObjectStream(std::unique_ptr<raw_pwrite_stream> OS) : OS(std::move(OS)) {}
   std::unique_ptr<raw_pwrite_stream> OS;
   virtual ~NativeObjectStream() = default;
 };
@@ -304,7 +301,7 @@ public:
 
   /// Static method that returns a list of libcall symbols that can be generated
   /// by LTO but might not be visible from bitcode symbol table.
-  static ArrayRef<const char *> getRuntimeLibcallSymbols();
+  static ArrayRef<const char*> getRuntimeLibcallSymbols();
 
 private:
   Config Conf;

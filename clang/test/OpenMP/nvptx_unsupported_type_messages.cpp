@@ -121,7 +121,7 @@ long double qa, qb;
 decltype(qa + qb) qc;
 double qd[sizeof(-(-(qc * 2)))];
 
-struct A {};
+struct A { };
 
 template <bool>
 struct A_type { typedef A type; };

@@ -16,9 +16,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert((std::is_base_of<std::streambuf, std::strstreambuf>::value),
-                "");
+int main(int, char**)
+{
+    static_assert((std::is_base_of<std::streambuf, std::strstreambuf>::value), "");
 
   return 0;
 }

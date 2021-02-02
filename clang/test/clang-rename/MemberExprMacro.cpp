@@ -1,6 +1,6 @@
 class Baz {
 public:
-  int Foo; /* Test 1 */ // CHECK: int Bar;
+  int Foo;  /* Test 1 */    // CHECK: int Bar;
 };
 
 int qux(int x) { return 0; }

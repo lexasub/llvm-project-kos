@@ -11,7 +11,7 @@ bool foobool(int argc) {
 }
 
 void xxx(int argc) {
-  int fp;                                      // expected-note {{initialize the variable 'fp' to silence this warning}}
+  int fp; // expected-note {{initialize the variable 'fp' to silence this warning}}
 #pragma omp parallel sections firstprivate(fp) // expected-warning {{variable 'fp' is uninitialized when used here}}
   {
     for (int i = 0; i < 10; ++i)
@@ -102,10 +102,7 @@ int foomain(int argc, char **argv) {
   {
     foo();
   }
-#pragma omp parallel sections firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                                      : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                                       : argv),              \
-                                                                                                                                                                        allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp parallel sections firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   {
     foo();
   }
@@ -162,8 +159,7 @@ int foomain(int argc, char **argv) {
   {
     foo();
   }
-#pragma omp parallel reduction(+ \
-                               : i)
+#pragma omp parallel reduction(+ : i)
 #pragma omp parallel sections firstprivate(i)
   {
     foo();
@@ -174,7 +170,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -309,8 +305,7 @@ int main(int argc, char **argv) {
   {
     foo();
   }
-#pragma omp parallel reduction(+ \
-                               : i)
+#pragma omp parallel reduction(+ : i)
 #pragma omp parallel sections firstprivate(i)
   {
     foo();

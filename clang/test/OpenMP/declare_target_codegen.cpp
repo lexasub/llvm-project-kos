@@ -84,7 +84,7 @@ int out_decl_target = 0;
 #endif
 
 #pragma omp declare target
-void lambda() {
+void lambda () {
 #ifdef __cpp_lambdas
   (void)[&] { (void)out_decl_target; };
 #else
@@ -99,7 +99,6 @@ void lambda() {
 template <typename T>
 class TemplateClass {
   T a;
-
 public:
   TemplateClass() {}
   T f_method() const { return a; }
@@ -236,7 +235,7 @@ template <typename T>
 struct TTT {
   virtual void emitted() {
 #pragma omp target
-    {}
+  {}
   }
 };
 

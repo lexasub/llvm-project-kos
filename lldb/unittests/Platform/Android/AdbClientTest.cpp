@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Plugins/Platform/Android/AdbClient.h"
 #include "gtest/gtest.h"
+#include "Plugins/Platform/Android/AdbClient.h"
 #include <cstdlib>
 
 static void set_env(const char *var, const char *value) {

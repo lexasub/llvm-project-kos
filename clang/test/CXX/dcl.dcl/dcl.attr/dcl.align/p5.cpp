@@ -1,19 +1,19 @@
 // RUN: %clang_cc1 -std=c++11 -triple x86_64-linux-gnu -verify %s
 
-alignas(1) int n1;                       // expected-error {{requested alignment is less than minimum alignment of 4 for type 'int'}}
-alignas(1) alignas(2) int n2;            // expected-error {{less than minimum alignment}}
+alignas(1) int n1; // expected-error {{requested alignment is less than minimum alignment of 4 for type 'int'}}
+alignas(1) alignas(2) int n2; // expected-error {{less than minimum alignment}}
 alignas(1) alignas(2) alignas(4) int n3; // ok
 alignas(1) alignas(2) alignas(0) int n4; // expected-error {{less than minimum alignment}}
 alignas(1) alignas(2) int n5 alignas(4); // ok
 alignas(1) alignas(4) int n6 alignas(2); // ok
-alignas(1) int n7 alignas(2),            // expected-error {{less than minimum alignment}}
-    n8 alignas(4);                       // ok
-alignas(8) int n9 alignas(2);            // ok, overaligned
-alignas(1) extern int n10;               // expected-error {{less than minimum alignment}}
+alignas(1) int n7 alignas(2), // expected-error {{less than minimum alignment}}
+               n8 alignas(4); // ok
+alignas(8) int n9 alignas(2); // ok, overaligned
+alignas(1) extern int n10; // expected-error {{less than minimum alignment}}
 
-enum alignas(1) E1 {};                  // expected-error {{requested alignment is less than minimum alignment of 4 for type 'E1'}}
-enum alignas(1) E2 : char {};           // ok
-enum alignas(4) E3 { e3 = 0 };          // ok
+enum alignas(1) E1 {}; // expected-error {{requested alignment is less than minimum alignment of 4 for type 'E1'}}
+enum alignas(1) E2 : char {}; // ok
+enum alignas(4) E3 { e3 = 0 }; // ok
 enum alignas(4) E4 { e4 = 1ull << 33 }; // expected-error {{requested alignment is less than minimum alignment of 8 for type 'E4'}}
 enum alignas(8) E5 {};
 static_assert(alignof(E5) == 8, "");
@@ -48,21 +48,21 @@ S1 s1 alignas(4); // expected-error {{requested alignment is less than minimum a
 S6 s6 alignas(4); // expected-error {{requested alignment is less than minimum alignment of 8 for type 'S6'}}
 S7 s7 alignas(4); // expected-error {{requested alignment is less than minimum alignment of 8 for type 'S7'}}
 
-template <int N, int M, typename T>
+template<int N, int M, typename T>
 struct alignas(N) X { // expected-error 3{{requested alignment is less than minimum}}
-  alignas(M) T t;     // expected-error 3{{requested alignment is less than minimum}}
+  alignas(M) T t; // expected-error 3{{requested alignment is less than minimum}}
 };
 
 template struct X<1, 1, char>;
 template struct X<4, 1, char>;
-template struct X<1, 2, char>;  // expected-note {{instantiation}}
+template struct X<1, 2, char>; // expected-note {{instantiation}}
 template struct X<1, 1, short>; // expected-note {{instantiation}}
 template struct X<2, 1, short>; // expected-note {{instantiation}}
 template struct X<2, 2, short>;
 template struct X<16, 8, S1>;
 template struct X<4, 4, S1>; // expected-note {{instantiation}}
 
-template <int N, typename T>
+template<int N, typename T>
 struct Y {
   enum alignas(N) E : T {}; // expected-error {{requested alignment is less than minimum}}
 };
@@ -71,7 +71,7 @@ template struct Y<2, char>;
 template struct Y<1, short>; // expected-note {{instantiation}}
 template struct Y<2, short>;
 
-template <int N, typename T>
+template<int N, typename T>
 void f() {
   alignas(N) T v; // expected-error {{requested alignment is less than minimum}}
 };

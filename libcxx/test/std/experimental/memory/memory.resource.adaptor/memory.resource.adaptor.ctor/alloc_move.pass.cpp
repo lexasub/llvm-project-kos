@@ -23,24 +23,25 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  typedef CountingAllocator<char> AllocT;
-  typedef ex::resource_adaptor<AllocT> R;
-  {
-    AllocController P;
-    AllocT a(P);
-    R const r(std::move(a));
-    assert(P.copy_constructed == 0);
-    assert(P.move_constructed == 1);
-    assert(r.get_allocator() == a);
-  }
-  {
-    AllocController P;
-    R const r(AllocT{P});
-    assert(P.copy_constructed == 0);
-    assert(P.move_constructed == 1);
-    assert(r.get_allocator() == AllocT{P});
-  }
+int main(int, char**)
+{
+    typedef CountingAllocator<char> AllocT;
+    typedef ex::resource_adaptor<AllocT> R;
+    {
+        AllocController P;
+        AllocT a(P);
+        R const r(std::move(a));
+        assert(P.copy_constructed == 0);
+        assert(P.move_constructed == 1);
+        assert(r.get_allocator() == a);
+    }
+    {
+        AllocController P;
+        R const r(AllocT{P});
+        assert(P.copy_constructed == 0);
+        assert(P.move_constructed == 1);
+        assert(r.get_allocator() == AllocT{P});
+    }
 
   return 0;
 }

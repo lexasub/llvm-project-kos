@@ -51,11 +51,11 @@
 
 using namespace llvm;
 
-static cl::opt<char *>
-    AsSecureLogFileName("as-secure-log-file-name",
-                        cl::desc("As secure log file name (initialized from "
-                                 "AS_SECURE_LOG_FILE env variable)"),
-                        cl::init(getenv("AS_SECURE_LOG_FILE")), cl::Hidden);
+static cl::opt<char*>
+AsSecureLogFileName("as-secure-log-file-name",
+        cl::desc("As secure log file name (initialized from "
+                 "AS_SECURE_LOG_FILE env variable)"),
+        cl::init(getenv("AS_SECURE_LOG_FILE")), cl::Hidden);
 
 MCContext::MCContext(const MCAsmInfo *mai, const MCRegisterInfo *mri,
                      const MCObjectFileInfo *mofi, const SourceMgr *mgr,
@@ -194,8 +194,8 @@ MCSymbol *MCContext::createSymbolImpl(const StringMapEntry<bool> *Name,
       return createXCOFFSymbolImpl(Name, IsTemporary);
     }
   }
-  return new (Name, *this)
-      MCSymbol(MCSymbol::SymbolKindUnset, Name, IsTemporary);
+  return new (Name, *this) MCSymbol(MCSymbol::SymbolKindUnset, Name,
+                                    IsTemporary);
 }
 
 MCSymbol *MCContext::createSymbol(StringRef Name, bool AlwaysAddSuffix,
@@ -297,8 +297,9 @@ MCSymbol *MCContext::lookupSymbol(const Twine &Name) const {
   return Symbols.lookup(NameRef);
 }
 
-void MCContext::setSymbolValue(MCStreamer &Streamer, StringRef Sym,
-                               uint64_t Val) {
+void MCContext::setSymbolValue(MCStreamer &Streamer,
+                              StringRef Sym,
+                              uint64_t Val) {
   auto Symbol = getOrCreateSymbol(Sym);
   Streamer.emitAssignment(Symbol, MCConstantExpr::create(Val, *this));
 }
@@ -449,13 +450,14 @@ MCSectionELF *MCContext::createELFSectionImpl(StringRef Section, unsigned Type,
   return Ret;
 }
 
-MCSectionELF *
-MCContext::createELFRelSection(const Twine &Name, unsigned Type, unsigned Flags,
-                               unsigned EntrySize, const MCSymbolELF *Group,
-                               const MCSectionELF *RelInfoSection) {
+MCSectionELF *MCContext::createELFRelSection(const Twine &Name, unsigned Type,
+                                             unsigned Flags, unsigned EntrySize,
+                                             const MCSymbolELF *Group,
+                                             const MCSectionELF *RelInfoSection) {
   StringMap<bool>::iterator I;
   bool Inserted;
-  std::tie(I, Inserted) = RelSecNames.insert(std::make_pair(Name.str(), true));
+  std::tie(I, Inserted) =
+      RelSecNames.insert(std::make_pair(Name.str(), true));
 
   return createELFSectionImpl(
       I->getKey(), Type, Flags, SectionKind::getReadOnly(), EntrySize, Group,
@@ -571,6 +573,7 @@ MCSectionCOFF *MCContext::getCOFFSection(StringRef Section,
     COMDATSymbol = getOrCreateSymbol(COMDATSymName);
     COMDATSymName = COMDATSymbol->getName();
   }
+
 
   // Do the lookup, if we have a hit, return it.
   COFFSectionKey T{Section, COMDATSymName, Selection, UniqueID};
@@ -784,10 +787,12 @@ void MCContext::setGenDwarfRootFile(StringRef InputFileName, StringRef Buffer) {
 /// directory tables.  If the file number has already been allocated it is an
 /// error and zero is returned and the client reports the error, else the
 /// allocated file number is returned.  The file numbers may be in any order.
-Expected<unsigned>
-MCContext::getDwarfFile(StringRef Directory, StringRef FileName,
-                        unsigned FileNumber, Optional<MD5::MD5Result> Checksum,
-                        Optional<StringRef> Source, unsigned CUID) {
+Expected<unsigned> MCContext::getDwarfFile(StringRef Directory,
+                                           StringRef FileName,
+                                           unsigned FileNumber,
+                                           Optional<MD5::MD5Result> Checksum,
+                                           Optional<StringRef> Source,
+                                           unsigned CUID) {
   MCDwarfLineTable &Table = MCDwarfLineTablesCUMap[CUID];
   return Table.tryGetFile(Directory, FileName, Checksum, Source, DwarfVersion,
                           FileNumber);

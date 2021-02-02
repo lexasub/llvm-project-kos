@@ -12,12 +12,12 @@
 #include "llvm/Support/YAMLTraits.h"
 #include "llvm/Support/raw_ostream.h"
 
-using llvm::yaml::Input;
-using llvm::yaml::IO;
 using llvm::yaml::MappingTraits;
+using llvm::yaml::IO;
+using llvm::yaml::Input;
 using ContextType = clang::find_all_symbols::SymbolInfo::ContextType;
-using clang::find_all_symbols::SymbolAndSignals;
 using clang::find_all_symbols::SymbolInfo;
+using clang::find_all_symbols::SymbolAndSignals;
 using SymbolKind = clang::find_all_symbols::SymbolInfo::SymbolKind;
 
 LLVM_YAML_IS_DOCUMENT_LIST_VECTOR(SymbolAndSignals)
@@ -111,7 +111,7 @@ bool SymbolInfo::Signals::operator==(const Signals &RHS) const {
   return std::tie(Seen, Used) == std::tie(RHS.Seen, RHS.Used);
 }
 
-bool SymbolAndSignals::operator==(const SymbolAndSignals &RHS) const {
+bool SymbolAndSignals::operator==(const SymbolAndSignals& RHS) const {
   return std::tie(Symbol, Signals) == std::tie(RHS.Symbol, RHS.Signals);
 }
 

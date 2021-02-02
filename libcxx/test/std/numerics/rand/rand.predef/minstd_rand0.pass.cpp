@@ -16,10 +16,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::minstd_rand0 e;
-  e.discard(9999);
-  assert(e() == 1043618065u);
+int main(int, char**)
+{
+    std::minstd_rand0 e;
+    e.discard(9999);
+    assert(e() == 1043618065u);
 
   return 0;
 }

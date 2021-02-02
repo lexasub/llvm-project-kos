@@ -17,65 +17,84 @@
 #include <cassert>
 #include "test_macros.h"
 
-class P1 {
+class P1
+{
 public:
-  using element_type = int;
+    using element_type = int;
 
-  constexpr explicit P1(int* p) : p_(p) {}
+    constexpr explicit P1(int* p)
+    : p_(p) { }
 
-  constexpr int* operator->() const noexcept { return p_; }
+    constexpr int* operator->() const noexcept
+    { return p_; }
 
 private:
-  int* p_;
+    int* p_;
 };
 
-class P2 {
+class P2
+{
 public:
-  using element_type = int;
+    using element_type = int;
 
-  constexpr explicit P2(int* p) : p_(p) {}
+    constexpr explicit P2(int* p)
+    : p_(p) { }
 
-  constexpr P1 operator->() const noexcept { return p_; }
+    constexpr P1 operator->() const noexcept
+    { return p_; }
 
 private:
-  P1 p_;
+    P1 p_;
 };
 
-class P3 {
+class P3
+{
 public:
-  constexpr explicit P3(int* p) : p_(p) {}
+    constexpr explicit P3(int* p)
+    : p_(p) { }
 
-  constexpr int* get() const noexcept { return p_; }
+    constexpr int* get() const noexcept
+    { return p_; }
 
 private:
-  int* p_;
+    int* p_;
 };
 
-namespace std {
-template <>
-struct pointer_traits< ::P3> {
-  static constexpr int* to_address(const ::P3& p) noexcept { return p.get(); }
+namespace std
+{
+template<>
+struct pointer_traits<::P3>
+{
+    static constexpr int* to_address(const ::P3& p) noexcept
+    { return p.get(); }
 };
-} // namespace std
+}
 
-class P4 {
+class P4
+{
 public:
-  constexpr explicit P4(int* p) : p_(p) {}
+    constexpr explicit P4(int* p)
+    : p_(p) { }
 
-  constexpr int* operator->() const noexcept { return nullptr; }
+    constexpr int* operator->() const noexcept
+    { return nullptr; }
 
-  constexpr int* get() const noexcept { return p_; }
+    constexpr int* get() const noexcept
+    { return p_; }
 
 private:
-  int* p_;
+    int* p_;
 };
 
-namespace std {
-template <>
-struct pointer_traits< ::P4> {
-  constexpr static int* to_address(const ::P4& p) noexcept { return p.get(); }
+namespace std
+{
+template<>
+struct pointer_traits<::P4>
+{
+    constexpr static int* to_address(const ::P4& p) noexcept
+    { return p.get(); }
 };
-} // namespace std
+}
 
 int n = 0;
 static_assert(std::to_address(&n) == &n);

@@ -12,9 +12,9 @@
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/SmallVector.h"
 #include <algorithm>
-#include <deque>
 #include <string>
 #include <vector>
+#include <deque>
 
 namespace llvm {
 namespace exegesis {

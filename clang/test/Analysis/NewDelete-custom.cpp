@@ -4,6 +4,7 @@
 
 // expected-no-diagnostics
 
+
 void *allocator(std::size_t size);
 
 void *operator new[](std::size_t size) throw() { return allocator(size); }
@@ -13,7 +14,7 @@ void *operator new(std::size_t, double d);
 
 class C {
 public:
-  void *operator new(std::size_t);
+  void *operator new(std::size_t);  
 };
 
 void testNewMethod() {
@@ -32,6 +33,7 @@ void testNewExprArray() {
   int *p = new int[0]; // no-warning
 }
 
+
 //----- Custom non-placement operators
 void testOpNew() {
   void *p = operator new(0); // call is inlined, no warn
@@ -47,7 +49,7 @@ void testOpNewNoThrow() {
 }
 
 void testNewExprNoThrow() {
-  int *p = new (std::nothrow) int; // no-warning
+  int *p = new(std::nothrow) int; // no-warning
 }
 
 //----- Custom placement operators
@@ -56,5 +58,5 @@ void testOpNewPlacement() {
 }
 
 void testNewExprPlacement() {
-  int *p = new (0.1) int; // no warn
+  int *p = new(0.1) int; // no warn
 }

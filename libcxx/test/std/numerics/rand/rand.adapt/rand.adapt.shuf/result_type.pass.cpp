@@ -21,62 +21,66 @@
 #include "test_macros.h"
 
 template <class UIntType, UIntType Min, UIntType Max>
-class rand1 {
+class rand1
+{
 public:
-  // types
-  typedef UIntType result_type;
+    // types
+    typedef UIntType result_type;
 
 private:
-  result_type x_;
+    result_type x_;
 
-  static_assert(Min < Max, "rand1 invalid parameters");
-
+    static_assert(Min < Max, "rand1 invalid parameters");
 public:
+
 #if TEST_STD_VER < 11 && defined(_LIBCPP_VERSION)
-  // Workaround for lack of constexpr in C++03
-  static const result_type _Min = Min;
-  static const result_type _Max = Max;
+    // Workaround for lack of constexpr in C++03
+    static const result_type _Min = Min;
+    static const result_type _Max = Max;
 #endif
 
-  static TEST_CONSTEXPR result_type min() { return Min; }
-  static TEST_CONSTEXPR result_type max() { return Max; }
+    static TEST_CONSTEXPR  result_type min() {return Min;}
+    static TEST_CONSTEXPR  result_type max() {return Max;}
 
-  explicit rand1(result_type sd = Min) : x_(sd) {
-    if (x_ < Min)
-      x_ = Min;
-    if (x_ > Max)
-      x_ = Max;
-  }
+    explicit rand1(result_type sd = Min) : x_(sd)
+    {
+        if (x_ < Min)
+            x_ = Min;
+        if (x_ > Max)
+            x_ = Max;
+    }
 
-  result_type operator()() {
-    result_type r = x_;
-    if (x_ < Max)
-      ++x_;
-    else
-      x_ = Min;
-    return r;
-  }
+    result_type operator()()
+    {
+        result_type r = x_;
+        if (x_ < Max)
+            ++x_;
+        else
+            x_ = Min;
+        return r;
+    }
 };
 
-void test1() {
-  static_assert(
-      (std::is_same<std::shuffle_order_engine<rand1<unsigned long, 0, 10>,
-                                              16>::result_type,
-                    unsigned long>::value),
-      "");
+void
+test1()
+{
+    static_assert((std::is_same<
+        std::shuffle_order_engine<rand1<unsigned long, 0, 10>, 16>::result_type,
+        unsigned long>::value), "");
 }
 
-void test2() {
-  static_assert(
-      (std::is_same<std::shuffle_order_engine<rand1<unsigned long long, 0, 10>,
-                                              16>::result_type,
-                    unsigned long long>::value),
-      "");
+void
+test2()
+{
+    static_assert((std::is_same<
+        std::shuffle_order_engine<rand1<unsigned long long, 0, 10>, 16>::result_type,
+        unsigned long long>::value), "");
 }
 
-int main(int, char**) {
-  test1();
-  test2();
+int main(int, char**)
+{
+    test1();
+    test2();
 
   return 0;
 }

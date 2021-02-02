@@ -54,8 +54,8 @@ void test_incorrect_alignment_without_instatiation(T value) {
   __builtin_align_up(value);       // Same here
 
   __builtin_align_up(array, sizeof(sizeof(value)) - 1); // expected-error{{requested alignment is not a power of 2}}
-  __builtin_align_up(array, value);                     // no diagnostic as the alignment is value dependent.
-  (void)__builtin_align_up(array, ArraySize);           // The same above here
+  __builtin_align_up(array, value); // no diagnostic as the alignment is value dependent.
+  (void)__builtin_align_up(array, ArraySize); // The same above here
 }
 
 // The original fix for the issue above broke some legitimate code.

@@ -22,19 +22,22 @@
 #include "test_macros.h"
 #include "../AB.h"
 
-void test() {
-  B* p1 = new B(1);
-  std::auto_ptr<B> ap1(p1);
-  std::auto_ptr_ref<A> apr = ap1;
-  std::auto_ptr<A> ap2(apr);
-  assert(ap1.get() == nullptr);
-  assert(ap2.get() == p1);
-  ap2.release();
-  delete p1;
+void
+test()
+{
+    B* p1 = new B(1);
+    std::auto_ptr<B> ap1(p1);
+    std::auto_ptr_ref<A> apr = ap1;
+    std::auto_ptr<A> ap2(apr);
+    assert(ap1.get() == nullptr);
+    assert(ap2.get() == p1);
+    ap2.release();
+    delete p1;
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 
   return 0;
 }

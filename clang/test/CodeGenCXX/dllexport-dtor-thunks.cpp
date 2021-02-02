@@ -1,23 +1,15 @@
 // RUN: %clang_cc1 -mconstructor-aliases -fms-extensions %s -emit-llvm -o - -triple x86_64-windows-msvc | FileCheck %s
 
 namespace test1 {
-struct A {
-  ~A();
-};
-struct __declspec(dllexport) B : virtual A {};
+struct A { ~A(); };
+struct __declspec(dllexport) B : virtual A { };
 // CHECK: define weak_odr dso_local dllexport void @"??1B@test1@@QEAA@XZ"
 // CHECK: define weak_odr dso_local dllexport void @"??_DB@test1@@QEAAXXZ"
-} // namespace test1
+}
 
-struct __declspec(dllexport) A {
-  virtual ~A();
-};
-struct __declspec(dllexport) B {
-  virtual ~B();
-};
-struct __declspec(dllexport) C : A, B {
-  virtual ~C();
-};
+struct __declspec(dllexport) A { virtual ~A(); };
+struct __declspec(dllexport) B { virtual ~B(); };
+struct __declspec(dllexport) C : A, B { virtual ~C(); };
 C::~C() {}
 
 // CHECK: define dso_local dllexport void @"??1C@@UEAA@XZ"

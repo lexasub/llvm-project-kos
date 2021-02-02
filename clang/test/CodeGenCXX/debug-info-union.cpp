@@ -3,8 +3,8 @@
 union E {
   int a;
   float b;
-  int bb() { return a; }
-  float aa() { return b; }
+  int bb() { return a;}
+  float aa() { return b;}
   E() { a = 0; }
 };
 

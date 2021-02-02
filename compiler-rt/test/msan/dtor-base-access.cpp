@@ -4,11 +4,11 @@
 
 // RUN: %clangxx_msan %s -O2 -fsanitize=memory -fsanitize-memory-use-after-dtor -o %t && MSAN_OPTIONS=poison_in_dtor=1 %run %t >%t.out 2>&1
 
-#include <assert.h>
 #include <sanitizer/msan_interface.h>
+#include <assert.h>
 
 class Base {
-public:
+ public:
   int *x_ptr;
   Base(int *y_ptr) {
     // store value of subclass member
@@ -18,9 +18,9 @@ public:
 };
 
 class Derived : public Base {
-public:
+ public:
   int y;
-  Derived() : Base(&y) {
+  Derived():Base(&y) {
     y = 10;
   }
   ~Derived();

@@ -19,7 +19,8 @@ struct MySpecialIntPointer : MyIntPointer {
 
 // We did see examples in the wild when a derived class changes
 // the ownership model. So we have a test for it.
-struct [[gsl::Owner(int)]] MyOwnerIntPointer : MyIntPointer{};
+struct [[gsl::Owner(int)]] MyOwnerIntPointer : MyIntPointer {
+};
 
 struct [[gsl::Pointer(long)]] MyLongPointerFromConversion {
   MyLongPointerFromConversion(long *p = nullptr);
@@ -36,7 +37,7 @@ struct [[gsl::Owner(long)]] MyLongOwnerWithConversion {
 
 void danglingHeapObject() {
   new MyLongPointerFromConversion(MyLongOwnerWithConversion{}); // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
-  new MyIntPointer(MyIntOwner{});                               // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
+  new MyIntPointer(MyIntOwner{}); // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
 }
 
 void intentionalFalseNegative() {
@@ -68,11 +69,11 @@ void dangligGslPtrFromTemporary() {
 }
 
 struct DanglingGslPtrField {
-  MyIntPointer p;                                            // expected-note {{pointer member declared here}}
-  MyLongPointerFromConversion p2;                            // expected-note {{pointer member declared here}}
-  DanglingGslPtrField(int i) : p(&i) {}                      // TODO
+  MyIntPointer p; // expected-note {{pointer member declared here}}
+  MyLongPointerFromConversion p2; // expected-note {{pointer member declared here}}
+  DanglingGslPtrField(int i) : p(&i) {} // TODO
   DanglingGslPtrField() : p2(MyLongOwnerWithConversion{}) {} // expected-warning {{initializing pointer member 'p2' to point to a temporary object whose lifetime is shorter than the lifetime of the constructed object}}
-  DanglingGslPtrField(double) : p(MyIntOwner{}) {}           // expected-warning {{initializing pointer member 'p' to point to a temporary object whose lifetime is shorter than the lifetime of the constructed object}}
+  DanglingGslPtrField(double) : p(MyIntOwner{}) {} // expected-warning {{initializing pointer member 'p' to point to a temporary object whose lifetime is shorter than the lifetime of the constructed object}}
 };
 
 MyIntPointer danglingGslPtrFromLocal() {
@@ -118,32 +119,32 @@ MyIntPointer global;
 MyLongPointerFromConversion global2;
 
 void initLocalGslPtrWithTempOwner() {
-  MyIntPointer p = MyIntOwner{};                                // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
-  p = MyIntOwner{};                                             // TODO ?
-  global = MyIntOwner{};                                        // TODO ?
+  MyIntPointer p = MyIntOwner{}; // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
+  p = MyIntOwner{}; // TODO ?
+  global = MyIntOwner{}; // TODO ?
   MyLongPointerFromConversion p2 = MyLongOwnerWithConversion{}; // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
-  p2 = MyLongOwnerWithConversion{};                             // TODO ?
-  global2 = MyLongOwnerWithConversion{};                        // TODO ?
+  p2 = MyLongOwnerWithConversion{}; // TODO ?
+  global2 = MyLongOwnerWithConversion{}; // TODO ?
 }
 
 namespace __gnu_cxx {
 template <typename T>
 struct basic_iterator {
   basic_iterator operator++();
-  T &operator*() const;
-  T *operator->() const;
+  T& operator*() const;
+  T* operator->() const;
 };
 
-template <typename T>
+template<typename T>
 bool operator!=(basic_iterator<T>, basic_iterator<T>);
-} // namespace __gnu_cxx
+}
 
 namespace std {
-template <typename T> struct remove_reference { typedef T type; };
-template <typename T> struct remove_reference<T &> { typedef T type; };
-template <typename T> struct remove_reference<T &&> { typedef T type; };
+template<typename T> struct remove_reference       { typedef T type; };
+template<typename T> struct remove_reference<T &>  { typedef T type; };
+template<typename T> struct remove_reference<T &&> { typedef T type; };
 
-template <typename T>
+template<typename T>
 typename remove_reference<T>::type &&move(T &&t) noexcept;
 
 template <typename C>
@@ -152,7 +153,7 @@ auto data(const C &c) -> decltype(c.data());
 template <typename C>
 auto begin(C &c) -> decltype(c.begin());
 
-template <typename T, int N>
+template<typename T, int N>
 T *begin(T (&array)[N]);
 
 template <typename T>
@@ -164,55 +165,56 @@ struct vector {
   T &at(int n);
 };
 
-template <typename T>
+template<typename T>
 struct basic_string_view {
   basic_string_view(const T *);
   const T *begin() const;
 };
 
-template <typename T>
+template<typename T>
 struct basic_string {
   basic_string();
   basic_string(const T *);
   const T *c_str() const;
-  operator basic_string_view<T>() const;
+  operator basic_string_view<T> () const;
 };
 
-template <typename T>
+
+template<typename T>
 struct unique_ptr {
   T &operator*();
   T *get() const;
 };
 
-template <typename T>
+template<typename T>
 struct optional {
   optional();
-  optional(const T &);
+  optional(const T&);
   T &operator*() &;
   T &&operator*() &&;
   T &value() &;
   T &&value() &&;
 };
 
-template <typename T>
+template<typename T>
 struct stack {
   T &top();
 };
 
 struct any {};
 
-template <typename T>
-T any_cast(const any &operand);
+template<typename T>
+T any_cast(const any& operand);
 
-template <typename T>
+template<typename T>
 struct reference_wrapper {
-  template <typename U>
+  template<typename U>
   reference_wrapper(U &&);
 };
 
-template <typename T>
-reference_wrapper<T> ref(T &t) noexcept;
-} // namespace std
+template<typename T>
+reference_wrapper<T> ref(T& t) noexcept;
+}
 
 struct Unannotated {
   typedef std::vector<int>::iterator iterator;
@@ -234,7 +236,7 @@ const int *modelFreeFunctions() {
 }
 
 int &modelAnyCast() {
-  return std::any_cast<int &>(std::any{}); // expected-warning {{returning reference to local temporary object}}
+  return std::any_cast<int&>(std::any{}); // expected-warning {{returning reference to local temporary object}}
 }
 
 int modelAnyCast2() {
@@ -242,7 +244,7 @@ int modelAnyCast2() {
 }
 
 int modelAnyCast3() {
-  return std::any_cast<int &>(std::any{}); // ok
+  return std::any_cast<int&>(std::any{}); // ok
 }
 
 const char *danglingRawPtrFromLocal() {
@@ -293,7 +295,7 @@ void testLoops() {
 
 int &usedToBeFalsePositive(std::vector<int> &v) {
   std::vector<int>::iterator it = v.begin();
-  int &value = *it;
+  int& value = *it;
   return value; // ok
 }
 
@@ -309,7 +311,8 @@ const char *trackThroughMultiplePointer() {
 }
 
 struct X {
-  X(std::unique_ptr<int> up) : pointee(*up), pointee2(up.get()), pointer(std::move(up)) {}
+  X(std::unique_ptr<int> up) :
+    pointee(*up), pointee2(up.get()), pointer(std::move(up)) {}
   int &pointee;
   int *pointee2;
   std::unique_ptr<int> pointer;
@@ -329,8 +332,8 @@ void handleGslPtrInitsThroughReference2() {
 }
 
 void handleTernaryOperator(bool cond) {
-  std::basic_string<char> def;
-  std::basic_string_view<char> v = cond ? def : ""; // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
+    std::basic_string<char> def;
+    std::basic_string_view<char> v = cond ? def : ""; // expected-warning {{object backing the pointer will be destroyed at the end of the full-expression}}
 }
 
 std::reference_wrapper<int> danglingPtrFromNonOwnerLocal() {
@@ -402,41 +405,41 @@ std::vector<int>::iterator doNotInterferWithUnannotated2() {
 }
 
 std::vector<int>::iterator supportDerefAddrofChain(int a, std::vector<int>::iterator value) {
-  switch (a) {
-  default:
-    return value;
-  case 1:
-    return *&value;
-  case 2:
-    return *&*&value;
-  case 3:
-    return *&*&*&value;
+  switch (a)  {
+    default:
+      return value;
+    case 1:
+      return *&value;
+    case 2:
+      return *&*&value;
+    case 3:
+      return *&*&*&value;
   }
 }
 
 int &supportDerefAddrofChain2(int a, std::vector<int>::iterator value) {
-  switch (a) {
-  default:
-    return *value;
-  case 1:
-    return **&value;
-  case 2:
-    return **&*&value;
-  case 3:
-    return **&*&*&value;
+  switch (a)  {
+    default:
+      return *value;
+    case 1:
+      return **&value;
+    case 2:
+      return **&*&value;
+    case 3:
+      return **&*&*&value;
   }
 }
 
 int *supportDerefAddrofChain3(int a, std::vector<int>::iterator value) {
-  switch (a) {
-  default:
-    return &*value;
-  case 1:
-    return &*&*value;
-  case 2:
-    return &*&**&value;
-  case 3:
-    return &*&**&*&value;
+  switch (a)  {
+    default:
+      return &*value;
+    case 1:
+      return &*&*value;
+    case 2:
+      return &*&**&value;
+    case 3:
+      return &*&**&*&value;
   }
 }
 

@@ -144,10 +144,10 @@ static cl::list<std::string> ClABIListFiles(
 
 // Controls whether the pass uses IA_Args or IA_TLS as the ABI for instrumented
 // functions (see DataFlowSanitizer::InstrumentedABI below).
-static cl::opt<bool>
-    ClArgsABI("dfsan-args-abi",
-              cl::desc("Use the argument ABI rather than the TLS ABI"),
-              cl::Hidden);
+static cl::opt<bool> ClArgsABI(
+    "dfsan-args-abi",
+    cl::desc("Use the argument ABI rather than the TLS ABI"),
+    cl::Hidden);
 
 // Controls whether the pass includes or ignores the labels of pointers in load
 // instructions.
@@ -217,7 +217,7 @@ namespace {
 class DFSanABIList {
   std::unique_ptr<SpecialCaseList> SCL;
 
-public:
+ public:
   DFSanABIList() = default;
 
   void set(std::unique_ptr<SpecialCaseList> List) { SCL = std::move(List); }
@@ -255,18 +255,20 @@ public:
 /// function type into another.  This struct is immutable.  It holds metadata
 /// useful for updating calls of the old function to the new type.
 struct TransformedFunction {
-  TransformedFunction(FunctionType *OriginalType, FunctionType *TransformedType,
+  TransformedFunction(FunctionType* OriginalType,
+                      FunctionType* TransformedType,
                       std::vector<unsigned> ArgumentIndexMapping)
-      : OriginalType(OriginalType), TransformedType(TransformedType),
+      : OriginalType(OriginalType),
+        TransformedType(TransformedType),
         ArgumentIndexMapping(ArgumentIndexMapping) {}
 
   // Disallow copies.
-  TransformedFunction(const TransformedFunction &) = delete;
-  TransformedFunction &operator=(const TransformedFunction &) = delete;
+  TransformedFunction(const TransformedFunction&) = delete;
+  TransformedFunction& operator=(const TransformedFunction&) = delete;
 
   // Allow moves.
-  TransformedFunction(TransformedFunction &&) = default;
-  TransformedFunction &operator=(TransformedFunction &&) = default;
+  TransformedFunction(TransformedFunction&&) = default;
+  TransformedFunction& operator=(TransformedFunction&&) = default;
 
   /// Type of the function before the transformation.
   FunctionType *OriginalType;
@@ -285,9 +287,9 @@ struct TransformedFunction {
 /// Given function attributes from a call site for the original function,
 /// return function attributes appropriate for a call to the transformed
 /// function.
-AttributeList
-TransformFunctionAttributes(const TransformedFunction &TransformedFunction,
-                            LLVMContext &Ctx, AttributeList CallSiteAttrs) {
+AttributeList TransformFunctionAttributes(
+    const TransformedFunction& TransformedFunction,
+    LLVMContext& Ctx, AttributeList CallSiteAttrs) {
 
   // Construct a vector of AttributeSet for each function argument.
   std::vector<llvm::AttributeSet> ArgumentAttributes(
@@ -296,7 +298,7 @@ TransformFunctionAttributes(const TransformedFunction &TransformedFunction,
   // Copy attributes from the parameter of the original function to the
   // transformed version.  'ArgumentIndexMapping' holds the mapping from
   // old argument position to new.
-  for (unsigned i = 0, ie = TransformedFunction.ArgumentIndexMapping.size();
+  for (unsigned i=0, ie = TransformedFunction.ArgumentIndexMapping.size();
        i < ie; ++i) {
     unsigned TransformedIndex = TransformedFunction.ArgumentIndexMapping[i];
     ArgumentAttributes[TransformedIndex] = CallSiteAttrs.getParamAttributes(i);
@@ -304,14 +306,15 @@ TransformFunctionAttributes(const TransformedFunction &TransformedFunction,
 
   // Copy annotations on varargs arguments.
   for (unsigned i = TransformedFunction.OriginalType->getNumParams(),
-                ie = CallSiteAttrs.getNumAttrSets();
-       i < ie; ++i) {
+       ie = CallSiteAttrs.getNumAttrSets(); i<ie; ++i) {
     ArgumentAttributes.push_back(CallSiteAttrs.getParamAttributes(i));
   }
 
-  return AttributeList::get(Ctx, CallSiteAttrs.getFnAttributes(),
-                            CallSiteAttrs.getRetAttributes(),
-                            llvm::makeArrayRef(ArgumentAttributes));
+  return AttributeList::get(
+      Ctx,
+      CallSiteAttrs.getFnAttributes(),
+      CallSiteAttrs.getRetAttributes(),
+      llvm::makeArrayRef(ArgumentAttributes));
 }
 
 class DataFlowSanitizer {
@@ -616,11 +619,10 @@ TransformedFunction DataFlowSanitizer::getCustomFunctionType(FunctionType *T) {
   // at call sites can be updated.
   std::vector<unsigned> ArgumentIndexMapping;
   for (unsigned i = 0, ie = T->getNumParams(); i != ie; ++i) {
-    Type *param_type = T->getParamType(i);
+    Type* param_type = T->getParamType(i);
     FunctionType *FT;
-    if (isa<PointerType>(param_type) &&
-        (FT = dyn_cast<FunctionType>(
-             cast<PointerType>(param_type)->getElementType()))) {
+    if (isa<PointerType>(param_type) && (FT = dyn_cast<FunctionType>(
+            cast<PointerType>(param_type)->getElementType()))) {
       ArgumentIndexMapping.push_back(ArgTypes.size());
       ArgTypes.push_back(getTrampolineFunctionType(FT)->getPointerTo());
       ArgTypes.push_back(Type::getInt8PtrTy(*Ctx));
@@ -942,8 +944,7 @@ Constant *DataFlowSanitizer::getOrBuildTrampolineFunction(FunctionType *FT,
     F->setLinkage(GlobalValue::LinkOnceODRLinkage);
     BasicBlock *BB = BasicBlock::Create(*Ctx, "entry", F);
     std::vector<Value *> Args;
-    Function::arg_iterator AI = F->arg_begin();
-    ++AI;
+    Function::arg_iterator AI = F->arg_begin(); ++AI;
     for (unsigned N = FT->getNumParams(); N != 0; ++AI, --N)
       Args.push_back(&*AI);
     CallInst *CI = CallInst::Create(FT, &*F->arg_begin(), Args, "", BB);
@@ -956,8 +957,7 @@ Constant *DataFlowSanitizer::getOrBuildTrampolineFunction(FunctionType *FT,
     // F is called by a wrapped custom function with primitive shadows. So
     // its arguments and return value need conversion.
     DFSanFunction DFSF(*this, F, /*IsNativeABI=*/true);
-    Function::arg_iterator ValAI = F->arg_begin(), ShadowAI = AI;
-    ++ValAI;
+    Function::arg_iterator ValAI = F->arg_begin(), ShadowAI = AI; ++ValAI;
     for (unsigned N = FT->getNumParams(); N != 0; ++ValAI, ++ShadowAI, --N) {
       Value *Shadow =
           DFSF.expandFromPrimitiveShadow(ValAI->getType(), &*ShadowAI, CI);
@@ -1181,18 +1181,20 @@ bool DataFlowSanitizer::runImpl(Module &M) {
       // Build a wrapper function for F.  The wrapper simply calls F, and is
       // added to FnsToInstrument so that any instrumentation according to its
       // WrapperKind is done in the second pass below.
-      FunctionType *NewFT =
-          getInstrumentedABI() == IA_Args ? getArgsFunctionType(FT) : FT;
+      FunctionType *NewFT = getInstrumentedABI() == IA_Args
+                                ? getArgsFunctionType(FT)
+                                : FT;
 
       // If the function being wrapped has local linkage, then preserve the
       // function's linkage in the wrapper function.
       GlobalValue::LinkageTypes wrapperLinkage =
-          F.hasLocalLinkage() ? F.getLinkage()
-                              : GlobalValue::LinkOnceODRLinkage;
+          F.hasLocalLinkage()
+              ? F.getLinkage()
+              : GlobalValue::LinkOnceODRLinkage;
 
       Function *NewF = buildWrapperFunction(
-          &F, std::string("dfsw$") + std::string(F.getName()), wrapperLinkage,
-          NewFT);
+          &F, std::string("dfsw$") + std::string(F.getName()),
+          wrapperLinkage, NewFT);
       if (getInstrumentedABI() == IA_TLS)
         NewF->removeAttributes(AttributeList::FunctionIndex, ReadOnlyNoneAttrs);
 
@@ -1219,8 +1221,8 @@ bool DataFlowSanitizer::runImpl(Module &M) {
         i = FnsToInstrument.begin() + N;
         e = FnsToInstrument.begin() + Count;
       }
-      // Hopefully, nobody will try to indirectly call a vararg
-      // function... yet.
+               // Hopefully, nobody will try to indirectly call a vararg
+               // function... yet.
     } else if (FT->isVarArg()) {
       UnwrappedFnMap[&F] = &F;
       *i = nullptr;
@@ -1753,7 +1755,7 @@ void DFSanVisitor::visitStoreInst(StoreInst &SI) {
 
   const Align Alignment = ClPreserveAlignment ? SI.getAlign() : Align(1);
 
-  Value *Shadow = DFSF.getShadow(SI.getValueOperand());
+  Value* Shadow = DFSF.getShadow(SI.getValueOperand());
   Value *PrimitiveShadow;
   if (ClCombinePointerLabelsOnStore) {
     Value *PtrShadow = DFSF.getShadow(SI.getPointerOperand());
@@ -1877,11 +1879,10 @@ void DFSanVisitor::visitSelectInst(SelectInst &I) {
 void DFSanVisitor::visitMemSetInst(MemSetInst &I) {
   IRBuilder<> IRB(&I);
   Value *ValShadow = DFSF.getShadow(I.getValue());
-  IRB.CreateCall(
-      DFSF.DFS.DFSanSetLabelFn,
-      {ValShadow,
-       IRB.CreateBitCast(I.getDest(), Type::getInt8PtrTy(*DFSF.DFS.Ctx)),
-       IRB.CreateZExtOrTrunc(I.getLength(), DFSF.DFS.IntptrTy)});
+  IRB.CreateCall(DFSF.DFS.DFSanSetLabelFn,
+                 {ValShadow, IRB.CreateBitCast(I.getDest(), Type::getInt8PtrTy(
+                                                                *DFSF.DFS.Ctx)),
+                  IRB.CreateZExtOrTrunc(I.getLength(), DFSF.DFS.IntptrTy)});
 }
 
 void DFSanVisitor::visitMemTransferInst(MemTransferInst &I) {
@@ -2026,9 +2027,9 @@ void DFSanVisitor::visitCallBase(CallBase &CB) {
         if (FT->isVarArg()) {
           auto *LabelVATy = ArrayType::get(DFSF.DFS.PrimitiveShadowTy,
                                            CB.arg_size() - FT->getNumParams());
-          auto *LabelVAAlloca =
-              new AllocaInst(LabelVATy, getDataLayout().getAllocaAddrSpace(),
-                             "labelva", &DFSF.F->getEntryBlock().front());
+          auto *LabelVAAlloca = new AllocaInst(
+              LabelVATy, getDataLayout().getAllocaAddrSpace(),
+              "labelva", &DFSF.F->getEntryBlock().front());
 
           for (unsigned n = 0; i != CB.arg_end(); ++i, ++n) {
             auto LabelVAPtr = IRB.CreateStructGEP(LabelVATy, LabelVAAlloca, n);
@@ -2054,8 +2055,8 @@ void DFSanVisitor::visitCallBase(CallBase &CB) {
 
         CallInst *CustomCI = IRB.CreateCall(CustomF, Args);
         CustomCI->setCallingConv(CI->getCallingConv());
-        CustomCI->setAttributes(TransformFunctionAttributes(
-            CustomFn, CI->getContext(), CI->getAttributes()));
+        CustomCI->setAttributes(TransformFunctionAttributes(CustomFn,
+            CI->getContext(), CI->getAttributes()));
 
         // Update the parameter attributes of the custom call instruction to
         // zero extend the shadow parameters. This is required for targets
@@ -2155,8 +2156,8 @@ void DFSanVisitor::visitCallBase(CallBase &CB) {
       ArrayType *VarArgArrayTy =
           ArrayType::get(DFSF.DFS.PrimitiveShadowTy, VarArgSize);
       AllocaInst *VarArgShadow =
-          new AllocaInst(VarArgArrayTy, getDataLayout().getAllocaAddrSpace(),
-                         "", &DFSF.F->getEntryBlock().front());
+        new AllocaInst(VarArgArrayTy, getDataLayout().getAllocaAddrSpace(),
+                       "", &DFSF.F->getEntryBlock().front());
       Args.push_back(IRB.CreateConstGEP2_32(VarArgArrayTy, VarArgShadow, 0, 0));
       for (unsigned n = 0; i != E; ++i, ++n) {
         IRB.CreateStore(

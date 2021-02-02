@@ -24,7 +24,7 @@ void JSONNodeDumper::Visit(const Attr *A) {
   switch (A->getKind()) {
 #define ATTR(X)                                                                \
   case attr::X:                                                                \
-    AttrName = #X "Attr";                                                      \
+    AttrName = #X"Attr";                                                       \
     break;
 #include "clang/Basic/AttrList.inc"
 #undef ATTR
@@ -39,7 +39,7 @@ void JSONNodeDumper::Visit(const Attr *A) {
   // the actual spelling. This would allow us to distinguish between the
   // various attribute syntaxes, but we don't currently track that information
   // within the AST.
-  // JOS.attribute("spelling", A->getSpelling());
+  //JOS.attribute("spelling", A->getSpelling());
 
   InnerAttrVisitor::Visit(A);
 }
@@ -57,15 +57,9 @@ void JSONNodeDumper::Visit(const Stmt *S) {
     JOS.attribute("type", createQualType(E->getType()));
     const char *Category = nullptr;
     switch (E->getValueKind()) {
-    case VK_LValue:
-      Category = "lvalue";
-      break;
-    case VK_XValue:
-      Category = "xvalue";
-      break;
-    case VK_RValue:
-      Category = "rvalue";
-      break;
+    case VK_LValue: Category = "lvalue"; break;
+    case VK_XValue: Category = "xvalue"; break;
+    case VK_RValue: Category = "rvalue"; break;
     }
     JOS.attribute("valueCategory", Category);
   }
@@ -343,10 +337,8 @@ llvm::json::Array JSONNodeDumper::createCastPath(const CastExpr *C) {
   return Ret;
 }
 
-#define FIELD2(Name, Flag)                                                     \
-  if (RD->Flag())                                                              \
-  Ret[Name] = true
-#define FIELD1(Flag) FIELD2(#Flag, Flag)
+#define FIELD2(Name, Flag)  if (RD->Flag()) Ret[Name] = true
+#define FIELD1(Flag)        FIELD2(#Flag, Flag)
 
 static llvm::json::Object
 createDefaultConstructorDefinitionData(const CXXRecordDecl *RD) {
@@ -526,14 +518,9 @@ void JSONNodeDumper::VisitFunctionProtoType(const FunctionProtoType *T) {
   attributeOnlyIfTrue("restrict", T->isRestrict());
   attributeOnlyIfTrue("variadic", E.Variadic);
   switch (E.RefQualifier) {
-  case RQ_LValue:
-    JOS.attribute("refQualifier", "&");
-    break;
-  case RQ_RValue:
-    JOS.attribute("refQualifier", "&&");
-    break;
-  case RQ_None:
-    break;
+  case RQ_LValue: JOS.attribute("refQualifier", "&"); break;
+  case RQ_RValue: JOS.attribute("refQualifier", "&&"); break;
+  case RQ_None: break;
   }
   switch (E.ExceptionSpec.Type) {
   case EST_DynamicNone:
@@ -555,8 +542,8 @@ void JSONNodeDumper::VisitFunctionProtoType(const FunctionProtoType *T) {
   case EST_NoexceptFalse:
     JOS.attribute("exceptionSpec", "noexcept");
     JOS.attribute("conditionEvaluatesTo",
-                  E.ExceptionSpec.Type == EST_NoexceptTrue);
-    // JOS.attributeWithCall("exceptionSpecExpr",
+                E.ExceptionSpec.Type == EST_NoexceptTrue);
+    //JOS.attributeWithCall("exceptionSpecExpr",
     //                    [this, E]() { Visit(E.ExceptionSpec.NoexceptExpr); });
     break;
   case EST_NoThrow:
@@ -570,8 +557,7 @@ void JSONNodeDumper::VisitFunctionProtoType(const FunctionProtoType *T) {
   case EST_Unevaluated:
   case EST_Uninstantiated:
   case EST_Unparsed:
-  case EST_None:
-    break;
+  case EST_None: break;
   }
   VisitFunctionType(T);
 }
@@ -782,14 +768,9 @@ void JSONNodeDumper::VisitVarDecl(const VarDecl *VD) {
   if (SC != SC_None)
     JOS.attribute("storageClass", VarDecl::getStorageClassSpecifierString(SC));
   switch (VD->getTLSKind()) {
-  case VarDecl::TLS_Dynamic:
-    JOS.attribute("tls", "dynamic");
-    break;
-  case VarDecl::TLS_Static:
-    JOS.attribute("tls", "static");
-    break;
-  case VarDecl::TLS_None:
-    break;
+  case VarDecl::TLS_Dynamic: JOS.attribute("tls", "dynamic"); break;
+  case VarDecl::TLS_Static: JOS.attribute("tls", "static"); break;
+  case VarDecl::TLS_None: break;
   }
   attributeOnlyIfTrue("nrvo", VD->isNRVOVariable());
   attributeOnlyIfTrue("inline", VD->isInline());
@@ -797,15 +778,9 @@ void JSONNodeDumper::VisitVarDecl(const VarDecl *VD) {
   attributeOnlyIfTrue("modulePrivate", VD->isModulePrivate());
   if (VD->hasInit()) {
     switch (VD->getInitStyle()) {
-    case VarDecl::CInit:
-      JOS.attribute("init", "c");
-      break;
-    case VarDecl::CallInit:
-      JOS.attribute("init", "call");
-      break;
-    case VarDecl::ListInit:
-      JOS.attribute("init", "list");
-      break;
+    case VarDecl::CInit: JOS.attribute("init", "c");  break;
+    case VarDecl::CallInit: JOS.attribute("init", "call"); break;
+    case VarDecl::ListInit: JOS.attribute("init", "list"); break;
     }
   }
   attributeOnlyIfTrue("isParameterPack", VD->isParameterPack());
@@ -922,12 +897,8 @@ void JSONNodeDumper::VisitTemplateTemplateParmDecl(
 void JSONNodeDumper::VisitLinkageSpecDecl(const LinkageSpecDecl *LSD) {
   StringRef Lang;
   switch (LSD->getLanguage()) {
-  case LinkageSpecDecl::lang_c:
-    Lang = "C";
-    break;
-  case LinkageSpecDecl::lang_cxx:
-    Lang = "C++";
-    break;
+  case LinkageSpecDecl::lang_c: Lang = "C"; break;
+  case LinkageSpecDecl::lang_cxx: Lang = "C++"; break;
   }
   JOS.attribute("language", Lang);
   attributeOnlyIfTrue("hasBraces", LSD->hasBraces());
@@ -947,21 +918,11 @@ void JSONNodeDumper::VisitObjCIvarDecl(const ObjCIvarDecl *D) {
   JOS.attribute("type", createQualType(D->getType()));
   attributeOnlyIfTrue("synthesized", D->getSynthesize());
   switch (D->getAccessControl()) {
-  case ObjCIvarDecl::None:
-    JOS.attribute("access", "none");
-    break;
-  case ObjCIvarDecl::Private:
-    JOS.attribute("access", "private");
-    break;
-  case ObjCIvarDecl::Protected:
-    JOS.attribute("access", "protected");
-    break;
-  case ObjCIvarDecl::Public:
-    JOS.attribute("access", "public");
-    break;
-  case ObjCIvarDecl::Package:
-    JOS.attribute("access", "package");
-    break;
+  case ObjCIvarDecl::None: JOS.attribute("access", "none"); break;
+  case ObjCIvarDecl::Private: JOS.attribute("access", "private"); break;
+  case ObjCIvarDecl::Protected: JOS.attribute("access", "protected"); break;
+  case ObjCIvarDecl::Public: JOS.attribute("access", "public"); break;
+  case ObjCIvarDecl::Package: JOS.attribute("access", "package"); break;
   }
 }
 
@@ -994,7 +955,7 @@ void JSONNodeDumper::VisitObjCCategoryDecl(const ObjCCategoryDecl *D) {
   JOS.attribute("implementation", createBareDeclRef(D->getImplementation()));
 
   llvm::json::Array Protocols;
-  for (const auto *P : D->protocols())
+  for (const auto* P : D->protocols())
     Protocols.push_back(createBareDeclRef(P));
   if (!Protocols.empty())
     JOS.attribute("protocols", std::move(Protocols));
@@ -1022,7 +983,7 @@ void JSONNodeDumper::VisitObjCInterfaceDecl(const ObjCInterfaceDecl *D) {
   JOS.attribute("implementation", createBareDeclRef(D->getImplementation()));
 
   llvm::json::Array Protocols;
-  for (const auto *P : D->protocols())
+  for (const auto* P : D->protocols())
     Protocols.push_back(createBareDeclRef(P));
   if (!Protocols.empty())
     JOS.attribute("protocols", std::move(Protocols));
@@ -1046,14 +1007,9 @@ void JSONNodeDumper::VisitObjCPropertyDecl(const ObjCPropertyDecl *D) {
   JOS.attribute("type", createQualType(D->getType()));
 
   switch (D->getPropertyImplementation()) {
-  case ObjCPropertyDecl::None:
-    break;
-  case ObjCPropertyDecl::Required:
-    JOS.attribute("control", "required");
-    break;
-  case ObjCPropertyDecl::Optional:
-    JOS.attribute("control", "optional");
-    break;
+  case ObjCPropertyDecl::None: break;
+  case ObjCPropertyDecl::Required: JOS.attribute("control", "required"); break;
+  case ObjCPropertyDecl::Optional: JOS.attribute("control", "optional"); break;
   }
 
   ObjCPropertyAttribute::Kind Attrs = D->getPropertyAttributes();
@@ -1200,17 +1156,10 @@ void JSONNodeDumper::VisitDeclRefExpr(const DeclRefExpr *DRE) {
     JOS.attribute("foundReferencedDecl",
                   createBareDeclRef(DRE->getFoundDecl()));
   switch (DRE->isNonOdrUse()) {
-  case NOUR_None:
-    break;
-  case NOUR_Unevaluated:
-    JOS.attribute("nonOdrUseReason", "unevaluated");
-    break;
-  case NOUR_Constant:
-    JOS.attribute("nonOdrUseReason", "constant");
-    break;
-  case NOUR_Discarded:
-    JOS.attribute("nonOdrUseReason", "discarded");
-    break;
+  case NOUR_None: break;
+  case NOUR_Unevaluated: JOS.attribute("nonOdrUseReason", "unevaluated"); break;
+  case NOUR_Constant: JOS.attribute("nonOdrUseReason", "constant"); break;
+  case NOUR_Discarded: JOS.attribute("nonOdrUseReason", "discarded"); break;
   }
 }
 
@@ -1245,17 +1194,10 @@ void JSONNodeDumper::VisitMemberExpr(const MemberExpr *ME) {
   JOS.attribute("isArrow", ME->isArrow());
   JOS.attribute("referencedMemberDecl", createPointerRepresentation(VD));
   switch (ME->isNonOdrUse()) {
-  case NOUR_None:
-    break;
-  case NOUR_Unevaluated:
-    JOS.attribute("nonOdrUseReason", "unevaluated");
-    break;
-  case NOUR_Constant:
-    JOS.attribute("nonOdrUseReason", "constant");
-    break;
-  case NOUR_Discarded:
-    JOS.attribute("nonOdrUseReason", "discarded");
-    break;
+  case NOUR_None: break;
+  case NOUR_Unevaluated: JOS.attribute("nonOdrUseReason", "unevaluated"); break;
+  case NOUR_Constant: JOS.attribute("nonOdrUseReason", "constant"); break;
+  case NOUR_Discarded: JOS.attribute("nonOdrUseReason", "discarded"); break;
   }
 }
 
@@ -1264,14 +1206,9 @@ void JSONNodeDumper::VisitCXXNewExpr(const CXXNewExpr *NE) {
   attributeOnlyIfTrue("isArray", NE->isArray());
   attributeOnlyIfTrue("isPlacement", NE->getNumPlacementArgs() != 0);
   switch (NE->getInitializationStyle()) {
-  case CXXNewExpr::NoInit:
-    break;
-  case CXXNewExpr::CallInit:
-    JOS.attribute("initStyle", "call");
-    break;
-  case CXXNewExpr::ListInit:
-    JOS.attribute("initStyle", "list");
-    break;
+  case CXXNewExpr::NoInit: break;
+  case CXXNewExpr::CallInit: JOS.attribute("initStyle", "call"); break;
+  case CXXNewExpr::ListInit: JOS.attribute("initStyle", "list"); break;
   }
   if (const FunctionDecl *FD = NE->getOperatorNew())
     JOS.attribute("operatorNewDecl", createBareDeclRef(FD));
@@ -1523,7 +1460,7 @@ void JSONNodeDumper::VisitWhileStmt(const WhileStmt *WS) {
   attributeOnlyIfTrue("hasVar", WS->hasVarStorage());
 }
 
-void JSONNodeDumper::VisitObjCAtCatchStmt(const ObjCAtCatchStmt *OACS) {
+void JSONNodeDumper::VisitObjCAtCatchStmt(const ObjCAtCatchStmt* OACS) {
   // FIXME: it would be nice for the ASTNodeTraverser would handle the catch
   // parameter the same way for C++ and ObjC rather. In this case, C++ gets a
   // null child node and ObjC gets no child node.

@@ -27,7 +27,7 @@ int *test_element_index_lifetime_with_local_ptr() {
 }
 
 template <typename T, int N>
-T *end(T (&arr)[N]) {
+T* end(T (&arr)[N]) {
   return arr + N; // no-warning, because we want to avoid false positives on returning the end() iterator of a container.
 }
 
@@ -44,8 +44,8 @@ class Iterable {
 public:
   Iterable() : start(buffer), finish(buffer + N) {}
 
-  int *begin() { return start; }
-  int *end() { return finish; }
+  int* begin() { return start; }
+  int* end() { return finish; }
 };
 
 void use_iterable_object() {
@@ -61,8 +61,8 @@ class BadIterable {
 public:
   BadIterable() : start(buffer), finish(buffer + N) {}
 
-  int *begin() { return start; }
-  int *end() { return finish + 1; } // expected-warning{{Returned pointer value points outside the original object (potential buffer overflow)}}
+  int* begin() { return start; }
+  int* end() { return finish + 1; } // expected-warning{{Returned pointer value points outside the original object (potential buffer overflow)}}
 };
 
 void use_bad_iterable_object() {

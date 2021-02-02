@@ -111,8 +111,8 @@ public:
   /// Write the modified source files.
   ///
   /// \returns true if there was an error, false otherwise.
-  bool WriteFixedFiles(std::vector<std::pair<std::string, std::string>>
-                           *RewrittenFiles = nullptr);
+  bool WriteFixedFiles(
+    std::vector<std::pair<std::string, std::string>> *RewrittenFiles = nullptr);
 
   /// IncludeInDiagnosticCounts - This method (whose default implementation
   /// returns true) indicates whether the diagnostics handled by this

@@ -21,7 +21,7 @@
 #ifdef MODULE_INTERFACE
 export
 #endif
-    module N;
+module N;
 
 #ifndef NO_IMPORT
 import M;
@@ -29,18 +29,16 @@ import M;
 
 #ifndef NO_ERRORS
 extern int var; // expected-error {{declaration of 'var' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:38 {{previous}}
-int func();     // expected-error {{declaration of 'func' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:39 {{previous}}
-struct str;     // expected-error {{declaration of 'str' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:40 {{previous}}
+int func(); // expected-error {{declaration of 'func' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:39 {{previous}}
+struct str; // expected-error {{declaration of 'str' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:40 {{previous}}
 using type = int;
 
-template <typename> extern int var_tpl;   // expected-error {{declaration of 'var_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:43 {{previous}}
-template <typename> int func_tpl();       // expected-error {{declaration of 'func_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:45 {{previous}}
-template <typename> struct str_tpl;       // expected-error {{declaration of 'str_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:46 {{previous}}
-template <typename> using type_tpl = int; // expected-error {{declaration of 'type_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:47 {{previous}}
+template<typename> extern int var_tpl; // expected-error {{declaration of 'var_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:43 {{previous}}
+template<typename> int func_tpl(); // expected-error {{declaration of 'func_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:45 {{previous}}
+template<typename> struct str_tpl; // expected-error {{declaration of 'str_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:46 {{previous}}
+template<typename> using type_tpl = int; // expected-error {{declaration of 'type_tpl' in module N follows declaration in module M}} expected-note@global-vs-module.cpp:47 {{previous}}
 
 typedef int type;
-namespace ns {
-using ::func;
-}
+namespace ns { using ::func; }
 namespace ns_alias = ns;
 #endif

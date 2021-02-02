@@ -9,7 +9,7 @@
 #ifdef _MSC_VER
 // Disable warnings about alignment-based structure padding.
 // This must be above the includes to suppress warnings in included templates.
-#pragma warning(disable : 4324)
+#pragma warning(disable:4324)
 #endif
 
 #include "llvm/Support/AlignOf.h"
@@ -22,7 +22,7 @@ namespace {
 // Disable warnings about questionable type definitions.
 // We're testing that even questionable types work with the alignment utilities.
 #ifdef _MSC_VER
-#pragma warning(disable : 4584)
+#pragma warning(disable:4584)
 #endif
 
 // Suppress direct base '{anonymous}::S1' inaccessible in '{anonymous}::D9'
@@ -44,69 +44,36 @@ struct alignas(4) A4 {};
 struct alignas(8) A8 {};
 
 struct S1 {};
-struct S2 {
-  char a;
-};
-struct S3 {
-  int x;
-};
-struct S4 {
-  double y;
-};
-struct S5 {
-  A1 a1;
-  A2 a2;
-  A4 a4;
-  A8 a8;
-};
-struct S6 {
-  double f();
-};
+struct S2 { char a; };
+struct S3 { int x; };
+struct S4 { double y; };
+struct S5 { A1 a1; A2 a2; A4 a4; A8 a8; };
+struct S6 { double f(); };
 struct D1 : S1 {};
-struct D2 : S6 {
-  float g();
-};
+struct D2 : S6 { float g(); };
 struct D3 : S2 {};
-struct D4 : S2 {
-  int x;
-};
-struct D5 : S3 {
-  char c;
-};
+struct D4 : S2 { int x; };
+struct D5 : S3 { char c; };
 struct D6 : S2, S3 {};
 struct D7 : S1, S3 {};
-struct D8 : S1, D4, D5 {
-  double x[2];
-};
-struct D9 : S1, D1 {
-  S1 s1;
-};
-struct V1 {
-  virtual ~V1();
-};
-struct V2 {
-  int x;
-  virtual ~V2();
-};
+struct D8 : S1, D4, D5 { double x[2]; };
+struct D9 : S1, D1 { S1 s1; };
+struct V1 { virtual ~V1(); };
+struct V2 { int x; virtual ~V2(); };
 struct V3 : V1 {
   ~V3() override;
 };
-struct V4 : virtual V2 {
-  int y;
+struct V4 : virtual V2 { int y;
   ~V4() override;
 };
-struct V5 : V4, V3 {
-  double z;
+struct V5 : V4, V3 { double z;
   ~V5() override;
 };
-struct V6 : S1 {
-  virtual ~V6();
-};
+struct V6 : S1 { virtual ~V6(); };
 struct V7 : virtual V2, virtual V6 {
   ~V7() override;
 };
-struct V8 : V5, virtual V6, V7 {
-  double zz;
+struct V8 : V5, virtual V6, V7 { double zz;
   ~V8() override;
 };
 
@@ -149,10 +116,11 @@ TEST(AlignOfTest, BasicAlignedArray) {
   EXPECT_EQ(4u, (alignof(AlignedCharArrayUnion<A1[42], A2[55], A4[13]>)));
   EXPECT_EQ(8u, (alignof(AlignedCharArrayUnion<A1[2], A2[1], A4, A8>)));
 
-  EXPECT_EQ(1u, sizeof(AlignedCharArrayUnion<A1[1]>));
-  EXPECT_EQ(2u, sizeof(AlignedCharArrayUnion<A1[2], A2[1]>));
-  EXPECT_EQ(4u, sizeof(AlignedCharArrayUnion<A1[3], A2[2], A4>));
-  EXPECT_EQ(16u, sizeof(AlignedCharArrayUnion<A1, A2[3], A4[3], A8>));
+  EXPECT_EQ(1u,  sizeof(AlignedCharArrayUnion<A1[1]>));
+  EXPECT_EQ(2u,  sizeof(AlignedCharArrayUnion<A1[2], A2[1]>));
+  EXPECT_EQ(4u,  sizeof(AlignedCharArrayUnion<A1[3], A2[2], A4>));
+  EXPECT_EQ(16u, sizeof(AlignedCharArrayUnion<A1, A2[3],
+                                              A4[3], A8>));
 
   // For other tests we simply assert that the alignment of the union mathes
   // that of the fundamental type and hope that we have any weird type
@@ -215,10 +183,12 @@ TEST(AlignOfTest, BasicAlignedArray) {
   EXPECT_EQ(sizeof(short), sizeof(AlignedCharArrayUnion<short>));
   EXPECT_EQ(sizeof(int), sizeof(AlignedCharArrayUnion<int>));
   EXPECT_EQ(sizeof(long), sizeof(AlignedCharArrayUnion<long>));
-  EXPECT_EQ(sizeof(long long), sizeof(AlignedCharArrayUnion<long long>));
+  EXPECT_EQ(sizeof(long long),
+            sizeof(AlignedCharArrayUnion<long long>));
   EXPECT_EQ(sizeof(float), sizeof(AlignedCharArrayUnion<float>));
   EXPECT_EQ(sizeof(double), sizeof(AlignedCharArrayUnion<double>));
-  EXPECT_EQ(sizeof(long double), sizeof(AlignedCharArrayUnion<long double>));
+  EXPECT_EQ(sizeof(long double),
+            sizeof(AlignedCharArrayUnion<long double>));
   EXPECT_EQ(sizeof(void *), sizeof(AlignedCharArrayUnion<void *>));
   EXPECT_EQ(sizeof(int *), sizeof(AlignedCharArrayUnion<int *>));
   EXPECT_EQ(sizeof(double (*)(double)),

@@ -14,9 +14,9 @@
 
 using namespace llvm;
 
-cl::opt<bool>
-    EnablePGSO("pgso", cl::Hidden, cl::init(true),
-               cl::desc("Enable the profile guided size optimizations. "));
+cl::opt<bool> EnablePGSO(
+    "pgso", cl::Hidden, cl::init(true),
+    cl::desc("Enable the profile guided size optimizations. "));
 
 cl::opt<bool> PGSOLargeWorkingSetSizeOnly(
     "pgso-lwss-only", cl::Hidden, cl::init(true),
@@ -43,9 +43,9 @@ cl::opt<bool> PGSOColdCodeOnlyForPartialSamplePGO(
     cl::desc("Apply the profile guided size optimizations only "
              "to cold code under partial-profile sample PGO."));
 
-cl::opt<bool>
-    ForcePGSO("force-pgso", cl::Hidden, cl::init(false),
-              cl::desc("Force the (profiled-guided) size optimizations. "));
+cl::opt<bool> ForcePGSO(
+    "force-pgso", cl::Hidden, cl::init(false),
+    cl::desc("Force the (profiled-guided) size optimizations. "));
 
 cl::opt<int> PgsoCutoffInstrProf(
     "pgso-cutoff-instr-prof", cl::Hidden, cl::init(950000), cl::ZeroOrMore,
@@ -76,11 +76,13 @@ struct BasicBlockBFIAdapter {
                                                      BlockFrequencyInfo &BFI) {
     return PSI->isFunctionColdInCallGraphNthPercentile(CutOff, F, BFI);
   }
-  static bool isColdBlock(const BasicBlock *BB, ProfileSummaryInfo *PSI,
+  static bool isColdBlock(const BasicBlock *BB,
+                          ProfileSummaryInfo *PSI,
                           BlockFrequencyInfo *BFI) {
     return PSI->isColdBlock(BB, BFI);
   }
-  static bool isHotBlockNthPercentile(int CutOff, const BasicBlock *BB,
+  static bool isHotBlockNthPercentile(int CutOff,
+                                      const BasicBlock *BB,
                                       ProfileSummaryInfo *PSI,
                                       BlockFrequencyInfo *BFI) {
     return PSI->isHotBlockNthPercentile(CutOff, BB, BFI);

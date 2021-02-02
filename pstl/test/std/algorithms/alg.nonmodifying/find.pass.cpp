@@ -84,14 +84,12 @@ int
 main()
 {
     // Note that the "hit" and "miss" functions here avoid overflow issues.
-    test<Number>(
-        Weird(42, OddTag()), [](int32_t) { return Number(42, OddTag()); }, // hit
-        [](int32_t j) { return Number(j == 42 ? 0 : j, OddTag()); });      // miss
+    test<Number>(Weird(42, OddTag()), [](int32_t) { return Number(42, OddTag()); }, // hit
+                 [](int32_t j) { return Number(j == 42 ? 0 : j, OddTag()); });      // miss
 
     // Test with value that is equal to two different bit patterns (-0.0 and 0.0)
-    test<float32_t>(
-        -0.0, [](int32_t j) { return j & 1 ? 0.0 : -0.0; }, // hit
-        [](int32_t j) { return j == 0 ? ~j : j; });         // miss
+    test<float32_t>(-0.0, [](int32_t j) { return j & 1 ? 0.0 : -0.0; }, // hit
+                    [](int32_t j) { return j == 0 ? ~j : j; });         // miss
 
     std::cout << done() << std::endl;
     return 0;

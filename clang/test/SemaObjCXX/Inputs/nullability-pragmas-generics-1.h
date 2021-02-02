@@ -17,5 +17,5 @@ typedef NSGeneric<C *> *Generic_with_C;
 
 #pragma clang assume_nonnull end
 
-@interface NSGeneric <T : C *>(Blah) // expected-error{{type bound 'C *' for type parameter 'T' conflicts with previous bound 'B *'}}
+@interface NSGeneric<T : C *>(Blah) // expected-error{{type bound 'C *' for type parameter 'T' conflicts with previous bound 'B *'}}
 @end

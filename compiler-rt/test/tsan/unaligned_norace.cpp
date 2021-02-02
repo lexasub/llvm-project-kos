@@ -1,10 +1,10 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 #include <pthread.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-uint64_t objs[8 * 3 * 3 * 2][3];
+uint64_t objs[8*3*3*2][3];
 
 extern "C" {
 void __tsan_unaligned_read2(void *addr);
@@ -18,43 +18,26 @@ void __tsan_unaligned_write8(void *addr);
 static void access(char *p, int sz, int rw) {
   if (rw) {
     switch (sz) {
-    case 0:
-      __tsan_unaligned_write2(p);
-      break;
-    case 1:
-      __tsan_unaligned_write4(p);
-      break;
-    case 2:
-      __tsan_unaligned_write8(p);
-      break;
-    default:
-      exit(1);
+    case 0: __tsan_unaligned_write2(p); break;
+    case 1: __tsan_unaligned_write4(p); break;
+    case 2: __tsan_unaligned_write8(p); break;
+    default: exit(1);
     }
   } else {
     switch (sz) {
-    case 0:
-      __tsan_unaligned_read2(p);
-      break;
-    case 1:
-      __tsan_unaligned_read4(p);
-      break;
-    case 2:
-      __tsan_unaligned_read8(p);
-      break;
-    default:
-      exit(1);
+    case 0: __tsan_unaligned_read2(p); break;
+    case 1: __tsan_unaligned_read4(p); break;
+    case 2: __tsan_unaligned_read8(p); break;
+    default: exit(1);
     }
   }
 }
 
 static int accesssize(int sz) {
   switch (sz) {
-  case 0:
-    return 2;
-  case 1:
-    return 4;
-  case 2:
-    return 8;
+  case 0: return 2;
+  case 1: return 4;
+  case 2: return 8;
   }
   exit(1);
 }
@@ -65,7 +48,7 @@ void Test(bool main) {
     for (int sz1 = 0; sz1 < 3; sz1++) {
       for (int sz2 = 0; sz2 < 3; sz2++) {
         for (int rw = 0; rw < 2; rw++) {
-          char *p = (char *)obj + off;
+          char *p = (char*)obj + off;
           if (main) {
             // printf("thr=%d off=%d sz1=%d sz2=%d rw=%d p=%p\n",
             //        main, off, sz1, sz2, rw, p);

@@ -41,8 +41,9 @@ static bool UsesVectorABI(StringRef CPU, StringRef FS) {
   // overridden via "[+-]vector" feature string elements.
   bool VectorABI = true;
   bool SoftFloat = false;
-  if (CPU.empty() || CPU == "generic" || CPU == "z10" || CPU == "z196" ||
-      CPU == "zEC12" || CPU == "arch8" || CPU == "arch9" || CPU == "arch10")
+  if (CPU.empty() || CPU == "generic" ||
+      CPU == "z10" || CPU == "z196" || CPU == "zEC12" ||
+      CPU == "arch8" || CPU == "arch9" || CPU == "arch10")
     VectorABI = false;
 
   SmallVector<StringRef, 3> Features;
@@ -179,8 +180,8 @@ SystemZTargetMachine::getSubtargetImpl(const Function &F) const {
   // we need to know whether or not the soft float flag is set on the
   // function, so we can enable it as a subtarget feature.
   bool softFloat =
-      F.hasFnAttribute("use-soft-float") &&
-      F.getFnAttribute("use-soft-float").getValueAsString() == "true";
+    F.hasFnAttribute("use-soft-float") &&
+    F.getFnAttribute("use-soft-float").getValueAsString() == "true";
 
   if (softFloat)
     FS += FS.empty() ? "+soft-float" : ",+soft-float";
@@ -203,7 +204,7 @@ namespace {
 class SystemZPassConfig : public TargetPassConfig {
 public:
   SystemZPassConfig(SystemZTargetMachine &TM, PassManagerBase &PM)
-      : TargetPassConfig(TM, PM) {}
+    : TargetPassConfig(TM, PM) {}
 
   SystemZTargetMachine &getSystemZTargetMachine() const {
     return getTM<SystemZTargetMachine>();
@@ -211,7 +212,8 @@ public:
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
-    return new ScheduleDAGMI(C, std::make_unique<SystemZPostRASchedStrategy>(C),
+    return new ScheduleDAGMI(C,
+                             std::make_unique<SystemZPostRASchedStrategy>(C),
                              /*RemoveKillFlags=*/true);
   }
 
@@ -239,7 +241,7 @@ void SystemZPassConfig::addIRPasses() {
 bool SystemZPassConfig::addInstSelector() {
   addPass(createSystemZISelDag(getSystemZTargetMachine(), getOptLevel()));
 
-  if (getOptLevel() != CodeGenOpt::None)
+ if (getOptLevel() != CodeGenOpt::None)
     addPass(createSystemZLDCleanupPass(getSystemZTargetMachine()));
 
   return false;

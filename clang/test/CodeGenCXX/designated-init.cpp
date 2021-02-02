@@ -1,12 +1,8 @@
 // RUN: %clang_cc1 -std=c++98 -emit-llvm -o - %s -triple x86_64-linux-gnu | FileCheck %s
 // RUN: %clang_cc1 -std=c++11 -emit-llvm -o - %s -triple x86_64-linux-gnu | FileCheck %s
 
-struct A {
-  int x, y[3];
-};
-struct B {
-  A a;
-};
+struct A { int x, y[3]; };
+struct B { A a; };
 
 // CHECK: @b ={{.*}} global %{{[^ ]*}} { %{{[^ ]*}} { i32 1, [3 x i32] [i32 2, i32 5, i32 4] } }
 B b = {(A){1, 2, 3, 4}, .a.y[1] = 5};
@@ -24,7 +20,7 @@ struct D {
 };
 
 // CHECK: @d1 = {{.*}} { i32 1, [3 x %[[U:.*]]] [%[[U]] { i32 2 }, %[[U]] { i32 5 }, %[[U]] { i32 4 }] }
-D d1 = {(C){1, {{.n = 2}, {.f = 3}, {.n = 4}}}, .c.u[1].n = 5};
+D d1 = {(C){1, {{.n=2}, {.f=3}, {.n=4}}}, .c.u[1].n = 5};
 
 // CHECK: @d2 = {{.*}} { i32 1, { %[[U]], float, %[[U]] } { %[[U]] { i32 2 }, float 5.{{0*}}e+00, %[[U]] { i32 4 } } }
 D d2 = {(C){1, 2, 3, 4}, .c.u[1].f = 5};
@@ -60,10 +56,7 @@ struct WithLargeArray {
 WithLargeArray large = {(LargeArray){1, 2, 3}, .arr.arr[10] = 10};
 
 union OverwritePaddingWithBitfield {
-  struct Padding {
-    unsigned : 8;
-    char c;
-  } padding;
+  struct Padding { unsigned : 8; char c; } padding;
   char bitfield : 3;
 };
 struct WithOverwritePaddingWithBitfield {

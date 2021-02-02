@@ -25,34 +25,35 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::codecvt_utf16<wchar_t> C;
-    C c;
-    char n[4] = {0};
-    std::mbstate_t m;
-    char* np = nullptr;
-    std::codecvt_base::result r = c.unshift(m, n, n + 4, np);
-    assert(r == std::codecvt_base::noconv);
-  }
-  {
-    typedef std::codecvt_utf16<char16_t> C;
-    C c;
-    char n[4] = {0};
-    std::mbstate_t m;
-    char* np = nullptr;
-    std::codecvt_base::result r = c.unshift(m, n, n + 4, np);
-    assert(r == std::codecvt_base::noconv);
-  }
-  {
-    typedef std::codecvt_utf16<char32_t> C;
-    C c;
-    char n[4] = {0};
-    std::mbstate_t m;
-    char* np = nullptr;
-    std::codecvt_base::result r = c.unshift(m, n, n + 4, np);
-    assert(r == std::codecvt_base::noconv);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::codecvt_utf16<wchar_t> C;
+        C c;
+        char n[4] = {0};
+        std::mbstate_t m;
+        char* np = nullptr;
+        std::codecvt_base::result r = c.unshift(m, n, n+4, np);
+        assert(r == std::codecvt_base::noconv);
+    }
+    {
+        typedef std::codecvt_utf16<char16_t> C;
+        C c;
+        char n[4] = {0};
+        std::mbstate_t m;
+        char* np = nullptr;
+        std::codecvt_base::result r = c.unshift(m, n, n+4, np);
+        assert(r == std::codecvt_base::noconv);
+    }
+    {
+        typedef std::codecvt_utf16<char32_t> C;
+        C c;
+        char n[4] = {0};
+        std::mbstate_t m;
+        char* np = nullptr;
+        std::codecvt_base::result r = c.unshift(m, n, n+4, np);
+        assert(r == std::codecvt_base::noconv);
+    }
 
   return 0;
 }

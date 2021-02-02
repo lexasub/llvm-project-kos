@@ -52,8 +52,8 @@ AST_MATCHER_FUNCTION(ast_matchers::TypeMatcher, isPointerToConst) {
 AST_MATCHER_P(NamedDecl, matchesAnyListedName, std::vector<std::string>,
               NameList) {
   return llvm::any_of(NameList, [&Node](const std::string &Name) {
-    return llvm::Regex(Name).match(Node.getName());
-  });
+      return llvm::Regex(Name).match(Node.getName());
+    });
 }
 
 } // namespace matchers

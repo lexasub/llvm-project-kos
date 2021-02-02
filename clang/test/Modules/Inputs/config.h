@@ -1,5 +1,5 @@
 #ifdef WANT_FOO
-int *foo();
+int* foo();
 #endif
 
 #ifdef WANT_BAR

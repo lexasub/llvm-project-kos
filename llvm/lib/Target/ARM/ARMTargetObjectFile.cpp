@@ -29,10 +29,8 @@ using namespace dwarf;
 
 void ARMElfTargetObjectFile::Initialize(MCContext &Ctx,
                                         const TargetMachine &TM) {
-  const ARMBaseTargetMachine &ARM_TM =
-      static_cast<const ARMBaseTargetMachine &>(TM);
-  bool isAAPCS_ABI =
-      ARM_TM.TargetABI == ARMBaseTargetMachine::ARMABI::ARM_ABI_AAPCS;
+  const ARMBaseTargetMachine &ARM_TM = static_cast<const ARMBaseTargetMachine &>(TM);
+  bool isAAPCS_ABI = ARM_TM.TargetABI == ARMBaseTargetMachine::ARMABI::ARM_ABI_AAPCS;
   bool genExecuteOnly =
       ARM_TM.getMCSubtargetInfo()->hasFeature(ARM::FeatureExecuteOnly);
 
@@ -68,8 +66,8 @@ const MCExpr *ARMElfTargetObjectFile::getTTypeGlobalReference(
                                  MCSymbolRefExpr::VK_ARM_TARGET2, getContext());
 }
 
-const MCExpr *
-ARMElfTargetObjectFile::getDebugThreadLocalSymbol(const MCSymbol *Sym) const {
+const MCExpr *ARMElfTargetObjectFile::
+getDebugThreadLocalSymbol(const MCSymbol *Sym) const {
   return MCSymbolRefExpr::create(Sym, MCSymbolRefExpr::VK_ARM_TLSLDO,
                                  getContext());
 }

@@ -142,9 +142,13 @@ bool isDereferenceOperator(OverloadedOperatorKind OK) {
          OK == OO_Subscript;
 }
 
-bool isDereferenceOperator(UnaryOperatorKind OK) { return OK == UO_Deref; }
+bool isDereferenceOperator(UnaryOperatorKind OK) {
+  return OK == UO_Deref;
+}
 
-bool isDereferenceOperator(BinaryOperatorKind OK) { return OK == BO_PtrMemI; }
+bool isDereferenceOperator(BinaryOperatorKind OK) {
+  return OK == BO_PtrMemI;
+}
 
 bool isIncrementOperator(OverloadedOperatorKind OK) {
   return OK == OO_PlusPlus;
@@ -168,8 +172,8 @@ bool isRandomIncrOrDecrOperator(OverloadedOperatorKind OK) {
 }
 
 bool isRandomIncrOrDecrOperator(BinaryOperatorKind OK) {
-  return OK == BO_Add || OK == BO_AddAssign || OK == BO_Sub ||
-         OK == BO_SubAssign;
+  return OK == BO_Add || OK == BO_AddAssign ||
+         OK == BO_Sub || OK == BO_SubAssign;
 }
 
 const ContainerData *getContainerData(ProgramStateRef State,
@@ -204,7 +208,7 @@ ProgramStateRef setIteratorPosition(ProgramStateRef State, const SVal &Val,
 }
 
 ProgramStateRef createIteratorPosition(ProgramStateRef State, const SVal &Val,
-                                       const MemRegion *Cont, const Stmt *S,
+                                       const MemRegion *Cont, const Stmt* S,
                                        const LocationContext *LCtx,
                                        unsigned blockCount) {
   auto &StateMgr = State->getStateManager();
@@ -228,9 +232,9 @@ ProgramStateRef advancePosition(ProgramStateRef State, const SVal &Iter,
   auto &SVB = State->getStateManager().getSValBuilder();
   auto &BVF = State->getStateManager().getBasicVals();
 
-  assert((Op == OO_Plus || Op == OO_PlusEqual || Op == OO_Minus ||
-          Op == OO_MinusEqual) &&
-         "Advance operator must be one of +, -, += and -=.");
+  assert ((Op == OO_Plus || Op == OO_PlusEqual ||
+           Op == OO_Minus || Op == OO_MinusEqual) &&
+          "Advance operator must be one of +, -, += and -=.");
   auto BinOp = (Op == OO_Plus || Op == OO_PlusEqual) ? BO_Add : BO_Sub;
   const auto IntDistOp = Distance.getAs<nonloc::ConcreteInt>();
   if (!IntDistOp)
@@ -243,10 +247,11 @@ ProgramStateRef advancePosition(ProgramStateRef State, const SVal &Iter,
     IntDist = nonloc::ConcreteInt(BVF.getValue(-IntDist.getValue()));
     BinOp = (BinOp == BO_Add) ? BO_Sub : BO_Add;
   }
-  const auto NewPos = Pos->setTo(
-      SVB.evalBinOp(State, BinOp, nonloc::SymbolVal(Pos->getOffset()), IntDist,
-                    SymMgr.getType(Pos->getOffset()))
-          .getAsSymbol());
+  const auto NewPos =
+    Pos->setTo(SVB.evalBinOp(State, BinOp,
+                             nonloc::SymbolVal(Pos->getOffset()),
+                             IntDist, SymMgr.getType(Pos->getOffset()))
+               .getAsSymbol());
   return setIteratorPosition(State, Iter, NewPos);
 }
 
@@ -301,10 +306,10 @@ bool compare(ProgramStateRef State, NonLoc NL1, NonLoc NL2,
   auto &SVB = State->getStateManager().getSValBuilder();
 
   const auto comparison =
-      SVB.evalBinOp(State, Opc, NL1, NL2, SVB.getConditionType());
+    SVB.evalBinOp(State, Opc, NL1, NL2, SVB.getConditionType());
 
   assert(comparison.getAs<DefinedSVal>() &&
-         "Symbol comparison must be a `DefinedSVal`");
+    "Symbol comparison must be a `DefinedSVal`");
 
   return !State->assume(comparison.castAs<DefinedSVal>(), false);
 }

@@ -6,9 +6,9 @@
 namespace coro = std::experimental::coroutines_v1;
 
 namespace std {
-using exception_ptr = int;
-exception_ptr current_exception();
-} // namespace std
+  using exception_ptr = int;
+  exception_ptr current_exception();
+}
 
 struct coro_t {
   struct promise_type {
@@ -18,14 +18,12 @@ struct coro_t {
     }
     coro::suspend_never initial_suspend() { return {}; }
     coro::suspend_never final_suspend() noexcept { return {}; }
-    void return_void() {}
+    void return_void(){}
     void unhandled_exception() noexcept;
   };
 };
 
-struct Cleanup {
-  ~Cleanup();
-};
+struct Cleanup { ~Cleanup(); };
 void may_throw();
 
 coro_t f() {

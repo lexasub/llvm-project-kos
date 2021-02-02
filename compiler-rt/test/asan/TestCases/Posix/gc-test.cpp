@@ -7,14 +7,14 @@
 // REQUIRES: stable-runtime
 
 #include <assert.h>
+#include <stdio.h>
 #include <pthread.h>
 #include <sanitizer/asan_interface.h>
-#include <stdio.h>
 
 static const int kNumThreads = 2;
 static const int kLeftRedzoneSize = sizeof(void *) * 4;
 
-void *Thread(void *unused) {
+void *Thread(void *unused)  {
   void *fake_stack = __asan_get_current_fake_stack();
   char var[15];
   if (fake_stack) {
@@ -25,8 +25,8 @@ void *Thread(void *unused) {
     void *real_stack =
         __asan_addr_is_in_fake_stack(fake_stack, &var[0], &beg, &end);
     assert(real_stack);
-    assert((char *)beg <= (char *)&var[0]);
-    assert((char *)end > (char *)&var[0]);
+    assert((char*)beg <= (char*)&var[0]);
+    assert((char*)end > (char*)&var[0]);
     for (int i = -kLeftRedzoneSize; i < 15; i++) {
       void *beg1, *end1;
       char *ptr = &var[0] + i;

@@ -49,13 +49,11 @@ class MyClass
     {
         return MyClass(-x.my_field);
     }
-    friend MyClass
-    operator*(const MyClass& x, const MyClass& y)
+    friend MyClass operator*(const MyClass& x, const MyClass& y)
     {
         return MyClass(x.my_field * y.my_field);
     }
-    friend bool
-    operator==(const MyClass& x, const MyClass& y)
+    friend bool operator==(const MyClass& x, const MyClass& y)
     {
         return x.my_field == y.my_field;
     }
@@ -117,10 +115,9 @@ main()
 {
     test_by_type<int32_t>(42, std::plus<int32_t>(), std::multiplies<int32_t>(), std::negate<int32_t>(),
                           [](std::size_t) -> int32_t { return int32_t(rand() % 1000); });
-    test_by_type<int64_t>(
-        0, [](const int64_t& a, const int64_t& b) -> int64_t { return a | b; }, XOR(),
-        [](const int64_t& x) -> int64_t { return x * 2; },
-        [](std::size_t) -> int64_t { return int64_t(rand() % 1000); });
+    test_by_type<int64_t>(0, [](const int64_t& a, const int64_t& b) -> int64_t { return a | b; }, XOR(),
+                          [](const int64_t& x) -> int64_t { return x * 2; },
+                          [](std::size_t) -> int64_t { return int64_t(rand() % 1000); });
     test_by_type<float32_t>(
         1.0f, std::multiplies<float32_t>(), [](const float32_t& a, const float32_t& b) -> float32_t { return a + b; },
         [](const float32_t& x) -> float32_t { return x + 2; }, [](std::size_t) -> float32_t { return rand() % 1000; });

@@ -20,7 +20,7 @@
 
 namespace __sanitizer {
 
-template <typename T>
+template<typename T>
 class Vector {
  public:
   Vector() : begin_(), end_(), last_() {}
@@ -38,7 +38,9 @@ class Vector {
     last_ = 0;
   }
 
-  uptr Size() const { return end_ - begin_; }
+  uptr Size() const {
+    return end_ - begin_;
+  }
 
   T &operator[](uptr i) {
     DCHECK_LT(i, end_ - begin_);
@@ -57,7 +59,7 @@ class Vector {
     return p;
   }
 
-  T *PushBack(const T &v) {
+  T *PushBack(const T& v) {
     EnsureSize(Size() + 1);
     T *p = &end_[-1];
     internal_memcpy(p, &v, sizeof(*p));
@@ -104,7 +106,7 @@ class Vector {
       cap = 16;
     if (cap < size)
       cap = size;
-    T *p = (T *)InternalAlloc(cap * sizeof(T));
+    T *p = (T*)InternalAlloc(cap * sizeof(T));
     if (cap0) {
       internal_memcpy(p, begin_, cap0 * sizeof(T));
       InternalFree(begin_);
@@ -114,8 +116,8 @@ class Vector {
     last_ = begin_ + cap;
   }
 
-  Vector(const Vector &);
-  void operator=(const Vector &);
+  Vector(const Vector&);
+  void operator=(const Vector&);
 };
 }  // namespace __sanitizer
 

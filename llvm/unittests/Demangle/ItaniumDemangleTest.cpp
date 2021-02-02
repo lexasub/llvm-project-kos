@@ -23,7 +23,7 @@ class TestAllocator {
 public:
   void reset() { Alloc.Reset(); }
 
-  template <typename T, typename... Args> T *makeNode(Args &&...args) {
+  template <typename T, typename... Args> T *makeNode(Args &&... args) {
     return new (Alloc.Allocate(sizeof(T), alignof(T)))
         T(std::forward<Args>(args)...);
   }

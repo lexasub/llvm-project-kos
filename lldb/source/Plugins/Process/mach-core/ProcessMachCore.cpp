@@ -27,8 +27,8 @@
 #include "lldb/Utility/Log.h"
 #include "lldb/Utility/State.h"
 
-#include "Plugins/Process/Utility/StopInfoMachException.h"
 #include "ProcessMachCore.h"
+#include "Plugins/Process/Utility/StopInfoMachException.h"
 #include "ThreadMachCore.h"
 
 // Needed for the plug-in names for the dynamic loaders.
@@ -277,6 +277,7 @@ Status ProcessMachCore::DoLoadCore() {
     m_core_range_infos.Sort();
   }
 
+
   bool found_main_binary_definitively = false;
 
   addr_t objfile_binary_addr;
@@ -284,13 +285,14 @@ Status ProcessMachCore::DoLoadCore() {
   ObjectFile::BinaryType type;
   if (core_objfile->GetCorefileMainBinaryInfo(objfile_binary_addr,
                                               objfile_binary_uuid, type)) {
-    if (objfile_binary_addr != LLDB_INVALID_ADDRESS) {
-      m_mach_kernel_addr = objfile_binary_addr;
-      found_main_binary_definitively = true;
-      LLDB_LOGF(log,
-                "ProcessMachCore::DoLoadCore: using kernel address 0x%" PRIx64
-                " from LC_NOTE 'main bin spec' load command.",
-                m_mach_kernel_addr);
+    if (objfile_binary_addr != LLDB_INVALID_ADDRESS)
+    {
+        m_mach_kernel_addr = objfile_binary_addr;
+        found_main_binary_definitively = true;
+        LLDB_LOGF(log,
+                  "ProcessMachCore::DoLoadCore: using kernel address 0x%" PRIx64
+                  " from LC_NOTE 'main bin spec' load command.",
+                  m_mach_kernel_addr);
     }
   }
 
@@ -518,8 +520,7 @@ Status ProcessMachCore::DoLoadCore() {
   // match the core file which is always single arch.
   ArchSpec arch(m_core_module_sp->GetArchitecture());
   if (arch.GetCore() == ArchSpec::eCore_x86_32_i486) {
-    arch =
-        Platform::GetAugmentedArchSpec(GetTarget().GetPlatform().get(), "i386");
+    arch = Platform::GetAugmentedArchSpec(GetTarget().GetPlatform().get(), "i386");
   }
   if (arch.IsValid())
     GetTarget().SetArchitecture(arch);

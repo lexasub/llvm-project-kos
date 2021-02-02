@@ -11,7 +11,7 @@
 using namespace llvm;
 
 namespace llvm {
-void initializeTestPassPass(PassRegistry &);
+  void initializeTestPassPass(PassRegistry &);
 }
 
 namespace {
@@ -62,9 +62,13 @@ static void targetOptionsTest(bool EnableIPRA) {
 
 } // End of anonymous namespace.
 
-TEST(TargetOptionsTest, IPRASetToOff) { targetOptionsTest(false); }
+TEST(TargetOptionsTest, IPRASetToOff) {
+  targetOptionsTest(false);
+}
 
-TEST(TargetOptionsTest, IPRASetToOn) { targetOptionsTest(true); }
+TEST(TargetOptionsTest, IPRASetToOn) {
+  targetOptionsTest(true);
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

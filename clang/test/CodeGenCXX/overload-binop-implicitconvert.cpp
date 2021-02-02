@@ -1,17 +1,22 @@
 // RUN: %clang_cc1 %s -emit-llvm-only
-class T {};
+class T
+{};
 
 void print(const char *t);
 
-T &operator<<(T &t, const char *c) {
+T& operator<< (T& t,const char* c)
+{
   print(c);
   return t;
 }
 
-int main() {
+
+int main()
+{
   T t;
   print("foo");
-  t << "foo";
-
+  t<<"foo";
+  
   return 0;
 }
+  

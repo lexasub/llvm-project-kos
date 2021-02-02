@@ -27,7 +27,7 @@ protected:
 
   StringType theString;
 
-  void assertEmpty(StringType &v) {
+  void assertEmpty(StringType & v) {
     // Size tests
     EXPECT_EQ(0u, v.size());
     EXPECT_TRUE(v.empty());
@@ -204,37 +204,36 @@ TEST_F(SmallStringTest, Realloc) {
 
 TEST_F(SmallStringTest, Comparisons) {
   EXPECT_EQ(-1, SmallString<10>("aab").compare("aad"));
-  EXPECT_EQ(0, SmallString<10>("aab").compare("aab"));
-  EXPECT_EQ(1, SmallString<10>("aab").compare("aaa"));
+  EXPECT_EQ( 0, SmallString<10>("aab").compare("aab"));
+  EXPECT_EQ( 1, SmallString<10>("aab").compare("aaa"));
   EXPECT_EQ(-1, SmallString<10>("aab").compare("aabb"));
-  EXPECT_EQ(1, SmallString<10>("aab").compare("aa"));
-  EXPECT_EQ(1, SmallString<10>("\xFF").compare("\1"));
+  EXPECT_EQ( 1, SmallString<10>("aab").compare("aa"));
+  EXPECT_EQ( 1, SmallString<10>("\xFF").compare("\1"));
 
   EXPECT_EQ(-1, SmallString<10>("AaB").compare_lower("aAd"));
-  EXPECT_EQ(0, SmallString<10>("AaB").compare_lower("aab"));
-  EXPECT_EQ(1, SmallString<10>("AaB").compare_lower("AAA"));
+  EXPECT_EQ( 0, SmallString<10>("AaB").compare_lower("aab"));
+  EXPECT_EQ( 1, SmallString<10>("AaB").compare_lower("AAA"));
   EXPECT_EQ(-1, SmallString<10>("AaB").compare_lower("aaBb"));
-  EXPECT_EQ(1, SmallString<10>("AaB").compare_lower("aA"));
-  EXPECT_EQ(1, SmallString<10>("\xFF").compare_lower("\1"));
+  EXPECT_EQ( 1, SmallString<10>("AaB").compare_lower("aA"));
+  EXPECT_EQ( 1, SmallString<10>("\xFF").compare_lower("\1"));
 
   EXPECT_EQ(-1, SmallString<10>("aab").compare_numeric("aad"));
-  EXPECT_EQ(0, SmallString<10>("aab").compare_numeric("aab"));
-  EXPECT_EQ(1, SmallString<10>("aab").compare_numeric("aaa"));
+  EXPECT_EQ( 0, SmallString<10>("aab").compare_numeric("aab"));
+  EXPECT_EQ( 1, SmallString<10>("aab").compare_numeric("aaa"));
   EXPECT_EQ(-1, SmallString<10>("aab").compare_numeric("aabb"));
-  EXPECT_EQ(1, SmallString<10>("aab").compare_numeric("aa"));
+  EXPECT_EQ( 1, SmallString<10>("aab").compare_numeric("aa"));
   EXPECT_EQ(-1, SmallString<10>("1").compare_numeric("10"));
-  EXPECT_EQ(0, SmallString<10>("10").compare_numeric("10"));
-  EXPECT_EQ(0, SmallString<10>("10a").compare_numeric("10a"));
-  EXPECT_EQ(1, SmallString<10>("2").compare_numeric("1"));
-  EXPECT_EQ(0,
-            SmallString<10>("llvm_v1i64_ty").compare_numeric("llvm_v1i64_ty"));
-  EXPECT_EQ(1, SmallString<10>("\xFF").compare_numeric("\1"));
-  EXPECT_EQ(1, SmallString<10>("V16").compare_numeric("V1_q0"));
+  EXPECT_EQ( 0, SmallString<10>("10").compare_numeric("10"));
+  EXPECT_EQ( 0, SmallString<10>("10a").compare_numeric("10a"));
+  EXPECT_EQ( 1, SmallString<10>("2").compare_numeric("1"));
+  EXPECT_EQ( 0, SmallString<10>("llvm_v1i64_ty").compare_numeric("llvm_v1i64_ty"));
+  EXPECT_EQ( 1, SmallString<10>("\xFF").compare_numeric("\1"));
+  EXPECT_EQ( 1, SmallString<10>("V16").compare_numeric("V1_q0"));
   EXPECT_EQ(-1, SmallString<10>("V1_q0").compare_numeric("V16"));
   EXPECT_EQ(-1, SmallString<10>("V8_q0").compare_numeric("V16"));
-  EXPECT_EQ(1, SmallString<10>("V16").compare_numeric("V8_q0"));
+  EXPECT_EQ( 1, SmallString<10>("V16").compare_numeric("V8_q0"));
   EXPECT_EQ(-1, SmallString<10>("V1_q0").compare_numeric("V8_q0"));
-  EXPECT_EQ(1, SmallString<10>("V8_q0").compare_numeric("V1_q0"));
+  EXPECT_EQ( 1, SmallString<10>("V8_q0").compare_numeric("V1_q0"));
 }
 
 // Check gtest prints SmallString as a string instead of a container of chars.

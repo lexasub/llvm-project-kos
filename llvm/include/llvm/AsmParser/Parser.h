@@ -184,6 +184,6 @@ Type *parseType(StringRef Asm, SMDiagnostic &Err, const Module &M,
 Type *parseTypeAtBeginning(StringRef Asm, unsigned &Read, SMDiagnostic &Err,
                            const Module &M, const SlotMapping *Slots = nullptr);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

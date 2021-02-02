@@ -152,7 +152,7 @@ static CallInst::BundleOpInfo *getBundleFromUse(const Use *U) {
 RetainedKnowledge
 llvm::getKnowledgeFromUse(const Use *U,
                           ArrayRef<Attribute::AttrKind> AttrKinds) {
-  CallInst::BundleOpInfo *Bundle = getBundleFromUse(U);
+  CallInst::BundleOpInfo* Bundle = getBundleFromUse(U);
   if (!Bundle)
     return RetainedKnowledge::none();
   RetainedKnowledge RK =
@@ -192,7 +192,7 @@ llvm::getKnowledgeForValue(const Value *V,
     return RetainedKnowledge::none();
   }
   for (const auto &U : V->uses()) {
-    CallInst::BundleOpInfo *Bundle = getBundleFromUse(&U);
+    CallInst::BundleOpInfo* Bundle = getBundleFromUse(&U);
     if (!Bundle)
       continue;
     if (RetainedKnowledge RK =

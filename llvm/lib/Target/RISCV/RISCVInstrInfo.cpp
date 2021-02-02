@@ -159,8 +159,8 @@ void RISCVInstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
 
   unsigned Opcode;
   if (RISCV::GPRRegClass.hasSubClassEq(RC))
-    Opcode =
-        TRI->getRegSizeInBits(RISCV::GPRRegClass) == 32 ? RISCV::SW : RISCV::SD;
+    Opcode = TRI->getRegSizeInBits(RISCV::GPRRegClass) == 32 ?
+             RISCV::SW : RISCV::SD;
   else if (RISCV::FPR16RegClass.hasSubClassEq(RC))
     Opcode = RISCV::FSH;
   else if (RISCV::FPR32RegClass.hasSubClassEq(RC))
@@ -194,8 +194,8 @@ void RISCVInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
 
   unsigned Opcode;
   if (RISCV::GPRRegClass.hasSubClassEq(RC))
-    Opcode =
-        TRI->getRegSizeInBits(RISCV::GPRRegClass) == 32 ? RISCV::LW : RISCV::LD;
+    Opcode = TRI->getRegSizeInBits(RISCV::GPRRegClass) == 32 ?
+             RISCV::LW : RISCV::LD;
   else if (RISCV::FPR16RegClass.hasSubClassEq(RC))
     Opcode = RISCV::FLH;
   else if (RISCV::FPR32RegClass.hasSubClassEq(RC))
@@ -206,9 +206,9 @@ void RISCVInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
     llvm_unreachable("Can't load this register from stack slot");
 
   BuildMI(MBB, I, DL, get(Opcode), DstReg)
-      .addFrameIndex(FI)
-      .addImm(0)
-      .addMemOperand(MMO);
+    .addFrameIndex(FI)
+    .addImm(0)
+    .addMemOperand(MMO);
 }
 
 void RISCVInstrInfo::movImm(MachineBasicBlock &MBB,
@@ -757,7 +757,9 @@ bool RISCVInstrInfo::isMBBSafeToOutlineFrom(MachineBasicBlock &MBB,
 }
 
 // Enum values indicating how an outlined call should be constructed.
-enum MachineOutlinerConstructionID { MachineOutlinerDefault };
+enum MachineOutlinerConstructionID {
+  MachineOutlinerDefault
+};
 
 outliner::OutlinedFunction RISCVInstrInfo::getOutliningCandidateInfo(
     std::vector<outliner::Candidate> &RepeatedSequenceLocs) const {
@@ -792,9 +794,7 @@ outliner::OutlinedFunction RISCVInstrInfo::getOutliningCandidateInfo(
 
   // jr t0 = 4 bytes, 2 bytes if compressed instructions are enabled.
   unsigned FrameOverhead = 4;
-  if (RepeatedSequenceLocs[0]
-          .getMF()
-          ->getSubtarget()
+  if (RepeatedSequenceLocs[0].getMF()->getSubtarget()
           .getFeatureBits()[RISCV::FeatureStdExtC])
     FrameOverhead = 2;
 
@@ -874,9 +874,9 @@ void RISCVInstrInfo::buildOutlinedFrame(
 
   // Add in a return instruction to the end of the outlined frame.
   MBB.insert(MBB.end(), BuildMI(MF, DebugLoc(), get(RISCV::JALR))
-                            .addReg(RISCV::X0, RegState::Define)
-                            .addReg(RISCV::X5)
-                            .addImm(0));
+      .addReg(RISCV::X0, RegState::Define)
+      .addReg(RISCV::X5)
+      .addImm(0));
 }
 
 MachineBasicBlock::iterator RISCVInstrInfo::insertOutlinedCall(

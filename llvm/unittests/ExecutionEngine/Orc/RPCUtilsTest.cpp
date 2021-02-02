@@ -27,18 +27,19 @@ public:
   static const char *getName() { return "RPCFoo"; }
 };
 
-template <> class SerializationTraits<QueueChannel, RPCFoo, RPCFoo> {
-public:
-  static Error serialize(QueueChannel &, const RPCFoo &) {
-    return Error::success();
-  }
+  template <>
+  class SerializationTraits<QueueChannel, RPCFoo, RPCFoo> {
+  public:
+    static Error serialize(QueueChannel&, const RPCFoo&) {
+      return Error::success();
+    }
 
-  static Error deserialize(QueueChannel &, RPCFoo &) {
-    return Error::success();
-  }
-};
+    static Error deserialize(QueueChannel&, RPCFoo&) {
+      return Error::success();
+    }
+  };
 
-} // namespace shared
+  } // namespace shared
 } // end namespace orc
 } // end namespace llvm
 
@@ -46,6 +47,7 @@ class RPCBar {};
 
 class DummyError : public ErrorInfo<DummyError> {
 public:
+
   static char ID;
 
   DummyError(uint32_t Val) : Val(Val) {}
@@ -57,7 +59,9 @@ public:
     return orcError(OrcErrorCode::RemoteAllocatorDoesNotExist);
   }
 
-  void log(raw_ostream &OS) const override { OS << "Dummy error " << Val; }
+  void log(raw_ostream &OS) const override {
+    OS << "Dummy error " << Val;
+  }
 
   uint32_t getValue() const { return Val; }
 
@@ -67,11 +71,12 @@ public:
 
 char DummyError::ID = 0;
 
-template <typename ChannelT> void registerDummyErrorSerialization() {
+template <typename ChannelT>
+void registerDummyErrorSerialization() {
   static bool AlreadyRegistered = false;
   if (!AlreadyRegistered) {
-    SerializationTraits<ChannelT, Error>::template registerErrorType<
-        DummyError>(
+    SerializationTraits<ChannelT, Error>::
+      template registerErrorType<DummyError>(
         "DummyError",
         [](ChannelT &C, const DummyError &DE) {
           return serializeSeq(C, DE.getValue());
@@ -148,14 +153,17 @@ class ExpectedFunc : public RPCFunction<ExpectedFunc, Expected<uint32_t>()> {
 public:
   static const char *getName() { return "ExpectedFunc"; }
 };
-} // namespace DummyRPCAPI
+}
 
 class DummyRPCEndpoint : public SingleThreadedRPCEndpoint<QueueChannel> {
 public:
-  DummyRPCEndpoint(QueueChannel &C) : SingleThreadedRPCEndpoint(C, true) {}
+  DummyRPCEndpoint(QueueChannel &C)
+      : SingleThreadedRPCEndpoint(C, true) {}
 };
 
-void freeVoidBool(bool B) {}
+
+void freeVoidBool(bool B) {
+}
 
 TEST(DummyRPC, TestFreeFunctionHandler) {
   auto Channels = createPairedQueueChannels();
@@ -169,21 +177,23 @@ TEST(DummyRPC, TestCallAsyncVoidBool) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::VoidBool>([](bool B) {
-      EXPECT_EQ(B, true) << "Server void(bool) received unexpected result";
-    });
+      Server.addHandler<DummyRPCAPI::VoidBool>(
+          [](bool B) {
+            EXPECT_EQ(B, true)
+              << "Server void(bool) received unexpected result";
+          });
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the VoidBool call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
-    }
+      {
+        // Poke the server to handle the VoidBool call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
+      }
   });
 
   {
@@ -192,8 +202,7 @@ TEST(DummyRPC, TestCallAsyncVoidBool) {
         [](Error Err) {
           EXPECT_FALSE(!!Err) << "Async void(bool) response handler failed";
           return Error::success();
-        },
-        true);
+        }, true);
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for void(bool)";
   }
 
@@ -223,33 +232,33 @@ TEST(DummyRPC, TestCallAsyncIntInt) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::IntInt>([](int X) -> int {
-      EXPECT_EQ(X, 21) << "Server int(int) receieved unexpected result";
-      return 2 * X;
+      Server.addHandler<DummyRPCAPI::IntInt>(
+          [](int X) -> int {
+            EXPECT_EQ(X, 21) << "Server int(int) receieved unexpected result";
+            return 2 * X;
+          });
+
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
+
+      {
+        // Poke the server to handle the int(int) call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to int(int)";
+      }
     });
-
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
-
-    {
-      // Poke the server to handle the int(int) call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to int(int)";
-    }
-  });
 
   {
     auto Err = Client.callAsync<DummyRPCAPI::IntInt>(
         [](Expected<int> Result) {
           EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
           EXPECT_EQ(*Result, 42)
-              << "Async int(int) response handler received incorrect result";
+            << "Async int(int) response handler received incorrect result";
           return Error::success();
-        },
-        21);
+        }, 21);
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for int(int)";
   }
 
@@ -268,24 +277,25 @@ TEST(DummyRPC, TestAsyncVoidBoolHandler) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addAsyncHandler<DummyRPCAPI::VoidBool>(
-        [](std::function<Error(Error)> SendResult, bool B) {
-          EXPECT_EQ(B, true) << "Server void(bool) receieved unexpected result";
-          cantFail(SendResult(Error::success()));
-          return Error::success();
-        });
+      Server.addAsyncHandler<DummyRPCAPI::VoidBool>(
+          [](std::function<Error(Error)> SendResult,
+             bool B) {
+            EXPECT_EQ(B, true) << "Server void(bool) receieved unexpected result";
+            cantFail(SendResult(Error::success()));
+            return Error::success();
+          });
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the VoidBool call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
-    }
+      {
+        // Poke the server to handle the VoidBool call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
+      }
   });
 
   {
@@ -293,8 +303,7 @@ TEST(DummyRPC, TestAsyncVoidBoolHandler) {
         [](Error Result) {
           EXPECT_FALSE(!!Result) << "Async void(bool) response handler failed";
           return Error::success();
-        },
-        true);
+        }, true);
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for void(bool)";
   }
 
@@ -313,23 +322,24 @@ TEST(DummyRPC, TestAsyncIntIntHandler) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addAsyncHandler<DummyRPCAPI::IntInt>(
-        [](std::function<Error(Expected<int32_t>)> SendResult, int32_t X) {
-          EXPECT_EQ(X, 21) << "Server int(int) receieved unexpected result";
-          return SendResult(2 * X);
-        });
+      Server.addAsyncHandler<DummyRPCAPI::IntInt>(
+          [](std::function<Error(Expected<int32_t>)> SendResult,
+             int32_t X) {
+            EXPECT_EQ(X, 21) << "Server int(int) receieved unexpected result";
+            return SendResult(2 * X);
+          });
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the VoidBool call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
-    }
+      {
+        // Poke the server to handle the VoidBool call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
+      }
   });
 
   {
@@ -337,10 +347,9 @@ TEST(DummyRPC, TestAsyncIntIntHandler) {
         [](Expected<int> Result) {
           EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
           EXPECT_EQ(*Result, 42)
-              << "Async int(int) response handler received incorrect result";
+            << "Async int(int) response handler received incorrect result";
           return Error::success();
-        },
-        21);
+        }, 21);
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for int(int)";
   }
 
@@ -361,27 +370,27 @@ TEST(DummyRPC, TestAsyncIntIntHandlerMethod) {
   class Dummy {
   public:
     Error handler(std::function<Error(Expected<int32_t>)> SendResult,
-                  int32_t X) {
+             int32_t X) {
       EXPECT_EQ(X, 21) << "Server int(int) receieved unexpected result";
       return SendResult(2 * X);
     }
   };
 
   std::thread ServerThread([&]() {
-    Dummy D;
-    Server.addAsyncHandler<DummyRPCAPI::IntInt>(D, &Dummy::handler);
+      Dummy D;
+      Server.addAsyncHandler<DummyRPCAPI::IntInt>(D, &Dummy::handler);
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the VoidBool call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
-    }
+      {
+        // Poke the server to handle the VoidBool call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to void(bool)";
+      }
   });
 
   {
@@ -389,10 +398,9 @@ TEST(DummyRPC, TestAsyncIntIntHandlerMethod) {
         [](Expected<int> Result) {
           EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
           EXPECT_EQ(*Result, 42)
-              << "Async int(int) response handler received incorrect result";
+            << "Async int(int) response handler received incorrect result";
           return Error::success();
-        },
-        21);
+        }, 21);
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for int(int)";
   }
 
@@ -411,16 +419,17 @@ TEST(DummyRPC, TestCallAsyncVoidString) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::VoidString>([](const std::string &S) {
-      EXPECT_EQ(S, "hello")
-          << "Server void(std::string) received unexpected result";
-    });
+      Server.addHandler<DummyRPCAPI::VoidString>(
+          [](const std::string &S) {
+            EXPECT_EQ(S, "hello")
+              << "Server void(std::string) received unexpected result";
+          });
 
-    // Poke the server to handle the negotiate call.
-    for (int I = 0; I < 4; ++I) {
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call";
-    }
+      // Poke the server to handle the negotiate call.
+      for (int I = 0; I < 4; ++I) {
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call";
+      }
   });
 
   {
@@ -522,19 +531,20 @@ TEST(DummyRPC, TestCustomType) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::CustomType>([](RPCFoo F) {});
+      Server.addHandler<DummyRPCAPI::CustomType>(
+          [](RPCFoo F) {});
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the CustomType call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to RPCFoo(RPCFoo)";
-    }
+      {
+        // Poke the server to handle the CustomType call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to RPCFoo(RPCFoo)";
+      }
   });
 
   {
@@ -542,10 +552,9 @@ TEST(DummyRPC, TestCustomType) {
     auto Err = Client.callAsync<DummyRPCAPI::CustomType>(
         [](Expected<RPCFoo> FOrErr) {
           EXPECT_TRUE(!!FOrErr)
-              << "Async RPCFoo(RPCFoo) response handler failed";
+            << "Async RPCFoo(RPCFoo) response handler failed";
           return Error::success();
-        },
-        RPCFoo());
+        }, RPCFoo());
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for RPCFoo(RPCFoo)";
   }
 
@@ -553,7 +562,7 @@ TEST(DummyRPC, TestCustomType) {
     // Poke the client to process the result of the RPCFoo() call.
     auto Err = Client.handleOne();
     EXPECT_FALSE(!!Err)
-        << "Client failed to handle response from RPCFoo(RPCFoo)";
+      << "Client failed to handle response from RPCFoo(RPCFoo)";
   }
 
   ServerThread.join();
@@ -565,19 +574,20 @@ TEST(DummyRPC, TestWithAltCustomType) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::CustomType>([](RPCBar F) {});
+      Server.addHandler<DummyRPCAPI::CustomType>(
+          [](RPCBar F) {});
 
-    {
-      // Poke the server to handle the negotiate call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
-    }
+      {
+        // Poke the server to handle the negotiate call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to negotiate";
+      }
 
-    {
-      // Poke the server to handle the CustomType call.
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to RPCFoo(RPCFoo)";
-    }
+      {
+        // Poke the server to handle the CustomType call.
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to RPCFoo(RPCFoo)";
+      }
   });
 
   {
@@ -585,10 +595,9 @@ TEST(DummyRPC, TestWithAltCustomType) {
     auto Err = Client.callAsync<DummyRPCAPI::CustomType>(
         [](Expected<RPCBar> FOrErr) {
           EXPECT_TRUE(!!FOrErr)
-              << "Async RPCFoo(RPCFoo) response handler failed";
+            << "Async RPCFoo(RPCFoo) response handler failed";
           return Error::success();
-        },
-        RPCBar());
+        }, RPCBar());
     EXPECT_FALSE(!!Err) << "Client.callAsync failed for RPCFoo(RPCFoo)";
   }
 
@@ -596,7 +605,7 @@ TEST(DummyRPC, TestWithAltCustomType) {
     // Poke the client to process the result of the RPCFoo() call.
     auto Err = Client.handleOne();
     EXPECT_FALSE(!!Err)
-        << "Client failed to handle response from RPCFoo(RPCFoo)";
+      << "Client failed to handle response from RPCFoo(RPCFoo)";
   }
 
   ServerThread.join();
@@ -610,18 +619,21 @@ TEST(DummyRPC, ReturnErrorSuccess) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::ErrorFunc>(
-        []() { return Error::success(); });
+      Server.addHandler<DummyRPCAPI::ErrorFunc>(
+        []() {
+          return Error::success();
+        });
 
-    // Handle the negotiate plus one call.
-    for (unsigned I = 0; I != 2; ++I)
-      cantFail(Server.handleOne());
-  });
+      // Handle the negotiate plus one call.
+      for (unsigned I = 0; I != 2; ++I)
+        cantFail(Server.handleOne());
+    });
 
-  cantFail(Client.callAsync<DummyRPCAPI::ErrorFunc>([&](Error Err) {
-    EXPECT_FALSE(!!Err) << "Expected success value";
-    return Error::success();
-  }));
+  cantFail(Client.callAsync<DummyRPCAPI::ErrorFunc>(
+             [&](Error Err) {
+               EXPECT_FALSE(!!Err) << "Expected success value";
+               return Error::success();
+             }));
 
   cantFail(Client.handleOne());
 
@@ -636,20 +648,27 @@ TEST(DummyRPC, ReturnErrorFailure) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::ErrorFunc>(
-        []() { return make_error<DummyError>(42); });
+      Server.addHandler<DummyRPCAPI::ErrorFunc>(
+        []() {
+          return make_error<DummyError>(42);
+        });
 
-    // Handle the negotiate plus one call.
-    for (unsigned I = 0; I != 2; ++I)
-      cantFail(Server.handleOne());
-  });
-
-  cantFail(Client.callAsync<DummyRPCAPI::ErrorFunc>([&](Error Err) {
-    EXPECT_TRUE(Err.isA<DummyError>()) << "Incorrect error type";
-    return handleErrors(std::move(Err), [](const DummyError &DE) {
-      EXPECT_EQ(DE.getValue(), 42ULL) << "Incorrect DummyError serialization";
+      // Handle the negotiate plus one call.
+      for (unsigned I = 0; I != 2; ++I)
+        cantFail(Server.handleOne());
     });
-  }));
+
+  cantFail(Client.callAsync<DummyRPCAPI::ErrorFunc>(
+             [&](Error Err) {
+               EXPECT_TRUE(Err.isA<DummyError>())
+                 << "Incorrect error type";
+               return handleErrors(
+                        std::move(Err),
+                        [](const DummyError &DE) {
+                          EXPECT_EQ(DE.getValue(), 42ULL)
+                            << "Incorrect DummyError serialization";
+                        });
+             }));
 
   cantFail(Client.handleOne());
 
@@ -664,21 +683,24 @@ TEST(DummyRPC, ReturnExpectedSuccess) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::ExpectedFunc>(
-        []() -> uint32_t { return 42; });
+      Server.addHandler<DummyRPCAPI::ExpectedFunc>(
+        []() -> uint32_t {
+          return 42;
+        });
 
-    // Handle the negotiate plus one call.
-    for (unsigned I = 0; I != 2; ++I)
-      cantFail(Server.handleOne());
-  });
+      // Handle the negotiate plus one call.
+      for (unsigned I = 0; I != 2; ++I)
+        cantFail(Server.handleOne());
+    });
 
   cantFail(Client.callAsync<DummyRPCAPI::ExpectedFunc>(
-      [&](Expected<uint32_t> ValOrErr) {
-        EXPECT_TRUE(!!ValOrErr) << "Expected success value";
-        EXPECT_EQ(*ValOrErr, 42ULL)
-            << "Incorrect Expected<uint32_t> deserialization";
-        return Error::success();
-      }));
+               [&](Expected<uint32_t> ValOrErr) {
+                 EXPECT_TRUE(!!ValOrErr)
+                   << "Expected success value";
+                 EXPECT_EQ(*ValOrErr, 42ULL)
+                   << "Incorrect Expected<uint32_t> deserialization";
+                 return Error::success();
+               }));
 
   cantFail(Client.handleOne());
 
@@ -693,24 +715,30 @@ TEST(DummyRPC, ReturnExpectedFailure) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::ExpectedFunc>(
-        []() -> Expected<uint32_t> { return make_error<DummyError>(7); });
+      Server.addHandler<DummyRPCAPI::ExpectedFunc>(
+        []() -> Expected<uint32_t> {
+          return make_error<DummyError>(7);
+        });
 
-    // Handle the negotiate plus one call.
-    for (unsigned I = 0; I != 2; ++I)
-      cantFail(Server.handleOne());
-  });
+      // Handle the negotiate plus one call.
+      for (unsigned I = 0; I != 2; ++I)
+        cantFail(Server.handleOne());
+    });
 
   cantFail(Client.callAsync<DummyRPCAPI::ExpectedFunc>(
-      [&](Expected<uint32_t> ValOrErr) {
-        EXPECT_FALSE(!!ValOrErr) << "Expected failure value";
-        auto Err = ValOrErr.takeError();
-        EXPECT_TRUE(Err.isA<DummyError>()) << "Incorrect error type";
-        return handleErrors(std::move(Err), [](const DummyError &DE) {
-          EXPECT_EQ(DE.getValue(), 7ULL)
-              << "Incorrect DummyError serialization";
-        });
-      }));
+               [&](Expected<uint32_t> ValOrErr) {
+                 EXPECT_FALSE(!!ValOrErr)
+                   << "Expected failure value";
+                 auto Err = ValOrErr.takeError();
+                 EXPECT_TRUE(Err.isA<DummyError>())
+                   << "Incorrect error type";
+                 return handleErrors(
+                          std::move(Err),
+                          [](const DummyError &DE) {
+                            EXPECT_EQ(DE.getValue(), 7ULL)
+                              << "Incorrect DummyError serialization";
+                          });
+               }));
 
   cantFail(Client.handleOne());
 
@@ -723,14 +751,17 @@ TEST(DummyRPC, TestParallelCallGroup) {
   DummyRPCEndpoint Server(*Channels.second);
 
   std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::IntInt>([](int X) -> int { return 2 * X; });
+      Server.addHandler<DummyRPCAPI::IntInt>(
+          [](int X) -> int {
+            return 2 * X;
+          });
 
-    // Handle the negotiate, plus three calls.
-    for (unsigned I = 0; I != 4; ++I) {
-      auto Err = Server.handleOne();
-      EXPECT_FALSE(!!Err) << "Server failed to handle call to int(int)";
-    }
-  });
+      // Handle the negotiate, plus three calls.
+      for (unsigned I = 0; I != 4; ++I) {
+        auto Err = Server.handleOne();
+        EXPECT_FALSE(!!Err) << "Server failed to handle call to int(int)";
+      }
+    });
 
   {
     int A, B, C;
@@ -738,37 +769,34 @@ TEST(DummyRPC, TestParallelCallGroup) {
 
     {
       auto Err = PCG.call(
-          rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
-          [&A](Expected<int> Result) {
-            EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
-            A = *Result;
-            return Error::success();
-          },
-          1);
+        rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
+        [&A](Expected<int> Result) {
+          EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
+          A = *Result;
+          return Error::success();
+        }, 1);
       EXPECT_FALSE(!!Err) << "First parallel call failed for int(int)";
     }
 
     {
       auto Err = PCG.call(
-          rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
-          [&B](Expected<int> Result) {
-            EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
-            B = *Result;
-            return Error::success();
-          },
-          2);
+        rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
+        [&B](Expected<int> Result) {
+          EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
+          B = *Result;
+          return Error::success();
+        }, 2);
       EXPECT_FALSE(!!Err) << "Second parallel call failed for int(int)";
     }
 
     {
       auto Err = PCG.call(
-          rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
-          [&C](Expected<int> Result) {
-            EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
-            C = *Result;
-            return Error::success();
-          },
-          3);
+        rpcAsyncDispatch<DummyRPCAPI::IntInt>(Client),
+        [&C](Expected<int> Result) {
+          EXPECT_TRUE(!!Result) << "Async int(int) response handler failed";
+          C = *Result;
+          return Error::success();
+        }, 3);
       EXPECT_FALSE(!!Err) << "Third parallel call failed for int(int)";
     }
 
@@ -793,8 +821,7 @@ TEST(DummyRPC, TestAPICalls) {
   using DummyCalls1 = APICalls<DummyRPCAPI::VoidBool, DummyRPCAPI::IntInt>;
   using DummyCalls2 = APICalls<DummyRPCAPI::AllTheTypes>;
   using DummyCalls3 = APICalls<DummyCalls1, DummyRPCAPI::CustomType>;
-  using DummyCallsAll =
-      APICalls<DummyCalls1, DummyCalls2, DummyRPCAPI::CustomType>;
+  using DummyCallsAll = APICalls<DummyCalls1, DummyCalls2, DummyRPCAPI::CustomType>;
 
   static_assert(DummyCalls1::Contains<DummyRPCAPI::VoidBool>::value,
                 "Contains<Func> template should return true here");
@@ -805,16 +832,17 @@ TEST(DummyRPC, TestAPICalls) {
   DummyRPCEndpoint Client(*Channels.first);
   DummyRPCEndpoint Server(*Channels.second);
 
-  std::thread ServerThread([&]() {
-    Server.addHandler<DummyRPCAPI::VoidBool>([](bool b) {});
-    Server.addHandler<DummyRPCAPI::IntInt>([](int x) { return x; });
-    Server.addHandler<DummyRPCAPI::CustomType>([](RPCFoo F) {});
+  std::thread ServerThread(
+    [&]() {
+      Server.addHandler<DummyRPCAPI::VoidBool>([](bool b) { });
+      Server.addHandler<DummyRPCAPI::IntInt>([](int x) { return x; });
+      Server.addHandler<DummyRPCAPI::CustomType>([](RPCFoo F) {});
 
-    for (unsigned I = 0; I < 4; ++I) {
-      auto Err = Server.handleOne();
-      (void)!!Err;
-    }
-  });
+      for (unsigned I = 0; I < 4; ++I) {
+        auto Err = Server.handleOne();
+        (void)!!Err;
+      }
+    });
 
   {
     auto Err = DummyCalls1::negotiate(Client);
@@ -829,8 +857,8 @@ TEST(DummyRPC, TestAPICalls) {
   {
     auto Err = DummyCallsAll::negotiate(Client);
     EXPECT_TRUE(Err.isA<CouldNotNegotiate>())
-        << "Expected CouldNotNegotiate error for attempted negotiate of "
-           "unsupported function";
+      << "Expected CouldNotNegotiate error for attempted negotiate of "
+         "unsupported function";
     consumeError(std::move(Err));
   }
 
@@ -841,9 +869,11 @@ TEST(DummyRPC, TestRemoveHandler) {
   auto Channels = createPairedQueueChannels();
   DummyRPCEndpoint Server(*Channels.second);
 
-  Server.addHandler<DummyRPCAPI::VoidBool>([](bool B) {
-    EXPECT_EQ(B, true) << "Server void(bool) received unexpected result";
-  });
+  Server.addHandler<DummyRPCAPI::VoidBool>(
+    [](bool B) {
+      EXPECT_EQ(B, true)
+        << "Server void(bool) received unexpected result";
+    });
 
   Server.removeHandler<DummyRPCAPI::VoidBool>();
 }
@@ -852,9 +882,11 @@ TEST(DummyRPC, TestClearHandlers) {
   auto Channels = createPairedQueueChannels();
   DummyRPCEndpoint Server(*Channels.second);
 
-  Server.addHandler<DummyRPCAPI::VoidBool>([](bool B) {
-    EXPECT_EQ(B, true) << "Server void(bool) received unexpected result";
-  });
+  Server.addHandler<DummyRPCAPI::VoidBool>(
+    [](bool B) {
+      EXPECT_EQ(B, true)
+        << "Server void(bool) received unexpected result";
+    });
 
   Server.clearHandlers();
 }

@@ -97,7 +97,8 @@ class MProtectHelper {
   bool MustCleanup;
 
 public:
-  explicit MProtectHelper(void *PageAlignedAddr, std::size_t MProtectLen,
+  explicit MProtectHelper(void *PageAlignedAddr,
+                          std::size_t MProtectLen,
                           std::size_t PageSize) XRAY_NEVER_INSTRUMENT
       : PageAlignedAddr(PageAlignedAddr),
         MProtectLen(MProtectLen),
@@ -203,12 +204,13 @@ findFunctionSleds(int32_t FuncId,
 
 XRayPatchingStatus patchFunction(int32_t FuncId,
                                  bool Enable) XRAY_NEVER_INSTRUMENT {
-  if (!atomic_load(&XRayInitialized, memory_order_acquire))
+  if (!atomic_load(&XRayInitialized,
+                                memory_order_acquire))
     return XRayPatchingStatus::NOT_INITIALIZED; // Not initialized.
 
   uint8_t NotPatching = false;
-  if (!atomic_compare_exchange_strong(&XRayPatching, &NotPatching, true,
-                                      memory_order_acq_rel))
+  if (!atomic_compare_exchange_strong(
+          &XRayPatching, &NotPatching, true, memory_order_acq_rel))
     return XRayPatchingStatus::ONGOING; // Already patching.
 
   // Next, we look for the function index.
@@ -238,7 +240,8 @@ XRayPatchingStatus patchFunction(int32_t FuncId,
   while (f != e)
     SucceedOnce |= patchSled(*f++, Enable, FuncId);
 
-  atomic_store(&XRayPatching, false, memory_order_release);
+  atomic_store(&XRayPatching, false,
+                            memory_order_release);
 
   if (!SucceedOnce) {
     Report("Failed patching any sled for function '%d'.", FuncId);
@@ -252,19 +255,22 @@ XRayPatchingStatus patchFunction(int32_t FuncId,
 // implementation. |Enable| defines whether we're enabling or disabling the
 // runtime XRay instrumentation.
 XRayPatchingStatus controlPatching(bool Enable) XRAY_NEVER_INSTRUMENT {
-  if (!atomic_load(&XRayInitialized, memory_order_acquire))
+  if (!atomic_load(&XRayInitialized,
+                                memory_order_acquire))
     return XRayPatchingStatus::NOT_INITIALIZED; // Not initialized.
 
   uint8_t NotPatching = false;
-  if (!atomic_compare_exchange_strong(&XRayPatching, &NotPatching, true,
-                                      memory_order_acq_rel))
+  if (!atomic_compare_exchange_strong(
+          &XRayPatching, &NotPatching, true, memory_order_acq_rel))
     return XRayPatchingStatus::ONGOING; // Already patching.
 
   uint8_t PatchingSuccess = false;
-  auto XRayPatchingStatusResetter = at_scope_exit([&PatchingSuccess] {
-    if (!PatchingSuccess)
-      atomic_store(&XRayPatching, false, memory_order_release);
-  });
+  auto XRayPatchingStatusResetter =
+      at_scope_exit([&PatchingSuccess] {
+        if (!PatchingSuccess)
+          atomic_store(&XRayPatching, false,
+                                    memory_order_release);
+      });
 
   XRaySledMap InstrMap;
   {
@@ -325,7 +331,8 @@ XRayPatchingStatus controlPatching(bool Enable) XRAY_NEVER_INSTRUMENT {
     }
     patchSled(Sled, Enable, FuncId);
   }
-  atomic_store(&XRayPatching, false, memory_order_release);
+  atomic_store(&XRayPatching, false,
+                            memory_order_release);
   PatchingSuccess = true;
   return XRayPatchingStatus::SUCCESS;
 }
@@ -393,10 +400,12 @@ using namespace __xray;
 
 int __xray_set_handler(void (*entry)(int32_t,
                                      XRayEntryType)) XRAY_NEVER_INSTRUMENT {
-  if (atomic_load(&XRayInitialized, memory_order_acquire)) {
+  if (atomic_load(&XRayInitialized,
+                               memory_order_acquire)) {
 
     atomic_store(&__xray::XRayPatchedFunction,
-                 reinterpret_cast<uintptr_t>(entry), memory_order_release);
+                              reinterpret_cast<uintptr_t>(entry),
+                              memory_order_release);
     return 1;
   }
   return 0;
@@ -404,19 +413,23 @@ int __xray_set_handler(void (*entry)(int32_t,
 
 int __xray_set_customevent_handler(void (*entry)(void *, size_t))
     XRAY_NEVER_INSTRUMENT {
-  if (atomic_load(&XRayInitialized, memory_order_acquire)) {
+  if (atomic_load(&XRayInitialized,
+                               memory_order_acquire)) {
     atomic_store(&__xray::XRayPatchedCustomEvent,
-                 reinterpret_cast<uintptr_t>(entry), memory_order_release);
+                              reinterpret_cast<uintptr_t>(entry),
+                              memory_order_release);
     return 1;
   }
   return 0;
 }
 
-int __xray_set_typedevent_handler(void (*entry)(uint16_t, const void *,
-                                                size_t)) XRAY_NEVER_INSTRUMENT {
-  if (atomic_load(&XRayInitialized, memory_order_acquire)) {
+int __xray_set_typedevent_handler(void (*entry)(
+    uint16_t, const void *, size_t)) XRAY_NEVER_INSTRUMENT {
+  if (atomic_load(&XRayInitialized,
+                               memory_order_acquire)) {
     atomic_store(&__xray::XRayPatchedTypedEvent,
-                 reinterpret_cast<uintptr_t>(entry), memory_order_release);
+                              reinterpret_cast<uintptr_t>(entry),
+                              memory_order_release);
     return 1;
   }
   return 0;
@@ -434,12 +447,12 @@ int __xray_remove_typedevent_handler() XRAY_NEVER_INSTRUMENT {
   return __xray_set_typedevent_handler(nullptr);
 }
 
-uint16_t
-__xray_register_event_type(const char *const event_type) XRAY_NEVER_INSTRUMENT {
+uint16_t __xray_register_event_type(
+    const char *const event_type) XRAY_NEVER_INSTRUMENT {
   TypeDescriptorMapType::Handle h(&TypeDescriptorAddressMap, (uptr)event_type);
   if (h.created()) {
-    h->type_id =
-        atomic_fetch_add(&TypeEventDescriptorCounter, 1, memory_order_acq_rel);
+    h->type_id = atomic_fetch_add(
+        &TypeEventDescriptorCounter, 1, memory_order_acq_rel);
     h->description_string_length = strnlen(event_type, 1024);
   }
   return h->type_id;
@@ -463,14 +476,15 @@ __xray_unpatch_function(int32_t FuncId) XRAY_NEVER_INSTRUMENT {
 }
 
 int __xray_set_handler_arg1(void (*entry)(int32_t, XRayEntryType, uint64_t)) {
-  if (!atomic_load(&XRayInitialized, memory_order_acquire))
+  if (!atomic_load(&XRayInitialized,
+                                memory_order_acquire))
     return 0;
 
   // A relaxed write might not be visible even if the current thread gets
   // scheduled on a different CPU/NUMA node.  We need to wait for everyone to
   // have this handler installed for consistency of collected data across CPUs.
   atomic_store(&XRayArgLogger, reinterpret_cast<uint64_t>(entry),
-               memory_order_release);
+                            memory_order_release);
   return 1;
 }
 

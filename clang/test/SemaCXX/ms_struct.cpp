@@ -8,7 +8,7 @@
 #endif
 
 struct A {
-  unsigned long a : 4;
+  unsigned long a:4;
   unsigned char b;
 };
 
@@ -18,13 +18,13 @@ struct B : public A {
 #elif defined(TEST_FOR_WARNING)
   // expected-warning@-4 {{ms_struct may not produce Microsoft-compatible layouts for classes with base classes or virtual functions}}
 #endif
-  unsigned long c : 16;
-  int d;
+  unsigned long c:16;
+	int d;
   B();
 };
 
 static_assert(__builtin_offsetof(B, d) == 12,
-              "We can't allocate the bitfield into the padding under ms_struct");
+  "We can't allocate the bitfield into the padding under ms_struct");
 
 // rdar://16178895
 struct C {

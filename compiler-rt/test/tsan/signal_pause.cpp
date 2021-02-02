@@ -3,8 +3,8 @@
 // Test that pause loop handles signals.
 
 #include "test.h"
-#include <errno.h>
 #include <signal.h>
+#include <errno.h>
 
 void handler(int signum) {
   write(2, "DONE\n", 5);
@@ -17,7 +17,7 @@ void *thread(void *arg) {
   return 0;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   struct sigaction act = {};
   act.sa_handler = &handler;
   if (sigaction(SIGUSR1, &act, 0)) {
@@ -26,9 +26,9 @@ int main(int argc, char **argv) {
   }
   pthread_t th;
   pthread_create(&th, 0, thread, 0);
-  sleep(1); // give it time to block in pause
+  sleep(1);  // give it time to block in pause
   pthread_kill(th, SIGUSR1);
-  sleep(10); // signal handler must exit the process while we are here
+  sleep(10);  // signal handler must exit the process while we are here
   return 0;
 }
 

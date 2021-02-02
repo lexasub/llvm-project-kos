@@ -84,3 +84,4 @@ void Foo5::Inner::Inner1::Inner2::bar2() {}
 //CHECK: define {{.*}}bar2@Inner@Foo5{{.*}} section "foo_outer"
 //CHECK: define {{.*}}bar1@Inner2@Inner1@Inner@Foo5{{.*}} section "inner1_seg"
 //CHECK: define {{.*}}bar2@Inner2@Inner1@Inner@Foo5{{.*}} section "inner1_seg"
+

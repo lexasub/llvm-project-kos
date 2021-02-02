@@ -79,7 +79,7 @@ void StrLenOOBTestTemplate(char *str, size_t length, OOBKind oob_kind) {
 TEST(AddressSanitizer, StrLenOOBTest) {
   // Check heap-allocated string
   size_t length = Ident(10);
-  char *heap_string = Ident((char *)malloc(length + 1));
+  char *heap_string = Ident((char*)malloc(length + 1));
   char stack_string[10 + 1];
   break_optimization(&stack_string);
   for (size_t i = 0; i < length; i++) {
@@ -102,7 +102,7 @@ TEST(AddressSanitizer, WcsLenTest) {
   size_t hello_len = 13;
   size_t hello_size = (hello_len + 1) * sizeof(wchar_t);
   EXPECT_EQ(hello_len, wcslen(Ident(L"Hello, World!")));
-  wchar_t *heap_string = Ident((wchar_t *)malloc(hello_size));
+  wchar_t *heap_string = Ident((wchar_t*)malloc(hello_size));
   memcpy(heap_string, L"Hello, World!", hello_size);
   EXPECT_EQ(hello_len, Ident(wcslen(heap_string)));
   EXPECT_DEATH(Ident(wcslen(heap_string + 14)), RightOOBReadMessage(0));
@@ -182,13 +182,13 @@ TEST(AddressSanitizer, MAYBE_StrNDupOOBTest) {
   EXPECT_DEATH(Ident(strndup(str + size - 1, 2)), RightOOBReadMessage(0));
   free(str);
 }
-#endif  // SANITIZER_TEST_HAS_STRNDUP
+#endif // SANITIZER_TEST_HAS_STRNDUP
 
 TEST(AddressSanitizer, StrCpyOOBTest) {
   size_t to_size = Ident(30);
   size_t from_size = Ident(6);  // less than to_size
-  char *to = Ident((char *)malloc(to_size));
-  char *from = Ident((char *)malloc(from_size));
+  char *to = Ident((char*)malloc(to_size));
+  char *from = Ident((char*)malloc(from_size));
   // Normal strcpy calls.
   strcpy(from, "hello");
   strcpy(to, from);
@@ -210,9 +210,9 @@ TEST(AddressSanitizer, StrCpyOOBTest) {
 TEST(AddressSanitizer, StrNCpyOOBTest) {
   size_t to_size = Ident(20);
   size_t from_size = Ident(6);  // less than to_size
-  char *to = Ident((char *)malloc(to_size));
+  char *to = Ident((char*)malloc(to_size));
   // From is a zero-terminated string "hello\0" of length 6
-  char *from = Ident((char *)malloc(from_size));
+  char *from = Ident((char*)malloc(from_size));
   strcpy(from, "hello");
   // copy 0 bytes
   strncpy(to, from, 0);
@@ -223,20 +223,26 @@ TEST(AddressSanitizer, StrNCpyOOBTest) {
   strncpy(to, from + from_size - 1, to_size);
   strncpy(to + to_size - 1, from, 1);
   // One of {to, from} points to not allocated memory
-  EXPECT_DEATH(Ident(strncpy(to, from - 1, from_size)), LeftOOBReadMessage(1));
-  EXPECT_DEATH(Ident(strncpy(to - 1, from, from_size)), LeftOOBWriteMessage(1));
-  EXPECT_DEATH(Ident(strncpy(to, from + from_size, 1)), RightOOBReadMessage(0));
-  EXPECT_DEATH(Ident(strncpy(to + to_size, from, 1)), RightOOBWriteMessage(0));
+  EXPECT_DEATH(Ident(strncpy(to, from - 1, from_size)),
+               LeftOOBReadMessage(1));
+  EXPECT_DEATH(Ident(strncpy(to - 1, from, from_size)),
+               LeftOOBWriteMessage(1));
+  EXPECT_DEATH(Ident(strncpy(to, from + from_size, 1)),
+               RightOOBReadMessage(0));
+  EXPECT_DEATH(Ident(strncpy(to + to_size, from, 1)),
+               RightOOBWriteMessage(0));
   // Length of "to" is too small
   EXPECT_DEATH(Ident(strncpy(to + to_size - from_size + 1, from, from_size)),
                RightOOBWriteMessage(0));
-  EXPECT_DEATH(Ident(strncpy(to + 1, from, to_size)), RightOOBWriteMessage(0));
+  EXPECT_DEATH(Ident(strncpy(to + 1, from, to_size)),
+               RightOOBWriteMessage(0));
   // Overwrite terminator in from
   from[from_size - 1] = '!';
   // normal strncpy call
   strncpy(to, from, from_size);
   // Length of "from" is too small
-  EXPECT_DEATH(Ident(strncpy(to, from, to_size)), RightOOBReadMessage(0));
+  EXPECT_DEATH(Ident(strncpy(to, from, to_size)),
+               RightOOBReadMessage(0));
   free(to);
   free(from);
 }
@@ -245,10 +251,10 @@ TEST(AddressSanitizer, StrNCpyOOBTest) {
 // function pointer typedefs and overload RunStrChrTest implementation.
 // We can't use macro for RunStrChrTest body here, as this macro would
 // confuse EXPECT_DEATH gtest macro.
-typedef char *(*PointerToStrChr1)(const char *, int);
-typedef char *(*PointerToStrChr2)(char *, int);
+typedef char*(*PointerToStrChr1)(const char*, int);
+typedef char*(*PointerToStrChr2)(char*, int);
 
-template <typename StrChrFn>
+template<typename StrChrFn>
 static void RunStrChrTestImpl(StrChrFn *StrChr) {
   size_t size = Ident(100);
   char *str = MallocAndMemsetString(size);
@@ -333,7 +339,7 @@ TEST(AddressSanitizer, StrCmpAndFriendsLogicTest) {
   EXPECT_LT(0, memcmp("zza", "zyx", 3));
 }
 
-typedef int (*PointerToStrCmp)(const char *, const char *);
+typedef int(*PointerToStrCmp)(const char*, const char*);
 void RunStrCmpTest(PointerToStrCmp StrCmp) {
   size_t size = Ident(100);
   int fill = 'o';
@@ -358,13 +364,17 @@ void RunStrCmpTest(PointerToStrCmp StrCmp) {
   free(s2);
 }
 
-TEST(AddressSanitizer, StrCmpOOBTest) { RunStrCmpTest(&strcmp); }
+TEST(AddressSanitizer, StrCmpOOBTest) {
+  RunStrCmpTest(&strcmp);
+}
 
 #if !defined(_WIN32)  // no str[n]casecmp on Windows.
-TEST(AddressSanitizer, StrCaseCmpOOBTest) { RunStrCmpTest(&strcasecmp); }
+TEST(AddressSanitizer, StrCaseCmpOOBTest) {
+  RunStrCmpTest(&strcasecmp);
+}
 #endif
 
-typedef int (*PointerToStrNCmp)(const char *, const char *, size_t);
+typedef int(*PointerToStrNCmp)(const char*, const char*, size_t);
 void RunStrNCmpTest(PointerToStrNCmp StrNCmp) {
   size_t size = Ident(100);
   char *s1 = MallocAndMemsetString(size);
@@ -391,10 +401,14 @@ void RunStrNCmpTest(PointerToStrNCmp StrNCmp) {
   free(s2);
 }
 
-TEST(AddressSanitizer, StrNCmpOOBTest) { RunStrNCmpTest(&strncmp); }
+TEST(AddressSanitizer, StrNCmpOOBTest) {
+  RunStrNCmpTest(&strncmp);
+}
 
 #if !defined(_WIN32)  // no str[n]casecmp on Windows.
-TEST(AddressSanitizer, StrNCaseCmpOOBTest) { RunStrNCmpTest(&strncasecmp); }
+TEST(AddressSanitizer, StrNCaseCmpOOBTest) {
+  RunStrNCmpTest(&strncasecmp);
+}
 #endif
 
 TEST(AddressSanitizer, StrCatOOBTest) {
@@ -472,7 +486,7 @@ static std::string OverlapErrorMessage(const std::string &func) {
 
 TEST(AddressSanitizer, StrArgsOverlapTest) {
   size_t size = Ident(100);
-  char *str = Ident((char *)malloc(size));
+  char *str = Ident((char*)malloc(size));
 
 // Do not check memcpy() on OS X 10.7 and later, where it actually aliases
 // memmove().
@@ -537,7 +551,7 @@ TEST(AddressSanitizer, StrArgsOverlapTest) {
   free(str);
 }
 
-typedef void (*PointerToCallAtoi)(const char *);
+typedef void(*PointerToCallAtoi)(const char*);
 
 void RunAtoiOOBTest(PointerToCallAtoi Atoi) {
   char *array = MallocAndMemsetString(10, '1');
@@ -559,9 +573,15 @@ void RunAtoiOOBTest(PointerToCallAtoi Atoi) {
 }
 
 #if !defined(_WIN32)  // FIXME: Fix and enable on Windows.
-void CallAtoi(const char *nptr) { Ident(atoi(nptr)); }
-void CallAtol(const char *nptr) { Ident(atol(nptr)); }
-void CallAtoll(const char *nptr) { Ident(atoll(nptr)); }
+void CallAtoi(const char *nptr) {
+  Ident(atoi(nptr));
+}
+void CallAtol(const char *nptr) {
+  Ident(atol(nptr));
+}
+void CallAtoll(const char *nptr) {
+  Ident(atoll(nptr));
+}
 TEST(AddressSanitizer, AtoiAndFriendsOOBTest) {
   RunAtoiOOBTest(&CallAtoi);
   RunAtoiOOBTest(&CallAtol);
@@ -569,7 +589,7 @@ TEST(AddressSanitizer, AtoiAndFriendsOOBTest) {
 }
 #endif
 
-typedef void (*PointerToCallStrtol)(const char *, char **, int);
+typedef void(*PointerToCallStrtol)(const char*, char**, int);
 
 void RunStrtolOOBTest(PointerToCallStrtol Strtol) {
   char *array = MallocAndMemsetString(3);
@@ -603,6 +623,10 @@ void CallStrtol(const char *nptr, char **endptr, int base) {
 void CallStrtoll(const char *nptr, char **endptr, int base) {
   Ident(strtoll(nptr, endptr, base));
 }
-TEST(AddressSanitizer, StrtollOOBTest) { RunStrtolOOBTest(&CallStrtoll); }
-TEST(AddressSanitizer, StrtolOOBTest) { RunStrtolOOBTest(&CallStrtol); }
+TEST(AddressSanitizer, StrtollOOBTest) {
+  RunStrtolOOBTest(&CallStrtoll);
+}
+TEST(AddressSanitizer, StrtolOOBTest) {
+  RunStrtolOOBTest(&CallStrtol);
+}
 #endif

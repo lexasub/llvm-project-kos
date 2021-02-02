@@ -31,7 +31,9 @@ void Thumb1InstrInfo::getNoop(MCInst &NopInst) const {
   NopInst.addOperand(MCOperand::createReg(0));
 }
 
-unsigned Thumb1InstrInfo::getUnindexedOpcode(unsigned Opc) const { return 0; }
+unsigned Thumb1InstrInfo::getUnindexedOpcode(unsigned Opc) const {
+  return 0;
+}
 
 void Thumb1InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
                                   MachineBasicBlock::iterator I,
@@ -44,8 +46,8 @@ void Thumb1InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
   assert(ARM::GPRRegClass.contains(DestReg, SrcReg) &&
          "Thumb1 can only copy GPR registers");
 
-  if (st.hasV6Ops() || ARM::hGPRRegClass.contains(SrcReg) ||
-      !ARM::tGPRRegClass.contains(DestReg))
+  if (st.hasV6Ops() || ARM::hGPRRegClass.contains(SrcReg)
+      || !ARM::tGPRRegClass.contains(DestReg))
     BuildMI(MBB, I, DL, get(ARM::tMOVr), DestReg)
         .addReg(SrcReg, getKillRegState(KillSrc))
         .add(predOps(ARMCC::AL));
@@ -54,8 +56,8 @@ void Thumb1InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
     // with hi as either r10 or r11.
 
     const TargetRegisterInfo *RegInfo = st.getRegisterInfo();
-    if (MBB.computeRegisterLiveness(RegInfo, ARM::CPSR, I) ==
-        MachineBasicBlock::LQR_Dead) {
+    if (MBB.computeRegisterLiveness(RegInfo, ARM::CPSR, I)
+        == MachineBasicBlock::LQR_Dead) {
       BuildMI(MBB, I, DL, get(ARM::tMOVSr), DestReg)
           .addReg(SrcReg, getKillRegState(KillSrc))
           ->addRegisterDead(ARM::CPSR, RegInfo);
@@ -72,11 +74,11 @@ void Thumb1InstrInfo::copyPhysReg(MachineBasicBlock &MBB,
   }
 }
 
-void Thumb1InstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
-                                          MachineBasicBlock::iterator I,
-                                          Register SrcReg, bool isKill, int FI,
-                                          const TargetRegisterClass *RC,
-                                          const TargetRegisterInfo *TRI) const {
+void Thumb1InstrInfo::
+storeRegToStackSlot(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
+                    Register SrcReg, bool isKill, int FI,
+                    const TargetRegisterClass *RC,
+                    const TargetRegisterInfo *TRI) const {
   assert((RC == &ARM::tGPRRegClass ||
           (Register::isPhysicalRegister(SrcReg) && isARMLowRegister(SrcReg))) &&
          "Unknown regclass!");
@@ -84,8 +86,7 @@ void Thumb1InstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
   if (RC == &ARM::tGPRRegClass ||
       (Register::isPhysicalRegister(SrcReg) && isARMLowRegister(SrcReg))) {
     DebugLoc DL;
-    if (I != MBB.end())
-      DL = I->getDebugLoc();
+    if (I != MBB.end()) DL = I->getDebugLoc();
 
     MachineFunction &MF = *MBB.getParent();
     MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -101,10 +102,11 @@ void Thumb1InstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
   }
 }
 
-void Thumb1InstrInfo::loadRegFromStackSlot(
-    MachineBasicBlock &MBB, MachineBasicBlock::iterator I, Register DestReg,
-    int FI, const TargetRegisterClass *RC,
-    const TargetRegisterInfo *TRI) const {
+void Thumb1InstrInfo::
+loadRegFromStackSlot(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
+                     Register DestReg, int FI,
+                     const TargetRegisterClass *RC,
+                     const TargetRegisterInfo *TRI) const {
   assert(
       (RC->hasSuperClassEq(&ARM::tGPRRegClass) ||
        (Register::isPhysicalRegister(DestReg) && isARMLowRegister(DestReg))) &&
@@ -113,8 +115,7 @@ void Thumb1InstrInfo::loadRegFromStackSlot(
   if (RC->hasSuperClassEq(&ARM::tGPRRegClass) ||
       (Register::isPhysicalRegister(DestReg) && isARMLowRegister(DestReg))) {
     DebugLoc DL;
-    if (I != MBB.end())
-      DL = I->getDebugLoc();
+    if (I != MBB.end()) DL = I->getDebugLoc();
 
     MachineFunction &MF = *MBB.getParent();
     MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -140,9 +141,9 @@ void Thumb1InstrInfo::expandLoadStackGuard(
 }
 
 bool Thumb1InstrInfo::canCopyGluedNodeDuringSchedule(SDNode *N) const {
-  // In Thumb1 the scheduler may need to schedule a cross-copy between GPRS and
-  // CPSR but this is not always possible there, so allow the Scheduler to clone
-  // tADCS and tSBCS even if they have glue.
+  // In Thumb1 the scheduler may need to schedule a cross-copy between GPRS and CPSR
+  // but this is not always possible there, so allow the Scheduler to clone tADCS and tSBCS
+  // even if they have glue.
   // FIXME. Actually implement the cross-copy where it is possible (post v6)
   // because these copies entail more spilling.
   unsigned Opcode = N->getMachineOpcode();

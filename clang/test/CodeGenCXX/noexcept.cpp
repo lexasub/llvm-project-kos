@@ -4,18 +4,18 @@
 //   Ensure that we call __cxa_begin_catch before calling
 //   std::terminate in a noexcept function.
 namespace test0 {
-void foo();
+  void foo();
 
-struct A {
-  A();
-  ~A();
-};
+  struct A {
+    A();
+    ~A();
+  };
 
-void test() noexcept {
-  A a;
-  foo();
+  void test() noexcept {
+    A a;
+    foo();
+  }
 }
-} // namespace test0
 // CHECK-LABEL:    define{{.*}} void @_ZN5test04testEv()
 // CHECK:      [[EXN:%.*]] = alloca i8*
 //   This goes to the terminate lpad.

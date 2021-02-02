@@ -5,11 +5,8 @@
 module A {}
 #pragma clang module contents
 #pragma clang module begin A
-template <int *> struct X {};
-auto get() {
-  static int n;
-  return X<&n>();
-}
+template<int*> struct X {};
+auto get() { static int n; return X<&n>(); }
 using A = decltype(get());
 #pragma clang module end
 #pragma clang module endbuild
@@ -18,11 +15,8 @@ using A = decltype(get());
 module B {}
 #pragma clang module contents
 #pragma clang module begin B
-template <int *> struct X {};
-auto get() {
-  static int n;
-  return X<&n>();
-}
+template<int*> struct X {};
+auto get() { static int n; return X<&n>(); }
 using B = decltype(get());
 #pragma clang module end
 #pragma clang module endbuild

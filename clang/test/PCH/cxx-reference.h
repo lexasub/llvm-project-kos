@@ -1,7 +1,7 @@
 // Header for PCH test cxx-reference.cpp
 
-typedef char(&LR);
-typedef char(&&RR);
+typedef char (&LR);
+typedef char (&&RR);
 
 char c;
 

@@ -28,4 +28,4 @@ bool CodeGenOptions::isNoBuiltinFunc(const char *Name) const {
   return false;
 }
 
-} // end namespace clang
+}  // end namespace clang

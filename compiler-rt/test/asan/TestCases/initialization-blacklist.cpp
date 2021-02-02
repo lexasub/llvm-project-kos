@@ -15,14 +15,14 @@
 
 // Function is defined in another TU.
 int readBadGlobal();
-int x = readBadGlobal(); // init-order bug.
+int x = readBadGlobal();  // init-order bug.
 
 // Function is defined in another TU.
 int accessBadObject();
-int y = accessBadObject(); // init-order bug.
+int y = accessBadObject();  // init-order bug.
 
 int readBadSrcGlobal();
-int z = readBadSrcGlobal(); // init-order bug.
+int z = readBadSrcGlobal();  // init-order bug.
 
 int main(int argc, char **argv) {
   return argc + x + y + z - 1;

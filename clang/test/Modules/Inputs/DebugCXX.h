@@ -3,58 +3,58 @@
 #include "dummy.h"
 
 namespace DebugCXX {
-// Records.
-struct Struct {
-  int i;
-  static int static_member;
-};
-
-// Enums.
-enum Enum {
-  Enumerator
-};
-enum {
-  e1 = '1'
-};
-enum {
-  e2 = '2'
-};
-
-// Templates (instantiations).
-template <typename T> struct traits {};
-template <typename T,
-          typename Traits = traits<T>>
-class Template {
-  T member;
-};
-// Explicit template instantiation.
-extern template class Template<int>;
-
-extern template struct traits<float>;
-typedef class Template<float> FloatInstantiation;
-
-inline void fn() {
-  Template<long> invisible;
-}
-
-// Non-template inside a template.
-template <class> struct Outer {
-  Outer();
-  struct Inner {
-    Inner(Outer) {}
+  // Records.
+  struct Struct {
+    int i;
+    static int static_member;
   };
-};
-template <class T> Outer<T>::Outer() {
-  Inner a(*this);
-};
 
-// Partial template specialization.
-template <typename...> class A;
-template <typename T> class A<T> {};
-typedef A<void> B;
-// Anchored by a function parameter.
-void foo(B) {}
-} // namespace DebugCXX
+  // Enums.
+  enum Enum {
+    Enumerator
+  };
+  enum {
+    e1 = '1'
+  };
+  enum {
+    e2 = '2'
+  };
+
+  // Templates (instantiations).
+  template<typename T> struct traits {};
+  template<typename T,
+           typename Traits = traits<T>
+          > class Template {
+    T member;
+  };
+  // Explicit template instantiation.
+  extern template class Template<int>;
+
+  extern template struct traits<float>;
+  typedef class Template<float> FloatInstantiation;
+
+  inline void fn() {
+    Template<long> invisible;
+  }
+
+  // Non-template inside a template.
+  template <class> struct Outer {
+    Outer();
+    struct Inner {
+      Inner(Outer) {}
+    };
+  };
+  template <class T> Outer<T>::Outer() {
+    Inner a(*this);
+  };
+
+  // Partial template specialization.
+  template <typename...> class A;
+  template <typename T> class A<T> {};
+  typedef A<void> B;
+  // Anchored by a function parameter.
+  void foo(B) {}
+}
 
 // Virtual class with a forward declaration.
 struct Virtual;
@@ -64,29 +64,19 @@ struct Virtual {
 
 struct PureForwardDecl;
 
-typedef union {
-  int i;
-} TypedefUnion;
+typedef union { int i; } TypedefUnion;
 typedef enum { e0 = 0 } TypedefEnum;
-typedef struct {
-  int i;
-} TypedefStruct;
+typedef struct { int i; } TypedefStruct;
 
-union {
-  int i;
-} GlobalUnion;
-struct {
-  int i;
-} GlobalStruct;
+union { int i; } GlobalUnion;
+struct { int i; } GlobalStruct;
 enum { e5 = 5 } GlobalEnum;
 
 namespace {
-namespace {
-struct InAnonymousNamespace {
-  int i;
-};
-} // namespace
-} // namespace
+  namespace {
+    struct InAnonymousNamespace { int i; };
+  }
+}
 
 class Base;
 class A {

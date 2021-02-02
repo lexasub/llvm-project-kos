@@ -28,13 +28,13 @@ class raw_ostream;
 
 /// Symbolize and annotate disassembled instructions.
 ///
-/// For now this mimics the old symbolization logic (from both ARM and x86),
-/// that relied on user-provided (C API) callbacks to do the actual symbol
-/// lookup in the object file. This was moved to MCExternalSymbolizer. A better
-/// API would not rely on actually calling the two methods here from inside each
-/// disassembler, but would use the instr info to determine what operands are
-/// actually symbolizable, and in what way. I don't think this information
-/// exists right now.
+/// For now this mimics the old symbolization logic (from both ARM and x86), that
+/// relied on user-provided (C API) callbacks to do the actual symbol lookup in
+/// the object file. This was moved to MCExternalSymbolizer.
+/// A better API would not rely on actually calling the two methods here from
+/// inside each disassembler, but would use the instr info to determine what
+/// operands are actually symbolizable, and in what way. I don't think this
+/// information exists right now.
 class MCSymbolizer {
 protected:
   MCContext &Ctx;
@@ -43,7 +43,8 @@ protected:
 public:
   /// Construct an MCSymbolizer, taking ownership of \p RelInfo.
   MCSymbolizer(MCContext &Ctx, std::unique_ptr<MCRelocationInfo> RelInfo)
-      : Ctx(Ctx), RelInfo(std::move(RelInfo)) {}
+    : Ctx(Ctx), RelInfo(std::move(RelInfo)) {
+  }
 
   MCSymbolizer(const MCSymbolizer &) = delete;
   MCSymbolizer &operator=(const MCSymbolizer &) = delete;

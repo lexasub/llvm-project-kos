@@ -23,52 +23,49 @@
 using namespace llvm;
 
 namespace {
-/// ExternalFunctionsPassedConstants - This pass prints out call sites to
-/// external functions that are called with constant arguments.  This can be
-/// useful when looking for standard library functions we should constant fold
-/// or handle in alias analyses.
-struct ExternalFunctionsPassedConstants : public ModulePass {
-  static char ID; // Pass ID, replacement for typeid
-  ExternalFunctionsPassedConstants() : ModulePass(ID) {}
-  bool runOnModule(Module &M) override {
-    for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I) {
-      if (!I->isDeclaration())
-        continue;
+  /// ExternalFunctionsPassedConstants - This pass prints out call sites to
+  /// external functions that are called with constant arguments.  This can be
+  /// useful when looking for standard library functions we should constant fold
+  /// or handle in alias analyses.
+  struct ExternalFunctionsPassedConstants : public ModulePass {
+    static char ID; // Pass ID, replacement for typeid
+    ExternalFunctionsPassedConstants() : ModulePass(ID) {}
+    bool runOnModule(Module &M) override {
+      for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I) {
+        if (!I->isDeclaration()) continue;
 
-      bool PrintedFn = false;
-      for (User *U : I->users()) {
-        Instruction *UI = dyn_cast<Instruction>(U);
-        if (!UI)
-          continue;
+        bool PrintedFn = false;
+        for (User *U : I->users()) {
+          Instruction *UI = dyn_cast<Instruction>(U);
+          if (!UI) continue;
 
-        CallBase *CB = dyn_cast<CallBase>(UI);
-        if (!CB)
-          continue;
-
-        for (auto AI = CB->arg_begin(), E = CB->arg_end(); AI != E; ++AI) {
-          if (!isa<Constant>(*AI))
+          CallBase *CB = dyn_cast<CallBase>(UI);
+          if (!CB)
             continue;
 
-          if (!PrintedFn) {
-            errs() << "Function '" << I->getName() << "':\n";
-            PrintedFn = true;
+          for (auto AI = CB->arg_begin(), E = CB->arg_end(); AI != E; ++AI) {
+            if (!isa<Constant>(*AI)) continue;
+
+            if (!PrintedFn) {
+              errs() << "Function '" << I->getName() << "':\n";
+              PrintedFn = true;
+            }
+            errs() << *UI;
+            break;
           }
-          errs() << *UI;
-          break;
         }
       }
+
+      return false;
     }
 
-    return false;
-  }
-
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesAll();
-  }
-};
-} // namespace
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesAll();
+    }
+  };
+}
 
 char ExternalFunctionsPassedConstants::ID = 0;
 static RegisterPass<ExternalFunctionsPassedConstants>
-    P1("print-externalfnconstants",
-       "Print external fn callsites passed constants");
+  P1("print-externalfnconstants",
+     "Print external fn callsites passed constants");

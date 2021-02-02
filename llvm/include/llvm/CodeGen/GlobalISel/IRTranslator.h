@@ -137,8 +137,8 @@ private:
 
     // We store pointers to vectors here since references may be invalidated
     // while we hold them if we stored the vectors directly.
-    DenseMap<const Value *, VRegListT *> ValToVRegs;
-    DenseMap<const Type *, OffsetListT *> TypeToOffsets;
+    DenseMap<const Value *, VRegListT*> ValToVRegs;
+    DenseMap<const Type *, OffsetListT*> TypeToOffsets;
   };
 
   /// Mapping of the values of the current LLVM IR function to the related

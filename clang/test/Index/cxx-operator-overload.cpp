@@ -2,18 +2,15 @@
 // FIXME: re-enable this when we can serialize more C++ ASTs
 class Cls {
 public:
-  Cls operator+(const Cls &RHS);
+    Cls operator +(const Cls &RHS);
 };
 
 static void bar() {
-  Cls x1, x2, x3;
-  Cls x4 = x1 + x2 + x3;
+    Cls x1, x2, x3;
+    Cls x4 = x1 + x2 + x3;
 }
 
-Cls Cls::operator+(const Cls &RHS) {
-  while (1) {
-  }
-}
+Cls Cls::operator +(const Cls &RHS) { while (1) {} }
 
 // RUN: %clang_cc1 -emit-pch %s -o %t.ast
 

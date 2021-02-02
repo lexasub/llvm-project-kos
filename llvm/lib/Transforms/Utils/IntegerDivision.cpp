@@ -55,20 +55,21 @@ static Value *generateSignedRemainderCode(Value *Dividend, Value *Divisor,
   // ;   %xored        = xor i32 %urem, %dividend_sgn
   // ;   %srem         = sub i32 %xored, %dividend_sgn
   Value *DividendSign = Builder.CreateAShr(Dividend, Shift);
-  Value *DivisorSign = Builder.CreateAShr(Divisor, Shift);
-  Value *DvdXor = Builder.CreateXor(Dividend, DividendSign);
-  Value *DvsXor = Builder.CreateXor(Divisor, DivisorSign);
-  Value *UDividend = Builder.CreateSub(DvdXor, DividendSign);
-  Value *UDivisor = Builder.CreateSub(DvsXor, DivisorSign);
-  Value *URem = Builder.CreateURem(UDividend, UDivisor);
-  Value *Xored = Builder.CreateXor(URem, DividendSign);
-  Value *SRem = Builder.CreateSub(Xored, DividendSign);
+  Value *DivisorSign  = Builder.CreateAShr(Divisor, Shift);
+  Value *DvdXor       = Builder.CreateXor(Dividend, DividendSign);
+  Value *DvsXor       = Builder.CreateXor(Divisor, DivisorSign);
+  Value *UDividend    = Builder.CreateSub(DvdXor, DividendSign);
+  Value *UDivisor     = Builder.CreateSub(DvsXor, DivisorSign);
+  Value *URem         = Builder.CreateURem(UDividend, UDivisor);
+  Value *Xored        = Builder.CreateXor(URem, DividendSign);
+  Value *SRem         = Builder.CreateSub(Xored, DividendSign);
 
   if (Instruction *URemInst = dyn_cast<Instruction>(URem))
     Builder.SetInsertPoint(URemInst);
 
   return SRem;
 }
+
 
 /// Generate code to compute the remainder of two unsigned integers. Returns the
 /// remainder. Builder's insert point should be pointing where the caller wants
@@ -84,8 +85,8 @@ static Value *generatedUnsignedRemainderCode(Value *Dividend, Value *Divisor,
   // ;   %quotient  = udiv i32 %dividend, %divisor
   // ;   %product   = mul i32 %divisor, %quotient
   // ;   %remainder = sub i32 %dividend, %product
-  Value *Quotient = Builder.CreateUDiv(Dividend, Divisor);
-  Value *Product = Builder.CreateMul(Divisor, Quotient);
+  Value *Quotient  = Builder.CreateUDiv(Dividend, Divisor);
+  Value *Product   = Builder.CreateMul(Divisor, Quotient);
   Value *Remainder = Builder.CreateSub(Dividend, Product);
 
   if (Instruction *UDiv = dyn_cast<Instruction>(Quotient))
@@ -126,16 +127,16 @@ static Value *generateSignedDivisionCode(Value *Dividend, Value *Divisor,
   // ;   %q_mag  = udiv i32 %u_dvnd, %u_dvsr
   // ;   %tmp4   = xor i32 %q_mag, %q_sgn
   // ;   %q      = sub i32 %tmp4, %q_sgn
-  Value *Tmp = Builder.CreateAShr(Dividend, Shift);
-  Value *Tmp1 = Builder.CreateAShr(Divisor, Shift);
-  Value *Tmp2 = Builder.CreateXor(Tmp, Dividend);
+  Value *Tmp    = Builder.CreateAShr(Dividend, Shift);
+  Value *Tmp1   = Builder.CreateAShr(Divisor, Shift);
+  Value *Tmp2   = Builder.CreateXor(Tmp, Dividend);
   Value *U_Dvnd = Builder.CreateSub(Tmp2, Tmp);
-  Value *Tmp3 = Builder.CreateXor(Tmp1, Divisor);
+  Value *Tmp3   = Builder.CreateXor(Tmp1, Divisor);
   Value *U_Dvsr = Builder.CreateSub(Tmp3, Tmp1);
-  Value *Q_Sgn = Builder.CreateXor(Tmp1, Tmp);
-  Value *Q_Mag = Builder.CreateUDiv(U_Dvnd, U_Dvsr);
-  Value *Tmp4 = Builder.CreateXor(Q_Mag, Q_Sgn);
-  Value *Q = Builder.CreateSub(Tmp4, Q_Sgn);
+  Value *Q_Sgn  = Builder.CreateXor(Tmp1, Tmp);
+  Value *Q_Mag  = Builder.CreateUDiv(U_Dvnd, U_Dvsr);
+  Value *Tmp4   = Builder.CreateXor(Q_Mag, Q_Sgn);
+  Value *Q      = Builder.CreateSub(Tmp4, Q_Sgn);
 
   if (Instruction *UDiv = dyn_cast<Instruction>(Q_Mag))
     Builder.SetInsertPoint(UDiv);
@@ -162,24 +163,24 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   ConstantInt *MSB;
 
   if (BitWidth == 64) {
-    Zero = Builder.getInt64(0);
-    One = Builder.getInt64(1);
-    NegOne = ConstantInt::getSigned(DivTy, -1);
-    MSB = Builder.getInt64(63);
+    Zero      = Builder.getInt64(0);
+    One       = Builder.getInt64(1);
+    NegOne    = ConstantInt::getSigned(DivTy, -1);
+    MSB       = Builder.getInt64(63);
   } else {
     assert(BitWidth == 32 && "Unexpected bit width");
-    Zero = Builder.getInt32(0);
-    One = Builder.getInt32(1);
-    NegOne = ConstantInt::getSigned(DivTy, -1);
-    MSB = Builder.getInt32(31);
+    Zero      = Builder.getInt32(0);
+    One       = Builder.getInt32(1);
+    NegOne    = ConstantInt::getSigned(DivTy, -1);
+    MSB       = Builder.getInt32(31);
   }
 
   ConstantInt *True = Builder.getTrue();
 
   BasicBlock *IBB = Builder.GetInsertBlock();
   Function *F = IBB->getParent();
-  Function *CTLZ =
-      Intrinsic::getDeclaration(F->getParent(), Intrinsic::ctlz, DivTy);
+  Function *CTLZ = Intrinsic::getDeclaration(F->getParent(), Intrinsic::ctlz,
+                                             DivTy);
 
   // Our CFG is going to look like:
   // +---------------------+
@@ -215,16 +216,16 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   // +-------+
   BasicBlock *SpecialCases = Builder.GetInsertBlock();
   SpecialCases->setName(Twine(SpecialCases->getName(), "_udiv-special-cases"));
-  BasicBlock *End =
-      SpecialCases->splitBasicBlock(Builder.GetInsertPoint(), "udiv-end");
-  BasicBlock *LoopExit =
-      BasicBlock::Create(Builder.getContext(), "udiv-loop-exit", F, End);
-  BasicBlock *DoWhile =
-      BasicBlock::Create(Builder.getContext(), "udiv-do-while", F, End);
-  BasicBlock *Preheader =
-      BasicBlock::Create(Builder.getContext(), "udiv-preheader", F, End);
-  BasicBlock *BB1 =
-      BasicBlock::Create(Builder.getContext(), "udiv-bb1", F, End);
+  BasicBlock *End = SpecialCases->splitBasicBlock(Builder.GetInsertPoint(),
+                                                  "udiv-end");
+  BasicBlock *LoopExit  = BasicBlock::Create(Builder.getContext(),
+                                             "udiv-loop-exit", F, End);
+  BasicBlock *DoWhile   = BasicBlock::Create(Builder.getContext(),
+                                             "udiv-do-while", F, End);
+  BasicBlock *Preheader = BasicBlock::Create(Builder.getContext(),
+                                             "udiv-preheader", F, End);
+  BasicBlock *BB1       = BasicBlock::Create(Builder.getContext(),
+                                             "udiv-bb1", F, End);
 
   // We'll be overwriting the terminator to insert our extra blocks
   SpecialCases->getTerminator()->eraseFromParent();
@@ -247,17 +248,17 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   // ;   %earlyRet    = or i1 %ret0, %retDividend
   // ;   br i1 %earlyRet, label %end, label %bb1
   Builder.SetInsertPoint(SpecialCases);
-  Value *Ret0_1 = Builder.CreateICmpEQ(Divisor, Zero);
-  Value *Ret0_2 = Builder.CreateICmpEQ(Dividend, Zero);
-  Value *Ret0_3 = Builder.CreateOr(Ret0_1, Ret0_2);
+  Value *Ret0_1      = Builder.CreateICmpEQ(Divisor, Zero);
+  Value *Ret0_2      = Builder.CreateICmpEQ(Dividend, Zero);
+  Value *Ret0_3      = Builder.CreateOr(Ret0_1, Ret0_2);
   Value *Tmp0 = Builder.CreateCall(CTLZ, {Divisor, True});
   Value *Tmp1 = Builder.CreateCall(CTLZ, {Dividend, True});
-  Value *SR = Builder.CreateSub(Tmp0, Tmp1);
-  Value *Ret0_4 = Builder.CreateICmpUGT(SR, MSB);
-  Value *Ret0 = Builder.CreateOr(Ret0_3, Ret0_4);
+  Value *SR          = Builder.CreateSub(Tmp0, Tmp1);
+  Value *Ret0_4      = Builder.CreateICmpUGT(SR, MSB);
+  Value *Ret0        = Builder.CreateOr(Ret0_3, Ret0_4);
   Value *RetDividend = Builder.CreateICmpEQ(SR, MSB);
-  Value *RetVal = Builder.CreateSelect(Ret0, Zero, Dividend);
-  Value *EarlyRet = Builder.CreateOr(Ret0, RetDividend);
+  Value *RetVal      = Builder.CreateSelect(Ret0, Zero, Dividend);
+  Value *EarlyRet    = Builder.CreateOr(Ret0, RetDividend);
   Builder.CreateCondBr(EarlyRet, End, BB1);
 
   // ; bb1:                                             ; preds = %special-cases
@@ -267,9 +268,9 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   // ;   %skipLoop = icmp eq i32 %sr_1, 0
   // ;   br i1 %skipLoop, label %loop-exit, label %preheader
   Builder.SetInsertPoint(BB1);
-  Value *SR_1 = Builder.CreateAdd(SR, One);
-  Value *Tmp2 = Builder.CreateSub(MSB, SR);
-  Value *Q = Builder.CreateShl(Dividend, Tmp2);
+  Value *SR_1     = Builder.CreateAdd(SR, One);
+  Value *Tmp2     = Builder.CreateSub(MSB, SR);
+  Value *Q        = Builder.CreateShl(Dividend, Tmp2);
   Value *SkipLoop = Builder.CreateICmpEQ(SR_1, Zero);
   Builder.CreateCondBr(SkipLoop, LoopExit, Preheader);
 
@@ -302,20 +303,20 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   // ;   br i1 %tmp12, label %loop-exit, label %do-while
   Builder.SetInsertPoint(DoWhile);
   PHINode *Carry_1 = Builder.CreatePHI(DivTy, 2);
-  PHINode *SR_3 = Builder.CreatePHI(DivTy, 2);
-  PHINode *R_1 = Builder.CreatePHI(DivTy, 2);
-  PHINode *Q_2 = Builder.CreatePHI(DivTy, 2);
-  Value *Tmp5 = Builder.CreateShl(R_1, One);
-  Value *Tmp6 = Builder.CreateLShr(Q_2, MSB);
-  Value *Tmp7 = Builder.CreateOr(Tmp5, Tmp6);
-  Value *Tmp8 = Builder.CreateShl(Q_2, One);
-  Value *Q_1 = Builder.CreateOr(Carry_1, Tmp8);
-  Value *Tmp9 = Builder.CreateSub(Tmp4, Tmp7);
+  PHINode *SR_3    = Builder.CreatePHI(DivTy, 2);
+  PHINode *R_1     = Builder.CreatePHI(DivTy, 2);
+  PHINode *Q_2     = Builder.CreatePHI(DivTy, 2);
+  Value *Tmp5  = Builder.CreateShl(R_1, One);
+  Value *Tmp6  = Builder.CreateLShr(Q_2, MSB);
+  Value *Tmp7  = Builder.CreateOr(Tmp5, Tmp6);
+  Value *Tmp8  = Builder.CreateShl(Q_2, One);
+  Value *Q_1   = Builder.CreateOr(Carry_1, Tmp8);
+  Value *Tmp9  = Builder.CreateSub(Tmp4, Tmp7);
   Value *Tmp10 = Builder.CreateAShr(Tmp9, MSB);
   Value *Carry = Builder.CreateAnd(Tmp10, One);
   Value *Tmp11 = Builder.CreateAnd(Tmp10, Divisor);
-  Value *R = Builder.CreateSub(Tmp7, Tmp11);
-  Value *SR_2 = Builder.CreateAdd(SR_3, NegOne);
+  Value *R     = Builder.CreateSub(Tmp7, Tmp11);
+  Value *SR_2  = Builder.CreateAdd(SR_3, NegOne);
   Value *Tmp12 = Builder.CreateICmpEQ(SR_2, Zero);
   Builder.CreateCondBr(Tmp12, LoopExit, DoWhile);
 
@@ -327,9 +328,9 @@ static Value *generateUnsignedDivisionCode(Value *Dividend, Value *Divisor,
   // ;   br label %end
   Builder.SetInsertPoint(LoopExit);
   PHINode *Carry_2 = Builder.CreatePHI(DivTy, 2);
-  PHINode *Q_3 = Builder.CreatePHI(DivTy, 2);
+  PHINode *Q_3     = Builder.CreatePHI(DivTy, 2);
   Value *Tmp13 = Builder.CreateShl(Q_3, One);
-  Value *Q_4 = Builder.CreateOr(Carry_2, Tmp13);
+  Value *Q_4   = Builder.CreateOr(Carry_2, Tmp13);
   Builder.CreateBr(End);
 
   // ; end:                                 ; preds = %loop-exit, %special-cases
@@ -404,22 +405,23 @@ bool llvm::expandRemainder(BinaryOperator *Rem) {
     Rem = BO;
   }
 
-  Value *Remainder = generatedUnsignedRemainderCode(
-      Rem->getOperand(0), Rem->getOperand(1), Builder);
+  Value *Remainder = generatedUnsignedRemainderCode(Rem->getOperand(0),
+                                                    Rem->getOperand(1),
+                                                    Builder);
 
   Rem->replaceAllUsesWith(Remainder);
   Rem->dropAllReferences();
   Rem->eraseFromParent();
 
   // Expand the udiv
-  if (BinaryOperator *UDiv =
-          dyn_cast<BinaryOperator>(Builder.GetInsertPoint())) {
+  if (BinaryOperator *UDiv = dyn_cast<BinaryOperator>(Builder.GetInsertPoint())) {
     assert(UDiv->getOpcode() == Instruction::UDiv && "Non-udiv in expansion?");
     expandDivision(UDiv);
   }
 
   return true;
 }
+
 
 /// Generate code to divide two integers, replacing Div with the generated
 /// code. This currently generates code similarly to compiler-rt's
@@ -464,7 +466,8 @@ bool llvm::expandDivision(BinaryOperator *Div) {
 
   // Insert the unsigned division code
   Value *Quotient = generateUnsignedDivisionCode(Div->getOperand(0),
-                                                 Div->getOperand(1), Builder);
+                                                 Div->getOperand(1),
+                                                 Builder);
   Div->replaceAllUsesWith(Quotient);
   Div->dropAllReferences();
   Div->eraseFromParent();
@@ -482,7 +485,7 @@ bool llvm::expandDivision(BinaryOperator *Div) {
 bool llvm::expandRemainderUpTo32Bits(BinaryOperator *Rem) {
   assert((Rem->getOpcode() == Instruction::SRem ||
           Rem->getOpcode() == Instruction::URem) &&
-         "Trying to expand remainder from a non-remainder function");
+          "Trying to expand remainder from a non-remainder function");
 
   Type *RemTy = Rem->getType();
   assert(!RemTy->isVectorTy() && "Div over vectors not supported");
@@ -531,15 +534,14 @@ bool llvm::expandRemainderUpTo32Bits(BinaryOperator *Rem) {
 bool llvm::expandRemainderUpTo64Bits(BinaryOperator *Rem) {
   assert((Rem->getOpcode() == Instruction::SRem ||
           Rem->getOpcode() == Instruction::URem) &&
-         "Trying to expand remainder from a non-remainder function");
+          "Trying to expand remainder from a non-remainder function");
 
   Type *RemTy = Rem->getType();
   assert(!RemTy->isVectorTy() && "Div over vectors not supported");
 
   unsigned RemTyBitWidth = RemTy->getIntegerBitWidth();
 
-  assert(RemTyBitWidth <= 64 &&
-         "Div of bitwidth greater than 64 not supported");
+  assert(RemTyBitWidth <= 64 && "Div of bitwidth greater than 64 not supported");
 
   if (RemTyBitWidth == 64)
     return expandRemainder(Rem);
@@ -581,15 +583,14 @@ bool llvm::expandRemainderUpTo64Bits(BinaryOperator *Rem) {
 bool llvm::expandDivisionUpTo32Bits(BinaryOperator *Div) {
   assert((Div->getOpcode() == Instruction::SDiv ||
           Div->getOpcode() == Instruction::UDiv) &&
-         "Trying to expand division from a non-division function");
+          "Trying to expand division from a non-division function");
 
   Type *DivTy = Div->getType();
   assert(!DivTy->isVectorTy() && "Div over vectors not supported");
 
   unsigned DivTyBitWidth = DivTy->getIntegerBitWidth();
 
-  assert(DivTyBitWidth <= 32 &&
-         "Div of bitwidth greater than 32 not supported");
+  assert(DivTyBitWidth <= 32 && "Div of bitwidth greater than 32 not supported");
 
   if (DivTyBitWidth == 32)
     return expandDivision(Div);
@@ -630,7 +631,7 @@ bool llvm::expandDivisionUpTo32Bits(BinaryOperator *Div) {
 bool llvm::expandDivisionUpTo64Bits(BinaryOperator *Div) {
   assert((Div->getOpcode() == Instruction::SDiv ||
           Div->getOpcode() == Instruction::UDiv) &&
-         "Trying to expand division from a non-division function");
+          "Trying to expand division from a non-division function");
 
   Type *DivTy = Div->getType();
   assert(!DivTy->isVectorTy() && "Div over vectors not supported");

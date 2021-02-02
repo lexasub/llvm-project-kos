@@ -25,7 +25,9 @@ namespace lld {
 ///
 class ArchiveLibraryFile : public File {
 public:
-  static bool classof(const File *f) { return f->kind() == kindArchiveLibrary; }
+  static bool classof(const File *f) {
+    return f->kind() == kindArchiveLibrary;
+  }
 
   /// Check if any member of the archive contains an Atom with the
   /// specified name and return the File object for that member, or nullptr.

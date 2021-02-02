@@ -18,7 +18,7 @@ struct A {
 // CHECK: store atomic i32
 void A::v(int j) { i = j; }
 // Initialising atomic values should not be atomic
-// CHECK-NOT: store atomic
+// CHECK-NOT: store atomic 
 A::A(int j) : i(j) {}
 
 struct B {
@@ -29,7 +29,7 @@ struct B {
 _Atomic(B) b;
 
 // CHECK-LABEL: define{{.*}} void @_Z11atomic_initR1Ai
-void atomic_init(A &a, int i) {
+void atomic_init(A& a, int i) {
   // CHECK-NOT: atomic
   // CHECK: call void @_ZN1BC1Ei
   __c11_atomic_init(&b, B(i));
@@ -37,7 +37,7 @@ void atomic_init(A &a, int i) {
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z16atomic_init_boolPU7_Atomicbb
-void atomic_init_bool(_Atomic(bool) * ab, bool b) {
+void atomic_init_bool(_Atomic(bool) *ab, bool b) {
   // CHECK-NOT: atomic
   // CHECK: {{zext i1.*to i8}}
   // CHECK-NEXT: store i8
@@ -54,53 +54,53 @@ struct AtomicBoolMember {
 // CHECK: zext i1 {{.*}} to i8
 // CHECK: store i8
 // CHECK-NEXT: ret void
-AtomicBoolMember::AtomicBoolMember(bool b) : ab(b) {}
+AtomicBoolMember::AtomicBoolMember(bool b) : ab(b) { }
 
 namespace PR18097 {
-namespace dynamic {
-struct X {
-  X(int);
-  short n;
-  char c;
-};
+  namespace dynamic {
+    struct X {
+      X(int);
+      short n;
+      char c;
+    };
 
-// CHECK-LABEL: define {{.*}} @__cxx_global_var_init
-// CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1aE, i32 1)
-_Atomic(X) a = X(1);
+    // CHECK-LABEL: define {{.*}} @__cxx_global_var_init
+    // CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1aE, i32 1)
+    _Atomic(X) a = X(1);
 
-// CHECK-LABEL: define {{.*}} @__cxx_global_var_init
-// CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1bE, i32 2)
-_Atomic(X) b(X(2));
+    // CHECK-LABEL: define {{.*}} @__cxx_global_var_init
+    // CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1bE, i32 2)
+    _Atomic(X) b(X(2));
 
-// CHECK-LABEL: define {{.*}} @__cxx_global_var_init
-// CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1cE, i32 3)
-_Atomic(X) c{X(3)};
+    // CHECK-LABEL: define {{.*}} @__cxx_global_var_init
+    // CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* nonnull {{[^,]*}} @_ZN7PR180977dynamic1cE, i32 3)
+    _Atomic(X) c{X(3)};
 
-struct Y {
-  _Atomic(X) a;
-  _Atomic(int) b;
-};
-// CHECK-LABEL: define {{.*}} @__cxx_global_var_init
-// CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* {{[^,]*}} getelementptr inbounds ({{.*}}, {{.*}}* @_ZN7PR180977dynamic1yE, i32 0, i32 0), i32 4)
-// CHECK: store i32 5, i32* getelementptr inbounds ({{.*}}, {{.*}}* @_ZN7PR180977dynamic1yE, i32 0, i32 1)
-Y y = {X(4), 5};
-} // namespace dynamic
+    struct Y {
+      _Atomic(X) a;
+      _Atomic(int) b;
+    };
+    // CHECK-LABEL: define {{.*}} @__cxx_global_var_init
+    // CHECK: call void @_ZN7PR180977dynamic1XC1Ei({{.*}}* {{[^,]*}} getelementptr inbounds ({{.*}}, {{.*}}* @_ZN7PR180977dynamic1yE, i32 0, i32 0), i32 4)
+    // CHECK: store i32 5, i32* getelementptr inbounds ({{.*}}, {{.*}}* @_ZN7PR180977dynamic1yE, i32 0, i32 1)
+    Y y = { X(4), 5 };
+  }
 
-// CHECKs at top of file.
-namespace constant {
-struct X {
-  constexpr X(int n) : n(n) {}
-  short n;
-  char c = 6;
-};
-_Atomic(X) a = X(1);
-_Atomic(X) b(X(2));
-_Atomic(X) c{X(3)};
+  // CHECKs at top of file.
+  namespace constant {
+    struct X {
+      constexpr X(int n) : n(n) {}
+      short n;
+      char c = 6;
+    };
+    _Atomic(X) a = X(1);
+    _Atomic(X) b(X(2));
+    _Atomic(X) c{X(3)};
 
-struct Y {
-  _Atomic(X) a;
-  _Atomic(int) b;
-};
-Y y = {X(4), 5};
-} // namespace constant
-} // namespace PR18097
+    struct Y {
+      _Atomic(X) a;
+      _Atomic(int) b;
+    };
+    Y y = { X(4), 5 };
+  }
+}

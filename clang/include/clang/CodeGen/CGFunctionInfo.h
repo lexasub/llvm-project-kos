@@ -19,8 +19,8 @@
 #include "clang/AST/CharUnits.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/Type.h"
-#include "llvm/ADT/FoldingSet.h"
 #include "llvm/IR/DerivedTypes.h"
+#include "llvm/ADT/FoldingSet.h"
 #include "llvm/Support/TrailingObjects.h"
 #include <cassert>
 
@@ -90,7 +90,7 @@ public:
 private:
   llvm::Type *TypeData; // canHaveCoerceToType()
   union {
-    llvm::Type *PaddingType;                 // canHavePaddingType()
+    llvm::Type *PaddingType; // canHavePaddingType()
     llvm::Type *UnpaddedCoerceAndExpandType; // isCoerceAndExpand()
   };
   union {
@@ -101,14 +101,14 @@ private:
   Kind TheKind;
   unsigned IndirectAddrSpace : 24; // isIndirect()
   bool PaddingInReg : 1;
-  bool InAllocaSRet : 1;     // isInAlloca()
-  bool InAllocaIndirect : 1; // isInAlloca()
-  bool IndirectByVal : 1;    // isIndirect()
-  bool IndirectRealign : 1;  // isIndirect()
-  bool SRetAfterThis : 1;    // isIndirect()
-  bool InReg : 1;            // isDirect() || isExtend() || isIndirect()
-  bool CanBeFlattened : 1;   // isDirect()
-  bool SignExt : 1;          // isExtend()
+  bool InAllocaSRet : 1;    // isInAlloca()
+  bool InAllocaIndirect : 1;// isInAlloca()
+  bool IndirectByVal : 1;   // isIndirect()
+  bool IndirectRealign : 1; // isIndirect()
+  bool SRetAfterThis : 1;   // isIndirect()
+  bool InReg : 1;           // isDirect() || isExtend() || isIndirect()
+  bool CanBeFlattened: 1;   // isDirect()
+  bool SignExt : 1;         // isExtend()
 
   bool canHavePaddingType() const {
     return isDirect() || isExtend() || isIndirect() || isIndirectAliased() ||
@@ -182,7 +182,9 @@ public:
     AI.setInReg(true);
     return AI;
   }
-  static ABIArgInfo getIgnore() { return ABIArgInfo(Ignore); }
+  static ABIArgInfo getIgnore() {
+    return ABIArgInfo(Ignore);
+  }
   static ABIArgInfo getIndirect(CharUnits Alignment, bool ByVal = true,
                                 bool Realign = false,
                                 llvm::Type *Padding = nullptr) {
@@ -248,8 +250,7 @@ public:
     // in the unpadded type.
     unsigned unpaddedIndex = 0;
     for (auto eltType : coerceToType->elements()) {
-      if (isPaddingForCoerceAndExpand(eltType))
-        continue;
+      if (isPaddingForCoerceAndExpand(eltType)) continue;
       if (unpaddedStruct) {
         assert(unpaddedStruct->getElementType(unpaddedIndex) == eltType);
       } else {
@@ -318,8 +319,12 @@ public:
     return (canHavePaddingType() ? PaddingType : nullptr);
   }
 
-  bool getPaddingInReg() const { return PaddingInReg; }
-  void setPaddingInReg(bool PIR) { PaddingInReg = PIR; }
+  bool getPaddingInReg() const {
+    return PaddingInReg;
+  }
+  void setPaddingInReg(bool PIR) {
+    PaddingInReg = PIR;
+  }
 
   llvm::Type *getCoerceToType() const {
     assert(canHaveCoerceToType() && "Invalid kind!");
@@ -341,10 +346,10 @@ public:
     return UnpaddedCoerceAndExpandType;
   }
 
-  ArrayRef<llvm::Type *> getCoerceAndExpandTypeSequence() const {
+  ArrayRef<llvm::Type *>getCoerceAndExpandTypeSequence() const {
     assert(isCoerceAndExpand());
     if (auto structTy =
-            dyn_cast<llvm::StructType>(UnpaddedCoerceAndExpandType)) {
+          dyn_cast<llvm::StructType>(UnpaddedCoerceAndExpandType)) {
       return structTy->elements();
     } else {
       return llvm::makeArrayRef(&UnpaddedCoerceAndExpandType, 1);
@@ -457,12 +462,13 @@ class RequiredArgs {
   /// The number of required arguments, or ~0 if the signature does
   /// not permit optional arguments.
   unsigned NumRequired;
-
 public:
   enum All_t { All };
 
   RequiredArgs(All_t _) : NumRequired(~0U) {}
-  explicit RequiredArgs(unsigned n) : NumRequired(n) { assert(n != ~0U); }
+  explicit RequiredArgs(unsigned n) : NumRequired(n) {
+    assert(n != ~0U);
+  }
 
   /// Compute the arguments required by the given formal prototype,
   /// given that there may be some additional, non-formal arguments
@@ -471,8 +477,7 @@ public:
   /// If FD is not null, this will consider pass_object_size params in FD.
   static RequiredArgs forPrototypePlus(const FunctionProtoType *prototype,
                                        unsigned additional) {
-    if (!prototype->isVariadic())
-      return All;
+    if (!prototype->isVariadic()) return All;
 
     if (prototype->hasExtParameterInfos())
       additional += llvm::count_if(
@@ -505,8 +510,7 @@ public:
 
   unsigned getOpaqueData() const { return NumRequired; }
   static RequiredArgs getFromOpaqueData(unsigned value) {
-    if (value == ~0U)
-      return All;
+    if (value == ~0U) return All;
     return RequiredArgs(value);
   }
 };
@@ -573,24 +577,31 @@ class CGFunctionInfo final
 
   unsigned NumArgs;
 
-  ArgInfo *getArgsBuffer() { return getTrailingObjects<ArgInfo>(); }
-  const ArgInfo *getArgsBuffer() const { return getTrailingObjects<ArgInfo>(); }
+  ArgInfo *getArgsBuffer() {
+    return getTrailingObjects<ArgInfo>();
+  }
+  const ArgInfo *getArgsBuffer() const {
+    return getTrailingObjects<ArgInfo>();
+  }
 
   ExtParameterInfo *getExtParameterInfosBuffer() {
     return getTrailingObjects<ExtParameterInfo>();
   }
-  const ExtParameterInfo *getExtParameterInfosBuffer() const {
+  const ExtParameterInfo *getExtParameterInfosBuffer() const{
     return getTrailingObjects<ExtParameterInfo>();
   }
 
   CGFunctionInfo() : Required(RequiredArgs::All) {}
 
 public:
-  static CGFunctionInfo *
-  create(unsigned llvmCC, bool instanceMethod, bool chainCall,
-         const FunctionType::ExtInfo &extInfo,
-         ArrayRef<ExtParameterInfo> paramInfos, CanQualType resultType,
-         ArrayRef<CanQualType> argTypes, RequiredArgs required);
+  static CGFunctionInfo *create(unsigned llvmCC,
+                                bool instanceMethod,
+                                bool chainCall,
+                                const FunctionType::ExtInfo &extInfo,
+                                ArrayRef<ExtParameterInfo> paramInfos,
+                                CanQualType resultType,
+                                ArrayRef<CanQualType> argTypes,
+                                RequiredArgs required);
   void operator delete(void *p) { ::operator delete(p); }
 
   // Friending class TrailingObjects is apparently not good enough for MSVC,
@@ -618,7 +629,7 @@ public:
   arg_iterator arg_begin() { return getArgsBuffer() + 1; }
   arg_iterator arg_end() { return getArgsBuffer() + 1 + NumArgs; }
 
-  unsigned arg_size() const { return NumArgs; }
+  unsigned  arg_size() const { return NumArgs; }
 
   bool isVariadic() const { return Required.allowsOptionalArgs(); }
   RequiredArgs getRequiredArgs() const { return Required; }
@@ -679,14 +690,12 @@ public:
   const ABIArgInfo &getReturnInfo() const { return getArgsBuffer()[0].info; }
 
   ArrayRef<ExtParameterInfo> getExtParameterInfos() const {
-    if (!HasExtParameterInfos)
-      return {};
+    if (!HasExtParameterInfos) return {};
     return llvm::makeArrayRef(getExtParameterInfosBuffer(), NumArgs);
   }
   ExtParameterInfo getExtParameterInfo(unsigned argIndex) const {
     assert(argIndex <= NumArgs);
-    if (!HasExtParameterInfos)
-      return ExtParameterInfo();
+    if (!HasExtParameterInfos) return ExtParameterInfo();
     return getExtParameterInfos()[argIndex];
   }
 
@@ -724,10 +733,13 @@ public:
     for (const auto &I : arguments())
       I.type.Profile(ID);
   }
-  static void Profile(llvm::FoldingSetNodeID &ID, bool InstanceMethod,
-                      bool ChainCall, const FunctionType::ExtInfo &info,
+  static void Profile(llvm::FoldingSetNodeID &ID,
+                      bool InstanceMethod,
+                      bool ChainCall,
+                      const FunctionType::ExtInfo &info,
                       ArrayRef<ExtParameterInfo> paramInfos,
-                      RequiredArgs required, CanQualType resultType,
+                      RequiredArgs required,
+                      CanQualType resultType,
                       ArrayRef<CanQualType> argTypes) {
     ID.AddInteger(info.getCC());
     ID.AddBoolean(InstanceMethod);
@@ -746,15 +758,14 @@ public:
         ID.AddInteger(paramInfo.getOpaqueValue());
     }
     resultType.Profile(ID);
-    for (ArrayRef<CanQualType>::iterator i = argTypes.begin(),
-                                         e = argTypes.end();
-         i != e; ++i) {
+    for (ArrayRef<CanQualType>::iterator
+           i = argTypes.begin(), e = argTypes.end(); i != e; ++i) {
       i->Profile(ID);
     }
   }
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

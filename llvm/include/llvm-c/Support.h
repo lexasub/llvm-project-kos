@@ -25,8 +25,8 @@ LLVM_C_EXTERN_C_BEGIN
  * It is safe to call this function multiple times for the same library.
  *
  * @see sys::DynamicLibrary::LoadLibraryPermanently()
- */
-LLVMBool LLVMLoadLibraryPermanently(const char *Filename);
+  */
+LLVMBool LLVMLoadLibraryPermanently(const char* Filename);
 
 /**
  * This function parses the given arguments using the LLVM command line parser.

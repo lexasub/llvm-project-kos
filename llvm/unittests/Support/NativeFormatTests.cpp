@@ -172,4 +172,4 @@ TEST(NativeFormatTest, CommaTests) {
   EXPECT_EQ("-1,000", format_number(-1000, IntegerStyle::Number));
   EXPECT_EQ("-1,234,567,890", format_number(-1234567890, IntegerStyle::Number));
 }
-} // namespace
+}

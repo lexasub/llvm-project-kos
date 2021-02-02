@@ -21,6 +21,7 @@
 #include "test_macros.h"
 #include "count_new.h"
 
+
 int main(int, char**) {
   using namespace fs;
   path p("abc");

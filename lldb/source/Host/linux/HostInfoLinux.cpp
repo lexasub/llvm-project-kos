@@ -31,7 +31,7 @@ struct HostInfoLinuxFields {
 };
 
 HostInfoLinuxFields *g_fields = nullptr;
-} // namespace
+}
 
 void HostInfoLinux::Initialize() {
   HostInfoPosix::Initialize();
@@ -86,6 +86,7 @@ llvm::StringRef HostInfoLinux::GetDistributionId() {
   // id.
   static llvm::once_flag g_once_flag;
   llvm::call_once(g_once_flag, []() {
+
     Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST));
     LLDB_LOGF(log, "attempting to determine Linux distribution...");
 

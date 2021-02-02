@@ -13,7 +13,7 @@ struct A {
 __attribute__((noinline)) A::A() : c8(1) {}
 
 int main() {
-  A *a = new A();
+  A* a = new A();
   if (a->c8 == 0)
     printf("zz\n");
   return 0;

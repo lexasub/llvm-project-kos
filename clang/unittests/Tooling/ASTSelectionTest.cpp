@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Tooling/Refactoring/ASTSelection.h"
 #include "TestVisitor.h"
 #include "clang/Basic/SourceManager.h"
+#include "clang/Tooling/Refactoring/ASTSelection.h"
 
 using namespace clang;
 using namespace tooling;
@@ -452,16 +452,16 @@ void outerFunction() { }
       },
       SelectionFinderVisitor::Lang_OBJC);
   // Just the 'outer' function:
-  findSelectedASTNodes(
-      Source, {19, 1}, FileRange{{19, 1}, {19, 25}},
-      [](Optional<SelectedASTNode> Node) {
-        EXPECT_TRUE(Node);
-        EXPECT_EQ(Node->Children.size(), 1u);
-        checkNode<FunctionDecl>(Node->Children[0],
-                                SourceSelectionKind::ContainsSelection,
-                                /*NumChildren=*/1, /*Name=*/"outerFunction");
-      },
-      SelectionFinderVisitor::Lang_OBJC);
+  findSelectedASTNodes(Source, {19, 1}, FileRange{{19, 1}, {19, 25}},
+                       [](Optional<SelectedASTNode> Node) {
+                         EXPECT_TRUE(Node);
+                         EXPECT_EQ(Node->Children.size(), 1u);
+                         checkNode<FunctionDecl>(
+                             Node->Children[0],
+                             SourceSelectionKind::ContainsSelection,
+                             /*NumChildren=*/1, /*Name=*/"outerFunction");
+                       },
+                       SelectionFinderVisitor::Lang_OBJC);
 }
 
 TEST(ASTSelectionFinder, FunctionInObjCImplementationCarefulWithEarlyExit) {
@@ -525,15 +525,15 @@ TEST(ASTSelectionFinder, CorrectEndForObjectiveCImplementation) {
 @ end
 )";
   // Just after '@ end'
-  findSelectedASTNodes(
-      Source, {5, 6}, None,
-      [](Optional<SelectedASTNode> Node) {
-        EXPECT_TRUE(Node);
-        EXPECT_EQ(Node->Children.size(), 1u);
-        checkNode<ObjCImplementationDecl>(
-            Node->Children[0], SourceSelectionKind::ContainsSelection);
-      },
-      SelectionFinderVisitor::Lang_OBJC);
+  findSelectedASTNodes(Source, {5, 6}, None,
+                       [](Optional<SelectedASTNode> Node) {
+                         EXPECT_TRUE(Node);
+                         EXPECT_EQ(Node->Children.size(), 1u);
+                         checkNode<ObjCImplementationDecl>(
+                             Node->Children[0],
+                             SourceSelectionKind::ContainsSelection);
+                       },
+                       SelectionFinderVisitor::Lang_OBJC);
 }
 
 const SelectedASTNode &checkFnBody(const Optional<SelectedASTNode> &Node,

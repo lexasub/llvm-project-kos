@@ -545,7 +545,9 @@ StructuredData::IntegerSP PythonInteger::CreateStructuredInteger() const {
 
 // PythonBoolean
 
-PythonBoolean::PythonBoolean(bool value) { SetValue(value); }
+PythonBoolean::PythonBoolean(bool value) {
+  SetValue(value);
+}
 
 bool PythonBoolean::Check(PyObject *py_obj) {
   return py_obj ? PyBool_Check(py_obj) : false;
@@ -952,15 +954,15 @@ PythonObject PythonCallable::operator()() {
   return PythonObject(PyRefType::Owned, PyObject_CallObject(m_py_obj, nullptr));
 }
 
-PythonObject
-PythonCallable::operator()(std::initializer_list<PyObject *> args) {
+PythonObject PythonCallable::
+operator()(std::initializer_list<PyObject *> args) {
   PythonTuple arg_tuple(args);
   return PythonObject(PyRefType::Owned,
                       PyObject_CallObject(m_py_obj, arg_tuple.get()));
 }
 
-PythonObject
-PythonCallable::operator()(std::initializer_list<PythonObject> args) {
+PythonObject PythonCallable::
+operator()(std::initializer_list<PythonObject> args) {
   PythonTuple arg_tuple(args);
   return PythonObject(PyRefType::Owned,
                       PyObject_CallObject(m_py_obj, arg_tuple.get()));

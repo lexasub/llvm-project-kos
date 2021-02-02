@@ -53,14 +53,12 @@ struct TestMediumString {
 
   static std::vector<std::string> generateInput(size_t size) {
     std::vector<std::string> Res(size);
-    std::generate(Res.begin(), Res.end(),
-                  [] { return getRandomString(StringSize); });
+    std::generate(Res.begin(), Res.end(), [] { return getRandomString(StringSize); });
     return Res;
   }
 };
 
-using AllTestTypes =
-    std::tuple<TestInt32, TestInt64, TestUint32, TestMediumString>;
+using AllTestTypes = std::tuple<TestInt32, TestInt64, TestUint32, TestMediumString>;
 
 struct LowerBoundAlg {
   template <class I, class V>

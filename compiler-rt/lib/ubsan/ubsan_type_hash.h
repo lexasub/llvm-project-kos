@@ -27,7 +27,7 @@ class DynamicTypeInfo {
 
 public:
   DynamicTypeInfo(const char *MDTN, sptr Offset, const char *STN)
-      : MostDerivedTypeName(MDTN), Offset(Offset), SubobjectTypeName(STN) {}
+    : MostDerivedTypeName(MDTN), Offset(Offset), SubobjectTypeName(STN) {}
 
   /// Determine whether the object had a valid dynamic type.
   bool isValid() const { return MostDerivedTypeName; }
@@ -54,15 +54,15 @@ const unsigned VptrTypeCacheSize = 128;
 
 /// A sanity check for Vtable. Offsets to top must be reasonably small
 /// numbers (by absolute value). It's a weak check for Vtable corruption.
-const int VptrMaxOffsetToTop = 1 << 20;
+const int VptrMaxOffsetToTop = 1<<20;
 
 /// \brief A cache of the results of checkDynamicType. \c checkDynamicType would
 /// return \c true (modulo hash collisions) if
 /// \code
 ///   __ubsan_vptr_type_cache[Hash % VptrTypeCacheSize] == Hash
 /// \endcode
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE HashValue
-    __ubsan_vptr_type_cache[VptrTypeCacheSize];
+extern "C" SANITIZER_INTERFACE_ATTRIBUTE
+HashValue __ubsan_vptr_type_cache[VptrTypeCacheSize];
 
 /// \brief Do whatever is required by the ABI to check for std::type_info
 /// equivalence beyond simple pointer comparison.

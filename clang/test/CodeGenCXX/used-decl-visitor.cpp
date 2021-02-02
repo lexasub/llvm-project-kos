@@ -12,6 +12,7 @@ struct B {
   B(int b = a.a) {}
 };
 
+
 void foo() {
   B();
 }

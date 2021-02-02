@@ -49,8 +49,8 @@ __ubsan::getDynamicTypeInfoFromVtable(void *VtablePtr) {
   // laid out before the virtual table), so we need to carefully validate each
   // pointer dereference and perform sanity checks.
   CompleteObjectLocator **obj_locator_ptr =
-      ((CompleteObjectLocator **)VtablePtr) - 1;
-  if (!IsAccessibleMemoryRange((uptr)obj_locator_ptr, sizeof(void *)))
+    ((CompleteObjectLocator**)VtablePtr)-1;
+  if (!IsAccessibleMemoryRange((uptr)obj_locator_ptr, sizeof(void*)))
     return DynamicTypeInfo(0, 0, 0);
 
   CompleteObjectLocator *obj_locator = *obj_locator_ptr;
@@ -81,4 +81,4 @@ bool __ubsan::checkTypeInfoEquality(const void *, const void *) {
   return false;
 }
 
-#endif // CAN_SANITIZE_UB && SANITIZER_WINDOWS
+#endif  // CAN_SANITIZE_UB && SANITIZER_WINDOWS

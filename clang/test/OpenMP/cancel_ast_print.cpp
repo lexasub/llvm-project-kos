@@ -19,42 +19,41 @@
 #ifndef HEADER
 #define HEADER
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
 // CHECK: int main(int argc, char **argv) {
 #pragma omp parallel
-  {
-#pragma omp cancel parallel if (argc)
-  }
+{
+#pragma omp cancel parallel if(argc)
+}
 // CHECK: #pragma omp parallel
 // CHECK-NEXT: {
 // CHECK-NEXT: #pragma omp cancel parallel if(argc)
 // CHECK-NEXT: }
 #pragma omp sections
-  {
+{
 #pragma omp cancel sections
-  }
+}
 // CHECK-NEXT: #pragma omp sections
 // CHECK: {
 // CHECK: #pragma omp cancel sections{{$}}
 // CHECK: }
 #pragma omp for
-  for (int i = 0; i < argc; ++i) {
-#pragma omp cancel for if (cancel \
-                           : argc)
-  }
+for (int i = 0; i < argc; ++i) {
+#pragma omp cancel for if(cancel:argc)
+}
 // CHECK: #pragma omp for
 // CHECK-NEXT: for (int i = 0; i < argc; ++i) {
 // CHECK-NEXT: #pragma omp cancel for if(cancel: argc)
 // CHECK-NEXT: }
 #pragma omp task
-  {
+{
 #pragma omp cancel taskgroup
-  }
-  // CHECK: #pragma omp task
-  // CHECK: {
-  // CHECK: #pragma omp cancel taskgroup
-  // CHECK: }
-  // CHECK: return argc;
+}
+// CHECK: #pragma omp task
+// CHECK: {
+// CHECK: #pragma omp cancel taskgroup
+// CHECK: }
+// CHECK: return argc;
   return argc;
 }
 

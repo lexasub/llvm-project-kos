@@ -14,7 +14,7 @@
 extern "C" {
 // This function should be defined by the user.
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size);
-} // extern "C"
+}  // extern "C"
 
 ATTRIBUTE_INTERFACE int main(int argc, char **argv) {
   return fuzzer::FuzzerDriver(&argc, &argv, LLVMFuzzerTestOneInput);

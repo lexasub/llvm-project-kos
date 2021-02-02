@@ -7,8 +7,8 @@
 #include "xray_interface_internal.h"
 
 #if SANITIZER_FREEBSD || SANITIZER_NETBSD || SANITIZER_MAC
-#include <sys/sysctl.h>
 #include <sys/types.h>
+#include <sys/sysctl.h>
 #elif SANITIZER_FUCHSIA
 #include <zircon/syscalls.h>
 #endif
@@ -84,27 +84,27 @@ uint64_t getTSCFrequency() XRAY_NEVER_INSTRUMENT {
 }
 #elif SANITIZER_FREEBSD || SANITIZER_NETBSD || SANITIZER_MAC
 uint64_t getTSCFrequency() XRAY_NEVER_INSTRUMENT {
-  long long TSCFrequency = -1;
-  size_t tscfreqsz = sizeof(TSCFrequency);
+    long long TSCFrequency = -1;
+    size_t tscfreqsz = sizeof(TSCFrequency);
 #if SANITIZER_MAC
-  if (internal_sysctlbyname("machdep.tsc.frequency", &TSCFrequency, &tscfreqsz,
-                            NULL, 0) != -1) {
+    if (internal_sysctlbyname("machdep.tsc.frequency", &TSCFrequency,
+                              &tscfreqsz, NULL, 0) != -1) {
 
 #else
-  if (internal_sysctlbyname("machdep.tsc_freq", &TSCFrequency, &tscfreqsz, NULL,
-                            0) != -1) {
+    if (internal_sysctlbyname("machdep.tsc_freq", &TSCFrequency, &tscfreqsz,
+                              NULL, 0) != -1) {
 #endif
-    return static_cast<uint64_t>(TSCFrequency);
-  } else {
-    Report("Unable to determine CPU frequency for TSC accounting.\n");
-  }
+        return static_cast<uint64_t>(TSCFrequency);
+    } else {
+      Report("Unable to determine CPU frequency for TSC accounting.\n");
+    }
 
-  return 0;
+    return 0;
 }
 #elif !SANITIZER_FUCHSIA
 uint64_t getTSCFrequency() XRAY_NEVER_INSTRUMENT {
-  /* Not supported */
-  return 0;
+    /* Not supported */
+    return 0;
 }
 #endif
 
@@ -288,12 +288,12 @@ bool patchCustomEvent(const bool Enable, const uint32_t FuncId,
           std::memory_order_release);
       break;
     }
-  }
+    }
   return false;
 }
 
 bool patchTypedEvent(const bool Enable, const uint32_t FuncId,
-                     const XRaySledEntry &Sled) XRAY_NEVER_INSTRUMENT {
+                      const XRaySledEntry &Sled) XRAY_NEVER_INSTRUMENT {
   // Here we do the dance of replacing the following sled:
   //
   // xray_sled_n:
@@ -333,9 +333,8 @@ bool probeRequiredCPUFeatures() XRAY_NEVER_INSTRUMENT {
   // We check whether rdtscp support is enabled. According to the x86_64 manual,
   // level should be set at 0x80000001, and we should have a look at bit 27 in
   // EDX. That's 0x8000000 (or 1u << 27).
-  __asm__ __volatile__("cpuid"
-                       : "=a"(EAX), "=b"(EBX), "=c"(ECX), "=d"(EDX)
-                       : "0"(0x80000001));
+  __asm__ __volatile__("cpuid" : "=a"(EAX), "=b"(EBX), "=c"(ECX), "=d"(EDX)
+    : "0"(0x80000001));
   if (!(EDX & (1u << 27))) {
     Report("Missing rdtscp support.\n");
     return false;

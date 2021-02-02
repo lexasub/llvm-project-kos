@@ -26,56 +26,63 @@
 #include "test_macros.h"
 
 template <class T>
-struct EnumType {
-  enum type : T { E_zero, E_one };
+struct EnumType
+{
+  enum type : T {E_zero, E_one};
 };
 
+
 template <class From, class To>
-void check_integral_types() {
+void check_integral_types()
+{
   typedef std::numeric_limits<From> Limits;
   const From max = Limits::max();
   const From min = Limits::min();
   {
-    auto ret = std::__convert_to_integral((From)max);
-    assert(ret == max);
-    ret = std::__convert_to_integral((From)min);
-    assert(ret == min);
-    static_assert(std::is_same<decltype(ret), To>::value, "");
+  auto ret = std::__convert_to_integral((From)max);
+  assert(ret == max);
+  ret = std::__convert_to_integral((From)min);
+  assert(ret == min);
+  static_assert(std::is_same<decltype(ret), To>::value, "");
   }
   {
-    UserDefinedIntegral<From> f(max);
-    auto ret = std::__convert_to_integral(f);
-    assert(ret == max);
-    f.value = min;
-    ret = std::__convert_to_integral(f);
-    assert(ret == min);
-    static_assert(std::is_same<decltype(ret), To>::value, "");
+  UserDefinedIntegral<From> f(max);
+  auto ret = std::__convert_to_integral(f);
+  assert(ret == max);
+  f.value = min;
+  ret = std::__convert_to_integral(f);
+  assert(ret == min);
+  static_assert(std::is_same<decltype(ret), To>::value, "");
   }
   {
-    typedef typename EnumType<From>::type Enum;
-    Enum e(static_cast<Enum>(max));
-    auto ret = std::__convert_to_integral(e);
-    assert(ret == max);
-    e = static_cast<Enum>(min);
-    ret = std::__convert_to_integral(min);
-    assert(ret == min);
-    static_assert(std::is_same<decltype(ret), To>::value, "");
+  typedef typename EnumType<From>::type Enum;
+  Enum e(static_cast<Enum>(max));
+  auto ret = std::__convert_to_integral(e);
+  assert(ret == max);
+  e = static_cast<Enum>(min);
+  ret = std::__convert_to_integral(min);
+  assert(ret == min);
+  static_assert(std::is_same<decltype(ret), To>::value, "");
   }
 }
 
+
 template <class From, class To>
-void check_enum_types() {
+void check_enum_types()
+{
   auto ret = std::__convert_to_integral((From)1);
   assert(ret == 1);
   static_assert(std::is_same<decltype(ret), To>::value, "");
 }
+
 
 enum enum1 { zero = 0, one = 1 };
 enum enum2 : unsigned long {
   value = std::numeric_limits<unsigned long>::max()
 };
 
-int main(int, char**) {
+int main(int, char**)
+{
   check_integral_types<bool, int>();
   check_integral_types<char, int>();
   check_integral_types<signed char, int>();
@@ -102,7 +109,7 @@ int main(int, char**) {
   check_integral_types<__int128_t, __int128_t>();
   check_integral_types<__uint128_t, __uint128_t>();
 #endif
-  // TODO(ericwf): Not standard
+    // TODO(ericwf): Not standard
   typedef std::underlying_type<enum1>::type Enum1UT;
   check_enum_types<enum1, decltype(((Enum1UT)1) + 1)>();
   typedef std::underlying_type<enum2>::type Enum2UT;

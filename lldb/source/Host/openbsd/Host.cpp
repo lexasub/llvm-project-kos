@@ -8,10 +8,10 @@
 
 #include <sys/types.h>
 
+#include <sys/signal.h>
 #include <sys/exec.h>
 #include <sys/proc.h>
 #include <sys/ptrace.h>
-#include <sys/signal.h>
 #include <sys/sysctl.h>
 #include <sys/user.h>
 
@@ -127,7 +127,7 @@ static bool GetOpenBSDProcessUserAndGroup(ProcessInstanceInfo &process_info) {
         process_info.SetUserID(proc_kinfo.p_ruid);
         process_info.SetGroupID(proc_kinfo.p_rgid);
         process_info.SetEffectiveUserID(proc_kinfo.p_uid);
-        process_info.SetEffectiveGroupID(proc_kinfo.p_gid);
+	process_info.SetEffectiveGroupID(proc_kinfo.p_gid);
         return true;
       }
     }
@@ -173,11 +173,11 @@ uint32_t Host::FindProcessesImpl(const ProcessInstanceInfoMatch &match_info,
                                      (our_uid == 0));
 
     if (kinfo_user_matches == false || // Make sure the user is acceptable
-        kinfo.p_pid == our_pid ||      // Skip this process
-        kinfo.p_pid == 0 ||            // Skip kernel (kernel pid is zero)
-        kinfo.p_stat == SZOMB ||       // Zombies are bad, they like brains...
+        kinfo.p_pid == our_pid ||     // Skip this process
+        kinfo.p_pid == 0 ||           // Skip kernel (kernel pid is zero)
+        kinfo.p_stat == SZOMB ||      // Zombies are bad, they like brains...
         kinfo.p_psflags & PS_TRACED || // Being debugged?
-        kinfo.p_flag & P_WEXIT)        // Working on exiting
+        kinfo.p_flag & P_WEXIT)       // Working on exiting
       continue;
 
     ProcessInstanceInfo process_info;

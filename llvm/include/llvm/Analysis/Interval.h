@@ -34,16 +34,15 @@ class raw_ostream;
 /// header)
 ///
 class Interval {
-  /// HeaderNode - The header BasicBlock, which dominates all BasicBlocks in
-  /// this interval.  Also, any loops in this interval must go through the
-  /// HeaderNode.
+  /// HeaderNode - The header BasicBlock, which dominates all BasicBlocks in this
+  /// interval.  Also, any loops in this interval must go through the HeaderNode.
   ///
   BasicBlock *HeaderNode;
 
 public:
-  using succ_iterator = std::vector<BasicBlock *>::iterator;
-  using pred_iterator = std::vector<BasicBlock *>::iterator;
-  using node_iterator = std::vector<BasicBlock *>::iterator;
+  using succ_iterator = std::vector<BasicBlock*>::iterator;
+  using pred_iterator = std::vector<BasicBlock*>::iterator;
+  using node_iterator = std::vector<BasicBlock*>::iterator;
 
   inline Interval(BasicBlock *Header) : HeaderNode(Header) {
     Nodes.push_back(Header);
@@ -52,16 +51,16 @@ public:
   inline BasicBlock *getHeaderNode() const { return HeaderNode; }
 
   /// Nodes - The basic blocks in this interval.
-  std::vector<BasicBlock *> Nodes;
+  std::vector<BasicBlock*> Nodes;
 
   /// Successors - List of BasicBlocks that are reachable directly from nodes in
   /// this interval, but are not in the interval themselves.
   /// These nodes necessarily must be header nodes for other intervals.
-  std::vector<BasicBlock *> Successors;
+  std::vector<BasicBlock*> Successors;
 
   /// Predecessors - List of BasicBlocks that have this Interval's header block
   /// as one of their successors.
-  std::vector<BasicBlock *> Predecessors;
+  std::vector<BasicBlock*> Predecessors;
 
   /// contains - Find out if a basic block is in this interval
   inline bool contains(BasicBlock *BB) const {
@@ -70,7 +69,7 @@ public:
         return true;
     return false;
     // I don't want the dependency on <algorithm>
-    // return find(Nodes.begin(), Nodes.end(), BB) != Nodes.end();
+    //return find(Nodes.begin(), Nodes.end(), BB) != Nodes.end();
   }
 
   /// isSuccessor - find out if a basic block is a successor of this Interval
@@ -80,8 +79,7 @@ public:
         return true;
     return false;
     // I don't want the dependency on <algorithm>
-    // return find(Successors.begin(), Successors.end(), BB) !=
-    // Successors.end();
+    //return find(Successors.begin(), Successors.end(), BB) != Successors.end();
   }
 
   /// Equality operator.  It is only valid to compare two intervals from the
@@ -101,7 +99,7 @@ public:
 inline Interval::succ_iterator succ_begin(Interval *I) {
   return I->Successors.begin();
 }
-inline Interval::succ_iterator succ_end(Interval *I) {
+inline Interval::succ_iterator succ_end(Interval *I)   {
   return I->Successors.end();
 }
 
@@ -111,11 +109,11 @@ inline Interval::succ_iterator succ_end(Interval *I) {
 inline Interval::pred_iterator pred_begin(Interval *I) {
   return I->Predecessors.begin();
 }
-inline Interval::pred_iterator pred_end(Interval *I) {
+inline Interval::pred_iterator pred_end(Interval *I)   {
   return I->Predecessors.end();
 }
 
-template <> struct GraphTraits<Interval *> {
+template <> struct GraphTraits<Interval*> {
   using NodeRef = Interval *;
   using ChildIteratorType = Interval::succ_iterator;
 
@@ -126,7 +124,7 @@ template <> struct GraphTraits<Interval *> {
   static ChildIteratorType child_end(NodeRef N) { return succ_end(N); }
 };
 
-template <> struct GraphTraits<Inverse<Interval *>> {
+template <> struct GraphTraits<Inverse<Interval*>> {
   using NodeRef = Interval *;
   using ChildIteratorType = Interval::pred_iterator;
 

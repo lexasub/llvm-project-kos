@@ -5,5 +5,5 @@
 // RUN: FileCheck -input-file=%t.cpp %s
 
 class RenameMe {
-  // CHECK: class test {
+// CHECK: class test {
 };

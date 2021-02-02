@@ -41,7 +41,7 @@ class WinEHStatePass : public FunctionPass {
 public:
   static char ID; // Pass identification, replacement for typeid.
 
-  WinEHStatePass() : FunctionPass(ID) {}
+  WinEHStatePass() : FunctionPass(ID) { }
 
   bool runOnFunction(Function &Fn) override;
 
@@ -152,7 +152,8 @@ bool WinEHStatePass::runOnFunction(Function &F) {
   // Check the personality. Do nothing if this personality doesn't use funclets.
   if (!F.hasPersonalityFn())
     return false;
-  PersonalityFn = dyn_cast<Function>(F.getPersonalityFn()->stripPointerCasts());
+  PersonalityFn =
+      dyn_cast<Function>(F.getPersonalityFn()->stripPointerCasts());
   if (!PersonalityFn)
     return false;
   Personality = classifyEHPersonality(PersonalityFn);
@@ -393,11 +394,11 @@ Function *WinEHStatePass::generateLSDAInEAXThunk(Function *ParentFunc) {
   FunctionType *TargetFuncTy =
       FunctionType::get(Int32Ty, makeArrayRef(&ArgTys[0], 5),
                         /*isVarArg=*/false);
-  Function *Trampoline = Function::Create(
-      TrampolineTy, GlobalValue::InternalLinkage,
-      Twine("__ehhandler$") +
-          GlobalValue::dropLLVMManglingEscape(ParentFunc->getName()),
-      TheModule);
+  Function *Trampoline =
+      Function::Create(TrampolineTy, GlobalValue::InternalLinkage,
+                       Twine("__ehhandler$") + GlobalValue::dropLLVMManglingEscape(
+                                                   ParentFunc->getName()),
+                       TheModule);
   if (auto *C = ParentFunc->getComdat())
     Trampoline->setComdat(C);
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", Trampoline);
@@ -490,8 +491,8 @@ void WinEHStatePass::rewriteSetJmpCall(IRBuilder<> &Builder, Function &F,
     NewCall = NewCI;
   } else {
     auto *II = cast<InvokeInst>(&Call);
-    NewCall = Builder.CreateInvoke(SetJmp3, II->getNormalDest(),
-                                   II->getUnwindDest(), Args, OpBundles);
+    NewCall = Builder.CreateInvoke(
+        SetJmp3, II->getNormalDest(), II->getUnwindDest(), Args, OpBundles);
   }
   NewCall->setCallingConv(Call.getCallingConv());
   NewCall->setAttributes(Call.getAttributes());

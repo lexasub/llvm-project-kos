@@ -14,24 +14,26 @@ namespace dynamic {
 Diagnostics::ArgStream Diagnostics::pushContextFrame(ContextType Type,
                                                      SourceRange Range) {
   ContextStack.emplace_back();
-  ContextFrame &data = ContextStack.back();
+  ContextFrame& data = ContextStack.back();
   data.Type = Type;
   data.Range = Range;
   return ArgStream(&data.Args);
 }
 
 Diagnostics::Context::Context(ConstructMatcherEnum, Diagnostics *Error,
-                              StringRef MatcherName, SourceRange MatcherRange)
+                              StringRef MatcherName,
+                              SourceRange MatcherRange)
     : Error(Error) {
   Error->pushContextFrame(CT_MatcherConstruct, MatcherRange) << MatcherName;
 }
 
 Diagnostics::Context::Context(MatcherArgEnum, Diagnostics *Error,
-                              StringRef MatcherName, SourceRange MatcherRange,
+                              StringRef MatcherName,
+                              SourceRange MatcherRange,
                               unsigned ArgNumber)
     : Error(Error) {
-  Error->pushContextFrame(CT_MatcherArg, MatcherRange)
-      << ArgNumber << MatcherName;
+  Error->pushContextFrame(CT_MatcherArg, MatcherRange) << ArgNumber
+                                                       << MatcherName;
 }
 
 Diagnostics::Context::~Context() { Error->ContextStack.pop_back(); }
@@ -73,10 +75,10 @@ Diagnostics::ArgStream Diagnostics::addError(SourceRange Range,
 
 static StringRef contextTypeToFormatString(Diagnostics::ContextType Type) {
   switch (Type) {
-  case Diagnostics::CT_MatcherConstruct:
-    return "Error building matcher $0.";
-  case Diagnostics::CT_MatcherArg:
-    return "Error parsing argument $0 for matcher $1.";
+    case Diagnostics::CT_MatcherConstruct:
+      return "Error building matcher $0.";
+    case Diagnostics::CT_MatcherArg:
+      return "Error parsing argument $0 for matcher $1.";
   }
   llvm_unreachable("Unknown ContextType value.");
 }
@@ -134,8 +136,7 @@ static void formatErrorString(StringRef FormatString,
   while (!FormatString.empty()) {
     std::pair<StringRef, StringRef> Pieces = FormatString.split("$");
     OS << Pieces.first.str();
-    if (Pieces.second.empty())
-      break;
+    if (Pieces.second.empty()) break;
 
     const char Next = Pieces.second.front();
     FormatString = Pieces.second.drop_front();
@@ -150,7 +151,8 @@ static void formatErrorString(StringRef FormatString,
   }
 }
 
-static void maybeAddLineAndColumn(SourceRange Range, llvm::raw_ostream &OS) {
+static void maybeAddLineAndColumn(SourceRange Range,
+                                  llvm::raw_ostream &OS) {
   if (Range.Start.Line > 0 && Range.Start.Column > 0) {
     OS << Range.Start.Line << ":" << Range.Start.Column << ": ";
   }
@@ -176,8 +178,7 @@ static void printErrorContentToStream(const Diagnostics::ErrorContent &Content,
     printMessageToStream(Content.Messages[0], "", OS);
   } else {
     for (size_t i = 0, e = Content.Messages.size(); i != e; ++i) {
-      if (i != 0)
-        OS << "\n";
+      if (i != 0) OS << "\n";
       printMessageToStream(Content.Messages[i],
                            "Candidate " + Twine(i + 1) + ": ", OS);
     }
@@ -186,8 +187,7 @@ static void printErrorContentToStream(const Diagnostics::ErrorContent &Content,
 
 void Diagnostics::printToStream(llvm::raw_ostream &OS) const {
   for (size_t i = 0, e = Errors.size(); i != e; ++i) {
-    if (i != 0)
-      OS << "\n";
+    if (i != 0) OS << "\n";
     printErrorContentToStream(Errors[i], OS);
   }
 }
@@ -201,8 +201,7 @@ std::string Diagnostics::toString() const {
 
 void Diagnostics::printToStreamFull(llvm::raw_ostream &OS) const {
   for (size_t i = 0, e = Errors.size(); i != e; ++i) {
-    if (i != 0)
-      OS << "\n";
+    if (i != 0) OS << "\n";
     const ErrorContent &Error = Errors[i];
     for (size_t i = 0, e = Error.ContextStack.size(); i != e; ++i) {
       printContextFrameToStream(Error.ContextStack[i], OS);
@@ -219,6 +218,6 @@ std::string Diagnostics::toStringFull() const {
   return OS.str();
 }
 
-} // namespace dynamic
-} // namespace ast_matchers
-} // namespace clang
+}  // namespace dynamic
+}  // namespace ast_matchers
+}  // namespace clang

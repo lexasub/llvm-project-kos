@@ -2,8 +2,8 @@
 
 void clang_analyzer_eval(bool);
 
-void usePointer(int *const *);
-void useReference(int *const &);
+void usePointer(int * const *);
+void useReference(int * const &);
 
 void testPointer() {
   int x;
@@ -21,18 +21,19 @@ void testPointer() {
   useReference(p);
   clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
 
-  int *const cp1 = &x;
+  int * const cp1 = &x;
   x = 42;
   clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
   usePointer(&cp1);
   clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
 
-  int *const cp2 = &x;
+  int * const cp2 = &x;
   x = 42;
   clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
   useReference(cp2);
   clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
 }
+
 
 struct Wrapper {
   int *ptr;
@@ -58,6 +59,7 @@ void testPointerStruct() {
   clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
 }
 
+
 struct RefWrapper {
   int &ref;
 };
@@ -67,7 +69,7 @@ void useConstStruct(const RefWrapper &w);
 
 void testReferenceStruct() {
   int x;
-  RefWrapper w = {x};
+  RefWrapper w = { x };
 
   x = 42;
   clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
@@ -79,7 +81,7 @@ void testReferenceStruct() {
 // does not preserve reference bindings. <rdar://problem/13320347>
 void testConstReferenceStruct() {
   int x;
-  RefWrapper w = {x};
+  RefWrapper w = { x };
 
   x = 42;
   clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
@@ -87,8 +89,9 @@ void testConstReferenceStruct() {
   clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
 }
 
-void usePointerPure(int *const *) __attribute__((pure));
-void usePointerConst(int *const *) __attribute__((const));
+
+void usePointerPure(int * const *) __attribute__((pure));
+void usePointerConst(int * const *) __attribute__((const));
 
 void testPureConst() {
   extern int global;
@@ -98,21 +101,22 @@ void testPureConst() {
   p = &x;
   x = 42;
   global = -5;
-  clang_analyzer_eval(x == 42);      // expected-warning{{TRUE}}
+  clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
   clang_analyzer_eval(global == -5); // expected-warning{{TRUE}}
 
   usePointerPure(&p);
-  clang_analyzer_eval(x == 42);      // expected-warning{{TRUE}}
+  clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
   clang_analyzer_eval(global == -5); // expected-warning{{TRUE}}
 
   usePointerConst(&p);
-  clang_analyzer_eval(x == 42);      // expected-warning{{TRUE}}
+  clang_analyzer_eval(x == 42); // expected-warning{{TRUE}}
   clang_analyzer_eval(global == -5); // expected-warning{{TRUE}}
 
   usePointer(&p);
-  clang_analyzer_eval(x == 42);      // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(x == 42); // expected-warning{{UNKNOWN}}
   clang_analyzer_eval(global == -5); // expected-warning{{UNKNOWN}}
 }
+
 
 struct PlainStruct {
   int x, y;
@@ -141,6 +145,7 @@ void testInvalidationThroughBaseRegionPointer() {
   useAnything(&(s1.y));
   clang_analyzer_eval(s1.x == 1); // expected-warning{{UNKNOWN}}
 }
+
 
 void useFirstConstSecondNonConst(const void *x, void *y);
 void useFirstNonConstSecondConst(void *x, const void *y);

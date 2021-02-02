@@ -2,9 +2,9 @@
 
 struct A;
 
-inline int g(); // expected-warning{{inline function 'g' is not defined}}
+inline int g();  // expected-warning{{inline function 'g' is not defined}}
 
-template <int M>
+template<int M>
 struct R {
   friend int g() {
     return M;
@@ -12,5 +12,5 @@ struct R {
 };
 
 void m() {
-  g(); // expected-note{{used here}}
+  g();  // expected-note{{used here}}
 }

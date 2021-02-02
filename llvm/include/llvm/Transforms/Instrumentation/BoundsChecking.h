@@ -20,6 +20,7 @@ struct BoundsCheckingPass : PassInfoMixin<BoundsCheckingPass> {
   static bool isRequired() { return true; }
 };
 
+
 /// Legacy pass creation function for the above pass.
 FunctionPass *createBoundsCheckingLegacyPass();
 

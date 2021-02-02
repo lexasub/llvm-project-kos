@@ -138,12 +138,12 @@ static const ValueDecl *getPrivateItem(const Expr *RefExpr) {
   return cast<ValueDecl>(ME->getMemberDecl()->getCanonicalDecl());
 }
 
+
 static RecordDecl *buildRecordForGlobalizedVars(
     ASTContext &C, ArrayRef<const ValueDecl *> EscapedDecls,
     ArrayRef<const ValueDecl *> EscapedDeclsForTeams,
     llvm::SmallDenseMap<const ValueDecl *, const FieldDecl *>
-        &MappedDeclsFields,
-    int BufSize) {
+        &MappedDeclsFields, int BufSize) {
   using VarsDataTy = std::pair<CharUnits /*Align*/, const ValueDecl *>;
   if (EscapedDecls.empty() && EscapedDeclsForTeams.empty())
     return nullptr;
@@ -586,8 +586,8 @@ static llvm::Value *getMasterThreadID(CodeGenFunction &CGF) {
                        Bld.CreateNot(Mask), "master_tid");
 }
 
-CGOpenMPRuntimeGPU::WorkerFunctionState::WorkerFunctionState(CodeGenModule &CGM,
-                                                             SourceLocation Loc)
+CGOpenMPRuntimeGPU::WorkerFunctionState::WorkerFunctionState(
+    CodeGenModule &CGM, SourceLocation Loc)
     : WorkerFn(nullptr), CGFI(CGM.getTypes().arrangeNullaryFunction()),
       Loc(Loc) {
   createWorkerFunction(CGM);
@@ -604,7 +604,8 @@ void CGOpenMPRuntimeGPU::WorkerFunctionState::createWorkerFunction(
   WorkerFn->setDoesNotRecurse();
 }
 
-CGOpenMPRuntimeGPU::ExecutionMode CGOpenMPRuntimeGPU::getExecutionMode() const {
+CGOpenMPRuntimeGPU::ExecutionMode
+CGOpenMPRuntimeGPU::getExecutionMode() const {
   return CurrentExecutionMode;
 }
 
@@ -1059,11 +1060,11 @@ static bool supportsLightweightRuntime(ASTContext &Ctx,
 }
 
 void CGOpenMPRuntimeGPU::emitNonSPMDKernel(const OMPExecutableDirective &D,
-                                           StringRef ParentName,
-                                           llvm::Function *&OutlinedFn,
-                                           llvm::Constant *&OutlinedFnID,
-                                           bool IsOffloadEntry,
-                                           const RegionCodeGenTy &CodeGen) {
+                                             StringRef ParentName,
+                                             llvm::Function *&OutlinedFn,
+                                             llvm::Constant *&OutlinedFnID,
+                                             bool IsOffloadEntry,
+                                             const RegionCodeGenTy &CodeGen) {
   ExecutionRuntimeModesRAII ModeRAII(CurrentExecutionMode);
   EntryFunctionState EST;
   WorkerFunctionState WST(CGM, D.getBeginLoc());
@@ -1080,13 +1081,15 @@ void CGOpenMPRuntimeGPU::emitNonSPMDKernel(const OMPExecutableDirective &D,
                          CGOpenMPRuntimeGPU::WorkerFunctionState &WST)
         : EST(EST), WST(WST) {}
     void Enter(CodeGenFunction &CGF) override {
-      auto &RT = static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
+      auto &RT =
+          static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
       RT.emitNonSPMDEntryHeader(CGF, EST, WST);
       // Skip target region initialization.
       RT.setLocThreadIdInsertPt(CGF, /*AtCurrentPoint=*/true);
     }
     void Exit(CodeGenFunction &CGF) override {
-      auto &RT = static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
+      auto &RT =
+          static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
       RT.clearLocThreadIdInsertPt(CGF);
       RT.emitNonSPMDEntryFooter(CGF, EST);
     }
@@ -1118,8 +1121,8 @@ void CGOpenMPRuntimeGPU::emitNonSPMDKernel(const OMPExecutableDirective &D,
 
 // Setup NVPTX threads for master-worker OpenMP scheme.
 void CGOpenMPRuntimeGPU::emitNonSPMDEntryHeader(CodeGenFunction &CGF,
-                                                EntryFunctionState &EST,
-                                                WorkerFunctionState &WST) {
+                                                  EntryFunctionState &EST,
+                                                  WorkerFunctionState &WST) {
   CGBuilderTy &Bld = CGF.Builder;
 
   llvm::BasicBlock *WorkerBB = CGF.createBasicBlock(".worker");
@@ -1161,7 +1164,7 @@ void CGOpenMPRuntimeGPU::emitNonSPMDEntryHeader(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitNonSPMDEntryFooter(CodeGenFunction &CGF,
-                                                EntryFunctionState &EST) {
+                                                  EntryFunctionState &EST) {
   IsInTargetMasterThreadRegion = false;
   if (!CGF.HaveInsertPoint())
     return;
@@ -1191,11 +1194,11 @@ void CGOpenMPRuntimeGPU::emitNonSPMDEntryFooter(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitSPMDKernel(const OMPExecutableDirective &D,
-                                        StringRef ParentName,
-                                        llvm::Function *&OutlinedFn,
-                                        llvm::Constant *&OutlinedFnID,
-                                        bool IsOffloadEntry,
-                                        const RegionCodeGenTy &CodeGen) {
+                                          StringRef ParentName,
+                                          llvm::Function *&OutlinedFn,
+                                          llvm::Constant *&OutlinedFnID,
+                                          bool IsOffloadEntry,
+                                          const RegionCodeGenTy &CodeGen) {
   ExecutionRuntimeModesRAII ModeRAII(
       CurrentExecutionMode, RequiresFullRuntime,
       CGM.getLangOpts().OpenMPCUDAForceFullRuntime ||
@@ -1241,9 +1244,9 @@ void CGOpenMPRuntimeGPU::emitSPMDKernel(const OMPExecutableDirective &D,
   IsInTTDRegion = false;
 }
 
-void CGOpenMPRuntimeGPU::emitSPMDEntryHeader(CodeGenFunction &CGF,
-                                             EntryFunctionState &EST,
-                                             const OMPExecutableDirective &D) {
+void CGOpenMPRuntimeGPU::emitSPMDEntryHeader(
+    CodeGenFunction &CGF, EntryFunctionState &EST,
+    const OMPExecutableDirective &D) {
   CGBuilderTy &Bld = CGF.Builder;
 
   // Setup BBs in entry function.
@@ -1271,7 +1274,7 @@ void CGOpenMPRuntimeGPU::emitSPMDEntryHeader(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitSPMDEntryFooter(CodeGenFunction &CGF,
-                                             EntryFunctionState &EST) {
+                                               EntryFunctionState &EST) {
   IsInTargetMasterThreadRegion = false;
   if (!CGF.HaveInsertPoint())
     return;
@@ -1443,9 +1446,9 @@ void CGOpenMPRuntimeGPU::emitWorkerLoop(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::createOffloadEntry(llvm::Constant *ID,
-                                            llvm::Constant *Addr, uint64_t Size,
-                                            int32_t,
-                                            llvm::GlobalValue::LinkageTypes) {
+                                              llvm::Constant *Addr,
+                                              uint64_t Size, int32_t,
+                                              llvm::GlobalValue::LinkageTypes) {
   // TODO: Add support for global variables on the device after declare target
   // support.
   if (!isa<llvm::Function>(Addr))
@@ -1522,8 +1525,8 @@ CGOpenMPRuntimeGPU::CGOpenMPRuntimeGPU(CodeGenModule &CGM)
 }
 
 void CGOpenMPRuntimeGPU::emitProcBindClause(CodeGenFunction &CGF,
-                                            ProcBindKind ProcBind,
-                                            SourceLocation Loc) {
+                                              ProcBindKind ProcBind,
+                                              SourceLocation Loc) {
   // Do nothing in case of SPMD mode and L0 parallel.
   if (getExecutionMode() == CGOpenMPRuntimeGPU::EM_SPMD)
     return;
@@ -1532,8 +1535,8 @@ void CGOpenMPRuntimeGPU::emitProcBindClause(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitNumThreadsClause(CodeGenFunction &CGF,
-                                              llvm::Value *NumThreads,
-                                              SourceLocation Loc) {
+                                                llvm::Value *NumThreads,
+                                                SourceLocation Loc) {
   // Do nothing in case of SPMD mode and L0 parallel.
   if (getExecutionMode() == CGOpenMPRuntimeGPU::EM_SPMD)
     return;
@@ -1542,9 +1545,9 @@ void CGOpenMPRuntimeGPU::emitNumThreadsClause(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitNumTeamsClause(CodeGenFunction &CGF,
-                                            const Expr *NumTeams,
-                                            const Expr *ThreadLimit,
-                                            SourceLocation Loc) {}
+                                              const Expr *NumTeams,
+                                              const Expr *ThreadLimit,
+                                              SourceLocation Loc) {}
 
 llvm::Function *CGOpenMPRuntimeGPU::emitParallelOutlinedFunction(
     const OMPExecutableDirective &D, const VarDecl *ThreadIDVar,
@@ -1664,7 +1667,8 @@ llvm::Function *CGOpenMPRuntimeGPU::emitTeamsOutlinedFunction(
         : Loc(Loc), GlobalizedRD(GlobalizedRD),
           MappedDeclsFields(MappedDeclsFields) {}
     void Enter(CodeGenFunction &CGF) override {
-      auto &Rt = static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
+      auto &Rt =
+          static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
       if (GlobalizedRD) {
         auto I = Rt.FunctionGlobalizedDecls.try_emplace(CGF.CurFn).first;
         I->getSecond().GlobalRecord = GlobalizedRD;
@@ -1694,8 +1698,8 @@ llvm::Function *CGOpenMPRuntimeGPU::emitTeamsOutlinedFunction(
 }
 
 void CGOpenMPRuntimeGPU::emitGenericVarsProlog(CodeGenFunction &CGF,
-                                               SourceLocation Loc,
-                                               bool WithSPMDCheck) {
+                                                 SourceLocation Loc,
+                                                 bool WithSPMDCheck) {
   if (getDataSharingMode(CGM) != CGOpenMPRuntimeGPU::Generic &&
       getExecutionMode() != CGOpenMPRuntimeGPU::EM_SPMD)
     return;
@@ -1985,7 +1989,7 @@ void CGOpenMPRuntimeGPU::emitGenericVarsProlog(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitGenericVarsEpilog(CodeGenFunction &CGF,
-                                               bool WithSPMDCheck) {
+                                                 bool WithSPMDCheck) {
   if (getDataSharingMode(CGM) != CGOpenMPRuntimeGPU::Generic &&
       getExecutionMode() != CGOpenMPRuntimeGPU::EM_SPMD)
     return;
@@ -2051,10 +2055,10 @@ void CGOpenMPRuntimeGPU::emitGenericVarsEpilog(CodeGenFunction &CGF,
 }
 
 void CGOpenMPRuntimeGPU::emitTeamsCall(CodeGenFunction &CGF,
-                                       const OMPExecutableDirective &D,
-                                       SourceLocation Loc,
-                                       llvm::Function *OutlinedFn,
-                                       ArrayRef<llvm::Value *> CapturedVars) {
+                                         const OMPExecutableDirective &D,
+                                         SourceLocation Loc,
+                                         llvm::Function *OutlinedFn,
+                                         ArrayRef<llvm::Value *> CapturedVars) {
   if (!CGF.HaveInsertPoint())
     return;
 
@@ -2068,11 +2072,9 @@ void CGOpenMPRuntimeGPU::emitTeamsCall(CodeGenFunction &CGF,
   emitOutlinedFunctionCall(CGF, Loc, OutlinedFn, OutlinedFnArgs);
 }
 
-void CGOpenMPRuntimeGPU::emitParallelCall(CodeGenFunction &CGF,
-                                          SourceLocation Loc,
-                                          llvm::Function *OutlinedFn,
-                                          ArrayRef<llvm::Value *> CapturedVars,
-                                          const Expr *IfCond) {
+void CGOpenMPRuntimeGPU::emitParallelCall(
+    CodeGenFunction &CGF, SourceLocation Loc, llvm::Function *OutlinedFn,
+    ArrayRef<llvm::Value *> CapturedVars, const Expr *IfCond) {
   if (!CGF.HaveInsertPoint())
     return;
 
@@ -2119,6 +2121,7 @@ void CGOpenMPRuntimeGPU::emitNonSPMDParallelCall(
   };
   auto &&SeqGen = [this, &CodeGen, Loc](CodeGenFunction &CGF,
                                         PrePostActionTy &) {
+
     RegionCodeGenTy RCG(CodeGen);
     llvm::Value *RTLoc = emitUpdateLocation(CGF, Loc);
     llvm::Value *ThreadID = getThreadID(CGF, Loc);
@@ -2293,6 +2296,7 @@ void CGOpenMPRuntimeGPU::emitSPMDParallelCall(
   };
   auto &&SeqGen = [this, &CodeGen, Loc](CodeGenFunction &CGF,
                                         PrePostActionTy &) {
+
     RegionCodeGenTy RCG(CodeGen);
     llvm::Value *RTLoc = emitUpdateLocation(CGF, Loc);
     llvm::Value *ThreadID = getThreadID(CGF, Loc);
@@ -2339,8 +2343,9 @@ void CGOpenMPRuntimeGPU::syncCTAThreads(CodeGenFunction &CGF) {
 }
 
 void CGOpenMPRuntimeGPU::emitBarrierCall(CodeGenFunction &CGF,
-                                         SourceLocation Loc,
-                                         OpenMPDirectiveKind Kind, bool, bool) {
+                                           SourceLocation Loc,
+                                           OpenMPDirectiveKind Kind, bool,
+                                           bool) {
   // Always emit simple barriers!
   if (!CGF.HaveInsertPoint())
     return;
@@ -2882,7 +2887,7 @@ static llvm::Value *emitInterWarpCopyFunction(CodeGenModule &CGM,
         C.getTypeSizeInChars(Private->getType())
             .alignTo(C.getTypeAlignInChars(Private->getType()))
             .getQuantity();
-    for (unsigned TySize = 4; TySize > 0 && RealTySize > 0; TySize /= 2) {
+    for (unsigned TySize = 4; TySize > 0 && RealTySize > 0; TySize /=2) {
       unsigned NumIters = RealTySize / TySize;
       if (NumIters == 0)
         continue;
@@ -3897,12 +3902,10 @@ static llvm::Value *emitGlobalToListReduceFunction(
 /// Finally, a call is made to '__kmpc_nvptx_parallel_reduce_nowait_v2' to
 /// reduce across workers and compute a globally reduced value.
 ///
-void CGOpenMPRuntimeGPU::emitReduction(CodeGenFunction &CGF, SourceLocation Loc,
-                                       ArrayRef<const Expr *> Privates,
-                                       ArrayRef<const Expr *> LHSExprs,
-                                       ArrayRef<const Expr *> RHSExprs,
-                                       ArrayRef<const Expr *> ReductionOps,
-                                       ReductionOptionsTy Options) {
+void CGOpenMPRuntimeGPU::emitReduction(
+    CodeGenFunction &CGF, SourceLocation Loc, ArrayRef<const Expr *> Privates,
+    ArrayRef<const Expr *> LHSExprs, ArrayRef<const Expr *> RHSExprs,
+    ArrayRef<const Expr *> ReductionOps, ReductionOptionsTy Options) {
   if (!CGF.HaveInsertPoint())
     return;
 
@@ -4122,8 +4125,8 @@ CGOpenMPRuntimeGPU::translateParameter(const FieldDecl *FD,
 
 Address
 CGOpenMPRuntimeGPU::getParameterAddress(CodeGenFunction &CGF,
-                                        const VarDecl *NativeParam,
-                                        const VarDecl *TargetParam) const {
+                                          const VarDecl *NativeParam,
+                                          const VarDecl *TargetParam) const {
   assert(NativeParam != TargetParam &&
          NativeParam->getType()->isReferenceType() &&
          "Native arg must not be the same as target arg.");
@@ -4135,8 +4138,8 @@ CGOpenMPRuntimeGPU::getParameterAddress(CodeGenFunction &CGF,
   unsigned NativePointeeAddrSpace =
       CGF.getContext().getTargetAddressSpace(NativePointeeTy);
   QualType TargetTy = TargetParam->getType();
-  llvm::Value *TargetAddr = CGF.EmitLoadOfScalar(LocalAddr, /*Volatile=*/false,
-                                                 TargetTy, SourceLocation());
+  llvm::Value *TargetAddr = CGF.EmitLoadOfScalar(
+      LocalAddr, /*Volatile=*/false, TargetTy, SourceLocation());
   // First cast to generic.
   TargetAddr = CGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
       TargetAddr, TargetAddr->getType()->getPointerElementType()->getPointerTo(
@@ -4300,7 +4303,7 @@ llvm::Function *CGOpenMPRuntimeGPU::createParallelDataSharingWrapper(
 }
 
 void CGOpenMPRuntimeGPU::emitFunctionProlog(CodeGenFunction &CGF,
-                                            const Decl *D) {
+                                              const Decl *D) {
   if (getDataSharingMode(CGM) != CGOpenMPRuntimeGPU::Generic)
     return;
 
@@ -4335,7 +4338,8 @@ void CGOpenMPRuntimeGPU::emitFunctionProlog(CodeGenFunction &CGF,
   if (!GlobalizedVarsRecord && EscapedVariableLengthDecls.empty())
     return;
   auto I = FunctionGlobalizedDecls.try_emplace(CGF.CurFn).first;
-  I->getSecond().MappedParams = std::make_unique<CodeGenFunction::OMPMapVars>();
+  I->getSecond().MappedParams =
+      std::make_unique<CodeGenFunction::OMPMapVars>();
   I->getSecond().GlobalRecord = GlobalizedVarsRecord;
   I->getSecond().EscapedParameters.insert(
       VarChecker.getEscapedParameters().begin(),
@@ -4377,7 +4381,7 @@ void CGOpenMPRuntimeGPU::emitFunctionProlog(CodeGenFunction &CGF,
 }
 
 Address CGOpenMPRuntimeGPU::getAddressOfLocalVariable(CodeGenFunction &CGF,
-                                                      const VarDecl *VD) {
+                                                        const VarDecl *VD) {
   if (VD && VD->hasAttr<OMPAllocateDeclAttr>()) {
     const auto *A = VD->getAttr<OMPAllocateDeclAttr>();
     auto AS = LangAS::Default;
@@ -4452,7 +4456,8 @@ void CGOpenMPRuntimeGPU::functionFinished(CodeGenFunction &CGF) {
 
 void CGOpenMPRuntimeGPU::getDefaultDistScheduleAndChunk(
     CodeGenFunction &CGF, const OMPLoopDirective &S,
-    OpenMPDistScheduleClauseKind &ScheduleKind, llvm::Value *&Chunk) const {
+    OpenMPDistScheduleClauseKind &ScheduleKind,
+    llvm::Value *&Chunk) const {
   auto &RT = static_cast<CGOpenMPRuntimeGPU &>(CGF.CGM.getOpenMPRuntime());
   if (getExecutionMode() == CGOpenMPRuntimeGPU::EM_SPMD) {
     ScheduleKind = OMPC_DIST_SCHEDULE_static;
@@ -4462,17 +4467,18 @@ void CGOpenMPRuntimeGPU::getDefaultDistScheduleAndChunk(
         S.getIterationVariable()->getType(), S.getBeginLoc());
     return;
   }
-  CGOpenMPRuntime::getDefaultDistScheduleAndChunk(CGF, S, ScheduleKind, Chunk);
+  CGOpenMPRuntime::getDefaultDistScheduleAndChunk(
+      CGF, S, ScheduleKind, Chunk);
 }
 
 void CGOpenMPRuntimeGPU::getDefaultScheduleAndChunk(
     CodeGenFunction &CGF, const OMPLoopDirective &S,
-    OpenMPScheduleClauseKind &ScheduleKind, const Expr *&ChunkExpr) const {
+    OpenMPScheduleClauseKind &ScheduleKind,
+    const Expr *&ChunkExpr) const {
   ScheduleKind = OMPC_SCHEDULE_static;
   // Chunk size is 1 in this case.
   llvm::APInt ChunkSize(32, 1);
-  ChunkExpr = IntegerLiteral::Create(
-      CGF.getContext(), ChunkSize,
+  ChunkExpr = IntegerLiteral::Create(CGF.getContext(), ChunkSize,
       CGF.getContext().getIntTypeForBitwidth(32, /*Signed=*/0),
       SourceLocation());
 }
@@ -4534,11 +4540,11 @@ unsigned CGOpenMPRuntimeGPU::getDefaultFirstprivateAddressSpace() const {
 }
 
 bool CGOpenMPRuntimeGPU::hasAllocateAttributeForGlobalVar(const VarDecl *VD,
-                                                          LangAS &AS) {
+                                                            LangAS &AS) {
   if (!VD || !VD->hasAttr<OMPAllocateDeclAttr>())
     return false;
   const auto *A = VD->getAttr<OMPAllocateDeclAttr>();
-  switch (A->getAllocatorType()) {
+  switch(A->getAllocatorType()) {
   case OMPAllocateDeclAttr::OMPNullMemAlloc:
   case OMPAllocateDeclAttr::OMPDefaultMemAlloc:
   // Not supported, fallback to the default mem space.
@@ -4578,7 +4584,8 @@ static CudaArch getCudaArch(CodeGenModule &CGM) {
 
 /// Check to see if target architecture supports unified addressing which is
 /// a restriction for OpenMP requires clause "unified_shared_memory".
-void CGOpenMPRuntimeGPU::processRequiresDirective(const OMPRequiresDecl *D) {
+void CGOpenMPRuntimeGPU::processRequiresDirective(
+    const OMPRequiresDecl *D) {
   for (const OMPClause *Clause : D->clauselists()) {
     if (Clause->getClauseKind() == OMPC_unified_shared_memory) {
       CudaArch Arch = getCudaArch(CGM);

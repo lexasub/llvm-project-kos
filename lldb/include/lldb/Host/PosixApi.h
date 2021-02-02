@@ -16,8 +16,8 @@
 #if defined(_WIN32)
 #include "lldb/Host/windows/PosixApi.h"
 #else
-#include <csignal>
 #include <unistd.h>
+#include <csignal>
 #endif
 
 #endif

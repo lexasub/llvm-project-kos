@@ -50,29 +50,29 @@ int main(int argc, char **argv) {
 #pragma omp taskloop simd nogroup grainsize(argc) simdlen(4)
   for (int i = 0; i < 10; ++i)
     ;
-  // CHECK: call void @__kmpc_taskgroup(%struct.ident_t* [[DEFLOC]], i32 [[GTID]])
-  // OMP45: [[TASKV:%.+]] = call i8* @__kmpc_omp_task_alloc(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i32 1, i64 80, i64 16, i32 (i32, i8*)* bitcast (i32 (i32, [[TDP_TY:%.+]]*)* [[TASK3:@.+]] to i32 (i32, i8*)*))
-  // OMP50: [[TASKV:%.+]] = call i8* @__kmpc_omp_task_alloc(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i32 1, i64 80, i64 24, i32 (i32, i8*)* bitcast (i32 (i32, [[TDP_TY:%.+]]*)* [[TASK3:@.+]] to i32 (i32, i8*)*))
-  // CHECK: [[TASK:%.+]] = bitcast i8* [[TASKV]] to [[TDP_TY]]*
-  // CHECK: [[TASK_DATA:%.+]] = getelementptr inbounds [[TDP_TY]], [[TDP_TY]]* [[TASK]], i32 0, i32 0
-  // OMP45: [[IF:%.+]] = icmp ne i32 %{{.+}}, 0
-  // OMP50: [[IF_VAL:%.+]] = load i8, i8* %
-  // OMP50: [[IF:%.+]] = trunc i8 [[IF_VAL]] to i1
-  // CHECK: [[IF_INT:%.+]] = sext i1 [[IF]] to i32
-  // CHECK: [[DOWN:%.+]] = getelementptr inbounds [[TD_TY:%.+]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 5
-  // CHECK: store i64 0, i64* [[DOWN]],
-  // CHECK: [[UP:%.+]] = getelementptr inbounds [[TD_TY]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 6
-  // CHECK: store i64 %{{.+}}, i64* [[UP]],
-  // CHECK: [[ST:%.+]] = getelementptr inbounds [[TD_TY]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 7
-  // CHECK: store i64 1, i64* [[ST]],
-  // CHECK: [[ST_VAL:%.+]] = load i64, i64* [[ST]],
-  // CHECK: call void @__kmpc_taskloop(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i8* [[TASKV]], i32 [[IF_INT]], i64* [[DOWN]], i64* [[UP]], i64 [[ST_VAL]], i32 1, i32 2, i64 4, i8* null)
-  // CHECK: call void @__kmpc_end_taskgroup(%struct.ident_t* [[DEFLOC]], i32 [[GTID]])
+// CHECK: call void @__kmpc_taskgroup(%struct.ident_t* [[DEFLOC]], i32 [[GTID]])
+// OMP45: [[TASKV:%.+]] = call i8* @__kmpc_omp_task_alloc(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i32 1, i64 80, i64 16, i32 (i32, i8*)* bitcast (i32 (i32, [[TDP_TY:%.+]]*)* [[TASK3:@.+]] to i32 (i32, i8*)*))
+// OMP50: [[TASKV:%.+]] = call i8* @__kmpc_omp_task_alloc(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i32 1, i64 80, i64 24, i32 (i32, i8*)* bitcast (i32 (i32, [[TDP_TY:%.+]]*)* [[TASK3:@.+]] to i32 (i32, i8*)*))
+// CHECK: [[TASK:%.+]] = bitcast i8* [[TASKV]] to [[TDP_TY]]*
+// CHECK: [[TASK_DATA:%.+]] = getelementptr inbounds [[TDP_TY]], [[TDP_TY]]* [[TASK]], i32 0, i32 0
+// OMP45: [[IF:%.+]] = icmp ne i32 %{{.+}}, 0
+// OMP50: [[IF_VAL:%.+]] = load i8, i8* %
+// OMP50: [[IF:%.+]] = trunc i8 [[IF_VAL]] to i1
+// CHECK: [[IF_INT:%.+]] = sext i1 [[IF]] to i32
+// CHECK: [[DOWN:%.+]] = getelementptr inbounds [[TD_TY:%.+]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 5
+// CHECK: store i64 0, i64* [[DOWN]],
+// CHECK: [[UP:%.+]] = getelementptr inbounds [[TD_TY]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 6
+// CHECK: store i64 %{{.+}}, i64* [[UP]],
+// CHECK: [[ST:%.+]] = getelementptr inbounds [[TD_TY]], [[TD_TY]]* [[TASK_DATA]], i32 0, i32 7
+// CHECK: store i64 1, i64* [[ST]],
+// CHECK: [[ST_VAL:%.+]] = load i64, i64* [[ST]],
+// CHECK: call void @__kmpc_taskloop(%struct.ident_t* [[DEFLOC]], i32 [[GTID]], i8* [[TASKV]], i32 [[IF_INT]], i64* [[DOWN]], i64* [[UP]], i64 [[ST_VAL]], i32 1, i32 2, i64 4, i8* null)
+// CHECK: call void @__kmpc_end_taskgroup(%struct.ident_t* [[DEFLOC]], i32 [[GTID]])
   int i;
-#pragma omp taskloop simd if (argc) shared(argc, argv) collapse(2) num_tasks(4) safelen(32)
+#pragma omp taskloop simd if(argc) shared(argc, argv) collapse(2) num_tasks(4) safelen(32)
   for (i = 0; i < argc; ++i)
-    for (int j = argc; j < argv[argc][argc]; ++j)
-      ;
+  for (int j = argc; j < argv[argc][argc]; ++j)
+    ;
 }
 
 // CHECK: define internal i32 [[TASK1]](

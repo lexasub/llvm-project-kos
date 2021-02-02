@@ -20,9 +20,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
         char *p = new char[kSize];
         memset(p, 0, kSize);
         SinkPtr = p;
-        delete[] p;
+        delete [] p;
       }
     }
   }
   return 0;
 }
+

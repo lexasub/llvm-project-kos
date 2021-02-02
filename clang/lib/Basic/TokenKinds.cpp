@@ -14,11 +14,12 @@
 #include "llvm/Support/ErrorHandling.h"
 using namespace clang;
 
-static const char *const TokNames[] = {
+static const char * const TokNames[] = {
 #define TOK(X) #X,
-#define KEYWORD(X, Y) #X,
+#define KEYWORD(X,Y) #X,
 #include "clang/Basic/TokenKinds.def"
-    nullptr};
+  nullptr
+};
 
 const char *tok::getTokenName(TokenKind Kind) {
   if (Kind < tok::NUM_TOKENS)
@@ -29,33 +30,25 @@ const char *tok::getTokenName(TokenKind Kind) {
 
 const char *tok::getPunctuatorSpelling(TokenKind Kind) {
   switch (Kind) {
-#define PUNCTUATOR(X, Y)                                                       \
-  case X:                                                                      \
-    return Y;
+#define PUNCTUATOR(X,Y) case X: return Y;
 #include "clang/Basic/TokenKinds.def"
-  default:
-    break;
+  default: break;
   }
   return nullptr;
 }
 
 const char *tok::getKeywordSpelling(TokenKind Kind) {
   switch (Kind) {
-#define KEYWORD(X, Y)                                                          \
-  case kw_##X:                                                                 \
-    return #X;
+#define KEYWORD(X,Y) case kw_ ## X: return #X;
 #include "clang/Basic/TokenKinds.def"
-  default:
-    break;
+    default: break;
   }
   return nullptr;
 }
 
 bool tok::isAnnotation(TokenKind Kind) {
   switch (Kind) {
-#define ANNOTATION(X)                                                          \
-  case annot_##X:                                                              \
-    return true;
+#define ANNOTATION(X) case annot_ ## X: return true;
 #include "clang/Basic/TokenKinds.def"
   default:
     break;
@@ -65,9 +58,7 @@ bool tok::isAnnotation(TokenKind Kind) {
 
 bool tok::isPragmaAnnotation(TokenKind Kind) {
   switch (Kind) {
-#define PRAGMA_ANNOTATION(X)                                                   \
-  case annot_##X:                                                              \
-    return true;
+#define PRAGMA_ANNOTATION(X) case annot_ ## X: return true;
 #include "clang/Basic/TokenKinds.def"
   default:
     break;

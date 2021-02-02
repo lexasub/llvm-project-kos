@@ -26,13 +26,13 @@
 
 template <typename T>
 void test_category(T v) {
-  TEST_OP(v, ==);   // expected-error 18 {{}}
-  TEST_OP(v, !=);   // expected-error 18 {{}}
-  TEST_OP(v, <);    // expected-error 18 {{}}
-  TEST_OP(v, <=);   // expected-error 18 {{}}
-  TEST_OP(v, >);    // expected-error 18 {{}}
-  TEST_OP(v, >=);   // expected-error 18 {{}}
-  TEST_OP(v, <= >); // expected-error 18 {{}}
+  TEST_OP(v, ==);  // expected-error 18 {{}}
+  TEST_OP(v, !=);  // expected-error 18 {{}}
+  TEST_OP(v, <);   // expected-error 18 {{}}
+  TEST_OP(v, <=);  // expected-error 18 {{}}
+  TEST_OP(v, >);   // expected-error 18 {{}}
+  TEST_OP(v, >=);  // expected-error 18 {{}}
+  TEST_OP(v, <=>); // expected-error 18 {{}}
 
   void(v == 0);
   void(0 == v);
@@ -47,8 +47,8 @@ void test_category(T v) {
   void(v >= 0);
   void(0 >= v);
 #ifndef _LIBCPP_HAS_NO_SPACESHIP_OPERATOR
-  void(v <= > 0);
-  void(0 <= > v);
+  void(v <=> 0);
+  void(0 <=> v);
 #endif
 }
 

@@ -18,15 +18,15 @@
 #include <memory>
 
 namespace clang {
-class ASTContext;
-class ASTConsumer;
-class ASTReader;
-class ASTUnit;
-class Decl;
-class FrontendAction;
+  class ASTContext;
+  class ASTConsumer;
+  class ASTReader;
+  class ASTUnit;
+  class Decl;
+  class FrontendAction;
 
 namespace serialization {
-class ModuleFile;
+  class ModuleFile;
 }
 
 namespace index {

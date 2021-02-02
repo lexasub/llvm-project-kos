@@ -1,39 +1,17 @@
 // RUN: %clang_cc1 -emit-llvm %s -o - -triple i686-pc-linux-gnu | FileCheck %s
 // RUN: %clang_cc1 -emit-llvm %s -o - -triple i686-pc-win32 | FileCheck -check-prefix MSVC %s
 
-struct A {
-  int a;
-  virtual int aa();
-};
-struct B {
-  int b;
-  virtual int bb();
-};
-struct C : virtual A, virtual B {
-  int c;
-  virtual int aa();
-  virtual int bb();
-};
-struct AA {
-  int a;
-  virtual int aa();
-};
-struct BB {
-  int b;
-  virtual int bb();
-};
-struct CC : AA, BB {
-  virtual int aa();
-  virtual int bb();
-  virtual int cc();
-};
-struct D : virtual C, virtual CC {
-  int e;
-};
+struct A { int a; virtual int aa(); };
+struct B { int b; virtual int bb(); };
+struct C : virtual A, virtual B { int c; virtual int aa(); virtual int bb(); };
+struct AA { int a; virtual int aa(); };
+struct BB { int b; virtual int bb(); };
+struct CC : AA, BB { virtual int aa(); virtual int bb(); virtual int cc(); };
+struct D : virtual C, virtual CC { int e; };
 
-D *x;
+D* x;
 
-A *a() { return x; }
+A* a() { return x; }
 // CHECK: @_Z1av() [[NUW:#[0-9]+]]
 // CHECK: [[VBASEOFFSETPTRA:%[a-zA-Z0-9\.]+]] = getelementptr i8, i8* {{.*}}, i64 -16
 // CHECK: [[CASTVBASEOFFSETPTRA:%[a-zA-Z0-9\.]+]] = bitcast i8* [[VBASEOFFSETPTRA]] to i32*
@@ -49,7 +27,7 @@ A *a() { return x; }
 // MSVC:   add nsw i32 0, %[[offset]]
 // MSVC: }
 
-B *b() { return x; }
+B* b() { return x; }
 // CHECK: @_Z1bv() [[NUW]]
 // CHECK: [[VBASEOFFSETPTRA:%[a-zA-Z0-9\.]+]] = getelementptr i8, i8* {{.*}}, i64 -20
 // CHECK: [[CASTVBASEOFFSETPTRA:%[a-zA-Z0-9\.]+]] = bitcast i8* [[VBASEOFFSETPTRA]] to i32*
@@ -66,7 +44,8 @@ B *b() { return x; }
 // MSVC:   add nsw i32 0, %[[offset]]
 // MSVC: }
 
-BB *c() { return x; }
+
+BB* c() { return x; }
 // CHECK: @_Z1cv() [[NUW]]
 // CHECK: [[VBASEOFFSETPTRC:%[a-zA-Z0-9\.]+]] = getelementptr i8, i8* {{.*}}, i64 -24
 // CHECK: [[CASTVBASEOFFSETPTRC:%[a-zA-Z0-9\.]+]] = bitcast i8* [[VBASEOFFSETPTRC]] to i32*
@@ -85,16 +64,12 @@ BB *c() { return x; }
 // MSVC: }
 
 // Put the vbptr at a non-zero offset inside a non-virtual base.
-struct E {
-  int e;
-};
-struct F : E, D {
-  int f;
-};
+struct E { int e; };
+struct F : E, D { int f; };
 
-F *y;
+F* y;
 
-BB *d() { return y; }
+BB* d() { return y; }
 
 // Same as 'c' except the vbptr offset is 4, changing the initial GEP and the
 // final add.

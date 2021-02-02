@@ -8,19 +8,19 @@ struct Filter {
   int a;
 };
 
-class Message {};
+class Message{};
 class Sender {
-public:
-  virtual bool Send(Message *msg) = 0;
+ public:
+  virtual bool Send(Message* msg) = 0;
 
-protected:
+ protected:
   virtual ~Sender() {}
 };
 
 // CHECK: declare zeroext i1 @_ZThn16_N17SyncMessageFilter4SendEP7Message
 class SyncMessageFilter : public Filter, public Sender {
-public:
-  bool Send(Message *message) override;
+ public:
+  bool Send(Message* message) override;
 };
 
 class TestSyncMessageFilter : public SyncMessageFilter {

@@ -56,12 +56,12 @@ class CalleeSavedInfo {
 
 public:
   explicit CalleeSavedInfo(unsigned R, int FI = 0)
-      : Reg(R), FrameIdx(FI), Restored(true), SpilledToReg(false) {}
+  : Reg(R), FrameIdx(FI), Restored(true), SpilledToReg(false) {}
 
   // Accessors.
-  Register getReg() const { return Reg; }
-  int getFrameIdx() const { return FrameIdx; }
-  unsigned getDstReg() const { return DstReg; }
+  Register getReg()                        const { return Reg; }
+  int getFrameIdx()                        const { return FrameIdx; }
+  unsigned getDstReg()                     const { return DstReg; }
   void setFrameIdx(int FI) {
     FrameIdx = FI;
     SpilledToReg = false;
@@ -70,9 +70,9 @@ public:
     DstReg = SpillReg;
     SpilledToReg = true;
   }
-  bool isRestored() const { return Restored; }
-  void setRestored(bool R) { Restored = R; }
-  bool isSpilledToReg() const { return SpilledToReg; }
+  bool isRestored()                        const { return Restored; }
+  void setRestored(bool R)                       { Restored = R; }
+  bool isSpilledToReg()                    const { return SpilledToReg; }
 };
 
 /// The MachineFrameInfo class represents an abstract stack frame until
@@ -388,9 +388,7 @@ public:
   int getObjectIndexBegin() const { return -NumFixedObjects; }
 
   /// Return one past the maximum frame object index.
-  int getObjectIndexEnd() const {
-    return (int)Objects.size() - NumFixedObjects;
-  }
+  int getObjectIndexEnd() const { return (int)Objects.size()-NumFixedObjects; }
 
   /// Return the number of fixed objects.
   unsigned getNumFixedObjects() const { return NumFixedObjects; }
@@ -406,8 +404,8 @@ public:
 
   /// Get the local offset mapping for a for an object.
   std::pair<int, int64_t> getLocalFrameObjectMap(int i) const {
-    assert(i >= 0 && (unsigned)i < LocalFrameObjects.size() &&
-           "Invalid local object reference!");
+    assert (i >= 0 && (unsigned)i < LocalFrameObjects.size() &&
+            "Invalid local object reference!");
     return LocalFrameObjects[i];
   }
 
@@ -444,23 +442,23 @@ public:
 
   /// Return true if the object was pre-allocated into the local block.
   bool isObjectPreAllocated(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].PreAllocated;
+    return Objects[ObjectIdx+NumFixedObjects].PreAllocated;
   }
 
   /// Return the size of the specified object.
   int64_t getObjectSize(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].Size;
+    return Objects[ObjectIdx+NumFixedObjects].Size;
   }
 
   /// Change the size of the specified stack object.
   void setObjectSize(int ObjectIdx, int64_t Size) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].Size = Size;
+    Objects[ObjectIdx+NumFixedObjects].Size = Size;
   }
 
   LLVM_ATTRIBUTE_DEPRECATED(inline unsigned getObjectAlignment(int ObjectIdx)
@@ -495,68 +493,68 @@ public:
 
   /// Return the underlying Alloca of the specified
   /// stack object if it exists. Returns 0 if none exists.
-  const AllocaInst *getObjectAllocation(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+  const AllocaInst* getObjectAllocation(int ObjectIdx) const {
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].Alloca;
+    return Objects[ObjectIdx+NumFixedObjects].Alloca;
   }
 
   /// Return the assigned stack offset of the specified object
   /// from the incoming stack pointer.
   int64_t getObjectOffset(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
     assert(!isDeadObjectIndex(ObjectIdx) &&
            "Getting frame offset for a dead object?");
-    return Objects[ObjectIdx + NumFixedObjects].SPOffset;
+    return Objects[ObjectIdx+NumFixedObjects].SPOffset;
   }
 
   bool isObjectZExt(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isZExt;
+    return Objects[ObjectIdx+NumFixedObjects].isZExt;
   }
 
   void setObjectZExt(int ObjectIdx, bool IsZExt) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].isZExt = IsZExt;
+    Objects[ObjectIdx+NumFixedObjects].isZExt = IsZExt;
   }
 
   bool isObjectSExt(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isSExt;
+    return Objects[ObjectIdx+NumFixedObjects].isSExt;
   }
 
   void setObjectSExt(int ObjectIdx, bool IsSExt) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].isSExt = IsSExt;
+    Objects[ObjectIdx+NumFixedObjects].isSExt = IsSExt;
   }
 
   /// Set the stack frame offset of the specified object. The
   /// offset is relative to the stack pointer on entry to the function.
   void setObjectOffset(int ObjectIdx, int64_t SPOffset) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
     assert(!isDeadObjectIndex(ObjectIdx) &&
            "Setting frame offset for a dead object?");
-    Objects[ObjectIdx + NumFixedObjects].SPOffset = SPOffset;
+    Objects[ObjectIdx+NumFixedObjects].SPOffset = SPOffset;
   }
 
   SSPLayoutKind getObjectSSPLayout(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return (SSPLayoutKind)Objects[ObjectIdx + NumFixedObjects].SSPLayout;
+    return (SSPLayoutKind)Objects[ObjectIdx+NumFixedObjects].SSPLayout;
   }
 
   void setObjectSSPLayout(int ObjectIdx, SSPLayoutKind Kind) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
     assert(!isDeadObjectIndex(ObjectIdx) &&
            "Setting SSP layout for a dead object?");
-    Objects[ObjectIdx + NumFixedObjects].SSPLayout = Kind;
+    Objects[ObjectIdx+NumFixedObjects].SSPLayout = Kind;
   }
 
   /// Return the number of bytes that must be allocated to hold
@@ -644,13 +642,14 @@ public:
   ///
   unsigned getMaxCallFrameSize() const {
     // TODO: Enable this assert when targets are fixed.
-    // assert(isMaxCallFrameSizeComputed() && "MaxCallFrameSize not computed
-    // yet");
+    //assert(isMaxCallFrameSizeComputed() && "MaxCallFrameSize not computed yet");
     if (!isMaxCallFrameSizeComputed())
       return 0;
     return MaxCallFrameSize;
   }
-  bool isMaxCallFrameSizeComputed() const { return MaxCallFrameSize != ~0u; }
+  bool isMaxCallFrameSizeComputed() const {
+    return MaxCallFrameSize != ~0u;
+  }
   void setMaxCallFrameSize(unsigned S) { MaxCallFrameSize = S; }
 
   /// Returns how many bytes of callee-saved registers the target pushed in the
@@ -682,9 +681,9 @@ public:
   /// Returns true if the specified index corresponds
   /// to an object that might be pointed to by an LLVM IR value.
   bool isAliasedObjectIndex(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isAliased;
+    return Objects[ObjectIdx+NumFixedObjects].isAliased;
   }
 
   /// Returns true if the specified index corresponds to an immutable object.
@@ -692,50 +691,50 @@ public:
     // Tail calling functions can clobber their function arguments.
     if (HasTailCall)
       return false;
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isImmutable;
+    return Objects[ObjectIdx+NumFixedObjects].isImmutable;
   }
 
   /// Marks the immutability of an object.
   void setIsImmutableObjectIndex(int ObjectIdx, bool IsImmutable) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].isImmutable = IsImmutable;
+    Objects[ObjectIdx+NumFixedObjects].isImmutable = IsImmutable;
   }
 
   /// Returns true if the specified index corresponds to a spill slot.
   bool isSpillSlotObjectIndex(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isSpillSlot;
+    return Objects[ObjectIdx+NumFixedObjects].isSpillSlot;
   }
 
   bool isStatepointSpillSlotObjectIndex(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].isStatepointSpillSlot;
+    return Objects[ObjectIdx+NumFixedObjects].isStatepointSpillSlot;
   }
 
   /// \see StackID
   uint8_t getStackID(int ObjectIdx) const {
-    return Objects[ObjectIdx + NumFixedObjects].StackID;
+    return Objects[ObjectIdx+NumFixedObjects].StackID;
   }
 
   /// \see StackID
   void setStackID(int ObjectIdx, uint8_t ID) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].StackID = ID;
+    Objects[ObjectIdx+NumFixedObjects].StackID = ID;
     // If ID > 0, MaxAlignment may now be overly conservative.
     // If ID == 0, MaxAlignment will need to be updated separately.
   }
 
   /// Returns true if the specified index corresponds to a dead object.
   bool isDeadObjectIndex(int ObjectIdx) const {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    return Objects[ObjectIdx + NumFixedObjects].Size == ~0ULL;
+    return Objects[ObjectIdx+NumFixedObjects].Size == ~0ULL;
   }
 
   /// Returns true if the specified index corresponds to a variable sized
@@ -747,9 +746,9 @@ public:
   }
 
   void markAsStatepointSpillSlotObjectIndex(int ObjectIdx) {
-    assert(unsigned(ObjectIdx + NumFixedObjects) < Objects.size() &&
+    assert(unsigned(ObjectIdx+NumFixedObjects) < Objects.size() &&
            "Invalid Object Idx!");
-    Objects[ObjectIdx + NumFixedObjects].isStatepointSpillSlot = true;
+    Objects[ObjectIdx+NumFixedObjects].isStatepointSpillSlot = true;
     assert(isStatepointSpillSlotObjectIndex(ObjectIdx) && "inconsistent");
   }
 
@@ -779,7 +778,7 @@ public:
   /// Remove or mark dead a statically sized stack object.
   void RemoveStackObject(int ObjectIdx) {
     // Mark it dead.
-    Objects[ObjectIdx + NumFixedObjects].Size = ~0ULL;
+    Objects[ObjectIdx+NumFixedObjects].Size = ~0ULL;
   }
 
   /// Notify the MachineFrameInfo object that a variable sized object has been
@@ -834,6 +833,6 @@ public:
   void dump(const MachineFunction &MF) const;
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

@@ -16,9 +16,9 @@ void positive() {
   // CHECK-FIXES: (*p)(2);
 }
 
-template <typename T>
-void invoke(const T &fn) {
-  fn(0);    // 1
+template<typename T>
+void invoke(const T& fn) {
+  fn(0); // 1
   (*fn)(0); // 2
   // CHECK-MESSAGES: :[[@LINE-1]]:4: warning: redundant repeated
   // CHECK-FIXES: fn(0); // 1

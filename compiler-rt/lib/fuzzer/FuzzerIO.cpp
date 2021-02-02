@@ -8,9 +8,9 @@
 // IO functions.
 //===----------------------------------------------------------------------===//
 
-#include "FuzzerIO.h"
 #include "FuzzerDefs.h"
 #include "FuzzerExtFunctions.h"
+#include "FuzzerIO.h"
 #include "FuzzerUtil.h"
 #include <algorithm>
 #include <cstdarg>
@@ -26,7 +26,7 @@ static FILE *OutputFile = stderr;
 long GetEpoch(const std::string &Path) {
   struct stat St;
   if (stat(Path.c_str(), &St))
-    return 0; // Can't stat, be conservative.
+    return 0;  // Can't stat, be conservative.
   return St.st_mtime;
 }
 
@@ -39,8 +39,7 @@ Unit FileToVector(const std::string &Path, size_t MaxSize, bool ExitOnError) {
 
   T.seekg(0, T.end);
   auto EndPos = T.tellg();
-  if (EndPos < 0)
-    return {};
+  if (EndPos < 0) return {};
   size_t FileLen = EndPos;
   if (MaxSize)
     FileLen = std::min(FileLen, MaxSize);
@@ -73,8 +72,7 @@ void WriteToFile(const std::string &Data, const std::string &Path) {
 void WriteToFile(const uint8_t *Data, size_t Size, const std::string &Path) {
   // Use raw C interface because this function may be called from a sig handler.
   FILE *Out = fopen(Path.c_str(), "wb");
-  if (!Out)
-    return;
+  if (!Out) return;
   fwrite(Data, sizeof(Data[0]), Size, Out);
   fclose(Out);
 }
@@ -92,16 +90,15 @@ void AppendToFile(const uint8_t *Data, size_t Size, const std::string &Path) {
   fclose(Out);
 }
 
-void ReadDirToVectorOfUnits(const char *Path, Vector<Unit> *V, long *Epoch,
-                            size_t MaxSize, bool ExitOnError) {
+void ReadDirToVectorOfUnits(const char *Path, Vector<Unit> *V,
+                            long *Epoch, size_t MaxSize, bool ExitOnError) {
   long E = Epoch ? *Epoch : 0;
   Vector<std::string> Files;
-  ListFilesInDirRecursive(Path, Epoch, &Files, /*TopDir*/ true);
+  ListFilesInDirRecursive(Path, Epoch, &Files, /*TopDir*/true);
   size_t NumLoaded = 0;
   for (size_t i = 0; i < Files.size(); i++) {
     auto &X = Files[i];
-    if (Epoch && GetEpoch(X) < E)
-      continue;
+    if (Epoch && GetEpoch(X) < E) continue;
     NumLoaded++;
     if ((NumLoaded & (NumLoaded - 1)) == 0 && NumLoaded >= 1024)
       Printf("Loaded %zd/%zd files from %s\n", NumLoaded, Files.size(), Path);
@@ -111,9 +108,10 @@ void ReadDirToVectorOfUnits(const char *Path, Vector<Unit> *V, long *Epoch,
   }
 }
 
+
 void GetSizedFilesFromDir(const std::string &Dir, Vector<SizedFile> *V) {
   Vector<std::string> Files;
-  ListFilesInDirRecursive(Dir, 0, &Files, /*TopDir*/ true);
+  ListFilesInDirRecursive(Dir, 0, &Files, /*TopDir*/true);
   for (auto &File : Files)
     if (size_t Size = FileSize(File))
       V->push_back({File, Size});
@@ -138,7 +136,9 @@ void DupAndCloseStderr() {
   }
 }
 
-void CloseStdout() { DiscardOutput(1); }
+void CloseStdout() {
+  DiscardOutput(1);
+}
 
 void Printf(const char *Fmt, ...) {
   va_list ap;
@@ -149,8 +149,7 @@ void Printf(const char *Fmt, ...) {
 }
 
 void VPrintf(bool Verbose, const char *Fmt, ...) {
-  if (!Verbose)
-    return;
+  if (!Verbose) return;
   va_list ap;
   va_start(ap, Fmt);
   vfprintf(OutputFile, Fmt, ap);
@@ -202,4 +201,4 @@ std::string TempPath(const char *Prefix, const char *Extension) {
                                    std::to_string(GetPid()) + Extension);
 }
 
-} // namespace fuzzer
+}  // namespace fuzzer

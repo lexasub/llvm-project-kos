@@ -13,22 +13,18 @@
 
 NOINLINE void asan_write_sized_aligned(uint8_t *p, size_t size) {
   EXPECT_EQ(0U, ((uintptr_t)p % size));
-  if (size == 1)
-    asan_write((uint8_t *)p);
-  else if (size == 2)
-    asan_write((uint16_t *)p);
-  else if (size == 4)
-    asan_write((uint32_t *)p);
-  else if (size == 8)
-    asan_write((uint64_t *)p);
+  if      (size == 1) asan_write((uint8_t*)p);
+  else if (size == 2) asan_write((uint16_t*)p);
+  else if (size == 4) asan_write((uint32_t*)p);
+  else if (size == 8) asan_write((uint64_t*)p);
 }
 
-template <typename T>
+template<typename T>
 NOINLINE void oob_test(int size, int off) {
-  char *p = (char *)malloc_aaa(size);
+  char *p = (char*)malloc_aaa(size);
   // fprintf(stderr, "writing %d byte(s) into [%p,%p) with offset %d\n",
   //        sizeof(T), p, p + size, off);
-  asan_write((T *)(p + off));
+  asan_write((T*)(p + off));
   free_aaa(p);
 }
 
@@ -52,18 +48,18 @@ static std::string GetRightOOBMessage(int off) {
   return str;
 }
 
-template <typename T>
+template<typename T>
 void OOBTest() {
   for (int size = sizeof(T); size < 20; size += 5) {
     for (int i = -5; i < 0; i++)
       EXPECT_DEATH(oob_test<T>(size, i), GetLeftOOBMessage(-i));
 
-    for (int i = 0; i < (int)(size - sizeof(T) + 1); i++) oob_test<T>(size, i);
+    for (int i = 0; i < (int)(size - sizeof(T) + 1); i++)
+      oob_test<T>(size, i);
 
     for (int i = size - sizeof(T) + 1; i <= (int)(size + 2 * sizeof(T)); i++) {
       // we don't catch unaligned partially OOB accesses.
-      if (i % sizeof(T))
-        continue;
+      if (i % sizeof(T)) continue;
       int off = i >= size ? (i - size) : 0;
       EXPECT_DEATH(oob_test<T>(size, i), GetRightOOBMessage(off));
     }
@@ -79,9 +75,13 @@ void OOBTest() {
 //   AddressSanitizer.OOBRightTest (315605 ms)
 //   AddressSanitizer.SimpleStackTest (366559 ms)
 
-TEST(AddressSanitizer, OOB_char) { OOBTest<U1>(); }
+TEST(AddressSanitizer, OOB_char) {
+  OOBTest<U1>();
+}
 
-TEST(AddressSanitizer, OOB_int) { OOBTest<U4>(); }
+TEST(AddressSanitizer, OOB_int) {
+  OOBTest<U4>();
+}
 
 TEST(AddressSanitizer, OOBRightTest) {
   size_t max_access_size = SANITIZER_WORDSIZE == 64 ? 8 : 4;
@@ -92,7 +92,7 @@ TEST(AddressSanitizer, OOBRightTest) {
         void *p = malloc(alloc_size);
         // allocated: [p, p + alloc_size)
         // accessed:  [p + offset, p + offset + access_size)
-        uint8_t *addr = (uint8_t *)p + offset;
+        uint8_t *addr = (uint8_t*)p + offset;
         if (offset + access_size <= alloc_size) {
           asan_write_sized_aligned(addr, access_size);
         } else {
@@ -112,17 +112,21 @@ TEST(AddressSanitizer, LargeOOBRightTest) {
     size_t size = large_power_of_two - i;
     char *p = Ident(new char[size]);
     EXPECT_DEATH(p[size] = 0, GetRightOOBMessage(0));
-    delete[] p;
+    delete [] p;
   }
 }
 
-TEST(AddressSanitizer, DISABLED_DemoOOBLeftLow) { oob_test<U1>(10, -1); }
+TEST(AddressSanitizer, DISABLED_DemoOOBLeftLow) {
+  oob_test<U1>(10, -1);
+}
 
 TEST(AddressSanitizer, DISABLED_DemoOOBLeftHigh) {
   oob_test<U1>(kLargeMalloc, -1);
 }
 
-TEST(AddressSanitizer, DISABLED_DemoOOBRightLow) { oob_test<U1>(10, 10); }
+TEST(AddressSanitizer, DISABLED_DemoOOBRightLow) {
+  oob_test<U1>(10, 10);
+}
 
 TEST(AddressSanitizer, DISABLED_DemoOOBRightHigh) {
   oob_test<U1>(kLargeMalloc, kLargeMalloc);

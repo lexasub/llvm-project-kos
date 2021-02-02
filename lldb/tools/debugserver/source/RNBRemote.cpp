@@ -38,6 +38,7 @@
 #include "DarwinLogEvent.h"
 #include "JSON.h"
 #include "JSONGenerator.h"
+#include "JSONGenerator.h"
 #include "MacOSX/Genealogy.h"
 #include "OsLogger.h"
 #include "RNBContext.h"
@@ -151,7 +152,7 @@ extern void ASLLogCallback(void *baton, uint32_t flags, const char *format,
     (__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 101000)
 // from System.framework/Versions/B/PrivateHeaders/sys/codesign.h
 extern "C" {
-#define CS_OPS_STATUS 0 /* return status */
+#define CS_OPS_STATUS 0       /* return status */
 #define CS_RESTRICT 0x0000800 /* tell dyld to treat restricted */
 int csops(pid_t pid, unsigned int ops, void *useraddr, size_t usersize);
 
@@ -272,10 +273,9 @@ void RNBRemote::CreatePacketTable() {
                      "vAttachWait",
                      "Wait for a process to start up then attach to it"));
   t.push_back(Packet(vattachorwait, &RNBRemote::HandlePacket_v, NULL,
-                     "vAttachOrWait",
-                     "Attach to the process or if it doesn't "
-                     "exist, wait for the process to start up "
-                     "then attach to it"));
+                     "vAttachOrWait", "Attach to the process or if it doesn't "
+                                      "exist, wait for the process to start up "
+                                      "then attach to it"));
   t.push_back(Packet(vattachname, &RNBRemote::HandlePacket_v, NULL,
                      "vAttachName", "Attach to an existing process by name"));
   t.push_back(Packet(vcont_list_actions, &RNBRemote::HandlePacket_v, NULL,
@@ -338,11 +338,10 @@ void RNBRemote::CreatePacketTable() {
       Packet(query_register_info, &RNBRemote::HandlePacket_qRegisterInfo, NULL,
              "qRegisterInfo",
              "Dynamically discover remote register context information."));
-  t.push_back(Packet(query_shlib_notify_info_addr,
-                     &RNBRemote::HandlePacket_qShlibInfoAddr, NULL,
-                     "qShlibInfoAddr",
-                     "Returns the address that contains info needed "
-                     "for getting shared library notifications"));
+  t.push_back(Packet(
+      query_shlib_notify_info_addr, &RNBRemote::HandlePacket_qShlibInfoAddr,
+      NULL, "qShlibInfoAddr", "Returns the address that contains info needed "
+                              "for getting shared library notifications"));
   t.push_back(Packet(query_step_packet_supported,
                      &RNBRemote::HandlePacket_qStepPacketSupported, NULL,
                      "qStepPacketSupported",
@@ -369,8 +368,8 @@ void RNBRemote::CreatePacketTable() {
       "qProcessInfo",
       "Replies with multiple 'key:value;' tuples appended to each other."));
   t.push_back(Packet(
-      query_symbol_lookup, &RNBRemote::HandlePacket_qSymbol, NULL,
-      "qSymbol:", "Notify that host debugger is ready to do symbol lookups"));
+      query_symbol_lookup, &RNBRemote::HandlePacket_qSymbol, NULL, "qSymbol:",
+      "Notify that host debugger is ready to do symbol lookups"));
   t.push_back(Packet(json_query_thread_extended_info,
                      &RNBRemote::HandlePacket_jThreadExtendedInfo, NULL,
                      "jThreadExtendedInfo",
@@ -386,10 +385,9 @@ void RNBRemote::CreatePacketTable() {
              "Replies with JSON data with information about all threads."));
   t.push_back(Packet(json_query_get_shared_cache_info,
                      &RNBRemote::HandlePacket_jGetSharedCacheInfo, NULL,
-                     "jGetSharedCacheInfo",
-                     "Replies with JSON data about the "
-                     "location and uuid of the shared "
-                     "cache in the inferior process."));
+                     "jGetSharedCacheInfo", "Replies with JSON data about the "
+                                            "location and uuid of the shared "
+                                            "cache in the inferior process."));
   t.push_back(Packet(start_noack_mode, &RNBRemote::HandlePacket_QStartNoAckMode,
                      NULL, "QStartNoAckMode",
                      "Request that " DEBUGSERVER_PROGRAM_NAME
@@ -401,19 +399,17 @@ void RNBRemote::CreatePacketTable() {
                      "'G', 'p', and 'P') support having the thread ID appended "
                      "to the end of the command"));
   t.push_back(Packet(set_logging_mode, &RNBRemote::HandlePacket_QSetLogging,
-                     NULL, "QSetLogging:",
-                     "Check if register packets ('g', "
-                     "'G', 'p', and 'P' support having "
-                     "the thread ID prefix"));
+                     NULL, "QSetLogging:", "Check if register packets ('g', "
+                                           "'G', 'p', and 'P' support having "
+                                           "the thread ID prefix"));
   t.push_back(Packet(
       set_max_packet_size, &RNBRemote::HandlePacket_QSetMaxPacketSize, NULL,
       "QSetMaxPacketSize:",
       "Tell " DEBUGSERVER_PROGRAM_NAME " the max sized packet gdb can handle"));
-  t.push_back(Packet(set_max_payload_size,
-                     &RNBRemote::HandlePacket_QSetMaxPayloadSize, NULL,
-                     "QSetMaxPayloadSize:",
-                     "Tell " DEBUGSERVER_PROGRAM_NAME
-                     " the max sized payload gdb can handle"));
+  t.push_back(Packet(
+      set_max_payload_size, &RNBRemote::HandlePacket_QSetMaxPayloadSize, NULL,
+      "QSetMaxPayloadSize:", "Tell " DEBUGSERVER_PROGRAM_NAME
+                             " the max sized payload gdb can handle"));
   t.push_back(
       Packet(set_environment_variable, &RNBRemote::HandlePacket_QEnvironment,
              NULL, "QEnvironment:",
@@ -424,42 +420,36 @@ void RNBRemote::CreatePacketTable() {
              "QEnvironmentHexEncoded:",
              "Add an environment variable to the inferior's environment"));
   t.push_back(Packet(set_launch_arch, &RNBRemote::HandlePacket_QLaunchArch,
-                     NULL, "QLaunchArch:",
-                     "Set the architecture to use when "
-                     "launching a process for hosts that "
-                     "can run multiple architecture "
-                     "slices from universal files."));
+                     NULL, "QLaunchArch:", "Set the architecture to use when "
+                                           "launching a process for hosts that "
+                                           "can run multiple architecture "
+                                           "slices from universal files."));
   t.push_back(Packet(set_disable_aslr, &RNBRemote::HandlePacket_QSetDisableASLR,
                      NULL, "QSetDisableASLR:",
                      "Set whether to disable ASLR when launching the process "
                      "with the set argv ('A') packet"));
   t.push_back(Packet(set_stdin, &RNBRemote::HandlePacket_QSetSTDIO, NULL,
-                     "QSetSTDIN:",
-                     "Set the standard input for a process to be "
-                     "launched with the 'A' packet"));
+                     "QSetSTDIN:", "Set the standard input for a process to be "
+                                   "launched with the 'A' packet"));
   t.push_back(Packet(set_stdout, &RNBRemote::HandlePacket_QSetSTDIO, NULL,
-                     "QSetSTDOUT:",
-                     "Set the standard output for a process to "
-                     "be launched with the 'A' packet"));
+                     "QSetSTDOUT:", "Set the standard output for a process to "
+                                    "be launched with the 'A' packet"));
   t.push_back(Packet(set_stderr, &RNBRemote::HandlePacket_QSetSTDIO, NULL,
-                     "QSetSTDERR:",
-                     "Set the standard error for a process to "
-                     "be launched with the 'A' packet"));
+                     "QSetSTDERR:", "Set the standard error for a process to "
+                                    "be launched with the 'A' packet"));
   t.push_back(Packet(set_working_dir, &RNBRemote::HandlePacket_QSetWorkingDir,
-                     NULL, "QSetWorkingDir:",
-                     "Set the working directory for a "
-                     "process to be launched with the "
-                     "'A' packet"));
+                     NULL, "QSetWorkingDir:", "Set the working directory for a "
+                                              "process to be launched with the "
+                                              "'A' packet"));
   t.push_back(Packet(set_list_threads_in_stop_reply,
                      &RNBRemote::HandlePacket_QListThreadsInStopReply, NULL,
                      "QListThreadsInStopReply",
                      "Set if the 'threads' key should be added to the stop "
                      "reply packets with a list of all thread IDs."));
-  t.push_back(Packet(sync_thread_state,
-                     &RNBRemote::HandlePacket_QSyncThreadState, NULL,
-                     "QSyncThreadState:",
-                     "Do whatever is necessary to make sure 'thread' is "
-                     "in a safe state to call functions on."));
+  t.push_back(Packet(
+      sync_thread_state, &RNBRemote::HandlePacket_QSyncThreadState, NULL,
+      "QSyncThreadState:", "Do whatever is necessary to make sure 'thread' is "
+                           "in a safe state to call functions on."));
   //  t.push_back (Packet (pass_signals_to_inferior,
   //  &RNBRemote::HandlePacket_UNIMPLEMENTED, NULL, "QPassSignals:", "Specify
   //  which signals are passed to the inferior"));
@@ -468,21 +458,19 @@ void RNBRemote::CreatePacketTable() {
   t.push_back(Packet(deallocate_memory,
                      &RNBRemote::HandlePacket_DeallocateMemory, NULL, "_m",
                      "Deallocate memory in the inferior process."));
-  t.push_back(Packet(save_register_state,
-                     &RNBRemote::HandlePacket_SaveRegisterState, NULL,
-                     "QSaveRegisterState",
-                     "Save the register state for the current thread "
-                     "and return a decimal save ID."));
+  t.push_back(Packet(
+      save_register_state, &RNBRemote::HandlePacket_SaveRegisterState, NULL,
+      "QSaveRegisterState", "Save the register state for the current thread "
+                            "and return a decimal save ID."));
   t.push_back(Packet(restore_register_state,
                      &RNBRemote::HandlePacket_RestoreRegisterState, NULL,
                      "QRestoreRegisterState:",
                      "Restore the register state given a save ID previously "
                      "returned from a call to QSaveRegisterState."));
-  t.push_back(Packet(memory_region_info,
-                     &RNBRemote::HandlePacket_MemoryRegionInfo, NULL,
-                     "qMemoryRegionInfo",
-                     "Return size and attributes of a memory region that "
-                     "contains the given address"));
+  t.push_back(Packet(
+      memory_region_info, &RNBRemote::HandlePacket_MemoryRegionInfo, NULL,
+      "qMemoryRegionInfo", "Return size and attributes of a memory region that "
+                           "contains the given address"));
   t.push_back(Packet(get_profile_data, &RNBRemote::HandlePacket_GetProfileData,
                      NULL, "qGetProfileData",
                      "Return profiling data of the current target."));
@@ -500,10 +488,9 @@ void RNBRemote::CreatePacketTable() {
                      "Return the number of supported hardware watchpoints"));
   t.push_back(Packet(set_process_event,
                      &RNBRemote::HandlePacket_QSetProcessEvent, NULL,
-                     "QSetProcessEvent:",
-                     "Set a process event, to be passed "
-                     "to the process, can be set before "
-                     "the process is started, or after."));
+                     "QSetProcessEvent:", "Set a process event, to be passed "
+                                          "to the process, can be set before "
+                                          "the process is started, or after."));
   t.push_back(
       Packet(set_detach_on_error, &RNBRemote::HandlePacket_QSetDetachOnError,
              NULL, "QSetDetachOnError:",
@@ -564,9 +551,8 @@ void RNBRemote::SendAsyncDarwinLogData() {
   DNBLogThreadedIf(LOG_DARWIN_LOG, "RNBRemote::%s(): enter", __FUNCTION__);
 
   if (!m_ctx.HasValidProcessID()) {
-    DNBLogThreadedIf(LOG_DARWIN_LOG,
-                     "RNBRemote::%s(): ignoring due to"
-                     "invalid process id",
+    DNBLogThreadedIf(LOG_DARWIN_LOG, "RNBRemote::%s(): ignoring due to"
+                                     "invalid process id",
                      __FUNCTION__);
     return;
   }
@@ -610,17 +596,15 @@ void RNBRemote::SendAsyncDarwinLogData() {
           std::min(base_entry + DARWIN_LOG_MAX_EVENTS_PER_PACKET, entry_count);
       for (DarwinLogEventVector::size_type i = base_entry; i < inner_loop_bound;
            ++i) {
-        DNBLogThreadedIf(LOG_DARWIN_LOG,
-                         "RNBRemote::%s(): adding "
-                         "entry index %lu to the JSON packet",
+        DNBLogThreadedIf(LOG_DARWIN_LOG, "RNBRemote::%s(): adding "
+                                         "entry index %lu to the JSON packet",
                          __FUNCTION__, i);
         events_array->AddItem(events[i]);
       }
 
       // Send off the packet.
-      DNBLogThreadedIf(LOG_DARWIN_LOG,
-                       "RNBRemote::%s(): sending JSON "
-                       "packet, %lu entries remain",
+      DNBLogThreadedIf(LOG_DARWIN_LOG, "RNBRemote::%s(): sending JSON "
+                                       "packet, %lu entries remain",
                        __FUNCTION__, entry_count - inner_loop_bound);
       SendAsyncJSONPacket(async_dictionary);
     }
@@ -714,45 +698,40 @@ std::string RNBRemote::CompressString(const std::string &orig) {
       size_t compressed_size = 0;
 
       // Allocate a scratch buffer for libcompression the first
-      // time we see a different compression type; reuse it in
+      // time we see a different compression type; reuse it in 
       // all compression_encode_buffer calls so it doesn't need
       // to allocate / free its own scratch buffer each time.
       // This buffer will only be freed when compression type
       // changes; otherwise it will persist until debugserver
       // exit.
 
-      static compression_types g_libcompress_scratchbuf_type =
-          compression_types::none;
+      static compression_types g_libcompress_scratchbuf_type = compression_types::none;
       static void *g_libcompress_scratchbuf = nullptr;
 
       if (g_libcompress_scratchbuf_type != compression_type) {
         if (g_libcompress_scratchbuf) {
-          free(g_libcompress_scratchbuf);
+          free (g_libcompress_scratchbuf);
           g_libcompress_scratchbuf = nullptr;
         }
         size_t scratchbuf_size = 0;
         switch (compression_type) {
-        case compression_types::lz4:
-          scratchbuf_size =
-              compression_encode_scratch_buffer_size(COMPRESSION_LZ4_RAW);
-          break;
-        case compression_types::zlib_deflate:
-          scratchbuf_size =
-              compression_encode_scratch_buffer_size(COMPRESSION_ZLIB);
-          break;
-        case compression_types::lzma:
-          scratchbuf_size =
-              compression_encode_scratch_buffer_size(COMPRESSION_LZMA);
-          break;
-        case compression_types::lzfse:
-          scratchbuf_size =
-              compression_encode_scratch_buffer_size(COMPRESSION_LZFSE);
-          break;
-        default:
-          break;
+          case compression_types::lz4: 
+            scratchbuf_size = compression_encode_scratch_buffer_size (COMPRESSION_LZ4_RAW);
+            break;
+          case compression_types::zlib_deflate: 
+            scratchbuf_size = compression_encode_scratch_buffer_size (COMPRESSION_ZLIB);
+            break;
+          case compression_types::lzma: 
+            scratchbuf_size = compression_encode_scratch_buffer_size (COMPRESSION_LZMA);
+            break;
+          case compression_types::lzfse: 
+            scratchbuf_size = compression_encode_scratch_buffer_size (COMPRESSION_LZFSE);
+            break;
+          default:
+            break;
         }
         if (scratchbuf_size > 0) {
-          g_libcompress_scratchbuf = (void *)malloc(scratchbuf_size);
+          g_libcompress_scratchbuf = (void*) malloc (scratchbuf_size);
           g_libcompress_scratchbuf_type = compression_type;
         }
       }
@@ -760,26 +739,30 @@ std::string RNBRemote::CompressString(const std::string &orig) {
       if (compression_type == compression_types::lz4) {
         compressed_size = compression_encode_buffer(
             encoded_data.data(), encoded_data_buf_size,
-            (const uint8_t *)orig.c_str(), orig.size(),
-            g_libcompress_scratchbuf, COMPRESSION_LZ4_RAW);
+            (const uint8_t *)orig.c_str(), orig.size(), 
+            g_libcompress_scratchbuf,
+            COMPRESSION_LZ4_RAW);
       }
       if (compression_type == compression_types::zlib_deflate) {
         compressed_size = compression_encode_buffer(
             encoded_data.data(), encoded_data_buf_size,
-            (const uint8_t *)orig.c_str(), orig.size(),
-            g_libcompress_scratchbuf, COMPRESSION_ZLIB);
+            (const uint8_t *)orig.c_str(), orig.size(), 
+            g_libcompress_scratchbuf,
+            COMPRESSION_ZLIB);
       }
       if (compression_type == compression_types::lzma) {
         compressed_size = compression_encode_buffer(
             encoded_data.data(), encoded_data_buf_size,
-            (const uint8_t *)orig.c_str(), orig.size(),
-            g_libcompress_scratchbuf, COMPRESSION_LZMA);
+            (const uint8_t *)orig.c_str(), orig.size(), 
+            g_libcompress_scratchbuf,
+            COMPRESSION_LZMA);
       }
       if (compression_type == compression_types::lzfse) {
         compressed_size = compression_encode_buffer(
             encoded_data.data(), encoded_data_buf_size,
-            (const uint8_t *)orig.c_str(), orig.size(),
-            g_libcompress_scratchbuf, COMPRESSION_LZFSE);
+            (const uint8_t *)orig.c_str(), orig.size(), 
+            g_libcompress_scratchbuf,
+            COMPRESSION_LZFSE);
       }
 
       if (compressed_size > 0) {
@@ -912,10 +895,9 @@ rnb_err_t RNBRemote::GetPacketPayload(std::string &return_packet) {
         char checksum_char = tolower(return_packet[i]);
         if (!isxdigit(checksum_char)) {
           m_comm.Write("-", 1);
-          DNBLogThreadedIf(LOG_RNB_REMOTE,
-                           "%8u RNBRemote::%s error: packet "
-                           "with invalid checksum characters: "
-                           "%s",
+          DNBLogThreadedIf(LOG_RNB_REMOTE, "%8u RNBRemote::%s error: packet "
+                                           "with invalid checksum characters: "
+                                           "%s",
                            (uint32_t)m_comm.Timer().ElapsedMicroSeconds(true),
                            __FUNCTION__, return_packet.c_str());
           return rnb_err;
@@ -942,12 +924,11 @@ rnb_err_t RNBRemote::GetPacketPayload(std::string &return_packet) {
         // __FUNCTION__, return_packet.c_str());
         m_comm.Write("+", 1);
       } else {
-        DNBLogThreadedIf(LOG_RNB_MEDIUM,
-                         "%8u RNBRemote::%s sending ACK for '%s' (error: "
-                         "packet checksum mismatch  (0x%2.2lx != 0x%2.2x))",
-                         (uint32_t)m_comm.Timer().ElapsedMicroSeconds(true),
-                         __FUNCTION__, return_packet.c_str(), packet_checksum,
-                         computed_checksum);
+        DNBLogThreadedIf(
+            LOG_RNB_MEDIUM, "%8u RNBRemote::%s sending ACK for '%s' (error: "
+                            "packet checksum mismatch  (0x%2.2lx != 0x%2.2x))",
+            (uint32_t)m_comm.Timer().ElapsedMicroSeconds(true), __FUNCTION__,
+            return_packet.c_str(), packet_checksum, computed_checksum);
         m_comm.Write("-", 1);
         return rnb_err;
       }
@@ -1313,7 +1294,7 @@ static cpu_type_t best_guess_cpu_type() {
   if (sizeof(char *) == 8) {
     return CPU_TYPE_ARM64;
   } else {
-#if defined(__ARM64_ARCH_8_32__)
+#if defined (__ARM64_ARCH_8_32__)
     return CPU_TYPE_ARM64_32;
 #endif
     return CPU_TYPE_ARM;
@@ -1663,8 +1644,8 @@ rnb_err_t RNBRemote::HandlePacket_qLaunchSuccess(const char *p) {
     return SendPacket("OK");
   std::ostringstream ret_str;
   std::string status_str;
-  std::string error_quoted =
-      binary_encode_string(m_ctx.LaunchStatusAsString(status_str));
+  std::string error_quoted = binary_encode_string
+               (m_ctx.LaunchStatusAsString(status_str));
   ret_str << "E" << error_quoted;
 
   return SendPacket(ret_str.str());
@@ -2697,11 +2678,11 @@ void append_hex_value(std::ostream &ostrm, const void *buf, size_t buf_size,
 
 std::string cstring_to_asciihex_string(const char *str) {
   std::string hex_str;
-  hex_str.reserve(strlen(str) * 2);
+  hex_str.reserve (strlen (str) * 2);
   while (str && *str) {
     uint8_t c = *str++;
     char hexbuf[5];
-    snprintf(hexbuf, sizeof(hexbuf), "%02x", c);
+    snprintf (hexbuf, sizeof(hexbuf), "%02x", c);
     hex_str += hexbuf;
   }
   return hex_str;
@@ -3656,10 +3637,10 @@ rnb_err_t RNBRemote::HandlePacket_qSupported(const char *p) {
   bool enable_compression = false;
   (void)enable_compression;
 
-#if (defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1) ||                      \
-    (defined(TARGET_OS_IOS) && TARGET_OS_IOS == 1) ||                          \
-    (defined(TARGET_OS_TV) && TARGET_OS_TV == 1) ||                            \
-    (defined(TARGET_OS_BRIDGE) && TARGET_OS_BRIDGE == 1)
+#if (defined (TARGET_OS_WATCH) && TARGET_OS_WATCH == 1) \
+    || (defined (TARGET_OS_IOS) && TARGET_OS_IOS == 1) \
+    || (defined (TARGET_OS_TV) && TARGET_OS_TV == 1) \
+    || (defined (TARGET_OS_BRIDGE) && TARGET_OS_BRIDGE == 1)
   enable_compression = true;
 #endif
 
@@ -3670,14 +3651,14 @@ rnb_err_t RNBRemote::HandlePacket_qSupported(const char *p) {
     snprintf(numbuf, sizeof(numbuf), "%zu", m_compression_minsize);
     numbuf[sizeof(numbuf) - 1] = '\0';
     strcat(buf, numbuf);
-  }
+  } 
 
   return SendPacket(buf);
 }
 
-static bool process_does_not_exist(nub_process_t pid) {
+static bool process_does_not_exist (nub_process_t pid) {
   std::vector<struct kinfo_proc> proc_infos;
-  DNBGetAllInfos(proc_infos);
+  DNBGetAllInfos (proc_infos);
   const size_t infos_size = proc_infos.size();
   for (size_t i = 0; i < infos_size; i++)
     if (proc_infos[i].kp_proc.p_pid == pid)
@@ -3689,14 +3670,15 @@ static bool process_does_not_exist(nub_process_t pid) {
 // my_uid and process_uid are only initialized if this function
 // returns true -- that there was a uid mismatch -- and those
 // id's may want to be used in the error message.
-//
+// 
 // NOTE: this should only be called after process_does_not_exist().
 // This sysctl will return uninitialized data if we ask for a pid
 // that doesn't exist.  The alternative would be to fetch all
 // processes and step through to find the one we're looking for
 // (as process_does_not_exist() does).
-static bool attach_failed_due_to_uid_mismatch(nub_process_t pid, uid_t &my_uid,
-                                              uid_t &process_uid) {
+static bool attach_failed_due_to_uid_mismatch (nub_process_t pid,
+                                               uid_t &my_uid,
+                                               uid_t &process_uid) {
   struct kinfo_proc kinfo;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
   size_t len = sizeof(struct kinfo_proc);
@@ -3721,7 +3703,7 @@ static bool attach_failed_due_to_uid_mismatch(nub_process_t pid, uid_t &my_uid,
 // that doesn't exist.  The alternative would be to fetch all
 // processes and step through to find the one we're looking for
 // (as process_does_not_exist() does).
-static bool process_is_already_being_debugged(nub_process_t pid) {
+static bool process_is_already_being_debugged (nub_process_t pid) {
   struct kinfo_proc kinfo;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
   size_t len = sizeof(struct kinfo_proc);
@@ -3738,7 +3720,7 @@ static bool process_is_already_being_debugged(nub_process_t pid) {
 // window server (if it does not have that access, it cannot ask
 // for debug permission by popping up a dialog box and attach
 // may fail outright).
-static bool login_session_has_gui_access() {
+static bool login_session_has_gui_access () {
   // I believe this API only works on macOS.
 #if TARGET_OS_OSX == 0
   return true;
@@ -3752,7 +3734,7 @@ static bool login_session_has_gui_access() {
 #endif
 }
 
-// Checking for
+// Checking for 
 //
 //  {
 //    'class' : 'rule',
@@ -3768,80 +3750,76 @@ static bool login_session_has_gui_access() {
 //
 // $ security authorizationdb read system.privilege.taskport.debug
 
-static bool developer_mode_enabled() {
+static bool developer_mode_enabled () {
   // This API only exists on macOS.
 #if TARGET_OS_OSX == 0
   return true;
 #else
-  CFDictionaryRef currentRightDict = NULL;
-  const char *debug_right = "system.privilege.taskport.debug";
-  // caller must free dictionary initialized by the following
-  OSStatus status = AuthorizationRightGet(debug_right, &currentRightDict);
-  if (status != errAuthorizationSuccess) {
-    // could not check authorization
-    return true;
-  }
+ CFDictionaryRef currentRightDict = NULL;
+ const char *debug_right = "system.privilege.taskport.debug";
+ // caller must free dictionary initialized by the following
+ OSStatus status = AuthorizationRightGet(debug_right, &currentRightDict);
+ if (status != errAuthorizationSuccess) {
+   // could not check authorization
+   return true;
+ }
 
-  bool devmode_enabled = true;
+ bool devmode_enabled = true;
 
-  if (!CFDictionaryContainsKey(currentRightDict, CFSTR("k-of-n"))) {
-    devmode_enabled = false;
-  } else {
-    CFNumberRef item =
-        (CFNumberRef)CFDictionaryGetValue(currentRightDict, CFSTR("k-of-n"));
-    if (item && CFGetTypeID(item) == CFNumberGetTypeID()) {
+ if (!CFDictionaryContainsKey(currentRightDict, CFSTR("k-of-n"))) {
+   devmode_enabled = false;
+ } else {
+   CFNumberRef item = (CFNumberRef) CFDictionaryGetValue(currentRightDict, CFSTR("k-of-n"));
+   if (item && CFGetTypeID(item) == CFNumberGetTypeID()) {
       int64_t num = 0;
       ::CFNumberGetValue(item, kCFNumberSInt64Type, &num);
       if (num != 1) {
         devmode_enabled = false;
       }
-    } else {
-      devmode_enabled = false;
-    }
-  }
+   } else {
+     devmode_enabled = false;
+   }
+ }
 
-  if (!CFDictionaryContainsKey(currentRightDict, CFSTR("class"))) {
-    devmode_enabled = false;
-  } else {
-    CFStringRef item =
-        (CFStringRef)CFDictionaryGetValue(currentRightDict, CFSTR("class"));
-    if (item && CFGetTypeID(item) == CFStringGetTypeID()) {
-      char tmpbuf[128];
-      if (CFStringGetCString(item, tmpbuf, sizeof(tmpbuf),
-                             CFStringGetSystemEncoding())) {
-        tmpbuf[sizeof(tmpbuf) - 1] = '\0';
-        if (strcmp(tmpbuf, "rule") != 0) {
-          devmode_enabled = false;
-        }
-      } else {
-        devmode_enabled = false;
-      }
-    } else {
-      devmode_enabled = false;
-    }
-  }
+ if (!CFDictionaryContainsKey(currentRightDict, CFSTR("class"))) {
+   devmode_enabled = false;
+ } else {
+   CFStringRef item = (CFStringRef) CFDictionaryGetValue(currentRightDict, CFSTR("class"));
+   if (item && CFGetTypeID(item) == CFStringGetTypeID()) {
+     char tmpbuf[128];
+     if (CFStringGetCString (item, tmpbuf, sizeof(tmpbuf), CFStringGetSystemEncoding())) {
+       tmpbuf[sizeof (tmpbuf) - 1] = '\0';
+       if (strcmp (tmpbuf, "rule") != 0) {
+         devmode_enabled = false;
+       }
+     } else {
+       devmode_enabled = false;
+     }
+   } else {
+     devmode_enabled = false;
+   }
+ }
 
-  if (!CFDictionaryContainsKey(currentRightDict, CFSTR("rule"))) {
-    devmode_enabled = false;
-  } else {
-    CFArrayRef item =
-        (CFArrayRef)CFDictionaryGetValue(currentRightDict, CFSTR("rule"));
-    if (item && CFGetTypeID(item) == CFArrayGetTypeID()) {
-      int count = ::CFArrayGetCount(item);
-      CFRange range = CFRangeMake(0, count);
-      if (!::CFArrayContainsValue(item, range, CFSTR("is-admin")))
-        devmode_enabled = false;
-      if (!::CFArrayContainsValue(item, range, CFSTR("is-developer")))
-        devmode_enabled = false;
-      if (!::CFArrayContainsValue(item, range, CFSTR("authenticate-developer")))
-        devmode_enabled = false;
-    } else {
-      devmode_enabled = false;
-    }
-  }
-  ::CFRelease(currentRightDict);
+ if (!CFDictionaryContainsKey(currentRightDict, CFSTR("rule"))) {
+   devmode_enabled = false;
+ } else {
+   CFArrayRef item = (CFArrayRef) CFDictionaryGetValue(currentRightDict, CFSTR("rule"));
+   if (item && CFGetTypeID(item) == CFArrayGetTypeID()) {
+     int count = ::CFArrayGetCount(item);
+      CFRange range = CFRangeMake (0, count);
+     if (!::CFArrayContainsValue (item, range, CFSTR("is-admin")))
+       devmode_enabled = false;
+     if (!::CFArrayContainsValue (item, range, CFSTR("is-developer")))
+       devmode_enabled = false;
+     if (!::CFArrayContainsValue (item, range, CFSTR("authenticate-developer")))
+       devmode_enabled = false;
+   } else {
+     devmode_enabled = false;
+   }
+ }
+ ::CFRelease(currentRightDict);
 
-  return devmode_enabled;
+ return devmode_enabled;
 #endif // TARGET_OS_OSX
 }
 
@@ -3891,7 +3869,7 @@ rnb_err_t RNBRemote::HandlePacket_v(const char *p) {
         if (errno != 0)
           return HandlePacket_ILLFORMED(
               __FILE__, __LINE__, p, "Could not parse signal in vCont packet");
-        // Fall through to next case...
+      // Fall through to next case...
         [[clang::fallthrough]];
       case 'c':
         // Continue
@@ -3904,7 +3882,7 @@ rnb_err_t RNBRemote::HandlePacket_v(const char *p) {
         if (errno != 0)
           return HandlePacket_ILLFORMED(
               __FILE__, __LINE__, p, "Could not parse signal in vCont packet");
-        // Fall through to next case...
+      // Fall through to next case...
         [[clang::fallthrough]];
       case 's':
         // Step
@@ -4026,41 +4004,38 @@ rnb_err_t RNBRemote::HandlePacket_v(const char *p) {
       // string to lldb.
 
       if (pid_attaching_to != INVALID_NUB_PROCESS) {
-        // The order of these checks is important.
-        if (process_does_not_exist(pid_attaching_to)) {
+        // The order of these checks is important.  
+        if (process_does_not_exist (pid_attaching_to)) {
           DNBLogError("Tried to attach to pid that doesn't exist");
           std::string return_message = "E96;";
           return_message += cstring_to_asciihex_string("no such process.");
           return SendPacket(return_message.c_str());
         }
-        if (process_is_already_being_debugged(pid_attaching_to)) {
+        if (process_is_already_being_debugged (pid_attaching_to)) {
           DNBLogError("Tried to attach to process already being debugged");
           std::string return_message = "E96;";
-          return_message +=
-              cstring_to_asciihex_string("tried to attach to "
-                                         "process already being debugged");
+          return_message += cstring_to_asciihex_string("tried to attach to "
+                                           "process already being debugged");
           return SendPacket(return_message.c_str());
         }
         uid_t my_uid, process_uid;
-        if (attach_failed_due_to_uid_mismatch(pid_attaching_to, my_uid,
-                                              process_uid)) {
-          std::string my_username = "uid " + std::to_string(my_uid);
-          std::string process_username = "uid " + std::to_string(process_uid);
-          struct passwd *pw = getpwuid(my_uid);
+        if (attach_failed_due_to_uid_mismatch (pid_attaching_to, 
+                                               my_uid, process_uid)) {
+          std::string my_username = "uid " + std::to_string (my_uid);
+          std::string process_username = "uid " + std::to_string (process_uid);
+          struct passwd *pw = getpwuid (my_uid);
           if (pw && pw->pw_name) {
             my_username = pw->pw_name;
           }
-          pw = getpwuid(process_uid);
+          pw = getpwuid (process_uid);
           if (pw && pw->pw_name) {
             process_username = pw->pw_name;
           }
           DNBLogError("Tried to attach to process with uid mismatch");
           std::string return_message = "E96;";
-          std::string msg = "tried to attach to process as user '" +
-                            my_username +
-                            "' and process is running "
-                            "as user '" +
-                            process_username + "'";
+          std::string msg = "tried to attach to process as user '" 
+                            + my_username + "' and process is running "
+                            "as user '" + process_username + "'";
           return_message += cstring_to_asciihex_string(msg.c_str());
           return SendPacket(return_message.c_str());
         }
@@ -4068,21 +4043,19 @@ rnb_err_t RNBRemote::HandlePacket_v(const char *p) {
           DNBLogError("Developer mode is not enabled and this is a "
                       "non-interactive session");
           std::string return_message = "E96;";
-          return_message +=
-              cstring_to_asciihex_string("developer mode is "
-                                         "not enabled on this machine "
-                                         "and this is a non-interactive "
-                                         "debug session.");
+          return_message += cstring_to_asciihex_string("developer mode is "
+                                           "not enabled on this machine "
+                                           "and this is a non-interactive "
+                                           "debug session.");
           return SendPacket(return_message.c_str());
         }
         if (!login_session_has_gui_access()) {
           DNBLogError("This is a non-interactive session");
           std::string return_message = "E96;";
-          return_message +=
-              cstring_to_asciihex_string("this is a "
-                                         "non-interactive debug session, "
-                                         "cannot get permission to debug "
-                                         "processes.");
+          return_message += cstring_to_asciihex_string("this is a "
+                                           "non-interactive debug session, "
+                                           "cannot get permission to debug "
+                                           "processes.");
           return SendPacket(return_message.c_str());
         }
       }
@@ -4090,22 +4063,23 @@ rnb_err_t RNBRemote::HandlePacket_v(const char *p) {
       std::string error_explainer = "attach failed";
       if (err_str[0] != '\0') {
         // This is not a super helpful message for end users
-        if (strcmp(err_str, "unable to start the exception thread") == 0) {
-          snprintf(err_str, sizeof(err_str) - 1,
-                   "Not allowed to attach to process.  Look in the console "
-                   "messages (Console.app), near the debugserver entries, "
-                   "when the attach failed.  The subsystem that denied "
-                   "the attach permission will likely have logged an "
-                   "informative message about why it was denied.");
-          err_str[sizeof(err_str) - 1] = '\0';
+        if (strcmp (err_str, "unable to start the exception thread") == 0) {
+          snprintf (err_str, sizeof (err_str) - 1,
+                    "Not allowed to attach to process.  Look in the console "
+                    "messages (Console.app), near the debugserver entries, "
+                    "when the attach failed.  The subsystem that denied "
+                    "the attach permission will likely have logged an "
+                    "informative message about why it was denied.");
+          err_str[sizeof (err_str) - 1] = '\0';
         }
         error_explainer += " (";
         error_explainer += err_str;
         error_explainer += ")";
       }
       std::string default_return_msg = "E96;";
-      default_return_msg += cstring_to_asciihex_string(error_explainer.c_str());
-      SendPacket(default_return_msg.c_str());
+      default_return_msg += cstring_to_asciihex_string 
+                              (error_explainer.c_str());
+      SendPacket (default_return_msg.c_str());
       DNBLogError("Attach failed: \"%s\".", err_str);
       return rnb_err;
     }
@@ -4713,7 +4687,7 @@ rnb_err_t RNBRemote::HandlePacket_k(const char *p) {
 
 rnb_err_t RNBRemote::HandlePacket_stop_process(const char *p) {
 //#define TEST_EXIT_ON_INTERRUPT // This should only be uncommented to test
-// exiting on interrupt
+//exiting on interrupt
 #if defined(TEST_EXIT_ON_INTERRUPT)
   rnb_err_t err = HandlePacket_k(p);
   m_comm.Disconnect(true);
@@ -4875,8 +4849,8 @@ static bool GetHostCPUType(uint32_t &cputype, uint32_t &cpusubtype,
           g_host_cputype |= CPU_ARCH_ABI64;
         }
       }
-#if defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
-      if (g_host_cputype == CPU_TYPE_ARM64 && sizeof(void *) == 4)
+#if defined (TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
+      if (g_host_cputype == CPU_TYPE_ARM64 && sizeof (void*) == 4)
         g_host_cputype = CPU_TYPE_ARM64_32;
 #endif
     }
@@ -4888,12 +4862,12 @@ static bool GetHostCPUType(uint32_t &cputype, uint32_t &cpusubtype,
           g_host_cpusubtype == CPU_SUBTYPE_486)
         g_host_cpusubtype = CPU_SUBTYPE_X86_64_ALL;
     }
-#if defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
+#if defined (TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
     // on arm64_32 devices, the machine's native cpu type is
     // CPU_TYPE_ARM64 and subtype is 2 indicating arm64e.
     // But we change the cputype to CPU_TYPE_ARM64_32 because
     // the user processes are all ILP32 processes today.
-    // We also need to rewrite the cpusubtype so we vend
+    // We also need to rewrite the cpusubtype so we vend 
     // a valid cputype + cpusubtype combination.
     if (g_host_cputype == CPU_TYPE_ARM64_32)
       g_host_cpusubtype = CPU_SUBTYPE_ARM64_32_V8;
@@ -4911,9 +4885,9 @@ static bool GetAddressingBits(uint32_t &addressing_bits) {
   static uint32_t g_addressing_bits = 0;
   static bool g_tried_addressing_bits_syscall = false;
   if (g_tried_addressing_bits_syscall == false) {
-    size_t len = sizeof(uint32_t);
-    if (::sysctlbyname("machdep.virtual_address_size", &g_addressing_bits, &len,
-                       NULL, 0) != 0) {
+    size_t len = sizeof (uint32_t);
+    if (::sysctlbyname("machdep.virtual_address_size",
+          &g_addressing_bits, &len, NULL, 0) != 0) {
       g_addressing_bits = 0;
     }
   }
@@ -4945,8 +4919,8 @@ rnb_err_t RNBRemote::HandlePacket_qHostInfo(const char *p) {
   // The OS in the triple should be "ios" or "macosx" which doesn't match our
   // "Darwin" which gets returned from "kern.ostype", so we need to hardcode
   // this for now.
-  if (cputype == CPU_TYPE_ARM || cputype == CPU_TYPE_ARM64 ||
-      cputype == CPU_TYPE_ARM64_32) {
+  if (cputype == CPU_TYPE_ARM || cputype == CPU_TYPE_ARM64
+      || cputype == CPU_TYPE_ARM64_32) {
 #if defined(TARGET_OS_TV) && TARGET_OS_TV == 1
     strm << "ostype:tvos;";
 #elif defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
@@ -5294,10 +5268,9 @@ void UpdateTargetXML() {
   //
   // On raw targets (no OS, vendor info), I've seen replies like
   // <architecture>i386:x86-64</architecture> (for x86_64 systems - from vmware)
-  // <architecture>arm</architecture> (for an unspecified arm device - from a
-  // Segger JLink) For good interop, I'm not sure what's expected here.  e.g.
-  // will anyone understand <architecture>x86_64</architecture> ? Or is
-  // i386:x86_64 the expected phrasing?
+  // <architecture>arm</architecture> (for an unspecified arm device - from a Segger JLink)
+  // For good interop, I'm not sure what's expected here.  e.g. will anyone understand
+  // <architecture>x86_64</architecture> ? Or is i386:x86_64 the expected phrasing?
   //
   // s << "<architecture>" << arch "</architecture>" << std::endl;
 
@@ -6091,31 +6064,28 @@ rnb_err_t RNBRemote::HandlePacket_jGetSharedCacheInfo(const char *p) {
 static bool MachHeaderIsMainExecutable(nub_process_t pid, uint32_t addr_size,
                                        nub_addr_t mach_header_addr,
                                        mach_header &mh) {
-  DNBLogThreadedIf(LOG_RNB_PROC,
-                   "GetMachHeaderForMainExecutable(pid = %u, "
-                   "addr_size = %u, mach_header_addr = "
-                   "0x%16.16llx)",
+  DNBLogThreadedIf(LOG_RNB_PROC, "GetMachHeaderForMainExecutable(pid = %u, "
+                                 "addr_size = %u, mach_header_addr = "
+                                 "0x%16.16llx)",
                    pid, addr_size, mach_header_addr);
   const nub_size_t bytes_read =
       DNBProcessMemoryRead(pid, mach_header_addr, sizeof(mh), &mh);
   if (bytes_read == sizeof(mh)) {
-    DNBLogThreadedIf(LOG_RNB_PROC,
-                     "GetMachHeaderForMainExecutable(pid = %u, addr_size = "
-                     "%u, mach_header_addr = 0x%16.16llx): mh = {\n  magic = "
-                     "0x%8.8x\n  cpu = 0x%8.8x\n  sub = 0x%8.8x\n  filetype = "
-                     "%u\n  ncmds = %u\n  sizeofcmds = 0x%8.8x\n  flags = "
-                     "0x%8.8x }",
-                     pid, addr_size, mach_header_addr, mh.magic, mh.cputype,
-                     mh.cpusubtype, mh.filetype, mh.ncmds, mh.sizeofcmds,
-                     mh.flags);
+    DNBLogThreadedIf(
+        LOG_RNB_PROC, "GetMachHeaderForMainExecutable(pid = %u, addr_size = "
+                      "%u, mach_header_addr = 0x%16.16llx): mh = {\n  magic = "
+                      "0x%8.8x\n  cpu = 0x%8.8x\n  sub = 0x%8.8x\n  filetype = "
+                      "%u\n  ncmds = %u\n  sizeofcmds = 0x%8.8x\n  flags = "
+                      "0x%8.8x }",
+        pid, addr_size, mach_header_addr, mh.magic, mh.cputype, mh.cpusubtype,
+        mh.filetype, mh.ncmds, mh.sizeofcmds, mh.flags);
     if ((addr_size == 4 && mh.magic == MH_MAGIC) ||
         (addr_size == 8 && mh.magic == MH_MAGIC_64)) {
       if (mh.filetype == MH_EXECUTE) {
-        DNBLogThreadedIf(LOG_RNB_PROC,
-                         "GetMachHeaderForMainExecutable(pid = "
-                         "%u, addr_size = %u, mach_header_addr = "
-                         "0x%16.16llx) -> this is the "
-                         "executable!!!",
+        DNBLogThreadedIf(LOG_RNB_PROC, "GetMachHeaderForMainExecutable(pid = "
+                                       "%u, addr_size = %u, mach_header_addr = "
+                                       "0x%16.16llx) -> this is the "
+                                       "executable!!!",
                          pid, addr_size, mach_header_addr);
         return true;
       }
@@ -6181,9 +6151,9 @@ static nub_addr_t GetMachHeaderForMainExecutable(const nub_process_t pid,
         if (aii.dylib_info_addr != 0) {
           const size_t image_info_byte_size = 3 * addr_size;
           for (uint32_t i = 0; i < aii.dylib_info_count; ++i) {
-            bytes_read = DNBProcessMemoryRead(
-                pid, aii.dylib_info_addr + i * image_info_byte_size,
-                image_info_byte_size, bytes);
+            bytes_read = DNBProcessMemoryRead(pid, aii.dylib_info_addr +
+                                                       i * image_info_byte_size,
+                                              image_info_byte_size, bytes);
             if (bytes_read != image_info_byte_size)
               break;
             offset = 0;
@@ -6209,9 +6179,8 @@ static nub_addr_t GetMachHeaderForMainExecutable(const nub_process_t pid,
 
     if (region_info.permissions & eMemoryPermissionsExecutable) {
       DNBLogThreadedIf(
-          LOG_RNB_PROC,
-          "[0x%16.16llx - 0x%16.16llx) permissions = %c%c%c: "
-          "checking region for executable mach header",
+          LOG_RNB_PROC, "[0x%16.16llx - 0x%16.16llx) permissions = %c%c%c: "
+                        "checking region for executable mach header",
           region_info.addr, region_info.addr + region_info.size,
           (region_info.permissions & eMemoryPermissionsReadable) ? 'r' : '-',
           (region_info.permissions & eMemoryPermissionsWritable) ? 'w' : '-',
@@ -6370,12 +6339,12 @@ rnb_err_t RNBRemote::HandlePacket_qProcessInfo(const char *p) {
         cpusubtype = 12; // CPU_SUBTYPE_ARM_V7K
       }
     }
-#if defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
+#if defined (TARGET_OS_WATCH) && TARGET_OS_WATCH == 1
     // on arm64_32 devices, the machine's native cpu type is
     // CPU_TYPE_ARM64 and subtype is 2 indicating arm64e.
     // But we change the cputype to CPU_TYPE_ARM64_32 because
     // the user processes are all ILP32 processes today.
-    // We also need to rewrite the cpusubtype so we vend
+    // We also need to rewrite the cpusubtype so we vend 
     // a valid cputype + cpusubtype combination.
     if (cputype == CPU_TYPE_ARM64_32 && cpusubtype == 2)
       cpusubtype = CPU_SUBTYPE_ARM64_32_V8;
@@ -6428,8 +6397,8 @@ rnb_err_t RNBRemote::HandlePacket_qProcessInfo(const char *p) {
     // The OS in the triple should be "ios" or "macosx" which doesn't match our
     // "Darwin" which gets returned from "kern.ostype", so we need to hardcode
     // this for now.
-    if (cputype == CPU_TYPE_ARM || cputype == CPU_TYPE_ARM64 ||
-        cputype == CPU_TYPE_ARM64_32) {
+    if (cputype == CPU_TYPE_ARM || cputype == CPU_TYPE_ARM64
+        || cputype == CPU_TYPE_ARM64_32) {
 #if defined(TARGET_OS_TV) && TARGET_OS_TV == 1
       rep << "ostype:tvos;";
 #elif defined(TARGET_OS_WATCH) && TARGET_OS_WATCH == 1

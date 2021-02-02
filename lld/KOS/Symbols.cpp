@@ -125,11 +125,11 @@ Defined *Undefined::getWeakAlias() {
 
 MemoryBufferRef LazyArchive::getMemberBuffer() {
   Archive::Child c =
-      CHECK(sym.getMember(),
-            "could not get the member for symbol " + toCOFFString(sym));
+    CHECK(sym.getMember(),
+          "could not get the member for symbol " + toCOFFString(sym));
   return CHECK(c.getMemoryBufferRef(),
-               "could not get the buffer for the member defining symbol " +
-                   toCOFFString(sym));
+      "could not get the buffer for the member defining symbol " +
+      toCOFFString(sym));
 }
 } // namespace kos
 } // namespace lld

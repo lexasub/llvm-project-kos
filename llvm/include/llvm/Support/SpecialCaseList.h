@@ -152,6 +152,7 @@ protected:
                           StringRef Query, StringRef Category) const;
 };
 
-} // namespace llvm
+}  // namespace llvm
 
-#endif // LLVM_SUPPORT_SPECIALCASELIST_H
+#endif  // LLVM_SUPPORT_SPECIALCASELIST_H
+

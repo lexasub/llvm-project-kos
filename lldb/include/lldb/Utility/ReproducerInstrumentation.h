@@ -61,13 +61,13 @@ inline void stringify_helper(llvm::raw_string_ostream &ss, const Head &head) {
 
 template <typename Head, typename... Tail>
 inline void stringify_helper(llvm::raw_string_ostream &ss, const Head &head,
-                             const Tail &...tail) {
+                             const Tail &... tail) {
   stringify_append(ss, head);
   ss << ", ";
   stringify_helper(ss, tail...);
 }
 
-template <typename... Ts> inline std::string stringify_args(const Ts &...ts) {
+template <typename... Ts> inline std::string stringify_args(const Ts &... ts) {
   std::string buffer;
   llvm::raw_string_ostream ss(buffer);
   stringify_helper(ss, ts...);
@@ -609,7 +609,7 @@ public:
 
   /// Recursively serialize all the given arguments.
   template <typename Head, typename... Tail>
-  void SerializeAll(const Head &head, const Tail &...tail) {
+  void SerializeAll(const Head &head, const Tail &... tail) {
     Serialize(head);
     SerializeAll(tail...);
   }
@@ -754,7 +754,7 @@ public:
   /// Records a single function call.
   template <typename Result, typename... FArgs, typename... RArgs>
   void Record(Serializer &serializer, Registry &registry, Result (*f)(FArgs...),
-              const RArgs &...args) {
+              const RArgs &... args) {
     m_serializer = &serializer;
     if (!ShouldCapture())
       return;
@@ -784,7 +784,7 @@ public:
   /// Records a single function call.
   template <typename... Args>
   void Record(Serializer &serializer, Registry &registry, void (*f)(Args...),
-              const Args &...args) {
+              const Args &... args) {
     m_serializer = &serializer;
     if (!ShouldCapture())
       return;

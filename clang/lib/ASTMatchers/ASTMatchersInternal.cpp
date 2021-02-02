@@ -136,8 +136,7 @@ public:
   bool dynMatches(const DynTypedNode &DynNode, ASTMatchFinder *Finder,
                   BoundNodesTreeBuilder *Builder) const override {
     bool Result = InnerMatcher->dynMatches(DynNode, Finder, Builder);
-    if (Result)
-      Builder->setBinding(ID, DynNode);
+    if (Result) Builder->setBinding(ID, DynNode);
     return Result;
   }
 
@@ -341,8 +340,7 @@ bool DynTypedMatcher::matchesNoKindCheck(const DynTypedNode &DynNode,
 }
 
 llvm::Optional<DynTypedMatcher> DynTypedMatcher::tryBind(StringRef ID) const {
-  if (!AllowBind)
-    return llvm::None;
+  if (!AllowBind) return llvm::None;
   auto Result = *this;
   Result.Implementation =
       new IdDynMatcher(ID, std::move(Result.Implementation));
@@ -355,8 +353,7 @@ bool DynTypedMatcher::canConvertTo(ASTNodeKind To) const {
   auto TypeKind = ASTNodeKind::getFromNodeKind<Type>();
   /// Mimic the implicit conversions of Matcher<>.
   /// - From Matcher<Type> to Matcher<QualType>
-  if (From.isSame(TypeKind) && To.isSame(QualKind))
-    return true;
+  if (From.isSame(TypeKind) && To.isSame(QualKind)) return true;
   /// - From Matcher<Base> to Matcher<Derived>
   return From.isBaseOf(To);
 }
@@ -442,8 +439,8 @@ optionallyVariadicOperator(const DynTypedNode &DynNode, ASTMatchFinder *Finder,
   return true;
 }
 
-inline static std::vector<std::string>
-vectorFromRefs(ArrayRef<const StringRef *> NameRefs) {
+inline static
+std::vector<std::string> vectorFromRefs(ArrayRef<const StringRef *> NameRefs) {
   std::vector<std::string> Names;
   Names.reserve(NameRefs.size());
   for (auto *Name : NameRefs)
@@ -456,8 +453,8 @@ Matcher<NamedDecl> hasAnyNameFunc(ArrayRef<const StringRef *> NameRefs) {
       new internal::HasNameMatcher(vectorFromRefs(NameRefs)));
 }
 
-Matcher<ObjCMessageExpr>
-hasAnySelectorFunc(ArrayRef<const StringRef *> NameRefs) {
+Matcher<ObjCMessageExpr> hasAnySelectorFunc(
+    ArrayRef<const StringRef *> NameRefs) {
   return hasAnySelectorMatcher(vectorFromRefs(NameRefs));
 }
 
@@ -735,8 +732,7 @@ const internal::VariadicDynCastAllOfMatcher<Decl, TypeAliasDecl> typeAliasDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, TypeAliasTemplateDecl>
     typeAliasTemplateDecl;
 const internal::VariadicAllOfMatcher<Decl> decl;
-const internal::VariadicDynCastAllOfMatcher<Decl, DecompositionDecl>
-    decompositionDecl;
+const internal::VariadicDynCastAllOfMatcher<Decl, DecompositionDecl> decompositionDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, LinkageSpecDecl>
     linkageSpecDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, NamedDecl> namedDecl;
@@ -820,7 +816,8 @@ const internal::VariadicDynCastAllOfMatcher<Decl, ObjCCategoryImplDecl>
     objcCategoryImplDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, ObjCMethodDecl>
     objcMethodDecl;
-const internal::VariadicDynCastAllOfMatcher<Decl, BlockDecl> blockDecl;
+const internal::VariadicDynCastAllOfMatcher<Decl, BlockDecl>
+    blockDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, ObjCIvarDecl> objcIvarDecl;
 const internal::VariadicDynCastAllOfMatcher<Decl, ObjCPropertyDecl>
     objcPropertyDecl;
@@ -875,8 +872,7 @@ const internal::VariadicDynCastAllOfMatcher<Stmt, CXXRewrittenBinaryOperator>
     cxxRewrittenBinaryOperator;
 const internal::VariadicDynCastAllOfMatcher<Stmt, Expr> expr;
 const internal::VariadicDynCastAllOfMatcher<Stmt, DeclRefExpr> declRefExpr;
-const internal::VariadicDynCastAllOfMatcher<Stmt, ObjCIvarRefExpr>
-    objcIvarRefExpr;
+const internal::VariadicDynCastAllOfMatcher<Stmt, ObjCIvarRefExpr> objcIvarRefExpr;
 const internal::VariadicDynCastAllOfMatcher<Stmt, BlockExpr> blockExpr;
 const internal::VariadicDynCastAllOfMatcher<Stmt, IfStmt> ifStmt;
 const internal::VariadicDynCastAllOfMatcher<Stmt, ForStmt> forStmt;
@@ -908,8 +904,7 @@ const internal::VariadicDynCastAllOfMatcher<Stmt, CharacterLiteral>
 const internal::VariadicDynCastAllOfMatcher<Stmt, IntegerLiteral>
     integerLiteral;
 const internal::VariadicDynCastAllOfMatcher<Stmt, FloatingLiteral> floatLiteral;
-const internal::VariadicDynCastAllOfMatcher<Stmt, ImaginaryLiteral>
-    imaginaryLiteral;
+const internal::VariadicDynCastAllOfMatcher<Stmt, ImaginaryLiteral> imaginaryLiteral;
 const internal::VariadicDynCastAllOfMatcher<Stmt, FixedPointLiteral>
     fixedPointLiteral;
 const internal::VariadicDynCastAllOfMatcher<Stmt, UserDefinedLiteral>

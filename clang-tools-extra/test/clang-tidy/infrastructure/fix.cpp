@@ -11,9 +11,7 @@ void f(); // So that the namespace isn't empty.
 // CHECK-MESSAGES: note: FIX-IT applied suggested code changes
 // CHECK-YAML: ReplacementText: ' // namespace i'
 
-class A {
-  A(int i);
-};
+class A { A(int i); };
 // CHECK: class A { explicit A(int i); };
 // CHECK-MESSAGES: note: FIX-IT applied suggested code changes
 // CHECK-MESSAGES: clang-tidy applied 2 of 2 suggested fixes.

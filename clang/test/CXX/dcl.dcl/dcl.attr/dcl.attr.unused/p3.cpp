@@ -11,7 +11,7 @@ enum E1 {
 };
 
 void f() {
-  int x;         // expected-warning {{unused variable}}
+  int x; // expected-warning {{unused variable}}
   typedef int I; // expected-warning {{unused typedef 'I'}}
   E1 e;
   switch (e) { // expected-warning {{enumeration value 'UsedEnumVal' not handled in switch}}

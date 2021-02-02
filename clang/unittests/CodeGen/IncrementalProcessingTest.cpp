@@ -33,38 +33,42 @@ namespace {
 
 // Incremental processing produces several modules, all using the same "main
 // file". Make sure CodeGen can cope with that, e.g. for static initializers.
-const char TestProgram1[] = "extern \"C\" int funcForProg1() { return 17; }\n"
-                            "struct EmitCXXGlobalInitFunc1 {\n"
-                            "   EmitCXXGlobalInitFunc1() {}\n"
-                            "} test1;";
+const char TestProgram1[] =
+    "extern \"C\" int funcForProg1() { return 17; }\n"
+    "struct EmitCXXGlobalInitFunc1 {\n"
+    "   EmitCXXGlobalInitFunc1() {}\n"
+    "} test1;";
 
-const char TestProgram2[] = "extern \"C\" int funcForProg2() { return 42; }\n"
-                            "struct EmitCXXGlobalInitFunc2 {\n"
-                            "   EmitCXXGlobalInitFunc2() {}\n"
-                            "} test2;";
+const char TestProgram2[] =
+    "extern \"C\" int funcForProg2() { return 42; }\n"
+    "struct EmitCXXGlobalInitFunc2 {\n"
+    "   EmitCXXGlobalInitFunc2() {}\n"
+    "} test2;";
+
 
 /// An incremental version of ParseAST().
-static std::unique_ptr<llvm::Module> IncrementalParseAST(CompilerInstance &CI,
-                                                         Parser &P,
-                                                         CodeGenerator &CG,
-                                                         const char *code) {
+static std::unique_ptr<llvm::Module>
+IncrementalParseAST(CompilerInstance& CI, Parser& P,
+                    CodeGenerator& CG, const char* code) {
   static int counter = 0;
   struct IncreaseCounterOnRet {
-    ~IncreaseCounterOnRet() { ++counter; }
+    ~IncreaseCounterOnRet() {
+      ++counter;
+    }
   } ICOR;
 
-  Sema &S = CI.getSema();
+  Sema& S = CI.getSema();
   clang::SourceManager &SM = S.getSourceManager();
   if (!code) {
     // Main file
-    SM.setMainFileID(SM.createFileID(llvm::MemoryBuffer::getMemBuffer("    "),
-                                     clang::SrcMgr::C_User));
+    SM.setMainFileID(SM.createFileID(
+        llvm::MemoryBuffer::getMemBuffer("    "), clang::SrcMgr::C_User));
 
     S.getPreprocessor().EnterMainSourceFile();
     P.Initialize();
   } else {
-    FileID FID = SM.createFileID(llvm::MemoryBuffer::getMemBuffer(code),
-                                 clang::SrcMgr::C_User);
+    FileID FID = SM.createFileID(
+        llvm::MemoryBuffer::getMemBuffer(code), clang::SrcMgr::C_User);
     SourceLocation MainStartLoc = SM.getLocForStartOfFile(SM.getMainFileID());
     SourceLocation InclLoc = MainStartLoc.getLocWithOffset(counter);
     S.getPreprocessor().EnterSourceFile(FID, 0, InclLoc);
@@ -97,8 +101,8 @@ static std::unique_ptr<llvm::Module> IncrementalParseAST(CompilerInstance &CI,
   return M;
 }
 
-const Function *getGlobalInit(llvm::Module &M) {
-  for (const auto &Func : M)
+const Function* getGlobalInit(llvm::Module& M) {
+  for (const auto& Func: M)
     if (Func.hasName() && Func.getName().startswith("_GLOBAL__sub_I_"))
       return &Func;
 
@@ -106,45 +110,46 @@ const Function *getGlobalInit(llvm::Module &M) {
 }
 
 TEST(IncrementalProcessing, EmitCXXGlobalInitFunc) {
-  clang::LangOptions LO;
-  LO.CPlusPlus = 1;
-  LO.CPlusPlus11 = 1;
-  TestCompiler Compiler(LO);
-  clang::CompilerInstance &CI = Compiler.compiler;
-  CI.getPreprocessor().enableIncrementalProcessing();
-  CI.setASTConsumer(std::move(Compiler.CG));
-  clang::CodeGenerator &CG =
-      static_cast<clang::CodeGenerator &>(CI.getASTConsumer());
-  CI.createSema(clang::TU_Prefix, nullptr);
+    clang::LangOptions LO;
+    LO.CPlusPlus = 1;
+    LO.CPlusPlus11 = 1;
+    TestCompiler Compiler(LO);
+    clang::CompilerInstance &CI = Compiler.compiler;
+    CI.getPreprocessor().enableIncrementalProcessing();
+    CI.setASTConsumer(std::move(Compiler.CG));
+    clang::CodeGenerator& CG =
+      static_cast<clang::CodeGenerator&>(CI.getASTConsumer());
+    CI.createSema(clang::TU_Prefix, nullptr);
 
-  Sema &S = CI.getSema();
+    Sema& S = CI.getSema();
 
-  std::unique_ptr<Parser> ParseOP(new Parser(S.getPreprocessor(), S,
-                                             /*SkipFunctionBodies*/ false));
-  Parser &P = *ParseOP.get();
+    std::unique_ptr<Parser> ParseOP(new Parser(S.getPreprocessor(), S,
+                                               /*SkipFunctionBodies*/ false));
+    Parser &P = *ParseOP.get();
 
-  std::array<std::unique_ptr<llvm::Module>, 3> M;
-  M[0] = IncrementalParseAST(CI, P, CG, nullptr);
-  ASSERT_TRUE(M[0]);
+    std::array<std::unique_ptr<llvm::Module>, 3> M;
+    M[0] = IncrementalParseAST(CI, P, CG, nullptr);
+    ASSERT_TRUE(M[0]);
 
-  M[1] = IncrementalParseAST(CI, P, CG, TestProgram1);
-  ASSERT_TRUE(M[1]);
-  ASSERT_TRUE(M[1]->getFunction("funcForProg1"));
+    M[1] = IncrementalParseAST(CI, P, CG, TestProgram1);
+    ASSERT_TRUE(M[1]);
+    ASSERT_TRUE(M[1]->getFunction("funcForProg1"));
 
-  M[2] = IncrementalParseAST(CI, P, CG, TestProgram2);
-  ASSERT_TRUE(M[2]);
-  ASSERT_TRUE(M[2]->getFunction("funcForProg2"));
-  // First code should not end up in second module:
-  ASSERT_FALSE(M[2]->getFunction("funcForProg1"));
+    M[2] = IncrementalParseAST(CI, P, CG, TestProgram2);
+    ASSERT_TRUE(M[2]);
+    ASSERT_TRUE(M[2]->getFunction("funcForProg2"));
+    // First code should not end up in second module:
+    ASSERT_FALSE(M[2]->getFunction("funcForProg1"));
 
-  // Make sure global inits exist and are unique:
-  const Function *GlobalInit1 = getGlobalInit(*M[1]);
-  ASSERT_TRUE(GlobalInit1);
+    // Make sure global inits exist and are unique:
+    const Function* GlobalInit1 = getGlobalInit(*M[1]);
+    ASSERT_TRUE(GlobalInit1);
 
-  const Function *GlobalInit2 = getGlobalInit(*M[2]);
-  ASSERT_TRUE(GlobalInit2);
+    const Function* GlobalInit2 = getGlobalInit(*M[2]);
+    ASSERT_TRUE(GlobalInit2);
 
-  ASSERT_FALSE(GlobalInit1->getName() == GlobalInit2->getName());
+    ASSERT_FALSE(GlobalInit1->getName() == GlobalInit2->getName());
+
 }
 
 } // end anonymous namespace

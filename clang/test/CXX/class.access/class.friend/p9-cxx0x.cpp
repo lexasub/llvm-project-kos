@@ -8,110 +8,110 @@
 // PR12328
 // Simple, non-templated case.
 namespace test0 {
-class X {
-  void f(); // expected-note {{implicitly declared private here}}
-};
+  class X {
+    void f(); // expected-note {{implicitly declared private here}}
+  };
 
-class Y {
-  friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test0::X'}}
-};
-} // namespace test0
+  class Y {
+    friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test0::X'}}
+  };
+}
 
 // Templated but non-dependent.
 namespace test1 {
-class X {
-  void f(); // expected-note {{implicitly declared private here}}
-};
+  class X {
+    void f(); // expected-note {{implicitly declared private here}}
+  };
 
-template <class T> class Y {
-  friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test1::X'}}
-};
-} // namespace test1
+  template <class T> class Y {
+    friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test1::X'}}
+  };
+}
 
 // Dependent but instantiated at the right type.
 namespace test2 {
-template <class T> class Y;
+  template <class T> class Y;
 
-class X {
-  void f();
-  friend class Y<int>;
-};
+  class X {
+    void f();
+    friend class Y<int>;
+  };
 
-template <class T> class Y {
-  friend void X::f();
-};
+  template <class T> class Y {
+    friend void X::f();
+  };
 
-template class Y<int>;
-} // namespace test2
+  template class Y<int>;
+}
 
 // Dependent and instantiated at the wrong type.
 namespace test3 {
-template <class T> class Y;
+  template <class T> class Y;
 
-class X {
-  void f(); // expected-note {{implicitly declared private here}}
-  friend class Y<int>;
-};
+  class X {
+    void f(); // expected-note {{implicitly declared private here}}
+    friend class Y<int>;
+  };
 
-template <class T> class Y {
-  friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test3::X'}}
-};
+  template <class T> class Y {
+    friend void X::f(); // expected-error {{friend function 'f' is a private member of 'test3::X'}}
+  };
 
-template class Y<float>; // expected-note {{in instantiation}}
-} // namespace test3
+  template class Y<float>; // expected-note {{in instantiation}}
+}
 
 // Dependent because dependently-scoped.
 namespace test4 {
-template <class T> class X {
-  void f();
-};
+  template <class T> class X {
+    void f();
+  };
 
-template <class T> class Y {
-  friend void X<T>::f();
-};
-} // namespace test4
+  template <class T> class Y {
+    friend void X<T>::f();
+  };
+}
 
 // Dependently-scoped, no friends.
 namespace test5 {
-template <class T> class X {
-  void f(); // expected-note {{implicitly declared private here}}
-};
+  template <class T> class X {
+    void f(); // expected-note {{implicitly declared private here}}
+  };
 
-template <class T> class Y {
-  friend void X<T>::f(); // expected-error {{friend function 'f' is a private member of 'test5::X<int>'}}
-};
+  template <class T> class Y {
+    friend void X<T>::f(); // expected-error {{friend function 'f' is a private member of 'test5::X<int>'}}
+  };
 
-template class Y<int>; // expected-note {{in instantiation}}
-} // namespace test5
+  template class Y<int>; // expected-note {{in instantiation}}
+}
 
 // Dependently-scoped, wrong friend.
 namespace test6 {
-template <class T> class Y;
+  template <class T> class Y;
 
-template <class T> class X {
-  void f(); // expected-note {{implicitly declared private here}}
-  friend class Y<float>;
-};
+  template <class T> class X {
+    void f(); // expected-note {{implicitly declared private here}}
+    friend class Y<float>;
+  };
 
-template <class T> class Y {
-  friend void X<T>::f(); // expected-error {{friend function 'f' is a private member of 'test6::X<int>'}}
-};
+  template <class T> class Y {
+    friend void X<T>::f(); // expected-error {{friend function 'f' is a private member of 'test6::X<int>'}}
+  };
 
-template class Y<int>; // expected-note {{in instantiation}}
-} // namespace test6
+  template class Y<int>; // expected-note {{in instantiation}}
+}
 
 // Dependently-scoped, right friend.
 namespace test7 {
-template <class T> class Y;
+  template <class T> class Y;
 
-template <class T> class X {
-  void f();
-  friend class Y<int>;
-};
+  template <class T> class X {
+    void f();
+    friend class Y<int>;
+  };
 
-template <class T> class Y {
-  friend void X<T>::f();
-};
+  template <class T> class Y {
+    friend void X<T>::f();
+  };
 
-template class Y<int>;
-} // namespace test7
+  template class Y<int>;
+}

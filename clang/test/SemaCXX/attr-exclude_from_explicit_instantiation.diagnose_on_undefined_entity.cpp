@@ -9,9 +9,9 @@
 
 template <class T>
 struct Foo {
-  EXCLUDE_FROM_EXPLICIT_INSTANTIATION void non_static_member_function();    // expected-note{{forward declaration of template entity is here}}
+  EXCLUDE_FROM_EXPLICIT_INSTANTIATION void non_static_member_function(); // expected-note{{forward declaration of template entity is here}}
   EXCLUDE_FROM_EXPLICIT_INSTANTIATION static void static_member_function(); // expected-note{{forward declaration of template entity is here}}
-  EXCLUDE_FROM_EXPLICIT_INSTANTIATION static int static_data_member;        // expected-note{{forward declaration of template entity is here}}
+  EXCLUDE_FROM_EXPLICIT_INSTANTIATION static int static_data_member; // expected-note{{forward declaration of template entity is here}}
   struct EXCLUDE_FROM_EXPLICIT_INSTANTIATION nested {
     static int static_member_function(); // expected-note{{forward declaration of template entity is here}}
   };

@@ -36,8 +36,9 @@
 #error "wrong value for __cpp_aggregate_paren_init"
 #endif
 
-#if defined(CHAR8_T) ? check(char8_t, 201811, 201811, 201811, 201811, 201811, 201811) : defined(NO_CHAR8_T) ? check(char8_t, 0, 0, 0, 0, 0, 0) \
-                                                                                                            : check(char8_t, 0, 0, 0, 0, 201811, 201811)
+#if defined(CHAR8_T) ? check(char8_t, 201811, 201811, 201811, 201811, 201811, 201811) : \
+    defined(NO_CHAR8_T) ? check(char8_t, 0, 0, 0, 0, 0, 0) : \
+    check(char8_t, 0, 0, 0, 0, 201811, 201811)
 #error "wrong value for __cpp_char8_t"
 #endif
 
@@ -184,7 +185,7 @@
 #error "wrong value for __cpp_nontype_template_args"
 #endif
 
-#if defined(RELAXED_TEMPLATE_TEMPLATE_ARGS)                          \
+#if defined(RELAXED_TEMPLATE_TEMPLATE_ARGS) \
     ? check(template_template_args, 0, 0, 0, 201611, 201611, 201611) \
     : check(template_template_args, 0, 0, 0, 0, 0, 0)
 #error "wrong value for __cpp_template_template_args"
@@ -253,7 +254,8 @@
 #error "wrong value for __cpp_user_defined_literals"
 #endif
 
-#if defined(NO_THREADSAFE_STATICS) ? check(threadsafe_static_init, 0, 0, 0, 0, 0, 0) : check(threadsafe_static_init, 200806, 200806, 200806, 200806, 200806, 200806)
+#if defined(NO_THREADSAFE_STATICS) ? check(threadsafe_static_init, 0, 0, 0, 0, 0, 0) : \
+                                     check(threadsafe_static_init, 200806, 200806, 200806, 200806, 200806, 200806)
 #error "wrong value for __cpp_threadsafe_static_init"
 #endif
 

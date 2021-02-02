@@ -31,6 +31,7 @@
 // system APIs consumes in the functions that take narrow strings as path
 // names.
 
+
 #include "filesystem_include.h"
 #include <type_traits>
 #include <cassert>
@@ -40,26 +41,24 @@
 
 // libstdc++ doesn't define conversions from/to wchar_t outside of windows.
 #if defined(__GLIBCXX__) && !defined(_WIN32)
-#define HAS_NO_WCHAR
+#  define HAS_NO_WCHAR
 #endif
 
 // Test conversion with strings that fit within the latin1 charset, that fit
 // within one code point in UTF-16, and that can be expressible in certain
 // one-byte code pages.
-static void test_latin_unicode() {
-  const char16_t u16str[] = {0xe5, 0xe4, 0xf6, 0x00};
-  const char32_t u32str[] = {0xe5, 0xe4, 0xf6, 0x00};
-  const char str[] = {
-      char(0xc3), char(0xa5), char(0xc3), char(0xa4),
-      char(0xc3), char(0xb6), 0x00}; // UTF8, in a regular char string
+static void test_latin_unicode()
+{
+  const char16_t u16str[] = { 0xe5, 0xe4, 0xf6, 0x00 };
+  const char32_t u32str[] = { 0xe5, 0xe4, 0xf6, 0x00 };
+  const char str[] = { char(0xc3), char(0xa5), char(0xc3), char(0xa4), char(0xc3), char(0xb6), 0x00 }; // UTF8, in a regular char string
 #if TEST_STD_VER > 17 && defined(__cpp_lib_char8_t)
-  const char8_t u8str[] = {0xc3, 0xa5, 0xc3, 0xa4, 0xc3, 0xb6, 0x00};
+  const char8_t u8str[] = { 0xc3, 0xa5, 0xc3, 0xa4, 0xc3, 0xb6, 0x00 };
 #else
-  const char u8str[] = {char(0xc3), char(0xa5), char(0xc3), char(0xa4),
-                        char(0xc3), char(0xb6), 0x00};
+  const char u8str[] = { char(0xc3), char(0xa5), char(0xc3), char(0xa4), char(0xc3), char(0xb6), 0x00 };
 #endif
 #ifndef HAS_NO_WCHAR
-  const wchar_t wstr[] = {0xe5, 0xe4, 0xf6, 0x00};
+  const wchar_t wstr[] = { 0xe5, 0xe4, 0xf6, 0x00 };
 #endif
 
   // Test well-defined conversion between UTF-8, UTF-16 and UTF-32
@@ -158,7 +157,7 @@ static void test_latin_unicode() {
   // behave as expected.
   SetFileApisToANSI();
   if (GetACP() == 1252) {
-    const char latin1[] = {char(0xe5), char(0xe4), char(0xf6), 0x00};
+    const char latin1[] = { char(0xe5), char(0xe4), char(0xf6), 0x00 };
     {
       const fs::path p(wstr);
       assert(p.string() == latin1);
@@ -177,7 +176,7 @@ static void test_latin_unicode() {
   SetFileApisToOEM();
   if (GetOEMCP() == 850 || GetOEMCP() == 437) {
     // These chars are identical in both CP 850 and 437
-    const char cp850[] = {char(0x86), char(0x84), char(0x94), 0x00};
+    const char cp850[] = { char(0x86), char(0x84), char(0x94), 0x00 };
     {
       const fs::path p(wstr);
       assert(p.string() == cp850);
@@ -199,15 +198,16 @@ static void test_latin_unicode() {
 // Test conversion with strings that don't fit within one UTF-16 code point.
 // Here, wchar_t can be either UTF-16 or UTF-32 depending on the size on the
 // particular platform.
-static void test_wide_unicode() {
-  const char16_t u16str[] = {0xd801, 0xdc37, 0x00};
-  const char32_t u32str[] = {0x10437, 0x00};
+static void test_wide_unicode()
+{
+  const char16_t u16str[] = { 0xd801, 0xdc37, 0x00 };
+  const char32_t u32str[] = { 0x10437, 0x00 };
 #if TEST_STD_VER > 17 && defined(__cpp_lib_char8_t)
-  const char8_t u8str[] = {0xf0, 0x90, 0x90, 0xb7, 0x00};
+  const char8_t u8str[] = { 0xf0, 0x90, 0x90, 0xb7, 0x00 };
 #else
-  const char u8str[] = {char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00};
+  const char u8str[] = { char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00 };
 #endif
-  const char str[] = {char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00};
+  const char str[] = { char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00 };
   {
     const fs::path p = fs::u8path(str);
     assert(p.u8string() == u8str);
@@ -228,9 +228,9 @@ static void test_wide_unicode() {
   }
 #if !defined(HAS_NO_WCHAR) && defined(__SIZEOF_WCHAR_T__)
 #if __SIZEOF_WCHAR_T__ == 2
-  const wchar_t wstr[] = {0xd801, 0xdc37, 0x00};
+  const wchar_t wstr[] = { 0xd801, 0xdc37, 0x00 };
 #else
-  const wchar_t wstr[] = {0x10437, 0x00};
+  const wchar_t wstr[] = { 0x10437, 0x00 };
 #endif
   // Test conversion to/from wchar_t.
   // libstdc++ doesn't define conversions from/to wchar_t outside of windows.
@@ -257,13 +257,12 @@ static void test_wide_unicode() {
 }
 
 // Test appending paths in different encodings.
-static void test_append() {
-  const char16_t u16str[] = {0xd801, 0xdc37, 0x00};
-  const char32_t u32str[] = {0x10437, 0x00};
-  const char32_t u32ref[] = {0x10437, fs::path::preferred_separator,
-                             0x10437, fs::path::preferred_separator,
-                             0x10437, 0x00};
-  const char str[] = {char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00};
+static void test_append()
+{
+  const char16_t u16str[] = { 0xd801, 0xdc37, 0x00 };
+  const char32_t u32str[] = { 0x10437, 0x00 };
+  const char32_t u32ref[] = { 0x10437, fs::path::preferred_separator, 0x10437, fs::path::preferred_separator, 0x10437, 0x00 };
+  const char str[] = { char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00 };
   {
     fs::path p = fs::u8path(str) / u16str / u32str;
     assert(p.u32string() == u32ref);
@@ -276,9 +275,9 @@ static void test_append() {
   }
 #if !defined(HAS_NO_WCHAR) && defined(__SIZEOF_WCHAR_T__)
 #if __SIZEOF_WCHAR_T__ == 2
-  const wchar_t wstr[] = {0xd801, 0xdc37, 0x00};
+  const wchar_t wstr[] = { 0xd801, 0xdc37, 0x00 };
 #else
-  const wchar_t wstr[] = {0x10437, 0x00};
+  const wchar_t wstr[] = { 0x10437, 0x00 };
 #endif
   // Test conversion from wchar_t.
   // libstdc++ doesn't define conversions from/to wchar_t outside of windows.
@@ -295,11 +294,12 @@ static void test_append() {
 #endif
 }
 
-static void test_concat() {
-  const char16_t u16str[] = {0xd801, 0xdc37, 0x00};
-  const char32_t u32str[] = {0x10437, 0x00};
-  const char32_t u32ref[] = {0x10437, 0x10437, 0x10437, 0x00};
-  const char str[] = {char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00};
+static void test_concat()
+{
+  const char16_t u16str[] = { 0xd801, 0xdc37, 0x00 };
+  const char32_t u32str[] = { 0x10437, 0x00 };
+  const char32_t u32ref[] = { 0x10437, 0x10437, 0x10437, 0x00 };
+  const char str[] = { char(0xf0), char(0x90), char(0x90), char(0xb7), 0x00 };
   {
     fs::path p = fs::u8path(str);
     p += u16str;
@@ -310,9 +310,9 @@ static void test_concat() {
   }
 #if !defined(HAS_NO_WCHAR) && defined(__SIZEOF_WCHAR_T__)
 #if __SIZEOF_WCHAR_T__ == 2
-  const wchar_t wstr[] = {0xd801, 0xdc37, 0x00};
+  const wchar_t wstr[] = { 0xd801, 0xdc37, 0x00 };
 #else
-  const wchar_t wstr[] = {0x10437, 0x00};
+  const wchar_t wstr[] = { 0x10437, 0x00 };
 #endif
   // Test conversion from wchar_t.
   // libstdc++ doesn't define conversions from/to wchar_t outside of windows.
@@ -327,15 +327,15 @@ static void test_concat() {
 #endif
 }
 
-static void test_append_concat_narrow() {
-  const char16_t u16str[] = {0xe5, 0x00};
-  const char32_t u32ref_append[] = {0xe5, fs::path::preferred_separator, 0xe5,
-                                    0x00};
-  const char32_t u32ref_concat[] = {0xe5, 0xe5, 0x00};
+static void test_append_concat_narrow()
+{
+  const char16_t u16str[] = { 0xe5, 0x00 };
+  const char32_t u32ref_append[] = { 0xe5, fs::path::preferred_separator, 0xe5, 0x00 };
+  const char32_t u32ref_concat[] = { 0xe5, 0xe5, 0x00 };
 
 #if TEST_STD_VER > 17 && defined(__cpp_lib_char8_t)
   {
-    const char8_t u8str[] = {0xc3, 0xa5, 0x00};
+    const char8_t u8str[] = { 0xc3, 0xa5, 0x00 };
     // In C++20, appends of a char8_t string is unambiguously treated as
     // UTF-8.
     fs::path p = fs::path(u16str) / u8str;
@@ -356,8 +356,7 @@ static void test_append_concat_narrow() {
   // Test appending a regular char-based string. On POSIX, this
   // is implied to convert to/from UTF-8.
   {
-    const char str[] = {char(0xc3), char(0xa5),
-                        0x00}; // UTF8, in a regular char string
+    const char str[] = { char(0xc3), char(0xa5), 0x00 }; // UTF8, in a regular char string
     fs::path p = fs::path(u16str) / str;
     assert(p.u32string() == u32ref_append);
     p = fs::path(u16str).append(str);
@@ -374,7 +373,7 @@ static void test_append_concat_narrow() {
 #else
   SetFileApisToANSI();
   if (GetACP() == 1252) {
-    const char latin1[] = {char(0xe5), 0x00};
+    const char latin1[] = { char(0xe5), 0x00 };
     fs::path p = fs::path(u16str) / latin1;
     assert(p.u32string() == u32ref_append);
     p = fs::path(u16str).append(latin1);
@@ -391,7 +390,7 @@ static void test_append_concat_narrow() {
   SetFileApisToOEM();
   if (GetOEMCP() == 850 || GetOEMCP() == 437) {
     // This chars is identical in both CP 850 and 437
-    const char cp850[] = {char(0x86), 0x00};
+    const char cp850[] = { char(0x86), 0x00 };
     fs::path p = fs::path(u16str) / cp850;
     assert(p.u32string() == u32ref_append);
     p = fs::path(u16str).append(cp850);
@@ -408,7 +407,8 @@ static void test_append_concat_narrow() {
 #endif
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   test_latin_unicode();
   test_wide_unicode();
   test_append();

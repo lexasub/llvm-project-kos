@@ -104,4 +104,4 @@ TEST_F(MDBuilderTest, createTBAANode) {
   EXPECT_EQ(mdconst::extract<ConstantInt>(N2->getOperand(2))->getZExtValue(),
             1U);
 }
-} // namespace
+}

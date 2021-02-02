@@ -21,13 +21,13 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  typedef int T;
-  typedef std::unordered_set<T> C;
-  C c(1);
-  C::local_iterator i = c.begin(0);
-  ++i;
-  ++i;
-  assert(false);
+    typedef int T;
+    typedef std::unordered_set<T> C;
+    C c(1);
+    C::local_iterator i = c.begin(0);
+    ++i;
+    ++i;
+    assert(false);
 
-  return 0;
+    return 0;
 }

@@ -19,10 +19,11 @@
 #include <cassert>
 #include "test_macros.h"
 
-int main(int, char**) {
-  //  ensure that the macros that are supposed to be defined in <memory_resource> are defined.
+int main(int, char**)
+{
+//  ensure that the macros that are supposed to be defined in <memory_resource> are defined.
 
-  /*
+/*
 #if !defined(__cpp_lib_fooby)
 # error "__cpp_lib_fooby is not defined"
 #elif __cpp_lib_fooby < 201606L

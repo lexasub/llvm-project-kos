@@ -1,25 +1,14 @@
 // RUN: %clang_cc1 -std=c++2a %s -emit-llvm -o - -triple x86_64-linux-gnu | FileCheck %s
 // RUN: %clang_cc1 -std=c++2a %s -emit-llvm -o - -triple x86_64-linux-gnu -O2 -disable-llvm-passes | FileCheck %s --check-prefix=CHECK-OPT
 
-struct A {
-  ~A();
-  int n;
-  char c[3];
-};
-struct B {
-  [[no_unique_address]] A a;
-  char k;
-};
+struct A { ~A(); int n; char c[3]; };
+struct B { [[no_unique_address]] A a; char k; };
 // CHECK-DAG: @b ={{.*}} global { i32, [3 x i8], i8 } { i32 1, [3 x i8] c"\02\03\04", i8 5 }
 B b = {1, 2, 3, 4, 5};
 
 struct C : A {};
 struct D : C {};
-struct E {
-  int e;
-  [[no_unique_address]] D d;
-  char k;
-};
+struct E { int e; [[no_unique_address]] D d; char k; };
 // CHECK-DAG: @e ={{.*}} global { i32, i32, [3 x i8], i8 } { i32 1, i32 2, [3 x i8] c"\03\04\05", i8 6 }
 E e = {1, 2, 3, 4, 5, 6};
 

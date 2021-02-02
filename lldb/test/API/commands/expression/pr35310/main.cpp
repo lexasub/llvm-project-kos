@@ -2,8 +2,12 @@
 
 class A {
 public:
-  int __attribute__((abi_tag("cxx11"))) test_abi_tag() { return 1; }
-  int test_asm_name() asm("A_test_asm") { return 2; }
+  int __attribute__((abi_tag("cxx11"))) test_abi_tag() {
+      return 1;
+  }
+  int test_asm_name() asm("A_test_asm") {
+      return 2;
+  }
 };
 
 int main(int argc, char **argv) {

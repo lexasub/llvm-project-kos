@@ -9,14 +9,14 @@ enum E { e };
 
 void f() {
   try {
-    (void)new constexpr int; // expected-error{{type name does not allow constexpr}}
-  } catch (constexpr int) {  // expected-error{{type name does not allow constexpr}}
+    (void) new constexpr int; // expected-error{{type name does not allow constexpr}}
+  } catch (constexpr int) { // expected-error{{type name does not allow constexpr}}
   }
 
   // These parse as type definitions, not as type references with braced
   // initializers. Sad but true...
-  (void)new struct S {};  // expected-error{{'S' cannot be defined in a type specifier}}
-  (void)new enum E { e }; // expected-error{{'E' cannot be defined in a type specifier}}
+  (void) new struct S {}; // expected-error{{'S' cannot be defined in a type specifier}}
+  (void) new enum E { e }; // expected-error{{'E' cannot be defined in a type specifier}}
 }
 
 // And for trailing-type-specifier-seq

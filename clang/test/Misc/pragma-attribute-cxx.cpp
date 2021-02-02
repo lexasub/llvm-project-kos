@@ -7,14 +7,14 @@ class testClass1 {
 // CHECK-LABEL: CXXRecordDecl{{.*}} testClass1
 // CHECK-NOT: AnnotateAttr
 
-#pragma clang attribute push(__attribute__((annotate("test"))), apply_to = any(record, field, variable, function, namespace, type_alias))
+#pragma clang attribute push (__attribute__((annotate("test"))), apply_to=any(record, field, variable, function, namespace, type_alias))
 
 class testClass2 {
   void testMethod1(int param);
 
   testClass2();
 
-  testClass2 *operator->();
+  testClass2 *operator -> ();
 };
 // CHECK-LABEL: CXXRecordDecl{{.*}} testClass2
 // CHECK: AnnotateAttr{{.*}} "test"
@@ -27,7 +27,7 @@ class testClass2 {
 // CHECK-NEXT: CXXMethodDecl{{.*}} operator->
 // CHECK-NEXT: AnnotateAttr{{.*}} "test"
 
-#pragma clang attribute push(__attribute__((annotate("method"))), apply_to = any(record, field, variable, function, namespace, type_alias))
+#pragma clang attribute push (__attribute__((annotate("method"))), apply_to=any(record, field, variable, function, namespace, type_alias))
 
 void testClass2::testMethod1(int param) {
 
@@ -70,7 +70,7 @@ void testCatchVariable() {
 // CHECK-NEXT: AnnotateAttr{{.*}} "test"
 
 void testLambdaMethod() {
-  auto l = []() {};
+  auto l = [] () { };
   testLambdaMethod();
 }
 // CHECK-LABEL: FunctionDecl{{.*}} testLambdaMethod
@@ -82,7 +82,7 @@ void testLambdaMethod() {
 
 #pragma clang attribute pop
 
-#pragma clang attribute push(__attribute__((require_constant_initialization)), apply_to = variable(is_global))
+#pragma clang attribute push (__attribute__((require_constant_initialization)), apply_to=variable(is_global))
 
 int testCI1 = 1;
 // CHECK-LABEL: VarDecl{{.*}} testCI1
@@ -97,7 +97,7 @@ int testNoCI = 0;
 // CHECK-NOT: ConstInitAttr
 
 // Check support for CXX11 style attributes
-#pragma clang attribute push([[noreturn]], apply_to = function)
+#pragma clang attribute push ([[noreturn]], apply_to = function)
 
 void testNoReturn();
 // CHECK-LABEL: FunctionDecl{{.*}} testNoReturn

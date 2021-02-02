@@ -10,7 +10,7 @@
 int ReturnInt(); // expected-note 0+ {{declared here}}
 
 struct PODType { // expected-note 0+ {{declared here}}
-  int value;     // expected-note 0-2 {{declared here}}
+  int value; // expected-note 0-2 {{declared here}}
   int value2;
 };
 
@@ -51,6 +51,7 @@ struct StoresNonLit {
 };
 
 #endif // __cplusplus
+
 
 #if defined(TEST_ONE) // Test semantics of attribute
 
@@ -150,8 +151,8 @@ void test_basic_start_static_2_2() {
   ATTR static PODType pod;
 #else
   ATTR static PODType pod; // expected-error {{variable does not have a constant initializer}}
-                           // expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
-                           // expected-note-re@-2 {{{{non-constexpr constructor|subobject of type 'int' is not initialized}}}}
+// expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
+// expected-note-re@-2 {{{{non-constexpr constructor|subobject of type 'int' is not initialized}}}}
 #endif
   ATTR static PODType pot2 = {ReturnInt()}; // expected-error {{variable does not have a constant initializer}}
                                             // expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
@@ -233,8 +234,8 @@ ATTR thread_local NonLit nl_ctor_tl = {}; // expected-error {{variable does not 
 // expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
 // expected-note@-2 {{non-constexpr constructor 'NonLit' cannot be used in a constant expression}}
 ATTR StoresNonLit snl; // expected-error {{variable does not have a constant initializer}}
-                       // expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
-                       // expected-note@-2 {{non-constexpr constructor 'StoresNonLit' cannot be used in a constant expression}}
+// expected-note@-1 {{required by 'require_constant_initialization' attribute here}}
+// expected-note@-2 {{non-constexpr constructor 'StoresNonLit' cannot be used in a constant expression}}
 #endif
 
 // Non-literal types cannot appear in the initializer of a non-literal type.
@@ -300,15 +301,16 @@ ATTR TestCtor<NotC> t(42); // expected-error {{variable does not have a constant
 ATTR const char *foo[] = {"abc", "def"};
 ATTR PODType bar[] = {{}, {123, 456}};
 
-namespace AttrAddedTooLate {
-struct A {
-  static const int n = 0; // expected-note {{here}}
-};
-ATTR const int A::n; // expected-warning {{added after initialization}}
 
-int m = 0;         // expected-note {{here}}
-extern ATTR int m; // expected-warning {{added after initialization}}
-} // namespace AttrAddedTooLate
+namespace AttrAddedTooLate {
+  struct A {
+    static const int n = 0; // expected-note {{here}}
+  };
+  ATTR const int A::n; // expected-warning {{added after initialization}}
+
+  int m = 0; // expected-note {{here}}
+  extern ATTR int m; // expected-warning {{added after initialization}}
+}
 
 #elif defined(TEST_TWO) // Test for duplicate warnings
 struct NotC {
@@ -333,7 +335,7 @@ NonLit const_init{42};                        // expected-warning {{declaration 
 constexpr TestCtor<NotC> inval_constexpr(42); // expected-error {{must be initialized by a constant expression}}
 // expected-note@-1 {{in call to 'TestCtor(42)'}}
 ATTR constexpr TestCtor<NotC> inval_constexpr2(42); // expected-error {{must be initialized by a constant expression}}
-                                                    // expected-note@-1 {{in call to 'TestCtor(42)'}}
+// expected-note@-1 {{in call to 'TestCtor(42)'}}
 
 #elif defined(TEST_THREE)
 #if defined(__cplusplus)

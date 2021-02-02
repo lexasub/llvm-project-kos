@@ -24,5 +24,5 @@ static int bar() { return 42; }
 int pch();
 #pragma hdrstop
 
-int pch() { return 42 * 42; }
+int pch() { return 42*42; }
 int other() { return 42; }

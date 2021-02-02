@@ -15,24 +15,24 @@ template <typename T> void f(T *tp) {
 
 void g(void) {
   f<__vector float>(nullptr);
-  //      CHECK: | |-FunctionDecl {{.*}} f 'void (__vector float *)'
+//      CHECK: | |-FunctionDecl {{.*}} f 'void (__vector float *)'
 
-  //      CHECK: |   | `-CStyleCastExpr {{.*}} '__vector int' <NoOp>
-  // CHECK-NEXT: |   |   `-ImplicitCastExpr {{.*}} '__vector int' <BitCast>
-  // CHECK-NEXT: |   |     `-ImplicitCastExpr {{.*}}'__vector float' <LValueToRValue>
+//      CHECK: |   | `-CStyleCastExpr {{.*}} '__vector int' <NoOp>
+// CHECK-NEXT: |   |   `-ImplicitCastExpr {{.*}} '__vector int' <BitCast>
+// CHECK-NEXT: |   |     `-ImplicitCastExpr {{.*}}'__vector float' <LValueToRValue>
 
-  //      CHECK: |     `-CStyleCastExpr {{.*}} '__vector int' <NoOp>
-  // CHECK-NEXT: |       `-ImplicitCastExpr {{.*}} '__vector int' <BitCast>
-  // CHECK-NEXT: |         `-ImplicitCastExpr {{.*}}'__vector float' <LValueToRValue>
+//      CHECK: |     `-CStyleCastExpr {{.*}} '__vector int' <NoOp>
+// CHECK-NEXT: |       `-ImplicitCastExpr {{.*}} '__vector int' <BitCast>
+// CHECK-NEXT: |         `-ImplicitCastExpr {{.*}}'__vector float' <LValueToRValue>
 
   f<double>(nullptr);
-  //      CHECK: | `-FunctionDecl {{.*}} f 'void (double *)'
+//      CHECK: | `-FunctionDecl {{.*}} f 'void (double *)'
 
-  //      CHECK: |     | `-CStyleCastExpr {{.*}} '__vector int' <VectorSplat>
-  // CHECK-NEXT: |     |   `-ImplicitCastExpr {{.*}} 'int' <FloatingToIntegral>
-  // CHECK-NEXT: |     |     `-ImplicitCastExpr {{.*}}'double' <LValueToRValue>
+//      CHECK: |     | `-CStyleCastExpr {{.*}} '__vector int' <VectorSplat>
+// CHECK-NEXT: |     |   `-ImplicitCastExpr {{.*}} 'int' <FloatingToIntegral>
+// CHECK-NEXT: |     |     `-ImplicitCastExpr {{.*}}'double' <LValueToRValue>
 
-  //      CHECK: |       `-CStyleCastExpr {{.*}} '__vector int' <VectorSplat>
-  // CHECK-NEXT: |         `-ImplicitCastExpr {{.*}} 'int' <FloatingToIntegral>
-  // CHECK-NEXT: |           `-ImplicitCastExpr {{.*}}:'double' <LValueToRValue>
+//      CHECK: |       `-CStyleCastExpr {{.*}} '__vector int' <VectorSplat>
+// CHECK-NEXT: |         `-ImplicitCastExpr {{.*}} 'int' <FloatingToIntegral>
+// CHECK-NEXT: |           `-ImplicitCastExpr {{.*}}:'double' <LValueToRValue>
 }

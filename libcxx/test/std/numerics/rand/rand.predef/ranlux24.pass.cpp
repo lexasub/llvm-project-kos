@@ -15,10 +15,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::ranlux24 e;
-  e.discard(9999);
-  assert(e() == 9901578u);
+int main(int, char**)
+{
+    std::ranlux24 e;
+    e.discard(9999);
+    assert(e() == 9901578u);
 
   return 0;
 }

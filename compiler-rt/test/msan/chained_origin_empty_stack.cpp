@@ -17,11 +17,13 @@
 
 volatile int x;
 
-__attribute__((noinline)) void fn_g(int a) {
+__attribute__((noinline))
+void fn_g(int a) {
   x = a;
 }
 
-__attribute__((noinline)) void fn_f(int a) {
+__attribute__((noinline))
+void fn_f(int a) {
   fn_g(a);
 }
 

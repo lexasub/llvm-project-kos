@@ -131,7 +131,8 @@ SBTrace::operator bool() const {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBTrace>(Registry &R) {
+template <>
+void RegisterMethods<SBTrace>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBTrace, StopTrace,
                        (lldb::SBError &, lldb::tid_t));
   LLDB_REGISTER_METHOD(void, SBTrace, GetTraceConfig,
@@ -142,5 +143,5 @@ template <> void RegisterMethods<SBTrace>(Registry &R) {
   LLDB_REGISTER_METHOD_CONST(bool, SBTrace, operator bool, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

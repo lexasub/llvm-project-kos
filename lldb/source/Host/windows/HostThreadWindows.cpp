@@ -20,7 +20,7 @@ namespace {
 void __stdcall ExitThreadProxy(ULONG_PTR dwExitCode) {
   ::ExitThread(dwExitCode);
 }
-} // namespace
+}
 
 HostThreadWindows::HostThreadWindows()
     : HostNativeThreadBase(), m_owns_handle(true) {}

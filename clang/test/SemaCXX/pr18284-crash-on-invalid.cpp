@@ -2,10 +2,8 @@
 // Don't crash (PR18284).
 
 namespace n1 {
-class A {};
-class C {
-  A a;
-};
+class A { };
+class C { A a; };
 
 A::RunTest() {} // expected-error {{C++ requires a type specifier for all declarations}}
 
@@ -15,8 +13,8 @@ void f() {
 } // namespace n1
 
 namespace n2 {
-class A {};
-class C : public A {};
+class A { };
+class C : public A { };
 
 A::RunTest() {} // expected-error {{C++ requires a type specifier for all declarations}}
 

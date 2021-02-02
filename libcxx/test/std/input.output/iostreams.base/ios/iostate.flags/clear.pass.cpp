@@ -20,42 +20,52 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**) {
-  {
-    std::ios ios(0);
-    ios.clear();
-    assert(ios.rdstate() == std::ios::badbit);
+int main(int, char**)
+{
+    {
+        std::ios ios(0);
+        ios.clear();
+        assert(ios.rdstate() == std::ios::badbit);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try {
-      ios.exceptions(std::ios::badbit);
-      assert(false);
-    } catch (...) {
-    }
-    try {
-      ios.clear();
-      assert(false);
-    } catch (std::ios::failure&) {
-      assert(ios.rdstate() == std::ios::badbit);
-    }
-    try {
-      ios.clear(std::ios::eofbit);
-      assert(false);
-    } catch (std::ios::failure&) {
-      assert(ios.rdstate() == (std::ios::eofbit | std::ios::badbit));
-    }
+        try
+        {
+            ios.exceptions(std::ios::badbit);
+            assert(false);
+        }
+        catch (...)
+        {
+        }
+        try
+        {
+            ios.clear();
+            assert(false);
+        }
+        catch (std::ios::failure&)
+        {
+            assert(ios.rdstate() == std::ios::badbit);
+        }
+        try
+        {
+            ios.clear(std::ios::eofbit);
+            assert(false);
+        }
+        catch (std::ios::failure&)
+        {
+            assert(ios.rdstate() == (std::ios::eofbit | std::ios::badbit));
+        }
 #endif
-  }
-  {
-    testbuf sb;
-    std::ios ios(&sb);
-    ios.clear();
-    assert(ios.rdstate() == std::ios::goodbit);
-    ios.exceptions(std::ios::badbit);
-    ios.clear();
-    assert(ios.rdstate() == std::ios::goodbit);
-    ios.clear(std::ios::eofbit);
-    assert(ios.rdstate() == std::ios::eofbit);
-  }
+    }
+    {
+        testbuf sb;
+        std::ios ios(&sb);
+        ios.clear();
+        assert(ios.rdstate() == std::ios::goodbit);
+        ios.exceptions(std::ios::badbit);
+        ios.clear();
+        assert(ios.rdstate() == std::ios::goodbit);
+        ios.clear(std::ios::eofbit);
+        assert(ios.rdstate() == std::ios::eofbit);
+    }
 
   return 0;
 }

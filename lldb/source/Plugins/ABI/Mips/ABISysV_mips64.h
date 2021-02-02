@@ -80,8 +80,7 @@ public:
 
   static void Terminate();
 
-  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp,
-                                    const lldb_private::ArchSpec &arch);
+  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp, const lldb_private::ArchSpec &arch);
 
   static lldb_private::ConstString GetPluginNameStatic();
 
@@ -101,8 +100,7 @@ protected:
   bool RegisterIsCalleeSaved(const lldb_private::RegisterInfo *reg_info);
 
 private:
-  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance
-                                                        // instead.
+  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance instead.
 };
 
 #endif // LLDB_SOURCE_PLUGINS_ABI_MIPS_ABISYSV_MIPS64_H

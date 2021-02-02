@@ -24,8 +24,9 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string C;
     C c(1, '\0');
     C::iterator i = c.end();
@@ -33,18 +34,16 @@ int main(int, char**) {
     assert(i == c.begin());
     --i;
     assert(false);
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        C;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> C;
     C c(1, '\0');
     C::iterator i = c.end();
     --i;
     assert(i == c.begin());
     --i;
     assert(false);
-  }
+    }
 #endif
 }

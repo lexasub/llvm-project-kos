@@ -21,27 +21,29 @@
 #include "test_macros.h"
 
 template <class C>
-void test(C c) {
-  const typename C::value_type v = typename C::value_type();
-  std::back_insert_iterator<C> i(c);
-  i = v;
-  assert(c.back() == v);
+void
+test(C c)
+{
+    const typename C::value_type v = typename C::value_type();
+    std::back_insert_iterator<C> i(c);
+    i = v;
+    assert(c.back() == v);
 }
 
-class Copyable {
-  int data_;
-
+class Copyable
+{
+    int data_;
 public:
-  Copyable() : data_(0) {}
-  ~Copyable() { data_ = -1; }
+    Copyable() : data_(0) {}
+    ~Copyable() {data_ = -1;}
 
-  friend bool operator==(const Copyable& x, const Copyable& y) {
-    return x.data_ == y.data_;
-  }
+    friend bool operator==(const Copyable& x, const Copyable& y)
+        {return x.data_ == y.data_;}
 };
 
-int main(int, char**) {
-  test(std::vector<Copyable>());
+int main(int, char**)
+{
+    test(std::vector<Copyable>());
 
   return 0;
 }

@@ -12,14 +12,14 @@
 // * don't check shadow values (-DCHECK_IN_F)
 // * treat all values loaded from memory as fully initialized (-UCHECK_IN_F)
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 __attribute__((noinline))
-__attribute__((no_sanitize_memory)) int
-f(void) {
+__attribute__((no_sanitize_memory))
+int f(void) {
   int x;
-  int *volatile p = &x;
+  int * volatile p = &x;
 #ifdef CHECK_IN_F
   if (*p)
     exit(0);

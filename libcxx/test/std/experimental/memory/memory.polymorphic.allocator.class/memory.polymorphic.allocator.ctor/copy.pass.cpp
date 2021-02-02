@@ -22,25 +22,30 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  typedef ex::polymorphic_allocator<void> A1;
-  {
-    static_assert(std::is_copy_constructible<A1>::value, "");
-    static_assert(std::is_move_constructible<A1>::value, "");
-  }
-  // copy
-  {
-    A1 const a((ex::memory_resource*)42);
-    A1 const a2(a);
-    assert(a.resource() == a2.resource());
-  }
-  // move
-  {
-    A1 a((ex::memory_resource*)42);
-    A1 a2(std::move(a));
-    assert(a.resource() == a2.resource());
-    assert(a2.resource() == (ex::memory_resource*)42);
-  }
+int main(int, char**)
+{
+    typedef ex::polymorphic_allocator<void> A1;
+    {
+        static_assert(
+            std::is_copy_constructible<A1>::value, ""
+          );
+        static_assert(
+            std::is_move_constructible<A1>::value, ""
+          );
+    }
+    // copy
+    {
+        A1 const a((ex::memory_resource*)42);
+        A1 const a2(a);
+        assert(a.resource() == a2.resource());
+    }
+    // move
+    {
+        A1 a((ex::memory_resource*)42);
+        A1 a2(std::move(a));
+        assert(a.resource() == a2.resource());
+        assert(a2.resource() == (ex::memory_resource*)42);
+    }
 
   return 0;
 }

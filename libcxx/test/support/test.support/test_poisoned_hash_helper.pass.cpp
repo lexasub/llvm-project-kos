@@ -18,20 +18,11 @@
 #include "test_macros.h"
 
 template <class T, size_t = sizeof(T)>
-constexpr bool is_complete_imp(int) {
-  return true;
-}
-template <class>
-constexpr bool is_complete_imp(long) {
-  return false;
-}
-template <class T>
-constexpr bool is_complete() {
-  return is_complete_imp<T>(0);
-}
+constexpr bool is_complete_imp(int) { return true; }
+template <class> constexpr bool is_complete_imp(long) { return false; }
+template <class T> constexpr bool is_complete() { return is_complete_imp<T>(0); }
 
-template <class T>
-struct has_complete_hash {
+template <class T> struct has_complete_hash {
   enum { value = is_complete<std::hash<T> >() };
 };
 

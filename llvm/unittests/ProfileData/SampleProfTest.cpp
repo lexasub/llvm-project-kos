@@ -32,8 +32,8 @@ using llvm::unittest::TempFile;
 static ::testing::AssertionResult NoError(std::error_code EC) {
   if (!EC)
     return ::testing::AssertionSuccess();
-  return ::testing::AssertionFailure()
-         << "error " << EC.value() << ": " << EC.message();
+  return ::testing::AssertionFailure() << "error " << EC.value() << ": "
+                                       << EC.message();
 }
 
 namespace {
@@ -309,6 +309,7 @@ struct SampleProfTest : ::testing::Test {
         getRepInFormat(StringviewName, UseMD5, StringviewGUID);
     ASSERT_EQ(1000u, CTMap.get()[MconstructRep]);
     ASSERT_EQ(437u, CTMap.get()[StringviewRep]);
+
 
     ProfileSummary &Summary = Reader->getSummary();
     Summary.setPartialProfile(true);

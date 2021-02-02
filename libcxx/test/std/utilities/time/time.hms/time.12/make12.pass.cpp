@@ -17,21 +17,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using hours = std::chrono::hours;
-  ASSERT_SAME_TYPE(hours, decltype(std::chrono::make12(std::declval<hours>())));
-  ASSERT_NOEXCEPT(std::chrono::make12(std::declval<hours>()));
+int main(int, char**)
+{
+    using hours = std::chrono::hours;
+    ASSERT_SAME_TYPE(hours, decltype(std::chrono::make12(std::declval<hours>())));
+    ASSERT_NOEXCEPT(                 std::chrono::make12(std::declval<hours>()));
 
-  static_assert(std::chrono::make12(hours(0)) == hours(12), "");
-  static_assert(std::chrono::make12(hours(11)) == hours(11), "");
-  static_assert(std::chrono::make12(hours(12)) == hours(12), "");
-  static_assert(std::chrono::make12(hours(23)) == hours(11), "");
+    static_assert( std::chrono::make12(hours( 0)) == hours(12), "");
+    static_assert( std::chrono::make12(hours(11)) == hours(11), "");
+    static_assert( std::chrono::make12(hours(12)) == hours(12), "");
+    static_assert( std::chrono::make12(hours(23)) == hours(11), "");
 
-  assert(std::chrono::make12(hours(0)) == hours(12));
-  for (int i = 1; i < 13; ++i)
-    assert(std::chrono::make12(hours(i)) == hours(i));
-  for (int i = 13; i < 24; ++i)
-    assert(std::chrono::make12(hours(i)) == hours(i - 12));
+    assert( std::chrono::make12(hours(0)) == hours(12));
+    for (int i = 1; i < 13; ++i)
+        assert( std::chrono::make12(hours(i)) == hours(i));
+    for (int i = 13; i < 24; ++i)
+        assert( std::chrono::make12(hours(i)) == hours(i-12));
 
-  return 0;
+    return 0;
 }

@@ -20,8 +20,8 @@ extern "C" int luaopen_lldb(lua_State *L) { return 0; }
 // C-linkage specified, but returns UDT 'llvm::Expected<bool>' which is
 // incompatible with C
 #if _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4190)
+#pragma warning (push)
+#pragma warning (disable : 4190)
 #endif
 
 extern "C" llvm::Expected<bool> LLDBSwigLuaBreakpointCallbackFunction(
@@ -31,7 +31,7 @@ extern "C" llvm::Expected<bool> LLDBSwigLuaBreakpointCallbackFunction(
 }
 
 #if _MSC_VER
-#pragma warning(pop)
+#pragma warning (pop)
 #endif
 
 #pragma clang diagnostic pop

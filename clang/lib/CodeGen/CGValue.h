@@ -14,23 +14,23 @@
 #ifndef LLVM_CLANG_LIB_CODEGEN_CGVALUE_H
 #define LLVM_CLANG_LIB_CODEGEN_CGVALUE_H
 
-#include "Address.h"
-#include "CodeGenTBAA.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Type.h"
-#include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
+#include "llvm/IR/Type.h"
+#include "Address.h"
+#include "CodeGenTBAA.h"
 
 namespace llvm {
-class Constant;
-class MDNode;
-} // namespace llvm
+  class Constant;
+  class MDNode;
+}
 
 namespace clang {
 namespace CodeGen {
-class AggValueSlot;
-class CodeGenFunction;
-struct CGBitFieldInfo;
+  class AggValueSlot;
+  class CodeGenFunction;
+  struct CGBitFieldInfo;
 
 /// RValue - This trivial value class is used to represent the result of an
 /// expression that is evaluated.  It can be one of three things: either a
@@ -110,14 +110,16 @@ public:
     ER.V1.setInt(Aggregate);
 
     auto align = static_cast<uintptr_t>(addr.getAlignment().getQuantity());
-    ER.V2.setPointer(reinterpret_cast<llvm::Value *>(align << AggAlignShift));
+    ER.V2.setPointer(reinterpret_cast<llvm::Value*>(align << AggAlignShift));
     ER.V2.setInt(isVolatile);
     return ER;
   }
 };
 
 /// Does an ARC strong l-value have precise lifetime?
-enum ARCPreciseLifetime_t { ARCImpreciseLifetime, ARCPreciseLifetime };
+enum ARCPreciseLifetime_t {
+  ARCImpreciseLifetime, ARCPreciseLifetime
+};
 
 /// The source of the alignment of an l-value; an expression of
 /// confidence in the alignment actually matching the estimate.
@@ -150,7 +152,7 @@ class LValueBaseInfo {
 
 public:
   explicit LValueBaseInfo(AlignmentSource Source = AlignmentSource::Type)
-      : AlignSource(Source) {}
+    : AlignSource(Source) {}
   AlignmentSource getAlignmentSource() const { return AlignSource; }
   void setAlignmentSource(AlignmentSource Source) { AlignSource = Source; }
 
@@ -195,14 +197,14 @@ class LValue {
   unsigned Alignment;
 
   // objective-c's ivar
-  bool Ivar : 1;
+  bool Ivar:1;
 
   // objective-c's ivar is an array
-  bool ObjIsArray : 1;
+  bool ObjIsArray:1;
 
   // LValue is non-gc'able for any reason, including being a parameter or local
   // variable.
-  bool NonGC : 1;
+  bool NonGC: 1;
 
   // Lvalue is a global reference of an objective-c object
   bool GlobalObjCRef : 1;
@@ -273,14 +275,14 @@ public:
   bool isObjCArray() const { return ObjIsArray; }
   void setObjCArray(bool Value) { ObjIsArray = Value; }
 
-  bool isNonGC() const { return NonGC; }
+  bool isNonGC () const { return NonGC; }
   void setNonGC(bool Value) { NonGC = Value; }
 
   bool isGlobalObjCRef() const { return GlobalObjCRef; }
   void setGlobalObjCRef(bool Value) { GlobalObjCRef = Value; }
 
   bool isThreadLocalRef() const { return ThreadLocalRef; }
-  void setThreadLocalRef(bool Value) { ThreadLocalRef = Value; }
+  void setThreadLocalRef(bool Value) { ThreadLocalRef = Value;}
 
   ARCPreciseLifetime_t isARCPreciseLifetime() const {
     return ARCPreciseLifetime_t(!ImpreciseLifetime);
@@ -291,12 +293,16 @@ public:
   bool isNontemporal() const { return Nontemporal; }
   void setNontemporal(bool Value) { Nontemporal = Value; }
 
-  bool isObjCWeak() const { return Quals.getObjCGCAttr() == Qualifiers::Weak; }
+  bool isObjCWeak() const {
+    return Quals.getObjCGCAttr() == Qualifiers::Weak;
+  }
   bool isObjCStrong() const {
     return Quals.getObjCGCAttr() == Qualifiers::Strong;
   }
 
-  bool isVolatile() const { return Quals.hasVolatile(); }
+  bool isVolatile() const {
+    return Quals.hasVolatile();
+  }
 
   Expr *getBaseIvarExp() const { return BaseIvarExp; }
   void setBaseIvarExp(Expr *V) { BaseIvarExp = V; }
@@ -371,20 +377,14 @@ public:
   Address getBitFieldAddress() const {
     return Address(getBitFieldPointer(), getAlignment());
   }
-  llvm::Value *getBitFieldPointer() const {
-    assert(isBitField());
-    return V;
-  }
+  llvm::Value *getBitFieldPointer() const { assert(isBitField()); return V; }
   const CGBitFieldInfo &getBitFieldInfo() const {
     assert(isBitField());
     return *BitFieldInfo;
   }
 
   // global register lvalue
-  llvm::Value *getGlobalReg() const {
-    assert(isGlobalReg());
-    return V;
-  }
+  llvm::Value *getGlobalReg() const { assert(isGlobalReg()); return V; }
 
   static LValue MakeAddr(Address address, QualType type, ASTContext &Context,
                          LValueBaseInfo BaseInfo, TBAAAccessInfo TBAAInfo) {
@@ -545,11 +545,14 @@ public:
   ///   for calling destructors on this object
   /// \param needsGC - true if the slot is potentially located
   ///   somewhere that ObjC GC calls should be emitted for
-  static AggValueSlot
-  forAddr(Address addr, Qualifiers quals, IsDestructed_t isDestructed,
-          NeedsGCBarriers_t needsGC, IsAliased_t isAliased,
-          Overlap_t mayOverlap, IsZeroed_t isZeroed = IsNotZeroed,
-          IsSanitizerChecked_t isChecked = IsNotSanitizerChecked) {
+  static AggValueSlot forAddr(Address addr,
+                              Qualifiers quals,
+                              IsDestructed_t isDestructed,
+                              NeedsGCBarriers_t needsGC,
+                              IsAliased_t isAliased,
+                              Overlap_t mayOverlap,
+                              IsZeroed_t isZeroed = IsNotZeroed,
+                       IsSanitizerChecked_t isChecked = IsNotSanitizerChecked) {
     AggValueSlot AV;
     if (addr.isValid()) {
       AV.Addr = addr.getPointer();
@@ -586,7 +589,9 @@ public:
 
   Qualifiers getQualifiers() const { return Quals; }
 
-  bool isVolatile() const { return Quals.hasVolatile(); }
+  bool isVolatile() const {
+    return Quals.hasVolatile();
+  }
 
   void setVolatile(bool flag) {
     if (flag)
@@ -603,19 +608,33 @@ public:
     return NeedsGCBarriers_t(ObjCGCFlag);
   }
 
-  llvm::Value *getPointer() const { return Addr; }
+  llvm::Value *getPointer() const {
+    return Addr;
+  }
 
-  Address getAddress() const { return Address(Addr, getAlignment()); }
+  Address getAddress() const {
+    return Address(Addr, getAlignment());
+  }
 
-  bool isIgnored() const { return Addr == nullptr; }
+  bool isIgnored() const {
+    return Addr == nullptr;
+  }
 
-  CharUnits getAlignment() const { return CharUnits::fromQuantity(Alignment); }
+  CharUnits getAlignment() const {
+    return CharUnits::fromQuantity(Alignment);
+  }
 
-  IsAliased_t isPotentiallyAliased() const { return IsAliased_t(AliasedFlag); }
+  IsAliased_t isPotentiallyAliased() const {
+    return IsAliased_t(AliasedFlag);
+  }
 
-  Overlap_t mayOverlap() const { return Overlap_t(OverlapFlag); }
+  Overlap_t mayOverlap() const {
+    return Overlap_t(OverlapFlag);
+  }
 
-  bool isSanitizerChecked() const { return SanitizerCheckedFlag; }
+  bool isSanitizerChecked() const {
+    return SanitizerCheckedFlag;
+  }
 
   RValue asRValue() const {
     if (isIgnored()) {
@@ -626,7 +645,9 @@ public:
   }
 
   void setZeroed(bool V = true) { ZeroedFlag = V; }
-  IsZeroed_t isZeroed() const { return IsZeroed_t(ZeroedFlag); }
+  IsZeroed_t isZeroed() const {
+    return IsZeroed_t(ZeroedFlag);
+  }
 
   /// Get the preferred size to use when storing a value to this slot. This
   /// is the type size unless that might overlap another object, in which
@@ -637,7 +658,7 @@ public:
   }
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

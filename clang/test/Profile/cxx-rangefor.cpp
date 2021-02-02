@@ -30,8 +30,7 @@ void range_for() {
 
   // PGOGEN: store {{.*}} @[[RFC]], i64 0, i64 4
   // PGOUSE: br {{.*}} !prof ![[RF4:[0-9]+]]
-  if (sum) {
-  }
+  if (sum) {}
 }
 
 // PGOUSE-DAG: ![[RF1]] = !{!"branch_weights", i32 5, i32 1}

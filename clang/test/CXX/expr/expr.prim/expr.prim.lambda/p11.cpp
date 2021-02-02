@@ -8,7 +8,7 @@ void test_reaching_scope() {
       void member() {
         (void)[=]() {
           return local + // expected-error{{reference to local variable 'local' declared in enclosing function 'test_reaching_scope'}}
-                 local_static;
+            local_static;
         };
       }
     };

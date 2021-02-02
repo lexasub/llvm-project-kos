@@ -16,9 +16,10 @@
 
 #include <mutex>
 
-int main(int, char**) {
-  std::mutex m;
-  std::lock_guard<std::mutex> lg = m; // expected-error{{no viable conversion}}
+int main(int, char**)
+{
+    std::mutex m;
+    std::lock_guard<std::mutex> lg = m; // expected-error{{no viable conversion}}
 
   return 0;
 }

@@ -12,8 +12,8 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   assert(Data);
-  if (Size == 0)
-    return 0;
+  if (Size == 0) return 0;
   __sanitizer_acquire_crash_state();
-  exit(0); // No report should be generated here.
+  exit(0);  // No report should be generated here.
 }
+

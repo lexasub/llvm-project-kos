@@ -7,35 +7,35 @@
 // RUN:   FileCheck --check-prefixes=CHECK,CHECK64 %s
 
 namespace test1 {
-struct Test1 {
-  Test1();
-  ~Test1();
-} t1, t2;
+  struct Test1 {
+    Test1();
+    ~Test1();
+  } t1, t2;
 } // namespace test1
 
 namespace test2 {
-int foo() { return 3; }
-int x = foo();
+  int foo() { return 3; }
+  int x = foo();
 } // namespace test2
 
 namespace test3 {
-struct Test3 {
-  constexpr Test3(){};
-  ~Test3(){};
-};
+  struct Test3 {
+    constexpr Test3() {};
+    ~Test3() {};
+  };
 
-constinit Test3 t;
+  constinit Test3 t;
 } // namespace test3
 
 namespace test4 {
-struct Test4 {
-  Test4();
-  ~Test4();
-};
+  struct Test4 {
+    Test4();
+    ~Test4();
+  };
 
-void f() {
-  static Test4 staticLocal;
-}
+  void f() {
+    static Test4 staticLocal;
+  }
 } // namespace test4
 
 // CHECK: @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL__sub_I__, i8* null }]

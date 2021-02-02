@@ -36,45 +36,49 @@ STATISTIC(NumPrefixedAligned,
           "Number of prefixed instructions that have been aligned");
 
 namespace {
-struct PPCBSel : public MachineFunctionPass {
-  static char ID;
-  PPCBSel() : MachineFunctionPass(ID) {
-    initializePPCBSelPass(*PassRegistry::getPassRegistry());
-  }
+  struct PPCBSel : public MachineFunctionPass {
+    static char ID;
+    PPCBSel() : MachineFunctionPass(ID) {
+      initializePPCBSelPass(*PassRegistry::getPassRegistry());
+    }
 
-  // The sizes of the basic blocks in the function (the first
-  // element of the pair); the second element of the pair is the amount of the
-  // size that is due to potential padding.
-  std::vector<std::pair<unsigned, unsigned>> BlockSizes;
+    // The sizes of the basic blocks in the function (the first
+    // element of the pair); the second element of the pair is the amount of the
+    // size that is due to potential padding.
+    std::vector<std::pair<unsigned, unsigned>> BlockSizes;
 
-  // The first block number which has imprecise instruction address.
-  int FirstImpreciseBlock = -1;
+    // The first block number which has imprecise instruction address.
+    int FirstImpreciseBlock = -1;
 
-  unsigned GetAlignmentAdjustment(MachineBasicBlock &MBB, unsigned Offset);
-  unsigned ComputeBlockSizes(MachineFunction &Fn);
-  void modifyAdjustment(MachineFunction &Fn);
-  int computeBranchSize(MachineFunction &Fn, const MachineBasicBlock *Src,
-                        const MachineBasicBlock *Dest, unsigned BrOffset);
+    unsigned GetAlignmentAdjustment(MachineBasicBlock &MBB, unsigned Offset);
+    unsigned ComputeBlockSizes(MachineFunction &Fn);
+    void modifyAdjustment(MachineFunction &Fn);
+    int computeBranchSize(MachineFunction &Fn,
+                          const MachineBasicBlock *Src,
+                          const MachineBasicBlock *Dest,
+                          unsigned BrOffset);
 
-  bool runOnMachineFunction(MachineFunction &Fn) override;
+    bool runOnMachineFunction(MachineFunction &Fn) override;
 
-  MachineFunctionProperties getRequiredProperties() const override {
-    return MachineFunctionProperties().set(
-        MachineFunctionProperties::Property::NoVRegs);
-  }
+    MachineFunctionProperties getRequiredProperties() const override {
+      return MachineFunctionProperties().set(
+          MachineFunctionProperties::Property::NoVRegs);
+    }
 
-  StringRef getPassName() const override { return "PowerPC Branch Selector"; }
-};
-char PPCBSel::ID = 0;
-} // namespace
+    StringRef getPassName() const override { return "PowerPC Branch Selector"; }
+  };
+  char PPCBSel::ID = 0;
+}
 
-INITIALIZE_PASS(PPCBSel, "ppc-branch-select", "PowerPC Branch Selector", false,
-                false)
+INITIALIZE_PASS(PPCBSel, "ppc-branch-select", "PowerPC Branch Selector",
+                false, false)
 
 /// createPPCBranchSelectionPass - returns an instance of the Branch Selection
 /// Pass
 ///
-FunctionPass *llvm::createPPCBranchSelectionPass() { return new PPCBSel(); }
+FunctionPass *llvm::createPPCBranchSelectionPass() {
+  return new PPCBSel();
+}
 
 /// In order to make MBB aligned, we need to add an adjustment value to the
 /// original Offset.
@@ -125,7 +129,7 @@ unsigned PPCBSel::ComputeBlockSizes(MachineFunction &Fn) {
     if (MBB->getNumber() > 0) {
       unsigned AlignExtra = GetAlignmentAdjustment(*MBB, FuncSize);
 
-      auto &BS = BlockSizes[MBB->getNumber() - 1];
+      auto &BS = BlockSizes[MBB->getNumber()-1];
       BS.first += AlignExtra;
       BS.second = AlignExtra;
 
@@ -182,7 +186,7 @@ void PPCBSel::modifyAdjustment(MachineFunction &Fn) {
     MachineBasicBlock *MBB = &*MFI;
 
     if (MBB->getNumber() > 0) {
-      auto &BS = BlockSizes[MBB->getNumber() - 1];
+      auto &BS = BlockSizes[MBB->getNumber()-1];
       BS.first -= BS.second;
       Offset -= BS.second;
 
@@ -216,13 +220,13 @@ int PPCBSel::computeBranchSize(MachineFunction &Fn,
 
     int DestBlock = Dest->getNumber();
     BranchSize += BlockSizes[DestBlock].first;
-    for (unsigned i = DestBlock + 1, e = Src->getNumber(); i < e; ++i) {
+    for (unsigned i = DestBlock+1, e = Src->getNumber(); i < e; ++i) {
       BranchSize += BlockSizes[i].first;
       MaxAlign = std::max(MaxAlign, Fn.getBlockNumbered(i)->getAlignment());
     }
 
-    NeedExtraAdjustment =
-        (FirstImpreciseBlock >= 0) && (DestBlock >= FirstImpreciseBlock);
+    NeedExtraAdjustment = (FirstImpreciseBlock >= 0) &&
+                          (DestBlock >= FirstImpreciseBlock);
   } else {
     // Otherwise, add the size of the blocks between this block and the
     // dest to the number of bytes left in this block.
@@ -230,13 +234,13 @@ int PPCBSel::computeBranchSize(MachineFunction &Fn,
     BranchSize = BlockSizes[StartBlock].first - BrOffset;
 
     MaxAlign = std::max(MaxAlign, Dest->getAlignment());
-    for (unsigned i = StartBlock + 1, e = Dest->getNumber(); i != e; ++i) {
+    for (unsigned i = StartBlock+1, e = Dest->getNumber(); i != e; ++i) {
       BranchSize += BlockSizes[i].first;
       MaxAlign = std::max(MaxAlign, Fn.getBlockNumbered(i)->getAlignment());
     }
 
-    NeedExtraAdjustment =
-        (FirstImpreciseBlock >= 0) && (Src->getNumber() >= FirstImpreciseBlock);
+    NeedExtraAdjustment = (FirstImpreciseBlock >= 0) &&
+                          (Src->getNumber() >= FirstImpreciseBlock);
   }
 
   // We tend to over estimate code size due to large alignment and
@@ -325,8 +329,8 @@ bool PPCBSel::runOnMachineFunction(MachineFunction &Fn) {
          ++MFI) {
       MachineBasicBlock &MBB = *MFI;
       unsigned MBBStartOffset = 0;
-      for (MachineBasicBlock::iterator I = MBB.begin(), E = MBB.end(); I != E;
-           ++I) {
+      for (MachineBasicBlock::iterator I = MBB.begin(), E = MBB.end();
+           I != E; ++I) {
         MachineBasicBlock *Dest = nullptr;
         if (I->getOpcode() == PPC::BCC && !I->getOperand(2).isImm())
           Dest = I->getOperand(2).getMBB();
@@ -334,7 +338,7 @@ bool PPCBSel::runOnMachineFunction(MachineFunction &Fn) {
                  !I->getOperand(1).isImm())
           Dest = I->getOperand(1).getMBB();
         else if ((I->getOpcode() == PPC::BDNZ8 || I->getOpcode() == PPC::BDNZ ||
-                  I->getOpcode() == PPC::BDZ8 || I->getOpcode() == PPC::BDZ) &&
+                  I->getOpcode() == PPC::BDZ8  || I->getOpcode() == PPC::BDZ) &&
                  !I->getOperand(0).isImm())
           Dest = I->getOperand(0).getMBB();
 
@@ -365,12 +369,9 @@ bool PPCBSel::runOnMachineFunction(MachineFunction &Fn) {
           PPC::Predicate Pred = (PPC::Predicate)I->getOperand(0).getImm();
           Register CRReg = I->getOperand(1).getReg();
 
-          // Jump over the uncond branch inst (i.e. $PC+8) on opposite
-          // condition.
+          // Jump over the uncond branch inst (i.e. $PC+8) on opposite condition.
           BuildMI(MBB, I, dl, TII->get(PPC::BCC))
-              .addImm(PPC::InvertPredicate(Pred))
-              .addReg(CRReg)
-              .addImm(2);
+            .addImm(PPC::InvertPredicate(Pred)).addReg(CRReg).addImm(2);
         } else if (I->getOpcode() == PPC::BC) {
           Register CRBit = I->getOperand(0).getReg();
           BuildMI(MBB, I, dl, TII->get(PPC::BCn)).addReg(CRBit).addImm(2);
@@ -386,7 +387,7 @@ bool PPCBSel::runOnMachineFunction(MachineFunction &Fn) {
         } else if (I->getOpcode() == PPC::BDZ8) {
           BuildMI(MBB, I, dl, TII->get(PPC::BDNZ8)).addImm(2);
         } else {
-          llvm_unreachable("Unhandled branch type!");
+           llvm_unreachable("Unhandled branch type!");
         }
 
         // Uncond branch to the real destination.

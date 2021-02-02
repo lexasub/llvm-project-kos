@@ -19,12 +19,15 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(const S& lhs, const S& rhs, bool x) {
-  assert((lhs <= rhs) == x);
+void
+test(const S& lhs, const S& rhs, bool x)
+{
+    assert((lhs <= rhs) == x);
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S(""), S(""), true);
     test(S(""), S("abcde"), true);
@@ -42,12 +45,10 @@ int main(int, char**) {
     test(S("abcdefghijklmnopqrst"), S("abcde"), false);
     test(S("abcdefghijklmnopqrst"), S("abcdefghij"), false);
     test(S("abcdefghijklmnopqrst"), S("abcdefghijklmnopqrst"), true);
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S(""), S(""), true);
     test(S(""), S("abcde"), true);
     test(S(""), S("abcdefghij"), true);
@@ -64,7 +65,7 @@ int main(int, char**) {
     test(S("abcdefghijklmnopqrst"), S("abcde"), false);
     test(S("abcdefghijklmnopqrst"), S("abcdefghij"), false);
     test(S("abcdefghijklmnopqrst"), S("abcdefghijklmnopqrst"), true);
-  }
+    }
 #endif
 
   return 0;

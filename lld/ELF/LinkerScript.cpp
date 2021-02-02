@@ -57,7 +57,8 @@ static uint64_t getOutputSectionVA(SectionBase *sec) {
 
 uint64_t ExprValue::getValue() const {
   if (sec)
-    return alignTo(sec->getOffset(val) + getOutputSectionVA(sec), alignment);
+    return alignTo(sec->getOffset(val) + getOutputSectionVA(sec),
+                   alignment);
   return alignTo(val, alignment);
 }
 
@@ -621,7 +622,8 @@ void LinkerScript::processSymbolAssignments() {
   ctx = nullptr;
 }
 
-static OutputSection *findByName(ArrayRef<BaseCommand *> vec, StringRef name) {
+static OutputSection *findByName(ArrayRef<BaseCommand *> vec,
+                                 StringRef name) {
   for (BaseCommand *base : vec)
     if (auto *sec = dyn_cast<OutputSection>(base))
       if (sec->name == name)

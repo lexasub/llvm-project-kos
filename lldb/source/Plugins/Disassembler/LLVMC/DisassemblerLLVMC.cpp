@@ -1158,8 +1158,9 @@ DisassemblerLLVMC::DisassemblerLLVMC(const ArchSpec &arch,
   // thumb instruction disassembler.
   if (llvm_arch == llvm::Triple::arm) {
     std::string thumb_triple(thumb_arch.GetTriple().getTriple());
-    m_alternate_disasm_up = MCDisasmInstance::Create(
-        thumb_triple.c_str(), "", features_str.c_str(), flavor, *this);
+    m_alternate_disasm_up =
+        MCDisasmInstance::Create(thumb_triple.c_str(), "", features_str.c_str(),
+                                 flavor, *this);
     if (!m_alternate_disasm_up)
       m_disasm_up.reset();
 

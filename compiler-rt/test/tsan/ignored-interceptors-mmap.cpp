@@ -2,26 +2,24 @@
 // RUN: not %run %t        2>&1 | FileCheck %s --check-prefix=CHECK-RACE
 // RUN:     %run %t ignore 2>&1 | FileCheck %s --check-prefix=CHECK-IGNORE
 
+#include <sys/mman.h>
+#include <string.h>
 #include <assert.h>
 #include <atomic>
-#include <string.h>
-#include <sys/mman.h>
 
 #include "test.h"
 
 // Use atomic to ensure we do not have a race for the pointer value itself.  We
 // only want to check races in the mmap'd memory to isolate the test that mmap
 // respects ignore annotations.
-std::atomic<int *> global_p;
+std::atomic<int*> global_p;
 
 void mmap_ignored(bool ignore) {
   const size_t kSize = sysconf(_SC_PAGESIZE);
 
-  if (ignore)
-    AnnotateIgnoreWritesBegin(__FILE__, __LINE__);
-  void *p = mmap(0, kSize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
-  if (ignore)
-    AnnotateIgnoreWritesEnd(__FILE__, __LINE__);
+  if (ignore) AnnotateIgnoreWritesBegin(__FILE__, __LINE__);
+  void *p = mmap(0, kSize, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
+  if (ignore) AnnotateIgnoreWritesEnd(__FILE__, __LINE__);
 
   // Use relaxed to retain the race between the mmap call and the memory write
   global_p.store((int *)p, std::memory_order_relaxed);

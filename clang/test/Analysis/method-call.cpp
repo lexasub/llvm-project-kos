@@ -2,19 +2,20 @@
 
 void clang_analyzer_eval(bool);
 
+
 struct A {
   int x;
   A(int a) { x = a; }
   int getx() const { return x; }
 };
 
-struct B {
+struct B{
   int x;
 };
 
 void testNullObject(A *a) {
   clang_analyzer_eval(a); // expected-warning{{UNKNOWN}}
-  (void)a->getx();        // assume we know what we're doing
+  (void)a->getx(); // assume we know what we're doing
   clang_analyzer_eval(a); // expected-warning{{TRUE}}
 }
 

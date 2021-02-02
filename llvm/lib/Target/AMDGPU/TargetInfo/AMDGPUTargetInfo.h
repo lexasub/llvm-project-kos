@@ -24,6 +24,6 @@ Target &getTheAMDGPUTarget();
 /// The target for GCN GPUs
 Target &getTheGCNTarget();
 
-} // namespace llvm
+}
 
 #endif // LLVM_LIB_TARGET_AMDGPU_TARGETINFO_AMDGPUTARGETINFO_H

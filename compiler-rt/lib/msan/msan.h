@@ -14,27 +14,30 @@
 #ifndef MSAN_H
 #define MSAN_H
 
-#include "msan_flags.h"
-#include "msan_interface_internal.h"
 #include "sanitizer_common/sanitizer_flags.h"
 #include "sanitizer_common/sanitizer_internal_defs.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
+#include "msan_interface_internal.h"
+#include "msan_flags.h"
 #include "ubsan/ubsan_platform.h"
 
 #ifndef MSAN_REPLACE_OPERATORS_NEW_AND_DELETE
-#define MSAN_REPLACE_OPERATORS_NEW_AND_DELETE 1
+# define MSAN_REPLACE_OPERATORS_NEW_AND_DELETE 1
 #endif
 
 #ifndef MSAN_CONTAINS_UBSAN
-#define MSAN_CONTAINS_UBSAN CAN_SANITIZE_UB
+# define MSAN_CONTAINS_UBSAN CAN_SANITIZE_UB
 #endif
 
 struct MappingDesc {
   uptr start;
   uptr end;
-  enum Type { INVALID, APP, SHADOW, ORIGIN } type;
+  enum Type {
+    INVALID, APP, SHADOW, ORIGIN
+  } type;
   const char *name;
 };
+
 
 #if SANITIZER_LINUX && defined(__mips64)
 
@@ -152,8 +155,8 @@ const MappingDesc kMemoryLayout[] = {
     {0x0FFB000000000ULL, 0x0FFFF00000000ULL, MappingDesc::INVALID, "invalid"},
     {0x0FFFF00000000ULL, 0x1000000000000ULL, MappingDesc::APP, "app-15"},
 };
-#define MEM_TO_SHADOW(mem) ((uptr)mem ^ 0x6000000000ULL)
-#define SHADOW_TO_ORIGIN(shadow) (((uptr)(shadow)) + 0x1000000000ULL)
+# define MEM_TO_SHADOW(mem) ((uptr)mem ^ 0x6000000000ULL)
+# define SHADOW_TO_ORIGIN(shadow) (((uptr)(shadow)) + 0x1000000000ULL)
 
 #elif SANITIZER_LINUX && SANITIZER_PPC64
 const MappingDesc kMemoryLayout[] = {
@@ -261,8 +264,7 @@ const uptr kMemoryLayoutSize = sizeof(kMemoryLayout) / sizeof(kMemoryLayout[0]);
 #ifndef __clang__
 __attribute__((optimize("unroll-loops")))
 #endif
-inline bool
-addr_is_type(uptr addr, MappingDesc::Type mapping_type) {
+inline bool addr_is_type(uptr addr, MappingDesc::Type mapping_type) {
 // It is critical for performance that this loop is unrolled (because then it is
 // simplified into just a few constant comparisons).
 #ifdef __clang__
@@ -335,25 +337,24 @@ u32 ChainOrigin(u32 id, StackTrace *stack);
 
 const int STACK_TRACE_TAG_POISON = StackTrace::TAG_CUSTOM + 1;
 
-#define GET_MALLOC_STACK_TRACE                                           \
-  BufferedStackTrace stack;                                              \
-  if (__msan_get_track_origins() && msan_inited)                         \
-  stack.Unwind(StackTrace::GetCurrentPc(), GET_CURRENT_FRAME(), nullptr, \
-               common_flags()->fast_unwind_on_malloc,                    \
-               common_flags()->malloc_context_size)
+#define GET_MALLOC_STACK_TRACE                                            \
+  BufferedStackTrace stack;                                               \
+  if (__msan_get_track_origins() && msan_inited)                          \
+    stack.Unwind(StackTrace::GetCurrentPc(), GET_CURRENT_FRAME(),         \
+                 nullptr, common_flags()->fast_unwind_on_malloc,          \
+                 common_flags()->malloc_context_size)
 
 // For platforms which support slow unwinder only, we restrict the store context
 // size to 1, basically only storing the current pc. We do this because the slow
 // unwinder which is based on libunwind is not async signal safe and causes
 // random freezes in forking applications as well as in signal handlers.
-#define GET_STORE_STACK_TRACE_PC_BP(pc, bp)                              \
-  BufferedStackTrace stack;                                              \
-  if (__msan_get_track_origins() > 1 && msan_inited) {                   \
-    int size = flags()->store_context_size;                              \
-    if (!SANITIZER_CAN_FAST_UNWIND)                                      \
-      size = Min(size, 1);                                               \
-    stack.Unwind(pc, bp, nullptr, common_flags()->fast_unwind_on_malloc, \
-                 size);                                                  \
+#define GET_STORE_STACK_TRACE_PC_BP(pc, bp)                                    \
+  BufferedStackTrace stack;                                                    \
+  if (__msan_get_track_origins() > 1 && msan_inited) {                         \
+    int size = flags()->store_context_size;                                    \
+    if (!SANITIZER_CAN_FAST_UNWIND)                                            \
+      size = Min(size, 1);                                                     \
+    stack.Unwind(pc, bp, nullptr, common_flags()->fast_unwind_on_malloc, size);\
   }
 
 #define GET_STORE_STACK_TRACE \
@@ -380,7 +381,6 @@ class ScopedThreadLocalStateBackup {
   ~ScopedThreadLocalStateBackup() { Restore(); }
   void Backup();
   void Restore();
-
  private:
   u64 va_arg_overflow_size_tls;
 };

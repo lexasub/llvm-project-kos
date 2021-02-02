@@ -65,7 +65,11 @@ public:
 /// potential for overflow.
 class OverflowingBinaryOperator : public Operator {
 public:
-  enum { AnyWrap = 0, NoUnsignedWrap = (1 << 0), NoSignedWrap = (1 << 1) };
+  enum {
+    AnyWrap        = 0,
+    NoUnsignedWrap = (1 << 0),
+    NoSignedWrap   = (1 << 1)
+  };
 
 private:
   friend class Instruction;
@@ -73,11 +77,11 @@ private:
 
   void setHasNoUnsignedWrap(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~NoUnsignedWrap) | (B * NoUnsignedWrap);
+      (SubclassOptionalData & ~NoUnsignedWrap) | (B * NoUnsignedWrap);
   }
   void setHasNoSignedWrap(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~NoSignedWrap) | (B * NoSignedWrap);
+      (SubclassOptionalData & ~NoSignedWrap) | (B * NoSignedWrap);
   }
 
 public:
@@ -115,7 +119,9 @@ public:
 /// indicating that no bits are destroyed.
 class PossiblyExactOperator : public Operator {
 public:
-  enum { IsExact = (1 << 0) };
+  enum {
+    IsExact = (1 << 0)
+  };
 
 private:
   friend class Instruction;
@@ -127,11 +133,15 @@ private:
 
 public:
   /// Test whether this division is known to be exact, with zero remainder.
-  bool isExact() const { return SubclassOptionalData & IsExact; }
+  bool isExact() const {
+    return SubclassOptionalData & IsExact;
+  }
 
   static bool isPossiblyExactOpcode(unsigned OpC) {
-    return OpC == Instruction::SDiv || OpC == Instruction::UDiv ||
-           OpC == Instruction::AShr || OpC == Instruction::LShr;
+    return OpC == Instruction::SDiv ||
+           OpC == Instruction::UDiv ||
+           OpC == Instruction::AShr ||
+           OpC == Instruction::LShr;
   }
 
   static bool classof(const ConstantExpr *CE) {
@@ -157,10 +167,8 @@ private:
     // If all 7 bits are set, turn this into -1. If the number of bits grows,
     // this must be updated. This is intended to provide some forward binary
     // compatibility insurance for the meaning of 'fast' in case bits are added.
-    if (F == 0x7F)
-      Flags = ~0U;
-    else
-      Flags = F;
+    if (F == 0x7F) Flags = ~0U;
+    else Flags = F;
   }
 
 public:
@@ -169,13 +177,13 @@ public:
   // WARNING: We're out of space. SubclassOptionalData only has 7 bits. New
   // functionality will require a change in how this information is stored.
   enum {
-    AllowReassoc = (1 << 0),
-    NoNaNs = (1 << 1),
-    NoInfs = (1 << 2),
-    NoSignedZeros = (1 << 3),
+    AllowReassoc    = (1 << 0),
+    NoNaNs          = (1 << 1),
+    NoInfs          = (1 << 2),
+    NoSignedZeros   = (1 << 3),
     AllowReciprocal = (1 << 4),
-    AllowContract = (1 << 5),
-    ApproxFunc = (1 << 6)
+    AllowContract   = (1 << 5),
+    ApproxFunc      = (1 << 6)
   };
 
   FastMathFlags() = default;
@@ -191,25 +199,29 @@ public:
   bool all() const { return Flags == ~0U; }
 
   void clear() { Flags = 0; }
-  void set() { Flags = ~0U; }
+  void set()   { Flags = ~0U; }
 
   /// Flag queries
-  bool allowReassoc() const { return 0 != (Flags & AllowReassoc); }
-  bool noNaNs() const { return 0 != (Flags & NoNaNs); }
-  bool noInfs() const { return 0 != (Flags & NoInfs); }
-  bool noSignedZeros() const { return 0 != (Flags & NoSignedZeros); }
+  bool allowReassoc() const    { return 0 != (Flags & AllowReassoc); }
+  bool noNaNs() const          { return 0 != (Flags & NoNaNs); }
+  bool noInfs() const          { return 0 != (Flags & NoInfs); }
+  bool noSignedZeros() const   { return 0 != (Flags & NoSignedZeros); }
   bool allowReciprocal() const { return 0 != (Flags & AllowReciprocal); }
-  bool allowContract() const { return 0 != (Flags & AllowContract); }
-  bool approxFunc() const { return 0 != (Flags & ApproxFunc); }
+  bool allowContract() const   { return 0 != (Flags & AllowContract); }
+  bool approxFunc() const      { return 0 != (Flags & ApproxFunc); }
   /// 'Fast' means all bits are set.
-  bool isFast() const { return all(); }
+  bool isFast() const          { return all(); }
 
   /// Flag setters
   void setAllowReassoc(bool B = true) {
     Flags = (Flags & ~AllowReassoc) | B * AllowReassoc;
   }
-  void setNoNaNs(bool B = true) { Flags = (Flags & ~NoNaNs) | B * NoNaNs; }
-  void setNoInfs(bool B = true) { Flags = (Flags & ~NoInfs) | B * NoInfs; }
+  void setNoNaNs(bool B = true) {
+    Flags = (Flags & ~NoNaNs) | B * NoNaNs;
+  }
+  void setNoInfs(bool B = true) {
+    Flags = (Flags & ~NoInfs) | B * NoInfs;
+  }
   void setNoSignedZeros(bool B = true) {
     Flags = (Flags & ~NoSignedZeros) | B * NoSignedZeros;
   }
@@ -248,30 +260,32 @@ private:
 
   void setHasAllowReassoc(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~FastMathFlags::AllowReassoc) |
-        (B * FastMathFlags::AllowReassoc);
+    (SubclassOptionalData & ~FastMathFlags::AllowReassoc) |
+    (B * FastMathFlags::AllowReassoc);
   }
 
   void setHasNoNaNs(bool B) {
-    SubclassOptionalData = (SubclassOptionalData & ~FastMathFlags::NoNaNs) |
-                           (B * FastMathFlags::NoNaNs);
+    SubclassOptionalData =
+      (SubclassOptionalData & ~FastMathFlags::NoNaNs) |
+      (B * FastMathFlags::NoNaNs);
   }
 
   void setHasNoInfs(bool B) {
-    SubclassOptionalData = (SubclassOptionalData & ~FastMathFlags::NoInfs) |
-                           (B * FastMathFlags::NoInfs);
+    SubclassOptionalData =
+      (SubclassOptionalData & ~FastMathFlags::NoInfs) |
+      (B * FastMathFlags::NoInfs);
   }
 
   void setHasNoSignedZeros(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~FastMathFlags::NoSignedZeros) |
-        (B * FastMathFlags::NoSignedZeros);
+      (SubclassOptionalData & ~FastMathFlags::NoSignedZeros) |
+      (B * FastMathFlags::NoSignedZeros);
   }
 
   void setHasAllowReciprocal(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~FastMathFlags::AllowReciprocal) |
-        (B * FastMathFlags::AllowReciprocal);
+      (SubclassOptionalData & ~FastMathFlags::AllowReciprocal) |
+      (B * FastMathFlags::AllowReciprocal);
   }
 
   void setHasAllowContract(bool B) {
@@ -281,8 +295,9 @@ private:
   }
 
   void setHasApproxFunc(bool B) {
-    SubclassOptionalData = (SubclassOptionalData & ~FastMathFlags::ApproxFunc) |
-                           (B * FastMathFlags::ApproxFunc);
+    SubclassOptionalData =
+        (SubclassOptionalData & ~FastMathFlags::ApproxFunc) |
+        (B * FastMathFlags::ApproxFunc);
   }
 
   /// Convenience function for setting multiple fast-math flags.
@@ -393,11 +408,15 @@ public:
 };
 
 /// A helper template for defining operators for individual opcodes.
-template <typename SuperClass, unsigned Opc>
+template<typename SuperClass, unsigned Opc>
 class ConcreteOperator : public SuperClass {
 public:
-  static bool classof(const Instruction *I) { return I->getOpcode() == Opc; }
-  static bool classof(const ConstantExpr *CE) { return CE->getOpcode() == Opc; }
+  static bool classof(const Instruction *I) {
+    return I->getOpcode() == Opc;
+  }
+  static bool classof(const ConstantExpr *CE) {
+    return CE->getOpcode() == Opc;
+  }
   static bool classof(const Value *V) {
     return (isa<Instruction>(V) && classof(cast<Instruction>(V))) ||
            (isa<ConstantExpr>(V) && classof(cast<ConstantExpr>(V)));
@@ -405,27 +424,35 @@ public:
 };
 
 class AddOperator
-    : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Add> {};
+  : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Add> {
+};
 class SubOperator
-    : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Sub> {};
+  : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Sub> {
+};
 class MulOperator
-    : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Mul> {};
+  : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Mul> {
+};
 class ShlOperator
-    : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Shl> {};
+  : public ConcreteOperator<OverflowingBinaryOperator, Instruction::Shl> {
+};
 
 class SDivOperator
-    : public ConcreteOperator<PossiblyExactOperator, Instruction::SDiv> {};
+  : public ConcreteOperator<PossiblyExactOperator, Instruction::SDiv> {
+};
 class UDivOperator
-    : public ConcreteOperator<PossiblyExactOperator, Instruction::UDiv> {};
+  : public ConcreteOperator<PossiblyExactOperator, Instruction::UDiv> {
+};
 class AShrOperator
-    : public ConcreteOperator<PossiblyExactOperator, Instruction::AShr> {};
+  : public ConcreteOperator<PossiblyExactOperator, Instruction::AShr> {
+};
 class LShrOperator
-    : public ConcreteOperator<PossiblyExactOperator, Instruction::LShr> {};
+  : public ConcreteOperator<PossiblyExactOperator, Instruction::LShr> {
+};
 
 class ZExtOperator : public ConcreteOperator<Operator, Instruction::ZExt> {};
 
 class GEPOperator
-    : public ConcreteOperator<Operator, Instruction::GetElementPtr> {
+  : public ConcreteOperator<Operator, Instruction::GetElementPtr> {
   friend class GetElementPtrInst;
   friend class ConstantExpr;
 
@@ -436,34 +463,41 @@ class GEPOperator
 
   void setIsInBounds(bool B) {
     SubclassOptionalData =
-        (SubclassOptionalData & ~IsInBounds) | (B * IsInBounds);
+      (SubclassOptionalData & ~IsInBounds) | (B * IsInBounds);
   }
 
 public:
   /// Test whether this is an inbounds GEP, as defined by LangRef.html.
-  bool isInBounds() const { return SubclassOptionalData & IsInBounds; }
+  bool isInBounds() const {
+    return SubclassOptionalData & IsInBounds;
+  }
 
   /// Returns the offset of the index with an inrange attachment, or None if
   /// none.
   Optional<unsigned> getInRangeIndex() const {
-    if (SubclassOptionalData >> 1 == 0)
-      return None;
+    if (SubclassOptionalData >> 1 == 0) return None;
     return (SubclassOptionalData >> 1) - 1;
   }
 
-  inline op_iterator idx_begin() { return op_begin() + 1; }
-  inline const_op_iterator idx_begin() const { return op_begin() + 1; }
-  inline op_iterator idx_end() { return op_end(); }
-  inline const_op_iterator idx_end() const { return op_end(); }
+  inline op_iterator       idx_begin()       { return op_begin()+1; }
+  inline const_op_iterator idx_begin() const { return op_begin()+1; }
+  inline op_iterator       idx_end()         { return op_end(); }
+  inline const_op_iterator idx_end()   const { return op_end(); }
 
-  Value *getPointerOperand() { return getOperand(0); }
-  const Value *getPointerOperand() const { return getOperand(0); }
+  Value *getPointerOperand() {
+    return getOperand(0);
+  }
+  const Value *getPointerOperand() const {
+    return getOperand(0);
+  }
   static unsigned getPointerOperandIndex() {
-    return 0U; // get index for modifying correct operand
+    return 0U;                      // get index for modifying correct operand
   }
 
   /// Method to return the pointer operand as a PointerType.
-  Type *getPointerOperandType() const { return getPointerOperand()->getType(); }
+  Type *getPointerOperandType() const {
+    return getPointerOperand()->getType();
+  }
 
   Type *getSourceElementType() const;
   Type *getResultElementType() const;
@@ -473,11 +507,13 @@ public:
     return getPointerOperandType()->getPointerAddressSpace();
   }
 
-  unsigned getNumIndices() const { // Note: always non-negative
+  unsigned getNumIndices() const {  // Note: always non-negative
     return getNumOperands() - 1;
   }
 
-  bool hasIndices() const { return getNumOperands() > 1; }
+  bool hasIndices() const {
+    return getNumOperands() > 1;
+  }
 
   /// Return true if all of the indices of this GEP are zeros.
   /// If so, the result pointer and the first operand have the same
@@ -504,8 +540,9 @@ public:
   }
 
   unsigned countNonConstantIndices() const {
-    return count_if(make_range(idx_begin(), idx_end()),
-                    [](const Use &use) { return !isa<ConstantInt>(*use); });
+    return count_if(make_range(idx_begin(), idx_end()), [](const Use& use) {
+        return !isa<ConstantInt>(*use);
+      });
   }
 
   /// Compute the maximum alignment that this GEP is garranteed to preserve.
@@ -539,15 +576,21 @@ class PtrToIntOperator
   friend class ConstantExpr;
 
 public:
-  Value *getPointerOperand() { return getOperand(0); }
-  const Value *getPointerOperand() const { return getOperand(0); }
+  Value *getPointerOperand() {
+    return getOperand(0);
+  }
+  const Value *getPointerOperand() const {
+    return getOperand(0);
+  }
 
   static unsigned getPointerOperandIndex() {
-    return 0U; // get index for modifying correct operand
+    return 0U;                      // get index for modifying correct operand
   }
 
   /// Method to return the pointer operand as a PointerType.
-  Type *getPointerOperandType() const { return getPointerOperand()->getType(); }
+  Type *getPointerOperandType() const {
+    return getPointerOperand()->getType();
+  }
 
   /// Method to return the address space of the pointer operand.
   unsigned getPointerAddressSpace() const {
@@ -561,9 +604,13 @@ class BitCastOperator
   friend class ConstantExpr;
 
 public:
-  Type *getSrcTy() const { return getOperand(0)->getType(); }
+  Type *getSrcTy() const {
+    return getOperand(0)->getType();
+  }
 
-  Type *getDestTy() const { return getType(); }
+  Type *getDestTy() const {
+    return getType();
+  }
 };
 
 class AddrSpaceCastOperator

@@ -6,7 +6,7 @@ struct YYY {
   static int ZZZ[10];
 };
 int YYY::ZZZ[10];
-} // namespace XXX
+}
 
 void *Thread(void *a) {
   barrier_wait(&barrier);

@@ -151,7 +151,7 @@
     return ::clang::ast_matchers::internal::makeMatcher(                       \
         new internal::matcher_##DefineMatcher##OverloadId##Matcher(Param));    \
   }                                                                            \
-  typedef ::clang::ast_matchers::internal::Matcher<Type> (                     \
+  typedef ::clang::ast_matchers::internal::Matcher<Type>(                      \
       &DefineMatcher##_Type##OverloadId)(ParamType const &Param);              \
   inline bool internal::matcher_##DefineMatcher##OverloadId##Matcher::matches( \
       const Type &Node,                                                        \
@@ -202,7 +202,7 @@
         new internal::matcher_##DefineMatcher##OverloadId##Matcher(Param1,     \
                                                                    Param2));   \
   }                                                                            \
-  typedef ::clang::ast_matchers::internal::Matcher<Type> (                     \
+  typedef ::clang::ast_matchers::internal::Matcher<Type>(                      \
       &DefineMatcher##_Type##OverloadId)(ParamType1 const &Param1,             \
                                          ParamType2 const &Param2);            \
   inline bool internal::matcher_##DefineMatcher##OverloadId##Matcher::matches( \
@@ -294,7 +294,7 @@
   }                                                                            \
   typedef ::clang::ast_matchers::internal::PolymorphicMatcherWithParam1<       \
       internal::matcher_##DefineMatcher##OverloadId##Matcher, ParamType,       \
-      ReturnTypesF> (&DefineMatcher##_Type##OverloadId)(                       \
+      ReturnTypesF>(&DefineMatcher##_Type##OverloadId)(                        \
       ParamType const &Param);                                                 \
   template <typename NodeType, typename ParamT>                                \
   bool internal::                                                              \
@@ -348,7 +348,7 @@
   }                                                                            \
   typedef ::clang::ast_matchers::internal::PolymorphicMatcherWithParam2<       \
       internal::matcher_##DefineMatcher##OverloadId##Matcher, ParamType1,      \
-      ParamType2, ReturnTypesF> (&DefineMatcher##_Type##OverloadId)(           \
+      ParamType2, ReturnTypesF>(&DefineMatcher##_Type##OverloadId)(            \
       ParamType1 const &Param1, ParamType2 const &Param2);                     \
   template <typename NodeType, typename ParamT1, typename ParamT2>             \
   bool internal::matcher_##DefineMatcher##OverloadId##Matcher<                 \

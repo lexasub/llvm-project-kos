@@ -10,32 +10,33 @@ struct A {
   }
 };
 
-template <typename T>
+template<typename T>
 struct B {
   B(T) {}
-
+  
   A nodes;
 };
+
 
 // PR4853
 template <typename T> class List {
 public:
-  List() {} // List<BinomialNode<int>*>::List() remains undefined.
+  List(){ }     // List<BinomialNode<int>*>::List() remains undefined.
   ~List() {}
 };
 
 template <typename T> class Node {
-  int i;
-
+ int i;
 public:
-  Node() {} // Node<BinomialNode<int>*>::Node() remains undefined.
-  ~Node() {}
+ Node(){ }      // Node<BinomialNode<int>*>::Node() remains undefined.
+ ~Node() {}
 };
 
-template <typename T> class BinomialNode : Node<BinomialNode<T> *> {
+
+template<typename T> class BinomialNode : Node<BinomialNode<T>*> {
 public:
   BinomialNode(T value) {}
-  List<BinomialNode<T> *> nodes;
+  List<BinomialNode<T>*> nodes;
 };
 
 int main() {

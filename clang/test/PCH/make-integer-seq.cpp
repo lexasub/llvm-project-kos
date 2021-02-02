@@ -6,7 +6,7 @@
 
 template <class T, T... I>
 struct Seq {
-  static constexpr T PackSize = sizeof...(I);
+    static constexpr T PackSize = sizeof...(I);
 };
 
 template <typename T, T N>

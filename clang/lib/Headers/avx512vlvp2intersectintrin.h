@@ -22,21 +22,18 @@
  *===-----------------------------------------------------------------------===
  */
 #ifndef __IMMINTRIN_H
-#error                                                                         \
-    "Never use <avx512vlvp2intersectintrin.h> directly; include <immintrin.h> instead."
+#error "Never use <avx512vlvp2intersectintrin.h> directly; include <immintrin.h> instead."
 #endif
 
 #ifndef _AVX512VLVP2INTERSECT_H
 #define _AVX512VLVP2INTERSECT_H
 
-#define __DEFAULT_FN_ATTRS128                                                  \
-  __attribute__((__always_inline__, __nodebug__,                               \
-                 __target__("avx512vl,avx512vp2intersect"),                    \
+#define __DEFAULT_FN_ATTRS128 \
+  __attribute__((__always_inline__, __nodebug__,  __target__("avx512vl,avx512vp2intersect"), \
                  __min_vector_width__(128)))
 
-#define __DEFAULT_FN_ATTRS256                                                  \
-  __attribute__((__always_inline__, __nodebug__,                               \
-                 __target__("avx512vl,avx512vp2intersect"),                    \
+#define __DEFAULT_FN_ATTRS256 \
+  __attribute__((__always_inline__, __nodebug__,  __target__("avx512vl,avx512vp2intersect"), \
                  __min_vector_width__(256)))
 /// Store, in an even/odd pair of mask registers, the indicators of the
 /// locations of value matches between dwords in operands __a and __b.
@@ -53,8 +50,8 @@
 ///    A pointer point to 8-bit mask
 /// \param __m1
 ///    A pointer point to 8-bit mask
-static __inline__ void __DEFAULT_FN_ATTRS256 _mm256_2intersect_epi32(
-    __m256i __a, __m256i __b, __mmask8 *__m0, __mmask8 *__m1) {
+static __inline__ void __DEFAULT_FN_ATTRS256
+_mm256_2intersect_epi32(__m256i __a, __m256i __b, __mmask8 *__m0, __mmask8 *__m1) {
   __builtin_ia32_vp2intersect_d_256((__v8si)__a, (__v8si)__b, __m0, __m1);
 }
 
@@ -73,8 +70,8 @@ static __inline__ void __DEFAULT_FN_ATTRS256 _mm256_2intersect_epi32(
 ///    A pointer point to 8-bit mask
 /// \param __m1
 ///    A pointer point to 8-bit mask
-static __inline__ void __DEFAULT_FN_ATTRS256 _mm256_2intersect_epi64(
-    __m256i __a, __m256i __b, __mmask8 *__m0, __mmask8 *__m1) {
+static __inline__ void __DEFAULT_FN_ATTRS256
+_mm256_2intersect_epi64(__m256i __a, __m256i __b, __mmask8 *__m0, __mmask8 *__m1) {
   __builtin_ia32_vp2intersect_q_256((__v4di)__a, (__v4di)__b, __m0, __m1);
 }
 

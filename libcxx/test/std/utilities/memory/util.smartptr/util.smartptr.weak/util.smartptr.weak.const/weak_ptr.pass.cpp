@@ -19,95 +19,98 @@
 
 #include "test_macros.h"
 
-struct B {
-  static int count;
+struct B
+{
+    static int count;
 
-  B() { ++count; }
-  B(const B&) { ++count; }
-  virtual ~B() { --count; }
+    B() {++count;}
+    B(const B&) {++count;}
+    virtual ~B() {--count;}
 };
 
 int B::count = 0;
 
-struct A : public B {
-  static int count;
+struct A
+    : public B
+{
+    static int count;
 
-  A() { ++count; }
-  A(const A& other) : B(other) { ++count; }
-  ~A() { --count; }
+    A() {++count;}
+    A(const A& other) : B(other) {++count;}
+    ~A() {--count;}
 };
 
 int A::count = 0;
 
-struct C {
-  static int count;
+struct C
+{
+    static int count;
 
-  C() { ++count; }
-  C(const C&) { ++count; }
-  virtual ~C() { --count; }
+    C() {++count;}
+    C(const C&) {++count;}
+    virtual ~C() {--count;}
 };
 
 int C::count = 0;
 
 template <class T>
-std::weak_ptr<T> source(std::shared_ptr<T> p) {
-  return std::weak_ptr<T>(p);
-}
+std::weak_ptr<T> source (std::shared_ptr<T> p) { return std::weak_ptr<T>(p); }
 
 #if TEST_STD_VER >= 11
 template <class T>
-void sink(std::weak_ptr<T>&&) {}
+void sink (std::weak_ptr<T> &&) {}
 #endif
 
-int main(int, char**) {
-  {
-    const std::shared_ptr<A> ps(new A);
-    const std::weak_ptr<A> pA(ps);
-    assert(pA.use_count() == 1);
-    assert(B::count == 1);
-    assert(A::count == 1);
+int main(int, char**)
+{
     {
-      std::weak_ptr<A> pB(pA);
-      assert(B::count == 1);
-      assert(A::count == 1);
-      assert(pB.use_count() == 1);
-      assert(pA.use_count() == 1);
+        const std::shared_ptr<A> ps(new A);
+        const std::weak_ptr<A> pA(ps);
+        assert(pA.use_count() == 1);
+        assert(B::count == 1);
+        assert(A::count == 1);
+        {
+            std::weak_ptr<A> pB(pA);
+            assert(B::count == 1);
+            assert(A::count == 1);
+            assert(pB.use_count() == 1);
+            assert(pA.use_count() == 1);
+        }
+        assert(pA.use_count() == 1);
+        assert(B::count == 1);
+        assert(A::count == 1);
     }
-    assert(pA.use_count() == 1);
-    assert(B::count == 1);
-    assert(A::count == 1);
-  }
-  assert(B::count == 0);
-  assert(A::count == 0);
-  {
-    std::weak_ptr<A> pA;
-    assert(pA.use_count() == 0);
     assert(B::count == 0);
     assert(A::count == 0);
     {
-      std::weak_ptr<A> pB(pA);
-      assert(B::count == 0);
-      assert(A::count == 0);
-      assert(pB.use_count() == 0);
-      assert(pA.use_count() == 0);
+        std::weak_ptr<A> pA;
+        assert(pA.use_count() == 0);
+        assert(B::count == 0);
+        assert(A::count == 0);
+        {
+            std::weak_ptr<A> pB(pA);
+            assert(B::count == 0);
+            assert(A::count == 0);
+            assert(pB.use_count() == 0);
+            assert(pA.use_count() == 0);
+        }
+        assert(pA.use_count() == 0);
+        assert(B::count == 0);
+        assert(A::count == 0);
     }
-    assert(pA.use_count() == 0);
     assert(B::count == 0);
     assert(A::count == 0);
-  }
-  assert(B::count == 0);
-  assert(A::count == 0);
 
 #if TEST_STD_VER >= 11
-  {
-    std::shared_ptr<A> ps(new A);
-    std::weak_ptr<A> pA = source(ps);
-    assert(pA.use_count() == 1);
-    assert(A::count == 1);
-    sink(std::move(pA)); // kill off the weak pointer
-  }
-  assert(B::count == 0);
-  assert(A::count == 0);
+    {
+        std::shared_ptr<A> ps(new A);
+        std::weak_ptr<A> pA = source(ps);
+        assert(pA.use_count() == 1);
+        assert(A::count == 1);
+        sink(std::move(pA)); // kill off the weak pointer
+    }
+    assert(B::count == 0);
+    assert(A::count == 0);
 #endif
 
   return 0;

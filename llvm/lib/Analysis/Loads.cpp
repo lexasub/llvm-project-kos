@@ -61,9 +61,9 @@ static bool isDereferenceableAndAlignedPointer(
   // bitcast instructions are no-ops as far as dereferenceability is concerned.
   if (const BitCastOperator *BC = dyn_cast<BitCastOperator>(V)) {
     if (BC->getSrcTy()->isPointerTy())
-      return isDereferenceableAndAlignedPointer(BC->getOperand(0), Alignment,
-                                                Size, DL, CtxI, DT, TLI,
-                                                Visited, MaxDepth);
+      return isDereferenceableAndAlignedPointer(
+          BC->getOperand(0), Alignment, Size, DL, CtxI, DT, TLI,
+          Visited, MaxDepth);
   }
 
   bool CheckForNonNull = false;
@@ -111,8 +111,8 @@ static bool isDereferenceableAndAlignedPointer(
 
   if (const AddrSpaceCastInst *ASC = dyn_cast<AddrSpaceCastInst>(V))
     return isDereferenceableAndAlignedPointer(ASC->getOperand(0), Alignment,
-                                              Size, DL, CtxI, DT, TLI, Visited,
-                                              MaxDepth);
+                                              Size, DL, CtxI, DT, TLI,
+                                              Visited, MaxDepth);
 
   if (const auto *Call = dyn_cast<CallBase>(V)) {
     if (auto *RP = getArgumentAliasingToReturnedPointer(Call, true))
@@ -144,12 +144,12 @@ static bool isDereferenceableAndAlignedPointer(
           // variant. For that variant, we need to prove that object hasn't
           // been conditionally freed before ontext instruction - if it has, we
           // might be hoisting over the inverse conditional and creating a
-          // dynamic use after free.
+          // dynamic use after free. 
           !PointerMayBeCapturedBefore(V, true, true, CtxI, DT, true)) {
         // As we recursed through GEPs to get here, we've incrementally
         // checked that each step advanced by a multiple of the alignment. If
         // our base is properly aligned, then the original offset accessed
-        // must also be.
+        // must also be. 
         Type *Ty = V->getType();
         assert(Ty->isSized() && "must be sized");
         APInt Offset(DL.getTypeStoreSizeInBits(Ty), 0);
@@ -264,7 +264,7 @@ bool llvm::isDereferenceableAndAlignedInLoop(LoadInst *LI, Loop *L,
   auto *AddRec = dyn_cast<SCEVAddRecExpr>(SE.getSCEV(Ptr));
   if (!AddRec || AddRec->getLoop() != L || !AddRec->isAffine())
     return false;
-  auto *Step = dyn_cast<SCEVConstant>(AddRec->getStepRecurrence(SE));
+  auto* Step = dyn_cast<SCEVConstant>(AddRec->getStepRecurrence(SE));
   if (!Step)
     return false;
   // TODO: generalize to access patterns which have gaps
@@ -309,7 +309,7 @@ bool llvm::isSafeToLoadUnconditionally(Value *V, Align Alignment, APInt &Size,
                                        const DominatorTree *DT,
                                        const TargetLibraryInfo *TLI) {
   // If DT is not specified we can't make context-sensitive query
-  const Instruction *CtxI = DT ? ScanFrom : nullptr;
+  const Instruction* CtxI = DT ? ScanFrom : nullptr;
   if (isDereferenceableAndAlignedPointer(V, Alignment, Size, DL, CtxI, DT, TLI))
     return true;
 
@@ -367,7 +367,8 @@ bool llvm::isSafeToLoadUnconditionally(Value *V, Align Alignment, APInt &Size,
       continue;
 
     // Handle trivial cases.
-    if (AccessedPtr == V && LoadSize <= DL.getTypeStoreSize(AccessedTy))
+    if (AccessedPtr == V &&
+        LoadSize <= DL.getTypeStoreSize(AccessedTy))
       return true;
 
     if (AreEquivalentAddressValues(AccessedPtr->stripPointerCasts(), V) &&
@@ -386,36 +387,38 @@ bool llvm::isSafeToLoadUnconditionally(Value *V, Type *Ty, Align Alignment,
   return isSafeToLoadUnconditionally(V, Alignment, Size, DL, ScanFrom, DT, TLI);
 }
 
-/// DefMaxInstsToScan - the default number of maximum instructions
+  /// DefMaxInstsToScan - the default number of maximum instructions
 /// to scan in the block, used by FindAvailableLoadedValue().
 /// FindAvailableLoadedValue() was introduced in r60148, to improve jump
 /// threading in part by eliminating partially redundant loads.
 /// At that point, the value of MaxInstsToScan was already set to '6'
 /// without documented explanation.
-cl::opt<unsigned> llvm::DefMaxInstsToScan(
-    "available-load-scan-limit", cl::init(6), cl::Hidden,
-    cl::desc("Use this to specify the default maximum number of instructions "
-             "to scan backward from a given instruction, when searching for "
-             "available loaded value"));
+cl::opt<unsigned>
+llvm::DefMaxInstsToScan("available-load-scan-limit", cl::init(6), cl::Hidden,
+  cl::desc("Use this to specify the default maximum number of instructions "
+           "to scan backward from a given instruction, when searching for "
+           "available loaded value"));
 
-Value *llvm::FindAvailableLoadedValue(LoadInst *Load, BasicBlock *ScanBB,
+Value *llvm::FindAvailableLoadedValue(LoadInst *Load,
+                                      BasicBlock *ScanBB,
                                       BasicBlock::iterator &ScanFrom,
-                                      unsigned MaxInstsToScan, AAResults *AA,
-                                      bool *IsLoad, unsigned *NumScanedInst) {
+                                      unsigned MaxInstsToScan,
+                                      AAResults *AA, bool *IsLoad,
+                                      unsigned *NumScanedInst) {
   // Don't CSE load that is volatile or anything stronger than unordered.
   if (!Load->isUnordered())
     return nullptr;
 
-  return FindAvailablePtrLoadStore(Load->getPointerOperand(), Load->getType(),
-                                   Load->isAtomic(), ScanBB, ScanFrom,
-                                   MaxInstsToScan, AA, IsLoad, NumScanedInst);
+  return FindAvailablePtrLoadStore(
+      Load->getPointerOperand(), Load->getType(), Load->isAtomic(), ScanBB,
+      ScanFrom, MaxInstsToScan, AA, IsLoad, NumScanedInst);
 }
 
 // Check if the load and the store have the same base, constant offsets and
 // non-overlapping access ranges.
-static bool AreNonOverlapSameBaseLoadAndStore(Value *LoadPtr, Type *LoadTy,
-                                              Value *StorePtr, Type *StoreTy,
-                                              const DataLayout &DL) {
+static bool AreNonOverlapSameBaseLoadAndStore(
+    Value *LoadPtr, Type *LoadTy, Value *StorePtr, Type *StoreTy,
+    const DataLayout &DL) {
   APInt LoadOffset(DL.getTypeSizeInBits(LoadPtr->getType()), 0);
   APInt StoreOffset(DL.getTypeSizeInBits(StorePtr->getType()), 0);
   Value *LoadBase = LoadPtr->stripAndAccumulateConstantOffsets(
@@ -426,16 +429,18 @@ static bool AreNonOverlapSameBaseLoadAndStore(Value *LoadPtr, Type *LoadTy,
     return false;
   auto LoadAccessSize = LocationSize::precise(DL.getTypeStoreSize(LoadTy));
   auto StoreAccessSize = LocationSize::precise(DL.getTypeStoreSize(StoreTy));
-  ConstantRange LoadRange(LoadOffset, LoadOffset + LoadAccessSize.toRaw());
-  ConstantRange StoreRange(StoreOffset, StoreOffset + StoreAccessSize.toRaw());
+  ConstantRange LoadRange(LoadOffset,
+                          LoadOffset + LoadAccessSize.toRaw());
+  ConstantRange StoreRange(StoreOffset,
+                           StoreOffset + StoreAccessSize.toRaw());
   return LoadRange.intersectWith(StoreRange).isEmptySet();
 }
 
 Value *llvm::FindAvailablePtrLoadStore(Value *Ptr, Type *AccessTy,
                                        bool AtLeastAtomic, BasicBlock *ScanBB,
                                        BasicBlock::iterator &ScanFrom,
-                                       unsigned MaxInstsToScan, AAResults *AA,
-                                       bool *IsLoadCSE,
+                                       unsigned MaxInstsToScan,
+                                       AAResults *AA, bool *IsLoadCSE,
                                        unsigned *NumScanedInst) {
   if (MaxInstsToScan == 0)
     MaxInstsToScan = ~0U;
@@ -475,7 +480,7 @@ Value *llvm::FindAvailablePtrLoadStore(Value *Ptr, Type *AccessTy,
           return nullptr;
 
         if (IsLoadCSE)
-          *IsLoadCSE = true;
+            *IsLoadCSE = true;
         return LI;
       }
 

@@ -1,15 +1,15 @@
 class A {
-public:
+ public:
   virtual void vfunc(bool param);
   virtual void vfunc(bool param, int p);
   void func(bool param);
 };
 class B : public A {
-  virtual int ttt(bool param, int x = 3) const;
-  void vfunc(bool param, int p) override;
+virtual int ttt(bool param, int x = 3) const;
+void vfunc(bool param, int p) override;
 };
 class C : public B {
-public:
+ public:
   void vfunc(bool param) override;
   vf
 };

@@ -11,8 +11,8 @@ void f_textless(int a) {
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use unary 'static_assert' when
   // CHECK-FIXES: {{^}}  static_assert(sizeof(a) <= 12 );{{$}}
   FOO
-      // CHECK-FIXES: {{^}}  FOO{{$}}
-      static_assert(sizeof(a) <= 17, MSG);
+  // CHECK-FIXES: {{^}}  FOO{{$}}
+  static_assert(sizeof(a) <= 17, MSG);
   // CHECK-FIXES: {{^}}  static_assert(sizeof(a) <= 17, MSG);{{$}}
 }
 

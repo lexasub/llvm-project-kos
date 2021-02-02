@@ -6,7 +6,7 @@
 // virtual bases
 
 class Base {
-public:
+ public:
   int x;
   Base() {
     x = 5;
@@ -17,7 +17,7 @@ public:
 };
 
 class Derived : public Base {
-public:
+ public:
   int y;
   Derived() {
     y = 10;

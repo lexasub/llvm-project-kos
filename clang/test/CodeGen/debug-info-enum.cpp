@@ -5,6 +5,7 @@
 
 // RUN: %clang -target x86_64-linux -g -S -emit-llvm -o - %s | FileCheck %s
 
+
 enum class E0 : signed char {
   A0 = -128,
   B0 = 127,
@@ -49,8 +50,7 @@ enum class E3 : unsigned short { A3 = 65535 } x3;
 // CHECK: ![[ELTS3]] = !{![[A3:[0-9]+]]}
 // CHECK: ![[A3]] = !DIEnumerator(name: "A3", value: 65535, isUnsigned: true)
 
-enum class E4 : signed int { A4 = -2147483648,
-                             B4 = 2147483647 } x4;
+enum class E4 : signed int { A4 = -2147483648, B4 = 2147483647 } x4;
 // CHECK: !DICompositeType(tag: DW_TAG_enumeration_type, name: "E4"
 // CHECK-SAME: baseType: ![[INT:[0-9]+]]
 // CHECK-SAME: DIFlagEnumClass
@@ -92,9 +92,9 @@ enum class E7 : unsigned long long { A7 = 18446744073709551615ULL } x7;
 // CHECK: ![[A7]] = !DIEnumerator(name: "A7", value: 18446744073709551615, isUnsigned: true)
 
 // Also test the FixedEnum flag is not present for old-style enumerations.
-enum E8 { A8 = -128,
-          B8 = 127 } x8;
+enum E8 { A8 = -128, B8 = 127 } x8;
 // CHECK: !DICompositeType(tag: DW_TAG_enumeration_type, name: "E8"
 // CHECK-SAME: baseType: ![[INT]]
 // CHECK-NOT: DIFlagEnumClass
 // CHECK: !DIEnumerator(name: "A8", value: -128)
+

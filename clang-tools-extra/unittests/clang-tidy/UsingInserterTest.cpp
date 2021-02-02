@@ -23,7 +23,7 @@ namespace utils {
 class InsertUsingCheck : public clang::tidy::ClangTidyCheck {
 public:
   InsertUsingCheck(StringRef Name, ClangTidyContext *Context)
-      : ClangTidyCheck(Name, Context) {}
+      :ClangTidyCheck(Name, Context) {}
   void registerMatchers(clang::ast_matchers::MatchFinder *Finder) override {
     Finder->addMatcher(clang::ast_matchers::callExpr().bind("foo"), this);
   }

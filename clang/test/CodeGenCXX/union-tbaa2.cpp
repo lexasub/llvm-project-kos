@@ -2,36 +2,34 @@
 
 // Testcase from llvm.org/PR32056
 
-extern "C" int printf(const char *__restrict __format, ...);
+extern "C" int printf (const char *__restrict __format, ...);
 
 typedef double __m256d __attribute__((__vector_size__(32)));
 
 static __inline __m256d __attribute__((__always_inline__, __nodebug__,
                                        __target__("avx")))
 _mm256_setr_pd(double __a, double __b, double __c, double __d) {
-  return (__m256d){__a, __b, __c, __d};
+  return (__m256d){ __a, __b, __c, __d };
 }
 
 struct A {
-  A() {
-    // Check that the TBAA information generated for the stores to the
-    // union members is based on the omnipotent char.
-    // CHECK: store <4 x double>
-    // CHECK: tbaa ![[OCPATH:[0-9]+]]
-    // CHECK: store <4 x double>
-    // CHECK: tbaa ![[OCPATH]]
-    // CHECK: call
+  A () {
+// Check that the TBAA information generated for the stores to the
+// union members is based on the omnipotent char.
+// CHECK: store <4 x double>
+// CHECK: tbaa ![[OCPATH:[0-9]+]]
+// CHECK: store <4 x double>
+// CHECK: tbaa ![[OCPATH]]
+// CHECK: call
     a = _mm256_setr_pd(0.0, 1.0, 2.0, 3.0);
     b = _mm256_setr_pd(4.0, 5.0, 6.0, 7.0);
   }
 
   const double *begin() { return c; }
-  const double *end() { return c + 8; }
+  const double *end() { return c+8; }
 
   union {
-    struct {
-      __m256d a, b;
-    };
+    struct { __m256d a, b; };
     double c[8];
   };
 };

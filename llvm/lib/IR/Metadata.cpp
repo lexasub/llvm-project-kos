@@ -1400,11 +1400,12 @@ bool Instruction::extractProfMetadata(uint64_t &TrueVal,
 }
 
 bool Instruction::extractProfTotalWeight(uint64_t &TotalVal) const {
-  assert(
-      (getOpcode() == Instruction::Br || getOpcode() == Instruction::Select ||
-       getOpcode() == Instruction::Call || getOpcode() == Instruction::Invoke ||
-       getOpcode() == Instruction::Switch) &&
-      "Looking for branch weights on something besides branch");
+  assert((getOpcode() == Instruction::Br ||
+          getOpcode() == Instruction::Select ||
+          getOpcode() == Instruction::Call ||
+          getOpcode() == Instruction::Invoke ||
+          getOpcode() == Instruction::Switch) &&
+         "Looking for branch weights on something besides branch");
 
   TotalVal = 0;
   auto *ProfileData = getMetadata(LLVMContext::MD_prof);
@@ -1478,9 +1479,10 @@ void GlobalObject::copyMetadata(const GlobalObject *Other, unsigned Offset) {
 void GlobalObject::addTypeMetadata(unsigned Offset, Metadata *TypeID) {
   addMetadata(
       LLVMContext::MD_type,
-      *MDTuple::get(getContext(), {ConstantAsMetadata::get(ConstantInt::get(
-                                       Type::getInt64Ty(getContext()), Offset)),
-                                   TypeID}));
+      *MDTuple::get(getContext(),
+                    {ConstantAsMetadata::get(ConstantInt::get(
+                         Type::getInt64Ty(getContext()), Offset)),
+                     TypeID}));
 }
 
 void GlobalObject::setVCallVisibilityMetadata(VCallVisibility Visibility) {

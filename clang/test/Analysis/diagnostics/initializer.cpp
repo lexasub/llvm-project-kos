@@ -14,17 +14,17 @@ struct B : virtual A {
   // When this constructor is called from D, this note is still correct but
   // it doesn't appear because it's pruned out because it's irrelevant to the
   // bug report.
-  B() : // expected-note{{Virtual base initialization skipped because it has already been handled by the most derived class}}
-        A(1),
-        y(1 / x) // expected-warning{{Division by zero}}
-                 // expected-note@-1{{Division by zero}}
+  B(): // expected-note{{Virtual base initialization skipped because it has already been handled by the most derived class}}
+    A(1),
+    y(1 / x) // expected-warning{{Division by zero}}
+             // expected-note@-1{{Division by zero}}
   {}
 };
 
 struct C : B {
-  C() :     // expected-note{{Calling default constructor for 'A'}}
-            // expected-note@-1{{Returning from default constructor for 'A'}}
-        B() // expected-note{{Calling default constructor for 'B'}}
+  C(): // expected-note{{Calling default constructor for 'A'}}
+       // expected-note@-1{{Returning from default constructor for 'A'}}
+    B() // expected-note{{Calling default constructor for 'B'}}
   {}
 };
 
@@ -32,7 +32,7 @@ void test_note() {
   C c; // expected-note{{Calling default constructor for 'C'}}
 }
 
-struct D : B {
+struct D: B {
   D() : A(1), B() {}
 };
 

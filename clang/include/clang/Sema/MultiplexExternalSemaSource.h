@@ -19,17 +19,18 @@
 
 namespace clang {
 
-class CXXConstructorDecl;
-class CXXRecordDecl;
-class DeclaratorDecl;
-struct ExternalVTableUse;
-class LookupResult;
-class NamespaceDecl;
-class Scope;
-class Sema;
-class TypedefNameDecl;
-class ValueDecl;
-class VarDecl;
+  class CXXConstructorDecl;
+  class CXXRecordDecl;
+  class DeclaratorDecl;
+  struct ExternalVTableUse;
+  class LookupResult;
+  class NamespaceDecl;
+  class Scope;
+  class Sema;
+  class TypedefNameDecl;
+  class ValueDecl;
+  class VarDecl;
+
 
 /// An abstract interface that should be implemented by
 /// external AST sources that also provide information for semantic
@@ -42,17 +43,18 @@ private:
   SmallVector<ExternalSemaSource *, 2> Sources; // doesn't own them.
 
 public:
-  /// Constructs a new multiplexing external sema source and appends the
+
+  ///Constructs a new multiplexing external sema source and appends the
   /// given element to it.
   ///
   ///\param[in] s1 - A non-null (old) ExternalSemaSource.
   ///\param[in] s2 - A non-null (new) ExternalSemaSource.
   ///
-  MultiplexExternalSemaSource(ExternalSemaSource &s1, ExternalSemaSource &s2);
+  MultiplexExternalSemaSource(ExternalSemaSource& s1, ExternalSemaSource& s2);
 
   ~MultiplexExternalSemaSource() override;
 
-  /// Appends new source to the source list.
+  ///Appends new source to the source list.
   ///
   ///\param[in] source - An ExternalSemaSource.
   ///
@@ -113,7 +115,7 @@ public:
   /// Get the decls that are contained in a file in the Offset/Length
   /// range. \p Length can be 0 to indicate a point at \p Offset instead of
   /// a range.
-  void FindFileRegionDecls(FileID File, unsigned Offset, unsigned Length,
+  void FindFileRegionDecls(FileID File, unsigned Offset,unsigned Length,
                            SmallVectorImpl<Decl *> &Decls) override;
 
   /// Gives the external AST source an opportunity to complete
@@ -178,12 +180,13 @@ public:
   /// be laid out according to the ABI.
   ///
   /// \returns true if the record layout was provided, false otherwise.
-  bool layoutRecordType(
-      const RecordDecl *Record, uint64_t &Size, uint64_t &Alignment,
-      llvm::DenseMap<const FieldDecl *, uint64_t> &FieldOffsets,
-      llvm::DenseMap<const CXXRecordDecl *, CharUnits> &BaseOffsets,
-      llvm::DenseMap<const CXXRecordDecl *, CharUnits> &VirtualBaseOffsets)
-      override;
+  bool
+  layoutRecordType(const RecordDecl *Record,
+                   uint64_t &Size, uint64_t &Alignment,
+                   llvm::DenseMap<const FieldDecl *, uint64_t> &FieldOffsets,
+                 llvm::DenseMap<const CXXRecordDecl *, CharUnits> &BaseOffsets,
+                 llvm::DenseMap<const CXXRecordDecl *,
+                                CharUnits> &VirtualBaseOffsets) override;
 
   /// Return the amount of memory used by memory buffers, breaking down
   /// by heap-backed versus mmap'ed memory.
@@ -212,17 +215,16 @@ public:
   /// Load the set of namespaces that are known to the external source,
   /// which will be used during typo correction.
   void
-  ReadKnownNamespaces(SmallVectorImpl<NamespaceDecl *> &Namespaces) override;
+  ReadKnownNamespaces(SmallVectorImpl<NamespaceDecl*> &Namespaces) override;
 
   /// Load the set of used but not defined functions or variables with
   /// internal linkage, or used but not defined inline functions.
   void ReadUndefinedButUsed(
       llvm::MapVector<NamedDecl *, SourceLocation> &Undefined) override;
 
-  void ReadMismatchingDeleteExpressions(
-      llvm::MapVector<FieldDecl *,
-                      llvm::SmallVector<std::pair<SourceLocation, bool>, 4>>
-          &Exprs) override;
+  void ReadMismatchingDeleteExpressions(llvm::MapVector<
+      FieldDecl *, llvm::SmallVector<std::pair<SourceLocation, bool>, 4>> &
+                                            Exprs) override;
 
   /// Do last resort, unqualified lookup on a LookupResult that
   /// Sema cannot find.
@@ -241,7 +243,7 @@ public:
   /// given vector of tentative definitions. Note that this routine may be
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  void ReadTentativeDefinitions(SmallVectorImpl<VarDecl *> &Defs) override;
+  void ReadTentativeDefinitions(SmallVectorImpl<VarDecl*> &Defs) override;
 
   /// Read the set of unused file-scope declarations known to the
   /// external Sema source.
@@ -251,7 +253,7 @@ public:
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
   void ReadUnusedFileScopedDecls(
-      SmallVectorImpl<const DeclaratorDecl *> &Decls) override;
+                        SmallVectorImpl<const DeclaratorDecl*> &Decls) override;
 
   /// Read the set of delegating constructors known to the
   /// external Sema source.
@@ -261,7 +263,7 @@ public:
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
   void ReadDelegatingConstructors(
-      SmallVectorImpl<CXXConstructorDecl *> &Decls) override;
+                          SmallVectorImpl<CXXConstructorDecl*> &Decls) override;
 
   /// Read the set of ext_vector type declarations known to the
   /// external Sema source.
@@ -270,7 +272,7 @@ public:
   /// the given vector of declarations. Note that this routine may be
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  void ReadExtVectorDecls(SmallVectorImpl<TypedefNameDecl *> &Decls) override;
+  void ReadExtVectorDecls(SmallVectorImpl<TypedefNameDecl*> &Decls) override;
 
   /// Read the set of potentially unused typedefs known to the source.
   ///
@@ -288,8 +290,8 @@ public:
   /// given vector of selectors. Note that this routine
   /// may be invoked multiple times; the external source should take care not
   /// to introduce the same selectors repeatedly.
-  void ReadReferencedSelectors(
-      SmallVectorImpl<std::pair<Selector, SourceLocation>> &Sels) override;
+  void ReadReferencedSelectors(SmallVectorImpl<std::pair<Selector,
+                                              SourceLocation> > &Sels) override;
 
   /// Read the set of weak, undeclared identifiers known to the
   /// external Sema source.
@@ -299,7 +301,7 @@ public:
   /// the external source should take care not to introduce the same identifiers
   /// repeatedly.
   void ReadWeakUndeclaredIdentifiers(
-      SmallVectorImpl<std::pair<IdentifierInfo *, WeakInfo>> &WI) override;
+           SmallVectorImpl<std::pair<IdentifierInfo*, WeakInfo> > &WI) override;
 
   /// Read the set of used vtables known to the external Sema source.
   ///
@@ -316,8 +318,7 @@ public:
   /// external source should take care not to introduce the same instantiations
   /// repeatedly.
   void ReadPendingInstantiations(
-      SmallVectorImpl<std::pair<ValueDecl *, SourceLocation>> &Pending)
-      override;
+     SmallVectorImpl<std::pair<ValueDecl*, SourceLocation> >& Pending) override;
 
   /// Read the set of late parsed template functions for this source.
   ///
@@ -340,10 +341,11 @@ public:
 
   /// \copydoc ExternalSemaSource::CorrectTypo
   /// \note Returns the first nonempty correction.
-  TypoCorrection CorrectTypo(const DeclarationNameInfo &Typo, int LookupKind,
-                             Scope *S, CXXScopeSpec *SS,
+  TypoCorrection CorrectTypo(const DeclarationNameInfo &Typo,
+                             int LookupKind, Scope *S, CXXScopeSpec *SS,
                              CorrectionCandidateCallback &CCC,
-                             DeclContext *MemberContext, bool EnteringContext,
+                             DeclContext *MemberContext,
+                             bool EnteringContext,
                              const ObjCObjectPointerType *OPT) override;
 
   /// Produces a diagnostic note if one of the attached sources

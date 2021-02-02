@@ -18,34 +18,35 @@
      defined(__powerpc64__) || defined(__s390__) || defined(__i386__) || \
      defined(__arm__) || SANITIZER_RISCV64)
 
-#include <elf.h>  // for NT_PRSTATUS
-#include <errno.h>
-#include <sched.h>  // for CLONE_* definitions
-#include <stddef.h>
-#include <sys/prctl.h>   // for PR_* definitions
-#include <sys/ptrace.h>  // for PTRACE_* definitions
-#include <sys/types.h>   // for pid_t
-#include <sys/uio.h>     // for iovec
-
-#include "sanitizer_atomic.h"
-#include "sanitizer_platform_limits_posix.h"
 #include "sanitizer_stoptheworld.h"
+
+#include "sanitizer_platform_limits_posix.h"
+#include "sanitizer_atomic.h"
+
+#include <errno.h>
+#include <sched.h> // for CLONE_* definitions
+#include <stddef.h>
+#include <sys/prctl.h> // for PR_* definitions
+#include <sys/ptrace.h> // for PTRACE_* definitions
+#include <sys/types.h> // for pid_t
+#include <sys/uio.h> // for iovec
+#include <elf.h> // for NT_PRSTATUS
 #if (defined(__aarch64__) || SANITIZER_RISCV64) && !SANITIZER_ANDROID
 // GLIBC 2.20+ sys/user does not include asm/ptrace.h
-#include <asm/ptrace.h>
+# include <asm/ptrace.h>
 #endif
 #include <sys/user.h>  // for user_regs_struct
 #if SANITIZER_ANDROID && SANITIZER_MIPS
-#include <asm/reg.h>  // for mips SP register in sys/user.h
+# include <asm/reg.h>  // for mips SP register in sys/user.h
 #endif
-#include <sys/wait.h>  // for signal-related stuff
+#include <sys/wait.h> // for signal-related stuff
 
 #ifdef sa_handler
-#undef sa_handler
+# undef sa_handler
 #endif
 
 #ifdef sa_sigaction
-#undef sa_sigaction
+# undef sa_sigaction
 #endif
 
 #include "sanitizer_common.h"
@@ -117,9 +118,10 @@ struct TracerThreadArgument {
 class ThreadSuspender {
  public:
   explicit ThreadSuspender(pid_t pid, TracerThreadArgument *arg)
-      : arg(arg), pid_(pid) {
-    CHECK_GE(pid, 0);
-  }
+    : arg(arg)
+    , pid_(pid) {
+      CHECK_GE(pid, 0);
+    }
   bool SuspendAllThreads();
   void ResumeAllThreads();
   void KillAllThreads();
@@ -127,7 +129,6 @@ class ThreadSuspender {
     return suspended_threads_list_;
   }
   TracerThreadArgument *arg;
-
  private:
   SuspendedThreadsListLinux suspended_threads_list_;
   pid_t pid_;
@@ -138,8 +139,7 @@ bool ThreadSuspender::SuspendThread(tid_t tid) {
   // Are we already attached to this thread?
   // Currently this check takes linear time, however the number of threads is
   // usually small.
-  if (suspended_threads_list_.ContainsTid(tid))
-    return false;
+  if (suspended_threads_list_.ContainsTid(tid)) return false;
   int pterrno;
   if (internal_iserror(internal_ptrace(PTRACE_ATTACH, tid, nullptr, nullptr),
                        &pterrno)) {
@@ -174,7 +174,7 @@ bool ThreadSuspender::SuspendThread(tid_t tid) {
       }
       if (WIFSTOPPED(status) && WSTOPSIG(status) != SIGSTOP) {
         internal_ptrace(PTRACE_CONT, tid, nullptr,
-                        (void *)(uptr)WSTOPSIG(status));
+                        (void*)(uptr)WSTOPSIG(status));
         continue;
       }
       break;
@@ -235,8 +235,8 @@ bool ThreadSuspender::SuspendAllThreads() {
 static ThreadSuspender *thread_suspender_instance = nullptr;
 
 // Synchronous signals that should not be blocked.
-static const int kSyncSignals[] = {SIGABRT, SIGILL,  SIGFPE, SIGSEGV,
-                                   SIGBUS,  SIGXCPU, SIGXFSZ};
+static const int kSyncSignals[] = { SIGABRT, SIGILL, SIGFPE, SIGSEGV, SIGBUS,
+                                    SIGXCPU, SIGXFSZ };
 
 static void TracerThreadDieCallback() {
   // Generally a call to Die() in the tracer thread should be fatal to the
@@ -275,7 +275,7 @@ static void TracerThreadSignalHandler(int signum, __sanitizer_siginfo *siginfo,
 static const int kHandlerStackSize = 8192;
 
 // This function will be run as a cloned task.
-static int TracerThread(void *argument) {
+static int TracerThread(void* argument) {
   TracerThreadArgument *tracer_thread_argument =
       (TracerThreadArgument *)argument;
 
@@ -335,8 +335,8 @@ class ScopedStackSpaceWithGuard {
     guard_size_ = GetPageSizeCached();
     // FIXME: Omitting MAP_STACK here works in current kernels but might break
     // in the future.
-    guard_start_ =
-        (uptr)MmapOrDie(stack_size_ + guard_size_, "ScopedStackWithGuard");
+    guard_start_ = (uptr)MmapOrDie(stack_size_ + guard_size_,
+                                   "ScopedStackWithGuard");
     CHECK(MprotectNoAccess((uptr)guard_start_, guard_size_));
   }
   ~ScopedStackSpaceWithGuard() {
@@ -428,11 +428,11 @@ void StopTheWorld(StopTheWorldCallback callback, void *argument) {
     internal_sigdelset(&blocked_sigset, kSyncSignals[i]);
   int rv = internal_sigprocmask(SIG_BLOCK, &blocked_sigset, &old_sigset);
   CHECK_EQ(rv, 0);
-  uptr tracer_pid =
-      internal_clone(TracerThread, tracer_stack.Bottom(),
-                     CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_UNTRACED,
-                     &tracer_thread_argument, nullptr /* parent_tidptr */,
-                     nullptr /* newtls */, nullptr /* child_tidptr */);
+  uptr tracer_pid = internal_clone(
+      TracerThread, tracer_stack.Bottom(),
+      CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_UNTRACED,
+      &tracer_thread_argument, nullptr /* parent_tidptr */,
+      nullptr /* newtls */, nullptr /* child_tidptr */);
   internal_sigprocmask(SIG_SETMASK, &old_sigset, 0);
   int local_errno = 0;
   if (internal_iserror(tracer_pid, &local_errno)) {
@@ -502,11 +502,11 @@ typedef pt_regs regs_struct;
 
 #elif defined(__mips__)
 typedef struct user regs_struct;
-#if SANITIZER_ANDROID
-#define REG_SP regs[EF_R29]
-#else
-#define REG_SP regs[EF_REG29]
-#endif
+# if SANITIZER_ANDROID
+#  define REG_SP regs[EF_R29]
+# else
+#  define REG_SP regs[EF_REG29]
+# endif
 
 #elif defined(__aarch64__)
 typedef struct user_pt_regs regs_struct;
@@ -530,7 +530,7 @@ static constexpr uptr kExtraRegs[] = {0};
 
 #else
 #error "Unsupported architecture"
-#endif  // SANITIZER_ANDROID && defined(__arm__)
+#endif // SANITIZER_ANDROID && defined(__arm__)
 
 tid_t SuspendedThreadsListLinux::GetThreadID(uptr index) const {
   CHECK_LT(index, thread_ids_.size());
@@ -543,8 +543,7 @@ uptr SuspendedThreadsListLinux::ThreadCount() const {
 
 bool SuspendedThreadsListLinux::ContainsTid(tid_t thread_id) const {
   for (uptr i = 0; i < thread_ids_.size(); i++) {
-    if (thread_ids_[i] == thread_id)
-      return true;
+    if (thread_ids_[i] == thread_id) return true;
   }
   return false;
 }
@@ -617,7 +616,7 @@ PtraceRegistersStatus SuspendedThreadsListLinux::GetRegistersAndSP(
   return REGISTERS_AVAILABLE;
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 #endif  // SANITIZER_LINUX && (defined(__x86_64__) || defined(__mips__)
         // || defined(__aarch64__) || defined(__powerpc64__)

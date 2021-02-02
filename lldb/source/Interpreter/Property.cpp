@@ -62,8 +62,7 @@ Property::Property(const PropertyDefinition &definition)
     break;
 
   case OptionValue::eTypeChar: {
-    llvm::StringRef s(
-        definition.default_cstr_value ? definition.default_cstr_value : "");
+    llvm::StringRef s(definition.default_cstr_value ? definition.default_cstr_value : "");
     m_value_sp = std::make_shared<OptionValueChar>(
         OptionArgParser::ToChar(s, '\0', nullptr));
     break;
@@ -225,8 +224,8 @@ Property::Property(const PropertyDefinition &definition)
   }
 }
 
-Property::Property(ConstString name, ConstString desc, bool is_global,
-                   const lldb::OptionValueSP &value_sp)
+Property::Property(ConstString name, ConstString desc,
+                   bool is_global, const lldb::OptionValueSP &value_sp)
     : m_name(name), m_description(desc), m_value_sp(value_sp),
       m_is_global(is_global) {}
 

@@ -42,31 +42,31 @@
 // Disable the missing braces warning for this reason.
 #include "disable_missing_braces_warning.h"
 
-template <typename C>
-void test_const_container(const C& c, typename C::value_type val) {
-  assert(std::begin(c) == c.begin());
-  assert(*std::begin(c) == val);
-  assert(std::begin(c) != c.end());
-  assert(std::end(c) == c.end());
+template<typename C>
+void test_const_container( const C & c, typename C::value_type val ) {
+    assert ( std::begin(c)   == c.begin());
+    assert (*std::begin(c)   ==  val );
+    assert ( std::begin(c)   != c.end());
+    assert ( std::end(c)     == c.end());
 #if TEST_STD_VER > 11
-  assert(std::cbegin(c) == c.cbegin());
-  assert(std::cbegin(c) != c.cend());
-  assert(std::cend(c) == c.cend());
-  assert(std::rbegin(c) == c.rbegin());
-  assert(std::rbegin(c) != c.rend());
-  assert(std::rend(c) == c.rend());
-  assert(std::crbegin(c) == c.crbegin());
-  assert(std::crbegin(c) != c.crend());
-  assert(std::crend(c) == c.crend());
+    assert ( std::cbegin(c)  == c.cbegin());
+    assert ( std::cbegin(c)  != c.cend());
+    assert ( std::cend(c)    == c.cend());
+    assert ( std::rbegin(c)  == c.rbegin());
+    assert ( std::rbegin(c)  != c.rend());
+    assert ( std::rend(c)    == c.rend());
+    assert ( std::crbegin(c) == c.crbegin());
+    assert ( std::crbegin(c) != c.crend());
+    assert ( std::crend(c)   == c.crend());
 #endif
-}
+    }
 
-template <typename T>
-void test_const_container(const std::initializer_list<T>& c, T val) {
-  assert(std::begin(c) == c.begin());
-  assert(*std::begin(c) == val);
-  assert(std::begin(c) != c.end());
-  assert(std::end(c) == c.end());
+template<typename T>
+void test_const_container( const std::initializer_list<T> & c, T val ) {
+    assert ( std::begin(c)   == c.begin());
+    assert (*std::begin(c)   ==  val );
+    assert ( std::begin(c)   != c.end());
+    assert ( std::end(c)     == c.end());
 #if TEST_STD_VER > 11
 //  initializer_list doesn't have cbegin/cend/rbegin/rend
 //  but std::cbegin(),etc work (b/c they're general fn templates)
@@ -80,33 +80,33 @@ void test_const_container(const std::initializer_list<T>& c, T val) {
 //     assert ( std::crbegin(c) != c.crend());
 //     assert ( std::crend(c)   == c.crend());
 #endif
-}
+    }
 
-template <typename C>
-void test_container(C& c, typename C::value_type val) {
-  assert(std::begin(c) == c.begin());
-  assert(*std::begin(c) == val);
-  assert(std::begin(c) != c.end());
-  assert(std::end(c) == c.end());
+template<typename C>
+void test_container( C & c, typename C::value_type val ) {
+    assert ( std::begin(c)   == c.begin());
+    assert (*std::begin(c)   ==  val );
+    assert ( std::begin(c)   != c.end());
+    assert ( std::end(c)     == c.end());
 #if TEST_STD_VER > 11
-  assert(std::cbegin(c) == c.cbegin());
-  assert(std::cbegin(c) != c.cend());
-  assert(std::cend(c) == c.cend());
-  assert(std::rbegin(c) == c.rbegin());
-  assert(std::rbegin(c) != c.rend());
-  assert(std::rend(c) == c.rend());
-  assert(std::crbegin(c) == c.crbegin());
-  assert(std::crbegin(c) != c.crend());
-  assert(std::crend(c) == c.crend());
+    assert ( std::cbegin(c)  == c.cbegin());
+    assert ( std::cbegin(c)  != c.cend());
+    assert ( std::cend(c)    == c.cend());
+    assert ( std::rbegin(c)  == c.rbegin());
+    assert ( std::rbegin(c)  != c.rend());
+    assert ( std::rend(c)    == c.rend());
+    assert ( std::crbegin(c) == c.crbegin());
+    assert ( std::crbegin(c) != c.crend());
+    assert ( std::crend(c)   == c.crend());
 #endif
-}
+    }
 
-template <typename T>
-void test_container(std::initializer_list<T>& c, T val) {
-  assert(std::begin(c) == c.begin());
-  assert(*std::begin(c) == val);
-  assert(std::begin(c) != c.end());
-  assert(std::end(c) == c.end());
+template<typename T>
+void test_container( std::initializer_list<T> & c, T val ) {
+    assert ( std::begin(c)   == c.begin());
+    assert (*std::begin(c)   ==  val );
+    assert ( std::begin(c)   != c.end());
+    assert ( std::end(c)     == c.end());
 #if TEST_STD_VER > 11
 //  initializer_list doesn't have cbegin/cend/rbegin/rend
 //     assert ( std::cbegin(c)  == c.cbegin());
@@ -119,86 +119,83 @@ void test_container(std::initializer_list<T>& c, T val) {
 //     assert ( std::crbegin(c) != c.crend());
 //     assert ( std::crend(c)   == c.crend());
 #endif
-}
+    }
 
-template <typename T, size_t Sz>
-void test_const_array(const T (&array)[Sz]) {
-  assert(std::begin(array) == array);
-  assert(*std::begin(array) == array[0]);
-  assert(std::begin(array) != std::end(array));
-  assert(std::end(array) == array + Sz);
+template<typename T, size_t Sz>
+void test_const_array( const T (&array)[Sz] ) {
+    assert ( std::begin(array)  == array );
+    assert (*std::begin(array)  ==  array[0] );
+    assert ( std::begin(array)  != std::end(array));
+    assert ( std::end(array)    == array + Sz);
 #if TEST_STD_VER > 11
-  assert(std::cbegin(array) == array);
-  assert(*std::cbegin(array) == array[0]);
-  assert(std::cbegin(array) != std::cend(array));
-  assert(std::cend(array) == array + Sz);
+    assert ( std::cbegin(array) == array );
+    assert (*std::cbegin(array) == array[0] );
+    assert ( std::cbegin(array) != std::cend(array));
+    assert ( std::cend(array)   == array + Sz);
 #endif
-}
+    }
 
 int main(int, char**) {
-  std::vector<int> v;
-  v.push_back(1);
-  std::list<int> l;
-  l.push_back(2);
-  std::array<int, 1> a;
-  a[0] = 3;
-  std::initializer_list<int> il = {4};
+    std::vector<int> v; v.push_back(1);
+    std::list<int> l;   l.push_back(2);
+    std::array<int, 1> a; a[0] = 3;
+    std::initializer_list<int> il = { 4 };
 
-  test_container(v, 1);
-  test_container(l, 2);
-  test_container(a, 3);
-  test_container(il, 4);
+    test_container ( v, 1 );
+    test_container ( l, 2 );
+    test_container ( a, 3 );
+    test_container ( il, 4 );
 
-  test_const_container(v, 1);
-  test_const_container(l, 2);
-  test_const_container(a, 3);
-  test_const_container(il, 4);
+    test_const_container ( v, 1 );
+    test_const_container ( l, 2 );
+    test_const_container ( a, 3 );
+    test_const_container ( il, 4 );
 
-  static constexpr int arrA[]{1, 2, 3};
-  test_const_array(arrA);
+    static constexpr int arrA [] { 1, 2, 3 };
+    test_const_array ( arrA );
 #if TEST_STD_VER > 11
-  constexpr const int* b = std::cbegin(arrA);
-  constexpr const int* e = std::cend(arrA);
-  static_assert(e - b == 3, "");
+    constexpr const int *b = std::cbegin(arrA);
+    constexpr const int *e = std::cend(arrA);
+    static_assert(e - b == 3, "");
 #endif
 
 #if TEST_STD_VER > 14
-  {
-    typedef std::array<int, 5> C;
-    constexpr const C c{0, 1, 2, 3, 4};
+    {
+        typedef std::array<int, 5> C;
+        constexpr const C c{0,1,2,3,4};
 
-    static_assert(c.begin() == std::begin(c), "");
-    static_assert(c.cbegin() == std::cbegin(c), "");
-    static_assert(c.end() == std::end(c), "");
-    static_assert(c.cend() == std::cend(c), "");
+        static_assert ( c.begin()   == std::begin(c), "");
+        static_assert ( c.cbegin()  == std::cbegin(c), "");
+        static_assert ( c.end()     == std::end(c), "");
+        static_assert ( c.cend()    == std::cend(c), "");
 
-    static_assert(c.rbegin() == std::rbegin(c), "");
-    static_assert(c.crbegin() == std::crbegin(c), "");
-    static_assert(c.rend() == std::rend(c), "");
-    static_assert(c.crend() == std::crend(c), "");
+        static_assert ( c.rbegin()  == std::rbegin(c), "");
+        static_assert ( c.crbegin() == std::crbegin(c), "");
+        static_assert ( c.rend()    == std::rend(c), "");
+        static_assert ( c.crend()   == std::crend(c), "");
 
-    static_assert(std::begin(c) != std::end(c), "");
-    static_assert(std::rbegin(c) != std::rend(c), "");
-    static_assert(std::cbegin(c) != std::cend(c), "");
-    static_assert(std::crbegin(c) != std::crend(c), "");
+        static_assert ( std::begin(c)   != std::end(c), "");
+        static_assert ( std::rbegin(c)  != std::rend(c), "");
+        static_assert ( std::cbegin(c)  != std::cend(c), "");
+        static_assert ( std::crbegin(c) != std::crend(c), "");
 
-    static_assert(*c.begin() == 0, "");
-    static_assert(*c.rbegin() == 4, "");
+        static_assert ( *c.begin()  == 0, "");
+        static_assert ( *c.rbegin()  == 4, "");
 
-    static_assert(*std::begin(c) == 0, "");
-    static_assert(*std::cbegin(c) == 0, "");
-    static_assert(*std::rbegin(c) == 4, "");
-    static_assert(*std::crbegin(c) == 4, "");
-  }
+        static_assert ( *std::begin(c)   == 0, "" );
+        static_assert ( *std::cbegin(c)  == 0, "" );
+        static_assert ( *std::rbegin(c)  == 4, "" );
+        static_assert ( *std::crbegin(c) == 4, "" );
+    }
 
-  {
-    static constexpr const int c[] = {0, 1, 2, 3, 4};
+    {
+        static constexpr const int c[] = {0,1,2,3,4};
 
-    static_assert(*std::begin(c) == 0, "");
-    static_assert(*std::cbegin(c) == 0, "");
-    static_assert(*std::rbegin(c) == 4, "");
-    static_assert(*std::crbegin(c) == 4, "");
-  }
+        static_assert ( *std::begin(c)   == 0, "" );
+        static_assert ( *std::cbegin(c)  == 0, "" );
+        static_assert ( *std::rbegin(c)  == 4, "" );
+        static_assert ( *std::crbegin(c) == 4, "" );
+    }
 #endif
 
   return 0;

@@ -14,6 +14,9 @@
 #include <tuple>
 #include <type_traits>
 
-static_assert(std::is_trivially_constructible<std::tuple<> >::value, "");
 
-int main(int, char**) { return 0; }
+static_assert(std::is_trivially_constructible<std::tuple<>>::value, "");
+
+int main(int, char**) {
+  return 0;
+}

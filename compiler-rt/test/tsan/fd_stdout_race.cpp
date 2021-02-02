@@ -1,8 +1,8 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include "test.h"
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 int X;
 
@@ -37,3 +37,5 @@ int main() {
 // CHECK:     #0 Thread1
 // CHECK:   Previous write of size 4
 // CHECK:     #0 Thread2
+
+

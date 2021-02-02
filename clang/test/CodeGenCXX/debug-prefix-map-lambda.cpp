@@ -6,5 +6,5 @@ void c() {
   // CHECK: !DISubprogram(name: "b<(lambda at
   // CHECK-SAME:          SOURCE_ROOT
   // CHECK-SAME:          [[@LINE+1]]:{{[0-9]+}})>"
-  b([] {});
+  b([]{});
 }

@@ -87,6 +87,7 @@ static bool DeclKindIsCXXClass(clang::Decl::Kind decl_kind) {
   return false;
 }
 
+
 ClangASTImporter &DWARFASTParserClang::GetClangASTImporter() {
   if (!m_clang_ast_importer_up) {
     m_clang_ast_importer_up = std::make_unique<ClangASTImporter>();
@@ -877,7 +878,7 @@ TypeSP DWARFASTParserClang::ParseEnum(const SymbolContext &sc,
 }
 
 TypeSP DWARFASTParserClang::ParseSubroutine(const DWARFDIE &die,
-                                            ParsedDWARFTypeAttributes &attrs) {
+                           ParsedDWARFTypeAttributes &attrs) {
   Log *log(LogChannelDWARF::GetLogIfAny(DWARF_LOG_TYPE_COMPLETION |
                                         DWARF_LOG_LOOKUPS));
 
@@ -933,8 +934,9 @@ TypeSP DWARFASTParserClang::ParseSubroutine(const DWARFDIE &die,
   if (die.HasChildren()) {
     bool skip_artificial = true;
     ParseChildParameters(containing_decl_ctx, die, skip_artificial, is_static,
-                         is_variadic, has_template_params, function_param_types,
-                         function_param_decls, type_quals);
+                         is_variadic, has_template_params,
+                         function_param_types, function_param_decls,
+                         type_quals);
   }
 
   bool ignore_containing_context = false;
@@ -1154,7 +1156,8 @@ TypeSP DWARFASTParserClang::ParseSubroutine(const DWARFDIE &die,
                       metadata.SetUserID(die.GetID());
 
                       if (!object_pointer_name.empty()) {
-                        metadata.SetObjectPtrName(object_pointer_name.c_str());
+                        metadata.SetObjectPtrName(
+                            object_pointer_name.c_str());
                         LLDB_LOGF(log,
                                   "Setting object pointer name: %s on method "
                                   "object %p.\n",
@@ -1316,7 +1319,8 @@ TypeSP DWARFASTParserClang::ParseArrayType(const DWARFDIE &die,
   CompilerType array_element_type = element_type->GetForwardCompilerType();
   RequireCompleteType(array_element_type);
 
-  uint64_t array_element_bit_stride = attrs.byte_stride * 8 + attrs.bit_stride;
+  uint64_t array_element_bit_stride =
+      attrs.byte_stride * 8 + attrs.bit_stride;
   CompilerType clang_type;
   if (array_info && array_info->element_orders.size() > 0) {
     uint64_t num_elements = 0;
@@ -1331,7 +1335,8 @@ TypeSP DWARFASTParserClang::ParseArrayType(const DWARFDIE &die,
                                      : array_element_bit_stride;
     }
   } else {
-    clang_type = m_ast.CreateArrayType(array_element_type, 0, attrs.is_vector);
+    clang_type =
+        m_ast.CreateArrayType(array_element_type, 0, attrs.is_vector);
   }
   ConstString empty_name;
   TypeSP type_sp = std::make_shared<Type>(
@@ -1685,8 +1690,8 @@ DWARFASTParserClang::ParseStructureLikeDIE(const SymbolContext &sc,
             TypeSystemClang::GetAsRecordDecl(clang_type);
 
         if (record_decl) {
-          GetClangASTImporter().SetRecordLayout(record_decl,
-                                                ClangASTImporter::LayoutInfo());
+          GetClangASTImporter().SetRecordLayout(
+              record_decl, ClangASTImporter::LayoutInfo());
         }
       }
     } else if (clang_type_was_created) {
@@ -2319,8 +2324,8 @@ Function *DWARFASTParserClang::ParseFunctionFromDWARF(CompileUnit &comp_unit,
         const user_id_t func_user_id = die.GetID();
         func_sp =
             std::make_shared<Function>(&comp_unit,
-                                       func_user_id, // UserID is the DIE offset
-                                       func_user_id, func_name, func_type,
+                                   func_user_id, // UserID is the DIE offset
+                                   func_user_id, func_name, func_type,
                                        func_range); // first address range
 
         if (func_sp.get() != nullptr) {
@@ -2572,15 +2577,13 @@ void DWARFASTParserClang::ParseSingleMember(
           }
 
           // The ObjC runtime knows the byte offset but we still need to provide
-          // the bit-offset in the layout. It just means something different
-          // then what it does in C and C++. So we skip this check for ObjC
-          // types.
+          // the bit-offset in the layout. It just means something different then
+          // what it does in C and C++. So we skip this check for ObjC types.
           //
           // We also skip this for fields of a union since they will all have a
           // zero offset.
           if (!TypeSystemClang::IsObjCObjectOrInterfaceType(class_clang_type) &&
-              !(parent_die.Tag() == DW_TAG_union_type &&
-                this_field_info.bit_offset == 0) &&
+              !(parent_die.Tag() == DW_TAG_union_type && this_field_info.bit_offset == 0) &&
               ((this_field_info.bit_offset >= parent_bit_size) ||
                (last_field_info.IsBitfield() &&
                 !last_field_info.NextBitfieldOffsetIsValid(
@@ -2688,8 +2691,9 @@ void DWARFASTParserClang::ParseSingleMember(
                                             &member_array_size,
                                             &member_array_is_incomplete) &&
               !member_array_is_incomplete) {
-            uint64_t parent_byte_size = parent_die.GetAttributeValueAsUnsigned(
-                DW_AT_byte_size, UINT64_MAX);
+            uint64_t parent_byte_size =
+                parent_die.GetAttributeValueAsUnsigned(DW_AT_byte_size,
+                                                       UINT64_MAX);
 
             if (member_byte_offset >= parent_byte_size) {
               if (member_array_size != 1 &&
@@ -2712,7 +2716,8 @@ void DWARFASTParserClang::ParseSingleMember(
         RequireCompleteType(member_clang_type);
 
         field_decl = TypeSystemClang::AddFieldToRecordType(
-            class_clang_type, name, member_clang_type, accessibility, bit_size);
+            class_clang_type, name, member_clang_type, accessibility,
+            bit_size);
 
         m_ast.SetMetadataAsUserID(field_decl, die.GetID());
 
@@ -3071,7 +3076,8 @@ DWARFASTParser::ParseChildArrayInfo(const DWARFDIE &parent_die,
                     Status error;
                     lldb::VariableSP var_sp;
                     auto valobj_sp = frame->GetValueForVariableExpressionPath(
-                        var_die.GetName(), eNoDynamicValues, 0, var_sp, error);
+                        var_die.GetName(), eNoDynamicValues, 0, var_sp,
+                        error);
                     if (valobj_sp) {
                       num_elements = valobj_sp->GetValueAsUnsigned(0);
                       break;

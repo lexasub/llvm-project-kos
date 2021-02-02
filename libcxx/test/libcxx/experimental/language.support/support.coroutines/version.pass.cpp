@@ -17,4 +17,8 @@
 #error _LIBCPP_VERSION must be defined
 #endif
 
-int main(int, char**) { return 0; }
+int main(int, char**)
+{
+
+  return 0;
+}

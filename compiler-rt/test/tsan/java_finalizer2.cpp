@@ -17,7 +17,7 @@ struct Heap {
 };
 
 void *Thread1(void *p) {
-  Heap *heap = (Heap *)p;
+  Heap* heap = (Heap*)p;
   pthread_barrier_wait(&heap->barrier_finalizer);
   __tsan_java_finalize();
   __atomic_fetch_add(&heap->wg, 1, __ATOMIC_RELEASE);
@@ -26,7 +26,7 @@ void *Thread1(void *p) {
 }
 
 void *Thread2(void *p) {
-  Heap *heap = (Heap *)p;
+  Heap* heap = (Heap*)p;
   pthread_barrier_wait(&heap->barrier_finalizer);
   heap->data = 1;
   __atomic_store_n(&heap->ready, 1, __ATOMIC_RELEASE);
@@ -34,7 +34,7 @@ void *Thread2(void *p) {
 }
 
 void *Thread3(void *p) {
-  Heap *heap = (Heap *)p;
+  Heap* heap = (Heap*)p;
   pthread_barrier_wait(&heap->barrier_finalizer);
   while (__atomic_load_n(&heap->ready, __ATOMIC_ACQUIRE) != 1)
     pthread_yield();
@@ -45,13 +45,13 @@ void *Thread3(void *p) {
 }
 
 void *Ballast(void *p) {
-  Heap *heap = (Heap *)p;
+  Heap* heap = (Heap*)p;
   pthread_barrier_wait(&heap->barrier_ballast);
   return 0;
 }
 
 int main() {
-  Heap *heap = (Heap *)calloc(sizeof(Heap), 2) + 1;
+  Heap* heap = (Heap*)calloc(sizeof(Heap), 2) + 1;
   __tsan_java_init((jptr)heap, sizeof(*heap));
   __tsan_java_alloc((jptr)heap, sizeof(*heap));
   // Ballast threads merely make the bug a bit easier to trigger.

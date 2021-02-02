@@ -16,4 +16,8 @@
 // is therefore non-standard. For this reason the test lives under the 'libcxx'
 // subdirectory.
 
-int main(int, char**) { return 0; }
+int main(int, char**)
+{
+
+  return 0;
+}

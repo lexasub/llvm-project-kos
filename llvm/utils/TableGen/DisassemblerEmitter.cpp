@@ -110,8 +110,8 @@ void EmitDisassembler(RecordKeeper &Records, raw_ostream &OS) {
   if (Target.getName() == "X86") {
     DisassemblerTables Tables;
 
-    ArrayRef<const CodeGenInstruction *> numberedInstructions =
-        Target.getInstructionsByEnumValue();
+    ArrayRef<const CodeGenInstruction*> numberedInstructions =
+      Target.getInstructionsByEnumValue();
 
     for (unsigned i = 0, e = numberedInstructions.size(); i != e; ++i)
       RecognizableInstr::processInstr(Tables, *numberedInstructions[i], i);
@@ -140,10 +140,11 @@ void EmitDisassembler(RecordKeeper &Records, raw_ostream &OS) {
     if (PredicateNamespace == "Thumb")
       PredicateNamespace = "ARM";
 
-    EmitFixedLenDecoder(Records, OS, PredicateNamespace, "if (!Check(S, ", "))",
+    EmitFixedLenDecoder(Records, OS, PredicateNamespace,
+                        "if (!Check(S, ", "))",
                         "S", "MCDisassembler::Fail",
                         "  MCDisassembler::DecodeStatus S = "
-                        "MCDisassembler::Success;\n(void)S;");
+                          "MCDisassembler::Success;\n(void)S;");
     return;
   }
 

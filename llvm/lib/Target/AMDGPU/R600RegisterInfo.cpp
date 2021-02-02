@@ -23,10 +23,11 @@ using namespace llvm;
 
 unsigned R600RegisterInfo::getSubRegFromChannel(unsigned Channel) {
   static const uint16_t SubRegFromChannelTable[] = {
-      R600::sub0,  R600::sub1,  R600::sub2,  R600::sub3,
-      R600::sub4,  R600::sub5,  R600::sub6,  R600::sub7,
-      R600::sub8,  R600::sub9,  R600::sub10, R600::sub11,
-      R600::sub12, R600::sub13, R600::sub14, R600::sub15};
+    R600::sub0, R600::sub1, R600::sub2, R600::sub3,
+    R600::sub4, R600::sub5, R600::sub6, R600::sub7,
+    R600::sub8, R600::sub9, R600::sub10, R600::sub11,
+    R600::sub12, R600::sub13, R600::sub14, R600::sub15
+  };
 
   assert(Channel < array_lengthof(SubRegFromChannelTable));
   return SubRegFromChannelTable[Channel];
@@ -54,8 +55,7 @@ BitVector R600RegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   reserveRegisterTuples(Reserved, R600::INDIRECT_BASE_ADDR);
 
   for (TargetRegisterClass::iterator I = R600::R600_AddrRegClass.begin(),
-                                     E = R600::R600_AddrRegClass.end();
-       I != E; ++I) {
+                        E = R600::R600_AddrRegClass.end(); I != E; ++I) {
     reserveRegisterTuples(Reserved, *I);
   }
 
@@ -67,8 +67,8 @@ BitVector R600RegisterInfo::getReservedRegs(const MachineFunction &MF) const {
 // Dummy to not crash RegisterClassInfo.
 static const MCPhysReg CalleeSavedReg = R600::NoRegister;
 
-const MCPhysReg *
-R600RegisterInfo::getCalleeSavedRegs(const MachineFunction *) const {
+const MCPhysReg *R600RegisterInfo::getCalleeSavedRegs(
+  const MachineFunction *) const {
   return &CalleeSavedReg;
 }
 
@@ -84,12 +84,11 @@ unsigned R600RegisterInfo::getHWRegIndex(unsigned Reg) const {
   return GET_REG_INDEX(getEncodingValue(Reg));
 }
 
-const TargetRegisterClass *
-R600RegisterInfo::getCFGStructurizerRegClass(MVT VT) const {
-  switch (VT.SimpleTy) {
+const TargetRegisterClass * R600RegisterInfo::getCFGStructurizerRegClass(
+                                                                   MVT VT) const {
+  switch(VT.SimpleTy) {
   default:
-  case MVT::i32:
-    return &R600::R600_TReg32RegClass;
+  case MVT::i32: return &R600::R600_TReg32RegClass;
   }
 }
 
@@ -107,13 +106,13 @@ bool R600RegisterInfo::isPhysRegLiveAcrossClauses(Register Reg) const {
 }
 
 void R600RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator MI,
-                                           int SPAdj, unsigned FIOperandNum,
+                                           int SPAdj,
+                                           unsigned FIOperandNum,
                                            RegScavenger *RS) const {
   llvm_unreachable("Subroutines not supported yet");
 }
 
-void R600RegisterInfo::reserveRegisterTuples(BitVector &Reserved,
-                                             unsigned Reg) const {
+void R600RegisterInfo::reserveRegisterTuples(BitVector &Reserved, unsigned Reg) const {
   MCRegAliasIterator R(Reg, this, true);
 
   for (; R.isValid(); ++R)

@@ -5,4 +5,6 @@ struct WrapperB {
   OuterX x;
 };
 
-WrapperB *foo() { return new WrapperB(); }
+WrapperB* foo() {
+  return new WrapperB();
+}

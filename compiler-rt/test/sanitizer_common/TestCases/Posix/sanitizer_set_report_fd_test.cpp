@@ -9,25 +9,25 @@
 // REQUIRES: stable-runtime
 // XFAIL: android && asan
 
-#include <assert.h>
-#include <fcntl.h>
 #include <sanitizer/common_interface_defs.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
+#include <stdlib.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <assert.h>
 
 volatile int *null = 0;
 
 int main(int argc, char **argv) {
   if (argc == 2) {
     if (!strcmp(argv[1], "stdout")) {
-      __sanitizer_set_report_fd(reinterpret_cast<void *>(1));
+      __sanitizer_set_report_fd(reinterpret_cast<void*>(1));
     } else {
       int fd = open(argv[1], O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
       assert(fd > 0);
-      __sanitizer_set_report_fd(reinterpret_cast<void *>(fd));
+      __sanitizer_set_report_fd(reinterpret_cast<void*>(fd));
     }
   }
   *null = 0;

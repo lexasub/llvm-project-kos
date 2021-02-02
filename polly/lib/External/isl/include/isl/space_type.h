@@ -11,13 +11,13 @@ struct __isl_export isl_space;
 typedef struct isl_space isl_space;
 
 enum isl_dim_type {
-  isl_dim_cst,
-  isl_dim_param,
-  isl_dim_in,
-  isl_dim_out,
-  isl_dim_set = isl_dim_out,
-  isl_dim_div,
-  isl_dim_all
+	isl_dim_cst,
+	isl_dim_param,
+	isl_dim_in,
+	isl_dim_out,
+	isl_dim_set = isl_dim_out,
+	isl_dim_div,
+	isl_dim_all
 };
 
 #if defined(__cplusplus)

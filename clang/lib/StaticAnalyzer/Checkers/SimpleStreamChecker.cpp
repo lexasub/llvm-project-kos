@@ -1,5 +1,4 @@
-//===-- SimpleStreamChecker.cpp -----------------------------------------*- C++
-//-*--//
+//===-- SimpleStreamChecker.cpp -----------------------------------------*- C++ -*--//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -31,7 +30,7 @@ typedef SmallVector<SymbolRef, 2> SymbolVector;
 struct StreamState {
 private:
   enum Kind { Opened, Closed } K;
-  StreamState(Kind InK) : K(InK) {}
+  StreamState(Kind InK) : K(InK) { }
 
 public:
   bool isOpened() const { return K == Opened; }
@@ -40,19 +39,25 @@ public:
   static StreamState getOpened() { return StreamState(Opened); }
   static StreamState getClosed() { return StreamState(Closed); }
 
-  bool operator==(const StreamState &X) const { return K == X.K; }
-  void Profile(llvm::FoldingSetNodeID &ID) const { ID.AddInteger(K); }
+  bool operator==(const StreamState &X) const {
+    return K == X.K;
+  }
+  void Profile(llvm::FoldingSetNodeID &ID) const {
+    ID.AddInteger(K);
+  }
 };
 
-class SimpleStreamChecker
-    : public Checker<check::PostCall, check::PreCall, check::DeadSymbols,
-                     check::PointerEscape> {
+class SimpleStreamChecker : public Checker<check::PostCall,
+                                           check::PreCall,
+                                           check::DeadSymbols,
+                                           check::PointerEscape> {
   CallDescription OpenFn, CloseFn;
 
   std::unique_ptr<BugType> DoubleCloseBugType;
   std::unique_ptr<BugType> LeakBugType;
 
-  void reportDoubleClose(SymbolRef FileDescSym, const CallEvent &Call,
+  void reportDoubleClose(SymbolRef FileDescSym,
+                         const CallEvent &Call,
                          CheckerContext &C) const;
 
   void reportLeaks(ArrayRef<SymbolRef> LeakedStreams, CheckerContext &C,
@@ -72,9 +77,9 @@ public:
 
   /// Stop tracking addresses which escape.
   ProgramStateRef checkPointerEscape(ProgramStateRef State,
-                                     const InvalidatedSymbols &Escaped,
-                                     const CallEvent *Call,
-                                     PointerEscapeKind Kind) const;
+                                    const InvalidatedSymbols &Escaped,
+                                    const CallEvent *Call,
+                                    PointerEscapeKind Kind) const;
 };
 
 } // end anonymous namespace
@@ -86,7 +91,6 @@ REGISTER_MAP_WITH_PROGRAMSTATE(StreamMap, SymbolRef, StreamState)
 namespace {
 class StopTrackingCallback final : public SymbolVisitor {
   ProgramStateRef state;
-
 public:
   StopTrackingCallback(ProgramStateRef st) : state(std::move(st)) {}
   ProgramStateRef getState() const { return state; }
@@ -105,8 +109,9 @@ SimpleStreamChecker::SimpleStreamChecker()
       new BugType(this, "Double fclose", "Unix Stream API Error"));
 
   // Sinks are higher importance bugs as well as calls to assert() or exit(0).
-  LeakBugType.reset(new BugType(this, "Resource Leak", "Unix Stream API Error",
-                                /*SuppressOnSink=*/true));
+  LeakBugType.reset(
+      new BugType(this, "Resource Leak", "Unix Stream API Error",
+                  /*SuppressOnSink=*/true));
 }
 
 void SimpleStreamChecker::checkPostCall(const CallEvent &Call,
@@ -154,8 +159,8 @@ void SimpleStreamChecker::checkPreCall(const CallEvent &Call,
   C.addTransition(State);
 }
 
-static bool isLeaked(SymbolRef Sym, const StreamState &SS, bool IsSymDead,
-                     ProgramStateRef State) {
+static bool isLeaked(SymbolRef Sym, const StreamState &SS,
+                     bool IsSymDead, ProgramStateRef State) {
   if (IsSymDead && SS.isOpened()) {
     // If a symbol is NULL, assume that fopen failed on this path.
     // A symbol should only be considered leaked if it is non-null.
@@ -172,8 +177,7 @@ void SimpleStreamChecker::checkDeadSymbols(SymbolReaper &SymReaper,
   SymbolVector LeakedStreams;
   StreamMapTy TrackedStreams = State->get<StreamMap>();
   for (StreamMapTy::iterator I = TrackedStreams.begin(),
-                             E = TrackedStreams.end();
-       I != E; ++I) {
+                             E = TrackedStreams.end(); I != E; ++I) {
     SymbolRef Sym = I->first;
     bool IsSymDead = SymReaper.isDead(Sym);
 
@@ -223,8 +227,7 @@ void SimpleStreamChecker::reportLeaks(ArrayRef<SymbolRef> LeakedStreams,
   }
 }
 
-bool SimpleStreamChecker::guaranteedNotToCloseFile(
-    const CallEvent &Call) const {
+bool SimpleStreamChecker::guaranteedNotToCloseFile(const CallEvent &Call) const{
   // If it's not in a system header, assume it might close a file.
   if (!Call.isInSystemHeader())
     return false;
@@ -241,9 +244,11 @@ bool SimpleStreamChecker::guaranteedNotToCloseFile(
 
 // If the pointer we are tracking escaped, do not track the symbol as
 // we cannot reason about it anymore.
-ProgramStateRef SimpleStreamChecker::checkPointerEscape(
-    ProgramStateRef State, const InvalidatedSymbols &Escaped,
-    const CallEvent *Call, PointerEscapeKind Kind) const {
+ProgramStateRef
+SimpleStreamChecker::checkPointerEscape(ProgramStateRef State,
+                                        const InvalidatedSymbols &Escaped,
+                                        const CallEvent *Call,
+                                        PointerEscapeKind Kind) const {
   // If we know that the call cannot close a file, there is nothing to do.
   if (Kind == PSK_DirectEscapeOnCall && guaranteedNotToCloseFile(*Call)) {
     return State;
@@ -251,7 +256,7 @@ ProgramStateRef SimpleStreamChecker::checkPointerEscape(
 
   for (InvalidatedSymbols::const_iterator I = Escaped.begin(),
                                           E = Escaped.end();
-       I != E; ++I) {
+                                          I != E; ++I) {
     SymbolRef Sym = *I;
 
     // The symbol escaped. Optimistically, assume that the corresponding file

@@ -2,9 +2,7 @@
 
 // Make sure we do not crash when relaxed-aliasing is on.
 // CHECK-NOT: !tbaa
-struct iterator {
-  void *node;
-};
+struct iterator { void *node; };
 
 struct pair {
   iterator first;

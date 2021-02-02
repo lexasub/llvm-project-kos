@@ -55,26 +55,26 @@ typedef int64_t elf_sxword;
 /// to locate additional sections within the file.
 struct ELFHeader {
   unsigned char e_ident[llvm::ELF::EI_NIDENT]; ///< ELF file identification.
-  elf_addr e_entry;        ///< Virtual address program entry point.
-  elf_off e_phoff;         ///< File offset of program header table.
-  elf_off e_shoff;         ///< File offset of section header table.
-  elf_word e_flags;        ///< Processor specific flags.
-  elf_word e_version;      ///< Version of object file (always 1).
-  elf_half e_type;         ///< Object file type.
-  elf_half e_machine;      ///< Target architecture.
-  elf_half e_ehsize;       ///< Byte size of the ELF header.
-  elf_half e_phentsize;    ///< Size of a program header table entry.
-  elf_half e_phnum_hdr;    ///< Number of program header entries.
-  elf_half e_shentsize;    ///< Size of a section header table entry.
-  elf_half e_shnum_hdr;    ///< Number of section header entries.
+  elf_addr e_entry;     ///< Virtual address program entry point.
+  elf_off e_phoff;      ///< File offset of program header table.
+  elf_off e_shoff;      ///< File offset of section header table.
+  elf_word e_flags;     ///< Processor specific flags.
+  elf_word e_version;   ///< Version of object file (always 1).
+  elf_half e_type;      ///< Object file type.
+  elf_half e_machine;   ///< Target architecture.
+  elf_half e_ehsize;    ///< Byte size of the ELF header.
+  elf_half e_phentsize; ///< Size of a program header table entry.
+  elf_half e_phnum_hdr; ///< Number of program header entries.
+  elf_half e_shentsize; ///< Size of a section header table entry.
+  elf_half e_shnum_hdr; ///< Number of section header entries.
   elf_half e_shstrndx_hdr; ///< String table section index.
 
   // In some cases these numbers do not fit in 16 bits and they are
   // stored outside of the header in section #0. Here are the actual
   // values.
-  elf_word e_phnum;    ///< Number of program header entries.
-  elf_word e_shnum;    ///< Number of section header entries.
-  elf_word e_shstrndx; ///< String table section index.
+  elf_word e_phnum;     ///< Number of program header entries.
+  elf_word e_shnum;     ///< Number of section header entries.
+  elf_word e_shstrndx;  ///< String table section index.
 
   ELFHeader();
 
@@ -145,6 +145,7 @@ struct ELFHeader {
   static unsigned AddressSizeInBytes(const uint8_t *magic);
 
 private:
+
   /// Parse an ELFHeader header extension entry.  This method is called by
   /// Parse().
   ///

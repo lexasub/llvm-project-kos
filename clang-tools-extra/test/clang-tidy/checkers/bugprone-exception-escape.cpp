@@ -13,26 +13,26 @@ struct throwing_destructor {
 };
 
 struct throwing_move_constructor {
-  throwing_move_constructor(throwing_move_constructor &&) {
+  throwing_move_constructor(throwing_move_constructor&&) {
     // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: an exception may be thrown in function 'throwing_move_constructor' which should not throw exceptions
     throw 1;
   }
 };
 
 struct throwing_move_assignment {
-  throwing_move_assignment &operator=(throwing_move_assignment &&) {
+  throwing_move_assignment& operator=(throwing_move_assignment&&) {
     // CHECK-MESSAGES: :[[@LINE-1]]:29: warning: an exception may be thrown in function 'operator=' which should not throw exceptions
     throw 1;
   }
 };
 
 void throwing_noexcept() noexcept {
-  // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throwing_noexcept' which should not throw exceptions
+    // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throwing_noexcept' which should not throw exceptions
   throw 1;
 }
 
 void throwing_throw_nothing() throw() {
-  // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throwing_throw_nothing' which should not throw exceptions
+    // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throwing_throw_nothing' which should not throw exceptions
   throw 1;
 }
 
@@ -40,38 +40,35 @@ void throw_and_catch() noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_and_catch' which should not throw exceptions
   try {
     throw 1;
-  } catch (int &) {
+  } catch(int &) {
   }
 }
 
 void throw_and_catch_some(int n) noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_and_catch_some' which should not throw exceptions
   try {
-    if (n)
-      throw 1;
+    if (n) throw 1;
     throw 1.1;
-  } catch (int &) {
+  } catch(int &) {
   }
 }
 
 void throw_and_catch_each(int n) noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_and_catch_each' which should not throw exceptions
   try {
-    if (n)
-      throw 1;
+    if (n) throw 1;
     throw 1.1;
-  } catch (int &) {
-  } catch (double &) {
+  } catch(int &) {
+  } catch(double &) {
   }
 }
 
 void throw_and_catch_all(int n) noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_and_catch_all' which should not throw exceptions
   try {
-    if (n)
-      throw 1;
+    if (n) throw 1;
     throw 1.1;
-  } catch (...) {
+  } catch(...) {
   }
 }
 
@@ -79,7 +76,7 @@ void throw_and_rethrow() noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_and_rethrow' which should not throw exceptions
   try {
     throw 1;
-  } catch (int &) {
+  } catch(int &) {
     throw;
   }
 }
@@ -88,7 +85,7 @@ void throw_catch_throw() noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_catch_throw' which should not throw exceptions
   try {
     throw 1;
-  } catch (int &) {
+  } catch(int &) {
     throw 2;
   }
 }
@@ -96,23 +93,22 @@ void throw_catch_throw() noexcept {
 void throw_catch_rethrow_the_rest(int n) noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_catch_rethrow_the_rest' which should not throw exceptions
   try {
-    if (n)
-      throw 1;
+    if (n) throw 1;
     throw 1.1;
-  } catch (int &) {
-  } catch (...) {
+  } catch(int &) {
+  } catch(...) {
     throw;
   }
 }
 
 class base {};
-class derived : public base {};
+class derived: public base {};
 
 void throw_derived_catch_base() noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'throw_derived_catch_base' which should not throw exceptions
   try {
     throw derived();
-  } catch (base &) {
+  } catch(base &) {
   }
 }
 
@@ -120,25 +116,23 @@ void try_nested_try(int n) noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'try_nested_try' which should not throw exceptions
   try {
     try {
-      if (n)
-        throw 1;
+      if (n) throw 1;
       throw 1.1;
-    } catch (int &) {
+    } catch(int &) {
     }
-  } catch (double &) {
+  } catch(double &) {
   }
 }
 
 void bad_try_nested_try(int n) noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'bad_try_nested_try' which should not throw exceptions
   try {
-    if (n)
-      throw 1;
+    if (n) throw 1;
     try {
       throw 1.1;
-    } catch (int &) {
+    } catch(int &) {
     }
-  } catch (double &) {
+  } catch(double &) {
   }
 }
 
@@ -147,10 +141,10 @@ void try_nested_catch() noexcept {
   try {
     try {
       throw 1;
-    } catch (int &) {
+    } catch(int &) {
       throw 1.1;
     }
-  } catch (double &) {
+  } catch(double &) {
   }
 }
 
@@ -158,10 +152,10 @@ void catch_nested_try() noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'catch_nested_try' which should not throw exceptions
   try {
     throw 1;
-  } catch (int &) {
+  } catch(int &) {
     try {
       throw 1;
-    } catch (int &) {
+    } catch(int &) {
     }
   }
 }
@@ -170,12 +164,12 @@ void bad_catch_nested_try() noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'bad_catch_nested_try' which should not throw exceptions
   try {
     throw 1;
-  } catch (int &) {
+  } catch(int &) {
     try {
       throw 1.1;
-    } catch (int &) {
+    } catch(int &) {
     }
-  } catch (double &) {
+  } catch(double &) {
   }
 }
 
@@ -199,25 +193,25 @@ void indirect_catch() noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'indirect_catch' which should not throw exceptions
   try {
     implicit_int_thrower();
-  } catch (int &) {
+  } catch(int&) {
   }
 }
 
-template <typename T>
-void dependent_throw() noexcept(sizeof(T) < 4) {
+template<typename T>
+void dependent_throw() noexcept(sizeof(T)<4) {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'dependent_throw' which should not throw exceptions
   if (sizeof(T) > 4)
     throw 1;
 }
 
-void swap(int &, int &) {
+void swap(int&, int&) {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'swap' which should not throw exceptions
   throw 1;
 }
 
 namespace std {
 class bad_alloc {};
-} // namespace std
+}
 
 void alloc() {
   throw std::bad_alloc();
@@ -242,7 +236,7 @@ void enabled3() {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'enabled3' which should not throw exceptions
   try {
     enabled1();
-  } catch (...) {
+  } catch(...) {
   }
 }
 
@@ -258,16 +252,14 @@ void this_does_not_count_either(int n) noexcept {
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'this_does_not_count_either' which should not throw exceptions
   try {
     throw 1;
-    if (n)
-      throw ignored2();
-  } catch (int &) {
+    if (n) throw ignored2();
+  } catch(int &) {
   }
 }
 
 void this_counts(int n) noexcept {
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: an exception may be thrown in function 'this_counts' which should not throw exceptions
-  if (n)
-    throw 1;
+  if (n) throw 1;
   throw ignored1();
 }
 
@@ -283,7 +275,7 @@ int directly_recursive(int n) noexcept {
 }
 
 int indirectly_recursive(int n) noexcept;
-// CHECK-MESSAGES: :[[@LINE-1]]:5: warning: an exception may be thrown in function 'indirectly_recursive' which should not throw exceptions
+  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: an exception may be thrown in function 'indirectly_recursive' which should not throw exceptions
 
 int recursion_helper(int n) {
   indirectly_recursive(n);

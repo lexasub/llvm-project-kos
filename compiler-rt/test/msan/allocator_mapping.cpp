@@ -12,8 +12,8 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/mman.h>
+#include <stdlib.h>
 
 #ifdef HEAP_ADDRESS
 struct A {

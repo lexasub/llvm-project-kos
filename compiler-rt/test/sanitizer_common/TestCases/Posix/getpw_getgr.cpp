@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-std::unique_ptr<char[]> any_group;
+std::unique_ptr<char []> any_group;
 const int N = 123456;
 
 void Check(const char *str) {

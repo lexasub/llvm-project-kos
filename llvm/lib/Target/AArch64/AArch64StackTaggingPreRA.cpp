@@ -7,9 +7,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #include "AArch64.h"
-#include "AArch64InstrInfo.h"
 #include "AArch64MachineFunctionInfo.h"
+#include "AArch64InstrInfo.h"
 #include "llvm/ADT/DepthFirstIterator.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/Statistic.h"
@@ -36,7 +37,8 @@ using namespace llvm;
 enum UncheckedLdStMode { UncheckedNever, UncheckedSafe, UncheckedAlways };
 
 cl::opt<UncheckedLdStMode> ClUncheckedLdSt(
-    "stack-tagging-unchecked-ld-st", cl::Hidden, cl::init(UncheckedSafe),
+    "stack-tagging-unchecked-ld-st", cl::Hidden,
+    cl::init(UncheckedSafe),
     cl::desc(
         "Unconditionally apply unchecked-ld-st optimization (even for large "
         "stack frames, or in the presence of variable sized allocas)."),
@@ -63,7 +65,7 @@ class AArch64StackTaggingPreRA : public MachineFunctionPass {
   const AArch64RegisterInfo *TRI;
   const AArch64InstrInfo *TII;
 
-  SmallVector<MachineInstr *, 16> ReTags;
+  SmallVector<MachineInstr*, 16> ReTags;
 
 public:
   static char ID;
@@ -340,8 +342,7 @@ bool AArch64StackTaggingPreRA::runOnMachineFunction(MachineFunction &Func) {
   MF = &Func;
   MRI = &MF->getRegInfo();
   AFI = MF->getInfo<AArch64FunctionInfo>();
-  TII =
-      static_cast<const AArch64InstrInfo *>(MF->getSubtarget().getInstrInfo());
+  TII = static_cast<const AArch64InstrInfo *>(MF->getSubtarget().getInstrInfo());
   TRI = static_cast<const AArch64RegisterInfo *>(
       MF->getSubtarget().getRegisterInfo());
   MFI = &MF->getFrameInfo();

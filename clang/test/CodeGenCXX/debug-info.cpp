@@ -22,20 +22,20 @@
 // CHECK: ![[INCTYPE]] = !DICompositeType(tag: DW_TAG_structure_type, name: "incomplete"
 // CHECK-SAME:                                   DIFlagFwdDecl
 
-template <typename T> struct Identity {
+template<typename T> struct Identity {
   typedef T Type;
 };
 
 void f(Identity<int>::Type a) {}
 void f(Identity<int> a) {}
-void f(int &a) {}
+void f(int& a) { }
 
-template <typename T> struct A {
+template<typename T> struct A {
   A<T> *next;
 };
-void f(A<int>) {}
+void f(A<int>) { }
 
-struct B {};
+struct B { };
 
 void f() {
   int B::*a = 0;
@@ -43,39 +43,31 @@ void f() {
 }
 
 namespace EmptyNameCrash {
-struct A {
-  A();
-};
-typedef struct {
-  A x;
-} B;
-B x;
-} // namespace EmptyNameCrash
+  struct A { A(); };
+  typedef struct { A x; } B;
+  B x;
+}
 
 // PR4890
 namespace PR4890 {
-struct X {
-  ~X();
-};
+  struct X {
+    ~X();
+  };
 
-X::~X() {}
-} // namespace PR4890
+  X::~X() { }
+}
 
 namespace VirtualDtor {
-struct Y {
-  virtual ~Y();
-};
-
-Y::~Y() {}
-} // namespace VirtualDtor
+  struct Y {
+    virtual ~Y();
+  };
+  
+  Y::~Y() { }
+}
 
 namespace VirtualBase {
-struct A {
-  int a;
-};
-struct B : virtual A {
-  int b;
-};
+  struct A { int a; };
+  struct B : virtual A { int b; };
 // BOTH: ![[VBASE_B:[0-9]+]] ={{.*}}!DICompositeType(tag: DW_TAG_structure_type, name: "B",{{.*}} line: [[@LINE-1]],
 // MSVC-SAME:                                        size: 96
 // CHECK-SAME:                                       size: 128,
@@ -92,10 +84,10 @@ struct B : virtual A {
 //
 // BOTH: ![[VBASE_A]] ={{.*}}!DICompositeType(tag: DW_TAG_structure_type, name: "A",
 
-void f() {
-  B b;
+  void f() {
+    B b;
+  }
 }
-} // namespace VirtualBase
 
 namespace b5249287 {
 template <typename T> class A {
@@ -107,7 +99,7 @@ class Cls {
 };
 
 Cls obj;
-} // namespace b5249287
+}
 
 // CHECK: [[FUNC:[0-9]+]] = distinct !DISubprogram(name: "func", linkageName: "_ZN7pr147634funcENS_3fooE"
 // CHECK-SAME:                                      type: {{![0-9]+}}
@@ -116,10 +108,10 @@ Cls obj;
 // CHECK: [[PR14763:![0-9]+]] = !DINamespace(name: "pr14763"
 namespace pr14763 {
 struct foo {
-  // CHECK: ![[FOO:[0-9]+]] ={{.*}}!DICompositeType(tag: DW_TAG_structure_type, name: "foo"
-  // CHECK-SAME:             scope: [[PR14763]]
-  // CHECK-SAME:             identifier:
-  foo(const foo &);
+// CHECK: ![[FOO:[0-9]+]] ={{.*}}!DICompositeType(tag: DW_TAG_structure_type, name: "foo"
+// CHECK-SAME:             scope: [[PR14763]]
+// CHECK-SAME:             identifier:
+  foo(const foo&);
 };
 
 // For some reason function arguments ended up down here
@@ -129,12 +121,12 @@ foo func(foo f) {
   return f; // reference 'f' for now because otherwise we hit another bug
 }
 
-} // namespace pr14763
+}
 
 void foo() {
-  // CHECK: !DILocalVariable(name: "c"
-  // CHECK-NOT:              arg:
-  // CHECK-SAME:            )
+// CHECK: !DILocalVariable(name: "c"
+// CHECK-NOT:              arg:
+// CHECK-SAME:            )
   const wchar_t c = L'x';
   wchar_t d = c;
 }
@@ -142,7 +134,7 @@ void foo() {
 namespace pr9608 { // also pr9600
 struct incomplete;
 incomplete (*x)[3];
-} // namespace pr9608
+}
 
 namespace pr16214 {
 // CHECK: !DICompositeType(tag: DW_TAG_structure_type, name: "a"
@@ -150,7 +142,7 @@ namespace pr16214 {
 // CHECK-SAME:             identifier: "_ZTSN7pr162141aE"
 // CHECK: [[A_MEM]] = !{[[A_I:![0-9]*]]}
 struct a {
-  // CHECK: [[A_I]] = !DIDerivedType(tag: DW_TAG_member, name: "i"
+// CHECK: [[A_I]] = !DIDerivedType(tag: DW_TAG_member, name: "i"
   int i;
 };
 
@@ -169,4 +161,4 @@ void func() {
   const bt *b_cnst_ptr_inst;
 }
 
-} // namespace pr16214
+}

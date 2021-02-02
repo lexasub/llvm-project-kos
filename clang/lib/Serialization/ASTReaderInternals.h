@@ -104,8 +104,8 @@ public:
 
   internal_key_type ReadKey(const unsigned char *d, unsigned);
 
-  void ReadDataInto(internal_key_type, const unsigned char *d, unsigned DataLen,
-                    data_type_builder &Val);
+  void ReadDataInto(internal_key_type, const unsigned char *d,
+                    unsigned DataLen, data_type_builder &Val);
 
   static void MergeDataInto(const data_type &From, data_type_builder &To) {
     To.Data.reserve(To.Data.size() + From.size());
@@ -135,26 +135,24 @@ public:
   using hash_value_type = unsigned;
   using offset_type = unsigned;
 
-  static bool EqualKey(const internal_key_type &a, const internal_key_type &b) {
+  static bool EqualKey(const internal_key_type& a, const internal_key_type& b) {
     return a == b;
   }
 
-  static hash_value_type ComputeHash(const internal_key_type &a);
+  static hash_value_type ComputeHash(const internal_key_type& a);
 
   static std::pair<unsigned, unsigned>
-  ReadKeyDataLength(const unsigned char *&d);
+  ReadKeyDataLength(const unsigned char*& d);
 
   // This hopefully will just get inlined and removed by the optimizer.
-  static const internal_key_type &GetInternalKey(const external_key_type &x) {
-    return x;
-  }
+  static const internal_key_type&
+  GetInternalKey(const external_key_type& x) { return x; }
 
   // This hopefully will just get inlined and removed by the optimizer.
-  static const external_key_type &GetExternalKey(const internal_key_type &x) {
-    return x;
-  }
+  static const external_key_type&
+  GetExternalKey(const internal_key_type& x) { return x; }
 
-  static internal_key_type ReadKey(const unsigned char *d, unsigned n);
+  static internal_key_type ReadKey(const unsigned char* d, unsigned n);
 };
 
 /// Class that performs lookup for an identifier stored in an AST file.
@@ -174,7 +172,8 @@ public:
                            IdentifierInfo *II = nullptr)
       : Reader(Reader), F(F), KnownII(II) {}
 
-  data_type ReadData(const internal_key_type &k, const unsigned char *d,
+  data_type ReadData(const internal_key_type& k,
+                     const unsigned char* d,
                      unsigned DataLen);
 
   IdentID ReadIdentifierID(const unsigned char *d);
@@ -212,21 +211,21 @@ public:
   ASTSelectorLookupTrait(ASTReader &Reader, ModuleFile &F)
       : Reader(Reader), F(F) {}
 
-  static bool EqualKey(const internal_key_type &a, const internal_key_type &b) {
+  static bool EqualKey(const internal_key_type& a,
+                       const internal_key_type& b) {
     return a == b;
   }
 
   static hash_value_type ComputeHash(Selector Sel);
 
-  static const internal_key_type &GetInternalKey(const external_key_type &x) {
-    return x;
-  }
+  static const internal_key_type&
+  GetInternalKey(const external_key_type& x) { return x; }
 
   static std::pair<unsigned, unsigned>
-  ReadKeyDataLength(const unsigned char *&d);
+  ReadKeyDataLength(const unsigned char*& d);
 
-  internal_key_type ReadKey(const unsigned char *d, unsigned);
-  data_type ReadData(Selector, const unsigned char *d, unsigned DataLen);
+  internal_key_type ReadKey(const unsigned char* d, unsigned);
+  data_type ReadData(Selector, const unsigned char* d, unsigned DataLen);
 };
 
 /// The on-disk hash table used for the global method pool.
@@ -273,12 +272,11 @@ public:
   bool EqualKey(internal_key_ref a, internal_key_ref b);
 
   static std::pair<unsigned, unsigned>
-  ReadKeyDataLength(const unsigned char *&d);
+  ReadKeyDataLength(const unsigned char*& d);
 
   static internal_key_type ReadKey(const unsigned char *d, unsigned);
 
-  data_type ReadData(internal_key_ref, const unsigned char *d,
-                     unsigned DataLen);
+  data_type ReadData(internal_key_ref,const unsigned char *d, unsigned DataLen);
 };
 
 /// The on-disk hash table used for known header files.

@@ -45,9 +45,7 @@ using namespace llvm;
 
 #define DEBUG_TYPE "nvptx-reflect"
 
-namespace llvm {
-void initializeNVVMReflectPass(PassRegistry &);
-}
+namespace llvm { void initializeNVVMReflectPass(PassRegistry &); }
 
 namespace {
 class NVVMReflect : public FunctionPass {
@@ -61,15 +59,15 @@ public:
 
   bool runOnFunction(Function &) override;
 };
-} // namespace
+}
 
 FunctionPass *llvm::createNVVMReflectPass(unsigned int SmVersion) {
   return new NVVMReflect(SmVersion);
 }
 
 static cl::opt<bool>
-    NVVMReflectEnabled("nvvm-reflect-enable", cl::init(true), cl::Hidden,
-                       cl::desc("NVVM reflection, enabled by default"));
+NVVMReflectEnabled("nvvm-reflect-enable", cl::init(true), cl::Hidden,
+                   cl::desc("NVVM reflection, enabled by default"));
 
 char NVVMReflect::ID = 0;
 INITIALIZE_PASS(NVVMReflect, "nvvm-reflect",

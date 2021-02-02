@@ -14,8 +14,8 @@
 #ifndef LLVM_CLANG_LIB_CODEGEN_ADDRESS_H
 #define LLVM_CLANG_LIB_CODEGEN_ADDRESS_H
 
-#include "clang/AST/CharUnits.h"
 #include "llvm/IR/Constants.h"
+#include "clang/AST/CharUnits.h"
 
 namespace clang {
 namespace CodeGen {
@@ -24,7 +24,6 @@ namespace CodeGen {
 class Address {
   llvm::Value *Pointer;
   CharUnits Alignment;
-
 public:
   Address(llvm::Value *pointer, CharUnits alignment)
       : Pointer(pointer), Alignment(alignment) {
@@ -49,13 +48,19 @@ public:
   ///
   /// When IR pointer types lose their element type, we should simply
   /// store it in Address instead for the convenience of writing code.
-  llvm::Type *getElementType() const { return getType()->getElementType(); }
+  llvm::Type *getElementType() const {
+    return getType()->getElementType();
+  }
 
   /// Return the address space that this address resides in.
-  unsigned getAddressSpace() const { return getType()->getAddressSpace(); }
+  unsigned getAddressSpace() const {
+    return getType()->getAddressSpace();
+  }
 
   /// Return the IR name of the pointer value.
-  llvm::StringRef getName() const { return getPointer()->getName(); }
+  llvm::StringRef getName() const {
+    return getPointer()->getName();
+  }
 
   /// Return the alignment of this pointer.
   CharUnits getAlignment() const {
@@ -69,7 +74,7 @@ public:
 class ConstantAddress : public Address {
 public:
   ConstantAddress(llvm::Constant *pointer, CharUnits alignment)
-      : Address(pointer, alignment) {}
+    : Address(pointer, alignment) {}
 
   static ConstantAddress invalid() {
     return ConstantAddress(nullptr, CharUnits());
@@ -97,7 +102,7 @@ public:
   }
 };
 
-} // namespace CodeGen
+}
 
 // Present a minimal LLVM-like casting interface.
 template <class U> inline U cast(CodeGen::Address addr) {
@@ -107,6 +112,6 @@ template <class U> inline bool isa(CodeGen::Address addr) {
   return U::isaImpl(addr);
 }
 
-} // namespace clang
+}
 
 #endif

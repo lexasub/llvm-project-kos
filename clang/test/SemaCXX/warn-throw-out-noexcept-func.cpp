@@ -3,7 +3,7 @@ struct A_ShouldDiag {
   ~A_ShouldDiag(); // implicitly noexcept(true)
 };
 A_ShouldDiag::~A_ShouldDiag() { // expected-note {{destructor has a implicit non-throwing exception specification}}
-  throw 1;                      // expected-warning {{has a non-throwing exception specification but can still throw}}
+  throw 1; // expected-warning {{has a non-throwing exception specification but can still throw}}
 }
 struct B_ShouldDiag {
   int i;
@@ -12,16 +12,16 @@ struct B_ShouldDiag {
 struct R_ShouldDiag : A_ShouldDiag {
   B_ShouldDiag b;
   ~R_ShouldDiag() { // expected-note  {{destructor has a implicit non-throwing exception specification}}
-    throw 1;        // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
-  __attribute__((nothrow)) R_ShouldDiag() { // expected-note {{function declared non-throwing here}}
-    throw 1;                                // expected-warning {{has a non-throwing exception specification but}}
+  __attribute__((nothrow)) R_ShouldDiag() {// expected-note {{function declared non-throwing here}}
+    throw 1;// expected-warning {{has a non-throwing exception specification but}}
   }
-  void __attribute__((nothrow)) SomeThrow() { // expected-note {{function declared non-throwing here}}
-    throw 1;                                  // expected-warning {{has a non-throwing exception specification but}}
+  void __attribute__((nothrow)) SomeThrow() {// expected-note {{function declared non-throwing here}}
+   throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
-  void __declspec(nothrow) SomeDeclspecThrow() { // expected-note {{function declared non-throwing here}}
-    throw 1;                                     // expected-warning {{has a non-throwing exception specification but}}
+  void __declspec(nothrow) SomeDeclspecThrow() {// expected-note {{function declared non-throwing here}}
+   throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 
@@ -40,17 +40,17 @@ struct N_ShouldDiag {
 };
 
 N_ShouldDiag::~N_ShouldDiag() { // expected-note  {{destructor has a implicit non-throwing exception specification}}
-  throw 1;                      // expected-warning {{has a non-throwing exception specification but}}
+  throw 1; // expected-warning {{has a non-throwing exception specification but}}
 }
 struct X_ShouldDiag {
   B_ShouldDiag b;
   ~X_ShouldDiag() noexcept { // expected-note  {{destructor has a non-throwing exception}}
-    throw 1;                 // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 struct Y_ShouldDiag : A_ShouldDiag {
   ~Y_ShouldDiag() noexcept(true) { // expected-note  {{destructor has a non-throwing exception specification}}
-    throw 1;                       // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 struct C_ShouldNotDiag {
@@ -78,7 +78,7 @@ class A1_ShouldDiag {
 
 public:
   ~A1_ShouldDiag() { // expected-note  {{destructor has a implicit non-throwing exception specification}}
-    throw 1;         // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 template <typename T>
@@ -91,18 +91,18 @@ struct R1_ShouldDiag : A1_ShouldDiag<T> //expected-note {{in instantiation of me
 {
   B1_ShouldDiag<T> b;
   ~R1_ShouldDiag() { // expected-note  {{destructor has a implicit non-throwing exception specification}}
-    throw 1;         // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 template <typename T>
 struct S1_ShouldDiag : A1_ShouldDiag<T> {
   B1_ShouldDiag<T> b;
   ~S1_ShouldDiag() noexcept { // expected-note  {{destructor has a non-throwing exception specification}}
-    throw 1;                  // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 void operator delete(void *ptr) noexcept { // expected-note  {{deallocator has a non-throwing exception specification}}
-  throw 1;                                 // expected-warning {{has a non-throwing exception specification but}}
+  throw 1; // expected-warning {{has a non-throwing exception specification but}}
 }
 struct except_fun {
   static const bool i = false;
@@ -119,17 +119,17 @@ struct dependent_warn {
 template <typename T>
 struct dependent_warn_noexcept {
   ~dependent_warn_noexcept() noexcept(T::i) { // expected-note  {{destructor has a non-throwing exception specification}}
-    throw 1;                                  // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 template <typename T>
 struct dependent_warn_both {
   ~dependent_warn_both() noexcept(T::i) { // expected-note  {{destructor has a non-throwing exception specification}}
-    throw 1;                              // expected-warning {{has a non-throwing exception specification but}}
+    throw 1; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 void foo() noexcept { //expected-note {{function declared non-throwing here}}
-  throw 1;            // expected-warning {{has a non-throwing exception specification but}}
+  throw 1; // expected-warning {{has a non-throwing exception specification but}}
 }
 struct Throws {
   ~Throws() noexcept(false);
@@ -138,7 +138,7 @@ struct Throws {
 struct ShouldDiagnose {
   Throws T;
   ~ShouldDiagnose() noexcept { //expected-note {{destructor has a non-throwing exception specification}}
-    throw;                     // expected-warning {{has a non-throwing exception specification but}}
+    throw; // expected-warning {{has a non-throwing exception specification but}}
   }
 };
 struct ShouldNotDiagnose {
@@ -240,7 +240,7 @@ void n_ShouldNotDiag() noexcept {
   }
 }
 // As seen in p34973, this should not throw the warning.  If there is an active
-// exception, catch(...) catches everything.
+// exception, catch(...) catches everything. 
 void o_ShouldNotDiag() noexcept {
   try {
     throw;
@@ -253,21 +253,21 @@ void p_ShouldNotDiag() noexcept {
   // when the active exception is of type 'int'.
   try {
     throw;
-  } catch (int) {
+  } catch (int){
   }
 }
 
 void q_ShouldNotDiag() noexcept {
   try {
     throw;
-  } catch (int) {
-  } catch (...) {
+  } catch (int){
+  } catch (...){
   }
 }
 
 #define NOEXCEPT noexcept
 void with_macro() NOEXCEPT { //expected-note {{function declared non-throwing here}}
-  throw 1;                   // expected-warning {{has a non-throwing exception specification but}}
+  throw 1; // expected-warning {{has a non-throwing exception specification but}}
 }
 
 void with_try_block() try {
@@ -276,52 +276,46 @@ void with_try_block() try {
 }
 
 void with_try_block1() noexcept try { //expected-note {{function declared non-throwing here}}
-  throw 2;                            // expected-warning {{has a non-throwing exception specification but}}
+  throw 2; // expected-warning {{has a non-throwing exception specification but}}
 } catch (char *) {
 }
 
 namespace derived {
 struct B {};
-struct D : B {};
+struct D: B {};
 void goodPlain() noexcept {
   try {
     throw D();
-  } catch (B) {
-  }
+  } catch (B) {}
 }
 void goodReference() noexcept {
   try {
     throw D();
-  } catch (B &) {
-  }
+  } catch (B &) {}
 }
 void goodPointer() noexcept {
   D d;
   try {
     throw &d;
-  } catch (B *) {
-  }
+  } catch (B *) {}
 }
 void badPlain() noexcept { //expected-note {{function declared non-throwing here}}
   try {
     throw B(); // expected-warning {{'badPlain' has a non-throwing exception specification but can still throw}}
-  } catch (D) {
-  }
+  } catch (D) {}
 }
 void badReference() noexcept { //expected-note {{function declared non-throwing here}}
   try {
     throw B(); // expected-warning {{'badReference' has a non-throwing exception specification but can still throw}}
-  } catch (D &) {
-  }
+  } catch (D &) {}
 }
 void badPointer() noexcept { //expected-note {{function declared non-throwing here}}
   B b;
   try {
     throw &b; // expected-warning {{'badPointer' has a non-throwing exception specification but can still throw}}
-  } catch (D *) {
-  }
+  } catch (D *) {}
 }
-} // namespace derived
+}
 
 int main() {
   R1_ShouldDiag<int> o; //expected-note {{in instantiation of member function}}
@@ -335,225 +329,136 @@ int main() {
 }
 
 namespace ExceptionInNamespace {
-namespace N {
-struct E {};
-} // namespace N
-void run() throw() {
-  try {
-    throw N::E();
-  } catch (const N::E &e) {
+  namespace N {
+    struct E {};
+  }
+  void run() throw() {
+    try {
+      throw N::E();
+    } catch (const N::E &e) {
+    }
   }
 }
-} // namespace ExceptionInNamespace
 
 namespace HandlerSpecialCases {
-struct A {};
-using CA = const A;
+  struct A {};
+  using CA = const A;
 
-struct B : A {};
-using CB = const B;
+  struct B : A {};
+  using CB = const B;
 
-struct AmbigBase {};
-struct AmbigMiddle : AmbigBase {};
-struct AmbigDerived : AmbigBase, AmbigMiddle {}; // expected-warning {{inaccessible}}
+  struct AmbigBase {};
+  struct AmbigMiddle : AmbigBase {};
+  struct AmbigDerived : AmbigBase, AmbigMiddle {}; // expected-warning {{inaccessible}}
 
-struct PrivateBase {};
-struct PrivateDerived : private PrivateBase {
-  friend void bad3() throw();
-};
+  struct PrivateBase {};
+  struct PrivateDerived : private PrivateBase { friend void bad3() throw(); };
 
-void good() throw() {
-  try {
-    throw CA();
-  } catch (volatile A &) {
+  void good() throw() {
+    try { throw CA(); } catch (volatile A&) {}
+    try { throw B(); } catch (A&) {}
+    try { throw B(); } catch (const volatile A&) {}
+    try { throw CB(); } catch (A&) {}
+    try { throw (int*)0; } catch (void* const volatile) {}
+    try { throw (int*)0; } catch (void* const &) {}
+    try { throw (B*)0; } catch (A*) {}
+    try { throw (B*)0; } catch (A* const &) {}
+    try { throw (void(*)() noexcept)0; } catch (void (*)()) {}
+    try { throw (void(*)() noexcept)0; } catch (void (*const &)()) {}
+    try { throw (int**)0; } catch (const int * const*) {}
+    try { throw (int**)0; } catch (const int * const* const&) {}
+    try { throw nullptr; } catch (int*) {}
+    try { throw nullptr; } catch (int* const&) {}
   }
-  try {
-    throw B();
-  } catch (A &) {
-  }
-  try {
-    throw B();
-  } catch (const volatile A &) {
-  }
-  try {
-    throw CB();
-  } catch (A &) {
-  }
-  try {
-    throw(int *) 0;
-  } catch (void *const volatile) {
-  }
-  try {
-    throw(int *) 0;
-  } catch (void *const &) {
-  }
-  try {
-    throw(B *) 0;
-  } catch (A *) {
-  }
-  try {
-    throw(B *) 0;
-  } catch (A *const &) {
-  }
-  try {
-    throw(void (*)() noexcept) 0;
-  } catch (void (*)()) {
-  }
-  try {
-    throw(void (*)() noexcept) 0;
-  } catch (void (*const &)()) {
-  }
-  try {
-    throw(int **) 0;
-  } catch (const int *const *) {
-  }
-  try {
-    throw(int **) 0;
-  } catch (const int *const *const &) {
-  }
-  try {
-    throw nullptr;
-  } catch (int *) {
-  }
-  try {
-    throw nullptr;
-  } catch (int *const &) {
-  }
-}
 
-void bad1() throw() { // expected-note {{here}}
-  try {
-    throw A();
-  } catch (const B &) {
-  } // expected-warning {{still throw}}
+  void bad1() throw() { // expected-note {{here}}
+    try { throw A(); } catch (const B&) {} // expected-warning {{still throw}}
+  }
+  void bad2() throw() { // expected-note {{here}}
+    try { throw AmbigDerived(); } catch (const AmbigBase&) {} // expected-warning {{still throw}}
+  }
+  void bad3() throw() { // expected-note {{here}}
+    try { throw PrivateDerived(); } catch (const PrivateBase&) {} // expected-warning {{still throw}}
+  }
+  void bad4() throw() { // expected-note {{here}}
+    try { throw (int*)0; } catch (void* &) {} // expected-warning {{still throw}}
+  }
+  void bad5() throw() { // expected-note {{here}}
+    try { throw (int*)0; } catch (void* const volatile &) {} // expected-warning {{still throw}}
+  }
+  void bad6() throw() { // expected-note {{here}}
+    try { throw (int* volatile)0; } catch (void* const volatile &) {} // expected-warning {{still throw}}
+  }
+  void bad7() throw() { // expected-note {{here}}
+    try { throw (AmbigDerived*)0; } catch (AmbigBase*) {} // expected-warning {{still throw}}
+  }
+  void bad8() throw() { // expected-note {{here}}
+    try { throw (PrivateDerived*)0; } catch (PrivateBase*) {} // expected-warning {{still throw}}
+  }
+  void bad9() throw() { // expected-note {{here}}
+    try { throw (B*)0; } catch (A* &) {} // expected-warning {{still throw}}
+  }
+  void bad10() throw() { // expected-note {{here}}
+    try { throw (void(*)())0; } catch (void (*)() noexcept) {} // expected-warning {{still throw}}
+  }
+  void bad11() throw() { // expected-note {{here}}
+    try { throw (int**)0; } catch (const int **) {} // expected-warning {{still throw}}
+  }
+  void bad12() throw() { // expected-note {{here}}
+    try { throw nullptr; } catch (int) {} // expected-warning {{still throw}}
+  }
 }
-void bad2() throw() { // expected-note {{here}}
-  try {
-    throw AmbigDerived();
-  } catch (const AmbigBase &) {
-  } // expected-warning {{still throw}}
-}
-void bad3() throw() { // expected-note {{here}}
-  try {
-    throw PrivateDerived();
-  } catch (const PrivateBase &) {
-  } // expected-warning {{still throw}}
-}
-void bad4() throw() { // expected-note {{here}}
-  try {
-    throw(int *) 0;
-  } catch (void *&) {
-  } // expected-warning {{still throw}}
-}
-void bad5() throw() { // expected-note {{here}}
-  try {
-    throw(int *) 0;
-  } catch (void *const volatile &) {
-  } // expected-warning {{still throw}}
-}
-void bad6() throw() { // expected-note {{here}}
-  try {
-    throw(int *volatile) 0;
-  } catch (void *const volatile &) {
-  } // expected-warning {{still throw}}
-}
-void bad7() throw() { // expected-note {{here}}
-  try {
-    throw(AmbigDerived *) 0;
-  } catch (AmbigBase *) {
-  } // expected-warning {{still throw}}
-}
-void bad8() throw() { // expected-note {{here}}
-  try {
-    throw(PrivateDerived *) 0;
-  } catch (PrivateBase *) {
-  } // expected-warning {{still throw}}
-}
-void bad9() throw() { // expected-note {{here}}
-  try {
-    throw(B *) 0;
-  } catch (A *&) {
-  } // expected-warning {{still throw}}
-}
-void bad10() throw() { // expected-note {{here}}
-  try {
-    throw(void (*)()) 0;
-  } catch (void (*)() noexcept) {
-  } // expected-warning {{still throw}}
-}
-void bad11() throw() { // expected-note {{here}}
-  try {
-    throw(int **) 0;
-  } catch (const int **) {
-  } // expected-warning {{still throw}}
-}
-void bad12() throw() { // expected-note {{here}}
-  try {
-    throw nullptr;
-  } catch (int) {
-  } // expected-warning {{still throw}}
-}
-} // namespace HandlerSpecialCases
 
 namespace NestedTry {
-void f() noexcept {
-  try {
+  void f() noexcept {
     try {
-      throw 0;
-    } catch (float) {
-    }
-  } catch (int) {
+      try {
+        throw 0;
+      } catch (float) {}
+    } catch (int) {}
   }
-}
 
-struct A {
-  [[noreturn]] ~A();
-};
+  struct A { [[noreturn]] ~A(); };
 
-void g() noexcept { // expected-note {{here}}
-  try {
+  void g() noexcept { // expected-note {{here}}
     try {
-      throw 0; // expected-warning {{still throw}}
-    } catch (float) {
-    }
-  } catch (const char *) {
+      try {
+        throw 0; // expected-warning {{still throw}}
+      } catch (float) {}
+    } catch (const char*) {}
   }
-}
 
-void h() noexcept { // expected-note {{here}}
-  try {
+  void h() noexcept { // expected-note {{here}}
     try {
-      throw 0;
-    } catch (float) {
-    }
-  } catch (int) {
-    throw; // expected-warning {{still throw}}
-  }
-}
-
-// FIXME: Ideally, this should still warn; we can track which types are
-// potentially thrown by the rethrow.
-void i() noexcept {
-  try {
-    try {
-      throw 0;
+      try {
+        throw 0;
+      } catch (float) {}
     } catch (int) {
-      throw;
+      throw; // expected-warning {{still throw}}
     }
-  } catch (float) {
   }
-}
 
-// FIXME: Ideally, this should not warn: the second catch block is
-// unreachable.
-void j() noexcept { // expected-note {{here}}
-  try {
+  // FIXME: Ideally, this should still warn; we can track which types are
+  // potentially thrown by the rethrow.
+  void i() noexcept {
     try {
-      throw 0;
-    } catch (int) {
+      try {
+        throw 0;
+      } catch (int) {
+        throw;
+      }
+    } catch (float) {}
+  }
+
+  // FIXME: Ideally, this should not warn: the second catch block is
+  // unreachable.
+  void j() noexcept { // expected-note {{here}}
+    try {
+      try {
+        throw 0;
+      } catch (int) {}
+    } catch (float) {
+      throw; // expected-warning {{still throw}}
     }
-  } catch (float) {
-    throw; // expected-warning {{still throw}}
   }
 }
-} // namespace NestedTry

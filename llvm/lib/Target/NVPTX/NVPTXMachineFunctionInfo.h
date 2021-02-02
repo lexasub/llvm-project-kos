@@ -36,7 +36,7 @@ public:
         return i;
     // Nope, insert it
     ImageHandleList.push_back(Symbol);
-    return ImageHandleList.size() - 1;
+    return ImageHandleList.size()-1;
   }
 
   /// Returns the symbol name at the given index.
@@ -45,6 +45,6 @@ public:
     return ImageHandleList[Idx].c_str();
   }
 };
-} // namespace llvm
+}
 
 #endif

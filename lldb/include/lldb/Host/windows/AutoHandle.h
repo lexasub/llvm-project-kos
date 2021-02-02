@@ -31,6 +31,6 @@ private:
   HANDLE m_handle;
   HANDLE m_invalid_value;
 };
-} // namespace lldb_private
+}
 
 #endif

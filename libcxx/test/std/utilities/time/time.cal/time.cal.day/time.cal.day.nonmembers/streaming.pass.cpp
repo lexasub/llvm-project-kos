@@ -42,6 +42,7 @@
 //             successfully parsed, that value will be assigned to *offset if offset is non-null.
 //
 
+
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -49,9 +50,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using day = std::chrono::day;
-  std::cout << day{1};
+int main(int, char**)
+{
+   using day = std::chrono::day;
+   std::cout << day{1};
 
   return 0;
 }

@@ -9,7 +9,7 @@ public:
   int z;
 };
 
-A *foo(A *x) {
+A *foo (A* x) {
   A *a = new A(*x);
   return a;
 }
@@ -27,11 +27,11 @@ int baz(B *b) {
   return bar(b);
 }
 
+
 // CHECK-C: !DICompositeType(tag: DW_TAG_structure_type, name: "C"
 // CHECK-C-SAME:             flags: DIFlagFwdDecl
 
 struct C {
 };
 
-C (*x)
-(C);
+C (*x)(C);

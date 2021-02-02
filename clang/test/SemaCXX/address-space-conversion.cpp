@@ -3,45 +3,43 @@
 // This test checks for the various conversions and casting operations
 // with address-space-qualified pointers.
 
-struct A {
-  virtual ~A() {}
-};
-struct B : A {};
+struct A { virtual ~A() {} };
+struct B : A { };
 
 typedef void *void_ptr;
-typedef void __attribute__((address_space(1))) * void_ptr_1;
-typedef void __attribute__((address_space(2))) * void_ptr_2;
+typedef void __attribute__((address_space(1))) *void_ptr_1;
+typedef void __attribute__((address_space(2))) *void_ptr_2;
 
 typedef int *int_ptr;
-typedef int __attribute__((address_space(1))) * int_ptr_1;
-typedef int __attribute__((address_space(2))) * int_ptr_2;
+typedef int __attribute__((address_space(1))) *int_ptr_1;
+typedef int __attribute__((address_space(2))) *int_ptr_2;
 
 typedef A *A_ptr;
-typedef A __attribute__((address_space(1))) * A_ptr_1;
-typedef A __attribute__((address_space(2))) * A_ptr_2;
+typedef A __attribute__((address_space(1))) *A_ptr_1;
+typedef A __attribute__((address_space(2))) *A_ptr_2;
 
 typedef B *B_ptr;
-typedef B __attribute__((address_space(1))) * B_ptr_1;
-typedef B __attribute__((address_space(2))) * B_ptr_2;
+typedef B __attribute__((address_space(1))) *B_ptr_1;
+typedef B __attribute__((address_space(2))) *B_ptr_2;
 
 void test_const_cast(int_ptr ip, int_ptr_1 ip1, int_ptr_2 ip2,
                      A_ptr ap, A_ptr_1 ap1, A_ptr_2 ap2,
-                     const int *cip,
-                     const int __attribute__((address_space(1))) * cip1) {
+                     const int *cip, 
+                     const int __attribute__((address_space(1))) *cip1) {
   // Cannot use const_cast to cast between address spaces, add an
   // address space, or remove an address space.
-  (void)const_cast<int_ptr>(ip1);   // expected-error{{is not allowed}}
-  (void)const_cast<int_ptr>(ip2);   // expected-error{{is not allowed}}
-  (void)const_cast<int_ptr_1>(ip);  // expected-error{{is not allowed}}
+  (void)const_cast<int_ptr>(ip1); // expected-error{{is not allowed}}
+  (void)const_cast<int_ptr>(ip2); // expected-error{{is not allowed}}
+  (void)const_cast<int_ptr_1>(ip); // expected-error{{is not allowed}}
   (void)const_cast<int_ptr_1>(ip2); // expected-error{{is not allowed}}
-  (void)const_cast<int_ptr_2>(ip);  // expected-error{{is not allowed}}
+  (void)const_cast<int_ptr_2>(ip); // expected-error{{is not allowed}}
   (void)const_cast<int_ptr_2>(ip1); // expected-error{{is not allowed}}
 
-  (void)const_cast<A_ptr>(ap1);   // expected-error{{is not allowed}}
-  (void)const_cast<A_ptr>(ap2);   // expected-error{{is not allowed}}
-  (void)const_cast<A_ptr_1>(ap);  // expected-error{{is not allowed}}
+  (void)const_cast<A_ptr>(ap1); // expected-error{{is not allowed}}
+  (void)const_cast<A_ptr>(ap2); // expected-error{{is not allowed}}
+  (void)const_cast<A_ptr_1>(ap); // expected-error{{is not allowed}}
   (void)const_cast<A_ptr_1>(ap2); // expected-error{{is not allowed}}
-  (void)const_cast<A_ptr_2>(ap);  // expected-error{{is not allowed}}
+  (void)const_cast<A_ptr_2>(ap); // expected-error{{is not allowed}}
   (void)const_cast<A_ptr_2>(ap1); // expected-error{{is not allowed}}
 
   // It's acceptable to cast away constness.
@@ -69,36 +67,36 @@ void test_static_cast(void_ptr vp, void_ptr_1 vp1, void_ptr_2 vp2,
   (void)static_cast<A_ptr>(vp);
   (void)static_cast<A_ptr_1>(vp1);
   (void)static_cast<A_ptr_2>(vp2);
-
+  
   // Ill-formed upcasts
-  (void)static_cast<A_ptr>(bp1);   // expected-error{{is not allowed}}
-  (void)static_cast<A_ptr>(bp2);   // expected-error{{is not allowed}}
-  (void)static_cast<A_ptr_1>(bp);  // expected-error{{is not allowed}}
+  (void)static_cast<A_ptr>(bp1); // expected-error{{is not allowed}}
+  (void)static_cast<A_ptr>(bp2); // expected-error{{is not allowed}}
+  (void)static_cast<A_ptr_1>(bp); // expected-error{{is not allowed}}
   (void)static_cast<A_ptr_1>(bp2); // expected-error{{is not allowed}}
-  (void)static_cast<A_ptr_2>(bp);  // expected-error{{is not allowed}}
+  (void)static_cast<A_ptr_2>(bp); // expected-error{{is not allowed}}
   (void)static_cast<A_ptr_2>(bp1); // expected-error{{is not allowed}}
 
   // Ill-formed downcasts
-  (void)static_cast<B_ptr>(ap1);   // expected-error{{casts away qualifiers}}
-  (void)static_cast<B_ptr>(ap2);   // expected-error{{casts away qualifiers}}
-  (void)static_cast<B_ptr_1>(ap);  // expected-error{{casts away qualifiers}}
+  (void)static_cast<B_ptr>(ap1); // expected-error{{casts away qualifiers}}
+  (void)static_cast<B_ptr>(ap2); // expected-error{{casts away qualifiers}}
+  (void)static_cast<B_ptr_1>(ap); // expected-error{{casts away qualifiers}}
   (void)static_cast<B_ptr_1>(ap2); // expected-error{{casts away qualifiers}}
-  (void)static_cast<B_ptr_2>(ap);  // expected-error{{casts away qualifiers}}
+  (void)static_cast<B_ptr_2>(ap); // expected-error{{casts away qualifiers}}
   (void)static_cast<B_ptr_2>(ap1); // expected-error{{casts away qualifiers}}
 
   // Ill-formed cast to/from void
-  (void)static_cast<void_ptr>(ap1);   // expected-error{{is not allowed}}
-  (void)static_cast<void_ptr>(ap2);   // expected-error{{is not allowed}}
-  (void)static_cast<void_ptr_1>(ap);  // expected-error{{is not allowed}}
+  (void)static_cast<void_ptr>(ap1); // expected-error{{is not allowed}}
+  (void)static_cast<void_ptr>(ap2); // expected-error{{is not allowed}}
+  (void)static_cast<void_ptr_1>(ap); // expected-error{{is not allowed}}
   (void)static_cast<void_ptr_1>(ap2); // expected-error{{is not allowed}}
-  (void)static_cast<void_ptr_2>(ap);  // expected-error{{is not allowed}}
+  (void)static_cast<void_ptr_2>(ap); // expected-error{{is not allowed}}
   (void)static_cast<void_ptr_2>(ap1); // expected-error{{is not allowed}}
-  (void)static_cast<A_ptr>(vp1);      // expected-error{{casts away qualifiers}}
-  (void)static_cast<A_ptr>(vp2);      // expected-error{{casts away qualifiers}}
-  (void)static_cast<A_ptr_1>(vp);     // expected-error{{casts away qualifiers}}
-  (void)static_cast<A_ptr_1>(vp2);    // expected-error{{casts away qualifiers}}
-  (void)static_cast<A_ptr_2>(vp);     // expected-error{{casts away qualifiers}}
-  (void)static_cast<A_ptr_2>(vp1);    // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr>(vp1); // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr>(vp2); // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr_1>(vp); // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr_1>(vp2); // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr_2>(vp); // expected-error{{casts away qualifiers}}
+  (void)static_cast<A_ptr_2>(vp1); // expected-error{{casts away qualifiers}}
 }
 
 void test_dynamic_cast(A_ptr ap, A_ptr_1 ap1, A_ptr_2 ap2,
@@ -114,19 +112,19 @@ void test_dynamic_cast(A_ptr ap, A_ptr_1 ap1, A_ptr_2 ap2,
   (void)dynamic_cast<B_ptr_2>(ap2);
 
   // Ill-formed upcasts
-  (void)dynamic_cast<A_ptr>(bp1);   // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<A_ptr>(bp2);   // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<A_ptr_1>(bp);  // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<A_ptr>(bp1); // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<A_ptr>(bp2); // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<A_ptr_1>(bp); // expected-error{{casts away qualifiers}}
   (void)dynamic_cast<A_ptr_1>(bp2); // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<A_ptr_2>(bp);  // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<A_ptr_2>(bp); // expected-error{{casts away qualifiers}}
   (void)dynamic_cast<A_ptr_2>(bp1); // expected-error{{casts away qualifiers}}
 
   // Ill-formed downcasts
-  (void)dynamic_cast<B_ptr>(ap1);   // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<B_ptr>(ap2);   // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<B_ptr_1>(ap);  // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<B_ptr>(ap1); // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<B_ptr>(ap2); // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<B_ptr_1>(ap); // expected-error{{casts away qualifiers}}
   (void)dynamic_cast<B_ptr_1>(ap2); // expected-error{{casts away qualifiers}}
-  (void)dynamic_cast<B_ptr_2>(ap);  // expected-error{{casts away qualifiers}}
+  (void)dynamic_cast<B_ptr_2>(ap); // expected-error{{casts away qualifiers}}
   (void)dynamic_cast<B_ptr_2>(ap1); // expected-error{{casts away qualifiers}}
 }
 
@@ -159,7 +157,7 @@ void test_reinterpret_cast(void_ptr vp, void_ptr_1 vp1, void_ptr_2 vp2,
 void test_cstyle_cast(void_ptr vp, void_ptr_1 vp1, void_ptr_2 vp2,
                       A_ptr ap, A_ptr_1 ap1, A_ptr_2 ap2,
                       B_ptr bp, B_ptr_1 bp1, B_ptr_2 bp2,
-                      const void __attribute__((address_space(1))) * cvp1) {
+                      const void __attribute__((address_space(1))) *cvp1) {
   // C-style casts are the wild west of casts.
   (void)(A_ptr)(ap1);
   (void)(A_ptr)(ap2);
@@ -192,8 +190,8 @@ void test_implicit_conversion(void_ptr vp, void_ptr_1 vp1, void_ptr_2 vp2,
   A_ptr_2 ap_A2 = bp2;
 
   // Ill-formed conversions
-  void_ptr vpB = ap1;     // expected-error{{cannot initialize a variable of type}}
+  void_ptr vpB = ap1; // expected-error{{cannot initialize a variable of type}}
   void_ptr_1 vp_1B = ap2; // expected-error{{cannot initialize a variable of type}}
-  A_ptr ap_B = bp1;       // expected-error{{cannot initialize a variable of type}}
-  A_ptr_1 ap_B1 = bp2;    // expected-error{{cannot initialize a variable of type}}
+  A_ptr ap_B = bp1; // expected-error{{cannot initialize a variable of type}}
+  A_ptr_1 ap_B1 = bp2; // expected-error{{cannot initialize a variable of type}}
 }

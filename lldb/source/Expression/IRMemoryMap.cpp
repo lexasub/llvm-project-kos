@@ -67,9 +67,9 @@ lldb::addr_t IRMemoryMap::FindSpace(size_t size) {
   if (process_is_alive && process_sp->CanJIT()) {
     Status alloc_error;
 
-    ret = process_sp->AllocateMemory(
-        size, lldb::ePermissionsReadable | lldb::ePermissionsWritable,
-        alloc_error);
+    ret = process_sp->AllocateMemory(size, lldb::ePermissionsReadable |
+                                               lldb::ePermissionsWritable,
+                                     alloc_error);
 
     if (!alloc_error.Success())
       return LLDB_INVALID_ADDRESS;
@@ -579,8 +579,8 @@ void IRMemoryMap::WriteMemory(lldb::addr_t process_address,
     LLDB_LOGF(log,
               "IRMemoryMap::WriteMemory (0x%" PRIx64 ", 0x%" PRIxPTR
               ", 0x%" PRId64 ") went to [0x%" PRIx64 "..0x%" PRIx64 ")",
-              (uint64_t)process_address, reinterpret_cast<uintptr_t>(bytes),
-              (uint64_t)size, (uint64_t)allocation.m_process_start,
+              (uint64_t)process_address, reinterpret_cast<uintptr_t>(bytes), (uint64_t)size,
+              (uint64_t)allocation.m_process_start,
               (uint64_t)allocation.m_process_start +
                   (uint64_t)allocation.m_size);
   }
@@ -710,8 +710,8 @@ void IRMemoryMap::ReadMemory(uint8_t *bytes, lldb::addr_t process_address,
     LLDB_LOGF(log,
               "IRMemoryMap::ReadMemory (0x%" PRIx64 ", 0x%" PRIxPTR
               ", 0x%" PRId64 ") came from [0x%" PRIx64 "..0x%" PRIx64 ")",
-              (uint64_t)process_address, reinterpret_cast<uintptr_t>(bytes),
-              (uint64_t)size, (uint64_t)allocation.m_process_start,
+              (uint64_t)process_address, reinterpret_cast<uintptr_t>(bytes), (uint64_t)size,
+              (uint64_t)allocation.m_process_start,
               (uint64_t)allocation.m_process_start +
                   (uint64_t)allocation.m_size);
   }

@@ -20,7 +20,7 @@ protected:
   virtual C *f();
 };
 C c;
-} // namespace t1
+}
 // Main external C::f impl:
 // CHECK-DAG: "?f@C@t1@@MEAAPEAU12@XZ"
 // New slot in C's vftable for B, returns C* directly:

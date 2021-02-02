@@ -50,6 +50,7 @@ namespace llvm {
 ///
 class MatcherContext {
 public:
+
   /// Describes pending match query.
   ///
   /// The query is represented by the current entity being investigated (type,
@@ -65,22 +66,23 @@ public:
     Query(const Metadata *M, unsigned N) : Entity(M), OperandNo(N) {}
     Query(const Type *T, unsigned N) : Entity(T), OperandNo(N) {}
 
-    template <typename T> const T *get() const {
+    template<typename T>
+    const T *get() const {
       return Entity.dyn_cast<const T *>();
     }
 
     unsigned getOperandNo() const { return OperandNo; }
   };
 
-  template <typename T> void push(const T *V, unsigned N = ~0) {
+  template<typename T>
+  void push(const T *V, unsigned N = ~0) {
     MatchStack.push_back(Query(V, N));
   }
 
   void pop() { MatchStack.pop_back(); }
 
-  template <typename T> const T *top() const {
-    return MatchStack.back().get<T>();
-  }
+  template<typename T>
+  const T *top() const { return MatchStack.back().get<T>(); }
 
   size_t size() const { return MatchStack.size(); }
 
@@ -99,6 +101,7 @@ private:
   SmallVector<Query, 8> MatchStack;
 };
 
+
 /// Base of all matcher classes.
 ///
 class Matcher {
@@ -111,9 +114,11 @@ public:
   virtual bool match(MatcherContext &MC) = 0;
 };
 
+
 /// Base class of matchers that test particular entity.
 ///
-template <typename T> class EntityMatcher : public Matcher {
+template<typename T>
+class EntityMatcher : public Matcher {
 public:
   bool match(MatcherContext &MC) override {
     if (auto V = MC.top<T>())
@@ -123,19 +128,22 @@ public:
   virtual bool matchEntity(const T &M, MatcherContext &C) = 0;
 };
 
+
 /// Matcher that matches any entity of the specified kind.
 ///
-template <typename T> class AnyMatcher : public EntityMatcher<T> {
+template<typename T>
+class AnyMatcher : public EntityMatcher<T> {
 public:
   bool matchEntity(const T &M, MatcherContext &C) override { return true; }
 };
 
+
 /// Matcher that tests if the current entity satisfies the specified
 /// condition.
 ///
-template <typename T> class CondMatcher : public EntityMatcher<T> {
+template<typename T>
+class CondMatcher : public EntityMatcher<T> {
   std::function<bool(const T &)> Condition;
-
 public:
   CondMatcher(std::function<bool(const T &)> C) : Condition(C) {}
   bool matchEntity(const T &V, MatcherContext &C) override {
@@ -143,13 +151,14 @@ public:
   }
 };
 
+
 /// Matcher that save pointer to the entity that satisfies condition of the
 // specified matcher.
 ///
-template <typename T> class SavingMatcher : public EntityMatcher<T> {
+template<typename T>
+class SavingMatcher : public EntityMatcher<T> {
   const T *&Var;
   std::shared_ptr<Matcher> Next;
-
 public:
   SavingMatcher(const T *&V, std::shared_ptr<Matcher> N) : Var(V), Next(N) {}
   bool matchEntity(const T &V, MatcherContext &C) override {
@@ -160,12 +169,12 @@ public:
   }
 };
 
+
 /// Matcher that checks that the entity is identical to another entity in the
 /// same container.
 ///
 class SameAsMatcher : public Matcher {
   unsigned OpNo;
-
 public:
   SameAsMatcher(unsigned N) : OpNo(N) {}
   bool match(MatcherContext &C) override {
@@ -194,12 +203,12 @@ public:
   }
 };
 
+
 /// Matcher that tests if the entity is a constant integer.
 ///
 class ConstantIntMatcher : public Matcher {
   uint64_t IntValue;
   unsigned Width;
-
 public:
   ConstantIntMatcher(uint64_t V, unsigned W = 0) : IntValue(V), Width(W) {}
   bool match(MatcherContext &Ctx) override {
@@ -218,13 +227,13 @@ public:
   }
 };
 
+
 /// Value matcher tuned to test instructions.
 ///
 class InstructionMatcher : public EntityMatcher<Value> {
   SmallVector<std::shared_ptr<Matcher>, 8> OperandMatchers;
   std::shared_ptr<EntityMatcher<Metadata>> MetaMatcher = nullptr;
   unsigned Code;
-
 public:
   InstructionMatcher(unsigned C) : Code(C) {}
 
@@ -233,7 +242,8 @@ public:
     MetaMatcher = M;
   }
   void push(std::shared_ptr<Matcher> V) { OperandMatchers.push_back(V); }
-  template <typename... Args> void push(std::shared_ptr<Matcher> V, Args... A) {
+  template<typename... Args>
+  void push(std::shared_ptr<Matcher> V, Args... A) {
     push(V);
     push(A...);
   }
@@ -277,17 +287,18 @@ public:
   }
 };
 
+
 /// Matcher that tests type of the current value using the specified
 /// type matcher.
 ///
 class ValueTypeMatcher : public EntityMatcher<Value> {
   std::shared_ptr<EntityMatcher<Type>> TyM;
-
 public:
   ValueTypeMatcher(std::shared_ptr<EntityMatcher<Type>> T) : TyM(T) {}
   ValueTypeMatcher(const Type *T)
-      : TyM(new CondMatcher<Type>(
-            [T](const Type &Ty) -> bool { return &Ty == T; })) {}
+    : TyM(new CondMatcher<Type>([T](const Type &Ty) -> bool {
+                                  return &Ty == T;
+                                })) {}
   bool matchEntity(const Value &V, MatcherContext &Ctx) override {
     Type *Ty = V.getType();
     Ctx.push(Ty);
@@ -297,11 +308,11 @@ public:
   }
 };
 
+
 /// Matcher that matches string metadata.
 ///
 class NameMetaMatcher : public EntityMatcher<Metadata> {
   StringRef Name;
-
 public:
   NameMetaMatcher(StringRef N) : Name(N) {}
   bool matchEntity(const Metadata &M, MatcherContext &C) override {
@@ -311,14 +322,15 @@ public:
   }
 };
 
+
 /// Matcher that matches metadata tuples.
 ///
 class MTupleMatcher : public EntityMatcher<Metadata> {
   SmallVector<std::shared_ptr<Matcher>, 4> Operands;
-
 public:
   void push(std::shared_ptr<Matcher> M) { Operands.push_back(M); }
-  template <typename... Args> void push(std::shared_ptr<Matcher> M, Args... A) {
+  template<typename... Args>
+  void push(std::shared_ptr<Matcher> M, Args... A) {
     push(M);
     push(A...);
   }
@@ -341,13 +353,14 @@ public:
   }
 };
 
+
 // Helper function used to construct matchers.
 
 inline std::shared_ptr<Matcher> MSameAs(unsigned N) {
   return std::shared_ptr<Matcher>(new SameAsMatcher(N));
 }
 
-template <typename... T>
+template<typename... T>
 std::shared_ptr<InstructionMatcher> MInstruction(unsigned C, T... Args) {
   auto Result = new InstructionMatcher(C);
   Result->push(Args...);
@@ -386,12 +399,13 @@ inline std::shared_ptr<EntityMatcher<Metadata>> MMString(const char *Name) {
   return std::shared_ptr<EntityMatcher<Metadata>>(new NameMetaMatcher(Name));
 }
 
-template <typename... T>
+template<typename... T>
 std::shared_ptr<EntityMatcher<Metadata>> MMTuple(T... Args) {
   auto Res = new MTupleMatcher();
   Res->push(Args...);
   return std::shared_ptr<EntityMatcher<Metadata>>(Res);
 }
+
 
 /// Looks for the instruction that satisfies condition of the specified
 /// matcher inside the given basic block.
@@ -416,8 +430,7 @@ inline const Instruction *match(const BasicBlock *BB,
 ///
 /// The given instruction is not checked.
 ///
-inline const Instruction *matchNext(const Instruction *I,
-                                    std::shared_ptr<Matcher> M) {
+inline const Instruction *matchNext(const Instruction *I, std::shared_ptr<Matcher> M) {
   if (!I)
     return nullptr;
   MatcherContext MC;
@@ -434,5 +447,5 @@ inline const Instruction *matchNext(const Instruction *I,
   return nullptr;
 }
 
-} // namespace llvm
+}
 #endif

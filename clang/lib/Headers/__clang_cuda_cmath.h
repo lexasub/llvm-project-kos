@@ -205,7 +205,8 @@ __DEVICE__ float remquo(float __n, float __d, int *__q) {
 // We can't use std::enable_if, because we want to be pre-C++11 compatible.  But
 // we go ahead and unconditionally define functions that are only available when
 // compiling for C++11 to match the behavior of the CUDA headers.
-template <bool __B, class __T = void> struct __clang_cuda_enable_if {};
+template<bool __B, class __T = void>
+struct __clang_cuda_enable_if {};
 
 template <class __T> struct __clang_cuda_enable_if<true, __T> {
   typedef __T type;

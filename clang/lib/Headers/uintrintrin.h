@@ -15,7 +15,7 @@
 #define __UINTRINTRIN_H
 
 /* Define the default attributes for the functions in this file */
-#define __DEFAULT_FN_ATTRS                                                     \
+#define __DEFAULT_FN_ATTRS \
   __attribute__((__always_inline__, __nodebug__, __target__("uintr")))
 
 #ifdef __x86_64__
@@ -35,7 +35,11 @@
 /// \operation
 ///   UIF := 0
 /// \endoperation
-static __inline__ void __DEFAULT_FN_ATTRS _clui(void) { __builtin_ia32_clui(); }
+static __inline__ void __DEFAULT_FN_ATTRS
+_clui (void)
+{
+  __builtin_ia32_clui();
+}
 
 /// Sets the user interrupt flag (UIF). Its effect takes place immediately; a
 ///    user interrupt may be delivered on the instruction boundary following
@@ -52,7 +56,11 @@ static __inline__ void __DEFAULT_FN_ATTRS _clui(void) { __builtin_ia32_clui(); }
 /// \operation
 ///   UIF := 1
 /// \endoperation
-static __inline__ void __DEFAULT_FN_ATTRS _stui(void) { __builtin_ia32_stui(); }
+static __inline__ void __DEFAULT_FN_ATTRS
+_stui (void)
+{
+  __builtin_ia32_stui();
+}
 
 /// Get the current value of the user interrupt flag (UIF). Can be executed
 ///    regardless of CPL and inside a transactional region. Can be executed only
@@ -75,7 +83,9 @@ static __inline__ void __DEFAULT_FN_ATTRS _stui(void) { __builtin_ia32_stui(); }
 ///   SF := 0
 ///   dst := CF
 /// \endoperation
-static __inline__ unsigned char __DEFAULT_FN_ATTRS _testui(void) {
+static __inline__ unsigned char __DEFAULT_FN_ATTRS
+_testui (void)
+{
   return __builtin_ia32_testui();
 }
 
@@ -127,7 +137,9 @@ static __inline__ unsigned char __DEFAULT_FN_ATTRS _testui(void) {
 ///     FI
 ///   FI
 /// \endoperation
-static __inline__ void __DEFAULT_FN_ATTRS _senduipi(unsigned long long __a) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_senduipi (unsigned long long __a)
+{
   __builtin_ia32_senduipi(__a);
 }
 

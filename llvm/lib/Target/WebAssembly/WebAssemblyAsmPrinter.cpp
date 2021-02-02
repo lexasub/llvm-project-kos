@@ -310,7 +310,7 @@ void WebAssemblyAsmPrinter::EmitProducerInfo(Module &M) {
     OutStreamer->SwitchSection(Producers);
     OutStreamer->emitULEB128IntValue(FieldCount);
     for (auto &Producers : {std::make_pair("language", &Languages),
-                            std::make_pair("processed-by", &Tools)}) {
+            std::make_pair("processed-by", &Tools)}) {
       if (Producers.second->empty())
         continue;
       OutStreamer->emitULEB128IntValue(strlen(Producers.first));

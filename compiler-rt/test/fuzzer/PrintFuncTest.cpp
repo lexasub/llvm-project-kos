@@ -9,7 +9,8 @@
 #include <iostream>
 
 extern "C" {
-__attribute__((noinline)) void FunctionC(const uint8_t *Data, size_t Size) {
+__attribute__((noinline))
+void FunctionC(const uint8_t *Data, size_t Size) {
   if (Size > 3 && Data[3] == 'Z') {
     static bool PrintedOnce = false;
     if (!PrintedOnce) {
@@ -19,11 +20,13 @@ __attribute__((noinline)) void FunctionC(const uint8_t *Data, size_t Size) {
   }
 }
 
-__attribute__((noinline)) void FunctionB(const uint8_t *Data, size_t Size) {
+__attribute__((noinline))
+void FunctionB(const uint8_t *Data, size_t Size) {
   if (Size > 2 && Data[2] == 'Z')
     FunctionC(Data, Size);
 }
-__attribute__((noinline)) void FunctionA(const uint8_t *Data, size_t Size) {
+__attribute__((noinline))
+void FunctionA(const uint8_t *Data, size_t Size) {
   if (Size > 1 && Data[1] == 'U')
     FunctionB(Data, Size);
 }
@@ -34,3 +37,4 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     FunctionA(Data, Size);
   return 0;
 }
+

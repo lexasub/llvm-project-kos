@@ -42,8 +42,8 @@
 
 #include <assert.h>
 #include <dlfcn.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/mman.h>
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 
   if (test_cast) {
     // Test cast. BOOM.
-    a = (A *)p;
+    a = (A*)p;
   } else {
     // Invisible to CFI. Test virtual call later.
     memcpy(&a, &p, sizeof(a));

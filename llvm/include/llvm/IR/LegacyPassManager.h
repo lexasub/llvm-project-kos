@@ -47,6 +47,7 @@ public:
 /// PassManager manages ModulePassManagers
 class PassManager : public PassManagerBase {
 public:
+
   PassManager();
   ~PassManager() override;
 
@@ -91,11 +92,11 @@ private:
   Module *M;
 };
 
-} // namespace legacy
+} // End legacy namespace
 
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_STDCXX_CONVERSION_FUNCTIONS(legacy::PassManagerBase, LLVMPassManagerRef)
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

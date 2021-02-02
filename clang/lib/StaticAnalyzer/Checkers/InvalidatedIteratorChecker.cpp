@@ -16,6 +16,7 @@
 #include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 
+
 #include "Iterator.h"
 
 using namespace clang;
@@ -25,17 +26,16 @@ using namespace iterator;
 namespace {
 
 class InvalidatedIteratorChecker
-    : public Checker<check::PreCall, check::PreStmt<UnaryOperator>,
-                     check::PreStmt<BinaryOperator>,
-                     check::PreStmt<ArraySubscriptExpr>,
-                     check::PreStmt<MemberExpr>> {
+  : public Checker<check::PreCall, check::PreStmt<UnaryOperator>,
+                   check::PreStmt<BinaryOperator>,
+                   check::PreStmt<ArraySubscriptExpr>,
+                   check::PreStmt<MemberExpr>> {
 
   std::unique_ptr<BugType> InvalidatedBugType;
 
   void verifyAccess(CheckerContext &C, const SVal &Val) const;
-  void reportBug(const StringRef &Message, const SVal &Val, CheckerContext &C,
-                 ExplodedNode *ErrNode) const;
-
+  void reportBug(const StringRef &Message, const SVal &Val,
+                 CheckerContext &C, ExplodedNode *ErrNode) const;
 public:
   InvalidatedIteratorChecker();
 
@@ -44,9 +44,10 @@ public:
   void checkPreStmt(const BinaryOperator *BO, CheckerContext &C) const;
   void checkPreStmt(const ArraySubscriptExpr *ASE, CheckerContext &C) const;
   void checkPreStmt(const MemberExpr *ME, CheckerContext &C) const;
+
 };
 
-} // namespace
+} //namespace
 
 InvalidatedIteratorChecker::InvalidatedIteratorChecker() {
   InvalidatedBugType.reset(
@@ -113,8 +114,7 @@ void InvalidatedIteratorChecker::checkPreStmt(const MemberExpr *ME,
   verifyAccess(C, BaseVal);
 }
 
-void InvalidatedIteratorChecker::verifyAccess(CheckerContext &C,
-                                              const SVal &Val) const {
+void InvalidatedIteratorChecker::verifyAccess(CheckerContext &C, const SVal &Val) const {
   auto State = C.getState();
   const auto *Pos = getIteratorPosition(State, Val);
   if (Pos && !Pos->isValid()) {

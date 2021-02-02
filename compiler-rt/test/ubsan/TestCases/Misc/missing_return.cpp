@@ -6,7 +6,7 @@
 
 // CHECK: missing_return.cpp:[[@LINE+1]]:5: runtime error: execution reached the end of a value-returning function without returning a value
 int f() {
-  // CHECK-STACKTRACE: #0 {{.*}}f{{.*}}missing_return.cpp:[[@LINE-1]]
+// CHECK-STACKTRACE: #0 {{.*}}f{{.*}}missing_return.cpp:[[@LINE-1]]
 }
 
 int main(int, char **argv) {

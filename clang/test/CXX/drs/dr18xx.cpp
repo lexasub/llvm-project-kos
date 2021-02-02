@@ -10,108 +10,90 @@
 #endif
 
 namespace dr1813 { // dr1813: 7
-struct B {
-  int i;
-};
-struct C : B {};
-struct D : C {};
-struct E : D {
-  char : 4;
-};
+  struct B { int i; };
+  struct C : B {};
+  struct D : C {};
+  struct E : D { char : 4; };
 
-static_assert(__is_standard_layout(B), "");
-static_assert(__is_standard_layout(C), "");
-static_assert(__is_standard_layout(D), "");
-static_assert(!__is_standard_layout(E), "");
+  static_assert(__is_standard_layout(B), "");
+  static_assert(__is_standard_layout(C), "");
+  static_assert(__is_standard_layout(D), "");
+  static_assert(!__is_standard_layout(E), "");
 
-struct Q {};
-struct S : Q {};
-struct T : Q {};
-struct U : S, T {};
+  struct Q {};
+  struct S : Q {};
+  struct T : Q {};
+  struct U : S, T {};
 
-static_assert(__is_standard_layout(Q), "");
-static_assert(__is_standard_layout(S), "");
-static_assert(__is_standard_layout(T), "");
-static_assert(!__is_standard_layout(U), "");
-} // namespace dr1813
+  static_assert(__is_standard_layout(Q), "");
+  static_assert(__is_standard_layout(S), "");
+  static_assert(__is_standard_layout(T), "");
+  static_assert(!__is_standard_layout(U), "");
+}
 
 namespace dr1814 { // dr1814: yes
 #if __cplusplus >= 201103L
-void test() {
-  auto lam = [](int x = 42) { return x; };
-}
+  void test() {
+    auto lam = [](int x = 42) { return x; };
+  }
 #endif
-} // namespace dr1814
+}
 
 namespace dr1815 { // dr1815: no
 #if __cplusplus >= 201402L
-// FIXME: needs codegen test
-struct A {
-  int &&r = 0;
-};        // expected-note {{default member init}}
-A a = {}; // FIXME expected-warning {{not supported}}
+  // FIXME: needs codegen test
+  struct A { int &&r = 0; }; // expected-note {{default member init}}
+  A a = {}; // FIXME expected-warning {{not supported}}
 
-struct B {
-  int &&r = 0;
-};   // expected-error {{binds to a temporary}} expected-note {{default member init}}
-B b; // expected-note {{here}}
+  struct B { int &&r = 0; }; // expected-error {{binds to a temporary}} expected-note {{default member init}}
+  B b; // expected-note {{here}}
 #endif
-} // namespace dr1815
+}
 
 namespace dr1872 { // dr1872: 9
 #if __cplusplus >= 201103L
-template <typename T> struct A : T {
-  constexpr int f() const { return 0; }
-};
-struct X {};
-struct Y {
-  virtual int f() const;
-};
-struct Z : virtual X {};
+  template<typename T> struct A : T {
+    constexpr int f() const { return 0; }
+  };
+  struct X {};
+  struct Y { virtual int f() const; };
+  struct Z : virtual X {};
 
-constexpr int x = A<X>().f();
-constexpr int y = A<Y>().f();
+  constexpr int x = A<X>().f();
+  constexpr int y = A<Y>().f();
 #if __cplusplus <= 201703L
-// expected-error@-2 {{constant expression}} expected-note@-2 {{call to virtual function}}
+  // expected-error@-2 {{constant expression}} expected-note@-2 {{call to virtual function}}
 #else
-static_assert(y == 0);
+  static_assert(y == 0);
 #endif
-// Note, this is invalid even though it would not use virtual dispatch.
-constexpr int y2 = A<Y>().A<Y>::f();
+  // Note, this is invalid even though it would not use virtual dispatch.
+  constexpr int y2 = A<Y>().A<Y>::f();
 #if __cplusplus <= 201703L
-// expected-error@-2 {{constant expression}} expected-note@-2 {{call to virtual function}}
+  // expected-error@-2 {{constant expression}} expected-note@-2 {{call to virtual function}}
 #else
-static_assert(y == 0);
+  static_assert(y == 0);
 #endif
-constexpr int z = A<Z>().f(); // expected-error {{constant expression}} expected-note {{non-literal type}}
+  constexpr int z = A<Z>().f(); // expected-error {{constant expression}} expected-note {{non-literal type}}
 #endif
-} // namespace dr1872
+}
 
 namespace dr1881 { // dr1881: 7
-struct A {
-  int a : 4;
-};
-struct B : A {
-  int b : 3;
-};
-static_assert(__is_standard_layout(A), "");
-static_assert(!__is_standard_layout(B), "");
+  struct A { int a : 4; };
+  struct B : A { int b : 3; };
+  static_assert(__is_standard_layout(A), "");
+  static_assert(!__is_standard_layout(B), "");
 
-struct C {
-  int : 0;
-};
-struct D : C {
-  int : 0;
-};
-static_assert(__is_standard_layout(C), "");
-static_assert(!__is_standard_layout(D), "");
-} // namespace dr1881
+  struct C { int : 0; };
+  struct D : C { int : 0; };
+  static_assert(__is_standard_layout(C), "");
+  static_assert(!__is_standard_layout(D), "");
+}
 
 void dr1891() { // dr1891: 4
 #if __cplusplus >= 201103L
   int n;
-  auto a = [] {};             // expected-note 0-4{{}}
-  auto b = [=] { return n; }; // expected-note 0-4{{}}
+  auto a = []{}; // expected-note 0-4{{}}
+  auto b = [=]{ return n; }; // expected-note 0-4{{}}
   typedef decltype(a) A;
   typedef decltype(b) B;
 
@@ -130,12 +112,12 @@ void dr1891() { // dr1891: 4
 
   // C++20 allows assignment for non-capturing lambdas (P0624R2).
   a = a;
-  a = static_cast<A &&>(a);
+  a = static_cast<A&&>(a);
 #if __cplusplus <= 201703L
   // expected-error@-3 {{copy assignment operator is implicitly deleted}}
   // expected-error@-3 {{copy assignment operator is implicitly deleted}}
 #endif
-  b = b;                    // expected-error {{copy assignment operator is implicitly deleted}}
-  b = static_cast<B &&>(b); // expected-error {{copy assignment operator is implicitly deleted}}
+  b = b; // expected-error {{copy assignment operator is implicitly deleted}}
+  b = static_cast<B&&>(b); // expected-error {{copy assignment operator is implicitly deleted}}
 #endif
 }

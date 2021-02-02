@@ -12,10 +12,10 @@ struct Test {
 
 void helper() {
   Test t;
-  new Test;     // expected-warning {{type 'test1::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
-  new Test[10]; // expected-warning {{type 'test1::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test;  // expected-warning {{type 'test1::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test[10];  // expected-warning {{type 'test1::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
 }
-} // namespace test1
+}
 
 namespace test2 {
 class Test {
@@ -25,10 +25,10 @@ class Test {
 
 void helper() {
   Test t;
-  new Test;     // expected-warning {{type 'test2::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
-  new Test[10]; // expected-warning {{type 'test2::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test;  // expected-warning {{type 'test2::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test[10];  // expected-warning {{type 'test2::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
 }
-} // namespace test2
+}
 
 namespace test3 {
 struct Test {
@@ -37,7 +37,7 @@ struct Test {
     T data;
   } __attribute__((aligned(256)));
 
-  void *operator new(unsigned long) {
+  void* operator new(unsigned long) {
     return 0; // expected-warning {{'operator new' should not return a null pointer unless it is declared 'throw()'}}
   }
 
@@ -47,9 +47,9 @@ struct Test {
 void helper() {
   Test t;
   new Test;
-  new Test[10]; // expected-warning {{type 'test3::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test[10];  // expected-warning {{type 'test3::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
 }
-} // namespace test3
+}
 
 namespace test4 {
 struct Test {
@@ -58,7 +58,7 @@ struct Test {
     T data;
   } __attribute__((aligned(256)));
 
-  void *operator new[](unsigned long) {
+  void* operator new[](unsigned long) {
     return 0; // expected-warning {{'operator new[]' should not return a null pointer unless it is declared 'throw()'}}
   }
 
@@ -67,7 +67,7 @@ struct Test {
 
 void helper() {
   Test t;
-  new Test; // expected-warning {{type 'test4::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
+  new Test;  // expected-warning {{type 'test4::Test' requires 256 bytes of alignment and the default allocator only guarantees}}
   new Test[10];
 }
-} // namespace test4
+}

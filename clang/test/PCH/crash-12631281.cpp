@@ -13,14 +13,14 @@
 #ifndef HEADER
 #define HEADER
 
-template <class _T2> struct is_convertible;
+template < class _T2> struct  is_convertible;
 template <> struct is_convertible<int> { typedef int type; };
 
-template <class _T1, class _T2> struct pair {
+template <class _T1, class _T2> struct  pair {
   typedef _T1 first_type;
   typedef _T2 second_type;
-  template <class _U1, class _U2, class = typename is_convertible<first_type>::type>
-  pair(_U1 &&, _U2 &&); // expected-note {{candidate}}
+  template <class _U1, class _U2, class = typename is_convertible< first_type>::type>
+    pair(_U1&& , _U2&& ); // expected-note {{candidate}}
 };
 
 template <class _ForwardIterator>
@@ -29,7 +29,7 @@ pair<_ForwardIterator, _ForwardIterator> __equal_range(_ForwardIterator) {
 }
 
 template <class _ForwardIterator>
-pair<_ForwardIterator, _ForwardIterator> equal_range(_ForwardIterator a) {
+pair<_ForwardIterator, _ForwardIterator> equal_range( _ForwardIterator a) {
   return __equal_range(a); // expected-note {{instantiation}}
 }
 

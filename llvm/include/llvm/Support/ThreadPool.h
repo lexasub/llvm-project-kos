@@ -51,7 +51,7 @@ public:
   /// Asynchronous submission of a task to the pool. The returned future can be
   /// used to wait for the task to finish and is *non-blocking* on destruction.
   template <typename Function, typename... Args>
-  inline std::shared_future<void> async(Function &&F, Args &&...ArgList) {
+  inline std::shared_future<void> async(Function &&F, Args &&... ArgList) {
     auto Task =
         std::bind(std::forward<Function>(F), std::forward<Args>(ArgList)...);
     return asyncImpl(std::move(Task));
@@ -100,6 +100,6 @@ private:
 
   unsigned ThreadCount;
 };
-} // namespace llvm
+}
 
 #endif // LLVM_SUPPORT_THREAD_POOL_H

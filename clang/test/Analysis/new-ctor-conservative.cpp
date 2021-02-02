@@ -32,8 +32,7 @@ void checkNewArray() {
 
 struct NullS {
   NullS() {
-    if (this) {
-    }
+    if (this) {}
   }
   NullS(int x) {
     if (!this) {

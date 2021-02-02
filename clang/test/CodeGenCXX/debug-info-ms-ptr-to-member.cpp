@@ -2,18 +2,10 @@
 
 // Test member pointer inheritance models.
 
-struct A {
-  int a;
-};
-struct B {
-  int b;
-};
-struct C : A, B {
-  int c;
-};
-struct D : virtual C {
-  int d;
-};
+struct A { int a; };
+struct B { int b; };
+struct C : A, B { int c; };
+struct D : virtual C { int d; };
 struct E;
 int A::*pmd_a;
 int C::*pmd_b;

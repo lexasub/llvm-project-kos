@@ -87,9 +87,9 @@ static bool isDefBetween(const LiveRange &LR, SlotIndex AndIdx,
 }
 
 // FIXME: Why do we bother trying to handle physical registers here?
-static bool isDefBetween(const SIRegisterInfo &TRI, LiveIntervals *LIS,
-                         Register Reg, const MachineInstr &Sel,
-                         const MachineInstr &And) {
+static bool isDefBetween(const SIRegisterInfo &TRI,
+                         LiveIntervals *LIS, Register Reg,
+                         const MachineInstr &Sel, const MachineInstr &And) {
   SlotIndex AndIdx = LIS->getInstructionIndex(And);
   SlotIndex SelIdx = LIS->getInstructionIndex(Sel);
 
@@ -123,16 +123,16 @@ static bool isDefBetween(const SIRegisterInfo &TRI, LiveIntervals *LIS,
 Register
 SIOptimizeExecMaskingPreRA::optimizeVcndVcmpPair(MachineBasicBlock &MBB) {
   auto I = llvm::find_if(MBB.terminators(), [](const MachineInstr &MI) {
-    unsigned Opc = MI.getOpcode();
-    return Opc == AMDGPU::S_CBRANCH_VCCZ || Opc == AMDGPU::S_CBRANCH_VCCNZ;
-  });
+                           unsigned Opc = MI.getOpcode();
+                           return Opc == AMDGPU::S_CBRANCH_VCCZ ||
+                                  Opc == AMDGPU::S_CBRANCH_VCCNZ; });
   if (I == MBB.terminators().end())
     return Register();
 
   auto *And =
       TRI->findReachingDef(CondReg, AMDGPU::NoSubRegister, *I, *MRI, LIS);
-  if (!And || And->getOpcode() != AndOpc || !And->getOperand(1).isReg() ||
-      !And->getOperand(2).isReg())
+  if (!And || And->getOpcode() != AndOpc ||
+      !And->getOperand(1).isReg() || !And->getOperand(2).isReg())
     return Register();
 
   MachineOperand *AndCC = &And->getOperand(1);
@@ -147,9 +147,8 @@ SIOptimizeExecMaskingPreRA::optimizeVcndVcmpPair(MachineBasicBlock &MBB) {
   }
 
   auto *Cmp = TRI->findReachingDef(CmpReg, CmpSubReg, *And, *MRI, LIS);
-  if (!Cmp ||
-      !(Cmp->getOpcode() == AMDGPU::V_CMP_NE_U32_e32 ||
-        Cmp->getOpcode() == AMDGPU::V_CMP_NE_U32_e64) ||
+  if (!Cmp || !(Cmp->getOpcode() == AMDGPU::V_CMP_NE_U32_e32 ||
+                Cmp->getOpcode() == AMDGPU::V_CMP_NE_U32_e64) ||
       Cmp->getParent() != And->getParent())
     return Register();
 
@@ -172,8 +171,8 @@ SIOptimizeExecMaskingPreRA::optimizeVcndVcmpPair(MachineBasicBlock &MBB) {
   Op1 = TII->getNamedOperand(*Sel, AMDGPU::OpName::src0);
   Op2 = TII->getNamedOperand(*Sel, AMDGPU::OpName::src1);
   MachineOperand *CC = TII->getNamedOperand(*Sel, AMDGPU::OpName::src2);
-  if (!Op1->isImm() || !Op2->isImm() || !CC->isReg() || Op1->getImm() != 0 ||
-      Op2->getImm() != 1)
+  if (!Op1->isImm() || !Op2->isImm() || !CC->isReg() ||
+      Op1->getImm() != 0 || Op2->getImm() != 1)
     return Register();
 
   Register CCReg = CC->getReg();
@@ -352,7 +351,7 @@ bool SIOptimizeExecMaskingPreRA::runOnMachineFunction(MachineFunction &MF) {
       if (Term.getOpcode() != AMDGPU::S_ENDPGM || Term.getNumOperands() != 1)
         continue;
 
-      SmallVector<MachineBasicBlock *, 4> Blocks({&MBB});
+      SmallVector<MachineBasicBlock*, 4> Blocks({&MBB});
 
       while (!Blocks.empty()) {
         auto CurBB = Blocks.pop_back_val();
@@ -410,8 +409,8 @@ bool SIOptimizeExecMaskingPreRA::runOnMachineFunction(MachineFunction &MF) {
     // =>
     //    %1 = S_AND_B64 $exec, %2:sreg_64
     unsigned ScanThreshold = 10;
-    for (auto I = MBB.rbegin(), E = MBB.rend(); I != E && ScanThreshold--;
-         ++I) {
+    for (auto I = MBB.rbegin(), E = MBB.rend(); I != E
+         && ScanThreshold--; ++I) {
       // Continue scanning if this is not a full exec copy
       if (!(I->isFullCopy() && I->getOperand(1).getReg() == Register(ExecReg)))
         continue;

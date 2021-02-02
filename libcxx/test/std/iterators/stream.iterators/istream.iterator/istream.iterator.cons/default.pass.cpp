@@ -20,28 +20,27 @@
 
 #include "test_macros.h"
 
-struct S {
-  S();
-}; // not constexpr
+struct S { S(); }; // not constexpr
 
 #if TEST_STD_VER > 14
-template <typename T,
-          bool isTrivial = std::is_trivially_default_constructible_v<T> >
+template <typename T, bool isTrivial = std::is_trivially_default_constructible_v<T>>
 struct test_trivial {
-  void operator()() const {
+void operator ()() const {
     constexpr std::istream_iterator<T> it;
     (void)it;
-  }
+    }
 };
 
 template <typename T>
 struct test_trivial<T, false> {
-  void operator()() const {}
+void operator ()() const {}
 };
 #endif
 
-int main(int, char**) {
-  {
+
+int main(int, char**)
+{
+    {
     typedef std::istream_iterator<int> T;
     T it;
     assert(it == T());
@@ -49,14 +48,14 @@ int main(int, char**) {
     constexpr T it2;
     (void)it2;
 #endif
-  }
+    }
 
 #if TEST_STD_VER > 14
-  test_trivial<int>()();
-  test_trivial<char>()();
-  test_trivial<double>()();
-  test_trivial<S>()();
-  test_trivial<std::string>()();
+    test_trivial<int>()();
+    test_trivial<char>()();
+    test_trivial<double>()();
+    test_trivial<S>()();
+    test_trivial<std::string>()();
 #endif
 
   return 0;

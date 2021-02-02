@@ -130,8 +130,7 @@ public:
 
   virtual bool GetPointerReturnRegister(const char *&name) { return false; }
 
-  static lldb::ABISP FindPlugin(lldb::ProcessSP process_sp,
-                                const ArchSpec &arch);
+  static lldb::ABISP FindPlugin(lldb::ProcessSP process_sp, const ArchSpec &arch);
 
 protected:
   ABI(lldb::ProcessSP process_sp, std::unique_ptr<llvm::MCRegisterInfo> info_up)
@@ -172,8 +171,7 @@ public:
   /// If the register name is of the form "<from_prefix>[<number>]" then change
   /// the name to "<to_prefix>[<number>]". Otherwise, leave the name unchanged.
   static void MapRegisterName(std::string &reg, llvm::StringRef from_prefix,
-                              llvm::StringRef to_prefix);
-
+               llvm::StringRef to_prefix);
 protected:
   using ABI::ABI;
 

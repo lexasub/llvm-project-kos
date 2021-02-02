@@ -19,10 +19,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  const std::type_info& ti = typeid(int);
-  std::type_index t1 = typeid(int);
-  assert(t1.hash_code() == ti.hash_code());
+int main(int, char**)
+{
+    const std::type_info& ti = typeid(int);
+    std::type_index t1 = typeid(int);
+    assert(t1.hash_code() == ti.hash_code());
 
   return 0;
 }

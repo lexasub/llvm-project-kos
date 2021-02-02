@@ -69,8 +69,9 @@ private:
     LiveInterval::SubRange *SR;
     unsigned Index;
 
-    SubRangeInfo(LiveIntervals &LIS, LiveInterval::SubRange &SR, unsigned Index)
-        : ConEQ(LIS), SR(&SR), Index(Index) {}
+    SubRangeInfo(LiveIntervals &LIS, LiveInterval::SubRange &SR,
+                 unsigned Index)
+      : ConEQ(LIS), SR(&SR), Index(Index) {}
   };
 
   /// Split unrelated subregister components and rename them to new vregs.
@@ -87,18 +88,18 @@ private:
   /// belonging to their class.
   void distribute(const IntEqClasses &Classes,
                   const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-                  const SmallVectorImpl<LiveInterval *> &Intervals) const;
+                  const SmallVectorImpl<LiveInterval*> &Intervals) const;
 
   /// Constructs main liverange and add missing undef+dead flags.
-  void computeMainRangesFixFlags(
-      const IntEqClasses &Classes,
+  void computeMainRangesFixFlags(const IntEqClasses &Classes,
       const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-      const SmallVectorImpl<LiveInterval *> &Intervals) const;
+      const SmallVectorImpl<LiveInterval*> &Intervals) const;
 
   /// Rewrite Machine Operands to use the new vreg belonging to their class.
   void rewriteOperands(const IntEqClasses &Classes,
                        const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-                       const SmallVectorImpl<LiveInterval *> &Intervals) const;
+                       const SmallVectorImpl<LiveInterval*> &Intervals) const;
+
 
   LiveIntervals *LIS;
   MachineRegisterInfo *MRI;
@@ -131,7 +132,7 @@ bool RenameIndependentSubregs::renameComponents(LiveInterval &LI) const {
   // Create a new VReg for each class.
   unsigned Reg = LI.reg();
   const TargetRegisterClass *RegClass = MRI->getRegClass(Reg);
-  SmallVector<LiveInterval *, 4> Intervals;
+  SmallVector<LiveInterval*, 4> Intervals;
   Intervals.push_back(&LI);
   LLVM_DEBUG(dbgs() << printReg(Reg) << ": Found " << Classes.getNumClasses()
                     << " equivalence classes.\n");
@@ -151,8 +152,7 @@ bool RenameIndependentSubregs::renameComponents(LiveInterval &LI) const {
   return true;
 }
 
-bool RenameIndependentSubregs::findComponents(
-    IntEqClasses &Classes,
+bool RenameIndependentSubregs::findComponents(IntEqClasses &Classes,
     SmallVectorImpl<RenameIndependentSubregs::SubRangeInfo> &SubRangeInfos,
     LiveInterval &LI) const {
   // First step: Create connected components for the VNInfos inside the
@@ -187,8 +187,8 @@ bool RenameIndependentSubregs::findComponents(
       if ((SR.LaneMask & LaneMask).none())
         continue;
       SlotIndex Pos = LIS->getInstructionIndex(*MO.getParent());
-      Pos =
-          MO.isDef() ? Pos.getRegSlot(MO.isEarlyClobber()) : Pos.getBaseIndex();
+      Pos = MO.isDef() ? Pos.getRegSlot(MO.isEarlyClobber())
+                       : Pos.getBaseIndex();
       const VNInfo *VNI = SR.getVNInfoAt(Pos);
       if (VNI == nullptr)
         continue;
@@ -208,22 +208,21 @@ bool RenameIndependentSubregs::findComponents(
   return NumClasses > 1;
 }
 
-void RenameIndependentSubregs::rewriteOperands(
-    const IntEqClasses &Classes,
+void RenameIndependentSubregs::rewriteOperands(const IntEqClasses &Classes,
     const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-    const SmallVectorImpl<LiveInterval *> &Intervals) const {
+    const SmallVectorImpl<LiveInterval*> &Intervals) const {
   const TargetRegisterInfo &TRI = *MRI->getTargetRegisterInfo();
   unsigned Reg = Intervals[0]->reg();
   for (MachineRegisterInfo::reg_nodbg_iterator I = MRI->reg_nodbg_begin(Reg),
-                                               E = MRI->reg_nodbg_end();
-       I != E;) {
+       E = MRI->reg_nodbg_end(); I != E; ) {
     MachineOperand &MO = *I++;
     if (!MO.isDef() && !MO.readsReg())
       continue;
 
     auto *MI = MO.getParent();
     SlotIndex Pos = LIS->getInstructionIndex(*MI);
-    Pos = MO.isDef() ? Pos.getRegSlot(MO.isEarlyClobber()) : Pos.getBaseIndex();
+    Pos = MO.isDef() ? Pos.getRegSlot(MO.isEarlyClobber())
+                     : Pos.getBaseIndex();
     unsigned SubRegIdx = MO.getSubReg();
     LaneBitmask LaneMask = TRI.getSubRegIndexLaneMask(SubRegIdx);
 
@@ -263,13 +262,12 @@ void RenameIndependentSubregs::rewriteOperands(
   // classes than the original vreg.
 }
 
-void RenameIndependentSubregs::distribute(
-    const IntEqClasses &Classes,
+void RenameIndependentSubregs::distribute(const IntEqClasses &Classes,
     const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-    const SmallVectorImpl<LiveInterval *> &Intervals) const {
+    const SmallVectorImpl<LiveInterval*> &Intervals) const {
   unsigned NumClasses = Classes.getNumClasses();
   SmallVector<unsigned, 8> VNIMapping;
-  SmallVector<LiveInterval::SubRange *, 8> SubRanges;
+  SmallVector<LiveInterval::SubRange*, 8> SubRanges;
   BumpPtrAllocator &Allocator = LIS->getVNInfoAllocator();
   for (const SubRangeInfo &SRInfo : SubRangeInfos) {
     LiveInterval::SubRange &SR = *SRInfo.SR;
@@ -277,15 +275,14 @@ void RenameIndependentSubregs::distribute(
     VNIMapping.clear();
     VNIMapping.reserve(NumValNos);
     SubRanges.clear();
-    SubRanges.resize(NumClasses - 1, nullptr);
+    SubRanges.resize(NumClasses-1, nullptr);
     for (unsigned I = 0; I < NumValNos; ++I) {
       const VNInfo &VNI = *SR.valnos[I];
       unsigned LocalID = SRInfo.ConEQ.getEqClass(&VNI);
       unsigned ID = Classes[LocalID + SRInfo.Index];
       VNIMapping.push_back(ID);
-      if (ID > 0 && SubRanges[ID - 1] == nullptr)
-        SubRanges[ID - 1] =
-            Intervals[ID]->createSubRange(Allocator, SR.LaneMask);
+      if (ID > 0 && SubRanges[ID-1] == nullptr)
+        SubRanges[ID-1] = Intervals[ID]->createSubRange(Allocator, SR.LaneMask);
     }
     DistributeRange(SR, SubRanges.data(), VNIMapping);
   }
@@ -302,7 +299,7 @@ static bool subRangeLiveAt(const LiveInterval &LI, SlotIndex Pos) {
 void RenameIndependentSubregs::computeMainRangesFixFlags(
     const IntEqClasses &Classes,
     const SmallVectorImpl<SubRangeInfo> &SubRangeInfos,
-    const SmallVectorImpl<LiveInterval *> &Intervals) const {
+    const SmallVectorImpl<LiveInterval*> &Intervals) const {
   BumpPtrAllocator &Allocator = LIS->getVNInfoAllocator();
   const SlotIndexes &Indexes = *LIS->getSlotIndexes();
   for (size_t I = 0, E = Intervals.size(); I < E; ++I) {
@@ -331,10 +328,10 @@ void RenameIndependentSubregs::computeMainRangesFixFlags(
             continue;
 
           MachineBasicBlock::iterator InsertPos =
-              llvm::findPHICopyInsertPoint(PredMBB, &MBB, Reg);
+            llvm::findPHICopyInsertPoint(PredMBB, &MBB, Reg);
           const MCInstrDesc &MCDesc = TII->get(TargetOpcode::IMPLICIT_DEF);
-          MachineInstrBuilder ImpDef =
-              BuildMI(*PredMBB, InsertPos, DebugLoc(), MCDesc, Reg);
+          MachineInstrBuilder ImpDef = BuildMI(*PredMBB, InsertPos,
+                                               DebugLoc(), MCDesc, Reg);
           SlotIndex DefIdx = LIS->InsertMachineInstrInMaps(*ImpDef);
           SlotIndex RegDefIdx = DefIdx.getRegSlot();
           for (LiveInterval::SubRange &SR : LI.subranges()) {

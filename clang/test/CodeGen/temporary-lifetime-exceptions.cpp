@@ -3,11 +3,8 @@
 // lifetime.end should be invoked even if the destructor doesn't run due to an
 // exception thrown from previous ctor call.
 
-struct A {
-  A();
-  ~A();
-};
-A Baz(const A &);
+struct A { A(); ~A(); };
+A Baz(const A&);
 
 void Test1() {
   // CHECK-LABEL: @_Z5Test1v(

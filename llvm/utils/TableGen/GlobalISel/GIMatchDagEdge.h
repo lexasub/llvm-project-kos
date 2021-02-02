@@ -41,9 +41,8 @@ class GIMatchDagEdge {
   const GIMatchDagOperand *ToMO;
 
 public:
-  GIMatchDagEdge(StringRef Name, const GIMatchDagInstr *FromMI,
-                 const GIMatchDagOperand *FromMO, const GIMatchDagInstr *ToMI,
-                 const GIMatchDagOperand *ToMO)
+  GIMatchDagEdge(StringRef Name, const GIMatchDagInstr *FromMI, const GIMatchDagOperand *FromMO,
+            const GIMatchDagInstr *ToMI, const GIMatchDagOperand *ToMO)
       : Name(Name), FromMI(FromMI), FromMO(FromMO), ToMI(ToMI), ToMO(ToMO) {}
 
   StringRef getName() const { return Name; }

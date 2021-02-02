@@ -31,27 +31,23 @@
 //CHECK-NEXT: }
 
 struct Obj {
-  int a;
-  Obj();
-  Obj(const Obj &r) = delete;
-  Obj &operator=(const Obj &r);
+  int a; Obj(); Obj(const Obj& r) = delete; Obj &operator=(const Obj& r);
   ~Obj();
 };
-
+ 
 void foo() {
-  int i, count = 0;
+  int i,count = 0;
   Obj obj;
 
-#pragma omp parallel private(i) num_threads(1)
+  #pragma omp parallel private(i) num_threads(1)
   {
-#pragma omp for reduction(+ \
-                          : count) lastprivate(obj)
-    for (i = 0; i < 1000; i++) {
-      if (i == 100) {
-        obj.a = 100;
-#pragma omp cancel for
-      }
-      count++;
+      #pragma omp for reduction(+:count) lastprivate(obj)
+      for (i=0; i<1000; i++) {
+            if(i==100) {
+                obj.a = 100;
+                #pragma omp cancel for
+            }
+            count++;
+        }
     }
-  }
 }

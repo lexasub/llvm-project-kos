@@ -23,16 +23,17 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class ArrayBoundChecker : public Checker<check::Location> {
+class ArrayBoundChecker :
+    public Checker<check::Location> {
   mutable std::unique_ptr<BuiltinBug> BT;
 
 public:
-  void checkLocation(SVal l, bool isLoad, const Stmt *S,
+  void checkLocation(SVal l, bool isLoad, const Stmt* S,
                      CheckerContext &C) const;
 };
-} // namespace
+}
 
-void ArrayBoundChecker::checkLocation(SVal l, bool isLoad, const Stmt *LoadS,
+void ArrayBoundChecker::checkLocation(SVal l, bool isLoad, const Stmt* LoadS,
                                       CheckerContext &C) const {
   // Check for out of bound array element access.
   const MemRegion *R = l.getAsRegion();

@@ -21,15 +21,13 @@
 #include <tuple>
 #include <memory>
 
-struct ExplicitDefault {
-  explicit ExplicitDefault() {}
-};
+
+struct ExplicitDefault { explicit ExplicitDefault() { } };
 
 std::tuple<ExplicitDefault> explicit_default_test() {
-  return {
-      std::allocator_arg,
-      std::allocator<
-          int>()}; // expected-error {{chosen constructor is explicit in copy-initialization}}
+    return {std::allocator_arg, std::allocator<int>()}; // expected-error {{chosen constructor is explicit in copy-initialization}}
 }
 
-int main(int, char**) { return 0; }
+int main(int, char**) {
+    return 0;
+}

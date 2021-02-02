@@ -4,11 +4,11 @@ void f1() {
   int *p1 = new int[1];
   int *p2 = new int[1];
   if (p1) {
-    delete[] p1; // expected-note{{Similar code using 'p1' here}}
+    delete [] p1; // expected-note{{Similar code using 'p1' here}}
     p1 = nullptr;
   }
   if (p2) {
-    delete[] p1; // expected-warning{{Potential copy-paste error; did you really mean to use 'p1' here?}}
+    delete [] p1; // expected-warning{{Potential copy-paste error; did you really mean to use 'p1' here?}}
     p2 = nullptr;
   }
 }

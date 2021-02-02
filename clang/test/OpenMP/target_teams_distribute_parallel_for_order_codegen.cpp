@@ -19,8 +19,7 @@ void gtid_test() {
 // CHECK: call void [[TARGET_OUTLINE:@.+]]()
 // CHECK: ret void
 #pragma omp target teams distribute parallel for order(concurrent)
-  for (int i = 0; i < 100; i++) {
-  }
+  for(int i = 0 ; i < 100; i++) {}
 }
 
 // CHECK: define internal void [[TARGET_OUTLINE]]()

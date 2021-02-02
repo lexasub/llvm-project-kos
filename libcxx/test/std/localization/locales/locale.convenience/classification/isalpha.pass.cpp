@@ -15,19 +15,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::locale l;
-  assert(!std::isalpha(' ', l));
-  assert(!std::isalpha('<', l));
-  assert(!std::isalpha('\x8', l));
-  assert(std::isalpha('A', l));
-  assert(std::isalpha('a', l));
-  assert(std::isalpha('z', l));
-  assert(!std::isalpha('3', l));
-  assert(!std::isalpha('.', l));
-  assert(std::isalpha('f', l));
-  assert(!std::isalpha('9', l));
-  assert(!std::isalpha('+', l));
+int main(int, char**)
+{
+    std::locale l;
+    assert(!std::isalpha(' ', l));
+    assert(!std::isalpha('<', l));
+    assert(!std::isalpha('\x8', l));
+    assert( std::isalpha('A', l));
+    assert( std::isalpha('a', l));
+    assert( std::isalpha('z', l));
+    assert(!std::isalpha('3', l));
+    assert(!std::isalpha('.', l));
+    assert( std::isalpha('f', l));
+    assert(!std::isalpha('9', l));
+    assert(!std::isalpha('+', l));
 
   return 0;
 }

@@ -26,55 +26,60 @@
 #include "test_iterators.h"
 
 template <class InIter, class OutIter>
-TEST_CONSTEXPR_CXX20 void test() {
-  int ia[] = {1, 2, 3, 4, 5};
-  int ir[] = {1, 3, 6, 10, 15};
-  const unsigned s = sizeof(ia) / sizeof(ia[0]);
-  int ib[s] = {0};
-  OutIter r = std::partial_sum(InIter(ia), InIter(ia + s), OutIter(ib));
-  assert(base(r) == ib + s);
-  for (unsigned i = 0; i < s; ++i)
-    assert(ib[i] == ir[i]);
+TEST_CONSTEXPR_CXX20 void
+test()
+{
+    int ia[] = {1, 2, 3, 4, 5};
+    int ir[] = {1, 3, 6, 10, 15};
+    const unsigned s = sizeof(ia) / sizeof(ia[0]);
+    int ib[s] = {0};
+    OutIter r = std::partial_sum(InIter(ia), InIter(ia+s), OutIter(ib));
+    assert(base(r) == ib + s);
+    for (unsigned i = 0; i < s; ++i)
+        assert(ib[i] == ir[i]);
 }
 
-TEST_CONSTEXPR_CXX20 bool test() {
-  test<input_iterator<const int*>, output_iterator<int*> >();
-  test<input_iterator<const int*>, forward_iterator<int*> >();
-  test<input_iterator<const int*>, bidirectional_iterator<int*> >();
-  test<input_iterator<const int*>, random_access_iterator<int*> >();
-  test<input_iterator<const int*>, int*>();
+TEST_CONSTEXPR_CXX20 bool
+test()
+{
+    test<input_iterator<const int*>, output_iterator<int*> >();
+    test<input_iterator<const int*>, forward_iterator<int*> >();
+    test<input_iterator<const int*>, bidirectional_iterator<int*> >();
+    test<input_iterator<const int*>, random_access_iterator<int*> >();
+    test<input_iterator<const int*>, int*>();
 
-  test<forward_iterator<const int*>, output_iterator<int*> >();
-  test<forward_iterator<const int*>, forward_iterator<int*> >();
-  test<forward_iterator<const int*>, bidirectional_iterator<int*> >();
-  test<forward_iterator<const int*>, random_access_iterator<int*> >();
-  test<forward_iterator<const int*>, int*>();
+    test<forward_iterator<const int*>, output_iterator<int*> >();
+    test<forward_iterator<const int*>, forward_iterator<int*> >();
+    test<forward_iterator<const int*>, bidirectional_iterator<int*> >();
+    test<forward_iterator<const int*>, random_access_iterator<int*> >();
+    test<forward_iterator<const int*>, int*>();
 
-  test<bidirectional_iterator<const int*>, output_iterator<int*> >();
-  test<bidirectional_iterator<const int*>, forward_iterator<int*> >();
-  test<bidirectional_iterator<const int*>, bidirectional_iterator<int*> >();
-  test<bidirectional_iterator<const int*>, random_access_iterator<int*> >();
-  test<bidirectional_iterator<const int*>, int*>();
+    test<bidirectional_iterator<const int*>, output_iterator<int*> >();
+    test<bidirectional_iterator<const int*>, forward_iterator<int*> >();
+    test<bidirectional_iterator<const int*>, bidirectional_iterator<int*> >();
+    test<bidirectional_iterator<const int*>, random_access_iterator<int*> >();
+    test<bidirectional_iterator<const int*>, int*>();
 
-  test<random_access_iterator<const int*>, output_iterator<int*> >();
-  test<random_access_iterator<const int*>, forward_iterator<int*> >();
-  test<random_access_iterator<const int*>, bidirectional_iterator<int*> >();
-  test<random_access_iterator<const int*>, random_access_iterator<int*> >();
-  test<random_access_iterator<const int*>, int*>();
+    test<random_access_iterator<const int*>, output_iterator<int*> >();
+    test<random_access_iterator<const int*>, forward_iterator<int*> >();
+    test<random_access_iterator<const int*>, bidirectional_iterator<int*> >();
+    test<random_access_iterator<const int*>, random_access_iterator<int*> >();
+    test<random_access_iterator<const int*>, int*>();
 
-  test<const int*, output_iterator<int*> >();
-  test<const int*, forward_iterator<int*> >();
-  test<const int*, bidirectional_iterator<int*> >();
-  test<const int*, random_access_iterator<int*> >();
-  test<const int*, int*>();
+    test<const int*, output_iterator<int*> >();
+    test<const int*, forward_iterator<int*> >();
+    test<const int*, bidirectional_iterator<int*> >();
+    test<const int*, random_access_iterator<int*> >();
+    test<const int*, int*>();
 
-  return true;
+    return true;
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 #if TEST_STD_VER > 17
-  static_assert(test());
+    static_assert(test());
 #endif
-  return 0;
+    return 0;
 }

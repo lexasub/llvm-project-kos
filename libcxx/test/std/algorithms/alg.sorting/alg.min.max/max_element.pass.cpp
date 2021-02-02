@@ -23,53 +23,63 @@
 std::mt19937 randomness;
 
 template <class Iter>
-void test(Iter first, Iter last) {
-  Iter i = std::max_element(first, last);
-  if (first != last) {
-    for (Iter j = first; j != last; ++j)
-      assert(!(*i < *j));
-  } else
-    assert(i == last);
+void
+test(Iter first, Iter last)
+{
+    Iter i = std::max_element(first, last);
+    if (first != last)
+    {
+        for (Iter j = first; j != last; ++j)
+            assert(!(*i < *j));
+    }
+    else
+        assert(i == last);
 }
 
 template <class Iter>
-void test(int N) {
-  int* a = new int[N];
-  for (int i = 0; i < N; ++i)
-    a[i] = i;
-  std::shuffle(a, a + N, randomness);
-  test(Iter(a), Iter(a + N));
-  delete[] a;
+void
+test(int N)
+{
+    int* a = new int[N];
+    for (int i = 0; i < N; ++i)
+        a[i] = i;
+    std::shuffle(a, a+N, randomness);
+    test(Iter(a), Iter(a+N));
+    delete [] a;
 }
 
 template <class Iter>
-void test() {
-  test<Iter>(0);
-  test<Iter>(1);
-  test<Iter>(2);
-  test<Iter>(3);
-  test<Iter>(10);
-  test<Iter>(1000);
+void
+test()
+{
+    test<Iter>(0);
+    test<Iter>(1);
+    test<Iter>(2);
+    test<Iter>(3);
+    test<Iter>(10);
+    test<Iter>(1000);
 }
 
 #if TEST_STD_VER >= 14
-constexpr int il[] = {2, 4, 6, 8, 7, 5, 3, 1};
+constexpr int il[] = { 2, 4, 6, 8, 7, 5, 3, 1 };
 #endif
 
-void constexpr_test() {
+void constexpr_test()
+{
 #if TEST_STD_VER >= 14
-  constexpr auto p = std::max_element(il, il + 8);
-  static_assert(*p == 8, "");
+    constexpr auto p = std::max_element(il,il+8);
+    static_assert ( *p == 8, "" );
 #endif
 }
 
-int main(int, char**) {
-  test<forward_iterator<const int*> >();
-  test<bidirectional_iterator<const int*> >();
-  test<random_access_iterator<const int*> >();
-  test<const int*>();
+int main(int, char**)
+{
+    test<forward_iterator<const int*> >();
+    test<bidirectional_iterator<const int*> >();
+    test<random_access_iterator<const int*> >();
+    test<const int*>();
 
-  constexpr_test();
+    constexpr_test ();
 
   return 0;
 }

@@ -19,30 +19,33 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using month = std::chrono::month;
-  using year = std::chrono::year;
-  using year_month = std::chrono::year_month;
+int main(int, char**)
+{
+    using month      = std::chrono::month;
+    using year       = std::chrono::year;
+    using year_month = std::chrono::year_month;
 
-  constexpr month January = std::chrono::January;
+    constexpr month January = std::chrono::January;
 
-  ASSERT_NOEXCEPT(std::declval<const year_month>().ok());
-  ASSERT_SAME_TYPE(bool, decltype(std::declval<const year_month>().ok()));
+    ASSERT_NOEXCEPT(                std::declval<const year_month>().ok());
+    ASSERT_SAME_TYPE(bool, decltype(std::declval<const year_month>().ok()));
 
-  static_assert(!year_month{year{-32768}, January}.ok(), ""); // Bad year
-  static_assert(!year_month{year{2019}, month{}}.ok(), "");   // Bad month
-  static_assert(year_month{year{2019}, January}.ok(), "");    // Both OK
+    static_assert(!year_month{year{-32768}, January}.ok(), ""); // Bad year
+    static_assert(!year_month{year{2019},   month{}}.ok(), ""); // Bad month
+    static_assert( year_month{year{2019},   January}.ok(), ""); // Both OK
 
-  for (unsigned i = 0; i <= 50; ++i) {
-    year_month ym{year{2019}, month{i}};
-    assert(ym.ok() == month{i}.ok());
-  }
+    for (unsigned i = 0; i <= 50; ++i)
+    {
+        year_month ym{year{2019}, month{i}};
+        assert( ym.ok() == month{i}.ok());
+    }
 
-  const int ymax = static_cast<int>(year::max());
-  for (int i = ymax - 100; i <= ymax + 100; ++i) {
-    year_month ym{year{i}, January};
-    assert(ym.ok() == year{i}.ok());
-  }
+    const int ymax = static_cast<int>(year::max());
+    for (int i = ymax - 100; i <= ymax + 100; ++i)
+    {
+        year_month ym{year{i}, January};
+        assert( ym.ok() == year{i}.ok());
+    }
 
   return 0;
 }

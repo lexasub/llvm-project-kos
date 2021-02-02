@@ -48,7 +48,7 @@ void initializeNVPTXPeepholePass(PassRegistry &);
 
 namespace {
 struct NVPTXPeephole : public MachineFunctionPass {
-public:
+ public:
   static char ID;
   NVPTXPeephole() : MachineFunctionPass(ID) {
     initializeNVPTXPeepholePass(*PassRegistry::getPassRegistry());
@@ -64,7 +64,7 @@ public:
     MachineFunctionPass::getAnalysisUsage(AU);
   }
 };
-} // namespace
+}
 
 char NVPTXPeephole::ID = 0;
 
@@ -139,8 +139,8 @@ bool NVPTXPeephole::runOnMachineFunction(MachineFunction &MF) {
         CombineCVTAToLocal(MI);
         Changed = true;
       }
-    } // Instruction
-  }   // Basic Block
+    }  // Instruction
+  }    // Basic Block
 
   // Remove unnecessary %VRFrame = cvta.local %VRFrameLocal
   const auto &MRI = MF.getRegInfo();

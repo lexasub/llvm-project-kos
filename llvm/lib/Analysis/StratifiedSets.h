@@ -591,6 +591,6 @@ private:
 
   bool inbounds(StratifiedIndex N) const { return N < Links.size(); }
 };
-} // namespace cflaa
-} // namespace llvm
+}
+}
 #endif // LLVM_ADT_STRATIFIEDSETS_H

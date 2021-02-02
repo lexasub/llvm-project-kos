@@ -6,12 +6,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Option/Option.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Twine.h"
 #include "llvm/Config/llvm-config.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/ArgList.h"
+#include "llvm/Option/Option.h"
 #include "llvm/Option/OptTable.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/Debug.h"
@@ -24,7 +24,7 @@ using namespace llvm;
 using namespace llvm::opt;
 
 Option::Option(const OptTable::Info *info, const OptTable *owner)
-    : Info(info), Owner(owner) {
+  : Info(info), Owner(owner) {
   // Multi-level aliases are not supported. This just simplifies option
   // tracking, it is not an inherent limitation.
   assert((!Info || !getAlias().isValid() || !getAlias().getAlias().isValid()) &&
@@ -41,10 +41,7 @@ Option::Option(const OptTable::Info *info, const OptTable *owner)
 void Option::print(raw_ostream &O) const {
   O << "<";
   switch (getKind()) {
-#define P(N)                                                                   \
-  case N:                                                                      \
-    O << #N;                                                                   \
-    break
+#define P(N) case N: O << #N; break
     P(GroupClass);
     P(InputClass);
     P(UnknownClass);

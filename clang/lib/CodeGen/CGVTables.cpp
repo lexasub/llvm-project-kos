@@ -66,8 +66,9 @@ static bool similar(const ABIArgInfo &infoL, CanQualType typeL,
 }
 #endif
 
-static RValue PerformReturnAdjustment(CodeGenFunction &CGF, QualType ResultType,
-                                      RValue RV, const ThunkInfo &Thunk) {
+static RValue PerformReturnAdjustment(CodeGenFunction &CGF,
+                                      QualType ResultType, RValue RV,
+                                      const ThunkInfo &Thunk) {
   // Emit the return adjustment.
   bool NullCheckValue = !ResultType->isReferenceType();
 
@@ -89,8 +90,9 @@ static RValue PerformReturnAdjustment(CodeGenFunction &CGF, QualType ResultType,
 
   auto ClassDecl = ResultType->getPointeeType()->getAsCXXRecordDecl();
   auto ClassAlign = CGF.CGM.getClassPointerAlignment(ClassDecl);
-  ReturnValue = CGF.CGM.getCXXABI().performReturnAdjustment(
-      CGF, Address(ReturnValue, ClassAlign), Thunk.Return);
+  ReturnValue = CGF.CGM.getCXXABI().performReturnAdjustment(CGF,
+                                            Address(ReturnValue, ClassAlign),
+                                            Thunk.Return);
 
   if (NullCheckValue) {
     CGF.Builder.CreateBr(AdjustEnd);
@@ -296,9 +298,9 @@ void CodeGenFunction::EmitCallAndReturnForThunk(llvm::FunctionCallee Callee,
 
   // Adjust the 'this' pointer if necessary
   llvm::Value *AdjustedThisPtr =
-      Thunk ? CGM.getCXXABI().performThisAdjustment(*this, LoadCXXThisAddress(),
-                                                    Thunk->This)
-            : LoadCXXThis();
+    Thunk ? CGM.getCXXABI().performThisAdjustment(
+                          *this, LoadCXXThisAddress(), Thunk->This)
+          : LoadCXXThis();
 
   // If perfect forwarding is required a variadic method, a method using
   // inalloca, or an unprototyped thunk, use musttail. Emit an error if this
@@ -341,23 +343,24 @@ void CodeGenFunction::EmitCallAndReturnForThunk(llvm::FunctionCallee Callee,
       CallArgs, FPT, RequiredArgs::forPrototypePlus(FPT, 1), PrefixArgs);
   assert(CallFnInfo.getRegParm() == CurFnInfo->getRegParm() &&
          CallFnInfo.isNoReturn() == CurFnInfo->isNoReturn() &&
-         CallFnInfo.getCallingConvention() ==
-             CurFnInfo->getCallingConvention());
+         CallFnInfo.getCallingConvention() == CurFnInfo->getCallingConvention());
   assert(isa<CXXDestructorDecl>(MD) || // ignore dtor return types
          similar(CallFnInfo.getReturnInfo(), CallFnInfo.getReturnType(),
                  CurFnInfo->getReturnInfo(), CurFnInfo->getReturnType()));
   assert(CallFnInfo.arg_size() == CurFnInfo->arg_size());
   for (unsigned i = 0, e = CurFnInfo->arg_size(); i != e; ++i)
-    assert(similar(
-        CallFnInfo.arg_begin()[i].info, CallFnInfo.arg_begin()[i].type,
-        CurFnInfo->arg_begin()[i].info, CurFnInfo->arg_begin()[i].type));
+    assert(similar(CallFnInfo.arg_begin()[i].info,
+                   CallFnInfo.arg_begin()[i].type,
+                   CurFnInfo->arg_begin()[i].info,
+                   CurFnInfo->arg_begin()[i].type));
 #endif
 
   // Determine whether we have a return value slot to use.
-  QualType ResultType = CGM.getCXXABI().HasThisReturn(CurGD) ? ThisType
-                        : CGM.getCXXABI().hasMostDerivedReturn(CurGD)
-                            ? CGM.getContext().VoidPtrTy
-                            : FPT->getReturnType();
+  QualType ResultType = CGM.getCXXABI().HasThisReturn(CurGD)
+                            ? ThisType
+                            : CGM.getCXXABI().hasMostDerivedReturn(CurGD)
+                                  ? CGM.getContext().VoidPtrTy
+                                  : FPT->getReturnType();
   ReturnValueSlot Slot;
   if (!ResultType->isVoidType() &&
       (CurFnInfo->getReturnInfo().getKind() == ABIArgInfo::Indirect ||
@@ -373,7 +376,7 @@ void CodeGenFunction::EmitCallAndReturnForThunk(llvm::FunctionCallee Callee,
   // Consider return adjustment if we have ThunkInfo.
   if (Thunk && !Thunk->Return.isEmpty())
     RV = PerformReturnAdjustment(*this, ResultType, RV, *Thunk);
-  else if (llvm::CallInst *Call = dyn_cast<llvm::CallInst>(CallOrInvoke))
+  else if (llvm::CallInst* Call = dyn_cast<llvm::CallInst>(CallOrInvoke))
     Call->setTailCallKind(llvm::CallInst::TCK_Tail);
 
   // Emit return.
@@ -600,7 +603,7 @@ llvm::Constant *CodeGenVTables::maybeEmitThunk(GlobalDecl GD,
 
 void CodeGenVTables::EmitThunks(GlobalDecl GD) {
   const CXXMethodDecl *MD =
-      cast<CXXMethodDecl>(GD.getDecl())->getCanonicalDecl();
+    cast<CXXMethodDecl>(GD.getDecl())->getCanonicalDecl();
 
   // We don't need to generate thunks for the base destructor.
   if (isa<CXXDestructorDecl>(MD) && GD.getDtorType() == Dtor_Base)
@@ -612,7 +615,7 @@ void CodeGenVTables::EmitThunks(GlobalDecl GD) {
   if (!ThunkInfoVector)
     return;
 
-  for (const ThunkInfo &Thunk : *ThunkInfoVector)
+  for (const ThunkInfo& Thunk : *ThunkInfoVector)
     maybeEmitThunk(GD, Thunk, /*ForVTable=*/false);
 }
 
@@ -791,14 +794,14 @@ void CodeGenVTables::addVTableComponent(ConstantArrayBuilder &builder,
             getSpecialVirtualFn(CGM.getCXXABI().GetPureVirtualCallName());
       fnPtr = PureVirtualFn;
 
-      // Deleted virtual member functions.
+    // Deleted virtual member functions.
     } else if (cast<CXXMethodDecl>(GD.getDecl())->isDeleted()) {
       if (!DeletedVirtualFn)
         DeletedVirtualFn =
             getSpecialVirtualFn(CGM.getCXXABI().GetDeletedVirtualCallName());
       fnPtr = DeletedVirtualFn;
 
-      // Thunks.
+    // Thunks.
     } else if (nextVTableThunkIndex < layout.vtable_thunks().size() &&
                layout.vtable_thunks()[nextVTableThunkIndex].first ==
                    componentIndex) {
@@ -807,7 +810,7 @@ void CodeGenVTables::addVTableComponent(ConstantArrayBuilder &builder,
       nextVTableThunkIndex++;
       fnPtr = maybeEmitThunk(GD, thunkInfo, /*ForVTable=*/true);
 
-      // Otherwise we can use the method definition directly.
+    // Otherwise we can use the method definition directly.
     } else {
       llvm::Type *fnTy = CGM.getTypes().GetFunctionTypeForVTable(GD);
       fnPtr = CGM.GetAddrOfFunction(GD, fnTy, /*ForVTable=*/true);
@@ -1017,34 +1020,34 @@ CodeGenModule::getVTableLinkage(const CXXRecordDecl *RD) {
       keyFunction = cast<CXXMethodDecl>(def);
 
     switch (keyFunction->getTemplateSpecializationKind()) {
-    case TSK_Undeclared:
-    case TSK_ExplicitSpecialization:
-      assert((def || CodeGenOpts.OptimizationLevel > 0 ||
-              CodeGenOpts.getDebugInfo() != codegenoptions::NoDebugInfo) &&
-             "Shouldn't query vtable linkage without key function, "
-             "optimizations, or debug info");
-      if (!def && CodeGenOpts.OptimizationLevel > 0)
-        return llvm::GlobalVariable::AvailableExternallyLinkage;
+      case TSK_Undeclared:
+      case TSK_ExplicitSpecialization:
+        assert((def || CodeGenOpts.OptimizationLevel > 0 ||
+                CodeGenOpts.getDebugInfo() != codegenoptions::NoDebugInfo) &&
+               "Shouldn't query vtable linkage without key function, "
+               "optimizations, or debug info");
+        if (!def && CodeGenOpts.OptimizationLevel > 0)
+          return llvm::GlobalVariable::AvailableExternallyLinkage;
 
-      if (keyFunction->isInlined())
-        return !Context.getLangOpts().AppleKext
-                   ? llvm::GlobalVariable::LinkOnceODRLinkage
-                   : llvm::Function::InternalLinkage;
+        if (keyFunction->isInlined())
+          return !Context.getLangOpts().AppleKext ?
+                   llvm::GlobalVariable::LinkOnceODRLinkage :
+                   llvm::Function::InternalLinkage;
 
-      return llvm::GlobalVariable::ExternalLinkage;
+        return llvm::GlobalVariable::ExternalLinkage;
 
-    case TSK_ImplicitInstantiation:
-      return !Context.getLangOpts().AppleKext
-                 ? llvm::GlobalVariable::LinkOnceODRLinkage
-                 : llvm::Function::InternalLinkage;
+      case TSK_ImplicitInstantiation:
+        return !Context.getLangOpts().AppleKext ?
+                 llvm::GlobalVariable::LinkOnceODRLinkage :
+                 llvm::Function::InternalLinkage;
 
-    case TSK_ExplicitInstantiationDefinition:
-      return !Context.getLangOpts().AppleKext
-                 ? llvm::GlobalVariable::WeakODRLinkage
-                 : llvm::Function::InternalLinkage;
+      case TSK_ExplicitInstantiationDefinition:
+        return !Context.getLangOpts().AppleKext ?
+                 llvm::GlobalVariable::WeakODRLinkage :
+                 llvm::Function::InternalLinkage;
 
-    case TSK_ExplicitInstantiationDeclaration:
-      llvm_unreachable("Should not have been asked to emit this");
+      case TSK_ExplicitInstantiationDeclaration:
+        llvm_unreachable("Should not have been asked to emit this");
     }
   }
 
@@ -1067,22 +1070,22 @@ CodeGenModule::getVTableLinkage(const CXXRecordDecl *RD) {
   }
 
   switch (RD->getTemplateSpecializationKind()) {
-  case TSK_Undeclared:
-  case TSK_ExplicitSpecialization:
-  case TSK_ImplicitInstantiation:
-    return DiscardableODRLinkage;
-
-  case TSK_ExplicitInstantiationDeclaration:
-    // Explicit instantiations in MSVC do not provide vtables, so we must emit
-    // our own.
-    if (getTarget().getCXXABI().isMicrosoft())
+    case TSK_Undeclared:
+    case TSK_ExplicitSpecialization:
+    case TSK_ImplicitInstantiation:
       return DiscardableODRLinkage;
-    return shouldEmitAvailableExternallyVTable(*this, RD)
-               ? llvm::GlobalVariable::AvailableExternallyLinkage
-               : llvm::GlobalVariable::ExternalLinkage;
 
-  case TSK_ExplicitInstantiationDefinition:
-    return NonDiscardableODRLinkage;
+    case TSK_ExplicitInstantiationDeclaration:
+      // Explicit instantiations in MSVC do not provide vtables, so we must emit
+      // our own.
+      if (getTarget().getCXXABI().isMicrosoft())
+        return DiscardableODRLinkage;
+      return shouldEmitAvailableExternallyVTable(*this, RD)
+                 ? llvm::GlobalVariable::AvailableExternallyLinkage
+                 : llvm::GlobalVariable::ExternalLinkage;
+
+    case TSK_ExplicitInstantiationDefinition:
+      return NonDiscardableODRLinkage;
   }
 
   llvm_unreachable("Invalid TemplateSpecializationKind!");
@@ -1098,7 +1101,8 @@ void CodeGenModule::EmitVTable(CXXRecordDecl *theClass) {
   VTables.GenerateClassData(theClass);
 }
 
-void CodeGenVTables::GenerateClassData(const CXXRecordDecl *RD) {
+void
+CodeGenVTables::GenerateClassData(const CXXRecordDecl *RD) {
   if (CGDebugInfo *DI = CGM.getModuleDebugInfo())
     DI->completeClassData(RD);
 
@@ -1273,30 +1277,30 @@ void CodeGenModule::EmitVTableTypeMetadata(const CXXRecordDecl *RD,
                                 AP.second.AddressPointIndex));
 
   // Sort the address points for determinism.
-  llvm::sort(AddressPoints,
-             [this](const AddressPoint &AP1, const AddressPoint &AP2) {
-               if (&AP1 == &AP2)
-                 return false;
+  llvm::sort(AddressPoints, [this](const AddressPoint &AP1,
+                                   const AddressPoint &AP2) {
+    if (&AP1 == &AP2)
+      return false;
 
-               std::string S1;
-               llvm::raw_string_ostream O1(S1);
-               getCXXABI().getMangleContext().mangleTypeName(
-                   QualType(AP1.first->getTypeForDecl(), 0), O1);
-               O1.flush();
+    std::string S1;
+    llvm::raw_string_ostream O1(S1);
+    getCXXABI().getMangleContext().mangleTypeName(
+        QualType(AP1.first->getTypeForDecl(), 0), O1);
+    O1.flush();
 
-               std::string S2;
-               llvm::raw_string_ostream O2(S2);
-               getCXXABI().getMangleContext().mangleTypeName(
-                   QualType(AP2.first->getTypeForDecl(), 0), O2);
-               O2.flush();
+    std::string S2;
+    llvm::raw_string_ostream O2(S2);
+    getCXXABI().getMangleContext().mangleTypeName(
+        QualType(AP2.first->getTypeForDecl(), 0), O2);
+    O2.flush();
 
-               if (S1 < S2)
-                 return true;
-               if (S1 != S2)
-                 return false;
+    if (S1 < S2)
+      return true;
+    if (S1 != S2)
+      return false;
 
-               return AP1.second < AP2.second;
-             });
+    return AP1.second < AP2.second;
+  });
 
   ArrayRef<VTableComponent> Comps = VTLayout.vtable_components();
   for (auto AP : AddressPoints) {

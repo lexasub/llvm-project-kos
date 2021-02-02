@@ -43,19 +43,21 @@ static BasicBlock *getBasicBlockByName(Function &F, StringRef Name) {
 TEST(BasicBlockUtils, EliminateUnreachableBlocks) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M =
-      parseIR(C, "define i32 @has_unreachable(i1 %cond) {\n"
-                 "entry:\n"
-                 "  br i1 %cond, label %bb0, label %bb1\n"
-                 "bb0:\n"
-                 "  br label %bb1\n"
-                 "bb1:\n"
-                 "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
-                 "  ret i32 %phi\n"
-                 "bb2:\n"
-                 "  ret i32 42\n"
-                 "}\n"
-                 "\n");
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    "define i32 @has_unreachable(i1 %cond) {\n"
+    "entry:\n"
+    "  br i1 %cond, label %bb0, label %bb1\n"
+    "bb0:\n"
+    "  br label %bb1\n"
+    "bb1:\n"
+    "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
+    "  ret i32 %phi\n"
+    "bb2:\n"
+    "  ret i32 42\n"
+    "}\n"
+    "\n"
+    );
 
   auto *F = M->getFunction("has_unreachable");
   DominatorTree DT(*F);
@@ -289,17 +291,19 @@ TEST(BasicBlockUtils, splitBasicBlockBefore_ex2) {
 TEST(BasicBlockUtils, NoUnreachableBlocksToEliminate) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M =
-      parseIR(C, "define i32 @no_unreachable(i1 %cond) {\n"
-                 "entry:\n"
-                 "  br i1 %cond, label %bb0, label %bb1\n"
-                 "bb0:\n"
-                 "  br label %bb1\n"
-                 "bb1:\n"
-                 "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
-                 "  ret i32 %phi\n"
-                 "}\n"
-                 "\n");
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    "define i32 @no_unreachable(i1 %cond) {\n"
+    "entry:\n"
+    "  br i1 %cond, label %bb0, label %bb1\n"
+    "bb0:\n"
+    "  br label %bb1\n"
+    "bb1:\n"
+    "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
+    "  ret i32 %phi\n"
+    "}\n"
+    "\n"
+    );
 
   auto *F = M->getFunction("no_unreachable");
   DominatorTree DT(*F);
@@ -315,17 +319,19 @@ TEST(BasicBlockUtils, NoUnreachableBlocksToEliminate) {
 TEST(BasicBlockUtils, SplitBlockPredecessors) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M =
-      parseIR(C, "define i32 @basic_func(i1 %cond) {\n"
-                 "entry:\n"
-                 "  br i1 %cond, label %bb0, label %bb1\n"
-                 "bb0:\n"
-                 "  br label %bb1\n"
-                 "bb1:\n"
-                 "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
-                 "  ret i32 %phi\n"
-                 "}\n"
-                 "\n");
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    "define i32 @basic_func(i1 %cond) {\n"
+    "entry:\n"
+    "  br i1 %cond, label %bb0, label %bb1\n"
+    "bb0:\n"
+    "  br label %bb1\n"
+    "bb1:\n"
+    "  %phi = phi i32 [ 0, %entry ], [ 1, %bb0 ]"
+    "  ret i32 %phi\n"
+    "}\n"
+    "\n"
+    );
 
   auto *F = M->getFunction("basic_func");
   DominatorTree DT(*F);
@@ -339,18 +345,20 @@ TEST(BasicBlockUtils, SplitBlockPredecessors) {
 TEST(BasicBlockUtils, SplitCriticalEdge) {
   LLVMContext C;
 
-  std::unique_ptr<Module> M =
-      parseIR(C, "define void @crit_edge(i1 %cond0, i1 %cond1) {\n"
-                 "entry:\n"
-                 "  br i1 %cond0, label %bb0, label %bb1\n"
-                 "bb0:\n"
-                 "  br label %bb1\n"
-                 "bb1:\n"
-                 "  br label %bb2\n"
-                 "bb2:\n"
-                 "  ret void\n"
-                 "}\n"
-                 "\n");
+  std::unique_ptr<Module> M = parseIR(
+    C,
+    "define void @crit_edge(i1 %cond0, i1 %cond1) {\n"
+    "entry:\n"
+    "  br i1 %cond0, label %bb0, label %bb1\n"
+    "bb0:\n"
+    "  br label %bb1\n"
+    "bb1:\n"
+    "  br label %bb2\n"
+    "bb2:\n"
+    "  ret void\n"
+    "}\n"
+    "\n"
+    );
 
   auto *F = M->getFunction("crit_edge");
   DominatorTree DT(*F);

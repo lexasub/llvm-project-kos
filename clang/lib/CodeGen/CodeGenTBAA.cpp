@@ -30,13 +30,15 @@ using namespace clang;
 using namespace CodeGen;
 
 CodeGenTBAA::CodeGenTBAA(ASTContext &Ctx, llvm::Module &M,
-                         const CodeGenOptions &CGO, const LangOptions &Features,
-                         MangleContext &MContext)
-    : Context(Ctx), Module(M), CodeGenOpts(CGO), Features(Features),
-      MContext(MContext), MDHelper(M.getContext()), Root(nullptr),
-      Char(nullptr) {}
+                         const CodeGenOptions &CGO,
+                         const LangOptions &Features, MangleContext &MContext)
+  : Context(Ctx), Module(M), CodeGenOpts(CGO),
+    Features(Features), MContext(MContext), MDHelper(M.getContext()),
+    Root(nullptr), Char(nullptr)
+{}
 
-CodeGenTBAA::~CodeGenTBAA() {}
+CodeGenTBAA::~CodeGenTBAA() {
+}
 
 llvm::MDNode *CodeGenTBAA::getRoot() {
   // Define the root of the tree. This identifies the tree, so that
@@ -270,9 +272,12 @@ TBAAAccessInfo CodeGenTBAA::getVTablePtrAccessInfo(llvm::Type *VTablePtrType) {
                         Size);
 }
 
-bool CodeGenTBAA::CollectFields(
-    uint64_t BaseOffset, QualType QTy,
-    SmallVectorImpl<llvm::MDBuilder::TBAAStructField> &Fields, bool MayAlias) {
+bool
+CodeGenTBAA::CollectFields(uint64_t BaseOffset,
+                           QualType QTy,
+                           SmallVectorImpl<llvm::MDBuilder::TBAAStructField> &
+                             Fields,
+                           bool MayAlias) {
   /* Things not handled yet include: C++ base classes, bitfields, */
 
   if (const RecordType *TTy = QTy->getAs<RecordType>()) {
@@ -288,12 +293,12 @@ bool CodeGenTBAA::CollectFields(
     const ASTRecordLayout &Layout = Context.getASTRecordLayout(RD);
 
     unsigned idx = 0;
-    for (RecordDecl::field_iterator i = RD->field_begin(), e = RD->field_end();
-         i != e; ++i, ++idx) {
+    for (RecordDecl::field_iterator i = RD->field_begin(),
+         e = RD->field_end(); i != e; ++i, ++idx) {
       if ((*i)->isZeroSize(Context) || (*i)->isUnnamedBitfield())
         continue;
-      uint64_t Offset =
-          BaseOffset + Layout.getFieldOffset(idx) / Context.getCharWidth();
+      uint64_t Offset = BaseOffset +
+                        Layout.getFieldOffset(idx) / Context.getCharWidth();
       QualType FieldQTy = i->getType();
       if (!CollectFields(Offset, FieldQTy, Fields,
                          MayAlias || TypeHasMayAlias(FieldQTy)))
@@ -311,7 +316,8 @@ bool CodeGenTBAA::CollectFields(
   return true;
 }
 
-llvm::MDNode *CodeGenTBAA::getTBAAStructInfo(QualType QTy) {
+llvm::MDNode *
+CodeGenTBAA::getTBAAStructInfo(QualType QTy) {
   const Type *Ty = Context.getCanonicalType(QTy).getTypePtr();
 
   if (llvm::MDNode *N = StructMetadataCache[Ty])
@@ -334,17 +340,16 @@ llvm::MDNode *CodeGenTBAA::getBaseTypeInfoHelper(const Type *Ty) {
       if (Field->isZeroSize(Context) || Field->isUnnamedBitfield())
         continue;
       QualType FieldQTy = Field->getType();
-      llvm::MDNode *TypeNode = isValidBaseType(FieldQTy)
-                                   ? getBaseTypeInfo(FieldQTy)
-                                   : getTypeInfo(FieldQTy);
+      llvm::MDNode *TypeNode = isValidBaseType(FieldQTy) ?
+          getBaseTypeInfo(FieldQTy) : getTypeInfo(FieldQTy);
       if (!TypeNode)
         return BaseTypeMetadataCache[Ty] = nullptr;
 
       uint64_t BitOffset = Layout.getFieldOffset(Field->getFieldIndex());
       uint64_t Offset = Context.toCharUnitsFromBits(BitOffset).getQuantity();
       uint64_t Size = Context.getTypeSizeInChars(FieldQTy).getQuantity();
-      Fields.push_back(
-          llvm::MDBuilder::TBAAStructField(Offset, Size, TypeNode));
+      Fields.push_back(llvm::MDBuilder::TBAAStructField(Offset, Size,
+                                                        TypeNode));
     }
 
     SmallString<256> OutName;
@@ -364,9 +369,9 @@ llvm::MDNode *CodeGenTBAA::getBaseTypeInfoHelper(const Type *Ty) {
     }
 
     // Create the struct type node with a vector of pairs (offset, type).
-    SmallVector<std::pair<llvm::MDNode *, uint64_t>, 4> OffsetsAndTypes;
+    SmallVector<std::pair<llvm::MDNode*, uint64_t>, 4> OffsetsAndTypes;
     for (const auto &Field : Fields)
-      OffsetsAndTypes.push_back(std::make_pair(Field.Type, Field.Offset));
+        OffsetsAndTypes.push_back(std::make_pair(Field.Type, Field.Offset));
     return MDHelper.createTBAAStructTypeNode(OutName, OffsetsAndTypes);
   }
 

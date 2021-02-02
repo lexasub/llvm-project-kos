@@ -15,9 +15,9 @@ struct S {
 };
 
 void foo(S *p) {
-  // CHECK-LABEL: _Z3fooP1S
-  // CHECK: store i32 5, {{.*}}, !tbaa [[TAG_V_n:!.*]]
-  ((V *)p->bytes)->n = 5;
+// CHECK-LABEL: _Z3fooP1S
+// CHECK: store i32 5, {{.*}}, !tbaa [[TAG_V_n:!.*]]
+  ((V*)p->bytes)->n = 5;
 }
 
 // OLD-PATH-DAG: [[TAG_V_n]] = !{[[TYPE_V:!.*]], [[TYPE_int:!.*]], i64 0}

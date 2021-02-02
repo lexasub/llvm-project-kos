@@ -43,8 +43,7 @@ void HelperDeclRefGraph::addEdge(const Decl *Caller, const Decl *Callee) {
   // class member definitions in global namespace like "int CLASS::static_var =
   // 1;", its DC is a VarDel whose outmost enclosing declaration is the "CLASS"
   // CXXRecordDecl.
-  if (Caller == Callee)
-    return;
+  if (Caller == Callee) return;
 
   // Allocate a new node, mark it as root, and process it's calls.
   CallGraphNode *CallerNode = getOrInsertNode(const_cast<Decl *>(Caller));

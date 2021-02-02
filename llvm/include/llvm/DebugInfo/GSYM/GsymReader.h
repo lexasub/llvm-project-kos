@@ -9,6 +9,7 @@
 #ifndef LLVM_DEBUGINFO_GSYM_GSYMREADER_H
 #define LLVM_DEBUGINFO_GSYM_GSYMREADER_H
 
+
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/DebugInfo/GSYM/FileEntry.h"
 #include "llvm/DebugInfo/GSYM/FunctionInfo.h"
@@ -196,7 +197,9 @@ public:
   void dump(raw_ostream &OS, Optional<FileEntry> FE);
 
   /// Get the number of addresses in this Gsym file.
-  uint32_t getNumAddresses() const { return Hdr->NumAddresses; }
+  uint32_t getNumAddresses() const {
+    return Hdr->NumAddresses;
+  }
 
   /// Gets an address from the address table.
   ///
@@ -208,6 +211,7 @@ public:
   Optional<uint64_t> getAddress(size_t Index) const;
 
 protected:
+
   /// Get an appropriate address info offsets array.
   ///
   /// The address table in the GSYM file is stored as array of 1, 2, 4 or 8
@@ -218,9 +222,10 @@ protected:
   /// AddrOffsets member variable.
   ///
   /// \returns An ArrayRef of an appropriate address offset size.
-  template <class T> ArrayRef<T> getAddrOffsets() const {
+  template <class T> ArrayRef<T>
+  getAddrOffsets() const {
     return ArrayRef<T>(reinterpret_cast<const T *>(AddrOffsets.data()),
-                       AddrOffsets.size() / sizeof(T));
+                       AddrOffsets.size()/sizeof(T));
   }
 
   /// Get an appropriate address from the address table.
@@ -235,7 +240,8 @@ protected:
   /// \param Index An index into the AddrOffsets array.
   /// \returns An virtual address that matches the original object file for the
   /// address as the specified index, or llvm::None if Index is out of bounds.
-  template <class T> Optional<uint64_t> addressForIndex(size_t Index) const {
+  template <class T> Optional<uint64_t>
+  addressForIndex(size_t Index) const {
     ArrayRef<T> AIO = getAddrOffsets<T>();
     if (Index < AIO.size())
       return AIO[Index] + Hdr->BaseAddress;
@@ -251,8 +257,7 @@ protected:
   /// \returns The matching address offset index. This index will be used to
   /// extract the FunctionInfo data's offset from the AddrInfoOffsets array.
   template <class T>
-  llvm::Optional<uint64_t>
-  getAddressOffsetIndex(const uint64_t AddrOffset) const {
+  llvm::Optional<uint64_t> getAddressOffsetIndex(const uint64_t AddrOffset) const {
     ArrayRef<T> AIO = getAddrOffsets<T>();
     const auto Begin = AIO.begin();
     const auto End = AIO.end();
@@ -277,6 +282,7 @@ protected:
   /// object that indicates reason for failing to read the GSYM.
   static llvm::Expected<llvm::gsym::GsymReader>
   create(std::unique_ptr<MemoryBuffer> &MemBuffer);
+
 
   /// Given an address, find the address index.
   ///

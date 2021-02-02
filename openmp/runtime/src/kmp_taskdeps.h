@@ -2,6 +2,7 @@
  * kmp_taskdeps.h
  */
 
+
 //===----------------------------------------------------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
@@ -9,6 +10,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
+
 
 #ifndef KMP_TASKDEPS_H
 #define KMP_TASKDEPS_H

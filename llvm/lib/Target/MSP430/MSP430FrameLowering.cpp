@@ -29,11 +29,11 @@ bool MSP430FrameLowering::hasFP(const MachineFunction &MF) const {
   const MachineFrameInfo &MFI = MF.getFrameInfo();
 
   return (MF.getTarget().Options.DisableFramePointerElim(MF) ||
-          MF.getFrameInfo().hasVarSizedObjects() || MFI.isFrameAddressTaken());
+          MF.getFrameInfo().hasVarSizedObjects() ||
+          MFI.isFrameAddressTaken());
 }
 
-bool MSP430FrameLowering::hasReservedCallFrame(
-    const MachineFunction &MF) const {
+bool MSP430FrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
   return !MF.getFrameInfo().hasVarSizedObjects();
 }
 
@@ -64,11 +64,11 @@ void MSP430FrameLowering::emitPrologue(MachineFunction &MF,
 
     // Save FP into the appropriate stack slot...
     BuildMI(MBB, MBBI, DL, TII.get(MSP430::PUSH16r))
-        .addReg(MSP430::R4, RegState::Kill);
+      .addReg(MSP430::R4, RegState::Kill);
 
     // Update FP with the new base value...
     BuildMI(MBB, MBBI, DL, TII.get(MSP430::MOV16rr), MSP430::R4)
-        .addReg(MSP430::SP);
+      .addReg(MSP430::SP);
 
     // Mark the FramePtr as live-in in every block except the entry.
     for (MachineFunction::iterator I = std::next(MF.begin()), E = MF.end();
@@ -88,16 +88,15 @@ void MSP430FrameLowering::emitPrologue(MachineFunction &MF,
   if (NumBytes) { // adjust stack pointer: SP -= numbytes
     // If there is an SUB16ri of SP immediately before this instruction, merge
     // the two.
-    // NumBytes -= mergeSPUpdates(MBB, MBBI, true);
+    //NumBytes -= mergeSPUpdates(MBB, MBBI, true);
     // If there is an ADD16ri or SUB16ri of SP immediately after this
     // instruction, merge the two instructions.
     // mergeSPUpdatesDown(MBB, MBBI, &NumBytes);
 
     if (NumBytes) {
       MachineInstr *MI =
-          BuildMI(MBB, MBBI, DL, TII.get(MSP430::SUB16ri), MSP430::SP)
-              .addReg(MSP430::SP)
-              .addImm(NumBytes);
+        BuildMI(MBB, MBBI, DL, TII.get(MSP430::SUB16ri), MSP430::SP)
+        .addReg(MSP430::SP).addImm(NumBytes);
       // The SRW implicit def is dead.
       MI->getOperand(3).setIsDead();
     }
@@ -117,8 +116,7 @@ void MSP430FrameLowering::emitEpilogue(MachineFunction &MF,
 
   switch (RetOpcode) {
   case MSP430::RET:
-  case MSP430::RETI:
-    break; // These are ok
+  case MSP430::RETI: break;  // These are ok
   default:
     llvm_unreachable("Can only insert epilog into returning blocks");
   }
@@ -151,17 +149,17 @@ void MSP430FrameLowering::emitEpilogue(MachineFunction &MF,
 
   // If there is an ADD16ri or SUB16ri of SP immediately before this
   // instruction, merge the two instructions.
-  // if (NumBytes || MFI.hasVarSizedObjects())
+  //if (NumBytes || MFI.hasVarSizedObjects())
   //  mergeSPUpdatesUp(MBB, MBBI, StackPtr, &NumBytes);
 
   if (MFI.hasVarSizedObjects()) {
-    BuildMI(MBB, MBBI, DL, TII.get(MSP430::MOV16rr), MSP430::SP)
-        .addReg(MSP430::R4);
+    BuildMI(MBB, MBBI, DL,
+            TII.get(MSP430::MOV16rr), MSP430::SP).addReg(MSP430::R4);
     if (CSSize) {
       MachineInstr *MI =
-          BuildMI(MBB, MBBI, DL, TII.get(MSP430::SUB16ri), MSP430::SP)
-              .addReg(MSP430::SP)
-              .addImm(CSSize);
+        BuildMI(MBB, MBBI, DL,
+                TII.get(MSP430::SUB16ri), MSP430::SP)
+        .addReg(MSP430::SP).addImm(CSSize);
       // The SRW implicit def is dead.
       MI->getOperand(3).setIsDead();
     }
@@ -169,9 +167,8 @@ void MSP430FrameLowering::emitEpilogue(MachineFunction &MF,
     // adjust stack pointer back: SP += numbytes
     if (NumBytes) {
       MachineInstr *MI =
-          BuildMI(MBB, MBBI, DL, TII.get(MSP430::ADD16ri), MSP430::SP)
-              .addReg(MSP430::SP)
-              .addImm(NumBytes);
+        BuildMI(MBB, MBBI, DL, TII.get(MSP430::ADD16ri), MSP430::SP)
+        .addReg(MSP430::SP).addImm(NumBytes);
       // The SRW implicit def is dead.
       MI->getOperand(3).setIsDead();
     }
@@ -186,8 +183,7 @@ bool MSP430FrameLowering::spillCalleeSavedRegisters(
     return false;
 
   DebugLoc DL;
-  if (MI != MBB.end())
-    DL = MI->getDebugLoc();
+  if (MI != MBB.end()) DL = MI->getDebugLoc();
 
   MachineFunction &MF = *MBB.getParent();
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
@@ -195,10 +191,11 @@ bool MSP430FrameLowering::spillCalleeSavedRegisters(
   MFI->setCalleeSavedFrameSize(CSI.size() * 2);
 
   for (unsigned i = CSI.size(); i != 0; --i) {
-    unsigned Reg = CSI[i - 1].getReg();
+    unsigned Reg = CSI[i-1].getReg();
     // Add the callee-saved register as live-in. It's killed at the spill.
     MBB.addLiveIn(Reg);
-    BuildMI(MBB, MI, DL, TII.get(MSP430::PUSH16r)).addReg(Reg, RegState::Kill);
+    BuildMI(MBB, MI, DL, TII.get(MSP430::PUSH16r))
+      .addReg(Reg, RegState::Kill);
   }
   return true;
 }
@@ -210,8 +207,7 @@ bool MSP430FrameLowering::restoreCalleeSavedRegisters(
     return false;
 
   DebugLoc DL;
-  if (MI != MBB.end())
-    DL = MI->getDebugLoc();
+  if (MI != MBB.end()) DL = MI->getDebugLoc();
 
   MachineFunction &MF = *MBB.getParent();
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
@@ -284,8 +280,9 @@ MachineBasicBlock::iterator MSP430FrameLowering::eliminateCallFramePseudoInstr(
   return MBB.erase(I);
 }
 
-void MSP430FrameLowering::processFunctionBeforeFrameFinalized(
-    MachineFunction &MF, RegScavenger *) const {
+void
+MSP430FrameLowering::processFunctionBeforeFrameFinalized(MachineFunction &MF,
+                                                         RegScavenger *) const {
   // Create a frame entry for the FP register that must be saved.
   if (hasFP(MF)) {
     int FrameIdx = MF.getFrameInfo().CreateFixedObject(2, -4, true);

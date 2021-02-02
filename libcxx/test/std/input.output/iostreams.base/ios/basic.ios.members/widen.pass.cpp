@@ -17,9 +17,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  const std::ios ios(0);
-  assert(ios.widen('c') == 'c');
+int main(int, char**)
+{
+    const std::ios ios(0);
+    assert(ios.widen('c') == 'c');
 
   return 0;
 }

@@ -9,8 +9,8 @@
 
 #include <stdlib.h>
 int main() {
-  volatile char *x = (char *)malloc(sizeof(char));
-  free((void *)x);
+  volatile char *x = (char*)malloc(sizeof(char));
+  free((void*)x);
   *x = 42;
   // CHECK: {{.*ERROR: AddressSanitizer: heap-use-after-free on address}}
   // CHECK:   {{0x.* at pc 0x.* bp 0x.* sp 0x.*}}

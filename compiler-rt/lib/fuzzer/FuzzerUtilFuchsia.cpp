@@ -80,10 +80,9 @@ void AlarmHandler(int Seconds) {
 // on top of their rsp).
 constexpr size_t CFAOffset = 128 + sizeof(zx_thread_state_general_regs_t);
 #elif defined(__aarch64__)
-// In aarch64 we need to always have the stack pointer aligned to 16 bytes, so
-// we make sure that we are keeping that same alignment.
-constexpr size_t CFAOffset =
-    (sizeof(zx_thread_state_general_regs_t) + 15) & -(uintptr_t)16;
+// In aarch64 we need to always have the stack pointer aligned to 16 bytes, so we
+// make sure that we are keeping that same alignment.
+constexpr size_t CFAOffset = (sizeof(zx_thread_state_general_regs_t) + 15) & -(uintptr_t)16;
 #endif
 
 // For the crash handler, we need to call Fuzzer::StaticCrashSignalCallback
@@ -99,57 +98,57 @@ constexpr size_t CFAOffset =
 // Alternatively, Fuchsia may in future actually implement basic signal
 // handling for the machine trap signals.
 #if defined(__x86_64__)
-#define FOREACH_REGISTER(OP_REG, OP_NUM)                                       \
-  OP_REG(rax)                                                                  \
-  OP_REG(rbx)                                                                  \
-  OP_REG(rcx)                                                                  \
-  OP_REG(rdx)                                                                  \
-  OP_REG(rsi)                                                                  \
-  OP_REG(rdi)                                                                  \
-  OP_REG(rbp)                                                                  \
-  OP_REG(rsp)                                                                  \
-  OP_REG(r8)                                                                   \
-  OP_REG(r9)                                                                   \
-  OP_REG(r10)                                                                  \
-  OP_REG(r11)                                                                  \
-  OP_REG(r12)                                                                  \
-  OP_REG(r13)                                                                  \
-  OP_REG(r14)                                                                  \
-  OP_REG(r15)                                                                  \
+#define FOREACH_REGISTER(OP_REG, OP_NUM) \
+  OP_REG(rax)                            \
+  OP_REG(rbx)                            \
+  OP_REG(rcx)                            \
+  OP_REG(rdx)                            \
+  OP_REG(rsi)                            \
+  OP_REG(rdi)                            \
+  OP_REG(rbp)                            \
+  OP_REG(rsp)                            \
+  OP_REG(r8)                             \
+  OP_REG(r9)                             \
+  OP_REG(r10)                            \
+  OP_REG(r11)                            \
+  OP_REG(r12)                            \
+  OP_REG(r13)                            \
+  OP_REG(r14)                            \
+  OP_REG(r15)                            \
   OP_REG(rip)
 
 #elif defined(__aarch64__)
-#define FOREACH_REGISTER(OP_REG, OP_NUM)                                       \
-  OP_NUM(0)                                                                    \
-  OP_NUM(1)                                                                    \
-  OP_NUM(2)                                                                    \
-  OP_NUM(3)                                                                    \
-  OP_NUM(4)                                                                    \
-  OP_NUM(5)                                                                    \
-  OP_NUM(6)                                                                    \
-  OP_NUM(7)                                                                    \
-  OP_NUM(8)                                                                    \
-  OP_NUM(9)                                                                    \
-  OP_NUM(10)                                                                   \
-  OP_NUM(11)                                                                   \
-  OP_NUM(12)                                                                   \
-  OP_NUM(13)                                                                   \
-  OP_NUM(14)                                                                   \
-  OP_NUM(15)                                                                   \
-  OP_NUM(16)                                                                   \
-  OP_NUM(17)                                                                   \
-  OP_NUM(18)                                                                   \
-  OP_NUM(19)                                                                   \
-  OP_NUM(20)                                                                   \
-  OP_NUM(21)                                                                   \
-  OP_NUM(22)                                                                   \
-  OP_NUM(23)                                                                   \
-  OP_NUM(24)                                                                   \
-  OP_NUM(25)                                                                   \
-  OP_NUM(26)                                                                   \
-  OP_NUM(27)                                                                   \
-  OP_NUM(28)                                                                   \
-  OP_NUM(29)                                                                   \
+#define FOREACH_REGISTER(OP_REG, OP_NUM) \
+  OP_NUM(0)                              \
+  OP_NUM(1)                              \
+  OP_NUM(2)                              \
+  OP_NUM(3)                              \
+  OP_NUM(4)                              \
+  OP_NUM(5)                              \
+  OP_NUM(6)                              \
+  OP_NUM(7)                              \
+  OP_NUM(8)                              \
+  OP_NUM(9)                              \
+  OP_NUM(10)                             \
+  OP_NUM(11)                             \
+  OP_NUM(12)                             \
+  OP_NUM(13)                             \
+  OP_NUM(14)                             \
+  OP_NUM(15)                             \
+  OP_NUM(16)                             \
+  OP_NUM(17)                             \
+  OP_NUM(18)                             \
+  OP_NUM(19)                             \
+  OP_NUM(20)                             \
+  OP_NUM(21)                             \
+  OP_NUM(22)                             \
+  OP_NUM(23)                             \
+  OP_NUM(24)                             \
+  OP_NUM(25)                             \
+  OP_NUM(26)                             \
+  OP_NUM(27)                             \
+  OP_NUM(28)                             \
+  OP_NUM(29)                             \
   OP_REG(sp)
 
 #else
@@ -164,14 +163,15 @@ constexpr size_t CFAOffset =
 
 // Produces an assembler immediate operand for the named or numbered register.
 // This operand contains the offset of the register relative to the CFA.
-#define ASM_OPERAND_REG(reg)                                                   \
+#define ASM_OPERAND_REG(reg) \
   [reg] "i"(offsetof(zx_thread_state_general_regs_t, reg) - CFAOffset),
-#define ASM_OPERAND_NUM(num)                                                   \
+#define ASM_OPERAND_NUM(num)                                 \
   [x##num] "i"(offsetof(zx_thread_state_general_regs_t, r[num]) - CFAOffset),
 
 // Trampoline to bridge from the assembly below to the static C++ crash
 // callback.
-__attribute__((noreturn)) static void StaticCrashHandler() {
+__attribute__((noreturn))
+static void StaticCrashHandler() {
   Fuzzer::StaticCrashSignalCallback();
   for (;;) {
     _Exit(1);
@@ -191,45 +191,46 @@ __attribute__((noreturn)) static void StaticCrashHandler() {
 // The __attribute__((used)) is necessary because the function
 // is never called; it's just a container around the assembly to allow it to
 // use operands for compile-time computed constants.
-__attribute__((used)) void MakeTrampoline() {
-  __asm__(
-      ".cfi_endproc\n"
-      ".pushsection .text.CrashTrampolineAsm\n"
-      ".type CrashTrampolineAsm,STT_FUNC\n"
-      "CrashTrampolineAsm:\n"
-      ".cfi_startproc simple\n"
-      ".cfi_signal_frame\n"
+__attribute__((used))
+void MakeTrampoline() {
+  __asm__(".cfi_endproc\n"
+    ".pushsection .text.CrashTrampolineAsm\n"
+    ".type CrashTrampolineAsm,STT_FUNC\n"
+"CrashTrampolineAsm:\n"
+    ".cfi_startproc simple\n"
+    ".cfi_signal_frame\n"
 #if defined(__x86_64__)
-      ".cfi_return_column rip\n"
-      ".cfi_def_cfa rsp, %c[CFAOffset]\n" FOREACH_REGISTER(
-          CFI_OFFSET_REG,
-          CFI_OFFSET_NUM) "mov %%rsp, %%rbp\n"
-                          ".cfi_def_cfa_register rbp\n"
-                          "andq $-16, %%rsp\n"
-                          "call %c[StaticCrashHandler]\n"
-                          "ud2\n"
+    ".cfi_return_column rip\n"
+    ".cfi_def_cfa rsp, %c[CFAOffset]\n"
+    FOREACH_REGISTER(CFI_OFFSET_REG, CFI_OFFSET_NUM)
+    "mov %%rsp, %%rbp\n"
+    ".cfi_def_cfa_register rbp\n"
+    "andq $-16, %%rsp\n"
+    "call %c[StaticCrashHandler]\n"
+    "ud2\n"
 #elif defined(__aarch64__)
-      ".cfi_return_column 33\n"
-      ".cfi_def_cfa sp, %c[CFAOffset]\n" FOREACH_REGISTER(
-          CFI_OFFSET_REG,
-          CFI_OFFSET_NUM) ".cfi_offset 33, %c[pc]\n"
-                          ".cfi_offset 30, %c[lr]\n"
-                          "bl %c[StaticCrashHandler]\n"
-                          "brk 1\n"
+    ".cfi_return_column 33\n"
+    ".cfi_def_cfa sp, %c[CFAOffset]\n"
+    FOREACH_REGISTER(CFI_OFFSET_REG, CFI_OFFSET_NUM)
+    ".cfi_offset 33, %c[pc]\n"
+    ".cfi_offset 30, %c[lr]\n"
+    "bl %c[StaticCrashHandler]\n"
+    "brk 1\n"
 #else
 #error "Unsupported architecture for fuzzing on Fuchsia"
 #endif
-                          ".cfi_endproc\n"
-                          ".size CrashTrampolineAsm, . - CrashTrampolineAsm\n"
-                          ".popsection\n"
-                          ".cfi_startproc\n"
-      : // No outputs
-      : FOREACH_REGISTER(ASM_OPERAND_REG, ASM_OPERAND_NUM)
+    ".cfi_endproc\n"
+    ".size CrashTrampolineAsm, . - CrashTrampolineAsm\n"
+    ".popsection\n"
+    ".cfi_startproc\n"
+    : // No outputs
+    : FOREACH_REGISTER(ASM_OPERAND_REG, ASM_OPERAND_NUM)
 #if defined(__aarch64__)
-            ASM_OPERAND_REG(pc) ASM_OPERAND_REG(lr)
+      ASM_OPERAND_REG(pc)
+      ASM_OPERAND_REG(lr)
 #endif
-                [StaticCrashHandler] "i"(StaticCrashHandler),
-        [CFAOffset] "i"(CFAOffset));
+      [StaticCrashHandler] "i" (StaticCrashHandler),
+      [CFAOffset] "i" (CFAOffset));
 }
 
 void CrashHandler(zx_handle_t *Event) {
@@ -395,16 +396,18 @@ size_t GetPeakRSSMb() {
   return (Info.mem_private_bytes + Info.mem_shared_bytes) >> 20;
 }
 
-template <typename Fn> class RunOnDestruction {
-public:
+template <typename Fn>
+class RunOnDestruction {
+ public:
   explicit RunOnDestruction(Fn fn) : fn_(fn) {}
   ~RunOnDestruction() { fn_(); }
 
-private:
+ private:
   Fn fn_;
 };
 
-template <typename Fn> RunOnDestruction<Fn> at_scope_exit(Fn fn) {
+template <typename Fn>
+RunOnDestruction<Fn> at_scope_exit(Fn fn) {
   return RunOnDestruction<Fn>(fn);
 }
 
@@ -536,11 +539,9 @@ const void *SearchMemory(const void *Data, size_t DataLen, const void *Patt,
 // fdio_null_create and binding that to a file descriptor.
 void DiscardOutput(int Fd) {
   fdio_t *fdio_null = fdio_null_create();
-  if (fdio_null == nullptr)
-    return;
+  if (fdio_null == nullptr) return;
   int nullfd = fdio_bind_to_fd(fdio_null, -1, 0);
-  if (nullfd < 0)
-    return;
+  if (nullfd < 0) return;
   dup2(nullfd, Fd);
 }
 

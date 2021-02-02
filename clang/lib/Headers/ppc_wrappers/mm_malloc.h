@@ -17,25 +17,31 @@
 /* We can't depend on <stdlib.h> since the prototype of posix_memalign
    may not be visible.  */
 #ifndef __cplusplus
-extern int posix_memalign(void **, size_t, size_t);
+extern int posix_memalign (void **, size_t, size_t);
 #else
-extern "C" int posix_memalign(void **, size_t, size_t) throw();
+extern "C" int posix_memalign (void **, size_t, size_t) throw ();
 #endif
 
-static __inline void *_mm_malloc(size_t size, size_t alignment) {
+static __inline void *
+_mm_malloc (size_t size, size_t alignment)
+{
   /* PowerPC64 ELF V2 ABI requires quadword alignment.  */
-  size_t vec_align = sizeof(__vector float);
+  size_t vec_align = sizeof (__vector float);
   void *ptr;
 
   if (alignment < vec_align)
     alignment = vec_align;
-  if (posix_memalign(&ptr, alignment, size) == 0)
+  if (posix_memalign (&ptr, alignment, size) == 0)
     return ptr;
   else
     return NULL;
 }
 
-static __inline void _mm_free(void *ptr) { free(ptr); }
+static __inline void
+_mm_free (void * ptr)
+{
+  free (ptr);
+}
 
 #else
 #include_next <mm_malloc.h>

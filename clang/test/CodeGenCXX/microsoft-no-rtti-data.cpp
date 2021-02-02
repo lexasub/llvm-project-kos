@@ -5,9 +5,7 @@
 // CHECK: @"??_7S@@6B@" = linkonce_odr unnamed_addr constant { [1 x i8*] } { [1 x i8*] [i8* bitcast ({{.*}} @"??_GS@@UAEPAXI@Z" to i8*)] }, comdat
 
 struct type_info;
-namespace std {
-using ::type_info;
-}
+namespace std { using ::type_info; }
 
 struct S {
   virtual ~S();

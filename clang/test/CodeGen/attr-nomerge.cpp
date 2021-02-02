@@ -22,11 +22,7 @@ void foo(int i, A *ap, B *bp) {
   [[clang::nomerge]] (i = 4, bar());
   [[clang::nomerge]] (void)(bar());
   f(bar(), bar());
-  [[clang::nomerge]][] {
-    bar();
-    bar();
-  }
-  (); // nomerge only applies to the anonymous function call
+  [[clang::nomerge]] [] { bar(); bar(); }(); // nomerge only applies to the anonymous function call
   [[clang::nomerge]] for (bar(); bar(); bar()) {}
   [[clang::nomerge]] { asm("nop"); }
   bar();

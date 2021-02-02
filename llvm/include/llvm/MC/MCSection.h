@@ -92,10 +92,10 @@ private:
 
   /// State for tracking labels that don't yet have Fragments
   struct PendingLabel {
-    MCSymbol *Sym;
+    MCSymbol* Sym;
     unsigned Subsection;
-    PendingLabel(MCSymbol *Sym, unsigned Subsection = 0)
-        : Sym(Sym), Subsection(Subsection) {}
+    PendingLabel(MCSymbol* Sym, unsigned Subsection = 0)
+      : Sym(Sym), Subsection(Subsection) {}
   };
   SmallVector<PendingLabel, 2> PendingLabels;
 
@@ -193,11 +193,11 @@ public:
 
   /// Add a pending label for the requested subsection. This label will be
   /// associated with a fragment in flushPendingLabels()
-  void addPendingLabel(MCSymbol *label, unsigned Subsection = 0);
+  void addPendingLabel(MCSymbol* label, unsigned Subsection = 0);
 
   /// Associate all pending labels in a subsection with a fragment.
   void flushPendingLabels(MCFragment *F, uint64_t FOffset = 0,
-                          unsigned Subsection = 0);
+			  unsigned Subsection = 0);
 
   /// Associate all pending labels with empty data fragments. One fragment
   /// will be created for each subsection as necessary.

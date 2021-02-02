@@ -11,12 +11,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/ExternalASTMerger.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/AST/ExternalASTMerger.h"
 
 using namespace clang;
 
@@ -109,7 +109,6 @@ private:
   /// @see ExternalASTMerger::ImporterSource::Merger
   ExternalASTMerger *SourceMerger;
   llvm::raw_ostream &logs() { return Parent.logs(); }
-
 public:
   LazyASTImporter(ExternalASTMerger &_Parent, ASTContext &ToContext,
                   FileManager &ToFileManager,
@@ -202,27 +201,30 @@ public:
     if (auto *ToDC = dyn_cast<DeclContext>(To)) {
       const bool LoggingEnabled = Parent.LoggingEnabled();
       if (LoggingEnabled)
-        logs() << "(ExternalASTMerger*)" << (void *)&Parent
-               << " imported (DeclContext*)" << (void *)ToDC
-               << ", (ASTContext*)" << (void *)&getToContext()
-               << " from (DeclContext*)"
-               << (void *)llvm::cast<DeclContext>(From) << ", (ASTContext*)"
-               << (void *)&getFromContext() << "\n";
+        logs() << "(ExternalASTMerger*)" << (void*)&Parent
+               << " imported (DeclContext*)" << (void*)ToDC
+               << ", (ASTContext*)" << (void*)&getToContext()
+               << " from (DeclContext*)" << (void*)llvm::cast<DeclContext>(From)
+               << ", (ASTContext*)" << (void*)&getFromContext()
+               << "\n";
       Source<DeclContext *> FromDC(
           cast<DeclContext>(From)->getPrimaryContext());
       if (FromOrigins.count(FromDC) &&
           Parent.HasImporterForOrigin(*FromOrigins.at(FromDC).AST)) {
         if (LoggingEnabled)
-          logs() << "(ExternalASTMerger*)" << (void *)&Parent
+          logs() << "(ExternalASTMerger*)" << (void*)&Parent
                  << " forced origin (DeclContext*)"
-                 << (void *)FromOrigins.at(FromDC).DC << ", (ASTContext*)"
-                 << (void *)FromOrigins.at(FromDC).AST << "\n";
+                 << (void*)FromOrigins.at(FromDC).DC
+                 << ", (ASTContext*)"
+                 << (void*)FromOrigins.at(FromDC).AST
+                 << "\n";
         Parent.ForceRecordOrigin(ToDC, FromOrigins.at(FromDC));
       } else {
         if (LoggingEnabled)
-          logs() << "(ExternalASTMerger*)" << (void *)&Parent
-                 << " maybe recording origin (DeclContext*)" << (void *)FromDC
-                 << ", (ASTContext*)" << (void *)&getFromContext() << "\n";
+          logs() << "(ExternalASTMerger*)" << (void*)&Parent
+                 << " maybe recording origin (DeclContext*)" << (void*)FromDC
+                 << ", (ASTContext*)" << (void*)&getFromContext()
+                 << "\n";
         Parent.MaybeRecordOrigin(ToDC, {FromDC, &getFromContext()});
       }
     }
@@ -261,11 +263,11 @@ ASTImporter &ExternalASTMerger::ImporterForOrigin(ASTContext &OriginContext) {
 
 namespace {
 LazyASTImporter &LazyImporterForOrigin(ExternalASTMerger &Merger,
-                                       ASTContext &OriginContext) {
+                                   ASTContext &OriginContext) {
   return static_cast<LazyASTImporter &>(
       Merger.ImporterForOrigin(OriginContext));
 }
-} // namespace
+}
 
 bool ExternalASTMerger::HasImporterForOrigin(ASTContext &OriginContext) {
   for (const std::unique_ptr<ASTImporter> &I : Importers)
@@ -295,39 +297,36 @@ void ExternalASTMerger::ForEachMatchingDC(const DeclContext *DC,
       }
     }
     if (!DidCallback && LoggingEnabled())
-      logs() << "(ExternalASTMerger*)" << (void *)this
-             << " asserting for (DeclContext*)" << (const void *)DC
-             << ", (ASTContext*)" << (void *)&Target.AST << "\n";
+      logs() << "(ExternalASTMerger*)" << (void*)this
+             << " asserting for (DeclContext*)" << (const void*)DC
+             << ", (ASTContext*)" << (void*)&Target.AST
+             << "\n";
     assert(DidCallback && "Couldn't find a source context matching our DC");
   }
 }
 
 void ExternalASTMerger::CompleteType(TagDecl *Tag) {
   assert(Tag->hasExternalLexicalStorage());
-  ForEachMatchingDC(
-      Tag,
-      [&](ASTImporter &Forward, ASTImporter &Reverse,
-          Source<const DeclContext *> SourceDC) -> bool {
-        auto *SourceTag = const_cast<TagDecl *>(cast<TagDecl>(SourceDC.get()));
-        if (SourceTag->hasExternalLexicalStorage())
-          SourceTag->getASTContext().getExternalSource()->CompleteType(
-              SourceTag);
-        if (!SourceTag->getDefinition())
-          return false;
-        Forward.MapImported(SourceTag, Tag);
-        if (llvm::Error Err = Forward.ImportDefinition(SourceTag))
-          llvm::consumeError(std::move(Err));
-        Tag->setCompleteDefinition(SourceTag->isCompleteDefinition());
-        return true;
-      });
+  ForEachMatchingDC(Tag, [&](ASTImporter &Forward, ASTImporter &Reverse,
+                             Source<const DeclContext *> SourceDC) -> bool {
+    auto *SourceTag = const_cast<TagDecl *>(cast<TagDecl>(SourceDC.get()));
+    if (SourceTag->hasExternalLexicalStorage())
+      SourceTag->getASTContext().getExternalSource()->CompleteType(SourceTag);
+    if (!SourceTag->getDefinition())
+      return false;
+    Forward.MapImported(SourceTag, Tag);
+    if (llvm::Error Err = Forward.ImportDefinition(SourceTag))
+      llvm::consumeError(std::move(Err));
+    Tag->setCompleteDefinition(SourceTag->isCompleteDefinition());
+    return true;
+  });
 }
 
 void ExternalASTMerger::CompleteType(ObjCInterfaceDecl *Interface) {
   assert(Interface->hasExternalLexicalStorage());
   ForEachMatchingDC(
-      Interface,
-      [&](ASTImporter &Forward, ASTImporter &Reverse,
-          Source<const DeclContext *> SourceDC) -> bool {
+      Interface, [&](ASTImporter &Forward, ASTImporter &Reverse,
+                     Source<const DeclContext *> SourceDC) -> bool {
         auto *SourceInterface = const_cast<ObjCInterfaceDecl *>(
             cast<ObjCInterfaceDecl>(SourceDC.get()));
         if (SourceInterface->hasExternalLexicalStorage())
@@ -365,7 +364,7 @@ bool IsSameDC(const DeclContext *D1, const DeclContext *D2) {
         return true;
   return D1 == D2 || D1 == CanonicalizeDC(D2);
 }
-} // namespace
+}
 
 void ExternalASTMerger::MaybeRecordOrigin(const DeclContext *ToDC,
                                           DCOrigin Origin) {
@@ -377,10 +376,11 @@ void ExternalASTMerger::MaybeRecordOrigin(const DeclContext *ToDC,
   if (DoRecord)
     RecordOriginImpl(ToDC, Origin, Importer);
   if (LoggingEnabled())
-    logs() << "(ExternalASTMerger*)" << (void *)this
-           << (DoRecord ? " decided " : " decided NOT")
-           << " to record origin (DeclContext*)" << (void *)Origin.DC
-           << ", (ASTContext*)" << (void *)&Origin.AST << "\n";
+    logs() << "(ExternalASTMerger*)" << (void*)this
+             << (DoRecord ? " decided " : " decided NOT")
+             << " to record origin (DeclContext*)" << (void*)Origin.DC
+             << ", (ASTContext*)" << (void*)&Origin.AST
+             << "\n";
 }
 
 void ExternalASTMerger::ForceRecordOrigin(const DeclContext *ToDC,
@@ -388,17 +388,14 @@ void ExternalASTMerger::ForceRecordOrigin(const DeclContext *ToDC,
   RecordOriginImpl(ToDC, Origin, ImporterForOrigin(*Origin.AST));
 }
 
-void ExternalASTMerger::RecordOriginImpl(const DeclContext *ToDC,
-                                         DCOrigin Origin,
+void ExternalASTMerger::RecordOriginImpl(const DeclContext *ToDC, DCOrigin Origin,
                                          ASTImporter &Importer) {
   Origins[ToDC] = Origin;
-  Importer.ASTImporter::MapImported(cast<Decl>(Origin.DC),
-                                    const_cast<Decl *>(cast<Decl>(ToDC)));
+  Importer.ASTImporter::MapImported(cast<Decl>(Origin.DC), const_cast<Decl*>(cast<Decl>(ToDC)));
 }
 
 ExternalASTMerger::ExternalASTMerger(const ImporterTarget &Target,
-                                     llvm::ArrayRef<ImporterSource> Sources)
-    : LogStream(&llvm::nulls()), Target(Target) {
+                                     llvm::ArrayRef<ImporterSource> Sources) : LogStream(&llvm::nulls()), Target(Target) {
   SharedState = std::make_shared<ASTImporterSharedState>(
       *Target.AST.getTranslationUnitDecl());
   AddSources(Sources);
@@ -429,18 +426,16 @@ void ExternalASTMerger::RemoveSources(llvm::ArrayRef<ImporterSource> Sources) {
              << " removing source (ASTContext*)" << (void *)&S.getASTContext()
              << "\n";
   Importers.erase(
-      std::remove_if(
-          Importers.begin(), Importers.end(),
-          [&Sources](std::unique_ptr<ASTImporter> &Importer) -> bool {
-            for (const ImporterSource &S : Sources) {
-              if (&Importer->getFromContext() == &S.getASTContext())
-                return true;
-            }
-            return false;
-          }),
+      std::remove_if(Importers.begin(), Importers.end(),
+                     [&Sources](std::unique_ptr<ASTImporter> &Importer) -> bool {
+                       for (const ImporterSource &S : Sources) {
+                         if (&Importer->getFromContext() == &S.getASTContext())
+                           return true;
+                       }
+                       return false;
+                     }),
       Importers.end());
-  for (OriginMap::iterator OI = Origins.begin(), OE = Origins.end();
-       OI != OE;) {
+  for (OriginMap::iterator OI = Origins.begin(), OE = Origins.end(); OI != OE; ) {
     std::pair<const DeclContext *, DCOrigin> Origin = *OI;
     bool Erase = false;
     for (const ImporterSource &S : Sources) {
@@ -487,8 +482,8 @@ bool ExternalASTMerger::FindExternalVisibleDeclsByName(const DeclContext *DC,
   llvm::SmallVector<Candidate, 4> Candidates;
 
   auto FilterFoundDecl = [&Candidates](const Candidate &C) {
-    if (!HasDeclOfSameType(Candidates, C))
-      Candidates.push_back(C);
+   if (!HasDeclOfSameType(Candidates, C))
+     Candidates.push_back(C);
   };
 
   ForEachMatchingDC(DC,
@@ -533,20 +528,19 @@ bool ExternalASTMerger::FindExternalVisibleDeclsByName(const DeclContext *DC,
 void ExternalASTMerger::FindExternalLexicalDecls(
     const DeclContext *DC, llvm::function_ref<bool(Decl::Kind)> IsKindWeWant,
     SmallVectorImpl<Decl *> &Result) {
-  ForEachMatchingDC(
-      DC,
-      [&](ASTImporter &Forward, ASTImporter &Reverse,
-          Source<const DeclContext *> SourceDC) -> bool {
-        for (const Decl *SourceDecl : SourceDC.get()->decls()) {
-          if (IsKindWeWant(SourceDecl->getKind())) {
-            auto ImportedDeclOrErr = Forward.Import(SourceDecl);
-            if (ImportedDeclOrErr)
-              assert(!(*ImportedDeclOrErr) ||
-                     IsSameDC((*ImportedDeclOrErr)->getDeclContext(), DC));
-            else
-              llvm::consumeError(ImportedDeclOrErr.takeError());
-          }
-        }
-        return false;
-      });
+  ForEachMatchingDC(DC, [&](ASTImporter &Forward, ASTImporter &Reverse,
+                            Source<const DeclContext *> SourceDC) -> bool {
+    for (const Decl *SourceDecl : SourceDC.get()->decls()) {
+      if (IsKindWeWant(SourceDecl->getKind())) {
+        auto ImportedDeclOrErr = Forward.Import(SourceDecl);
+        if (ImportedDeclOrErr)
+          assert(!(*ImportedDeclOrErr) ||
+                 IsSameDC((*ImportedDeclOrErr)->getDeclContext(), DC));
+        else
+          llvm::consumeError(ImportedDeclOrErr.takeError());
+      }
+    }
+    return false;
+  });
 }
+

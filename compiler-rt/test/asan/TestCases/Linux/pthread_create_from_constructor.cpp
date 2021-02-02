@@ -14,8 +14,8 @@
 
 #ifdef BUILD_SO
 
-#include <pthread.h>
 #include <stdio.h>
+#include <pthread.h>
 #include <unistd.h>
 
 void *threadFn(void *) {

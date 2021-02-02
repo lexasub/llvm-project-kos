@@ -147,9 +147,13 @@ void addCheckerRegistrationOrderPrinter(CheckerRegistry &Registry) {
 UNITTEST_CHECKER(StrongDep, "Strong")
 UNITTEST_CHECKER(Dep, "Dep")
 
-bool shouldRegisterStrongFALSE(const CheckerManager &mgr) { return false; }
+bool shouldRegisterStrongFALSE(const CheckerManager &mgr) {
+  return false;
+}
 
-void addDep(AnalysisASTConsumer &AnalysisConsumer, AnalyzerOptions &AnOpts) {
+
+void addDep(AnalysisASTConsumer &AnalysisConsumer,
+                  AnalyzerOptions &AnOpts) {
   AnOpts.CheckersAndPackages = {{"test.Dep", true},
                                 {"test.RegistrationOrder", true}};
   AnalysisConsumer.AddCheckerRegistrationFn([](CheckerRegistry &Registry) {

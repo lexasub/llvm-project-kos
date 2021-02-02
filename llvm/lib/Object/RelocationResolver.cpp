@@ -1,5 +1,4 @@
-//===- RelocationResolver.cpp ------------------------------------*- C++
-//-*-===//
+//===- RelocationResolver.cpp ------------------------------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -345,7 +344,9 @@ static uint64_t resolveAVR(uint64_t Type, uint64_t Offset, uint64_t S,
   }
 }
 
-static bool supportsLanai(uint64_t Type) { return Type == ELF::R_LANAI_32; }
+static bool supportsLanai(uint64_t Type) {
+  return Type == ELF::R_LANAI_32;
+}
 
 static uint64_t resolveLanai(uint64_t Type, uint64_t Offset, uint64_t S,
                              uint64_t /*LocData*/, int64_t Addend) {
@@ -391,7 +392,9 @@ static uint64_t resolveSparc32(uint64_t Type, uint64_t Offset, uint64_t S,
   return LocData;
 }
 
-static bool supportsHexagon(uint64_t Type) { return Type == ELF::R_HEX_32; }
+static bool supportsHexagon(uint64_t Type) {
+  return Type == ELF::R_HEX_32;
+}
 
 static uint64_t resolveHexagon(uint64_t Type, uint64_t Offset, uint64_t S,
                                uint64_t /*LocData*/, int64_t Addend) {
@@ -678,7 +681,8 @@ getRelocationResolver(const ObjectFile &Obj) {
     }
 
     // 32-bit object file
-    assert(Obj.getBytesInAddress() == 4 && "Invalid word size in object file");
+    assert(Obj.getBytesInAddress() == 4 &&
+           "Invalid word size in object file");
 
     switch (Obj.getArch()) {
     case Triple::x86:

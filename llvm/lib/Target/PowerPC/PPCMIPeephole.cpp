@@ -61,13 +61,13 @@ STATISTIC(NumLoadImmZeroFoldedAndRemoved,
           "Number of LI(8) reg, 0 that are folded to r0 and removed");
 
 static cl::opt<bool>
-    FixedPointRegToImm("ppc-reg-to-imm-fixed-point", cl::Hidden, cl::init(true),
-                       cl::desc("Iterate to a fixed point when attempting to "
-                                "convert reg-reg instructions to reg-imm"));
+FixedPointRegToImm("ppc-reg-to-imm-fixed-point", cl::Hidden, cl::init(true),
+                   cl::desc("Iterate to a fixed point when attempting to "
+                            "convert reg-reg instructions to reg-imm"));
 
 static cl::opt<bool>
-    ConvertRegReg("ppc-convert-rr-to-ri", cl::Hidden, cl::init(true),
-                  cl::desc("Convert eligible reg+reg instructions to reg+imm"));
+ConvertRegReg("ppc-convert-rr-to-ri", cl::Hidden, cl::init(true),
+              cl::desc("Convert eligible reg+reg instructions to reg+imm"));
 
 static cl::opt<bool>
     EnableSExtElimination("ppc-eliminate-signext",
@@ -113,6 +113,7 @@ private:
                       MachineInstr *MI);
 
 public:
+
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<MachineDominatorTree>();
     AU.addRequired<MachinePostDominatorTree>();
@@ -165,8 +166,8 @@ static MachineInstr *getVRegDefOrNull(MachineOperand *Op,
 
 // This function returns number of known zero bits in output of MI
 // starting from the most significant bit.
-static unsigned getKnownLeadingZeroCount(MachineInstr *MI,
-                                         const PPCInstrInfo *TII) {
+static unsigned
+getKnownLeadingZeroCount(MachineInstr *MI, const PPCInstrInfo *TII) {
   unsigned Opcode = MI->getOpcode();
   if (Opcode == PPC::RLDICL || Opcode == PPC::RLDICL_rec ||
       Opcode == PPC::RLDCL || Opcode == PPC::RLDCL_rec)
@@ -198,13 +199,15 @@ static unsigned getKnownLeadingZeroCount(MachineInstr *MI,
     // The result ranges from 0 to 64.
     return 57;
 
-  if (Opcode == PPC::LHZ || Opcode == PPC::LHZX || Opcode == PPC::LHZ8 ||
-      Opcode == PPC::LHZX8 || Opcode == PPC::LHZU || Opcode == PPC::LHZUX ||
+  if (Opcode == PPC::LHZ   || Opcode == PPC::LHZX  ||
+      Opcode == PPC::LHZ8  || Opcode == PPC::LHZX8 ||
+      Opcode == PPC::LHZU  || Opcode == PPC::LHZUX ||
       Opcode == PPC::LHZU8 || Opcode == PPC::LHZUX8)
     return 48;
 
-  if (Opcode == PPC::LBZ || Opcode == PPC::LBZX || Opcode == PPC::LBZ8 ||
-      Opcode == PPC::LBZX8 || Opcode == PPC::LBZU || Opcode == PPC::LBZUX ||
+  if (Opcode == PPC::LBZ   || Opcode == PPC::LBZX  ||
+      Opcode == PPC::LBZ8  || Opcode == PPC::LBZX8 ||
+      Opcode == PPC::LBZU  || Opcode == PPC::LBZUX ||
       Opcode == PPC::LBZU8 || Opcode == PPC::LBZUX8)
     return 56;
 
@@ -220,8 +223,8 @@ static unsigned getKnownLeadingZeroCount(MachineInstr *MI,
 // redundant by setting it's entry in the map as false. It then adds the new
 // instruction to the map with either true or false depending on if any
 // existing instructions dominated the new one.
-void PPCMIPeephole::UpdateTOCSaves(std::map<MachineInstr *, bool> &TOCSaves,
-                                   MachineInstr *MI) {
+void PPCMIPeephole::UpdateTOCSaves(
+  std::map<MachineInstr *, bool> &TOCSaves, MachineInstr *MI) {
   assert(TII->isTOCSaveMI(*MI) && "Expecting a TOC save instruction here");
   assert(MF->getSubtarget<PPCSubtarget>().isELFv2ABI() &&
          "TOC-save removal only supported on ELFv2");
@@ -248,7 +251,7 @@ void PPCMIPeephole::UpdateTOCSaves(std::map<MachineInstr *, bool> &TOCSaves,
   }
 
   bool Keep = true;
-  for (auto It = TOCSaves.begin(); It != TOCSaves.end(); It++) {
+  for (auto It = TOCSaves.begin(); It != TOCSaves.end(); It++ ) {
     MachineInstr *CurrInst = It->first;
     // If new instruction dominates an existing one, mark existing one as
     // redundant.
@@ -374,7 +377,7 @@ static void convertUnprimedAccPHIs(const PPCInstrInfo *TII,
 // Perform peephole optimizations.
 bool PPCMIPeephole::simplifyCode(void) {
   bool Simplified = false;
-  MachineInstr *ToErase = nullptr;
+  MachineInstr* ToErase = nullptr;
   std::map<MachineInstr *, bool> TOCSaves;
   const TargetRegisterInfo *TRI = &TII->getRegisterInfo();
   NumFunctionsEnteredInMIPeephole++;
@@ -465,7 +468,7 @@ bool PPCMIPeephole::simplifyCode(void) {
         if (!MI.getOperand(1).isImm() || MI.getOperand(1).getImm() != 0)
           break;
         unsigned MIDestReg = MI.getOperand(0).getReg();
-        for (MachineInstr &UseMI : MRI->use_instructions(MIDestReg))
+        for (MachineInstr& UseMI : MRI->use_instructions(MIDestReg))
           Simplified |= TII->onlyFoldImmediate(UseMI, MI, MIDestReg);
         if (MRI->use_nodbg_empty(MIDestReg)) {
           ++NumLoadImmZeroFoldedAndRemoved;
@@ -501,9 +504,9 @@ bool PPCMIPeephole::simplifyCode(void) {
         // We have to look through chains of COPY and SUBREG_TO_REG
         // to find the real source values for comparison.
         unsigned TrueReg1 =
-            TRI->lookThruCopyLike(MI.getOperand(1).getReg(), MRI);
+          TRI->lookThruCopyLike(MI.getOperand(1).getReg(), MRI);
         unsigned TrueReg2 =
-            TRI->lookThruCopyLike(MI.getOperand(2).getReg(), MRI);
+          TRI->lookThruCopyLike(MI.getOperand(2).getReg(), MRI);
 
         if (!(TrueReg1 == TrueReg2 && Register::isVirtualRegister(TrueReg1)))
           break;
@@ -523,7 +526,7 @@ bool PPCMIPeephole::simplifyCode(void) {
           if (DefOpc != PPC::XVCVDPSXDS && DefOpc != PPC::XVCVDPUXDS)
             return false;
           unsigned FeedReg1 =
-              TRI->lookThruCopyLike(DefMI->getOperand(1).getReg(), MRI);
+            TRI->lookThruCopyLike(DefMI->getOperand(1).getReg(), MRI);
           if (Register::isVirtualRegister(FeedReg1)) {
             MachineInstr *LoadMI = MRI->getVRegDef(FeedReg1);
             if (LoadMI && LoadMI->getOpcode() == PPC::LXVDSX)
@@ -615,7 +618,7 @@ bool PPCMIPeephole::simplifyCode(void) {
         unsigned MyOpcode = MI.getOpcode();
         unsigned OpNo = MyOpcode == PPC::XXSPLTW ? 1 : 2;
         unsigned TrueReg =
-            TRI->lookThruCopyLike(MI.getOperand(OpNo).getReg(), MRI);
+          TRI->lookThruCopyLike(MI.getOperand(OpNo).getReg(), MRI);
         if (!Register::isVirtualRegister(TrueReg))
           break;
         MachineInstr *DefMI = MRI->getVRegDef(TrueReg);
@@ -630,16 +633,15 @@ bool PPCMIPeephole::simplifyCode(void) {
             return false;
           MachineInstr *Splt = MRI->getVRegDef(ConvReg);
           return Splt && (Splt->getOpcode() == PPC::LXVWSX ||
-                          Splt->getOpcode() == PPC::XXSPLTW);
+            Splt->getOpcode() == PPC::XXSPLTW);
         };
-        bool AlreadySplat =
-            (MyOpcode == DefOpcode) ||
-            (MyOpcode == PPC::VSPLTB && DefOpcode == PPC::VSPLTBs) ||
-            (MyOpcode == PPC::VSPLTH && DefOpcode == PPC::VSPLTHs) ||
-            (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::XXSPLTWs) ||
-            (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::LXVWSX) ||
-            (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::MTVSRWS) ||
-            (MyOpcode == PPC::XXSPLTW && isConvertOfSplat());
+        bool AlreadySplat = (MyOpcode == DefOpcode) ||
+          (MyOpcode == PPC::VSPLTB && DefOpcode == PPC::VSPLTBs) ||
+          (MyOpcode == PPC::VSPLTH && DefOpcode == PPC::VSPLTHs) ||
+          (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::XXSPLTWs) ||
+          (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::LXVWSX) ||
+          (MyOpcode == PPC::XXSPLTW && DefOpcode == PPC::MTVSRWS)||
+          (MyOpcode == PPC::XXSPLTW && isConvertOfSplat());
         // If the instruction[s] that feed this splat have already splat
         // the value, this splat is redundant.
         if (AlreadySplat) {
@@ -679,7 +681,7 @@ bool PPCMIPeephole::simplifyCode(void) {
       case PPC::XVCVDPSP: {
         // If this is a DP->SP conversion fed by an FRSP, the FRSP is redundant.
         unsigned TrueReg =
-            TRI->lookThruCopyLike(MI.getOperand(1).getReg(), MRI);
+          TRI->lookThruCopyLike(MI.getOperand(1).getReg(), MRI);
         if (!Register::isVirtualRegister(TrueReg))
           break;
         MachineInstr *DefMI = MRI->getVRegDef(TrueReg);
@@ -688,9 +690,9 @@ bool PPCMIPeephole::simplifyCode(void) {
         // values.
         if (DefMI && DefMI->getOpcode() == PPC::XXPERMDI) {
           unsigned DefsReg1 =
-              TRI->lookThruCopyLike(DefMI->getOperand(1).getReg(), MRI);
+            TRI->lookThruCopyLike(DefMI->getOperand(1).getReg(), MRI);
           unsigned DefsReg2 =
-              TRI->lookThruCopyLike(DefMI->getOperand(2).getReg(), MRI);
+            TRI->lookThruCopyLike(DefMI->getOperand(2).getReg(), MRI);
           if (!Register::isVirtualRegister(DefsReg1) ||
               !Register::isVirtualRegister(DefsReg2))
             break;
@@ -740,8 +742,7 @@ bool PPCMIPeephole::simplifyCode(void) {
       case PPC::EXTSH:
       case PPC::EXTSH8:
       case PPC::EXTSH8_32_64: {
-        if (!EnableSExtElimination)
-          break;
+        if (!EnableSExtElimination) break;
         Register NarrowReg = MI.getOperand(1).getReg();
         if (!Register::isVirtualRegister(NarrowReg))
           break;
@@ -749,21 +750,23 @@ bool PPCMIPeephole::simplifyCode(void) {
         MachineInstr *SrcMI = MRI->getVRegDef(NarrowReg);
         // If we've used a zero-extending load that we will sign-extend,
         // just do a sign-extending load.
-        if (SrcMI->getOpcode() == PPC::LHZ || SrcMI->getOpcode() == PPC::LHZX) {
+        if (SrcMI->getOpcode() == PPC::LHZ ||
+            SrcMI->getOpcode() == PPC::LHZX) {
           if (!MRI->hasOneNonDBGUse(SrcMI->getOperand(0).getReg()))
             break;
-          auto is64Bit = [](unsigned Opcode) { return Opcode == PPC::EXTSH8; };
-          auto isXForm = [](unsigned Opcode) { return Opcode == PPC::LHZX; };
-          auto getSextLoadOp = [](bool is64Bit, bool isXForm) {
+          auto is64Bit = [] (unsigned Opcode) {
+            return Opcode == PPC::EXTSH8;
+          };
+          auto isXForm = [] (unsigned Opcode) {
+            return Opcode == PPC::LHZX;
+          };
+          auto getSextLoadOp = [] (bool is64Bit, bool isXForm) {
             if (is64Bit)
-              if (isXForm)
-                return PPC::LHAX8;
-              else
-                return PPC::LHA8;
-            else if (isXForm)
-              return PPC::LHAX;
+              if (isXForm) return PPC::LHAX8;
+              else         return PPC::LHA8;
             else
-              return PPC::LHA;
+              if (isXForm) return PPC::LHAX;
+              else         return PPC::LHA;
           };
           unsigned Opc = getSextLoadOp(is64Bit(MI.getOpcode()),
                                        isXForm(SrcMI->getOpcode()));
@@ -783,8 +786,7 @@ bool PPCMIPeephole::simplifyCode(void) {
       case PPC::EXTSW:
       case PPC::EXTSW_32:
       case PPC::EXTSW_32_64: {
-        if (!EnableSExtElimination)
-          break;
+        if (!EnableSExtElimination) break;
         Register NarrowReg = MI.getOperand(1).getReg();
         if (!Register::isVirtualRegister(NarrowReg))
           break;
@@ -792,23 +794,23 @@ bool PPCMIPeephole::simplifyCode(void) {
         MachineInstr *SrcMI = MRI->getVRegDef(NarrowReg);
         // If we've used a zero-extending load that we will sign-extend,
         // just do a sign-extending load.
-        if (SrcMI->getOpcode() == PPC::LWZ || SrcMI->getOpcode() == PPC::LWZX) {
+        if (SrcMI->getOpcode() == PPC::LWZ ||
+            SrcMI->getOpcode() == PPC::LWZX) {
           if (!MRI->hasOneNonDBGUse(SrcMI->getOperand(0).getReg()))
             break;
-          auto is64Bit = [](unsigned Opcode) {
+          auto is64Bit = [] (unsigned Opcode) {
             return Opcode == PPC::EXTSW || Opcode == PPC::EXTSW_32_64;
           };
-          auto isXForm = [](unsigned Opcode) { return Opcode == PPC::LWZX; };
-          auto getSextLoadOp = [](bool is64Bit, bool isXForm) {
+          auto isXForm = [] (unsigned Opcode) {
+            return Opcode == PPC::LWZX;
+          };
+          auto getSextLoadOp = [] (bool is64Bit, bool isXForm) {
             if (is64Bit)
-              if (isXForm)
-                return PPC::LWAX;
-              else
-                return PPC::LWA;
-            else if (isXForm)
-              return PPC::LWAX_32;
+              if (isXForm) return PPC::LWAX;
+              else         return PPC::LWA;
             else
-              return PPC::LWA_32;
+              if (isXForm) return PPC::LWAX_32;
+              else         return PPC::LWA_32;
           };
           unsigned Opc = getSextLoadOp(is64Bit(MI.getOpcode()),
                                        isXForm(SrcMI->getOpcode()));
@@ -849,8 +851,7 @@ bool PPCMIPeephole::simplifyCode(void) {
         //   %6 = COPY %5:sub_32; (optional)
         //   %8 = IMPLICIT_DEF;
         //   %7<def,tied1> = INSERT_SUBREG %8<tied0>, %6, sub_32;
-        if (!EnableZExtElimination)
-          break;
+        if (!EnableZExtElimination) break;
 
         if (MI.getOperand(2).getImm() != 0)
           break;
@@ -867,8 +868,7 @@ bool PPCMIPeephole::simplifyCode(void) {
         MachineInstr *ImpDefMI, *SubRegMI;
         ImpDefMI = MRI->getVRegDef(SrcMI->getOperand(1).getReg());
         SubRegMI = MRI->getVRegDef(SrcMI->getOperand(2).getReg());
-        if (ImpDefMI->getOpcode() != PPC::IMPLICIT_DEF)
-          break;
+        if (ImpDefMI->getOpcode() != PPC::IMPLICIT_DEF) break;
 
         SrcMI = SubRegMI;
         if (SubRegMI->getOpcode() == PPC::COPY) {
@@ -917,9 +917,8 @@ bool PPCMIPeephole::simplifyCode(void) {
             MachineInstr *LiMI =
                 getVRegDefOrNull(&DefPhiMI->getOperand(i), MRI);
             if (!LiMI ||
-                (LiMI->getOpcode() != PPC::LI &&
-                 LiMI->getOpcode() != PPC::LI8) ||
-                !MRI->hasOneNonDBGUse(LiMI->getOperand(0).getReg()) ||
+                (LiMI->getOpcode() != PPC::LI && LiMI->getOpcode() != PPC::LI8)
+                || !MRI->hasOneNonDBGUse(LiMI->getOperand(0).getReg()) ||
                 !MDT->dominates(DefDomMI, LiMI))
               return false;
           }
@@ -955,13 +954,13 @@ bool PPCMIPeephole::simplifyCode(void) {
           if (LiMI->getOpcode() == PPC::ADDI || LiMI->getOpcode() == PPC::ADDI8)
             continue;
 
-          assert(
-              (LiMI->getOpcode() == PPC::LI || LiMI->getOpcode() == PPC::LI8) &&
-              "Invalid Opcode!");
+          assert((LiMI->getOpcode() == PPC::LI ||
+                  LiMI->getOpcode() == PPC::LI8) &&
+                 "Invalid Opcode!");
           auto LiImm = LiMI->getOperand(1).getImm(); // save the imm of LI
           LiMI->RemoveOperand(1);                    // remove the imm of LI
-          LiMI->setDesc(
-              TII->get(LiMI->getOpcode() == PPC::LI ? PPC::ADDI : PPC::ADDI8));
+          LiMI->setDesc(TII->get(LiMI->getOpcode() == PPC::LI ? PPC::ADDI
+                                                              : PPC::ADDI8));
           MachineInstrBuilder(*LiMI->getParent()->getParent(), *LiMI)
               .addReg(DominatorReg)
               .addImm(LiImm); // restore the imm of LI
@@ -1024,31 +1023,27 @@ static bool isEqOrNe(MachineInstr *BI) {
 }
 
 static bool isSupportedCmpOp(unsigned opCode) {
-  return (opCode == PPC::CMPLD || opCode == PPC::CMPD || opCode == PPC::CMPLW ||
-          opCode == PPC::CMPW || opCode == PPC::CMPLDI ||
-          opCode == PPC::CMPDI || opCode == PPC::CMPLWI ||
-          opCode == PPC::CMPWI);
+  return (opCode == PPC::CMPLD  || opCode == PPC::CMPD  ||
+          opCode == PPC::CMPLW  || opCode == PPC::CMPW  ||
+          opCode == PPC::CMPLDI || opCode == PPC::CMPDI ||
+          opCode == PPC::CMPLWI || opCode == PPC::CMPWI);
 }
 
 static bool is64bitCmpOp(unsigned opCode) {
-  return (opCode == PPC::CMPLD || opCode == PPC::CMPD ||
+  return (opCode == PPC::CMPLD  || opCode == PPC::CMPD ||
           opCode == PPC::CMPLDI || opCode == PPC::CMPDI);
 }
 
 static bool isSignedCmpOp(unsigned opCode) {
-  return (opCode == PPC::CMPD || opCode == PPC::CMPW || opCode == PPC::CMPDI ||
-          opCode == PPC::CMPWI);
+  return (opCode == PPC::CMPD  || opCode == PPC::CMPW ||
+          opCode == PPC::CMPDI || opCode == PPC::CMPWI);
 }
 
 static unsigned getSignedCmpOpCode(unsigned opCode) {
-  if (opCode == PPC::CMPLD)
-    return PPC::CMPD;
-  if (opCode == PPC::CMPLW)
-    return PPC::CMPW;
-  if (opCode == PPC::CMPLDI)
-    return PPC::CMPDI;
-  if (opCode == PPC::CMPLWI)
-    return PPC::CMPWI;
+  if (opCode == PPC::CMPLD)  return PPC::CMPD;
+  if (opCode == PPC::CMPLW)  return PPC::CMPW;
+  if (opCode == PPC::CMPLDI) return PPC::CMPDI;
+  if (opCode == PPC::CMPLWI) return PPC::CMPWI;
   return opCode;
 }
 
@@ -1096,7 +1091,7 @@ static unsigned getIncomingRegForBlock(MachineInstr *Phi,
   for (unsigned I = 2, E = Phi->getNumOperands() + 1; I != E; I += 2) {
     MachineOperand &MO = Phi->getOperand(I);
     if (MO.getMBB() == MBB)
-      return Phi->getOperand(I - 1).getReg();
+      return Phi->getOperand(I-1).getReg();
   }
   llvm_unreachable("invalid src basic block for this Phi node\n");
   return 0;
@@ -1115,7 +1110,8 @@ static unsigned getSrcVReg(unsigned Reg, MachineBasicBlock *BB1,
       NextReg = getIncomingRegForBlock(Inst, BB1);
       // We track through PHI only once to avoid infinite loop.
       BB1 = nullptr;
-    } else if (Inst->isFullCopy())
+    }
+    else if (Inst->isFullCopy())
       NextReg = Inst->getOperand(1).getReg();
     if (NextReg == SrcReg || !Register::isVirtualRegister(NextReg))
       break;
@@ -1134,8 +1130,10 @@ static bool eligibleForCompareElimination(MachineBasicBlock &MBB,
     // We optimize BBs ending with a conditional branch.
     // We check only for BCC here, not BCCLR, because BCCLR
     // will be formed only later in the pipeline.
-    if (BB.succ_size() == 2 && BII != BB.instr_end() &&
-        (*BII).getOpcode() == PPC::BCC && (*BII).getOperand(1).isReg()) {
+    if (BB.succ_size() == 2 &&
+        BII != BB.instr_end() &&
+        (*BII).getOpcode() == PPC::BCC &&
+        (*BII).getOperand(1).isReg()) {
       // We optimize only if the condition code is used only by one BCC.
       Register CndReg = (*BII).getOperand(1).getReg();
       if (!Register::isVirtualRegister(CndReg) || !MRI->hasOneNonDBGUse(CndReg))
@@ -1175,23 +1173,25 @@ static bool eligibleForCompareElimination(MachineBasicBlock &MBB,
       MBBtoMoveCmp = nullptr;
       return true;
     }
-  } else if (NumPredBBs == 2) {
+  }
+  else if (NumPredBBs == 2) {
     // We check for partially redundant case.
     // So far, we support cases with only two predecessors
     // to avoid increasing the number of instructions.
     MachineBasicBlock::pred_iterator PI = MBB.pred_begin();
     MachineBasicBlock *Pred1MBB = *PI;
-    MachineBasicBlock *Pred2MBB = *(PI + 1);
+    MachineBasicBlock *Pred2MBB = *(PI+1);
 
     if (isEligibleBB(*Pred1MBB) && isEligibleForMoveCmp(*Pred2MBB)) {
       // We assume Pred1MBB is the BB containing the compare to be merged and
       // Pred2MBB is the BB to which we will append a compare instruction.
       // Hence we can proceed as is.
-    } else if (isEligibleBB(*Pred2MBB) && isEligibleForMoveCmp(*Pred1MBB)) {
+    }
+    else if (isEligibleBB(*Pred2MBB) && isEligibleForMoveCmp(*Pred1MBB)) {
       // We need to swap Pred1MBB and Pred2MBB to canonicalize.
       std::swap(Pred1MBB, Pred2MBB);
-    } else
-      return false;
+    }
+    else return false;
 
     // Here, Pred2MBB is the BB to which we need to append a compare inst.
     // We cannot move the compare instruction if operands are not available
@@ -1295,10 +1295,10 @@ bool PPCMIPeephole::eliminateRedundantCompare(void) {
     if (!eligibleForCompareElimination(MBB2, MBB1, MBBtoMoveCmp, MRI))
       continue;
 
-    MachineInstr *BI1 = &*MBB1->getFirstInstrTerminator();
+    MachineInstr *BI1   = &*MBB1->getFirstInstrTerminator();
     MachineInstr *CMPI1 = MRI->getVRegDef(BI1->getOperand(1).getReg());
 
-    MachineInstr *BI2 = &*MBB2.getFirstInstrTerminator();
+    MachineInstr *BI2   = &*MBB2.getFirstInstrTerminator();
     MachineInstr *CMPI2 = MRI->getVRegDef(BI2->getOperand(1).getReg());
     bool IsPartiallyRedundant = (MBBtoMoveCmp != nullptr);
 
@@ -1336,25 +1336,25 @@ bool PPCMIPeephole::eliminateRedundantCompare(void) {
       else if (isEqOrNe(BI1) && !CmpAgainstImmWithSignBit(CMPI1) &&
                getSignedCmpOpCode(CMPI1->getOpcode()) == CMPI2->getOpcode())
         NewOpCode = CMPI2->getOpcode();
-      else
-        continue;
+      else continue;
     }
 
     if (CMPI1->getOperand(2).isReg() && CMPI2->getOperand(2).isReg()) {
       // In case of comparisons between two registers, these two registers
       // must be same to merge two comparisons.
-      unsigned Cmp1Operand1 =
-          getSrcVReg(CMPI1->getOperand(1).getReg(), nullptr, nullptr, MRI);
-      unsigned Cmp1Operand2 =
-          getSrcVReg(CMPI1->getOperand(2).getReg(), nullptr, nullptr, MRI);
-      unsigned Cmp2Operand1 =
-          getSrcVReg(CMPI2->getOperand(1).getReg(), MBB1, &MBB2, MRI);
-      unsigned Cmp2Operand2 =
-          getSrcVReg(CMPI2->getOperand(2).getReg(), MBB1, &MBB2, MRI);
+      unsigned Cmp1Operand1 = getSrcVReg(CMPI1->getOperand(1).getReg(),
+                                         nullptr, nullptr, MRI);
+      unsigned Cmp1Operand2 = getSrcVReg(CMPI1->getOperand(2).getReg(),
+                                         nullptr, nullptr, MRI);
+      unsigned Cmp2Operand1 = getSrcVReg(CMPI2->getOperand(1).getReg(),
+                                         MBB1, &MBB2, MRI);
+      unsigned Cmp2Operand2 = getSrcVReg(CMPI2->getOperand(2).getReg(),
+                                         MBB1, &MBB2, MRI);
 
       if (Cmp1Operand1 == Cmp2Operand1 && Cmp1Operand2 == Cmp2Operand2) {
         // Same pair of registers in the same order; ready to merge as is.
-      } else if (Cmp1Operand1 == Cmp2Operand2 && Cmp1Operand2 == Cmp2Operand1) {
+      }
+      else if (Cmp1Operand1 == Cmp2Operand2 && Cmp1Operand2 == Cmp2Operand1) {
         // Same pair of registers in different order.
         // We reverse the predicate to merge compare instructions.
         PPC::Predicate Pred = (PPC::Predicate)BI2->getOperand(0).getImm();
@@ -1362,15 +1362,16 @@ bool PPCMIPeephole::eliminateRedundantCompare(void) {
         // In case of partial redundancy, we need to swap operands
         // in another compare instruction.
         SwapOperands = true;
-      } else
-        continue;
-    } else if (CMPI1->getOperand(2).isImm() && CMPI2->getOperand(2).isImm()) {
+      }
+      else continue;
+    }
+    else if (CMPI1->getOperand(2).isImm() && CMPI2->getOperand(2).isImm()) {
       // In case of comparisons between a register and an immediate,
       // the operand register must be same for two compare instructions.
-      unsigned Cmp1Operand1 =
-          getSrcVReg(CMPI1->getOperand(1).getReg(), nullptr, nullptr, MRI);
-      unsigned Cmp2Operand1 =
-          getSrcVReg(CMPI2->getOperand(1).getReg(), MBB1, &MBB2, MRI);
+      unsigned Cmp1Operand1 = getSrcVReg(CMPI1->getOperand(1).getReg(),
+                                         nullptr, nullptr, MRI);
+      unsigned Cmp2Operand1 = getSrcVReg(CMPI2->getOperand(1).getReg(),
+                                         MBB1, &MBB2, MRI);
       if (Cmp1Operand1 != Cmp2Operand1)
         continue;
 
@@ -1395,23 +1396,28 @@ bool PPCMIPeephole::eliminateRedundantCompare(void) {
             NewImm2++;
             NewImm1--;
           }
-        } else if (Diff == 1) {
+        }
+        else if (Diff == 1) {
           if (PredToInc2) {
             NewImm2++;
             NewPredicate2 = PredToInc2;
-          } else if (PredToDec1) {
+          }
+          else if (PredToDec1) {
             NewImm1--;
             NewPredicate1 = PredToDec1;
           }
-        } else if (Diff == -1) {
+        }
+        else if (Diff == -1) {
           if (PredToDec2) {
             NewImm2--;
             NewPredicate2 = PredToDec2;
-          } else if (PredToInc1) {
+          }
+          else if (PredToInc1) {
             NewImm1++;
             NewPredicate1 = PredToInc1;
           }
-        } else if (Diff == -2) {
+        }
+        else if (Diff == -2) {
           if (PredToDec2 && PredToInc1) {
             NewPredicate2 = PredToDec2;
             NewPredicate1 = PredToInc1;
@@ -1475,13 +1481,13 @@ bool PPCMIPeephole::eliminateRedundantCompare(void) {
 
       DebugLoc DL = CMPI2->getDebugLoc();
       Register NewVReg = MRI->createVirtualRegister(&PPC::CRRCRegClass);
-      BuildMI(MBB2, MBB2.begin(), DL, TII->get(PPC::PHI), NewVReg)
-          .addReg(BI1->getOperand(1).getReg())
-          .addMBB(MBB1)
-          .addReg(BI2->getOperand(1).getReg())
-          .addMBB(MBBtoMoveCmp);
+      BuildMI(MBB2, MBB2.begin(), DL,
+              TII->get(PPC::PHI), NewVReg)
+        .addReg(BI1->getOperand(1).getReg()).addMBB(MBB1)
+        .addReg(BI2->getOperand(1).getReg()).addMBB(MBBtoMoveCmp);
       BI2->getOperand(1).setReg(NewVReg);
-    } else {
+    }
+    else {
       // We finally eliminate compare instruction in MBB2.
       BI2->getOperand(1).setReg(BI1->getOperand(1).getReg());
       CMPI2->eraseFromParent();
@@ -1643,7 +1649,7 @@ bool PPCMIPeephole::combineSEXTAndSHL(MachineInstr &MI,
   return true;
 }
 
-} // namespace
+} // end default namespace
 
 INITIALIZE_PASS_BEGIN(PPCMIPeephole, DEBUG_TYPE,
                       "PowerPC MI Peephole Optimization", false, false)
@@ -1654,4 +1660,6 @@ INITIALIZE_PASS_END(PPCMIPeephole, DEBUG_TYPE,
                     "PowerPC MI Peephole Optimization", false, false)
 
 char PPCMIPeephole::ID = 0;
-FunctionPass *llvm::createPPCMIPeepholePass() { return new PPCMIPeephole(); }
+FunctionPass*
+llvm::createPPCMIPeepholePass() { return new PPCMIPeephole(); }
+

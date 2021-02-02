@@ -14,36 +14,37 @@
 // WARNING: this test is very subtle and may nto work on some systems.
 // If this is the case we'll need to futher improve it or disable it.
 #include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sanitizer/asan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
+#include <sanitizer/asan_interface.h>
 
 char FileContents[1 << 16];
 
 void FileToString(const char *path) {
   FileContents[0] = 0;
   int fd = open(path, 0);
-  if (fd < 0)
-    return;
+  if (fd < 0) return;
   char *p = FileContents;
   ssize_t size = sizeof(FileContents) - 1;
   ssize_t res = 0;
   do {
-    ssize_t got = read(fd, p, size);
+    ssize_t got = read (fd, p, size);
     if (got == 0)
       break;
-    else if (got > 0) {
-      p += got;
-      res += got;
-      size -= got;
-    } else if (errno != EINTR)
+    else if (got > 0)
+      {
+        p += got;
+        res += got;
+        size -= got;
+      }
+    else if (errno != EINTR)
       break;
   } while (size > 0 && res < sizeof(FileContents));
   if (res >= 0)
@@ -54,17 +55,15 @@ long ReadShadowRss() {
   const char *path = "/proc/self/smaps";
   FileToString(path);
   char *s = strstr(FileContents, "2008fff7000-10007fff8000");
-  if (!s)
-    return 0;
+  if (!s) return 0;
 
   s = strstr(s, "Rss:");
-  if (!s)
-    return 0;
+  if (!s) return 0;
   s = s + 4;
   return atol(s);
 }
 
-const int kAllocSize = 1 << 28; // 256Mb
+const int kAllocSize = 1 << 28;  // 256Mb
 const int kTwoMb = 1 << 21;
 const int kAsanShadowGranularity = 8;
 
@@ -98,8 +97,8 @@ int main() {
   // Print the differences.
   for (int i = 0; i < 4; i++) {
     assert(rss[i] > 0);
-    assert(rss[i + 1] >= rss[i]);
-    long diff = rss[i + 1] / rss[i];
+    assert(rss[i+1] >= rss[i]);
+    long diff = rss[i+1] / rss[i];
     fprintf(stderr, "RSS CHANGE IS %d => %d: %s (%ld vs %ld)\n", i, i + 1,
             diff < 10 ? "SMALL" : "LARGE", rss[i], rss[i + 1]);
   }

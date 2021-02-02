@@ -22,7 +22,7 @@
 void *__mempcpy_chk(void *__restrict__ s1, const void *__restrict__ s2,
                     size_t n, size_t destlen);
 
-#define mempcpy(a, b, c) __mempcpy_chk(a, b, c, (size_t)-1)
+#define mempcpy(a,b,c) __mempcpy_chk(a,b,c,(size_t)-1)
 
 #else /* VARIANT */
 
@@ -52,7 +52,7 @@ int *testStdCopyInvalidatesBuffer(std::vector<int> v) {
 int *testStdCopyBackwardInvalidatesBuffer(std::vector<int> v) {
   int n = v.size();
   int *buf = (int *)malloc(n * sizeof(int));
-
+  
   buf[0] = 66;
 
   // Call to copy_backward should invalidate buf.
@@ -77,7 +77,7 @@ class b {
   }
   unsigned *f;
 };
-} // namespace pr34460
+}
 
 void *memset(void *dest, int ch, std::size_t count);
 namespace memset_non_pod {

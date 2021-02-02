@@ -3,6 +3,6 @@ bool bar(int const *foo) {
 }
 
 int main() {
-  int foo[] = {1, 2, 3};
+  int foo[] = {1,2,3};
   return bar(foo);
 }

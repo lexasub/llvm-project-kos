@@ -7,12 +7,12 @@ template <Enum v> struct C {
 };
 template struct C<val>;
 
-template <typename T>
+template<typename T>
 struct get_size {
   static const unsigned value = sizeof(T);
 };
 
-template <typename T>
+template<typename T>
 struct X0 {
   enum {
     Val1 = get_size<T>::value,
@@ -24,14 +24,14 @@ struct X0 {
 X0<int> x0i;
 
 namespace rdar8020920 {
-template <typename T>
-struct X {
-  enum { e0 = 32 };
+  template<typename T>
+  struct X {
+    enum { e0 = 32 };
 
-  unsigned long long bitfield : e0;
+    unsigned long long bitfield : e0;
 
-  void f(int j) {
-    bitfield + j;
-  }
-};
-} // namespace rdar8020920
+    void f(int j) {
+      bitfield + j;
+    }
+  };
+}

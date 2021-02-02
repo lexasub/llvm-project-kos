@@ -31,8 +31,8 @@ MCAsmBackend::createObjectWriter(raw_pwrite_stream &OS) const {
   auto TW = createObjectTargetWriter();
   switch (TW->getFormat()) {
   case Triple::ELF:
-    return createELFObjectWriter(cast<MCELFObjectTargetWriter>(std::move(TW)),
-                                 OS, Endian == support::little);
+    return createELFObjectWriter(cast<MCELFObjectTargetWriter>(std::move(TW)), OS,
+                                 Endian == support::little);
   case Triple::MachO:
     return createMachObjectWriter(cast<MCMachObjectTargetWriter>(std::move(TW)),
                                   OS, Endian == support::little);
@@ -110,11 +110,10 @@ const MCFixupKindInfo &MCAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
   return Builtins[Kind];
 }
 
-bool MCAsmBackend::fixupNeedsRelaxationAdvanced(const MCFixup &Fixup,
-                                                bool Resolved, uint64_t Value,
-                                                const MCRelaxableFragment *DF,
-                                                const MCAsmLayout &Layout,
-                                                const bool WasForced) const {
+bool MCAsmBackend::fixupNeedsRelaxationAdvanced(
+    const MCFixup &Fixup, bool Resolved, uint64_t Value,
+    const MCRelaxableFragment *DF, const MCAsmLayout &Layout,
+    const bool WasForced) const {
   if (!Resolved)
     return true;
   return fixupNeedsRelaxation(Fixup, Value, DF, Layout);

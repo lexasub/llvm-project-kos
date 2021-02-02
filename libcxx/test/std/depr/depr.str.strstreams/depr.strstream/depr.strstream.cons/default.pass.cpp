@@ -19,21 +19,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::strstream inout;
-  int i = 123;
-  double d = 4.5;
-  std::string s("dog");
-  inout << i << ' ' << d << ' ' << s << std::ends;
-  assert(inout.str() == std::string("123 4.5 dog"));
-  i = 0;
-  d = 0;
-  s = "";
-  inout >> i >> d >> s;
-  assert(i == 123);
-  assert(d == 4.5);
-  assert(std::strcmp(s.c_str(), "dog") == 0);
-  inout.freeze(false);
+int main(int, char**)
+{
+    std::strstream inout;
+    int i = 123;
+    double d = 4.5;
+    std::string s("dog");
+    inout << i << ' ' << d << ' ' << s << std::ends;
+    assert(inout.str() == std::string("123 4.5 dog"));
+    i = 0;
+    d = 0;
+    s = "";
+    inout >> i >> d >> s;
+    assert(i == 123);
+    assert(d == 4.5);
+    assert(std::strcmp(s.c_str(), "dog") == 0);
+    inout.freeze(false);
 
   return 0;
 }

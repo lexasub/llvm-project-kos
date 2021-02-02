@@ -1,5 +1,6 @@
-// RUN: %clangxx -arch x86_64 %target_itanium_abi_host_triple -O1 -g %s -o
-// %t.out -fsanitize=address RUN: %test_debuginfo %s %t.out REQUIRES: !asan
+// RUN: %clangxx -arch x86_64 %target_itanium_abi_host_triple -O1 -g %s -o %t.out -fsanitize=address
+// RUN: %test_debuginfo %s %t.out
+// REQUIRES: !asan
 //           Zorg configures the ASAN stage2 bots to not build the asan
 //           compiler-rt. Only run this test on non-asanified configurations.
 // UNSUPPORTED: apple-lldb-pre-1000

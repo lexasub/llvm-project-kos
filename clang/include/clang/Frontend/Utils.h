@@ -86,8 +86,8 @@ public:
   /// to the list of dependencies.
   ///
   /// The default implementation ignores <built-in> and system files.
-  virtual bool sawDependency(StringRef Filename, bool FromModule, bool IsSystem,
-                             bool IsModuleFile, bool IsMissing);
+  virtual bool sawDependency(StringRef Filename, bool FromModule,
+                             bool IsSystem, bool IsModuleFile, bool IsMissing);
 
   /// Called when the end of the main file is reached.
   virtual void finishedMainFile(DiagnosticsEngine &Diags) {}
@@ -162,9 +162,7 @@ public:
   ~ModuleDependencyCollector() override { writeFileMap(); }
 
   StringRef getDest() { return DestDir; }
-  virtual bool insertSeen(StringRef Filename) {
-    return Seen.insert(Filename).second;
-  }
+  virtual bool insertSeen(StringRef Filename) { return Seen.insert(Filename).second; }
   virtual void addFile(StringRef Filename, StringRef FileDst = {});
 
   virtual void addFileMapping(StringRef VPath, StringRef RPath) {
@@ -198,8 +196,8 @@ void AttachDependencyGraphGen(Preprocessor &PP, StringRef OutputFile,
 void AttachHeaderIncludeGen(Preprocessor &PP,
                             const DependencyOutputOptions &DepOpts,
                             bool ShowAllHeaders = false,
-                            StringRef OutputPath = {}, bool ShowDepth = true,
-                            bool MSStyle = false);
+                            StringRef OutputPath = {},
+                            bool ShowDepth = true, bool MSStyle = false);
 
 /// The ChainedIncludesSource class converts headers to chained PCHs in
 /// memory, mainly for testing.

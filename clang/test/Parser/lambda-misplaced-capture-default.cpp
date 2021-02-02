@@ -8,16 +8,16 @@ void Test() {
   [=, &i, &] {};  // expected-error {{expected variable name or 'this' in lambda capture list}}
   [=, &i, = ] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
 
-  [i, &] {};       // expected-error {{capture default must be first}}
-  [i, = ] {};      // expected-error {{capture default must be first}}
-  [i, = x] {};     // expected-error {{expected variable name or 'this' in lambda capture list}}
-  [=, &i] {};      // ok
-  [&, &i] {};      // expected-error {{'&' cannot precede a capture when the capture default is '&'}}
-  [&x = i] {};     // ok
+  [i, &] {};   // expected-error {{capture default must be first}}
+  [i, = ] {};  // expected-error {{capture default must be first}}
+  [i, = x] {}; // expected-error {{expected variable name or 'this' in lambda capture list}}
+  [=, &i] {};  // ok
+  [&, &i] {};  // expected-error {{'&' cannot precede a capture when the capture default is '&'}}
+  [&x = i] {}; // ok
   [=, &x = i] {};  // ok
   [x = &i] {};     // ok
   [=, &x = &i] {}; // expected-error {{non-const lvalue reference to type 'int *' cannot bind to a temporary of type 'int *'}}
-  [&, this] {};    // expected-error {{'this' cannot be captured in this context}}
+  [&, this] {}; // expected-error {{'this' cannot be captured in this context}}
 
   [i, &, x = 2] {}; // expected-error {{capture default must be first}}
   [i, =, x = 2] {}; // expected-error {{capture default must be first}}

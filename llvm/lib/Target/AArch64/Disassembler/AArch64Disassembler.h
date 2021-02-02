@@ -19,7 +19,7 @@ namespace llvm {
 class AArch64Disassembler : public MCDisassembler {
 public:
   AArch64Disassembler(const MCSubtargetInfo &STI, MCContext &Ctx)
-      : MCDisassembler(STI, Ctx) {}
+    : MCDisassembler(STI, Ctx) {}
 
   ~AArch64Disassembler() override = default;
 

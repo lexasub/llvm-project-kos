@@ -38,7 +38,8 @@ public:
   // Uses the host triple. If CpuName is empty, uses the host CPU.
   LLVMState(const std::string &CpuName);
 
-  LLVMState(const std::string &Triple, const std::string &CpuName,
+  LLVMState(const std::string &Triple,
+            const std::string &CpuName,
             const std::string &Features = ""); // For tests.
 
   const TargetMachine &getTargetMachine() const { return *TheTargetMachine; }

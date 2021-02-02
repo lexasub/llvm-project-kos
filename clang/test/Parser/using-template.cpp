@@ -14,27 +14,27 @@ struct Foo<T, Ts...> : public Foo<Ts...> {
   using template Foo<Ts...>::Bar;
   // expected-error@-1 {{'template' keyword not permitted after 'using' keyword}}
 };
-} // namespace N1
+}
 
 namespace N2 {
 namespace foo {
-using I = int;
+  using I = int;
 }
 using template namespace foo;
 // expected-error@-1 {{'template' keyword not permitted after 'using' keyword}}
 using template template namespace foo;
 // expected-error@-1 2{{'template' keyword not permitted after 'using' keyword}}
 I i;
-} // namespace N2
+}
 
 namespace N3 {
 namespace foo {
-using I = int;
+  using I = int;
 }
 using template foo::I;
 // expected-error@-1 {{'template' keyword not permitted after 'using' keyword}}
 I i;
-} // namespace N3
+}
 
 namespace N4 {
 template <typename T>
@@ -49,4 +49,4 @@ using template <typename T> C = A<T>;
 // expected-error@-2 {{expected unqualified-id}}
 C<int> c;
 // expected-error@-1 {{no template named 'C'}}
-} // namespace N4
+}

@@ -26,7 +26,7 @@ union union_type {
   char h{1};
 };
 #pragma clang module import bar
-template <typename T>
+template<typename T>
 union_type var;
 #pragma clang module end
 #pragma clang module endbuild

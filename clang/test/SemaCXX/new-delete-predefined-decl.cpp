@@ -9,9 +9,9 @@
 
 #if defined(TEMPLATE_OVERLOAD)
 // Don't crash on global template operator new overloads.
-template <typename T> void *operator new(size_t, T);
+template<typename T> void* operator new(size_t, T);
 void test_template_overload() {
-  (void)new (0) double;
+  (void)new(0) double;
 }
 #endif
 

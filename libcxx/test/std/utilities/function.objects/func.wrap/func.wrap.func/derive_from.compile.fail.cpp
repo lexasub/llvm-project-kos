@@ -16,13 +16,11 @@
 
 #include "test_macros.h"
 
-struct S : public std::function<void()> {
-  using function::function;
-};
+struct S : public std::function<void()> { using function::function; };
 
 int main(int, char**) {
-  S f1([]() {});
-  S f2(std::allocator_arg, std::allocator<int>{}, f1);
+   S f1( [](){} );
+   S f2(std::allocator_arg, std::allocator<int>{}, f1);
 
   return 0;
 }

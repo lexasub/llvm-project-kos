@@ -52,7 +52,7 @@ private:
 REGISTER_TWEAK(RawStringLiteral)
 
 static bool isNormalString(const StringLiteral &Str, SourceLocation Cursor,
-                           SourceManager &SM) {
+                          SourceManager &SM) {
   // All chunks must be normal ASCII strings, not u8"..." etc.
   if (!Str.isAscii())
     return false;
@@ -64,7 +64,7 @@ static bool isNormalString(const StringLiteral &Str, SourceLocation Cursor,
       LastTokenBeforeCursor = *I;
   }
   // Token we care about must be a normal "string": not raw, u8, etc.
-  const char *Data = SM.getCharacterData(LastTokenBeforeCursor);
+  const char* Data = SM.getCharacterData(LastTokenBeforeCursor);
   return Data && *Data == '"';
 }
 

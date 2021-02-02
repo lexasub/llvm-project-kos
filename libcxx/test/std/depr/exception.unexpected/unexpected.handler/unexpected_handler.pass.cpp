@@ -16,9 +16,10 @@
 
 void f() {}
 
-int main(int, char**) {
-  std::unexpected_handler p = f;
-  ((void)p);
+int main(int, char**)
+{
+    std::unexpected_handler p = f;
+    ((void)p);
 
   return 0;
 }

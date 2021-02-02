@@ -19,8 +19,8 @@
 namespace mlir {
 
 /// Pull in generated enum utility declarations and definitions.
-#include "StructAttrGenTest.cpp.inc"
 #include "StructAttrGenTest.h.inc"
+#include "StructAttrGenTest.cpp.inc"
 
 /// Helper that returns an example test::TestStruct for testing its
 /// implementation.

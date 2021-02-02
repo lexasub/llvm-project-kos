@@ -28,8 +28,8 @@ void TextDiagnosticBuffer::HandleDiagnostic(DiagnosticsEngine::Level Level,
   SmallString<100> Buf;
   Info.FormatDiagnostic(Buf);
   switch (Level) {
-  default:
-    llvm_unreachable("Diagnostic not handled during diagnostic buffering!");
+  default: llvm_unreachable(
+                         "Diagnostic not handled during diagnostic buffering!");
   case DiagnosticsEngine::Note:
     All.emplace_back(Level, Notes.size());
     Notes.emplace_back(Info.getLocation(), std::string(Buf.str()));
@@ -54,8 +54,8 @@ void TextDiagnosticBuffer::FlushDiagnostics(DiagnosticsEngine &Diags) const {
   for (const auto &I : All) {
     auto Diag = Diags.Report(Diags.getCustomDiagID(I.first, "%0"));
     switch (I.first) {
-    default:
-      llvm_unreachable("Diagnostic not handled during diagnostic flushing!");
+    default: llvm_unreachable(
+                           "Diagnostic not handled during diagnostic flushing!");
     case DiagnosticsEngine::Note:
       Diag << Notes[I.second].second;
       break;

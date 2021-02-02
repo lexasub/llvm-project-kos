@@ -15,6 +15,7 @@ int f1(A, A, A, A);
 B f2(void);
 _Complex float f3(void);
 A &f4();
+
 }
 
 void test() {

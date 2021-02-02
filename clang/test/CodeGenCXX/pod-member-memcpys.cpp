@@ -13,8 +13,8 @@ struct PODLike {
 
 struct NonPOD {
   NonPOD();
-  NonPOD(const NonPOD &);
-  NonPOD &operator=(const NonPOD &);
+  NonPOD(const NonPOD&);
+  NonPOD& operator=(const NonPOD&);
 };
 
 struct Basic {
@@ -46,10 +46,10 @@ struct ArrayMember {
 };
 
 struct ZeroLengthArrayMember {
-  NonPOD np;
-  int a;
-  int b[0];
-  int c;
+    NonPOD np;
+    int a;
+    int b[0];
+    int c;
 };
 
 struct VolatileMember {
@@ -76,7 +76,7 @@ struct BitfieldMember2 {
 
 struct BitfieldMember3 {
   virtual void f();
-  int : 8;
+  int   : 8;
   int x : 1;
   int y;
 };
@@ -92,7 +92,7 @@ struct InnerClassMember {
 
 struct ReferenceMember {
   ReferenceMember(int &a, int &b, int &c, int &d)
-      : a(a), b(b), c(c), d(d) {}
+    : a(a), b(b), c(c), d(d) {}
   int &a;
   int &b;
   NonPOD np;
@@ -110,8 +110,7 @@ struct __attribute__((packed)) PackedMembers {
 
 // Assignment operators are output in the order they're encountered.
 
-#define CALL_AO(T) \
-  void callAO##T(T &a, const T &b) { a = b; }
+#define CALL_AO(T) void callAO##T(T& a, const T& b) { a = b; } 
 
 CALL_AO(Basic)
 CALL_AO(PODMember)
@@ -192,8 +191,7 @@ CALL_AO(PackedMembers)
 // copy-constructor calls are encountered. Add functions that call the copy
 // constructors of the classes above in reverse order here.
 
-#define CALL_CC(T) \
-  T callCC##T(const T &b) { return b; }
+#define CALL_CC(T) T callCC##T(const T& b) { return b; }
 
 CALL_CC(PackedMembers)
 // PackedMembers copy-assignment:

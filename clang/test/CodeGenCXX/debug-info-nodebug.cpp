@@ -20,7 +20,7 @@ struct S1 {
   int a;
   int b;
 };
-NODEBUG S1 global_struct = {2, 3};
+NODEBUG S1 global_struct = { 2, 3 };
 // YESINFO-DAG: !DICompositeType({{.*}} name: "S1"
 // NOINFO-NOT:  !DICompositeType({{.*}} name: "S1"
 // YESINFO-DAG: !DIGlobalVariable(name: "global_struct"
@@ -47,7 +47,7 @@ void func3() {
 // Function-local static and auto variables.
 void func4() {
   NODEBUG static int static_local = 6;
-  NODEBUG int normal_local = 7;
+  NODEBUG        int normal_local = 7;
 }
 // YESINFO-DAG: !DIGlobalVariable(name: "static_local"
 // NOINFO-NOT:  !DIGlobalVariable(name: "static_local"

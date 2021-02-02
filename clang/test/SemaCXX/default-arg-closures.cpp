@@ -10,9 +10,10 @@ struct DependentDefaultCtorArg {
   DependentDefaultCtorArg(int n = T::error);
 };
 struct
-    __declspec(dllexport)    // expected-note {{due to 'ExportDefaultCtorClosure' being dllexported}}
-    ExportDefaultCtorClosure // expected-note {{in instantiation of default function argument expression for 'DependentDefaultCtorArg<int>' required here}} expected-note {{implicit default constructor for 'ExportDefaultCtorClosure' first required here}}
-    : DependentDefaultCtorArg<int> {};
+__declspec(dllexport) // expected-note {{due to 'ExportDefaultCtorClosure' being dllexported}}
+ExportDefaultCtorClosure // expected-note {{in instantiation of default function argument expression for 'DependentDefaultCtorArg<int>' required here}} expected-note {{implicit default constructor for 'ExportDefaultCtorClosure' first required here}}
+: DependentDefaultCtorArg<int>
+{};
 
 template <typename T>
 struct DependentDefaultCopyArg {

@@ -6,7 +6,7 @@ jptr varaddr2;
 
 void *Thread(void *p) {
   barrier_wait(&barrier);
-  *(int *)varaddr2 = 42;
+  *(int*)varaddr2 = 42;
   return 0;
 }
 
@@ -22,7 +22,7 @@ int main() {
   varaddr2 = varaddr + kMove;
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
-  *(int *)varaddr = 43;
+  *(int*)varaddr = 43;
   __tsan_java_move(varaddr, varaddr2, kBlockSize);
   barrier_wait(&barrier);
   pthread_join(th, 0);

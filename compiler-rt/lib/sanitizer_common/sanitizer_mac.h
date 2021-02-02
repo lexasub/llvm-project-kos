@@ -66,11 +66,11 @@ void RestrictMemoryToMaxAddress(uptr max_address);
 
 extern "C" {
 static char __crashreporter_info_buff__[__sanitizer::kErrorMessageBufferSize] =
-    {};
+  {};
 static const char *__crashreporter_info__ __attribute__((__used__)) =
-    &__crashreporter_info_buff__[0];
+  &__crashreporter_info_buff__[0];
 asm(".desc ___crashreporter_info__, 0x10");
-}  // extern "C"
+} // extern "C"
 
 namespace __sanitizer {
 static BlockingMutex crashreporter_info_mutex(LINKER_INITIALIZED);
@@ -78,8 +78,7 @@ static BlockingMutex crashreporter_info_mutex(LINKER_INITIALIZED);
 inline void CRAppendCrashLogMessage(const char *msg) {
   BlockingMutexLock l(&crashreporter_info_mutex);
   internal_strlcat(__crashreporter_info_buff__, msg,
-                   sizeof(__crashreporter_info_buff__));
-}
+                   sizeof(__crashreporter_info_buff__)); }
 }  // namespace __sanitizer
 
 #endif  // SANITIZER_MAC

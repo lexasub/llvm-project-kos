@@ -30,10 +30,7 @@ static_assert(n2 == 42);                                       // expected-error
 // expected-note@-1 {{initializer of 'n2' is not a constant expression}}
 
 template <bool V, bool Default = std::is_constant_evaluated()>
-struct Templ {
-  static_assert(V);
-  static_assert(Default);
-};
+struct Templ { static_assert(V); static_assert(Default); };
 Templ<__builtin_is_constant_evaluated()> x; // type X<true>
 
 template <class T>
@@ -109,6 +106,7 @@ struct TestBitfieldWidth {
 void test_operand_of_noexcept_fn() noexcept(std::is_constant_evaluated());
 static_assert(noexcept(test_operand_of_noexcept_fn()), "");
 
+
 namespace test_ref_initialization {
 int x;
 int y;
@@ -125,23 +123,23 @@ TestConditionalExplicit e = 42;
 #endif
 
 namespace fold_initializer {
-// Global 'f' has a constant initializer.
-const float f = __builtin_is_constant_evaluated();
-static_assert(fold(f == 1.0f));
-
-void g() {
-  // Local static 'sf' has a constant initializer.
-  static const float sf = __builtin_is_constant_evaluated();
-  static_assert(fold(sf == 1.0f));
-
-  // Local non-static 'f' has a non-constant initializer.
+  // Global 'f' has a constant initializer.
   const float f = __builtin_is_constant_evaluated();
-  static_assert(fold(f == 0.0f));
-}
+  static_assert(fold(f == 1.0f));
 
-struct A {
-  static const float f;
-};
-const float A::f = __builtin_is_constant_evaluated();
-static_assert(fold(A::f == 1.0f));
-} // namespace fold_initializer
+  void g() {
+    // Local static 'sf' has a constant initializer.
+    static const float sf = __builtin_is_constant_evaluated();
+    static_assert(fold(sf == 1.0f));
+
+    // Local non-static 'f' has a non-constant initializer.
+    const float f = __builtin_is_constant_evaluated();
+    static_assert(fold(f == 0.0f));
+  }
+
+  struct A {
+    static const float f;
+  };
+  const float A::f = __builtin_is_constant_evaluated();
+  static_assert(fold(A::f == 1.0f));
+}

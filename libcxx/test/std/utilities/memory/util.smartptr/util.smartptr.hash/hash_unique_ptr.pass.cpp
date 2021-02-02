@@ -48,21 +48,20 @@ void test_disabled_with_deleter() {
 namespace std {
 
 template <class T>
-struct hash< ::min_pointer<T, std::integral_constant<size_t, 1> > > {
-  size_t operator()(::min_pointer<T, std::integral_constant<size_t, 1> > p)
-      const TEST_NOEXCEPT_FALSE {
-    if (!p)
-      return 0;
+struct hash<::min_pointer<T, std::integral_constant<size_t, 1>>> {
+  size_t operator()(::min_pointer<T, std::integral_constant<size_t, 1>> p) const TEST_NOEXCEPT_FALSE {
+    if (!p) return 0;
     return std::hash<T*>{}(std::addressof(*p));
   }
 };
-} // namespace std
+}
 
 struct A {};
 
 #endif // TEST_STD_VER >= 11
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     int* ptr = new int;
     std::unique_ptr<int> p(ptr);
@@ -72,31 +71,31 @@ int main(int, char**) {
   }
 #if TEST_STD_VER >= 11
   {
-    std::unique_ptr<int, PointerDeleter<int, 1> > pThrowingHash;
-    std::hash<std::unique_ptr<int, PointerDeleter<int, 1> > > fThrowingHash;
+    std::unique_ptr<int, PointerDeleter<int, 1>> pThrowingHash;
+    std::hash<std::unique_ptr<int, PointerDeleter<int, 1>>> fThrowingHash;
     ASSERT_NOT_NOEXCEPT(fThrowingHash(pThrowingHash));
   }
   {
-    test_enabled_with_deleter<int, Deleter<int> >();
-    test_enabled_with_deleter<int[], Deleter<int[]> >();
-    test_enabled_with_deleter<int, CopyDeleter<int> >();
-    test_enabled_with_deleter<int, CopyDeleter<int[]> >();
+    test_enabled_with_deleter<int, Deleter<int>>();
+    test_enabled_with_deleter<int[], Deleter<int[]>>();
+    test_enabled_with_deleter<int, CopyDeleter<int>>();
+    test_enabled_with_deleter<int, CopyDeleter<int[]>>();
     test_enabled_with_deleter<int, NCDeleter<int>&>();
     test_enabled_with_deleter<int[], NCDeleter<int[]>&>();
     test_enabled_with_deleter<int, NCConstDeleter<int> const&>();
     test_enabled_with_deleter<int[], NCConstDeleter<int[]> const&>();
   }
   {
-    test_enabled_with_deleter<int, PointerDeleter<int, 1> >();
-    test_enabled_with_deleter<int[], PointerDeleter<int[], 1> >();
-    test_enabled_with_deleter<A, PointerDeleter<A, 1> >();
-    test_enabled_with_deleter<A[], PointerDeleter<A[], 1> >();
+    test_enabled_with_deleter<int, PointerDeleter<int, 1>>();
+    test_enabled_with_deleter<int[], PointerDeleter<int[], 1>>();
+    test_enabled_with_deleter<A, PointerDeleter<A, 1>>();
+    test_enabled_with_deleter<A[], PointerDeleter<A[], 1>>();
 
 #if TEST_STD_VER > 14
-    test_disabled_with_deleter<int, PointerDeleter<int, 0> >();
-    test_disabled_with_deleter<int[], PointerDeleter<int[], 0> >();
-    test_disabled_with_deleter<A, PointerDeleter<A, 0> >();
-    test_disabled_with_deleter<A[], PointerDeleter<A[], 0> >();
+    test_disabled_with_deleter<int, PointerDeleter<int, 0>>();
+    test_disabled_with_deleter<int[], PointerDeleter<int[], 0>>();
+    test_disabled_with_deleter<A, PointerDeleter<A, 0>>();
+    test_disabled_with_deleter<A[], PointerDeleter<A[], 0>>();
 #endif
   }
 #endif

@@ -54,25 +54,26 @@ bool HardwareLoopInfo::canAnalyze(LoopInfo &LI) {
   return true;
 }
 
-IntrinsicCostAttributes::IntrinsicCostAttributes(const IntrinsicInst &I)
-    : II(&I), RetTy(I.getType()), IID(I.getIntrinsicID()) {
+IntrinsicCostAttributes::IntrinsicCostAttributes(const IntrinsicInst &I) :
+    II(&I), RetTy(I.getType()), IID(I.getIntrinsicID()) {
 
-  FunctionType *FTy = I.getCalledFunction()->getFunctionType();
-  ParamTys.insert(ParamTys.begin(), FTy->param_begin(), FTy->param_end());
-  Arguments.insert(Arguments.begin(), I.arg_begin(), I.arg_end());
-  if (auto *FPMO = dyn_cast<FPMathOperator>(&I))
-    FMF = FPMO->getFastMathFlags();
+ FunctionType *FTy = I.getCalledFunction()->getFunctionType();
+ ParamTys.insert(ParamTys.begin(), FTy->param_begin(), FTy->param_end());
+ Arguments.insert(Arguments.begin(), I.arg_begin(), I.arg_end());
+ if (auto *FPMO = dyn_cast<FPMathOperator>(&I))
+   FMF = FPMO->getFastMathFlags();
 }
 
 IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id,
-                                                 const CallBase &CI)
-    : II(dyn_cast<IntrinsicInst>(&CI)), RetTy(CI.getType()), IID(Id) {
+                                                 const CallBase &CI) :
+  II(dyn_cast<IntrinsicInst>(&CI)),  RetTy(CI.getType()), IID(Id) {
 
   if (const auto *FPMO = dyn_cast<FPMathOperator>(&CI))
     FMF = FPMO->getFastMathFlags();
 
   Arguments.insert(Arguments.begin(), CI.arg_begin(), CI.arg_end());
-  FunctionType *FTy = CI.getCalledFunction()->getFunctionType();
+  FunctionType *FTy =
+    CI.getCalledFunction()->getFunctionType();
   ParamTys.insert(ParamTys.begin(), FTy->param_begin(), FTy->param_end());
 }
 
@@ -86,7 +87,8 @@ IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id,
     FMF = FPMO->getFastMathFlags();
 
   Arguments.insert(Arguments.begin(), CI.arg_begin(), CI.arg_end());
-  FunctionType *FTy = CI.getCalledFunction()->getFunctionType();
+  FunctionType *FTy =
+    CI.getCalledFunction()->getFunctionType();
   ParamTys.insert(ParamTys.begin(), FTy->param_begin(), FTy->param_end());
 }
 
@@ -100,22 +102,23 @@ IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id,
     FMF = FPMO->getFastMathFlags();
 
   Arguments.insert(Arguments.begin(), CI.arg_begin(), CI.arg_end());
-  FunctionType *FTy = CI.getCalledFunction()->getFunctionType();
+  FunctionType *FTy =
+    CI.getCalledFunction()->getFunctionType();
   ParamTys.insert(ParamTys.begin(), FTy->param_begin(), FTy->param_end());
 }
 
 IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id, Type *RTy,
                                                  ArrayRef<Type *> Tys,
-                                                 FastMathFlags Flags)
-    : RetTy(RTy), IID(Id), FMF(Flags) {
+                                                 FastMathFlags Flags) :
+    RetTy(RTy), IID(Id), FMF(Flags) {
   ParamTys.insert(ParamTys.begin(), Tys.begin(), Tys.end());
 }
 
 IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id, Type *RTy,
                                                  ArrayRef<Type *> Tys,
                                                  FastMathFlags Flags,
-                                                 unsigned ScalarCost)
-    : RetTy(RTy), IID(Id), FMF(Flags), ScalarizationCost(ScalarCost) {
+                                                 unsigned ScalarCost) :
+    RetTy(RTy), IID(Id), FMF(Flags), ScalarizationCost(ScalarCost) {
   ParamTys.insert(ParamTys.begin(), Tys.begin(), Tys.end());
 }
 
@@ -123,14 +126,14 @@ IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id, Type *RTy,
                                                  ArrayRef<Type *> Tys,
                                                  FastMathFlags Flags,
                                                  unsigned ScalarCost,
-                                                 const IntrinsicInst *I)
-    : II(I), RetTy(RTy), IID(Id), FMF(Flags), ScalarizationCost(ScalarCost) {
+                                                 const IntrinsicInst *I) :
+    II(I), RetTy(RTy), IID(Id), FMF(Flags), ScalarizationCost(ScalarCost) {
   ParamTys.insert(ParamTys.begin(), Tys.begin(), Tys.end());
 }
 
 IntrinsicCostAttributes::IntrinsicCostAttributes(Intrinsic::ID Id, Type *RTy,
-                                                 ArrayRef<Type *> Tys)
-    : RetTy(RTy), IID(Id) {
+                                                 ArrayRef<Type *> Tys) :
+    RetTy(RTy), IID(Id) {
   ParamTys.insert(ParamTys.begin(), Tys.begin(), Tys.end());
 }
 
@@ -599,9 +602,10 @@ int TargetTransformInfo::getIntImmCostInst(unsigned Opcode, unsigned Idx,
   return Cost;
 }
 
-int TargetTransformInfo::getIntImmCostIntrin(
-    Intrinsic::ID IID, unsigned Idx, const APInt &Imm, Type *Ty,
-    TTI::TargetCostKind CostKind) const {
+int
+TargetTransformInfo::getIntImmCostIntrin(Intrinsic::ID IID, unsigned Idx,
+                                         const APInt &Imm, Type *Ty,
+                                         TTI::TargetCostKind CostKind) const {
   int Cost = TTIImpl->getIntImmCostIntrin(IID, Idx, Imm, Ty, CostKind);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
@@ -740,12 +744,13 @@ TargetTransformInfo::getOperandInfo(const Value *V,
 
 int TargetTransformInfo::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
-    OperandValueKind Opd1Info, OperandValueKind Opd2Info,
-    OperandValueProperties Opd1PropInfo, OperandValueProperties Opd2PropInfo,
-    ArrayRef<const Value *> Args, const Instruction *CxtI) const {
-  int Cost =
-      TTIImpl->getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info, Opd2Info,
-                                      Opd1PropInfo, Opd2PropInfo, Args, CxtI);
+    OperandValueKind Opd1Info,
+    OperandValueKind Opd2Info, OperandValueProperties Opd1PropInfo,
+    OperandValueProperties Opd2PropInfo, ArrayRef<const Value *> Args,
+    const Instruction *CxtI) const {
+  int Cost = TTIImpl->getArithmeticInstrCost(
+      Opcode, Ty, CostKind, Opd1Info, Opd2Info, Opd1PropInfo, Opd2PropInfo,
+      Args, CxtI);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
 }
@@ -862,8 +867,9 @@ int TargetTransformInfo::getMemoryOpCost(unsigned Opcode, Type *Src,
 int TargetTransformInfo::getMaskedMemoryOpCost(
     unsigned Opcode, Type *Src, Align Alignment, unsigned AddressSpace,
     TTI::TargetCostKind CostKind) const {
-  int Cost = TTIImpl->getMaskedMemoryOpCost(Opcode, Src, Alignment,
-                                            AddressSpace, CostKind);
+  int Cost =
+      TTIImpl->getMaskedMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                     CostKind);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
 }
@@ -888,8 +894,9 @@ int TargetTransformInfo::getInterleavedMemoryOpCost(
   return Cost;
 }
 
-int TargetTransformInfo::getIntrinsicInstrCost(
-    const IntrinsicCostAttributes &ICA, TTI::TargetCostKind CostKind) const {
+int
+TargetTransformInfo::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
+                                           TTI::TargetCostKind CostKind) const {
   int Cost = TTIImpl->getIntrinsicInstrCost(ICA, CostKind);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
@@ -921,11 +928,12 @@ int TargetTransformInfo::getMemcpyCost(const Instruction *I) const {
   return Cost;
 }
 
-int TargetTransformInfo::getArithmeticReductionCost(
-    unsigned Opcode, VectorType *Ty, bool IsPairwiseForm,
-    TTI::TargetCostKind CostKind) const {
-  int Cost =
-      TTIImpl->getArithmeticReductionCost(Opcode, Ty, IsPairwiseForm, CostKind);
+int TargetTransformInfo::getArithmeticReductionCost(unsigned Opcode,
+                                                    VectorType *Ty,
+                                                    bool IsPairwiseForm,
+                                                    TTI::TargetCostKind CostKind) const {
+  int Cost = TTIImpl->getArithmeticReductionCost(Opcode, Ty, IsPairwiseForm,
+                                                 CostKind);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
 }
@@ -933,8 +941,9 @@ int TargetTransformInfo::getArithmeticReductionCost(
 int TargetTransformInfo::getMinMaxReductionCost(
     VectorType *Ty, VectorType *CondTy, bool IsPairwiseForm, bool IsUnsigned,
     TTI::TargetCostKind CostKind) const {
-  int Cost = TTIImpl->getMinMaxReductionCost(Ty, CondTy, IsPairwiseForm,
-                                             IsUnsigned, CostKind);
+  int Cost =
+      TTIImpl->getMinMaxReductionCost(Ty, CondTy, IsPairwiseForm, IsUnsigned,
+                                      CostKind);
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
 }
@@ -1196,13 +1205,12 @@ static TTI::ReductionKind matchPairwiseReductionAtLevel(Instruction *I,
     return RD->Kind;
 
   // Match next level.
-  return matchPairwiseReductionAtLevel(dyn_cast<Instruction>(NextLevelOp),
-                                       Level, NumLevels);
+  return matchPairwiseReductionAtLevel(dyn_cast<Instruction>(NextLevelOp), Level,
+                                       NumLevels);
 }
 
-TTI::ReductionKind
-TTI::matchPairwiseReduction(const ExtractElementInst *ReduxRoot,
-                            unsigned &Opcode, VectorType *&Ty) {
+TTI::ReductionKind TTI::matchPairwiseReduction(
+  const ExtractElementInst *ReduxRoot, unsigned &Opcode, VectorType *&Ty) {
   if (!EnableReduxCost)
     return TTI::RK_None;
 
@@ -1265,9 +1273,8 @@ getShuffleAndOtherOprd(Value *L, Value *R) {
   return std::make_pair(L, S);
 }
 
-TTI::ReductionKind
-TTI::matchVectorSplittingReduction(const ExtractElementInst *ReduxRoot,
-                                   unsigned &Opcode, VectorType *&Ty) {
+TTI::ReductionKind TTI::matchVectorSplittingReduction(
+  const ExtractElementInst *ReduxRoot, unsigned &Opcode, VectorType *&Ty) {
 
   if (!EnableReduxCost)
     return TTI::RK_None;
@@ -1346,9 +1353,9 @@ TTI::matchVectorSplittingReduction(const ExtractElementInst *ReduxRoot,
   return RD->Kind;
 }
 
-TTI::ReductionKind TTI::matchVectorReduction(const ExtractElementInst *Root,
-                                             unsigned &Opcode, VectorType *&Ty,
-                                             bool &IsPairwise) {
+TTI::ReductionKind
+TTI::matchVectorReduction(const ExtractElementInst *Root, unsigned &Opcode,
+                          VectorType *&Ty, bool &IsPairwise) {
   TTI::ReductionKind RdxKind = matchVectorSplittingReduction(Root, Opcode, Ty);
   if (RdxKind != TTI::ReductionKind::RK_None) {
     IsPairwise = false;

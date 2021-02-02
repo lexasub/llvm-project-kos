@@ -70,8 +70,8 @@ void SourceCoverageViewText::renderViewHeader(raw_ostream &) {}
 void SourceCoverageViewText::renderViewFooter(raw_ostream &) {}
 
 void SourceCoverageViewText::renderSourceName(raw_ostream &OS, bool WholeFile) {
-  getOptions().colored_ostream(OS, raw_ostream::CYAN)
-      << getSourceName() << ":\n";
+  getOptions().colored_ostream(OS, raw_ostream::CYAN) << getSourceName()
+                                                      << ":\n";
 }
 
 void SourceCoverageViewText::renderLinePrefix(raw_ostream &OS,
@@ -198,7 +198,7 @@ void SourceCoverageViewText::renderRegionMarkers(raw_ostream &OS,
 
     if (getOptions().Debug)
       errs() << "Marker at " << S->Line << ":" << S->Col << " = "
-             << formatCount(S->Count) << "\n";
+            << formatCount(S->Count) << "\n";
   }
   OS << '\n';
 }

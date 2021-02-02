@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "NVPTXMCTargetDesc.h"
 #include "NVPTXInstPrinter.h"
 #include "NVPTXMCAsmInfo.h"
+#include "NVPTXMCTargetDesc.h"
 #include "NVPTXTargetStreamer.h"
 #include "TargetInfo/NVPTXTargetInfo.h"
 #include "llvm/MC/MCInstrInfo.h"

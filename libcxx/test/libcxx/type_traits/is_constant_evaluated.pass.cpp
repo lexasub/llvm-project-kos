@@ -19,17 +19,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  ASSERT_SAME_TYPE(decltype(std::__libcpp_is_constant_evaluated()), bool);
-  ASSERT_NOEXCEPT(std::__libcpp_is_constant_evaluated());
+int main (int, char**) {
+    ASSERT_SAME_TYPE(decltype(std::__libcpp_is_constant_evaluated()), bool);
+    ASSERT_NOEXCEPT(std::__libcpp_is_constant_evaluated());
 
-#if !defined(_LIBCPP_HAS_NO_BUILTIN_IS_CONSTANT_EVALUATED) &&                  \
-    !defined(_LIBCPP_CXX03_LANG)
-  static_assert(std::__libcpp_is_constant_evaluated(), "");
+#if !defined(_LIBCPP_HAS_NO_BUILTIN_IS_CONSTANT_EVALUATED) && !defined(_LIBCPP_CXX03_LANG)
+    static_assert(std::__libcpp_is_constant_evaluated(), "");
 #endif
 
-  bool p = std::__libcpp_is_constant_evaluated();
-  assert(!p);
+    bool p = std::__libcpp_is_constant_evaluated();
+    assert(!p);
 
-  return 0;
-}
+    return 0;
+    }

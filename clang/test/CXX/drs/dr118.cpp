@@ -13,13 +13,14 @@ void (S::*pmf)();
 // CHECK-LABEL: define {{.*}} @_Z1g
 void g(S *sp) {
   // CHECK: call void %
-  sp->f(); // 1: polymorphic
+  sp->f();        // 1: polymorphic
   // CHECK: call void @
-  sp->S::f(); // 2: non-polymorphic
+  sp->S::f();     // 2: non-polymorphic
   // CHECK: call void @
-  (sp->S::f)(); // 3: non-polymorphic
+  (sp->S::f)();   // 3: non-polymorphic
   // CHECK: call void %
-  (sp->*pmf)(); // 4: polymorphic
+  (sp->*pmf)();   // 4: polymorphic
   // CHECK: call void %
   (sp->*&S::f)(); // 5: polymorphic
 }
+

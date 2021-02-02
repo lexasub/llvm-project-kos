@@ -33,7 +33,7 @@ class R600MCCodeEmitter : public MCCodeEmitter {
 
 public:
   R600MCCodeEmitter(const MCInstrInfo &mcii, const MCRegisterInfo &mri)
-      : MRI(mri), MCII(mcii) {}
+    : MRI(mri), MCII(mcii) {}
   R600MCCodeEmitter(const R600MCCodeEmitter &) = delete;
   R600MCCodeEmitter &operator=(const R600MCCodeEmitter &) = delete;
 
@@ -48,6 +48,7 @@ public:
                              const MCSubtargetInfo &STI) const;
 
 private:
+
   void Emit(uint32_t value, raw_ostream &OS) const;
   void Emit(uint64_t value, raw_ostream &OS) const;
 
@@ -60,11 +61,17 @@ private:
   void
   verifyInstructionPredicates(const MCInst &MI,
                               const FeatureBitset &AvailableFeatures) const;
+
 };
 
 } // end anonymous namespace
 
-enum RegElement { ELEMENT_X = 0, ELEMENT_Y, ELEMENT_Z, ELEMENT_W };
+enum RegElement {
+  ELEMENT_X = 0,
+  ELEMENT_Y,
+  ELEMENT_Z,
+  ELEMENT_W
+};
 
 enum FCInstr {
   FC_IF_PREDICATE = 0,
@@ -83,15 +90,17 @@ MCCodeEmitter *llvm::createR600MCCodeEmitter(const MCInstrInfo &MCII,
 }
 
 void R600MCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
-                                          SmallVectorImpl<MCFixup> &Fixups,
-                                          const MCSubtargetInfo &STI) const {
+                                       SmallVectorImpl<MCFixup> &Fixups,
+                                       const MCSubtargetInfo &STI) const {
   verifyInstructionPredicates(MI,
                               computeAvailableFeatures(STI.getFeatureBits()));
 
   const MCInstrDesc &Desc = MCII.get(MI.getOpcode());
-  if (MI.getOpcode() == R600::RETURN || MI.getOpcode() == R600::FETCH_CLAUSE ||
-      MI.getOpcode() == R600::ALU_CLAUSE || MI.getOpcode() == R600::BUNDLE ||
-      MI.getOpcode() == R600::KILL) {
+  if (MI.getOpcode() == R600::RETURN ||
+    MI.getOpcode() == R600::FETCH_CLAUSE ||
+    MI.getOpcode() == R600::ALU_CLAUSE ||
+    MI.getOpcode() == R600::BUNDLE ||
+    MI.getOpcode() == R600::KILL) {
     return;
   } else if (IS_VTX(Desc)) {
     uint64_t InstWord01 = getBinaryCodeForInstr(MI, Fixups, STI);
@@ -102,30 +111,35 @@ void R600MCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
 
     Emit(InstWord01, OS);
     Emit(InstWord2, OS);
-    Emit((uint32_t)0, OS);
+    Emit((uint32_t) 0, OS);
   } else if (IS_TEX(Desc)) {
-    int64_t Sampler = MI.getOperand(14).getImm();
+      int64_t Sampler = MI.getOperand(14).getImm();
 
-    int64_t SrcSelect[4] = {
-        MI.getOperand(2).getImm(), MI.getOperand(3).getImm(),
-        MI.getOperand(4).getImm(), MI.getOperand(5).getImm()};
-    int64_t Offsets[3] = {MI.getOperand(6).getImm() & 0x1F,
-                          MI.getOperand(7).getImm() & 0x1F,
-                          MI.getOperand(8).getImm() & 0x1F};
+      int64_t SrcSelect[4] = {
+        MI.getOperand(2).getImm(),
+        MI.getOperand(3).getImm(),
+        MI.getOperand(4).getImm(),
+        MI.getOperand(5).getImm()
+      };
+      int64_t Offsets[3] = {
+        MI.getOperand(6).getImm() & 0x1F,
+        MI.getOperand(7).getImm() & 0x1F,
+        MI.getOperand(8).getImm() & 0x1F
+      };
 
-    uint64_t Word01 = getBinaryCodeForInstr(MI, Fixups, STI);
-    uint32_t Word2 = Sampler << 15 | SrcSelect[ELEMENT_X] << 20 |
-                     SrcSelect[ELEMENT_Y] << 23 | SrcSelect[ELEMENT_Z] << 26 |
-                     SrcSelect[ELEMENT_W] << 29 | Offsets[0] << 0 |
-                     Offsets[1] << 5 | Offsets[2] << 10;
+      uint64_t Word01 = getBinaryCodeForInstr(MI, Fixups, STI);
+      uint32_t Word2 = Sampler << 15 | SrcSelect[ELEMENT_X] << 20 |
+          SrcSelect[ELEMENT_Y] << 23 | SrcSelect[ELEMENT_Z] << 26 |
+          SrcSelect[ELEMENT_W] << 29 | Offsets[0] << 0 | Offsets[1] << 5 |
+          Offsets[2] << 10;
 
-    Emit(Word01, OS);
-    Emit(Word2, OS);
-    Emit((uint32_t)0, OS);
+      Emit(Word01, OS);
+      Emit(Word2, OS);
+      Emit((uint32_t) 0, OS);
   } else {
     uint64_t Inst = getBinaryCodeForInstr(MI, Fixups, STI);
     if ((STI.getFeatureBits()[R600::FeatureR600ALUInst]) &&
-        ((Desc.TSFlags & R600_InstFlag::OP1) ||
+       ((Desc.TSFlags & R600_InstFlag::OP1) ||
          Desc.TSFlags & R600_InstFlag::OP2)) {
       uint64_t ISAOpCode = Inst & (0x3FFULL << 39);
       Inst &= ~(0x3FFULL << 39);
@@ -147,10 +161,10 @@ unsigned R600MCCodeEmitter::getHWReg(unsigned RegNo) const {
   return MRI.getEncodingValue(RegNo) & HW_REG_MASK;
 }
 
-uint64_t
-R600MCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
-                                     SmallVectorImpl<MCFixup> &Fixups,
-                                     const MCSubtargetInfo &STI) const {
+uint64_t R600MCCodeEmitter::getMachineOpValue(const MCInst &MI,
+                                              const MCOperand &MO,
+                                        SmallVectorImpl<MCFixup> &Fixups,
+                                        const MCSubtargetInfo &STI) const {
   if (MO.isReg()) {
     if (HAS_NATIVE_OPERANDS(MCII.get(MI.getOpcode()).TSFlags))
       return MRI.getEncodingValue(MO.getReg());
@@ -165,8 +179,7 @@ R600MCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
     // We can't easily get the order of the current one, so compare against
     // the first one and adjust offset.
     const unsigned offset = (&MO == &MI.getOperand(0)) ? 0 : 4;
-    Fixups.push_back(
-        MCFixup::create(offset, MO.getExpr(), FK_SecRel_4, MI.getLoc()));
+    Fixups.push_back(MCFixup::create(offset, MO.getExpr(), FK_SecRel_4, MI.getLoc()));
     return 0;
   }
 

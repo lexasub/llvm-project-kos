@@ -51,6 +51,6 @@ protected:
   uint64_t m_start;
   uint64_t m_len;
 };
-} // namespace lldb_private
+}
 
 #endif

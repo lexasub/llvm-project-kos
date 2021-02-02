@@ -317,9 +317,9 @@ struct InsertHint : Base {
         auto& Map = Data.Maps[I];
         auto Third = *(Data.Hints[I].begin() + 2);
         for (auto K : Data.Keys) {
-          auto Itor = hint == ::Hint::Begin   ? Map.begin()
-                      : hint == ::Hint::Third ? Third
-                                              : Map.end();
+          auto Itor = hint == ::Hint::Begin
+                          ? Map.begin()
+                          : hint == ::Hint::Third ? Third : Map.end();
 #ifndef VALIDATE
           benchmark::DoNotOptimize(Map.insert(Itor, std::make_pair(K, 1)));
 #else
@@ -436,9 +436,9 @@ struct InsertAssignHint : Base {
         auto& Map = Data.Maps[I];
         auto Third = *(Data.Hints[I].begin() + 2);
         for (auto K : Data.Keys) {
-          auto Itor = hint == ::Hint::Begin   ? Map.begin()
-                      : hint == ::Hint::Third ? Third
-                                              : Map.end();
+          auto Itor = hint == ::Hint::Begin
+                          ? Map.begin()
+                          : hint == ::Hint::Third ? Third : Map.end();
 #ifndef VALIDATE
           benchmark::DoNotOptimize(Map.insert_or_assign(Itor, K, 1));
 #else
@@ -556,9 +556,9 @@ struct EmplaceHint : Base {
         auto& Map = Data.Maps[I];
         auto Third = *(Data.Hints[I].begin() + 2);
         for (auto K : Data.Keys) {
-          auto Itor = hint == ::Hint::Begin   ? Map.begin()
-                      : hint == ::Hint::Third ? Third
-                                              : Map.end();
+          auto Itor = hint == ::Hint::Begin
+                          ? Map.begin()
+                          : hint == ::Hint::Third ? Third : Map.end();
 #ifndef VALIDATE
           benchmark::DoNotOptimize(Map.emplace_hint(Itor, K, 1));
 #else
@@ -676,9 +676,9 @@ struct TryEmplaceHint : Base {
         auto& Map = Data.Maps[I];
         auto Third = *(Data.Hints[I].begin() + 2);
         for (auto K : Data.Keys) {
-          auto Itor = hint == ::Hint::Begin   ? Map.begin()
-                      : hint == ::Hint::Third ? Third
-                                              : Map.end();
+          auto Itor = hint == ::Hint::Begin
+                          ? Map.begin()
+                          : hint == ::Hint::Third ? Third : Map.end();
 #ifndef VALIDATE
           benchmark::DoNotOptimize(Map.try_emplace(Itor, K, 1));
 #else

@@ -2,16 +2,16 @@
 // expected-no-diagnostics
 
 namespace PR12866 {
-struct bar {
-  union {
-    int member;
+  struct bar {
+    union {
+      int member;
+    };
   };
-};
 
-void foo(void) {
-  (void)sizeof(bar::member);
+  void foo( void ) {
+    (void)sizeof(bar::member);
+  }
 }
-} // namespace PR12866
 
 namespace PR20021 {
 class C {
@@ -20,4 +20,4 @@ class C {
     int i;
   };
 };
-} // namespace PR20021
+}

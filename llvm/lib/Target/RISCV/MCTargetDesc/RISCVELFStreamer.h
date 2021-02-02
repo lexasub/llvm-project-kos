@@ -104,5 +104,5 @@ public:
   void emitDirectiveOptionRelax() override;
   void emitDirectiveOptionNoRelax() override;
 };
-} // namespace llvm
+}
 #endif

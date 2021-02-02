@@ -8,7 +8,7 @@ int main(void) {
   // Allocate chunk from the secondary allocator to trigger CHECK(IsALigned())
   // in its free() path.
   void *p = malloc(8 << 20);
-  free(reinterpret_cast<char *>(p) + 1);
+  free(reinterpret_cast<char*>(p) + 1);
   // CHECK: MemorySanitizer: bad pointer
   // CHECK: MemorySanitizer CHECK failed
   // CHECK: #0

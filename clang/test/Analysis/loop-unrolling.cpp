@@ -247,6 +247,7 @@ int make_new_branches_loop_uncached2() {
   return 0;
 }
 
+
 int escape_before_loop_no_unroll1() {
   int a[9];
   int k = 42;
@@ -372,7 +373,7 @@ int nested_inlined_no_unroll1() {
 #else
     clang_analyzer_numTimesReached(); // expected-warning {{14}}
 #endif
-    k = simple_unknown_bound_loop(); // reevaluation without inlining, splits the state as well
+    k = simple_unknown_bound_loop();  // reevaluation without inlining, splits the state as well
   }
   int a = 22 / k; // no-warning
   return 0;
@@ -491,6 +492,7 @@ int num_steps_over_limit3() {
   }
   return 0;
 }
+
 
 void pr34943() {
   for (int i = 0; i < 6L; ++i) {

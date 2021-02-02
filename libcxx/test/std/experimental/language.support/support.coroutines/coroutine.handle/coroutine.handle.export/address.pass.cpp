@@ -27,13 +27,11 @@ namespace coro = std::experimental;
 template <class C>
 void do_test() {
   {
-    constexpr C c;
-    ((void)c);
+    constexpr C c; ((void)c);
     static_assert(c.address() == nullptr, "");
   }
   {
-    const C c = {};
-    ((void)c);
+    const C c = {}; ((void)c);
     ASSERT_NOEXCEPT(c.address());
     ASSERT_SAME_TYPE(decltype(c.address()), void*);
     assert(c.address() == nullptr);
@@ -45,9 +43,10 @@ void do_test() {
   }
 }
 
-int main(int, char**) {
-  do_test<coro::coroutine_handle<> >();
-  do_test<coro::coroutine_handle<int> >();
+int main(int, char**)
+{
+  do_test<coro::coroutine_handle<>>();
+  do_test<coro::coroutine_handle<int>>();
 
   return 0;
 }

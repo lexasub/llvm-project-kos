@@ -21,11 +21,11 @@
 #include <string>
 
 #if LLDB_SERVER_IS_DEBUGSERVER
-#define LLGS_TEST(x) DISABLED_##x
+#define LLGS_TEST(x) DISABLED_ ## x
 #define DS_TEST(x) x
 #else
 #define LLGS_TEST(x) x
-#define DS_TEST(x) DISABLED_##x
+#define DS_TEST(x) DISABLED_ ## x
 #endif
 
 namespace llgs_tests {
@@ -37,8 +37,7 @@ public:
 
   /// Launches the server, connects it to the client and returns the client. If
   /// Log is non-empty, the server will write it's log to this file.
-  static llvm::Expected<std::unique_ptr<TestClient>>
-  launch(llvm::StringRef Log);
+  static llvm::Expected<std::unique_ptr<TestClient>> launch(llvm::StringRef Log);
 
   /// Launches the server, while specifying the inferior on its command line.
   /// When the client connects, it already has a process ready.
@@ -49,8 +48,8 @@ public:
   /// using this for generic tests, as the two stubs have different
   /// command-line interfaces.
   static llvm::Expected<std::unique_ptr<TestClient>>
-  launchCustom(llvm::StringRef Log, llvm::ArrayRef<llvm::StringRef> ServerArgs,
-               llvm::ArrayRef<llvm::StringRef> InferiorArgs);
+  launchCustom(llvm::StringRef Log, llvm::ArrayRef<llvm::StringRef> ServerArgs, llvm::ArrayRef<llvm::StringRef> InferiorArgs);
+
 
   ~TestClient() override;
   llvm::Error SetInferior(llvm::ArrayRef<std::string> inferior_args);
@@ -77,7 +76,7 @@ public:
 
   template <typename P, typename... CreateArgs>
   llvm::Expected<typename P::result_type> SendMessage(llvm::StringRef Message,
-                                                      CreateArgs &&...Args);
+                                                      CreateArgs &&... Args);
   unsigned int GetPcRegisterId();
 
 private:
@@ -101,7 +100,7 @@ private:
 
 template <typename P, typename... CreateArgs>
 llvm::Expected<typename P::result_type>
-TestClient::SendMessage(llvm::StringRef Message, CreateArgs &&...Args) {
+TestClient::SendMessage(llvm::StringRef Message, CreateArgs &&... Args) {
   std::string ResponseText;
   if (llvm::Error E = SendMessage(Message, ResponseText))
     return std::move(E);

@@ -50,8 +50,7 @@ public:
   /// If given, the version string of the linker in use.
   std::string LinkerVersion;
 
-  /// The list of target specific features to enable or disable, as written on
-  /// the command line.
+  /// The list of target specific features to enable or disable, as written on the command line.
   std::vector<std::string> FeaturesAsWritten;
 
   /// The list of target specific features to enable or disable -- this should
@@ -94,6 +93,6 @@ public:
   llvm::VersionTuple SDKVersion;
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

@@ -17,14 +17,15 @@
 
 #include <chrono>
 
-int main(int, char**) {
-  typedef std::chrono::system_clock Clock;
-  typedef std::chrono::milliseconds Duration1;
-  typedef std::chrono::microseconds Duration2;
-  {
+int main(int, char**)
+{
+    typedef std::chrono::system_clock Clock;
+    typedef std::chrono::milliseconds Duration1;
+    typedef std::chrono::microseconds Duration2;
+    {
     std::chrono::time_point<Clock, Duration2> t2(Duration2(3));
     std::chrono::time_point<Clock, Duration1> t1 = t2;
-  }
+    }
 
   return 0;
 }

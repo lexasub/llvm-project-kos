@@ -13,10 +13,11 @@
 #include "ARM.h"
 
 #include "ARMCallLowering.h"
-#include "ARMFrameLowering.h"
-#include "ARMInstrInfo.h"
 #include "ARMLegalizerInfo.h"
 #include "ARMRegisterBankInfo.h"
+#include "ARMSubtarget.h"
+#include "ARMFrameLowering.h"
+#include "ARMInstrInfo.h"
 #include "ARMSubtarget.h"
 #include "ARMTargetMachine.h"
 #include "MCTargetDesc/ARMMCTargetDesc.h"
@@ -45,25 +46,31 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_CTOR
 #include "ARMGenSubtargetInfo.inc"
 
-static cl::opt<bool> UseFusedMulOps("arm-use-mulops", cl::init(true),
-                                    cl::Hidden);
+static cl::opt<bool>
+UseFusedMulOps("arm-use-mulops",
+               cl::init(true), cl::Hidden);
 
-enum ITMode { DefaultIT, RestrictedIT, NoRestrictedIT };
+enum ITMode {
+  DefaultIT,
+  RestrictedIT,
+  NoRestrictedIT
+};
 
 static cl::opt<ITMode>
-    IT(cl::desc("IT block support"), cl::Hidden, cl::init(DefaultIT),
-       cl::ZeroOrMore,
-       cl::values(clEnumValN(DefaultIT, "arm-default-it",
-                             "Generate IT block based on arch"),
-                  clEnumValN(RestrictedIT, "arm-restrict-it",
-                             "Disallow deprecated IT based on ARMv8"),
-                  clEnumValN(NoRestrictedIT, "arm-no-restrict-it",
-                             "Allow IT blocks based on ARMv7")));
+IT(cl::desc("IT block support"), cl::Hidden, cl::init(DefaultIT),
+   cl::ZeroOrMore,
+   cl::values(clEnumValN(DefaultIT, "arm-default-it",
+                         "Generate IT block based on arch"),
+              clEnumValN(RestrictedIT, "arm-restrict-it",
+                         "Disallow deprecated IT based on ARMv8"),
+              clEnumValN(NoRestrictedIT, "arm-no-restrict-it",
+                         "Allow IT blocks based on ARMv7")));
 
 /// ForceFastISel - Use the fast-isel, even for subtargets where it is not
 /// currently supported (for testing only).
-static cl::opt<bool> ForceFastISel("arm-force-fast-isel", cl::init(false),
-                                   cl::Hidden);
+static cl::opt<bool>
+ForceFastISel("arm-force-fast-isel",
+               cl::init(false), cl::Hidden);
 
 static cl::opt<bool> EnableSubRegLiveness("arm-enable-subreg-liveness",
                                           cl::init(false), cl::Hidden);
@@ -96,9 +103,11 @@ ARMSubtarget::ARMSubtarget(const Triple &TT, const std::string &CPU,
       FrameLowering(initializeFrameLowering(CPU, FS)),
       // At this point initializeSubtargetDependencies has been called so
       // we can query directly.
-      InstrInfo(isThumb1Only() ? (ARMBaseInstrInfo *)new Thumb1InstrInfo(*this)
-                : !isThumb()   ? (ARMBaseInstrInfo *)new ARMInstrInfo(*this)
-                             : (ARMBaseInstrInfo *)new Thumb2InstrInfo(*this)),
+      InstrInfo(isThumb1Only()
+                    ? (ARMBaseInstrInfo *)new Thumb1InstrInfo(*this)
+                    : !isThumb()
+                          ? (ARMBaseInstrInfo *)new ARMInstrInfo(*this)
+                          : (ARMBaseInstrInfo *)new Thumb2InstrInfo(*this)),
       TLInfo(TM, *this) {
 
   CallLoweringInfo.reset(new ARMCallLowering(*getTargetLowering()));
@@ -143,10 +152,10 @@ void ARMSubtarget::initializeEnvironment() {
   UseSjLjEH = (isTargetDarwin() && !isTargetWatchABI() &&
                Options.ExceptionModel == ExceptionHandling::None) ||
               Options.ExceptionModel == ExceptionHandling::SjLj;
-  assert(
-      (!TM.getMCAsmInfo() || (TM.getMCAsmInfo()->getExceptionHandlingType() ==
-                              ExceptionHandling::SjLj) == UseSjLjEH) &&
-      "inconsistent sjlj choice between CodeGen and MC");
+  assert((!TM.getMCAsmInfo() ||
+          (TM.getMCAsmInfo()->getExceptionHandlingType() ==
+           ExceptionHandling::SjLj) == UseSjLjEH) &&
+         "inconsistent sjlj choice between CodeGen and MC");
 }
 
 void ARMSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
@@ -185,8 +194,7 @@ void ARMSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
   // Execute only support requires movt support
   if (genExecuteOnly()) {
     NoMovt = false;
-    assert(hasV8MBaselineOps() &&
-           "Cannot generate execute-only code for this target");
+    assert(hasV8MBaselineOps() && "Cannot generate execute-only code for this target");
   }
 
   // Keep a pointer to static instruction cost data for the specified CPU.
@@ -248,8 +256,7 @@ void ARMSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
   if (isRWPI())
     ReserveR9 = true;
 
-  // If MVEVectorCostFactor is still 0 (has not been set to anything else),
-  // default it to 2
+  // If MVEVectorCostFactor is still 0 (has not been set to anything else), default it to 2
   if (MVEVectorCostFactor == 0)
     MVEVectorCostFactor = 2;
 
@@ -408,7 +415,8 @@ bool ARMSubtarget::useStride4VFPs() const {
   // For general targets, the prologue can grow when VFPs are allocated with
   // stride 4 (more vpush instructions). But WatchOS uses a compact unwind
   // format which it's more important to get right.
-  return isTargetWatchABI() || (useWideStrideVFP() && !OptMinSize);
+  return isTargetWatchABI() ||
+         (useWideStrideVFP() && !OptMinSize);
 }
 
 bool ARMSubtarget::useMovt() const {

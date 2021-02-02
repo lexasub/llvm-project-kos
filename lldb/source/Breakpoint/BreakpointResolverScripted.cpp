@@ -8,6 +8,7 @@
 
 #include "lldb/Breakpoint/BreakpointResolverScripted.h"
 
+
 #include "lldb/Breakpoint/BreakpointLocation.h"
 #include "lldb/Core/Debugger.h"
 #include "lldb/Core/Module.h"
@@ -45,8 +46,8 @@ void BreakpointResolverScripted::CreateImplementationIfNeeded(
     return;
 
   TargetSP target_sp = breakpoint_sp->GetTargetSP();
-  ScriptInterpreter *script_interp =
-      target_sp->GetDebugger().GetScriptInterpreter();
+  ScriptInterpreter *script_interp = target_sp->GetDebugger()
+                                              .GetScriptInterpreter();
   if (!script_interp)
     return;
 
@@ -58,12 +59,13 @@ void BreakpointResolverScripted::NotifyBreakpointSet() {
   CreateImplementationIfNeeded(GetBreakpoint());
 }
 
-BreakpointResolver *BreakpointResolverScripted::CreateFromStructuredData(
+BreakpointResolver *
+BreakpointResolverScripted::CreateFromStructuredData(
     const BreakpointSP &bkpt, const StructuredData::Dictionary &options_dict,
     Status &error) {
   llvm::StringRef class_name;
   bool success;
-
+  
   success = options_dict.GetValueForKeyAsString(
       GetKey(OptionNames::PythonClassName), class_name);
   if (!success) {
@@ -73,15 +75,15 @@ BreakpointResolver *BreakpointResolverScripted::CreateFromStructuredData(
   // The Python function will actually provide the search depth, this is a
   // placeholder.
   lldb::SearchDepth depth = lldb::eSearchDepthTarget;
-
+  
   StructuredDataImpl *args_data_impl = new StructuredDataImpl();
   StructuredData::Dictionary *args_dict = nullptr;
   success = options_dict.GetValueForKeyAsDictionary(
-      GetKey(OptionNames::ScriptArgs), args_dict);
+    GetKey(OptionNames::ScriptArgs), args_dict);
   if (success) {
-    args_data_impl->SetObjectSP(args_dict->shared_from_this());
+      args_data_impl->SetObjectSP(args_dict->shared_from_this());
   }
-  return new BreakpointResolverScripted(bkpt, class_name, depth,
+  return new BreakpointResolverScripted(bkpt, class_name, depth, 
                                         args_data_impl);
 }
 
@@ -91,10 +93,10 @@ BreakpointResolverScripted::SerializeToStructuredData() {
       new StructuredData::Dictionary());
 
   options_dict_sp->AddStringItem(GetKey(OptionNames::PythonClassName),
-                                 m_class_name);
+                                   m_class_name);
   if (m_args_ptr->IsValid())
-    options_dict_sp->AddItem(GetKey(OptionNames::ScriptArgs),
-                             m_args_ptr->GetObjectSP());
+      options_dict_sp->AddItem(GetKey(OptionNames::ScriptArgs),
+          m_args_ptr->GetObjectSP());
 
   return WrapOptionsDict(options_dict_sp);
 }
@@ -111,18 +113,21 @@ Searcher::CallbackReturn BreakpointResolverScripted::SearchCallback(
 
   ScriptInterpreter *interp = GetScriptInterpreter();
   should_continue = interp->ScriptedBreakpointResolverSearchCallback(
-      m_implementation_sp, &context);
+      m_implementation_sp,
+      &context);
   if (should_continue)
     return Searcher::eCallbackReturnContinue;
 
   return Searcher::eCallbackReturnStop;
 }
 
-lldb::SearchDepth BreakpointResolverScripted::GetDepth() {
+lldb::SearchDepth
+BreakpointResolverScripted::GetDepth() {
   lldb::SearchDepth depth = lldb::eSearchDepthModule;
   if (m_implementation_sp) {
     ScriptInterpreter *interp = GetScriptInterpreter();
-    depth = interp->ScriptedBreakpointResolverSearchDepth(m_implementation_sp);
+    depth = interp->ScriptedBreakpointResolverSearchDepth(
+        m_implementation_sp);
   }
   return depth;
 }
@@ -133,7 +138,8 @@ void BreakpointResolverScripted::GetDescription(Stream *s) {
 
   if (m_implementation_sp) {
     ScriptInterpreter *interp = GetScriptInterpreter();
-    interp->GetShortHelpForCommandObject(m_implementation_sp, short_help);
+    interp->GetShortHelpForCommandObject(m_implementation_sp,
+                                         short_help);
   }
   if (!short_help.empty())
     s->PutCString(short_help.c_str());
@@ -147,7 +153,8 @@ lldb::BreakpointResolverSP
 BreakpointResolverScripted::CopyForBreakpoint(BreakpointSP &breakpoint) {
   // FIXME: Have to make a copy of the arguments from the m_args_ptr and then
   // pass that to the new resolver.
-  lldb::BreakpointResolverSP ret_sp(new BreakpointResolverScripted(
-      breakpoint, m_class_name, m_depth, nullptr));
+  lldb::BreakpointResolverSP ret_sp(
+      new BreakpointResolverScripted(breakpoint, m_class_name, m_depth, 
+                                     nullptr));
   return ret_sp;
 }

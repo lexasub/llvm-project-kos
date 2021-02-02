@@ -74,7 +74,8 @@ static void addExtraArgs(std::unique_ptr<CompilationDatabase> &Compilations) {
   if (!Compilations)
     return;
   auto AdjustingCompilations =
-      std::make_unique<ArgumentsAdjustingCompilations>(std::move(Compilations));
+      std::make_unique<ArgumentsAdjustingCompilations>(
+          std::move(Compilations));
   AdjustingCompilations->appendArgumentsAdjuster(
       getInsertArgumentAdjuster(ArgsBefore, ArgumentInsertPosition::BEGIN));
   AdjustingCompilations->appendArgumentsAdjuster(
@@ -95,8 +96,9 @@ getAST(const std::unique_ptr<CompilationDatabase> &CommonCompilations,
           << "Error while trying to load a compilation database, running "
              "without flags.\n"
           << ErrorMessage;
-      Compilations = std::make_unique<clang::tooling::FixedCompilationDatabase>(
-          ".", std::vector<std::string>());
+      Compilations =
+          std::make_unique<clang::tooling::FixedCompilationDatabase>(
+              ".", std::vector<std::string>());
     }
   }
   addExtraArgs(Compilations);

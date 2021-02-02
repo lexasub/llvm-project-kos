@@ -69,19 +69,20 @@ MCInstrInfo *createHexagonMCInstrInfo();
 MCRegisterInfo *createHexagonMCRegisterInfo(StringRef TT);
 
 namespace Hexagon_MC {
-StringRef selectHexagonCPU(StringRef CPU);
+  StringRef selectHexagonCPU(StringRef CPU);
 
-FeatureBitset completeHVXFeatures(const FeatureBitset &FB);
-/// Create a Hexagon MCSubtargetInfo instance. This is exposed so Asm parser,
-/// etc. do not need to go through TargetRegistry.
-MCSubtargetInfo *createHexagonMCSubtargetInfo(const Triple &TT, StringRef CPU,
-                                              StringRef FS);
-MCSubtargetInfo const *getArchSubtarget(MCSubtargetInfo const *STI);
-void addArchSubtarget(MCSubtargetInfo const *STI, StringRef FS);
-unsigned GetELFFlags(const MCSubtargetInfo &STI);
+  FeatureBitset completeHVXFeatures(const FeatureBitset &FB);
+  /// Create a Hexagon MCSubtargetInfo instance. This is exposed so Asm parser,
+  /// etc. do not need to go through TargetRegistry.
+  MCSubtargetInfo *createHexagonMCSubtargetInfo(const Triple &TT, StringRef CPU,
+                                                StringRef FS);
+  MCSubtargetInfo const *getArchSubtarget(MCSubtargetInfo const *STI);
+  void addArchSubtarget(MCSubtargetInfo const *STI,
+                        StringRef FS);
+  unsigned GetELFFlags(const MCSubtargetInfo &STI);
 
-llvm::ArrayRef<MCPhysReg> GetVectRegRev();
-} // namespace Hexagon_MC
+  llvm::ArrayRef<MCPhysReg> GetVectRegRev();
+}
 
 MCCodeEmitter *createHexagonMCCodeEmitter(const MCInstrInfo &MCII,
                                           const MCRegisterInfo &MRI,
@@ -98,7 +99,7 @@ createHexagonELFObjectWriter(uint8_t OSABI, StringRef CPU);
 unsigned HexagonGetLastSlot();
 unsigned HexagonConvertUnits(unsigned ItinUnits, unsigned *Lanes);
 
-} // namespace llvm
+} // End llvm namespace
 
 // Define symbolic names for Hexagon registers.  This defines a mapping from
 // register name to register number.

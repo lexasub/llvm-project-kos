@@ -9,9 +9,9 @@ float f(int y) {
   return static_cst<float>(y); // expected-error{{use of undeclared identifier 'static_cst'; did you mean 'static_cast'?}}
 }
 
-struct Foobar {};                       // expected-note {{here}}
-template <typename T> struct Goobar {}; // expected-note {{here}}
+struct Foobar {}; // expected-note {{here}}
+template<typename T> struct Goobar {}; // expected-note {{here}}
 void use_foobar() {
-  auto x = zoobar();      // expected-error {{did you mean 'Foobar'}}
+  auto x = zoobar(); // expected-error {{did you mean 'Foobar'}}
   auto y = zoobar<int>(); // expected-error {{did you mean 'Goobar'}}
 }

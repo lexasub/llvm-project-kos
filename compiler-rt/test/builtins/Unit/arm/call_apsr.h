@@ -6,14 +6,14 @@
 #endif
 
 union cpsr {
-  struct {
-    uint32_t filler : 28;
-    uint32_t v : 1;
-    uint32_t c : 1;
-    uint32_t z : 1;
-    uint32_t n : 1;
-  } flags;
-  uint32_t value;
+    struct {
+        uint32_t filler: 28;
+        uint32_t v: 1;
+        uint32_t c: 1;
+        uint32_t z: 1;
+        uint32_t n: 1;
+    } flags;
+    uint32_t value;
 };
 
 __attribute__((noinline, pcs("aapcs"))) static uint32_t call_apsr_f(float a, float b,

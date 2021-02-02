@@ -34,6 +34,7 @@ BlockingMutex global_mutex(LINKER_INITIALIZED);
 
 Flags lsan_flags;
 
+
 void DisableCounterUnderflow() {
   if (common_flags()->detect_leaks) {
     Report("Unmatched call to __lsan_enable().\n");
@@ -54,16 +55,14 @@ void RegisterLsanFlags(FlagParser *parser, Flags *f) {
 #undef LSAN_FLAG
 }
 
-#define LOG_POINTERS(...)      \
-  do {                         \
-    if (flags()->log_pointers) \
-      Report(__VA_ARGS__);     \
+#define LOG_POINTERS(...)                           \
+  do {                                              \
+    if (flags()->log_pointers) Report(__VA_ARGS__); \
   } while (0)
 
-#define LOG_THREADS(...)      \
-  do {                        \
-    if (flags()->log_threads) \
-      Report(__VA_ARGS__);    \
+#define LOG_THREADS(...)                           \
+  do {                                             \
+    if (flags()->log_threads) Report(__VA_ARGS__); \
   } while (0)
 
 class LeakSuppressionContext {
@@ -95,7 +94,7 @@ class LeakSuppressionContext {
 ALIGNED(64) static char suppression_placeholder[sizeof(LeakSuppressionContext)];
 static LeakSuppressionContext *suppression_ctx = nullptr;
 static const char kSuppressionLeak[] = "leak";
-static const char *kSuppressionTypes[] = {kSuppressionLeak};
+static const char *kSuppressionTypes[] = { kSuppressionLeak };
 static const char kStdSuppressions[] =
 #if SANITIZER_SUPPRESS_LEAK_ON_PTHREAD_EXIT
     // For more details refer to the SANITIZER_SUPPRESS_LEAK_ON_PTHREAD_EXIT
@@ -151,9 +150,9 @@ void InitCommonLsan() {
   }
 }
 
-class Decorator : public __sanitizer::SanitizerCommonDecorator {
+class Decorator: public __sanitizer::SanitizerCommonDecorator {
  public:
-  Decorator() : SanitizerCommonDecorator() {}
+  Decorator() : SanitizerCommonDecorator() { }
   const char *Error() { return Red(); }
   const char *Leak() { return Blue(); }
 };
@@ -162,15 +161,15 @@ static inline bool CanBeAHeapPointer(uptr p) {
   // Since our heap is located in mmap-ed memory, we can assume a sensible lower
   // bound on heap addresses.
   const uptr kMinAddress = 4 * 4096;
-  if (p < kMinAddress)
-    return false;
+  if (p < kMinAddress) return false;
 #if defined(__x86_64__)
   // Accept only canonical form user-space addresses.
   return ((p >> 47) == 0);
 #elif defined(__mips64)
   return ((p >> 40) == 0);
 #elif defined(__aarch64__)
-  unsigned runtimeVMA = (MostSignificantSetBitIndex(GET_CURRENT_FRAME()) + 1);
+  unsigned runtimeVMA =
+    (MostSignificantSetBitIndex(GET_CURRENT_FRAME()) + 1);
   return ((p >> runtimeVMA) == 0);
 #else
   return true;
@@ -183,7 +182,8 @@ static inline bool CanBeAHeapPointer(uptr p) {
 // (|tag| = kReachable) and finding indirectly leaked chunks
 // (|tag| = kIndirectlyLeaked). In the second case, there's no flood fill,
 // so |frontier| = 0.
-void ScanRangeForPointers(uptr begin, uptr end, Frontier *frontier,
+void ScanRangeForPointers(uptr begin, uptr end,
+                          Frontier *frontier,
                           const char *region_type, ChunkTag tag) {
   CHECK(tag == kReachable || tag == kIndirectlyLeaked);
   const uptr alignment = flags()->pointer_alignment();
@@ -193,17 +193,13 @@ void ScanRangeForPointers(uptr begin, uptr end, Frontier *frontier,
     pp = pp + alignment - pp % alignment;
   for (; pp + sizeof(void *) <= end; pp += alignment) {
     void *p = *reinterpret_cast<void **>(pp);
-    if (!CanBeAHeapPointer(reinterpret_cast<uptr>(p)))
-      continue;
+    if (!CanBeAHeapPointer(reinterpret_cast<uptr>(p))) continue;
     uptr chunk = PointsIntoChunk(p);
-    if (!chunk)
-      continue;
+    if (!chunk) continue;
     // Pointers to self don't count. This matters when tag == kIndirectlyLeaked.
-    if (chunk == begin)
-      continue;
+    if (chunk == begin) continue;
     LsanMetadata m(chunk);
-    if (m.tag() == kReachable || m.tag() == kIgnored)
-      continue;
+    if (m.tag() == kReachable || m.tag() == kIgnored) continue;
 
     // Do this check relatively late so we can log only the interesting cases.
     if (!flags()->use_poisoned && WordIsPoisoned(pp)) {
@@ -239,7 +235,7 @@ void ScanGlobalRange(uptr begin, uptr end, Frontier *frontier) {
   }
 }
 
-void ForEachExtraStackRangeCb(uptr begin, uptr end, void *arg) {
+void ForEachExtraStackRangeCb(uptr begin, uptr end, void* arg) {
   Frontier *frontier = reinterpret_cast<Frontier *>(arg);
   ScanRangeForPointers(begin, end, frontier, "FAKE STACK", kReachable);
 }
@@ -287,9 +283,9 @@ static void ProcessThreads(SuspendedThreadsList const &suspended_threads,
     LOG_THREADS("Processing thread %d.\n", os_id);
     uptr stack_begin, stack_end, tls_begin, tls_end, cache_begin, cache_end;
     DTLS *dtls;
-    bool thread_found =
-        GetThreadRangesLocked(os_id, &stack_begin, &stack_end, &tls_begin,
-                              &tls_end, &cache_begin, &cache_end, &dtls);
+    bool thread_found = GetThreadRangesLocked(os_id, &stack_begin, &stack_end,
+                                              &tls_begin, &tls_end,
+                                              &cache_begin, &cache_end, &dtls);
     if (!thread_found) {
       // If a thread can't be found in the thread registry, it's probably in the
       // process of destruction. Log this event and move on.
@@ -303,8 +299,7 @@ static void ProcessThreads(SuspendedThreadsList const &suspended_threads,
       Report("Unable to get registers from thread %d.\n", os_id);
       // If unable to get SP, consider the entire stack to be reachable unless
       // GetRegistersAndSP failed with ESRCH.
-      if (have_registers == REGISTERS_UNAVAILABLE_FATAL)
-        continue;
+      if (have_registers == REGISTERS_UNAVAILABLE_FATAL) continue;
       sp = stack_begin;
     }
 
@@ -401,8 +396,7 @@ void ScanRootRegion(Frontier *frontier, const RootRegion &root_region,
                     uptr region_begin, uptr region_end, bool is_readable) {
   uptr intersection_begin = Max(root_region.begin, region_begin);
   uptr intersection_end = Min(region_end, root_region.begin + root_region.size);
-  if (intersection_begin >= intersection_end)
-    return;
+  if (intersection_begin >= intersection_end) return;
   LOG_POINTERS("Root region %p-%p intersects with mapped region %p-%p (%s)\n",
                root_region.begin, root_region.begin + root_region.size,
                region_begin, region_end,
@@ -424,8 +418,7 @@ static void ProcessRootRegion(Frontier *frontier,
 
 // Scans root regions for heap pointers.
 static void ProcessRootRegions(Frontier *frontier) {
-  if (!flags()->use_root_regions)
-    return;
+  if (!flags()->use_root_regions) return;
   CHECK(root_regions);
   for (uptr i = 0; i < root_regions->size(); i++) {
     ProcessRootRegion(frontier, (*root_regions)[i]);
@@ -478,8 +471,8 @@ static void CollectIgnoredCb(uptr chunk, void *arg) {
   chunk = GetUserBegin(chunk);
   LsanMetadata m(chunk);
   if (m.allocated() && m.tag() == kIgnored) {
-    LOG_POINTERS("Ignored: chunk %p-%p of size %zu.\n", chunk,
-                 chunk + m.requested_size(), m.requested_size());
+    LOG_POINTERS("Ignored: chunk %p-%p of size %zu.\n",
+                 chunk, chunk + m.requested_size(), m.requested_size());
     reinterpret_cast<Frontier *>(arg)->push_back(chunk);
   }
 }
@@ -603,8 +596,7 @@ static void CollectLeaksCb(uptr chunk, void *arg) {
   LeakReport *leak_report = reinterpret_cast<LeakReport *>(arg);
   chunk = GetUserBegin(chunk);
   LsanMetadata m(chunk);
-  if (!m.allocated())
-    return;
+  if (!m.allocated()) return;
   if (m.tag() == kDirectlyLeaked || m.tag() == kIndirectlyLeaked) {
     u32 resolution = flags()->resolution;
     u32 stack_trace_id = 0;
@@ -752,12 +744,10 @@ bool HasReportedLeaks() { return has_reported_leaks; }
 void DoLeakCheck() {
   BlockingMutexLock l(&global_mutex);
   static bool already_done;
-  if (already_done)
-    return;
+  if (already_done) return;
   already_done = true;
   has_reported_leaks = CheckForLeaks();
-  if (has_reported_leaks)
-    HandleLeaks();
+  if (has_reported_leaks) HandleLeaks();
 }
 
 static int DoRecoverableLeakCheck() {
@@ -828,10 +818,9 @@ void LeakReport::AddLeakedChunk(uptr chunk, u32 stack_trace_id,
     }
   }
   if (i == leaks_.size()) {
-    if (leaks_.size() == kMaxLeaksConsidered)
-      return;
-    Leak leak = {next_id_++,     /* hit_count */ 1,  leaked_size,
-                 stack_trace_id, is_directly_leaked, /* is_suppressed */ false};
+    if (leaks_.size() == kMaxLeaksConsidered) return;
+    Leak leak = { next_id_++, /* hit_count */ 1, leaked_size, stack_trace_id,
+                  is_directly_leaked, /* is_suppressed */ false };
     leaks_.push_back(leak);
   }
   if (flags()->report_objects) {
@@ -851,10 +840,9 @@ void LeakReport::ReportTopLeaks(uptr num_leaks_to_report) {
   CHECK(leaks_.size() <= kMaxLeaksConsidered);
   Printf("\n");
   if (leaks_.size() == kMaxLeaksConsidered)
-    Printf(
-        "Too many leaks! Only the first %zu leaks encountered will be "
-        "reported.\n",
-        kMaxLeaksConsidered);
+    Printf("Too many leaks! Only the first %zu leaks encountered will be "
+           "reported.\n",
+           kMaxLeaksConsidered);
 
   uptr unsuppressed_count = UnsuppressedLeakCount();
   if (num_leaks_to_report > 0 && num_leaks_to_report < unsuppressed_count)
@@ -862,12 +850,10 @@ void LeakReport::ReportTopLeaks(uptr num_leaks_to_report) {
   Sort(leaks_.data(), leaks_.size(), &LeakComparator);
   uptr leaks_reported = 0;
   for (uptr i = 0; i < leaks_.size(); i++) {
-    if (leaks_[i].is_suppressed)
-      continue;
+    if (leaks_[i].is_suppressed) continue;
     PrintReportForLeak(i);
     leaks_reported++;
-    if (leaks_reported == num_leaks_to_report)
-      break;
+    if (leaks_reported == num_leaks_to_report) break;
   }
   if (leaks_reported < unsuppressed_count) {
     uptr remaining = unsuppressed_count - leaks_reported;
@@ -905,10 +891,9 @@ void LeakReport::PrintSummary() {
   CHECK(leaks_.size() <= kMaxLeaksConsidered);
   uptr bytes = 0, allocations = 0;
   for (uptr i = 0; i < leaks_.size(); i++) {
-    if (leaks_[i].is_suppressed)
-      continue;
-    bytes += leaks_[i].total_size;
-    allocations += leaks_[i].hit_count;
+      if (leaks_[i].is_suppressed) continue;
+      bytes += leaks_[i].total_size;
+      allocations += leaks_[i].hit_count;
   }
   InternalScopedString summary(kMaxSummaryLength);
   summary.append("%zu byte(s) leaked in %zu allocation(s).", bytes,
@@ -925,7 +910,7 @@ uptr LeakReport::ApplySuppressions() {
     if (s) {
       s->weight += leaks_[i].total_size;
       atomic_store_relaxed(&s->hit_count, atomic_load_relaxed(&s->hit_count) +
-                                              leaks_[i].hit_count);
+          leaks_[i].hit_count);
       leaks_[i].is_suppressed = true;
       ++new_suppressions;
     }
@@ -936,8 +921,7 @@ uptr LeakReport::ApplySuppressions() {
 uptr LeakReport::UnsuppressedLeakCount() {
   uptr result = 0;
   for (uptr i = 0; i < leaks_.size(); i++)
-    if (!leaks_[i].is_suppressed)
-      result++;
+    if (!leaks_[i].is_suppressed) result++;
   return result;
 }
 
@@ -949,16 +933,16 @@ uptr LeakReport::IndirectUnsuppressedLeakCount() {
   return result;
 }
 
-}  // namespace __lsan
-#else  // CAN_SANITIZE_LEAKS
+} // namespace __lsan
+#else // CAN_SANITIZE_LEAKS
 namespace __lsan {
-void InitCommonLsan() {}
-void DoLeakCheck() {}
-void DoRecoverableLeakCheckVoid() {}
-void DisableInThisThread() {}
-void EnableInThisThread() {}
-}  // namespace __lsan
-#endif  // CAN_SANITIZE_LEAKS
+void InitCommonLsan() { }
+void DoLeakCheck() { }
+void DoRecoverableLeakCheckVoid() { }
+void DisableInThisThread() { }
+void EnableInThisThread() { }
+}
+#endif // CAN_SANITIZE_LEAKS
 
 using namespace __lsan;
 
@@ -975,13 +959,11 @@ void __lsan_ignore_object(const void *p) {
   if (res == kIgnoreObjectInvalid)
     VReport(1, "__lsan_ignore_object(): no heap object found at %p", p);
   if (res == kIgnoreObjectAlreadyIgnored)
-    VReport(1,
-            "__lsan_ignore_object(): "
-            "heap object at %p is already being ignored\n",
-            p);
+    VReport(1, "__lsan_ignore_object(): "
+           "heap object at %p is already being ignored\n", p);
   if (res == kIgnoreObjectSuccess)
     VReport(1, "__lsan_ignore_object(): ignoring heap object at %p\n", p);
-#endif  // CAN_SANITIZE_LEAKS
+#endif // CAN_SANITIZE_LEAKS
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
@@ -992,7 +974,7 @@ void __lsan_register_root_region(const void *begin, uptr size) {
   RootRegion region = {reinterpret_cast<uptr>(begin), size};
   root_regions->push_back(region);
   VReport(1, "Registered root region at %p of size %llu\n", begin, size);
-#endif  // CAN_SANITIZE_LEAKS
+#endif // CAN_SANITIZE_LEAKS
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
@@ -1019,7 +1001,7 @@ void __lsan_unregister_root_region(const void *begin, uptr size) {
         begin, size);
     Die();
   }
-#endif  // CAN_SANITIZE_LEAKS
+#endif // CAN_SANITIZE_LEAKS
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
@@ -1041,7 +1023,7 @@ void __lsan_do_leak_check() {
 #if CAN_SANITIZE_LEAKS
   if (common_flags()->detect_leaks)
     __lsan::DoLeakCheck();
-#endif  // CAN_SANITIZE_LEAKS
+#endif // CAN_SANITIZE_LEAKS
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
@@ -1049,7 +1031,7 @@ int __lsan_do_recoverable_leak_check() {
 #if CAN_SANITIZE_LEAKS
   if (common_flags()->detect_leaks)
     return __lsan::DoRecoverableLeakCheck();
-#endif  // CAN_SANITIZE_LEAKS
+#endif // CAN_SANITIZE_LEAKS
   return 0;
 }
 
@@ -1058,14 +1040,14 @@ SANITIZER_INTERFACE_WEAK_DEF(const char *, __lsan_default_options, void) {
 }
 
 #if !SANITIZER_SUPPORTS_WEAK_HOOKS
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE int
-__lsan_is_turned_off() {
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
+int __lsan_is_turned_off() {
   return 0;
 }
 
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE const char *
-__lsan_default_suppressions() {
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
+const char *__lsan_default_suppressions() {
   return "";
 }
 #endif
-}  // extern "C"
+} // extern "C"

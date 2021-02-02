@@ -13,7 +13,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept {}
 };
-} // namespace std::experimental
+}
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -39,7 +39,7 @@ extern "C" void f0() {
   co_return;
 }
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<int> {
   struct promise_type {
     int get_return_object();

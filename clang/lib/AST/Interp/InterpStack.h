@@ -27,7 +27,7 @@ public:
   ~InterpStack();
 
   /// Constructs a value in place on the top of the stack.
-  template <typename T, typename... Tys> void push(Tys &&...Args) {
+  template <typename T, typename... Tys> void push(Tys &&... Args) {
     new (grow(aligned_size<T>())) T(std::forward<Tys>(Args)...);
   }
 

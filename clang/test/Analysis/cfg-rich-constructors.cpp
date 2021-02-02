@@ -38,7 +38,7 @@ void operatorNewWithConstructor() {
 // CHECK-NEXT:     5: [B1.4] (CXXConstructExpr, [B1.6], class C)
 // CHECK-NEXT:     6: new C([B1.5])
 void operatorNewWithConstructorWithOperatorNewWithContstructor() {
-  new C(new C());
+	new C(new C());
 }
 
 // CHECK: void operatorPlacementNewWithConstructorWithinPlacementArgument()
@@ -50,7 +50,7 @@ void operatorNewWithConstructorWithOperatorNewWithContstructor() {
 // CHECK-NEXT:     6:  (CXXConstructExpr, [B1.7], class C)
 // CHECK-NEXT:     7: new ([B1.4]) C([B1.6])
 void operatorPlacementNewWithConstructorWithinPlacementArgument() {
-  new (new C()) C();
+	new (new C()) C();
 }
 
 } // namespace operator_new
@@ -224,49 +224,50 @@ void referenceVariableWithTernaryOperator(bool coin) {
 
 namespace ctor_initializers {
 
-class D : public C {
+class D: public C {
   C c1;
 
 public:
-  // CHECK: D()
-  // CHECK:          1:  (CXXConstructExpr, C() (Base initializer), class C)
-  // CHECK-NEXT:     2: C([B1.1]) (Base initializer)
-  // CHECK-NEXT:     3: CFGNewAllocator(C *)
-  // CHECK-NEXT:     4:  (CXXConstructExpr, [B1.5], class C)
-  // CHECK-NEXT:     5: new C([B1.4])
-  // CHECK-NEXT:     6: [B1.5] (CXXConstructExpr, c1([B1.5]) (Member initializer), class C)
-  // CHECK-NEXT:     7: c1([B1.6]) (Member initializer)
-  D() : C(), c1(new C()) {}
 
-  // CHECK: D(int)
-  // CHECK:          1:  (CXXConstructExpr, D() (Delegating initializer), class ctor_initializers::D)
-  // CHECK-NEXT:     2: D([B1.1]) (Delegating initializer)
-  D(int) : D() {}
+// CHECK: D()
+// CHECK:          1:  (CXXConstructExpr, C() (Base initializer), class C)
+// CHECK-NEXT:     2: C([B1.1]) (Base initializer)
+// CHECK-NEXT:     3: CFGNewAllocator(C *)
+// CHECK-NEXT:     4:  (CXXConstructExpr, [B1.5], class C)
+// CHECK-NEXT:     5: new C([B1.4])
+// CHECK-NEXT:     6: [B1.5] (CXXConstructExpr, c1([B1.5]) (Member initializer), class C)
+// CHECK-NEXT:     7: c1([B1.6]) (Member initializer)
+  D(): C(), c1(new C()) {}
 
-  // FIXME: Why is CXXRecordTypedCall not present in C++17? Note that once it gets
-  // detected the test would not fail, because FileCheck allows partial matches.
-  // CHECK: D(double)
-  // CHECK:          1: C::get
-  // CHECK-NEXT:     2: [B1.1] (ImplicitCastExpr, FunctionToPointerDecay, class C (*)(void))
-  // CHECK-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4])
-  // CHECK-NEXT:     4: [B1.3]
-  // CHECK-NEXT:     5: [B1.4] (CXXConstructExpr, C([B1.4]) (Base initializer), class C)
-  // CHECK-NEXT:     6: C([B1.5]) (Base initializer)
-  // CHECK-NEXT:     7: CFGNewAllocator(C *)
-  // CHECK-NEXT:     8: C::get
-  // CHECK-NEXT:     9: [B1.8] (ImplicitCastExpr, FunctionToPointerDecay, class C (*)(void))
-  // CXX11-ELIDE-NEXT:    10: [B1.9]() (CXXRecordTypedCall, [B1.11], [B1.12])
-  // CXX11-NOELIDE-NEXT:    10: [B1.9]() (CXXRecordTypedCall, [B1.11])
-  // CXX11-NEXT:    11: [B1.10]
-  // CXX11-NEXT:    12: [B1.11] (CXXConstructExpr, [B1.13], class C)
-  // CXX11-NEXT:    13: new C([B1.12])
-  // CXX11-NEXT:    14: [B1.13] (CXXConstructExpr, c1([B1.13]) (Member initializer), class C)
-  // CXX11-NEXT:    15: c1([B1.14]) (Member initializer)
-  // CXX17-NEXT:    10: [B1.9]()
-  // CXX17-NEXT:    11: new C([B1.10])
-  // CXX17-NEXT:    12: [B1.11] (CXXConstructExpr, c1([B1.11]) (Member initializer), class C)
-  // CXX17-NEXT:    13: c1([B1.12]) (Member initializer)
-  D(double) : C(C::get()), c1(new C(C::get())) {}
+// CHECK: D(int)
+// CHECK:          1:  (CXXConstructExpr, D() (Delegating initializer), class ctor_initializers::D)
+// CHECK-NEXT:     2: D([B1.1]) (Delegating initializer)
+  D(int): D() {}
+
+// FIXME: Why is CXXRecordTypedCall not present in C++17? Note that once it gets
+// detected the test would not fail, because FileCheck allows partial matches.
+// CHECK: D(double)
+// CHECK:          1: C::get
+// CHECK-NEXT:     2: [B1.1] (ImplicitCastExpr, FunctionToPointerDecay, class C (*)(void))
+// CHECK-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4])
+// CHECK-NEXT:     4: [B1.3]
+// CHECK-NEXT:     5: [B1.4] (CXXConstructExpr, C([B1.4]) (Base initializer), class C)
+// CHECK-NEXT:     6: C([B1.5]) (Base initializer)
+// CHECK-NEXT:     7: CFGNewAllocator(C *)
+// CHECK-NEXT:     8: C::get
+// CHECK-NEXT:     9: [B1.8] (ImplicitCastExpr, FunctionToPointerDecay, class C (*)(void))
+// CXX11-ELIDE-NEXT:    10: [B1.9]() (CXXRecordTypedCall, [B1.11], [B1.12])
+// CXX11-NOELIDE-NEXT:    10: [B1.9]() (CXXRecordTypedCall, [B1.11])
+// CXX11-NEXT:    11: [B1.10]
+// CXX11-NEXT:    12: [B1.11] (CXXConstructExpr, [B1.13], class C)
+// CXX11-NEXT:    13: new C([B1.12])
+// CXX11-NEXT:    14: [B1.13] (CXXConstructExpr, c1([B1.13]) (Member initializer), class C)
+// CXX11-NEXT:    15: c1([B1.14]) (Member initializer)
+// CXX17-NEXT:    10: [B1.9]()
+// CXX17-NEXT:    11: new C([B1.10])
+// CXX17-NEXT:    12: [B1.11] (CXXConstructExpr, c1([B1.11]) (Member initializer), class C)
+// CXX17-NEXT:    13: c1([B1.12]) (Member initializer)
+  D(double): C(C::get()), c1(new C(C::get())) {}
 };
 
 // Let's see if initializers work well for fields with destructors.
@@ -280,23 +281,23 @@ class F {
   E e;
 
 public:
-  // FIXME: There should be no temporary destructor in C++17.
-  // CHECK: F()
-  // CHECK:          1: E::get
-  // CHECK-NEXT:     2: [B1.1] (ImplicitCastExpr, FunctionToPointerDecay, class ctor_initializers::E (*)(
-  // CXX11-ELIDE-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4], [B1.6], [B1.7])
-  // CXX11-NOELIDE-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4], [B1.6])
-  // CXX11-NEXT:     4: [B1.3] (BindTemporary)
-  // CXX11-NEXT:     5: [B1.4] (ImplicitCastExpr, NoOp, const class ctor_initializers::E)
-  // CXX11-NEXT:     6: [B1.5]
-  // CXX11-NEXT:     7: [B1.6] (CXXConstructExpr, e([B1.6]) (Member initializer), class ctor_initializers
-  // CXX11-NEXT:     8: e([B1.7]) (Member initializer)
-  // CXX11-NEXT:     9: ~ctor_initializers::E() (Temporary object destructor)
-  // CXX17-NEXT:     3: [B1.2]() (CXXRecordTypedCall, e([B1.4]) (Member initializer), [B1.4])
-  // CXX17-NEXT:     4: [B1.3] (BindTemporary)
-  // CXX17-NEXT:     5: e([B1.4]) (Member initializer)
-  // CXX17-NEXT:     6: ~ctor_initializers::E() (Temporary object destructor)
-  F() : e(E::get()) {}
+// FIXME: There should be no temporary destructor in C++17.
+// CHECK: F()
+// CHECK:          1: E::get
+// CHECK-NEXT:     2: [B1.1] (ImplicitCastExpr, FunctionToPointerDecay, class ctor_initializers::E (*)(
+// CXX11-ELIDE-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4], [B1.6], [B1.7])
+// CXX11-NOELIDE-NEXT:     3: [B1.2]() (CXXRecordTypedCall, [B1.4], [B1.6])
+// CXX11-NEXT:     4: [B1.3] (BindTemporary)
+// CXX11-NEXT:     5: [B1.4] (ImplicitCastExpr, NoOp, const class ctor_initializers::E)
+// CXX11-NEXT:     6: [B1.5]
+// CXX11-NEXT:     7: [B1.6] (CXXConstructExpr, e([B1.6]) (Member initializer), class ctor_initializers
+// CXX11-NEXT:     8: e([B1.7]) (Member initializer)
+// CXX11-NEXT:     9: ~ctor_initializers::E() (Temporary object destructor)
+// CXX17-NEXT:     3: [B1.2]() (CXXRecordTypedCall, e([B1.4]) (Member initializer), [B1.4])
+// CXX17-NEXT:     4: [B1.3] (BindTemporary)
+// CXX17-NEXT:     5: e([B1.4]) (Member initializer)
+// CXX17-NEXT:     6: ~ctor_initializers::E() (Temporary object destructor)
+  F(): e(E::get()) {}
 };
 } // end namespace ctor_initializers
 
@@ -467,8 +468,7 @@ void simpleTemporary() {
 // CHECK-NEXT:     6: [B2.5] (ImplicitCastExpr, UserDefinedConversion, _Bool)
 // CHECK-NEXT:     T: if [B2.6]
 void temporaryInCondition() {
-  if (C())
-    ;
+  if (C());
 }
 
 // CHECK: void temporaryInConditionVariable()
@@ -492,9 +492,9 @@ void temporaryInCondition() {
 // CXX17-NEXT:     7: [B2.6] (ImplicitCastExpr, UserDefinedConversion, _Bool)
 // CXX17-NEXT:     T: if [B2.7]
 void temporaryInConditionVariable() {
-  if (C c = C())
-    ;
+  if (C c = C());
 }
+
 
 // CHECK: void temporaryInForLoopConditionVariable()
 // CHECK:        [B2]
@@ -526,9 +526,9 @@ void temporaryInConditionVariable() {
 // CXX17-NEXT:     1: C() (CXXConstructExpr, [B3.2], class C)
 // CXX17-NEXT:     2: C c1 = C();
 void temporaryInForLoopConditionVariable() {
-  for (C c1 = C(); C c2 = C();)
-    ;
+  for (C c1 = C(); C c2 = C(); );
 }
+
 
 // CHECK: void temporaryInWhileLoopConditionVariable()
 // CXX11-ELIDE:          1: C() (CXXConstructExpr, [B2.2], [B2.3], class C)
@@ -551,8 +551,7 @@ void temporaryInForLoopConditionVariable() {
 // CXX17-NEXT:     7: [B2.6] (ImplicitCastExpr, UserDefinedConversion, _Bool)
 // CXX17-NEXT:     T: while [B2.7]
 void temporaryInWhileLoopConditionVariable() {
-  while (C c = C())
-    ;
+  while (C c = C());
 }
 
 } // end namespace temporary_object_expr_without_dtors
@@ -589,8 +588,7 @@ void simpleTemporary() {
 // CHECK-NEXT:     8: ~temporary_object_expr_with_dtors::D() (Temporary object destructor)
 // CHECK-NEXT:     T: if [B2.7]
 void temporaryInCondition() {
-  if (D())
-    ;
+  if (D());
 }
 
 // CHECK: void referenceVariableWithConstructor()
@@ -938,6 +936,7 @@ void passArgumentIntoAnotherConstructor() {
   E e = E(D());
 }
 
+
 // CHECK: void passTwoArgumentsIntoAnotherConstructor()
 // CXX11-ELIDE:          1: argument_constructors::D() (CXXConstructExpr, [B1.2], [B1.4], [B1.5], class argument_constructors::D)
 // CXX11-NOELIDE:          1: argument_constructors::D() (CXXConstructExpr, [B1.2], [B1.4], class argument_constructors::D)
@@ -993,6 +992,7 @@ void testCopyElisionWhenCopyConstructorHasExtraArguments() {
 }
 } // namespace copy_elision_with_extra_arguments
 
+
 namespace operators {
 class C {
 public:
@@ -1026,7 +1026,7 @@ void testOperators() {
 
 namespace variadic_function_arguments {
 class C {
-public:
+ public:
   C(int);
 };
 

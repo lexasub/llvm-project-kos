@@ -32,10 +32,13 @@ void DWARFAbbreviationDeclaration::clear() {
   FixedAttributeSize.reset();
 }
 
-DWARFAbbreviationDeclaration::DWARFAbbreviationDeclaration() { clear(); }
+DWARFAbbreviationDeclaration::DWARFAbbreviationDeclaration() {
+  clear();
+}
 
-bool DWARFAbbreviationDeclaration::extract(DataExtractor Data,
-                                           uint64_t *OffsetPtr) {
+bool
+DWARFAbbreviationDeclaration::extract(DataExtractor Data,
+                                      uint64_t* OffsetPtr) {
   clear();
   const uint64_t Offset = *OffsetPtr;
   Code = Data.getULEB128(OffsetPtr);
@@ -144,10 +147,9 @@ DWARFAbbreviationDeclaration::findAttributeIndex(dwarf::Attribute Attr) const {
   return None;
 }
 
-Optional<DWARFFormValue>
-DWARFAbbreviationDeclaration::getAttributeValue(const uint64_t DIEOffset,
-                                                const dwarf::Attribute Attr,
-                                                const DWARFUnit &U) const {
+Optional<DWARFFormValue> DWARFAbbreviationDeclaration::getAttributeValue(
+    const uint64_t DIEOffset, const dwarf::Attribute Attr,
+    const DWARFUnit &U) const {
   // Check if this abbreviation has this attribute without needing to skip
   // any data so we can return quickly if it doesn't.
   Optional<uint32_t> MatchAttrIndex = findAttributeIndex(Attr);

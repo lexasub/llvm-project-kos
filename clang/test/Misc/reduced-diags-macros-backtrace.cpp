@@ -3,8 +3,8 @@
 
 #define F(x) x + 1
 #define G(x) F(x) + 2
-#define ADD(x, y) G(x) + y
-#define LEVEL4(x) ADD(p, x)
+#define ADD(x,y) G(x) + y
+#define LEVEL4(x) ADD(p,x)
 #define LEVEL3(x) LEVEL4(x)
 #define LEVEL2(x) LEVEL3(x)
 #define LEVEL1(x) LEVEL2(x)

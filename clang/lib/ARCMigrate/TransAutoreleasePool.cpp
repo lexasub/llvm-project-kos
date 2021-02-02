@@ -26,8 +26,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Sema/SemaDiagnostic.h"
@@ -45,7 +45,7 @@ class ReleaseCollector : public RecursiveASTVisitor<ReleaseCollector> {
 
 public:
   ReleaseCollector(Decl *D, SmallVectorImpl<ObjCMessageExpr *> &releases)
-      : Dcl(D), Releases(releases) {}
+    : Dcl(D), Releases(releases) { }
 
   bool VisitObjCMessageExpr(ObjCMessageExpr *E) {
     if (!E->isInstanceMessage())
@@ -61,17 +61,18 @@ public:
   }
 };
 
-} // namespace
+}
 
 namespace {
 
 class AutoreleasePoolRewriter
-    : public RecursiveASTVisitor<AutoreleasePoolRewriter> {
+                         : public RecursiveASTVisitor<AutoreleasePoolRewriter> {
 public:
-  AutoreleasePoolRewriter(MigrationPass &pass) : Body(nullptr), Pass(pass) {
+  AutoreleasePoolRewriter(MigrationPass &pass)
+    : Body(nullptr), Pass(pass) {
     PoolII = &pass.Ctx.Idents.get("NSAutoreleasePool");
-    DrainSel =
-        pass.Ctx.Selectors.getNullarySelector(&pass.Ctx.Idents.get("drain"));
+    DrainSel = pass.Ctx.Selectors.getNullarySelector(
+                                                 &pass.Ctx.Idents.get("drain"));
   }
 
   void transformBody(Stmt *body, Decl *ParentD) {
@@ -82,18 +83,17 @@ public:
   ~AutoreleasePoolRewriter() {
     SmallVector<VarDecl *, 8> VarsToHandle;
 
-    for (std::map<VarDecl *, PoolVarInfo>::iterator I = PoolVars.begin(),
-                                                    E = PoolVars.end();
-         I != E; ++I) {
+    for (std::map<VarDecl *, PoolVarInfo>::iterator
+           I = PoolVars.begin(), E = PoolVars.end(); I != E; ++I) {
       VarDecl *var = I->first;
       PoolVarInfo &info = I->second;
 
       // Check that we can handle/rewrite all references of the pool.
 
       clearRefsIn(info.Dcl, info.Refs);
-      for (SmallVectorImpl<PoolScope>::iterator scpI = info.Scopes.begin(),
-                                                scpE = info.Scopes.end();
-           scpI != scpE; ++scpI) {
+      for (SmallVectorImpl<PoolScope>::iterator
+             scpI = info.Scopes.begin(),
+             scpE = info.Scopes.end(); scpI != scpE; ++scpI) {
         PoolScope &scope = *scpI;
         clearRefsIn(*scope.Begin, info.Refs);
         clearRefsIn(*scope.End, info.Refs);
@@ -115,9 +115,9 @@ public:
       Pass.TA.removeStmt(info.Dcl);
 
       // Add "@autoreleasepool { }"
-      for (SmallVectorImpl<PoolScope>::iterator scpI = info.Scopes.begin(),
-                                                scpE = info.Scopes.end();
-           scpI != scpE; ++scpI) {
+      for (SmallVectorImpl<PoolScope>::iterator
+             scpI = info.Scopes.begin(),
+             scpE = info.Scopes.end(); scpI != scpE; ++scpI) {
         PoolScope &scope = *scpI;
         clearUnavailableDiags(*scope.Begin);
         clearUnavailableDiags(*scope.End);
@@ -146,14 +146,13 @@ public:
       }
 
       // Remove rest of pool var references.
-      for (SmallVectorImpl<PoolScope>::iterator scpI = info.Scopes.begin(),
-                                                scpE = info.Scopes.end();
-           scpI != scpE; ++scpI) {
+      for (SmallVectorImpl<PoolScope>::iterator
+             scpI = info.Scopes.begin(),
+             scpE = info.Scopes.end(); scpI != scpE; ++scpI) {
         PoolScope &scope = *scpI;
         for (SmallVectorImpl<ObjCMessageExpr *>::iterator
-                 relI = scope.Releases.begin(),
-                 relE = scope.Releases.end();
-             relI != relE; ++relI) {
+               relI = scope.Releases.begin(),
+               relE = scope.Releases.end(); relI != relE; ++relI) {
           clearUnavailableDiags(*relI);
           Pass.TA.removeStmt(*relI);
         }
@@ -164,8 +163,8 @@ public:
   bool VisitCompoundStmt(CompoundStmt *S) {
     SmallVector<PoolScope, 4> Scopes;
 
-    for (Stmt::child_iterator I = S->body_begin(), E = S->body_end(); I != E;
-         ++I) {
+    for (Stmt::child_iterator
+           I = S->body_begin(), E = S->body_end(); I != E; ++I) {
       Stmt *child = getEssential(*I);
       if (DeclStmt *DclS = dyn_cast<DeclStmt>(child)) {
         if (DclS->isSingleDecl()) {
@@ -230,9 +229,8 @@ private:
     bool IsFollowedBySimpleReturnStmt;
     SmallVector<ObjCMessageExpr *, 4> Releases;
 
-    PoolScope()
-        : PoolVar(nullptr), CompoundParent(nullptr), Begin(), End(),
-          IsFollowedBySimpleReturnStmt(false) {}
+    PoolScope() : PoolVar(nullptr), CompoundParent(nullptr), Begin(), End(),
+                  IsFollowedBySimpleReturnStmt(false) { }
 
     SourceRange getIndentedRange() const {
       Stmt::child_iterator rangeS = Begin;
@@ -246,8 +244,7 @@ private:
     }
   };
 
-  class NameReferenceChecker
-      : public RecursiveASTVisitor<NameReferenceChecker> {
+  class NameReferenceChecker : public RecursiveASTVisitor<NameReferenceChecker>{
     ASTContext &Ctx;
     SourceRange ScopeRange;
     SourceLocation &referenceLoc, &declarationLoc;
@@ -256,7 +253,8 @@ private:
     NameReferenceChecker(ASTContext &ctx, PoolScope &scope,
                          SourceLocation &referenceLoc,
                          SourceLocation &declarationLoc)
-        : Ctx(ctx), referenceLoc(referenceLoc), declarationLoc(declarationLoc) {
+      : Ctx(ctx), referenceLoc(referenceLoc),
+        declarationLoc(declarationLoc) {
       ScopeRange = SourceRange((*scope.Begin)->getBeginLoc(),
                                (*scope.End)->getBeginLoc());
     }
@@ -314,20 +312,19 @@ private:
           }
 
       for (; SI != SE; ++SI) {
-        nameUsedOutsideScope =
-            !NameReferenceChecker(Pass.Ctx, scope, referenceLoc, declarationLoc)
-                 .TraverseStmt(*SI);
+        nameUsedOutsideScope = !NameReferenceChecker(Pass.Ctx, scope,
+                                                     referenceLoc,
+                                              declarationLoc).TraverseStmt(*SI);
         if (nameUsedOutsideScope)
           break;
       }
 
-      // If not all references were cleared it means some
-      // variables/typenames/etc declared inside the pool scope are used outside
-      // of it. We won't try to rewrite the pool.
+      // If not all references were cleared it means some variables/typenames/etc
+      // declared inside the pool scope are used outside of it.
+      // We won't try to rewrite the pool.
       if (nameUsedOutsideScope) {
         Pass.TA.reportError("a name is referenced outside the "
-                            "NSAutoreleasePool scope that it was declared in",
-                            referenceLoc);
+            "NSAutoreleasePool scope that it was declared in", referenceLoc);
         Pass.TA.reportNote("name declared here", declarationLoc);
         Pass.TA.reportNote("intended @autoreleasepool scope begins here",
                            (*scope.Begin)->getBeginLoc());
@@ -350,12 +347,10 @@ private:
   }
 
   bool isPoolCreation(Expr *E) {
-    if (!E)
-      return false;
+    if (!E) return false;
     E = getEssential(E);
     ObjCMessageExpr *ME = dyn_cast<ObjCMessageExpr>(E);
-    if (!ME)
-      return false;
+    if (!ME) return false;
     if (ME->getMethodFamily() == OMF_new &&
         ME->getReceiverKind() == ObjCMessageExpr::Class &&
         isNSAutoreleasePool(ME->getReceiverInterface()))
@@ -375,12 +370,10 @@ private:
   }
 
   bool isPoolDrain(VarDecl *poolVar, Stmt *S) {
-    if (!S)
-      return false;
+    if (!S) return false;
     S = getEssential(S);
     ObjCMessageExpr *ME = dyn_cast<ObjCMessageExpr>(S);
-    if (!ME)
-      return false;
+    if (!ME) return false;
     if (ME->getReceiverKind() == ObjCMessageExpr::Instance) {
       Expr *rec = getEssential(ME->getInstanceReceiver());
       if (DeclRefExpr *dref = dyn_cast<DeclRefExpr>(rec))
@@ -406,7 +399,7 @@ private:
   }
 
   static Expr *getEssential(Expr *E) {
-    return cast<Expr>(getEssential((Stmt *)E));
+    return cast<Expr>(getEssential((Stmt*)E));
   }
   static Stmt *getEssential(Stmt *S) {
     if (FullExpr *FE = dyn_cast<FullExpr>(S))
@@ -427,7 +420,7 @@ private:
     ExprSet Refs;
     SmallVector<PoolScope, 2> Scopes;
 
-    PoolVarInfo() : Dcl(nullptr) {}
+    PoolVarInfo() : Dcl(nullptr) { }
   };
 
   std::map<VarDecl *, PoolVarInfo> PoolVars;

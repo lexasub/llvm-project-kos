@@ -12,24 +12,24 @@
 #include <algorithm>
 #include <vector>
 
-#include "gtest/gtest.h"
 #include "interception/interception.h"
-#include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_test_utils.h"
+#include "sanitizer_common/sanitizer_libc.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "gtest/gtest.h"
 
 using namespace __sanitizer;
 
-#define COMMON_INTERCEPTOR_READ_WRITE_RANGE(ctx, ptr, size) \
-  do {                                                      \
-    ((std::vector<unsigned> *)ctx)->push_back(size);        \
-    ptr = ptr;                                              \
+#define COMMON_INTERCEPTOR_READ_WRITE_RANGE(ctx, ptr, size)                    \
+  do {                                                                         \
+    ((std::vector<unsigned> *)ctx)->push_back(size);                           \
+    ptr = ptr;                                                                 \
   } while (0)
 
-#define COMMON_INTERCEPTOR_READ_RANGE(ctx, ptr, size) \
+#define COMMON_INTERCEPTOR_READ_RANGE(ctx, ptr, size)                          \
   COMMON_INTERCEPTOR_READ_WRITE_RANGE(ctx, ptr, size)
 
-#define COMMON_INTERCEPTOR_WRITE_RANGE(ctx, ptr, size) \
+#define COMMON_INTERCEPTOR_WRITE_RANGE(ctx, ptr, size)                         \
   COMMON_INTERCEPTOR_READ_WRITE_RANGE(ctx, ptr, size)
 
 #define SANITIZER_INTERCEPT_PRINTF 1
@@ -50,8 +50,9 @@ static void verifyFormatResults(const char *format, unsigned n,
                                 const std::vector<unsigned> &computed_sizes,
                                 const std::vector<unsigned> &expected_sizes) {
   // "+ 1" because of the format string
-  ASSERT_EQ(n + 1, computed_sizes.size())
-      << "Unexpected number of format arguments: '" << format << "'";
+  ASSERT_EQ(n + 1,
+            computed_sizes.size()) << "Unexpected number of format arguments: '"
+                                   << format << "'";
   for (unsigned i = 0; i < n; ++i)
     EXPECT_EQ(expected_sizes[i], computed_sizes[i + 1])
         << "Unexpect write size for argument " << i << ", format string '"
@@ -97,7 +98,7 @@ static void testScanfPartial(const char *format, int scanf_result, unsigned n,
                              ...) {
   va_list ap;
   va_start(ap, n);
-  testScanf2(format, scanf_result, /* allowGnuMalloc */ true, n, ap);
+  testScanf2(format, scanf_result, /* allowGnuMalloc */ true,  n, ap);
   va_end(ap);
 }
 
@@ -237,10 +238,10 @@ static void testPrintf2(const char *format, unsigned n,
     expected_sizes.push_back(va_arg(expected_sizes_va, unsigned));
 
   // 16 args should be enough.
-  testPrintf3((void *)&printf_sizes, format, test_buf, test_buf, test_buf,
-              test_buf, test_buf, test_buf, test_buf, test_buf, test_buf,
-              test_buf, test_buf, test_buf, test_buf, test_buf, test_buf,
-              test_buf);
+  testPrintf3((void *)&printf_sizes, format,
+             test_buf, test_buf, test_buf, test_buf, test_buf, test_buf,
+             test_buf, test_buf, test_buf, test_buf, test_buf, test_buf,
+             test_buf, test_buf, test_buf, test_buf);
   verifyFormatResults(format, n, printf_sizes, expected_sizes);
 }
 

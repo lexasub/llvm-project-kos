@@ -22,36 +22,32 @@ int c = b;
 // CHECK-DAG: @_ZL1d = internal thread_local global i32 0
 static thread_local int d = g();
 
-struct U {
-  static thread_local int m;
-};
+struct U { static thread_local int m; };
 // LINUX-DAG: @_ZN1U1mE ={{.*}} thread_local global i32 0
 // DARWIN-DAG: @_ZN1U1mE = internal thread_local global i32 0
 thread_local int U::m = f();
 
 namespace MismatchedInitType {
-// Check that we don't crash here when we're forced to create a new global
-// variable (with a different type) when we add the initializer.
-union U {
-  int a;
-  float f;
-  constexpr U() : f(0.0) {}
-};
-static thread_local U u;
-void *p = &u;
-} // namespace MismatchedInitType
+  // Check that we don't crash here when we're forced to create a new global
+  // variable (with a different type) when we add the initializer.
+  union U {
+    int a;
+    float f;
+    constexpr U() : f(0.0) {}
+  };
+  static thread_local U u;
+  void *p = &u;
+}
 
-template <typename T> struct V { static thread_local int m; };
-template <typename T> thread_local int V<T>::m = g();
+template<typename T> struct V { static thread_local int m; };
+template<typename T> thread_local int V<T>::m = g();
 
-template <typename T> struct W { static thread_local int m; };
-template <typename T> thread_local int W<T>::m = 123;
+template<typename T> struct W { static thread_local int m; };
+template<typename T> thread_local int W<T>::m = 123;
 
-struct Dtor {
-  ~Dtor();
-};
-template <typename T> struct X { static thread_local Dtor m; };
-template <typename T> thread_local Dtor X<T>::m;
+struct Dtor { ~Dtor(); };
+template<typename T> struct X { static thread_local Dtor m; };
+template<typename T> thread_local Dtor X<T>::m;
 
 // CHECK-DAG: @e ={{.*}} global
 void *e = V<int>::m + W<int>::m + &X<int>::m;
@@ -105,6 +101,7 @@ void *e2 = V<char>::m + W<char>::m + &X<char>::m;
 // CHECK-NOT: @_ZTHN1WIiE1mE =
 // CHECK-NOT: @_ZTHN1WIfE1mE =
 // CHECK-NOT: @_ZTHL1d =
+
 
 // Individual variable initialization functions:
 
@@ -224,13 +221,8 @@ int f() {
 // LINUX: call void @_ZTHN1XIcE1mE()
 // LINUX: ret {{.*}}* @_ZN1XIcE1mE
 
-struct S {
-  S();
-  ~S();
-};
-struct T {
-  ~T();
-};
+struct S { S(); ~S(); };
+struct T { ~T(); };
 
 // CHECK-LABEL: define{{.*}} void @_Z8tls_dtorv()
 void tls_dtor() {
@@ -313,6 +305,7 @@ void set_anon_i() {
 // CHECK: call void @[[C_INIT]]()
 // CHECK: call void @[[E_INIT]]()
 
+
 // CHECK: define {{.*}}@__tls_init()
 // CHECK: load i8, i8* @__tls_guard
 // CHECK: %[[NEED_TLS_INIT:.*]] = icmp eq i8 %{{.*}}, 0
@@ -328,12 +321,14 @@ void set_anon_i() {
 // CHECK: call void @[[U_M_INIT]]()
 // CHECK-NOT: call void @[[V_M_INIT]]()
 
+
 // LINUX: define weak_odr hidden i32* @_ZTW1a()
 // DARWIN: define cxx_fast_tlscc i32* @_ZTW1a()
 // LINUX:   call void @_ZTH1a()
 // DARWIN: call cxx_fast_tlscc void @_ZTH1a()
 // CHECK:   ret i32* @a
 // CHECK: }
+
 
 // Should not emit a thread wrapper for internal-linkage unused variable 'd'.
 // We separately check that 'd' does in fact get initialized with the other

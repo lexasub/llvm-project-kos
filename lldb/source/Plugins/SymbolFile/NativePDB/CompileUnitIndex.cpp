@@ -125,12 +125,12 @@ CompilandIndexItem &CompileUnitIndex::GetOrCreateCompiland(uint16_t modi) {
   std::unique_ptr<llvm::msf::MappedBlockStream> stream_data =
       m_index.pdb().createIndexedStream(stream);
 
-  std::unique_ptr<CompilandIndexItem> &cci = result.first->second;
+
+  std::unique_ptr<CompilandIndexItem>& cci = result.first->second;
 
   if (!stream_data) {
     llvm::pdb::ModuleDebugStreamRef debug_stream(descriptor, nullptr);
-    cci = std::make_unique<CompilandIndexItem>(
-        PdbCompilandId{modi}, debug_stream, std::move(descriptor));
+    cci = std::make_unique<CompilandIndexItem>(PdbCompilandId{ modi }, debug_stream, std::move(descriptor));
     return *cci;
   }
 

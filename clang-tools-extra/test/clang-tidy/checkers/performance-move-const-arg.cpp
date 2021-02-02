@@ -219,10 +219,9 @@ void lambda1() {
   f(MoveSemantics());
 }
 
-template <class T>
-struct function {};
+template<class T> struct function {};
 
-template <typename Result, typename... Args>
+template<typename Result, typename... Args>
 class function<Result(Args...)> {
 public:
   function() = default;

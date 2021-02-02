@@ -19,7 +19,7 @@
 namespace llvm {
 class PPCSubtarget;
 
-class PPCFrameLowering : public TargetFrameLowering {
+class PPCFrameLowering: public TargetFrameLowering {
   const PPCSubtarget &Subtarget;
   const unsigned ReturnSaveOffset;
   const unsigned TOCSaveOffset;
@@ -58,7 +58,8 @@ class PPCFrameLowering : public TargetFrameLowering {
    *         If either output parameter refers to a required scratch register
    *         that isn't available, it will be set to an invalid value.
    */
-  bool findScratchRegister(MachineBasicBlock *MBB, bool UseAtEnd,
+  bool findScratchRegister(MachineBasicBlock *MBB,
+                           bool UseAtEnd,
                            bool TwoUniqueRegsRequired = false,
                            Register *SR1 = nullptr,
                            Register *SR2 = nullptr) const;
@@ -72,9 +73,9 @@ class PPCFrameLowering : public TargetFrameLowering {
   void createTailCallBranchInstr(MachineBasicBlock &MBB) const;
 
   /**
-   * Check if the conditions are correct to allow for the stack update
-   * to be moved past the CSR save/restore code.
-   */
+    * Check if the conditions are correct to allow for the stack update
+    * to be moved past the CSR save/restore code.
+    */
   bool stackUpdateCanBeMoved(MachineFunction &MF) const;
 
 public:
@@ -108,8 +109,8 @@ public:
 
   void determineCalleeSaves(MachineFunction &MF, BitVector &SavedRegs,
                             RegScavenger *RS = nullptr) const override;
-  void processFunctionBeforeFrameFinalized(
-      MachineFunction &MF, RegScavenger *RS = nullptr) const override;
+  void processFunctionBeforeFrameFinalized(MachineFunction &MF,
+                                     RegScavenger *RS = nullptr) const override;
   void addScavengingSpillSlot(MachineFunction &MF, RegScavenger *RS) const;
 
   bool spillCalleeSavedRegisters(MachineBasicBlock &MBB,
@@ -169,6 +170,6 @@ public:
   bool canUseAsPrologue(const MachineBasicBlock &MBB) const override;
   bool canUseAsEpilogue(const MachineBasicBlock &MBB) const override;
 };
-} // namespace llvm
+} // End llvm namespace
 
 #endif

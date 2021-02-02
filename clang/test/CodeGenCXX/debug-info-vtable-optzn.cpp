@@ -6,12 +6,14 @@
 // Darwin and FreeBSD.
 //
 // CHECK: !DIDerivedType(tag: DW_TAG_member, name: "lost"
-class A {
+class A
+{
   virtual bool f() = 0;
   int lost;
 };
 
-class B : public A {
+class B : public A
+{
   B *g();
 };
 

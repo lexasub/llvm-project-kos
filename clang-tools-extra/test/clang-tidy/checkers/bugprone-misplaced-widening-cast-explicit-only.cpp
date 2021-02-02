@@ -58,8 +58,7 @@ long ret(int a) {
 }
 
 // Shall not generate an assert. https://bugs.llvm.org/show_bug.cgi?id=33660
-template <class>
-class A {
+template <class> class A {
   enum Type {};
   static char *m_fn1() { char p = (Type)(&p - m_fn1()); }
 };

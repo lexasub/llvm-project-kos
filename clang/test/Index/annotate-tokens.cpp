@@ -1,7 +1,7 @@
-struct bonk {};
+struct bonk { };
 void test(bonk X) {
-  X = X;
-  __is_base_of(bonk, bonk);
+    X = X;
+    __is_base_of(bonk, bonk);
 }
 
 struct X {
@@ -13,23 +13,19 @@ void test2(X x) {
   (x)++;
 }
 
-struct S1 {
-  void f();
-};
-struct S2 {
-  S1 *operator->();
-};
+struct S1 { void f(); };
+struct S2 { S1 *operator->(); };
 void test3(S2 s2) {
   s2->f();
   X foo;
 }
 
-template <bool (*tfn)(X *)>
+template <bool (*tfn)(X*)>
 struct TS {
   void foo();
 };
 
-template <bool (*tfn)(X *)>
+template <bool (*tfn)(X*)>
 void TS<tfn>::foo() {}
 
 void test4() {

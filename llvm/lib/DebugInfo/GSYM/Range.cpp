@@ -16,6 +16,7 @@
 using namespace llvm;
 using namespace gsym;
 
+
 void AddressRanges::insert(AddressRange Range) {
   if (Range.size() == 0)
     return;
@@ -117,7 +118,7 @@ void AddressRange::skip(DataExtractor &Data, uint64_t &Offset) {
 
 uint64_t AddressRanges::skip(DataExtractor &Data, uint64_t &Offset) {
   uint64_t NumRanges = Data.getULEB128(&Offset);
-  for (uint64_t I = 0; I < NumRanges; ++I)
+  for (uint64_t I=0; I<NumRanges; ++I)
     AddressRange::skip(Data, Offset);
   return NumRanges;
 }

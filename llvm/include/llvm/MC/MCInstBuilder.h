@@ -23,7 +23,9 @@ class MCInstBuilder {
 
 public:
   /// Create a new MCInstBuilder for an MCInst with a specific opcode.
-  MCInstBuilder(unsigned Opcode) { Inst.setOpcode(Opcode); }
+  MCInstBuilder(unsigned Opcode) {
+    Inst.setOpcode(Opcode);
+  }
 
   /// Add a new register operand.
   MCInstBuilder &addReg(unsigned Reg) {
@@ -61,7 +63,9 @@ public:
     return *this;
   }
 
-  operator MCInst &() { return Inst; }
+  operator MCInst&() {
+    return Inst;
+  }
 };
 
 } // end namespace llvm

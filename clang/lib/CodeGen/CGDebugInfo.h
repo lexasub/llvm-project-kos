@@ -78,7 +78,8 @@ class CGDebugInfo {
   llvm::DIType *OCLQueueDITy = nullptr;
   llvm::DIType *OCLNDRangeDITy = nullptr;
   llvm::DIType *OCLReserveIDDITy = nullptr;
-#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) llvm::DIType *Id##Ty = nullptr;
+#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) \
+  llvm::DIType *Id##Ty = nullptr;
 #include "clang/Basic/OpenCLExtensionTypes.def"
 
   /// Cache of previously constructed Types.
@@ -422,8 +423,8 @@ public:
 
   /// Emit debug info for a function declaration.
   /// \p Fn is set only when a declaration for a debug call site gets created.
-  void EmitFunctionDecl(GlobalDecl GD, SourceLocation Loc, QualType FnType,
-                        llvm::Function *Fn = nullptr);
+  void EmitFunctionDecl(GlobalDecl GD, SourceLocation Loc,
+                        QualType FnType, llvm::Function *Fn = nullptr);
 
   /// Emit debug info for an extern function being called.
   /// This is needed for call site debug info.
@@ -662,6 +663,7 @@ private:
   CollectAnonRecordDecls(const RecordDecl *RD, llvm::DIFile *Unit,
                          unsigned LineNo, StringRef LinkageName,
                          llvm::GlobalVariable *Var, llvm::DIScope *DContext);
+
 
   /// Return flags which enable debug info emission for call sites, provided
   /// that it is supported and enabled.

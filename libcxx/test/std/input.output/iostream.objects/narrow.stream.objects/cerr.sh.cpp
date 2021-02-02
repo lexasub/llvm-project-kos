@@ -20,13 +20,13 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  std::cerr << "1234";
-  assert(std::cerr.flags() & std::ios_base::unitbuf);
+    std::cerr << "1234";
+    assert(std::cerr.flags() & std::ios_base::unitbuf);
 
 #ifdef _LIBCPP_HAS_NO_STDOUT
-  assert(std::cerr.tie() == NULL);
+    assert(std::cerr.tie() == NULL);
 #else
-  assert(std::cerr.tie() == &std::cout);
+    assert(std::cerr.tie() == &std::cout);
 #endif
-  return 0;
+    return 0;
 }

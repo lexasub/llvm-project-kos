@@ -142,10 +142,13 @@ public:
                                   unsigned SrcAddrSpace, unsigned DestAddrSpace,
                                   unsigned SrcAlign, unsigned DestAlign) const;
 
-  void getMemcpyLoopResidualLoweringType(
-      SmallVectorImpl<Type *> &OpsOut, LLVMContext &Context,
-      unsigned RemainingBytes, unsigned SrcAddrSpace, unsigned DestAddrSpace,
-      unsigned SrcAlign, unsigned DestAlign) const;
+  void getMemcpyLoopResidualLoweringType(SmallVectorImpl<Type *> &OpsOut,
+                                         LLVMContext &Context,
+                                         unsigned RemainingBytes,
+                                         unsigned SrcAddrSpace,
+                                         unsigned DestAddrSpace,
+                                         unsigned SrcAlign,
+                                         unsigned DestAlign) const;
   unsigned getMaxInterleaveFactor(unsigned VF);
 
   bool getTgtMemIntrinsic(IntrinsicInst *Inst, MemIntrinsicInfo &Info) const;
@@ -206,14 +209,16 @@ public:
   int getInlinerVectorBonusPercent() { return 0; }
 
   int getArithmeticReductionCost(
-      unsigned Opcode, VectorType *Ty, bool IsPairwise,
+      unsigned Opcode,
+      VectorType *Ty,
+      bool IsPairwise,
       TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput);
 
   int getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                             TTI::TargetCostKind CostKind);
   int getMinMaxReductionCost(
-      VectorType *Ty, VectorType *CondTy, bool IsPairwiseForm, bool IsUnsigned,
-      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput);
+    VectorType *Ty, VectorType *CondTy, bool IsPairwiseForm, bool IsUnsigned,
+    TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput);
 };
 
 class R600TTIImpl final : public BasicTTIImplBase<R600TTIImpl> {

@@ -29,11 +29,10 @@ class DenseSlabAllocCache {
   typedef u32 IndexT;
   uptr pos;
   IndexT cache[kSize];
-  template <typename T, uptr kL1Size, uptr kL2Size>
-  friend class DenseSlabAlloc;
+  template<typename T, uptr kL1Size, uptr kL2Size> friend class DenseSlabAlloc;
 };
 
-template <typename T, uptr kL1Size, uptr kL2Size>
+template<typename T, uptr kL1Size, uptr kL2Size>
 class DenseSlabAlloc {
  public:
   typedef DenseSlabAllocCache Cache;
@@ -82,7 +81,7 @@ class DenseSlabAlloc {
     SpinMutexLock lock(&mtx_);
     while (c->pos) {
       IndexT idx = c->cache[--c->pos];
-      *(IndexT *)Map(idx) = freelist_;
+      *(IndexT*)Map(idx) = freelist_;
       freelist_ = idx;
     }
   }
@@ -103,27 +102,27 @@ class DenseSlabAlloc {
     SpinMutexLock lock(&mtx_);
     if (freelist_ == 0) {
       if (fillpos_ == kL1Size) {
-        Printf("ThreadSanitizer: %s overflow (%zu*%zu). Dying.\n", name_,
-               kL1Size, kL2Size);
+        Printf("ThreadSanitizer: %s overflow (%zu*%zu). Dying.\n",
+            name_, kL1Size, kL2Size);
         Die();
       }
-      VPrintf(2, "ThreadSanitizer: growing %s: %zu out of %zu*%zu\n", name_,
-              fillpos_, kL1Size, kL2Size);
-      T *batch = (T *)MmapOrDie(kL2Size * sizeof(T), name_);
+      VPrintf(2, "ThreadSanitizer: growing %s: %zu out of %zu*%zu\n",
+          name_, fillpos_, kL1Size, kL2Size);
+      T *batch = (T*)MmapOrDie(kL2Size * sizeof(T), name_);
       // Reserve 0 as invalid index.
       IndexT start = fillpos_ == 0 ? 1 : 0;
       for (IndexT i = start; i < kL2Size; i++) {
-        new (batch + i) T;
-        *(IndexT *)(batch + i) = i + 1 + fillpos_ * kL2Size;
+        new(batch + i) T;
+        *(IndexT*)(batch + i) = i + 1 + fillpos_ * kL2Size;
       }
-      *(IndexT *)(batch + kL2Size - 1) = 0;
+      *(IndexT*)(batch + kL2Size - 1) = 0;
       freelist_ = fillpos_ * kL2Size + start;
       map_[fillpos_++] = batch;
     }
     for (uptr i = 0; i < Cache::kSize / 2 && freelist_ != 0; i++) {
       IndexT idx = freelist_;
       c->cache[c->pos++] = idx;
-      freelist_ = *(IndexT *)Map(idx);
+      freelist_ = *(IndexT*)Map(idx);
     }
   }
 
@@ -131,7 +130,7 @@ class DenseSlabAlloc {
     SpinMutexLock lock(&mtx_);
     for (uptr i = 0; i < Cache::kSize / 2; i++) {
       IndexT idx = c->cache[--c->pos];
-      *(IndexT *)Map(idx) = freelist_;
+      *(IndexT*)Map(idx) = freelist_;
       freelist_ = idx;
     }
   }

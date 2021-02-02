@@ -5,7 +5,7 @@ template <typename T>
 int Foo(T t) {
   return t;
 }
-template <> int Foo<int>(int i) {
+template<> int Foo<int>(int i) {
   return i;
 }
 

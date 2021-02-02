@@ -167,8 +167,9 @@ public:
   /// if 'LocalAddress' is true, this returns the address of the section
   /// within the linker's memory. If 'LocalAddress' is false it returns the
   /// address within the target process (i.e. the load address).
-  std::pair<uint64_t, std::string>
-  getSectionAddr(StringRef FileName, StringRef SectionName, bool LocalAddress);
+  std::pair<uint64_t, std::string> getSectionAddr(StringRef FileName,
+                                                  StringRef SectionName,
+                                                  bool LocalAddress);
 
   /// If there is a section at the given local address, return its load
   /// address, otherwise return none.

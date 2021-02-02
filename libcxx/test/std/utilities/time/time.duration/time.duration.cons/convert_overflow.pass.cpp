@@ -23,14 +23,18 @@
 bool called = false;
 
 void f(std::chrono::milliseconds);
-void f(std::chrono::seconds) { called = true; }
+void f(std::chrono::seconds)
+{
+    called = true;
+}
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     std::chrono::duration<int, std::exa> r(1);
     f(r);
     assert(called);
-  }
+    }
 
   return 0;
 }

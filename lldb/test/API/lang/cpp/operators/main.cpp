@@ -2,31 +2,15 @@
 
 int side_effect = 0;
 
-struct B {
-  int dummy = 2324;
-};
+struct B { int dummy = 2324; };
 struct C {
-  void *operator new(std::size_t size) {
-    void *p = ::operator new(size);
-    side_effect = 3;
-    return p;
-  }
-  void *operator new[](std::size_t size) {
-    void *p = ::operator new(size);
-    side_effect = 4;
-    return p;
-  }
-  void operator delete(void *p) {
-    std::free(p);
-    side_effect = 1;
-  }
-  void operator delete[](void *p) {
-    std::free(p);
-    side_effect = 2;
-  }
+  void *operator new(std::size_t size) { void *p = ::operator new(size); side_effect = 3; return p; }
+  void *operator new[](std::size_t size) { void *p = ::operator new(size); side_effect = 4; return p; }
+  void operator delete(void *p) { std::free(p); side_effect = 1; }
+  void operator delete[](void *p) { std::free(p); side_effect = 2; }
 
   B b;
-  B *operator->() { return &b; }
+  B* operator->() { return &b; }
   int operator->*(int) { return 2; }
   int operator+(int) { return 44; }
   int operator+=(int) { return 42; }
@@ -87,12 +71,12 @@ int main(int argc, char **argv) {
   C c;
   int result = c->dummy;
   result = c->*4;
-  result += c + 1;
-  result += c += 1;
+  result += c+1;
+  result += c+=1;
   result += c++;
   result += ++c;
-  result += c - 1;
-  result += c -= 1;
+  result += c-1;
+  result += c-=1;
   result += c--;
   result += --c;
 
@@ -114,20 +98,20 @@ int main(int argc, char **argv) {
 
   result += ~c;
   result += !c;
-  result += c != 1;
-  result += c = 2;
-  result += c == 2;
+  result += c!=1;
+  result += c=2;
+  result += c==2;
 
-  result += c < 2;
-  result += c << 2;
-  result += c <= 2;
-  result += c <<= 2;
-  result += c > 2;
-  result += c >> 2;
-  result += c >= 2;
-  result += c >>= 2;
+  result += c<2;
+  result += c<<2;
+  result += c<=2;
+  result += c<<=2;
+  result += c>2;
+  result += c>>2;
+  result += c>=2;
+  result += c>>=2;
 
-  result += (c, 2);
+  result += (c , 2);
   result += &c;
 
   result += c(1);

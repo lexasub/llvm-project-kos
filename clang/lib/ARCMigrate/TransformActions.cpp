@@ -33,12 +33,9 @@ class TransformActionsImpl {
   bool IsInTransaction;
 
   enum ActionKind {
-    Act_Insert,
-    Act_InsertAfterToken,
-    Act_Remove,
-    Act_RemoveStmt,
-    Act_Replace,
-    Act_ReplaceText,
+    Act_Insert, Act_InsertAfterToken,
+    Act_Remove, Act_RemoveStmt,
+    Act_Replace, Act_ReplaceText,
     Act_IncreaseIndentation,
     Act_ClearDiagnostic
   };
@@ -100,8 +97,8 @@ class TransformActionsImpl {
     static RangeComparison compare(SourceRange LHS, SourceRange RHS,
                                    SourceManager &SrcMgr, Preprocessor &PP) {
       return CharRange(CharSourceRange::getTokenRange(LHS), SrcMgr, PP)
-          .compareWith(
-              CharRange(CharSourceRange::getTokenRange(RHS), SrcMgr, PP));
+                  .compareWith(CharRange(CharSourceRange::getTokenRange(RHS),
+                                            SrcMgr, PP));
     }
   };
 
@@ -115,16 +112,15 @@ class TransformActionsImpl {
 
   llvm::DenseSet<Stmt *> StmtRemovals;
 
-  std::vector<std::pair<CharRange, SourceLocation>> IndentationRanges;
+  std::vector<std::pair<CharRange, SourceLocation> > IndentationRanges;
 
   /// Keeps text passed to transformation methods.
   llvm::StringMap<bool> UniqueText;
 
 public:
-  TransformActionsImpl(CapturedDiagList &capturedDiags, ASTContext &ctx,
-                       Preprocessor &PP)
-      : CapturedDiags(capturedDiags), Ctx(ctx), PP(PP), IsInTransaction(false) {
-  }
+  TransformActionsImpl(CapturedDiagList &capturedDiags,
+                       ASTContext &ctx, Preprocessor &PP)
+    : CapturedDiags(capturedDiags), Ctx(ctx), PP(PP), IsInTransaction(false) { }
 
   ASTContext &getASTContext() { return Ctx; }
 
@@ -143,7 +139,8 @@ public:
   void replaceStmt(Stmt *S, StringRef text);
   void replaceText(SourceLocation loc, StringRef text,
                    StringRef replacementText);
-  void increaseIndentation(SourceRange range, SourceLocation parentIndent);
+  void increaseIndentation(SourceRange range,
+                           SourceLocation parentIndent);
 
   bool clearDiagnostic(ArrayRef<unsigned> IDs, SourceRange range);
 
@@ -163,8 +160,7 @@ private:
   void commitReplace(SourceRange range, SourceRange replacementRange);
   void commitReplaceText(SourceLocation loc, StringRef text,
                          StringRef replacementText);
-  void commitIncreaseIndentation(SourceRange range,
-                                 SourceLocation parentIndent);
+  void commitIncreaseIndentation(SourceRange range,SourceLocation parentIndent);
   void commitClearDiagnostic(ArrayRef<unsigned> IDs, SourceRange range);
 
   void addRemoval(CharSourceRange range);
@@ -178,8 +174,8 @@ private:
   /// Computes the source location just past the end of the token at
   /// the given source location. If the location points at a macro, the whole
   /// macro expansion is skipped.
-  static SourceLocation
-  getLocForEndOfToken(SourceLocation loc, SourceManager &SM, Preprocessor &PP);
+  static SourceLocation getLocForEndOfToken(SourceLocation loc,
+                                            SourceManager &SM,Preprocessor &PP);
 };
 
 } // anonymous namespace
@@ -295,8 +291,7 @@ void TransformActionsImpl::insert(SourceLocation loc, StringRef text) {
   CachedActions.push_back(data);
 }
 
-void TransformActionsImpl::insertAfterToken(SourceLocation loc,
-                                            StringRef text) {
+void TransformActionsImpl::insertAfterToken(SourceLocation loc, StringRef text) {
   assert(IsInTransaction && "Actions only allowed during a transaction");
   text = getUniqueText(text);
   ActionData data;
@@ -362,8 +357,7 @@ void TransformActionsImpl::replaceStmt(Stmt *S, StringRef text) {
 
 void TransformActionsImpl::increaseIndentation(SourceRange range,
                                                SourceLocation parentIndent) {
-  if (range.isInvalid())
-    return;
+  if (range.isInvalid()) return;
   assert(IsInTransaction && "Actions only allowed during a transaction");
   ActionData data;
   data.Kind = Act_IncreaseIndentation;
@@ -469,8 +463,8 @@ void TransformActionsImpl::commitRemoveStmt(Stmt *S) {
 
 void TransformActionsImpl::commitReplace(SourceRange range,
                                          SourceRange replacementRange) {
-  RangeComparison comp =
-      CharRange::compare(replacementRange, range, Ctx.getSourceManager(), PP);
+  RangeComparison comp = CharRange::compare(replacementRange, range,
+                                               Ctx.getSourceManager(), PP);
   assert(comp == Range_Contained);
   if (comp != Range_Contained)
     return; // Although we asserted, be extra safe for release build.
@@ -479,11 +473,12 @@ void TransformActionsImpl::commitReplace(SourceRange range,
                                              replacementRange.getBegin()));
   if (replacementRange.getEnd() != range.getEnd())
     addRemoval(CharSourceRange::getTokenRange(
-        getLocForEndOfToken(replacementRange.getEnd(), Ctx.getSourceManager(),
-                            PP),
-        range.getEnd()));
+                                  getLocForEndOfToken(replacementRange.getEnd(),
+                                                      Ctx.getSourceManager(), PP),
+                                  range.getEnd()));
 }
-void TransformActionsImpl::commitReplaceText(SourceLocation loc, StringRef text,
+void TransformActionsImpl::commitReplaceText(SourceLocation loc,
+                                             StringRef text,
                                              StringRef replacementText) {
   SourceManager &SM = Ctx.getSourceManager();
   loc = SM.getExpansionLoc(loc);
@@ -494,12 +489,13 @@ void TransformActionsImpl::commitReplaceText(SourceLocation loc, StringRef text,
   commitInsert(loc, replacementText);
 }
 
-void TransformActionsImpl::commitIncreaseIndentation(
-    SourceRange range, SourceLocation parentIndent) {
+void TransformActionsImpl::commitIncreaseIndentation(SourceRange range,
+                                                  SourceLocation parentIndent) {
   SourceManager &SM = Ctx.getSourceManager();
   IndentationRanges.push_back(
-      std::make_pair(CharRange(CharSourceRange::getTokenRange(range), SM, PP),
-                     SM.getExpansionLoc(parentIndent)));
+                 std::make_pair(CharRange(CharSourceRange::getTokenRange(range),
+                                          SM, PP),
+                                SM.getExpansionLoc(parentIndent)));
 }
 
 void TransformActionsImpl::commitClearDiagnostic(ArrayRef<unsigned> IDs,
@@ -559,27 +555,24 @@ void TransformActionsImpl::addRemoval(CharSourceRange range) {
 }
 
 void TransformActionsImpl::applyRewrites(
-    TransformActions::RewriteReceiver &receiver) {
-  for (InsertsMap::iterator I = Inserts.begin(), E = Inserts.end(); I != E;
-       ++I) {
+                                  TransformActions::RewriteReceiver &receiver) {
+  for (InsertsMap::iterator I = Inserts.begin(), E = Inserts.end(); I!=E; ++I) {
     SourceLocation loc = I->first;
-    for (TextsVec::iterator TI = I->second.begin(), TE = I->second.end();
-         TI != TE; ++TI) {
+    for (TextsVec::iterator
+           TI = I->second.begin(), TE = I->second.end(); TI != TE; ++TI) {
       receiver.insert(loc, *TI);
     }
   }
 
-  for (std::vector<std::pair<CharRange, SourceLocation>>::iterator
-           I = IndentationRanges.begin(),
-           E = IndentationRanges.end();
-       I != E; ++I) {
-    CharSourceRange range =
-        CharSourceRange::getCharRange(I->first.Begin, I->first.End);
+  for (std::vector<std::pair<CharRange, SourceLocation> >::iterator
+       I = IndentationRanges.begin(), E = IndentationRanges.end(); I!=E; ++I) {
+    CharSourceRange range = CharSourceRange::getCharRange(I->first.Begin,
+                                                          I->first.End);
     receiver.increaseIndentation(range, I->second);
   }
 
-  for (std::list<CharRange>::iterator I = Removals.begin(), E = Removals.end();
-       I != E; ++I) {
+  for (std::list<CharRange>::iterator
+         I = Removals.begin(), E = Removals.end(); I != E; ++I) {
     CharSourceRange range = CharSourceRange::getCharRange(I->Begin, I->End);
     receiver.remove(range);
   }
@@ -607,7 +600,7 @@ SourceLocation TransformActionsImpl::getLocForEndOfToken(SourceLocation loc,
   return PP.getLocForEndOfToken(loc);
 }
 
-TransformActions::RewriteReceiver::~RewriteReceiver() {}
+TransformActions::RewriteReceiver::~RewriteReceiver() { }
 
 TransformActions::TransformActions(DiagnosticsEngine &diag,
                                    CapturedDiagList &capturedDiags,
@@ -617,69 +610,71 @@ TransformActions::TransformActions(DiagnosticsEngine &diag,
 }
 
 TransformActions::~TransformActions() {
-  delete static_cast<TransformActionsImpl *>(Impl);
+  delete static_cast<TransformActionsImpl*>(Impl);
 }
 
 void TransformActions::startTransaction() {
-  static_cast<TransformActionsImpl *>(Impl)->startTransaction();
+  static_cast<TransformActionsImpl*>(Impl)->startTransaction();
 }
 
 bool TransformActions::commitTransaction() {
-  return static_cast<TransformActionsImpl *>(Impl)->commitTransaction();
+  return static_cast<TransformActionsImpl*>(Impl)->commitTransaction();
 }
 
 void TransformActions::abortTransaction() {
-  static_cast<TransformActionsImpl *>(Impl)->abortTransaction();
+  static_cast<TransformActionsImpl*>(Impl)->abortTransaction();
 }
+
 
 void TransformActions::insert(SourceLocation loc, StringRef text) {
-  static_cast<TransformActionsImpl *>(Impl)->insert(loc, text);
+  static_cast<TransformActionsImpl*>(Impl)->insert(loc, text);
 }
 
-void TransformActions::insertAfterToken(SourceLocation loc, StringRef text) {
-  static_cast<TransformActionsImpl *>(Impl)->insertAfterToken(loc, text);
+void TransformActions::insertAfterToken(SourceLocation loc,
+                                        StringRef text) {
+  static_cast<TransformActionsImpl*>(Impl)->insertAfterToken(loc, text);
 }
 
 void TransformActions::remove(SourceRange range) {
-  static_cast<TransformActionsImpl *>(Impl)->remove(range);
+  static_cast<TransformActionsImpl*>(Impl)->remove(range);
 }
 
 void TransformActions::removeStmt(Stmt *S) {
-  static_cast<TransformActionsImpl *>(Impl)->removeStmt(S);
+  static_cast<TransformActionsImpl*>(Impl)->removeStmt(S);
 }
 
 void TransformActions::replace(SourceRange range, StringRef text) {
-  static_cast<TransformActionsImpl *>(Impl)->replace(range, text);
+  static_cast<TransformActionsImpl*>(Impl)->replace(range, text);
 }
 
 void TransformActions::replace(SourceRange range,
                                SourceRange replacementRange) {
-  static_cast<TransformActionsImpl *>(Impl)->replace(range, replacementRange);
+  static_cast<TransformActionsImpl*>(Impl)->replace(range, replacementRange);
 }
 
 void TransformActions::replaceStmt(Stmt *S, StringRef text) {
-  static_cast<TransformActionsImpl *>(Impl)->replaceStmt(S, text);
+  static_cast<TransformActionsImpl*>(Impl)->replaceStmt(S, text);
 }
 
 void TransformActions::replaceText(SourceLocation loc, StringRef text,
                                    StringRef replacementText) {
-  static_cast<TransformActionsImpl *>(Impl)->replaceText(loc, text,
-                                                         replacementText);
+  static_cast<TransformActionsImpl*>(Impl)->replaceText(loc, text,
+                                                        replacementText);
 }
 
 void TransformActions::increaseIndentation(SourceRange range,
                                            SourceLocation parentIndent) {
-  static_cast<TransformActionsImpl *>(Impl)->increaseIndentation(range,
-                                                                 parentIndent);
+  static_cast<TransformActionsImpl*>(Impl)->increaseIndentation(range,
+                                                                parentIndent);
 }
 
 bool TransformActions::clearDiagnostic(ArrayRef<unsigned> IDs,
                                        SourceRange range) {
-  return static_cast<TransformActionsImpl *>(Impl)->clearDiagnostic(IDs, range);
+  return static_cast<TransformActionsImpl*>(Impl)->clearDiagnostic(IDs, range);
 }
 
 void TransformActions::applyRewrites(RewriteReceiver &receiver) {
-  static_cast<TransformActionsImpl *>(Impl)->applyRewrites(receiver);
+  static_cast<TransformActionsImpl*>(Impl)->applyRewrites(receiver);
 }
 
 DiagnosticBuilder TransformActions::report(SourceLocation loc, unsigned diagId,

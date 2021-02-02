@@ -96,7 +96,7 @@ void GetProcessExecutableAndTriple(const AutoHandle &handle,
 
   // TODO(zturner): Add the ability to get the process user name.
 }
-} // namespace
+}
 
 lldb::thread_t Host::GetCurrentThread() {
   return lldb::thread_t(::GetCurrentThread());

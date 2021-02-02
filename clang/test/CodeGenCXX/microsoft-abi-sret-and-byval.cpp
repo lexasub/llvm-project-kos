@@ -71,7 +71,7 @@ struct BaseNoByval : Small {
 
 struct SmallWithPrivate {
 private:
-  int i;
+ int i;
 };
 
 // WIN32: declare dso_local void @"{{.*take_bools_and_chars.*}}"
@@ -137,6 +137,7 @@ Big big_return() { return Big(); }
 // WIN64: define dso_local void @"?big_return@@YA?AUBig@@XZ"(%struct.Big* noalias sret(%struct.Big) align 4 %agg.result)
 // WOA64: define dso_local void @"?big_return@@YA?AUBig@@XZ"(%struct.Big* noalias sret(%struct.Big) align 4 %agg.result)
 
+
 void small_arg(Small s) {}
 // LINUX-LABEL: define{{.*}} void @_Z9small_arg5Small(i32 %s.0)
 // WIN32: define dso_local void @"?small_arg@@YAXUSmall@@@Z"(i32 %s.0)
@@ -190,6 +191,7 @@ void small_arg_with_dtor(SmallWithDtor s) {}
 // WOA:   call arm_aapcs_vfpcc void @"??1SmallWithDtor@@QAA@XZ"(%struct.SmallWithDtor* {{[^,]*}} %s)
 // WOA: }
 
+
 // Test that the eligible non-aggregate is passed directly, but returned
 // indirectly on ARM64 Windows.
 // WOA64: define dso_local void @"?small_arg_with_private_member@@YA?AUSmallWithPrivate@@U1@@Z"(%struct.SmallWithPrivate* inreg noalias sret(%struct.SmallWithPrivate) align 4 %agg.result, i64 %s.coerce) {{.*}} {
@@ -204,7 +206,7 @@ void call_small_arg_with_dtor() {
 // WIN64:   ret void
 
 // Test that references aren't destroyed in the callee.
-void ref_small_arg_with_dtor(const SmallWithDtor &s) {}
+void ref_small_arg_with_dtor(const SmallWithDtor &s) { }
 // WIN32: define dso_local void @"?ref_small_arg_with_dtor@@YAXABUSmallWithDtor@@@Z"(%struct.SmallWithDtor* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %s) {{.*}} {
 // WIN32-NOT:   call x86_thiscallcc void @"??1SmallWithDtor@@QAE@XZ"
 // WIN32: }
@@ -290,7 +292,7 @@ void pass_ref_field() {
 // WIN64: call void @"?takes_ref_field@@YAXURefField@@@Z"(i64 %{{.*}})
 
 class Class {
-public:
+ public:
   Small thiscall_method_small() { return Small(); }
   // LINUX: define {{.*}} void @_ZN5Class21thiscall_method_smallEv(%struct.Small* noalias sret(%struct.Small) align 4 %agg.result, %class.Class* {{[^,]*}} %this)
   // WIN32: define {{.*}} x86_thiscallcc void @"?thiscall_method_small@Class@@QAE?AUSmall@@XZ"(%class.Class* {{[^,]*}} %this, %struct.Small* noalias sret(%struct.Small) align 4 %agg.result)
@@ -371,6 +373,7 @@ void f() {
 // WIN32-NOT: call {{.*}} @"??1X@@QAE@XZ"
 // WIN32: }
 
+
 namespace test2 {
 // We used to crash on this due to the mixture of POD byval and non-trivial
 // byval.
@@ -381,9 +384,7 @@ struct NonTrivial {
   ~NonTrivial();
   int a;
 };
-struct POD {
-  int b;
-};
+struct POD { int b; };
 
 int foo(NonTrivial a, POD b);
 void bar() {
@@ -401,7 +402,7 @@ void bar() {
 // WIN32:   ret void
 // WIN32: }
 
-} // namespace test2
+}
 
 namespace test3 {
 
@@ -412,10 +413,10 @@ struct NonTrivial {
   ~NonTrivial();
   int a;
 };
-void foo(NonTrivial a, bool b) {}
+void foo(NonTrivial a, bool b) { }
 // WIN32-LABEL: define dso_local void @"?foo@test3@@YAXUNonTrivial@1@_N@Z"(<{ %"struct.test3::NonTrivial", i8, [3 x i8] }>* inalloca %0)
 
-} // namespace test3
+}
 
 // We would crash here because the later definition of ForwardDeclare1 results
 // in a different IR type for the value we want to store.  However, the alloca's
@@ -423,7 +424,7 @@ void foo(NonTrivial a, bool b) {}
 struct ForwardDeclare1;
 
 typedef void (*FnPtr1)(ForwardDeclare1);
-void fn1(FnPtr1 a, SmallWithDtor b) {}
+void fn1(FnPtr1 a, SmallWithDtor b) { }
 
 struct ForwardDeclare1 {};
 
@@ -466,4 +467,4 @@ void C::g() { return h(SmallWithDtor()); }
 
 // WIN64-LABEL: define dso_local void @"?g@C@pr30293@@QEAAXXZ"(%"struct.pr30293::C"* {{[^,]*}} %this)
 // WIN64: declare dso_local void @"?h@C@pr30293@@UEAAXUSmallWithDtor@@@Z"(i8*, i32)
-} // namespace pr30293
+}

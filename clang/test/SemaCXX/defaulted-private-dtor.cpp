@@ -6,21 +6,21 @@ class BadDtor {
   friend class K;
 };
 void f() {
-  BadDtor *p = new BadDtor[3];    // expected-error {{private destructor}}
-  delete[] p;                     // expected-error {{private destructor}}
+  BadDtor *p = new BadDtor[3]; // expected-error {{private destructor}}
+  delete [] p; // expected-error {{private destructor}}
   const BadDtor &dd2 = BadDtor(); // expected-error {{private destructor}}
-  BadDtor dd;                     // expected-error {{private destructor}}
-  throw dd;                       // expected-error {{private destructor}}
+  BadDtor dd; // expected-error {{private destructor}}
+  throw dd; // expected-error {{private destructor}}
 }
 struct V {
   V();
   BadDtor bd; // expected-note {{inaccessible destructor}}
 };
-V v;                 // expected-error {{deleted function}}
+V v; // expected-error {{deleted function}}
 struct W : BadDtor { // expected-note {{inaccessible destructor}}
   W();
 };
-W w;                 // expected-error {{deleted function}}
+W w; // expected-error {{deleted function}}
 struct X : BadDtor { // expected-error {{private destructor}}
   ~X() {}
 };
@@ -36,7 +36,7 @@ BadDtor dd; // expected-error {{private destructor}}
 class K : BadDtor {
   void f() {
     BadDtor *p = new BadDtor[3];
-    delete[] p;
+    delete [] p;
     const BadDtor &dd2 = BadDtor();
     BadDtor dd;
     throw dd;
@@ -45,7 +45,8 @@ class K : BadDtor {
       BadDtor x;
       goto dont_call_dtor;
     }
-  dont_call_dtor:;
+dont_call_dtor:
+    ;
   }
   struct Z : virtual BadDtor {
     ~Z() {}

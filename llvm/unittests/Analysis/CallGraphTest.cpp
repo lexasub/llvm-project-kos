@@ -57,4 +57,4 @@ TEST(CallGraphTest, GraphTraitsConstSpecialization) {
 
   canSpecializeGraphTraitsIterators(const_cast<const CallGraph *>(&CG));
 }
-} // namespace
+}

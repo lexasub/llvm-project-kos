@@ -200,11 +200,13 @@ private:
   void lazyInitImporterSharedSt(TranslationUnitDecl *ToTU);
   ASTImporter &getOrCreateASTImporter(ASTUnit *Unit);
   template <typename T>
-  llvm::Expected<const T *>
-  getCrossTUDefinitionImpl(const T *D, StringRef CrossTUDir,
-                           StringRef IndexName, bool DisplayCTUProgress);
+  llvm::Expected<const T *> getCrossTUDefinitionImpl(const T *D,
+                                                     StringRef CrossTUDir,
+                                                     StringRef IndexName,
+                                                     bool DisplayCTUProgress);
   template <typename T>
-  const T *findDefInDeclContext(const DeclContext *DC, StringRef LookupName);
+  const T *findDefInDeclContext(const DeclContext *DC,
+                                StringRef LookupName);
   template <typename T>
   llvm::Expected<const T *> importDefinitionImpl(const T *D, ASTUnit *Unit);
 

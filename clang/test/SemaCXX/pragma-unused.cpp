@@ -4,6 +4,6 @@
 struct S {
   void m(int x, int y) {
     int z;
-#pragma unused(x, y, z)
+    #pragma unused(x,y,z)
   }
 };

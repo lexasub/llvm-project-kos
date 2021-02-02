@@ -98,7 +98,7 @@ cl::opt<std::string> CustomExecCommand(
     "exec-command", cl::init("simulate"),
     cl::desc("Command to execute the bitcode (use with -run-custom) "
              "(default: simulate)"));
-} // namespace
+}
 
 namespace llvm {
 // Anything specified after the --args option are taken as arguments to the
@@ -110,7 +110,7 @@ cl::list<std::string> InputArgv("args", cl::Positional,
 cl::opt<std::string>
     OutputPrefix("output-prefix", cl::init("bugpoint"),
                  cl::desc("Prefix to use for outputs (default: 'bugpoint')"));
-} // namespace llvm
+}
 
 namespace {
 cl::list<std::string> ToolArgv("tool-args", cl::Positional,
@@ -127,7 +127,7 @@ cl::opt<std::string> CCBinary("gcc", cl::init(""),
 cl::list<std::string> CCToolArgv("gcc-tool-args", cl::Positional,
                                  cl::desc("<gcc-tool arguments>..."),
                                  cl::ZeroOrMore, cl::PositionalEatsArgs);
-} // namespace
+}
 
 //===----------------------------------------------------------------------===//
 // BugDriver method implementation
@@ -405,13 +405,13 @@ Error BugDriver::createReferenceFile(Module &M, const std::string &Filename) {
   if (Error E = Result.takeError()) {
     if (Interpreter != SafeInterpreter) {
       E = joinErrors(
-          std::move(E),
-          make_error<StringError>(
-              "*** There is a bug running the \"safe\" backend.  Either"
-              " debug it (for example with the -run-jit bugpoint option,"
-              " if JIT is being used as the \"safe\" backend), or fix the"
-              " error some other way.\n",
-              inconvertibleErrorCode()));
+              std::move(E),
+              make_error<StringError>(
+                  "*** There is a bug running the \"safe\" backend.  Either"
+                  " debug it (for example with the -run-jit bugpoint option,"
+                  " if JIT is being used as the \"safe\" backend), or fix the"
+                  " error some other way.\n",
+                  inconvertibleErrorCode()));
     }
     return E;
   }

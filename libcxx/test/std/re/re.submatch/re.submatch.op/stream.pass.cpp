@@ -20,22 +20,25 @@
 #include "test_macros.h"
 
 template <class CharT>
-void test(const std::basic_string<CharT>& s) {
-  typedef std::basic_string<CharT> string;
-  typedef std::sub_match<typename string::const_iterator> SM;
-  typedef std::basic_ostringstream<CharT> ostringstream;
-  SM sm;
-  sm.first = s.begin();
-  sm.second = s.end();
-  sm.matched = true;
-  ostringstream os;
-  os << sm;
-  assert(os.str() == s);
+void
+test(const std::basic_string<CharT>& s)
+{
+    typedef std::basic_string<CharT> string;
+    typedef std::sub_match<typename string::const_iterator> SM;
+    typedef std::basic_ostringstream<CharT> ostringstream;
+    SM sm;
+    sm.first = s.begin();
+    sm.second = s.end();
+    sm.matched = true;
+    ostringstream os;
+    os << sm;
+    assert(os.str() == s);
 }
 
-int main(int, char**) {
-  test(std::string("123"));
-  test(std::wstring(L"123"));
+int main(int, char**)
+{
+    test(std::string("123"));
+    test(std::wstring(L"123"));
 
   return 0;
 }

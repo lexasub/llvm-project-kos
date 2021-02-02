@@ -275,7 +275,7 @@ public:
     AU.addPreserved<CallGraphWrapperPass>();
   }
 };
-} // namespace
+}
 
 char InternalizeLegacyPass::ID = 0;
 INITIALIZE_PASS(InternalizeLegacyPass, "internalize",

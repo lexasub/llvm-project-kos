@@ -15,7 +15,8 @@ using namespace sys;
 
 namespace {
 
-class ThreadLocalTest : public ::testing::Test {};
+class ThreadLocalTest : public ::testing::Test {
+};
 
 struct S {
   int i;
@@ -52,4 +53,4 @@ TEST_F(ThreadLocalTest, Basics) {
   EXPECT_EQ(nullptr, y.get());
 }
 
-} // namespace
+}

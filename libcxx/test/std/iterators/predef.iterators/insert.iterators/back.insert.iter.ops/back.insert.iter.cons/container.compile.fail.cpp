@@ -17,8 +17,9 @@
 #include <iterator>
 #include <vector>
 
-int main(int, char**) {
-  std::back_insert_iterator<std::vector<int> > i = std::vector<int>();
+int main(int, char**)
+{
+    std::back_insert_iterator<std::vector<int> > i = std::vector<int>();
 
   return 0;
 }

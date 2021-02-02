@@ -126,32 +126,28 @@ void tinst() {
 // CHECK: _ZTIi
 // CHECK: __cxa_call_unexpected
 
-struct VX {
-  virtual ~VX() {}
-};
+struct VX
+{ virtual ~VX() {} };
 
-struct VY : VX {
-  virtual ~VY() {}
-};
+struct VY : VX
+{ virtual ~VY() {} };
 
-template <typename T>
-struct TVY : VX {
-  virtual ~TVY() {}
-};
+template<typename T>
+struct TVY : VX
+{ virtual ~TVY() {} };
+
 
 struct VA {
   B b;
   virtual ~VA() {}
 };
 
-struct VB : VA {
-  virtual ~VB() {}
-};
+struct VB : VA
+{ virtual ~VB() {} };
 
-template <typename T>
-struct TVB : VA {
-  virtual ~TVB() {}
-};
+template<typename T>
+struct TVB : VA
+{ virtual ~TVB() {} };
 
 void tinst2() {
   TVY<int> tvy;
@@ -175,7 +171,8 @@ void tsw() {
 // CHECK: define linkonce_odr {{.*}} @_ZN2SwIiED1Ev({{.*}} [[ATTRGRP:#[0-9]+]]
 
 template <typename T>
-struct TVC : VX { virtual ~TVC(); };
+struct TVC : VX
+{ virtual ~TVC(); };
 template <typename T>
 TVC<T>::~TVC() {}
 

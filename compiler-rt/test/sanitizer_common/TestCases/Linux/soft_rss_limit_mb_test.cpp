@@ -19,13 +19,13 @@
 // https://github.com/google/sanitizers/issues/981
 // UNSUPPORTED: android-26
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
 static const int kMaxNumAllocs = 1 << 9;
-static const int kAllocSize = 1 << 20; // Large enough to go via mmap.
+static const int kAllocSize = 1 << 20;  // Large enough to go via mmap.
 
 static char *allocs[kMaxNumAllocs];
 
@@ -39,7 +39,7 @@ int main() {
         usleep(100000);
         fprintf(stderr, "  [%d]\n", j);
       }
-      allocs[j] = (char *)malloc(kAllocSize);
+      allocs[j] = (char*)malloc(kAllocSize);
       if (allocs[j])
         memset(allocs[j], -1, kAllocSize);
       else

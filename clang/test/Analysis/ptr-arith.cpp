@@ -2,7 +2,7 @@
 struct X {
   int *p;
   int zero;
-  void foo() {
+  void foo () {
     reset(p - 1);
   }
   void reset(int *in) {
@@ -11,13 +11,14 @@ struct X {
   }
 };
 
-int test(int *in) {
+int test (int *in) {
   X littleX;
   littleX.zero = 0;
   littleX.p = in;
   littleX.foo();
-  return 5 / littleX.zero; // no-warning
+  return 5/littleX.zero; // no-warning
 }
+
 
 class Base {};
 class Derived : public Base {};
@@ -31,8 +32,8 @@ void checkPolymorphicUse() {
 
 void checkBitCasts() {
   long l;
-  char *p = (char *)&l;
-  p = p + 2;
+  char *p = (char*)&l;
+  p = p+2;
 }
 
 void checkBasicarithmetic(int i) {
@@ -41,17 +42,17 @@ void checkBasicarithmetic(int i) {
   ++p;
   int a = 5;
   p = &a;
-  ++p;       // expected-warning{{Pointer arithmetic on non-array variables relies on memory layout, which is dangerous}}
+  ++p; // expected-warning{{Pointer arithmetic on non-array variables relies on memory layout, which is dangerous}}
   p = p + 2; // expected-warning{{}}
   p = 2 + p; // expected-warning{{}}
-  p += 2;    // expected-warning{{}}
+  p += 2; // expected-warning{{}}
   a += p[2]; // expected-warning{{}}
-  p = i * 0 + p;
-  p = p + i * 0;
-  p += i * 0;
+  p = i*0 + p;
+  p = p + i*0;
+  p += i*0;
 }
 
-void checkArithOnSymbolic(int *p) {
+void checkArithOnSymbolic(int*p) {
   ++p;
   p = p + 2;
   p = 2 + p;
@@ -65,7 +66,7 @@ struct S {
 
 void arrayInStruct() {
   S s;
-  int *p = s.t;
+  int * p = s.t;
   ++p;
   S *sp = new S;
   p = sp->t;
@@ -78,24 +79,24 @@ void checkNew() {
   p[1] = 1; // expected-warning{{}}
 }
 
-void InitState(int *state) {
-  state[1] = 1; // expected-warning{{}}
+void InitState(int* state) {
+    state[1] = 1; // expected-warning{{}}
 }
 
-int *getArray(int size) {
-  if (size == 0)
-    return new int;
-  return new int[5];
+int* getArray(int size) {
+    if (size == 0)
+      return new int;
+    return new int[5];
 }
 
 void checkConditionalArray() {
-  int *maybeArray = getArray(0);
-  InitState(maybeArray);
+    int* maybeArray = getArray(0);
+    InitState(maybeArray);
 }
 
 void checkMultiDimansionalArray() {
   int a[5][5];
-  *(*(a + 1) + 2) = 2;
+   *(*(a+1)+2) = 2;
 }
 
 unsigned ptrSubtractionNoCrash(char *Begin, char *End) {
@@ -113,6 +114,6 @@ bool ptrAsIntegerSubtractionNoCrash(__UINTPTR_TYPE__ x, char *p) {
 
 // Bug 34374
 bool integerAsPtrSubtractionNoCrash(char *p, __UINTPTR_TYPE__ m) {
-  auto n = p - reinterpret_cast<char *>((__UINTPTR_TYPE__)1);
+  auto n = p - reinterpret_cast<char*>((__UINTPTR_TYPE__)1);
   return n == m;
 }

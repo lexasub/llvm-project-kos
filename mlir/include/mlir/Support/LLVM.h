@@ -40,11 +40,9 @@ class StringLiteral;
 class Twine;
 
 // Containers.
-template <typename T>
-class ArrayRef;
+template <typename T> class ArrayRef;
 namespace detail {
-template <typename KeyT, typename ValueT>
-struct DenseMapPair;
+template <typename KeyT, typename ValueT> struct DenseMapPair;
 } // namespace detail
 template <typename KeyT, typename ValueT, typename KeyInfoT, typename BucketT>
 class DenseMap;

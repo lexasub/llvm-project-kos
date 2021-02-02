@@ -17,7 +17,7 @@
 #define SCUDO_ALLOCATOR_SECONDARY_H_
 
 #ifndef SCUDO_ALLOCATOR_H_
-#error "This file must be included inside scudo_allocator.h."
+# error "This file must be included inside scudo_allocator.h."
 #endif
 
 // Secondary backed allocations are standalone chunks that contain extra
@@ -63,11 +63,13 @@ static Header *getHeader(uptr Ptr) {
 static Header *getHeader(const void *Ptr) {
   return getHeader(reinterpret_cast<uptr>(Ptr));
 }
-} // namespace LargeChunk
+}  // namespace LargeChunk
 
 class LargeMmapAllocator {
-public:
-  void Init() { internal_memset(this, 0, sizeof(*this)); }
+ public:
+  void Init() {
+    internal_memset(this, 0, sizeof(*this));
+  }
 
   void *Allocate(AllocatorStats *Stats, uptr Size, uptr Alignment) {
     const uptr UserSize = Size - Chunk::getHeaderSize();
@@ -175,7 +177,7 @@ public:
            (AllocatedBytes - FreedBytes) >> 10, LargestSize >> 20);
   }
 
-private:
+ private:
   static constexpr uptr HeadersSize =
       LargeChunk::getHeaderSize() + Chunk::getHeaderSize();
 
@@ -187,4 +189,4 @@ private:
   uptr LargestSize;
 };
 
-#endif // SCUDO_ALLOCATOR_SECONDARY_H_
+#endif  // SCUDO_ALLOCATOR_SECONDARY_H_

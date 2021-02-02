@@ -18,62 +18,60 @@ void checkThatMallocCheckerIsRunning() {
 
 // Test for radar://11110132.
 struct Foo {
-  mutable void *m_data;
-  Foo(void *data) : m_data(data) {}
+    mutable void* m_data;
+    Foo(void* data) : m_data(data) {}
 };
 Foo aFunction() {
-  return malloc(10);
+    return malloc(10);
 }
 
 // Assume that functions which take a function pointer can free memory even if
 // they are defined in system headers and take the const pointer to the
 // allocated memory. (radar://11160612)
 // Test default parameter.
-int const_ptr_and_callback_def_param(int, const char *, int n, void (*)(void *) = free);
+int const_ptr_and_callback_def_param(int, const char*, int n, void(*)(void*) = free);
 void r11160612_3() {
-  char *x = (char *)malloc(12);
+  char *x = (char*)malloc(12);
   const_ptr_and_callback_def_param(0, x, 12);
 }
 
-int const_ptr_and_callback_def_param_null(int, const char *, int n, void (*)(void *) = 0);
+int const_ptr_and_callback_def_param_null(int, const char*, int n, void(*)(void*) = 0);
 void r11160612_no_callback() {
-  char *x = (char *)malloc(12);
+  char *x = (char*)malloc(12);
   const_ptr_and_callback_def_param_null(0, x, 12);
 } // expected-warning{{leak}}
 
 // Test member function pointer.
 struct CanFreeMemory {
-  static void myFree(void *);
+  static void myFree(void*);
 };
 //This is handled because we look at the type of the parameter(not argument).
-void r11160612_3(CanFreeMemory *p) {
-  char *x = (char *)malloc(12);
+void r11160612_3(CanFreeMemory* p) {
+  char *x = (char*)malloc(12);
   const_ptr_and_callback_def_param(0, x, 12, p->myFree);
 }
 
+
 namespace PR13751 {
-class OwningVector {
-  void **storage;
-  size_t length;
+  class OwningVector {
+    void **storage;
+    size_t length;
+  public:
+    OwningVector();
+    ~OwningVector();
+    void push_back(void *Item) {
+      storage[length++] = Item;
+    }
+  };
 
-public:
-  OwningVector();
-  ~OwningVector();
-  void push_back(void *Item) {
-    storage[length++] = Item;
+  void testDestructors() {
+    OwningVector v;
+    v.push_back(malloc(4));
+    // no leak warning; freed in destructor
   }
-};
-
-void testDestructors() {
-  OwningVector v;
-  v.push_back(malloc(4));
-  // no leak warning; freed in destructor
 }
-} // namespace PR13751
 
-struct X {
-  void *a;
-};
+struct X { void *a; };
 
 struct X get() {
   struct X result;
@@ -84,59 +82,60 @@ struct X get() {
 // Ensure that regions accessible through a LazyCompoundVal trigger region escape.
 // Malloc checker used to report leaks for the following two test cases.
 struct Property {
-  char *getterName;
-  Property(char *n)
-      : getterName(n) {}
+  char* getterName;
+  Property(char* n)
+  : getterName(n) {}
+
 };
 void append(Property x);
 
 void appendWrapper(char *getterName) {
   append(Property(getterName));
 }
-void foo(const char *name) {
-  char *getterName = strdup(name);
+void foo(const char* name) {
+  char* getterName = strdup(name);
   appendWrapper(getterName); // no-warning
 }
 
 struct NestedProperty {
   Property prop;
   NestedProperty(Property p)
-      : prop(p) {}
+  : prop(p) {}
 };
 void appendNested(NestedProperty x);
 
 void appendWrapperNested(char *getterName) {
   appendNested(NestedProperty(Property(getterName)));
 }
-void fooNested(const char *name) {
-  char *getterName = strdup(name);
+void fooNested(const char* name) {
+  char* getterName = strdup(name);
   appendWrapperNested(getterName); // no-warning
 }
 
 namespace PR31226 {
-struct b2 {
-  int f;
-};
+  struct b2 {
+    int f;
+  };
 
-struct b1 : virtual b2 {
-  void m();
-};
+  struct b1 : virtual b2 {
+    void m();
+  };
 
-struct d : b1, b2 {
-};
+  struct d : b1, b2 {
+  };
 
-void f() {
-  d *p = new d();
-  p->m(); // no-crash // no-warning
+  void f() {
+    d *p = new d();
+    p->m(); // no-crash // no-warning
+  }
 }
-} // namespace PR31226
 
 // Allow __cxa_demangle to escape.
-char *test_cxa_demangle(const char *sym) {
+char* test_cxa_demangle(const char* sym) {
   size_t funcnamesize = 256;
-  char *funcname = (char *)malloc(funcnamesize);
+  char* funcname = (char*)malloc(funcnamesize);
   int status;
-  char *ret = abi::__cxa_demangle(sym, funcname, &funcnamesize, &status);
+  char* ret = abi::__cxa_demangle(sym, funcname, &funcnamesize, &status);
   if (status == 0) {
     funcname = ret;
   }
@@ -180,14 +179,14 @@ class a {
 };
 } // namespace pr46253_class
 
-namespace pr46253_retty {
+namespace pr46253_retty{
 void realloc(void *ptr, size_t size) { realloc(ptr, size); } // no-crash
 } // namespace pr46253_retty
 
-namespace pr46253_paramty {
+namespace pr46253_paramty{
 void *realloc(void **ptr, size_t size) { realloc(ptr, size); } // no-crash
 } // namespace pr46253_paramty
 
-namespace pr46253_paramty2 {
+namespace pr46253_paramty2{
 void *realloc(void *ptr, int size) { realloc(ptr, size); } // no-crash
 } // namespace pr46253_paramty2

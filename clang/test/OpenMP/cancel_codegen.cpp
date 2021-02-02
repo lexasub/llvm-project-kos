@@ -29,31 +29,31 @@
 #define HEADER
 
 float flag;
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
 #pragma omp parallel
-  {
-#pragma omp cancel parallel if (flag)
-    argv[0][0] = argc;
+{
+#pragma omp cancel parallel if(flag)
+  argv[0][0] = argc;
 #pragma omp barrier
-    argv[0][0] += argc;
-  }
+  argv[0][0] += argc;
+}
 // ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
 #pragma omp sections
-  {
+{
 #pragma omp cancel sections
-  }
+}
 // ALL: call void @__kmpc_for_static_init_4(
 // ALL: call i32 @__kmpc_cancel(
 // ALL: call void @__kmpc_for_static_fini(
 // ALL: call void @__kmpc_barrier(%struct.ident_t*
 #pragma omp sections
-  {
+{
 #pragma omp cancel sections
 #pragma omp section
-    {
+  {
 #pragma omp cancel sections
-    }
   }
+}
 // ALL: call void @__kmpc_for_static_init_4(
 // ALL: [[RES:%.+]] = call i32 @__kmpc_cancel(%struct.ident_t* {{[^,]+}}, i32 [[GTID:%.*]], i32 3)
 // ALL: [[CMP:%.+]] = icmp ne i32 [[RES]], 0
@@ -71,10 +71,9 @@ int main(int argc, char **argv) {
 // ALL: br label
 // ALL: call void @__kmpc_for_static_fini(
 #pragma omp for
-  for (int i = 0; i < argc; ++i) {
-#pragma omp cancel for if (cancel \
-                           : flag)
-  }
+for (int i = 0; i < argc; ++i) {
+#pragma omp cancel for if(cancel: flag)
+}
 // ALL: call void @__kmpc_for_static_init_4(
 // ALL: [[FLAG:%.+]] = load float, float* @{{.+}},
 // ALL: [[BOOL:%.+]] = fcmp une float [[FLAG]], 0.000000e+00
@@ -92,33 +91,32 @@ int main(int argc, char **argv) {
 // ALL: call void @__kmpc_for_static_fini(
 // ALL: call void @__kmpc_barrier(%struct.ident_t*
 #pragma omp task
-  {
+{
 #pragma omp cancel taskgroup
-  }
+}
 // ALL: call i8* @__kmpc_omp_task_alloc(
 // ALL: call i32 @__kmpc_omp_task(
 #pragma omp parallel sections
-  {
+{
 #pragma omp cancel sections
-  }
+}
 // ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
 #pragma omp parallel sections
-  {
+{
 #pragma omp cancel sections
 #pragma omp section
-    {
+  {
 #pragma omp cancel sections
-    }
   }
-  // ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
-  int r = 0;
-#pragma omp parallel for reduction(+ \
-                                   : r)
-  for (int i = 0; i < argc; ++i) {
+}
+// ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
+int r = 0;
+#pragma omp parallel for reduction(+: r)
+for (int i = 0; i < argc; ++i) {
 #pragma omp cancel for
-    r += i;
-  }
-  // ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
+  r += i;
+}
+// ALL: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
   return argc;
 }
 

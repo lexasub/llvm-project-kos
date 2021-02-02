@@ -19,12 +19,12 @@
 // UNSUPPORTED: ios
 
 #include <assert.h>
-#include <pthread.h>
-#include <sanitizer/asan_interface.h>
 #include <stdlib.h>
-#include <sys/resource.h>
-#include <sys/time.h>
+#include <pthread.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sanitizer/asan_interface.h>
 
 const int BS = 1024;
 volatile char x;
@@ -84,7 +84,7 @@ void recursive_func(char *p) {
   // For this reason, we don't do any further checks.
 }
 
-void *ThreadFn(void *unused) {
+void *ThreadFn(void* unused) {
   recursive_func(0);
   return 0;
 }

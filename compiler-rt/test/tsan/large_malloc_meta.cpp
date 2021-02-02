@@ -22,7 +22,7 @@ int main() {
       __atomic_store_n(&p[i], 1, __ATOMIC_RELEASE);
     delete[] p;
     mmap(0, kSize * sizeof(*p) + kPageSize, PROT_NONE, MAP_PRIVATE | MAP_ANON,
-         -1, 0);
+        -1, 0);
   }
   fprintf(stderr, "DONE\n");
   return 0;

@@ -28,12 +28,11 @@ class MCSymbolELF;
 class MCValue;
 
 struct ELFRelocationEntry {
-  uint64_t Offset;           // Where is the relocation.
+  uint64_t Offset; // Where is the relocation.
   const MCSymbolELF *Symbol; // The symbol to relocate with.
-  unsigned Type;             // The type of the relocation.
-  uint64_t Addend;           // The addend to use.
-  const MCSymbolELF
-      *OriginalSymbol;     // The original value of Symbol if we changed it.
+  unsigned Type;   // The type of the relocation.
+  uint64_t Addend; // The addend to use.
+  const MCSymbolELF *OriginalSymbol; // The original value of Symbol if we changed it.
   uint64_t OriginalAddend; // The original value of addend.
 
   ELFRelocationEntry(uint64_t Offset, const MCSymbolELF *Symbol, unsigned Type,
@@ -72,15 +71,15 @@ public:
 
   static uint8_t getOSABI(Triple::OSType OSType) {
     switch (OSType) {
-    case Triple::CloudABI:
-      return ELF::ELFOSABI_CLOUDABI;
-    case Triple::HermitCore:
-      return ELF::ELFOSABI_STANDALONE;
-    case Triple::PS4:
-    case Triple::FreeBSD:
-      return ELF::ELFOSABI_FREEBSD;
-    default:
-      return ELF::ELFOSABI_NONE;
+      case Triple::CloudABI:
+        return ELF::ELFOSABI_CLOUDABI;
+      case Triple::HermitCore:
+        return ELF::ELFOSABI_STANDALONE;
+      case Triple::PS4:
+      case Triple::FreeBSD:
+        return ELF::ELFOSABI_FREEBSD;
+      default:
+        return ELF::ELFOSABI_NONE;
     }
   }
 

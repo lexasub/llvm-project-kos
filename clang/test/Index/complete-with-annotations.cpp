@@ -3,8 +3,8 @@ class X {
 
   int field __attribute((annotate("one"), annotate("two"), annotate("three")));
 
-public
-  __attribute__((annotate("some annotation"))) : void func2();
+public __attribute__((annotate("some annotation"))):
+  void func2();
   int member2 __attribute__((annotate("another annotation")));
 };
 
@@ -20,3 +20,4 @@ void X::doSomething() {
 // CHECK: CXXMethod:{ResultType X &}{TypedText operator=}{LeftParen (}{Placeholder const X &}{RightParen )} (79)
 // CHECK: ClassDecl:{TypedText X}{Text ::} (75)
 // CHECK: CXXDestructor:{ResultType void}{TypedText ~X}{LeftParen (}{RightParen )} (79)
+

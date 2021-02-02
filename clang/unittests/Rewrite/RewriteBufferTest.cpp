@@ -32,7 +32,7 @@ static void tagRange(unsigned Offset, unsigned Len, StringRef tagName,
   raw_string_ostream(EndTag) << "</" << tagName << '>';
 
   Buf.InsertTextAfter(Offset, BeginTag);
-  Buf.InsertTextBefore(Offset + Len, EndTag);
+  Buf.InsertTextBefore(Offset+Len, EndTag);
 }
 
 TEST(RewriteBuffer, TagRanges) {

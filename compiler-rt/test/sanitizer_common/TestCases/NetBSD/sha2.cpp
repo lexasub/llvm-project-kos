@@ -47,8 +47,7 @@
 #define SHA_Data(x) _SHA_Data(x)
 
 void test1() {
-  SHA_CTX(SHASIZE)
-  ctx;
+  SHA_CTX(SHASIZE) ctx;
   uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
   uint8_t digest[SHA_DIGEST_LENGTH(SHASIZE)];
 
@@ -63,8 +62,7 @@ void test1() {
 }
 
 void test2() {
-  SHA_CTX(SHASIZE)
-  ctx;
+  SHA_CTX(SHASIZE) ctx;
   uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
   char digest[SHA_DIGEST_STRING_LENGTH(SHASIZE)];
 
@@ -77,8 +75,7 @@ void test2() {
 }
 
 void test3() {
-  SHA_CTX(SHASIZE)
-  ctx;
+  SHA_CTX(SHASIZE) ctx;
   uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
 
   SHA_Init(SHASIZE)(&ctx);

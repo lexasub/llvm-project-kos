@@ -12,8 +12,8 @@
 #include <mutex>
 #include <string>
 
-#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/ArrayRef.h"
 
 struct option;
 
@@ -49,6 +49,6 @@ public:
   static int GetOptionErrorCause();
   static std::string GetShortOptionString(struct option *long_options);
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_HOST_OPTIONPARSER_H

@@ -37,6 +37,6 @@ inline uptr CountFromData(uptr data) {
   return data & ((1ull << (sizeof(uptr) * 8 - kKindBits)) - 1);
 }
 
-} // namespace __sanitizer
+}
 
 #endif

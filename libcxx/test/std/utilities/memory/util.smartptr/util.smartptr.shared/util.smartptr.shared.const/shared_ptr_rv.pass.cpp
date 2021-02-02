@@ -19,58 +19,60 @@
 
 #include "test_macros.h"
 
-struct A {
-  static int count;
+struct A
+{
+    static int count;
 
-  A() { ++count; }
-  A(const A&) { ++count; }
-  ~A() { --count; }
+    A() {++count;}
+    A(const A&) {++count;}
+    ~A() {--count;}
 };
 
 int A::count = 0;
 
-int main(int, char**) {
-  {
-    std::shared_ptr<A> pA(new A);
-    assert(pA.use_count() == 1);
-    assert(A::count == 1);
+int main(int, char**)
+{
     {
-      A* p = pA.get();
-      std::shared_ptr<A> pA2(std::move(pA));
-      assert(A::count == 1);
+        std::shared_ptr<A> pA(new A);
+        assert(pA.use_count() == 1);
+        assert(A::count == 1);
+        {
+            A* p = pA.get();
+            std::shared_ptr<A> pA2(std::move(pA));
+            assert(A::count == 1);
 #if TEST_STD_VER >= 11
-      assert(pA.use_count() == 0);
-      assert(pA2.use_count() == 1);
+            assert(pA.use_count() == 0);
+            assert(pA2.use_count() == 1);
 #else
-      assert(pA.use_count() == 2);
-      assert(pA2.use_count() == 2);
+            assert(pA.use_count() == 2);
+            assert(pA2.use_count() == 2);
 #endif
-      assert(pA2.get() == p);
+            assert(pA2.get() == p);
+        }
+#if TEST_STD_VER >= 11
+        assert(pA.use_count() == 0);
+        assert(A::count == 0);
+#else
+        assert(pA.use_count() == 1);
+        assert(A::count == 1);
+#endif
     }
-#if TEST_STD_VER >= 11
-    assert(pA.use_count() == 0);
-    assert(A::count == 0);
-#else
-    assert(pA.use_count() == 1);
-    assert(A::count == 1);
-#endif
-  }
-  assert(A::count == 0);
-  {
-    std::shared_ptr<A> pA;
-    assert(pA.use_count() == 0);
     assert(A::count == 0);
     {
-      std::shared_ptr<A> pA2(std::move(pA));
-      assert(A::count == 0);
-      assert(pA.use_count() == 0);
-      assert(pA2.use_count() == 0);
-      assert(pA2.get() == pA.get());
+        std::shared_ptr<A> pA;
+        assert(pA.use_count() == 0);
+        assert(A::count == 0);
+        {
+            std::shared_ptr<A> pA2(std::move(pA));
+            assert(A::count == 0);
+            assert(pA.use_count() == 0);
+            assert(pA2.use_count() == 0);
+            assert(pA2.get() == pA.get());
+        }
+        assert(pA.use_count() == 0);
+        assert(A::count == 0);
     }
-    assert(pA.use_count() == 0);
     assert(A::count == 0);
-  }
-  assert(A::count == 0);
 
   return 0;
 }

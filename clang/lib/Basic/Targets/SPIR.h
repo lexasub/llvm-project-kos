@@ -93,7 +93,9 @@ public:
                                                             : CCCR_Warning;
   }
 
-  CallingConv getDefaultCallingConv() const override { return CC_SpirFunction; }
+  CallingConv getDefaultCallingConv() const override {
+    return CC_SpirFunction;
+  }
 
   void setSupportedOpenCLOpts() override {
     // Assume all OpenCL extensions and optional core features are supported

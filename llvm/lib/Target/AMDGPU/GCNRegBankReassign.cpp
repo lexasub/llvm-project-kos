@@ -43,10 +43,10 @@
 
 using namespace llvm;
 
-static cl::opt<unsigned> VerifyStallCycles(
-    "amdgpu-verify-regbanks-reassign",
-    cl::desc("Verify stall cycles in the regbanks reassign pass"),
-    cl::value_desc("0|1|2"), cl::init(0), cl::Hidden);
+static cl::opt<unsigned> VerifyStallCycles("amdgpu-verify-regbanks-reassign",
+  cl::desc("Verify stall cycles in the regbanks reassign pass"),
+  cl::value_desc("0|1|2"),
+  cl::init(0), cl::Hidden);
 
 #define DEBUG_TYPE "amdgpu-regbanks-reassign"
 
@@ -58,8 +58,10 @@ static cl::opt<unsigned> VerifyStallCycles(
 #define SGPR_BANK_MASK 0xff0
 #define SGPR_BANK_SHIFTED_MASK (SGPR_BANK_MASK >> SGPR_BANK_OFFSET)
 
-STATISTIC(NumStallsDetected, "Number of operand read stalls detected");
-STATISTIC(NumStallsRecovered, "Number of operand read stalls recovered");
+STATISTIC(NumStallsDetected,
+          "Number of operand read stalls detected");
+STATISTIC(NumStallsRecovered,
+          "Number of operand read stalls recovered");
 
 namespace {
 
@@ -68,7 +70,7 @@ class GCNRegBankReassign : public MachineFunctionPass {
   class OperandMask {
   public:
     OperandMask(unsigned r, unsigned s, unsigned m)
-        : Reg(r), SubReg(s), Mask(m) {}
+      : Reg(r), SubReg(s), Mask(m) {}
     Register Reg;
     unsigned SubReg;
     unsigned Mask;
@@ -97,11 +99,13 @@ class GCNRegBankReassign : public MachineFunctionPass {
 
   class CandidateList : public std::map<unsigned, std::list<Candidate>> {
   public:
-    void push(unsigned Weight, const Candidate &&C) {
+    void push(unsigned Weight, const Candidate&& C) {
       operator[](Weight).push_front(C);
     }
 
-    Candidate &back() { return rbegin()->second.back(); }
+    Candidate &back() {
+      return rbegin()->second.back();
+    }
 
     void pop_back() {
       rbegin()->second.pop_back();
@@ -194,8 +198,11 @@ private:
   // Check if registers' defs are old and may be pre-loaded.
   // Returns 0 if both registers are old enough, 1 or 2 if one or both
   // registers will not likely be pre-loaded.
-  unsigned getOperandGatherWeight(const MachineInstr &MI, Register Reg1,
-                                  Register Reg2, unsigned StallCycles) const;
+  unsigned getOperandGatherWeight(const MachineInstr& MI,
+                                  Register Reg1,
+                                  Register Reg2,
+                                  unsigned StallCycles) const;
+
 
   // Find all bank bits in UsedBanks where Mask can be relocated to.
   unsigned getFreeBanks(unsigned Mask, unsigned UsedBanks) const;
@@ -207,7 +214,7 @@ private:
                         unsigned UsedBanks) const;
 
   // Add cadidate instruction to the work list.
-  void collectCandidates(MachineInstr &MI, unsigned UsedBanks,
+  void collectCandidates(MachineInstr& MI, unsigned UsedBanks,
                          unsigned StallCycles);
 
   // Collect cadidate instructions across function. Returns a number stall
@@ -220,7 +227,8 @@ private:
   // Compute stalls within the uses of SrcReg replaced by a register from
   // Bank. If Bank is -1 does not perform substitution. If Collect is set
   // candidates are collected and added to work list.
-  unsigned computeStallCycles(Register SrcReg, Register Reg = Register(),
+  unsigned computeStallCycles(Register SrcReg,
+                              Register Reg = Register(),
                               unsigned SubReg = 0, int Bank = -1,
                               bool Collect = false);
 
@@ -232,8 +240,9 @@ private:
   // Try to reassign candidate. Returns number or stall cycles saved.
   unsigned tryReassign(Candidate &C);
 
-  bool verifyCycles(MachineFunction &MF, unsigned OriginalCycles,
-                    unsigned CyclesSaved);
+  bool verifyCycles(MachineFunction &MF,
+                    unsigned OriginalCycles, unsigned CyclesSaved);
+
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 public:
@@ -277,6 +286,7 @@ INITIALIZE_PASS_DEPENDENCY(VirtRegMap)
 INITIALIZE_PASS_DEPENDENCY(LiveRegMatrix)
 INITIALIZE_PASS_END(GCNRegBankReassign, DEBUG_TYPE, "GCN RegBank Reassign",
                     false, false)
+
 
 char GCNRegBankReassign::ID = 0;
 
@@ -365,8 +375,8 @@ uint32_t GCNRegBankReassign::getRegBankMask(Register Reg, unsigned SubReg,
       Used |= 1 << I;
   RegsUsed.set(StartBit + RegNo, StartBit + RegNo + Size);
   Mask &= ~Used;
-  Mask <<=
-      (Bank == -1) ? RegNo % NUM_SGPR_BANKS : unsigned(Bank - SGPR_BANK_OFFSET);
+  Mask <<= (Bank == -1) ? RegNo % NUM_SGPR_BANKS
+                        : unsigned(Bank - SGPR_BANK_OFFSET);
   Mask = (Mask | (Mask >> NUM_SGPR_BANKS)) & SGPR_BANK_SHIFTED_MASK;
   // Reserve 4 bank ids for VGPRs.
   return Mask << SGPR_BANK_OFFSET;
@@ -383,7 +393,7 @@ GCNRegBankReassign::analyzeInst(const MachineInstr &MI, Register Reg,
 
   RegsUsed.reset();
   OperandMasks.clear();
-  for (const auto &Op : MI.explicit_uses()) {
+  for (const auto& Op : MI.explicit_uses()) {
     // Undef can be assigned to any register, so two vregs can be assigned
     // the same phys reg within the same instruction.
     if (!Op.isReg() || Op.isUndef())
@@ -425,8 +435,8 @@ GCNRegBankReassign::analyzeInst(const MachineInstr &MI, Register Reg,
       }
     }
 
-    uint32_t Mask =
-        getRegBankMask(R, Op.getSubReg(), (Reg == R) ? ShiftedBank : -1);
+    uint32_t Mask = getRegBankMask(R, Op.getSubReg(),
+                                   (Reg == R) ? ShiftedBank : -1);
     StallCycles += countPopulation(UsedBanks & Mask);
     UsedBanks |= Mask;
     OperandMasks.push_back(OperandMask(Op.getReg(), Op.getSubReg(), Mask));
@@ -435,10 +445,11 @@ GCNRegBankReassign::analyzeInst(const MachineInstr &MI, Register Reg,
   return std::make_pair(StallCycles, UsedBanks);
 }
 
-unsigned
-GCNRegBankReassign::getOperandGatherWeight(const MachineInstr &MI,
-                                           Register Reg1, Register Reg2,
-                                           unsigned StallCycles) const {
+unsigned GCNRegBankReassign::getOperandGatherWeight(const MachineInstr& MI,
+                                                    Register Reg1,
+                                                    Register Reg2,
+                                                    unsigned StallCycles) const
+{
   unsigned Defs = 0;
   MachineBasicBlock::const_instr_iterator Def(MI.getIterator());
   MachineBasicBlock::const_instr_iterator B(MI.getParent()->instr_begin());
@@ -540,7 +551,8 @@ unsigned GCNRegBankReassign::getFreeBanks(unsigned Mask,
   return FreeBanks;
 }
 
-unsigned GCNRegBankReassign::getFreeBanks(Register Reg, unsigned SubReg,
+unsigned GCNRegBankReassign::getFreeBanks(Register Reg,
+                                          unsigned SubReg,
                                           unsigned Mask,
                                           unsigned UsedBanks) const {
   if (!isReassignable(Reg))
@@ -554,8 +566,8 @@ unsigned GCNRegBankReassign::getFreeBanks(Register Reg, unsigned SubReg,
     if (Shift >= NUM_VGPR_BANKS)
       return 0;
     unsigned VB = FreeBanks & VGPR_BANK_MASK;
-    FreeBanks =
-        ((VB >> Shift) | (VB << (NUM_VGPR_BANKS - Shift))) & VGPR_BANK_MASK;
+    FreeBanks = ((VB >> Shift) | (VB << (NUM_VGPR_BANKS - Shift))) &
+                VGPR_BANK_MASK;
   } else if (Offset > 1 && (Mask & SGPR_BANK_MASK)) {
     unsigned Shift = Offset >> 1;
     if (Shift >= NUM_SGPR_BANKS)
@@ -567,16 +579,15 @@ unsigned GCNRegBankReassign::getFreeBanks(Register Reg, unsigned SubReg,
   }
 
   LLVM_DEBUG(if (FreeBanks) {
-    dbgs() << "Potential reassignments of " << printReg(Reg, SubReg)
-           << " to banks: ";
-    dumpFreeBanks(FreeBanks);
-    dbgs() << '\n';
-  });
+          dbgs() << "Potential reassignments of " << printReg(Reg, SubReg)
+                 << " to banks: "; dumpFreeBanks(FreeBanks);
+          dbgs() << '\n'; });
 
   return FreeBanks;
 }
 
-void GCNRegBankReassign::collectCandidates(MachineInstr &MI, unsigned UsedBanks,
+void GCNRegBankReassign::collectCandidates(MachineInstr& MI,
+                                           unsigned UsedBanks,
                                            unsigned StallCycles) {
   LLVM_DEBUG(MI.dump());
 
@@ -599,8 +610,8 @@ void GCNRegBankReassign::collectCandidates(MachineInstr &MI, unsigned UsedBanks,
       unsigned Size1 = countPopulation(Mask1);
       unsigned Size2 = countPopulation(Mask2);
 
-      LLVM_DEBUG(dbgs() << "Conflicting operands: " << printReg(Reg1, SubReg1)
-                        << " and " << printReg(Reg2, SubReg2) << '\n');
+      LLVM_DEBUG(dbgs() << "Conflicting operands: " << printReg(Reg1, SubReg1) <<
+                      " and " << printReg(Reg2, SubReg2) << '\n');
 
       unsigned Weight = getOperandGatherWeight(MI, Reg1, Reg2, StallCycles);
       Weight += MLI->getLoopDepth(MI.getParent()) * 10;
@@ -644,9 +655,10 @@ unsigned GCNRegBankReassign::computeStallCycles(Register SrcReg, Register Reg,
 MCRegister GCNRegBankReassign::scavengeReg(LiveInterval &LI, unsigned Bank,
                                            unsigned SubReg) const {
   const TargetRegisterClass *RC = MRI->getRegClass(LI.reg());
-  unsigned MaxNumRegs = (Bank < NUM_VGPR_BANKS) ? MaxNumVGPRs : MaxNumSGPRs;
-  unsigned MaxReg =
-      MaxNumRegs + (Bank < NUM_VGPR_BANKS ? AMDGPU::VGPR0 : AMDGPU::SGPR0);
+  unsigned MaxNumRegs = (Bank < NUM_VGPR_BANKS) ? MaxNumVGPRs
+                                                : MaxNumSGPRs;
+  unsigned MaxReg = MaxNumRegs + (Bank < NUM_VGPR_BANKS ? AMDGPU::VGPR0
+                                                        : AMDGPU::SGPR0);
 
   for (MCRegister Reg : RC->getRegisters()) {
     // Check occupancy limit.
@@ -675,8 +687,8 @@ unsigned GCNRegBankReassign::tryReassign(Candidate &C) {
     return 0;
 
   LiveInterval &LI = LIS->getInterval(C.Reg);
-  LLVM_DEBUG(dbgs() << "Try reassign " << printReg(C.Reg) << " in ";
-             C.MI->dump(); LI.dump());
+  LLVM_DEBUG(dbgs() << "Try reassign " << printReg(C.Reg) << " in "; C.MI->dump();
+             LI.dump());
 
   // For each candidate bank walk all instructions in the range of live
   // interval and check if replacing the register with one belonging to
@@ -688,7 +700,7 @@ unsigned GCNRegBankReassign::tryReassign(Candidate &C) {
     return 0;
 
   struct BankStall {
-    BankStall(unsigned b, unsigned s) : Bank(b), Stalls(s){};
+    BankStall(unsigned b, unsigned s) : Bank(b), Stalls(s) {};
     bool operator<(const BankStall &RHS) const {
       if (Stalls == RHS.Stalls)
         return Bank < RHS.Bank;
@@ -704,8 +716,8 @@ unsigned GCNRegBankReassign::tryReassign(Candidate &C) {
       LLVM_DEBUG(dbgs() << "Trying bank " << printBank(Bank) << '\n');
       unsigned Stalls = computeStallCycles(C.Reg, C.Reg, C.SubReg, Bank);
       if (Stalls < OrigStalls) {
-        LLVM_DEBUG(dbgs() << "With bank " << printBank(Bank) << " -> " << Stalls
-                          << '\n');
+        LLVM_DEBUG(dbgs() << "With bank " << printBank(Bank) << " -> "
+                     << Stalls << '\n');
         BankStalls.push_back(BankStall((unsigned)Bank, Stalls));
       }
     }
@@ -719,17 +731,16 @@ unsigned GCNRegBankReassign::tryReassign(Candidate &C) {
     MCRegister Reg = scavengeReg(LI, BS.Bank, C.SubReg);
     if (Reg == AMDGPU::NoRegister) {
       LLVM_DEBUG(dbgs() << "No free registers in bank " << printBank(BS.Bank)
-                        << '\n');
+                   << '\n');
       continue;
     }
     LLVM_DEBUG(dbgs() << "Found free register " << printReg(Reg)
-                      << (LRM->isPhysRegUsed(Reg) ? "" : " (new)")
-                      << " in bank " << printBank(BS.Bank) << '\n');
+                 << (LRM->isPhysRegUsed(Reg) ? "" : " (new)")
+                 << " in bank " << printBank(BS.Bank) << '\n');
 
     LRM->assign(LI, Reg);
 
-    LLVM_DEBUG(dbgs() << "--- Cycles saved: " << OrigStalls - BS.Stalls
-                      << '\n');
+    LLVM_DEBUG(dbgs() << "--- Cycles saved: " << OrigStalls - BS.Stalls << '\n');
 
     return OrigStalls - BS.Stalls;
   }
@@ -745,16 +756,13 @@ unsigned GCNRegBankReassign::collectCandidates(MachineFunction &MF,
   for (MachineBasicBlock &MBB : MF) {
 
     LLVM_DEBUG(if (Collect) {
-      if (MBB.getName().empty())
-        dbgs() << "bb." << MBB.getNumber();
-      else
-        dbgs() << MBB.getName();
-      dbgs() << ":\n";
-    });
+            if (MBB.getName().empty()) dbgs() << "bb." << MBB.getNumber();
+            else dbgs() << MBB.getName(); dbgs() << ":\n";
+          });
 
     for (MachineInstr &MI : MBB.instrs()) {
       if (MI.isBundle())
-        continue; // we analyze the instructions inside the bundle individually
+          continue; // we analyze the instructions inside the bundle individually
 
       unsigned StallCycles;
       unsigned UsedBanks;
@@ -776,7 +784,7 @@ void GCNRegBankReassign::removeCandidates(Register Reg) {
   typename CandidateList::iterator Next;
   for (auto I = Candidates.begin(), E = Candidates.end(); I != E; I = Next) {
     Next = std::next(I);
-    I->second.remove_if([Reg, this](const Candidate &C) {
+    I->second.remove_if([Reg, this](const Candidate& C) {
       return C.MI->readsRegister(Reg, TRI);
     });
     if (I->second.empty())
@@ -789,7 +797,7 @@ bool GCNRegBankReassign::verifyCycles(MachineFunction &MF,
                                       unsigned CyclesSaved) {
   unsigned StallCycles = collectCandidates(MF, false);
   LLVM_DEBUG(dbgs() << "=== After the pass " << StallCycles
-                    << " stall cycles left\n");
+               << " stall cycles left\n");
   return StallCycles + CyclesSaved == OriginalCycles;
 }
 
@@ -818,16 +826,14 @@ bool GCNRegBankReassign::runOnMachineFunction(MachineFunction &MF) {
                          AMDGPU::SReg_32RegClass.getNumRegs() / 2 + 1;
   RegsUsed.resize(NumRegBanks);
 
-  LLVM_DEBUG(dbgs() << "=== RegBanks reassign analysis on function "
-                    << MF.getName() << '\n');
+  LLVM_DEBUG(dbgs() << "=== RegBanks reassign analysis on function " << MF.getName()
+               << '\n');
 
   unsigned StallCycles = collectCandidates(MF);
   NumStallsDetected += StallCycles;
 
-  LLVM_DEBUG(dbgs() << "=== " << StallCycles
-                    << " stall cycles detected in "
-                       "function "
-                    << MF.getName() << '\n');
+  LLVM_DEBUG(dbgs() << "=== " << StallCycles << " stall cycles detected in "
+                  "function " << MF.getName() << '\n');
 
   LLVM_DEBUG(Candidates.dump(this));
 
@@ -851,7 +857,7 @@ bool GCNRegBankReassign::runOnMachineFunction(MachineFunction &MF) {
   NumStallsRecovered += CyclesSaved;
 
   LLVM_DEBUG(dbgs() << "=== After the pass " << CyclesSaved
-                    << " cycles saved in function " << MF.getName() << '\n');
+               << " cycles saved in function " << MF.getName() << '\n');
 
   Candidates.clear();
 

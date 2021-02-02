@@ -118,7 +118,8 @@ static bool hasNoSimpleLoops(const LegalizeRule &Rule, const LegalityQuery &Q,
 }
 
 // Make sure the returned mutation makes sense for the match type.
-static bool mutationIsSane(const LegalizeRule &Rule, const LegalityQuery &Q,
+static bool mutationIsSane(const LegalizeRule &Rule,
+                           const LegalityQuery &Q,
                            std::pair<unsigned, LLT> Mutation) {
   // If the user wants a custom mutation, then we can't really say much about
   // it. Return true, and trust that they're doing the right thing.
@@ -165,7 +166,7 @@ static bool mutationIsSane(const LegalizeRule &Rule, const LegalityQuery &Q,
         return false;
     }
 
-    if (Rule.getAction() == NarrowScalar) {
+    if (Rule.getAction() == NarrowScalar)  {
       // Make sure the size really decreased.
       if (NewTy.getScalarSizeInBits() >= OldTy.getScalarSizeInBits())
         return false;
@@ -434,8 +435,7 @@ LegalizerInfo::getActionDefinitions(unsigned Opcode) const {
 LegalizeRuleSet &LegalizerInfo::getActionDefinitionsBuilder(unsigned Opcode) {
   unsigned OpcodeIdx = getActionDefinitionsIdx(Opcode);
   auto &Result = RulesForOpcode[OpcodeIdx];
-  assert(!Result.isAliasedByAnother() &&
-         "Modifying this opcode will modify aliases");
+  assert(!Result.isAliasedByAnother() && "Modifying this opcode will modify aliases");
   return Result;
 }
 
@@ -462,7 +462,8 @@ void LegalizerInfo::aliasActionDefinitions(unsigned OpcodeTo,
   RulesForOpcode[OpcodeFromIdx].aliasTo(OpcodeTo);
 }
 
-LegalizeActionStep LegalizerInfo::getAction(const LegalityQuery &Query) const {
+LegalizeActionStep
+LegalizerInfo::getAction(const LegalityQuery &Query) const {
   LegalizeActionStep Step = getActionDefinitions(Query.Opcode).apply(Query);
   if (Step.Action != LegalizeAction::UseLegacyRules) {
     return Step;
@@ -630,10 +631,11 @@ LegalizerInfo::findScalarLegalAction(const InstrAspect &Aspect) const {
     return {NotFound, LLT()};
   }
   const SmallVector<SizeAndActionsVec, 1> &Actions =
-      Aspect.Type.isPointer() ? AddrSpace2PointerActions[OpcodeIdx]
-                                    .find(Aspect.Type.getAddressSpace())
-                                    ->second
-                              : ScalarActions[OpcodeIdx];
+      Aspect.Type.isPointer()
+          ? AddrSpace2PointerActions[OpcodeIdx]
+                .find(Aspect.Type.getAddressSpace())
+                ->second
+          : ScalarActions[OpcodeIdx];
   if (Aspect.Idx >= Actions.size())
     return {NotFound, LLT()};
   const SizeAndActionsVec &Vec = Actions[Aspect.Idx];

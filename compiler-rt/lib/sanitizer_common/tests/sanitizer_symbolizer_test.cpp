@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_allocator_internal.h"
 #include "sanitizer_common/sanitizer_symbolizer_internal.h"
+#include "gtest/gtest.h"
 
 namespace __sanitizer {
 
@@ -61,7 +61,7 @@ TEST(Symbolizer, DemangleSwiftAndCXX) {
   EXPECT_STREQ("_TtSd", DemangleSwiftAndCXX("_TtSd"));
   // Check that the rest demangles properly.
   EXPECT_STREQ("f1(char*, int)", DemangleSwiftAndCXX("_Z2f1Pci"));
-#if !SANITIZER_FREEBSD  // QoI issue with libcxxrt on FreeBSD
+#if !SANITIZER_FREEBSD // QoI issue with libcxxrt on FreeBSD
   EXPECT_STREQ("foo", DemangleSwiftAndCXX("foo"));
 #endif
   EXPECT_STREQ("", DemangleSwiftAndCXX(""));

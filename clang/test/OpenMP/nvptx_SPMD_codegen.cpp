@@ -45,7 +45,7 @@ void foo() {
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
 // CHECK-DAG: [[DISTR_FULL]]
 // CHECK-DAG: [[FULL]]
-#pragma omp target teams distribute parallel for simd if (a)
+#pragma omp target teams distribute parallel for simd if(a)
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp target teams distribute parallel for simd schedule(static)
@@ -66,7 +66,7 @@ void foo() {
 #pragma omp target teams distribute parallel for simd schedule(guided)
   for (int i = 0; i < 10; ++i)
     ;
-  int a;
+int a;
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 0)
 // CHECK-DAG: [[DISTR_LIGHT]]
 // CHECK-DAG: [[FOR_LIGHT]]
@@ -137,28 +137,28 @@ void foo() {
 // CHECK-DAG: [[DISTR_FULL]]
 // CHECK-DAG: [[FULL]]
 #pragma omp target teams
-  {
-    int b;
+   {
+     int b;
 #pragma omp distribute parallel for simd
-    for (int i = 0; i < 10; ++i)
-      ;
+  for (int i = 0; i < 10; ++i)
     ;
-  }
+  ;
+   }
 #pragma omp target teams
-  {
-    int b[] = {2, 3, sizeof(int)};
+   {
+     int b[] = {2, 3, sizeof(int)};
 #pragma omp distribute parallel for simd schedule(static)
-    for (int i = 0; i < 10; ++i)
-      ;
-  }
+  for (int i = 0; i < 10; ++i)
+    ;
+   }
 #pragma omp target teams
-  {
-    int b;
+   {
+     int b;
 #pragma omp distribute parallel for simd schedule(static, 1)
-    for (int i = 0; i < 10; ++i)
-      ;
-    int &c = b;
-  }
+  for (int i = 0; i < 10; ++i)
+    ;
+  int &c = b;
+   }
 #pragma omp target teams
 #pragma omp distribute parallel for simd schedule(auto)
   for (int i = 0; i < 10; ++i)
@@ -303,7 +303,7 @@ void foo() {
 // CHECK-DAG: [[FULL]]
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
 // CHECK-DAG: [[FULL]]
-#pragma omp target parallel for if (a)
+#pragma omp target parallel for if(a)
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp target parallel for schedule(static)
@@ -348,7 +348,7 @@ void foo() {
 // CHECK: call void @__kmpc_spmd_kernel_init(i32 {{.+}}, i16 1)
 // CHECK-DAG: [[FULL]]
 // CHECK-DAG: [[BAR_FULL]]
-#pragma omp target parallel if (a)
+#pragma omp target parallel if(a)
 #pragma omp for simd
   for (int i = 0; i < 10; ++i)
     ;
@@ -482,3 +482,4 @@ void foo() {
 }
 
 #endif
+

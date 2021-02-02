@@ -54,12 +54,12 @@ struct FakeFrame {
 // frames in round robin fashion to maximize the delay between a deallocation
 // and the next allocation.
 class FakeStack {
-  static const uptr kMinStackFrameSizeLog = 6;   // Min frame is 64B.
+  static const uptr kMinStackFrameSizeLog = 6;  // Min frame is 64B.
   static const uptr kMaxStackFrameSizeLog = 16;  // Max stack frame is 64K.
 
  public:
   static const uptr kNumberOfSizeClasses =
-      kMaxStackFrameSizeLog - kMinStackFrameSizeLog + 1;
+       kMaxStackFrameSizeLog - kMinStackFrameSizeLog + 1;
 
   // CTOR: create the FakeStack as a single mmap-ed object.
   static FakeStack *Create(uptr stack_size_log);
@@ -155,7 +155,7 @@ class FakeStack {
   void ForEachFakeFrame(RangeIteratorCallback callback, void *arg);
 
  private:
-  FakeStack() {}
+  FakeStack() { }
   static const uptr kFlagsOffset = 4096;  // This is were the flags begin.
   // Must match the number of uses of DEFINE_STACK_MALLOC_FREE_WITH_CLASS_ID
   COMPILER_CHECK(kNumberOfSizeClasses == 11);

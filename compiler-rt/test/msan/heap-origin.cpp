@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 int main(int argc, char **argv) {
-  char *volatile x = (char *)malloc(5 * sizeof(char));
+  char *volatile x = (char*)malloc(5 * sizeof(char));
   return *x;
   // CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value
   // CHECK: {{#0 0x.* in main .*heap-origin.cpp:}}[[@LINE-2]]

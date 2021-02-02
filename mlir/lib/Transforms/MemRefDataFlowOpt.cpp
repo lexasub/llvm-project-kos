@@ -168,7 +168,7 @@ void MemRefDataFlowOpt::forwardStoreToLoad(AffineReadOpInterface loadOp) {
 
   // Perform the actual store to load forwarding.
   Value storeVal =
-      cast<AffineWriteOpInterface>(lastWriteStoreOp).getValueToStore();
+    cast<AffineWriteOpInterface>(lastWriteStoreOp).getValueToStore();
   loadOp.getValue().replaceAllUsesWith(storeVal);
   // Record the memref for a later sweep to optimize away.
   memrefsToErase.insert(loadOp.getMemRef());

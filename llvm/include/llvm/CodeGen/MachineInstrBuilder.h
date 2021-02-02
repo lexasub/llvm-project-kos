@@ -1,5 +1,4 @@
-//===- CodeGen/MachineInstrBuilder.h - Simplify creation of MIs --*- C++
-//-*-===//
+//===- CodeGen/MachineInstrBuilder.h - Simplify creation of MIs --*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -82,7 +81,7 @@ public:
       : MF(&F), MI(&*I) {}
 
   /// Allow automatic conversion to the machine instruction we are working on.
-  operator MachineInstr *() const { return MI; }
+  operator MachineInstr*() const { return MI; }
   MachineInstr *operator->() const { return MI; }
   operator MachineBasicBlock::iterator() const { return MI; }
 
@@ -100,13 +99,17 @@ public:
                                     unsigned SubReg = 0) const {
     assert((flags & 0x1) == 0 &&
            "Passing in 'true' to addReg is forbidden! Use enums instead.");
-    MI->addOperand(
-        *MF, MachineOperand::CreateReg(
-                 RegNo, flags & RegState::Define, flags & RegState::Implicit,
-                 flags & RegState::Kill, flags & RegState::Dead,
-                 flags & RegState::Undef, flags & RegState::EarlyClobber,
-                 SubReg, flags & RegState::Debug,
-                 flags & RegState::InternalRead, flags & RegState::Renamable));
+    MI->addOperand(*MF, MachineOperand::CreateReg(RegNo,
+                                               flags & RegState::Define,
+                                               flags & RegState::Implicit,
+                                               flags & RegState::Kill,
+                                               flags & RegState::Dead,
+                                               flags & RegState::Undef,
+                                               flags & RegState::EarlyClobber,
+                                               SubReg,
+                                               flags & RegState::Debug,
+                                               flags & RegState::InternalRead,
+                                               flags & RegState::Renamable));
     return *this;
   }
 
@@ -160,9 +163,9 @@ public:
   }
 
   const MachineInstrBuilder &addTargetIndex(unsigned Idx, int64_t Offset = 0,
-                                            unsigned TargetFlags = 0) const {
-    MI->addOperand(*MF,
-                   MachineOperand::CreateTargetIndex(Idx, Offset, TargetFlags));
+                                          unsigned TargetFlags = 0) const {
+    MI->addOperand(*MF, MachineOperand::CreateTargetIndex(Idx, Offset,
+                                                          TargetFlags));
     return *this;
   }
 
@@ -236,9 +239,9 @@ public:
     assert((MI->isDebugValue() ? static_cast<bool>(MI->getDebugVariable())
                                : true) &&
            "first MDNode argument of a DBG_VALUE not a variable");
-    assert(
-        (MI->isDebugLabel() ? static_cast<bool>(MI->getDebugLabel()) : true) &&
-        "first MDNode argument of a DBG_LABEL not a label");
+    assert((MI->isDebugLabel() ? static_cast<bool>(MI->getDebugLabel())
+                               : true) &&
+           "first MDNode argument of a DBG_LABEL not a label");
     return *this;
   }
 
@@ -289,22 +292,22 @@ public:
       TargetFlags = Disp.getTargetFlags();
 
     switch (Disp.getType()) {
-    default:
-      llvm_unreachable("Unhandled operand type in addDisp()");
-    case MachineOperand::MO_Immediate:
-      return addImm(Disp.getImm() + off);
-    case MachineOperand::MO_ConstantPoolIndex:
-      return addConstantPoolIndex(Disp.getIndex(), Disp.getOffset() + off,
-                                  TargetFlags);
-    case MachineOperand::MO_GlobalAddress:
-      return addGlobalAddress(Disp.getGlobal(), Disp.getOffset() + off,
-                              TargetFlags);
-    case MachineOperand::MO_BlockAddress:
-      return addBlockAddress(Disp.getBlockAddress(), Disp.getOffset() + off,
-                             TargetFlags);
-    case MachineOperand::MO_JumpTableIndex:
-      assert(off == 0 && "cannot create offset into jump tables");
-      return addJumpTableIndex(Disp.getIndex(), TargetFlags);
+      default:
+        llvm_unreachable("Unhandled operand type in addDisp()");
+      case MachineOperand::MO_Immediate:
+        return addImm(Disp.getImm() + off);
+      case MachineOperand::MO_ConstantPoolIndex:
+        return addConstantPoolIndex(Disp.getIndex(), Disp.getOffset() + off,
+                                    TargetFlags);
+      case MachineOperand::MO_GlobalAddress:
+        return addGlobalAddress(Disp.getGlobal(), Disp.getOffset() + off,
+                                TargetFlags);
+      case MachineOperand::MO_BlockAddress:
+        return addBlockAddress(Disp.getBlockAddress(), Disp.getOffset() + off,
+                               TargetFlags);
+      case MachineOperand::MO_JumpTableIndex:
+        assert(off == 0 && "cannot create offset into jump tables");
+        return addJumpTableIndex(Disp.getIndex(), TargetFlags);
     }
   }
 
@@ -333,7 +336,7 @@ inline MachineInstrBuilder BuildMI(MachineFunction &MF, const DebugLoc &DL,
 inline MachineInstrBuilder BuildMI(MachineFunction &MF, const DebugLoc &DL,
                                    const MCInstrDesc &MCID, Register DestReg) {
   return MachineInstrBuilder(MF, MF.CreateMachineInstr(MCID, DL))
-      .addReg(DestReg, RegState::Define);
+           .addReg(DestReg, RegState::Define);
 }
 
 /// This version of the builder inserts the newly-built instruction before
@@ -477,15 +480,27 @@ MachineInstr *buildDbgValueForSpill(MachineBasicBlock &BB,
 /// modifying an instruction in place while iterating over a basic block.
 void updateDbgValueForSpill(MachineInstr &Orig, int FrameIndex);
 
-inline unsigned getDefRegState(bool B) { return B ? RegState::Define : 0; }
-inline unsigned getImplRegState(bool B) { return B ? RegState::Implicit : 0; }
-inline unsigned getKillRegState(bool B) { return B ? RegState::Kill : 0; }
-inline unsigned getDeadRegState(bool B) { return B ? RegState::Dead : 0; }
-inline unsigned getUndefRegState(bool B) { return B ? RegState::Undef : 0; }
+inline unsigned getDefRegState(bool B) {
+  return B ? RegState::Define : 0;
+}
+inline unsigned getImplRegState(bool B) {
+  return B ? RegState::Implicit : 0;
+}
+inline unsigned getKillRegState(bool B) {
+  return B ? RegState::Kill : 0;
+}
+inline unsigned getDeadRegState(bool B) {
+  return B ? RegState::Dead : 0;
+}
+inline unsigned getUndefRegState(bool B) {
+  return B ? RegState::Undef : 0;
+}
 inline unsigned getInternalReadRegState(bool B) {
   return B ? RegState::InternalRead : 0;
 }
-inline unsigned getDebugRegState(bool B) { return B ? RegState::Debug : 0; }
+inline unsigned getDebugRegState(bool B) {
+  return B ? RegState::Debug : 0;
+}
 inline unsigned getRenamableRegState(bool B) {
   return B ? RegState::Renamable : 0;
 }
@@ -534,8 +549,8 @@ public:
   /// Create an MIBundleBuilder representing an existing instruction or bundle
   /// that has MI as its head.
   explicit MIBundleBuilder(MachineInstr *MI)
-      : MBB(*MI->getParent()), Begin(MI), End(getBundleEnd(MI->getIterator())) {
-  }
+      : MBB(*MI->getParent()), Begin(MI),
+        End(getBundleEnd(MI->getIterator())) {}
 
   /// Return a reference to the basic block containing this bundle.
   MachineBasicBlock &getMBB() const { return MBB; }
@@ -574,11 +589,15 @@ public:
 
   /// Insert MI into MBB by prepending it to the instructions in the bundle.
   /// MI will become the first instruction in the bundle.
-  MIBundleBuilder &prepend(MachineInstr *MI) { return insert(begin(), MI); }
+  MIBundleBuilder &prepend(MachineInstr *MI) {
+    return insert(begin(), MI);
+  }
 
   /// Insert MI into MBB by appending it to the instructions in the bundle.
   /// MI will become the last instruction in the bundle.
-  MIBundleBuilder &append(MachineInstr *MI) { return insert(end(), MI); }
+  MIBundleBuilder &append(MachineInstr *MI) {
+    return insert(end(), MI);
+  }
 };
 
 } // end namespace llvm

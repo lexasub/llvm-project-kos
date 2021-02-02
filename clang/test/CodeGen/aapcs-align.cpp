@@ -101,7 +101,7 @@ void g4() {
 // CHECK: declare void @f4m(i32, i32, i32, i32, i32, %struct.SF16* byval(%struct.SF16) align 8)
 
 // Packed structure.
-struct __attribute__((packed)) P {
+struct  __attribute__((packed)) P {
   int x;
   long long u;
 };
@@ -119,8 +119,9 @@ void g5() {
 // CHECK: declare void @f5(i32, [3 x i32])
 // CHECK: declare void @f5m(i32, i32, i32, i32, i32, [3 x i32])
 
+
 // Packed and aligned, alignement causes padding at the end.
-struct __attribute__((packed, aligned(8))) P8 {
+struct  __attribute__((packed, aligned(8))) P8 {
   int x;
   long long u;
 };

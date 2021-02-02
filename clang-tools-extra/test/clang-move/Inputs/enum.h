@@ -1,6 +1,5 @@
 namespace a {
-enum E1 { Green,
-          Red };
+enum E1 { Green, Red };
 
 enum class E2 { Yellow };
 

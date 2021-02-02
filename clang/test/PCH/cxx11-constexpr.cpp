@@ -19,13 +19,13 @@ struct C {
 };
 
 struct D : B {
-  constexpr D(int n) : B('x'), k(2 * n + 1) {}
+  constexpr D(int n) : B('x'), k(2*n+1) {}
   int k;
 };
 
 constexpr int value = 7;
 
-template <typename T>
+template<typename T>
 constexpr T plus_seven(T other) {
   return value + other;
 }

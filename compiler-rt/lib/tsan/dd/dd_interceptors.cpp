@@ -15,8 +15,10 @@
 
 using namespace __dsan;
 
-__attribute__((tls_model("initial-exec"))) static __thread Thread *thr;
-__attribute__((tls_model("initial-exec"))) static __thread volatile int initing;
+__attribute__((tls_model("initial-exec")))
+static __thread Thread *thr;
+__attribute__((tls_model("initial-exec")))
+static __thread volatile int initing;
 static bool inited;
 static uptr g_data_start;
 static uptr g_data_end;
@@ -31,7 +33,7 @@ static bool InitThread() {
     inited = true;
     Initialize();
   }
-  thr = (Thread *)InternalAlloc(sizeof(*thr));
+  thr = (Thread*)InternalAlloc(sizeof(*thr));
   internal_memset(thr, 0, sizeof(*thr));
   ThreadInit(thr);
   initing = false;
@@ -118,7 +120,7 @@ INTERCEPTOR(int, pthread_rwlock_tryrdlock, pthread_rwlock_t *m) {
 }
 
 INTERCEPTOR(int, pthread_rwlock_timedrdlock, pthread_rwlock_t *m,
-            const timespec *abstime) {
+    const timespec *abstime) {
   InitThread();
   int res = REAL(pthread_rwlock_timedrdlock)(m, abstime);
   if (res == 0)
@@ -143,7 +145,7 @@ INTERCEPTOR(int, pthread_rwlock_trywrlock, pthread_rwlock_t *m) {
 }
 
 INTERCEPTOR(int, pthread_rwlock_timedwrlock, pthread_rwlock_t *m,
-            const timespec *abstime) {
+    const timespec *abstime) {
   InitThread();
   int res = REAL(pthread_rwlock_timedwrlock)(m, abstime);
   if (res == 0)
@@ -158,21 +160,21 @@ INTERCEPTOR(int, pthread_rwlock_unlock, pthread_rwlock_t *m) {
 }
 
 static pthread_cond_t *init_cond(pthread_cond_t *c, bool force = false) {
-  atomic_uintptr_t *p = (atomic_uintptr_t *)c;
+  atomic_uintptr_t *p = (atomic_uintptr_t*)c;
   uptr cond = atomic_load(p, memory_order_acquire);
   if (!force && cond != 0)
-    return (pthread_cond_t *)cond;
+    return (pthread_cond_t*)cond;
   void *newcond = InternalAlloc(sizeof(pthread_cond_t));
   internal_memset(newcond, 0, sizeof(pthread_cond_t));
   if (atomic_compare_exchange_strong(p, &cond, (uptr)newcond,
-                                     memory_order_acq_rel))
-    return (pthread_cond_t *)newcond;
+      memory_order_acq_rel))
+    return (pthread_cond_t*)newcond;
   InternalFree(newcond);
-  return (pthread_cond_t *)cond;
+  return (pthread_cond_t*)cond;
 }
 
 INTERCEPTOR(int, pthread_cond_init, pthread_cond_t *c,
-            const pthread_condattr_t *a) {
+    const pthread_condattr_t *a) {
   InitThread();
   pthread_cond_t *cond = init_cond(c, true);
   return REAL(pthread_cond_init)(cond, a);
@@ -189,7 +191,7 @@ INTERCEPTOR(int, pthread_cond_wait, pthread_cond_t *c, pthread_mutex_t *m) {
 }
 
 INTERCEPTOR(int, pthread_cond_timedwait, pthread_cond_t *c, pthread_mutex_t *m,
-            const timespec *abstime) {
+    const timespec *abstime) {
   InitThread();
   pthread_cond_t *cond = init_cond(c);
   MutexBeforeUnlock(thr, (uptr)m, true);
@@ -216,12 +218,12 @@ INTERCEPTOR(int, pthread_cond_destroy, pthread_cond_t *c) {
   pthread_cond_t *cond = init_cond(c);
   int res = REAL(pthread_cond_destroy)(cond);
   InternalFree(cond);
-  atomic_store((atomic_uintptr_t *)c, 0, memory_order_relaxed);
+  atomic_store((atomic_uintptr_t*)c, 0, memory_order_relaxed);
   return res;
 }
 
 // for symbolizer
-INTERCEPTOR(char *, realpath, const char *path, char *resolved_path) {
+INTERCEPTOR(char*, realpath, const char *path, char *resolved_path) {
   InitThread();
   return REAL(realpath)(path, resolved_path);
 }
@@ -279,13 +281,11 @@ static void InitDataSeg() {
                   (segment.filename[0] == 0 ||
                    internal_strcmp(segment.filename, "[heap]") == 0) &&
                   prev_is_data;
-    if (g_data_start == 0 && is_data)
-      g_data_start = segment.start;
-    if (is_bss)
-      g_data_end = segment.end;
+    if (g_data_start == 0 && is_data) g_data_start = segment.start;
+    if (is_bss) g_data_end = segment.end;
     prev_is_data = is_data;
   }
-  VPrintf(1, "guessed data_start=%p data_end=%p\n", g_data_start, g_data_end);
+  VPrintf(1, "guessed data_start=%p data_end=%p\n",  g_data_start, g_data_end);
   CHECK_LT(g_data_start, g_data_end);
   CHECK_GE((uptr)&g_data_start, g_data_start);
   CHECK_LT((uptr)&g_data_start, g_data_end);

@@ -4,13 +4,13 @@
 
 struct Base {
   virtual ~Base() = default;
-  virtual void *Alloc() = 0;
+  virtual void* Alloc() = 0;
 };
 
 class Child : public Base {
 public:
   Child() = default;
-  void *Alloc();
+  void* Alloc();
 };
 
 void test() {

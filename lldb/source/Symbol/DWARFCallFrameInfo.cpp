@@ -18,8 +18,8 @@
 #include "lldb/Utility/ArchSpec.h"
 #include "lldb/Utility/Log.h"
 #include "lldb/Utility/Timer.h"
-#include <cstring>
 #include <list>
+#include <cstring>
 
 using namespace lldb;
 using namespace lldb_private;
@@ -449,10 +449,9 @@ void DWARFCallFrameInfo::GetFDEIndex() {
     }
 
     if (next_entry > m_cfi_data.GetByteSize() + 1) {
-      Host::SystemLog(Host::eSystemLogError,
-                      "error: Invalid fde/cie next "
-                      "entry offset of 0x%x found in "
-                      "cie/fde at 0x%x\n",
+      Host::SystemLog(Host::eSystemLogError, "error: Invalid fde/cie next "
+                                             "entry offset of 0x%x found in "
+                                             "cie/fde at 0x%x\n",
                       next_entry, current_entry);
       // Don't trust anything in this eh_frame section if we find blatantly
       // invalid data.
@@ -512,10 +511,9 @@ void DWARFCallFrameInfo::GetFDEIndex() {
       FDEEntryMap::Entry fde(addr, length, current_entry);
       m_fde_index.Append(fde);
     } else {
-      Host::SystemLog(Host::eSystemLogError,
-                      "error: unable to find CIE at "
-                      "0x%8.8x for cie_id = 0x%8.8x for "
-                      "entry at 0x%8.8x.\n",
+      Host::SystemLog(Host::eSystemLogError, "error: unable to find CIE at "
+                                             "0x%8.8x for cie_id = 0x%8.8x for "
+                                             "entry at 0x%8.8x.\n",
                       cie_offset, cie_id, current_entry);
     }
     offset = next_entry;
@@ -604,7 +602,7 @@ bool DWARFCallFrameInfo::FDEToUnwindPlan(dw_offset_t dwarf_offset,
     offset += aug_data_len;
   }
   unwind_plan.SetUnwindPlanForSignalTrap(
-      strchr(cie->augmentation, 'S') ? eLazyBoolYes : eLazyBoolNo);
+    strchr(cie->augmentation, 'S') ? eLazyBoolYes : eLazyBoolNo);
 
   Address lsda_data;
   Address personality_function_ptr;

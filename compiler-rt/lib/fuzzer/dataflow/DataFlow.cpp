@@ -59,12 +59,12 @@
 //===----------------------------------------------------------------------===*/
 
 #include <assert.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
-#include <execinfo.h> // backtrace_symbols_fd
+#include <execinfo.h>  // backtrace_symbols_fd
 
 #include "DataFlow.h"
 
@@ -76,7 +76,7 @@ __attribute__((weak)) extern int LLVMFuzzerInitialize(int *argc, char ***argv);
 CallbackData __dft;
 static size_t InputLen;
 static size_t NumIterations;
-static dfsan_label **FuncLabelsPerIter; // NumIterations x NumFuncs;
+static dfsan_label **FuncLabelsPerIter;  // NumIterations x NumFuncs;
 
 static inline bool BlockIsEntry(size_t BlockIdx) {
   return __dft.PCsBeg[BlockIdx * 2 + 1] & PCFLAG_FUNC_ENTRY;
@@ -98,9 +98,8 @@ static int PrintFunctions() {
                      "w");
   for (size_t I = 0; I < __dft.NumGuards; I++) {
     uintptr_t PC = __dft.PCsBeg[I * 2];
-    if (!BlockIsEntry(I))
-      continue;
-    void *const Buf[1] = {(void *)PC};
+    if (!BlockIsEntry(I)) continue;
+    void *const Buf[1] = {(void*)PC};
     backtrace_symbols_fd(Buf, 1, fileno(Pipe));
   }
   pclose(Pipe);
@@ -127,7 +126,7 @@ static void PrintDataFlow(FILE *Out) {
     fprintf(Out, "F%zd ", Func);
     size_t LenOfLastIteration = kNumLabels;
     if (auto Tail = InputLen % kNumLabels)
-      LenOfLastIteration = Tail;
+        LenOfLastIteration = Tail;
     for (size_t Iter = 0; Iter < NumIterations; Iter++)
       PrintBinary(Out, FuncLabelsPerIter[Iter][Func],
                   Iter == NumIterations - 1 ? LenOfLastIteration : kNumLabels);
@@ -170,7 +169,7 @@ int main(int argc, char **argv) {
   fseek(In, 0, SEEK_END);
   InputLen = ftell(In);
   fseek(In, 0, SEEK_SET);
-  unsigned char *Buf = (unsigned char *)malloc(InputLen);
+  unsigned char *Buf = (unsigned char*)malloc(InputLen);
   size_t NumBytesRead = fread(Buf, 1, InputLen, In);
   assert(NumBytesRead == InputLen);
   fclose(In);
@@ -204,6 +203,5 @@ int main(int argc, char **argv) {
   FILE *Out = OutIsStdout ? stdout : fopen(argv[2], "w");
   PrintDataFlow(Out);
   PrintCoverage(Out);
-  if (!OutIsStdout)
-    fclose(Out);
+  if (!OutIsStdout) fclose(Out);
 }

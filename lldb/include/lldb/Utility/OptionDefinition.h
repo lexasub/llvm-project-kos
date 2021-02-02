@@ -49,7 +49,8 @@ struct OptionDefinition {
   /// Whether this has a short option character.
   bool HasShortOption() const {
     // See the short_option documentation for more.
-    return llvm::isUInt<CHAR_BIT>(short_option) && llvm::isPrint(short_option);
+    return llvm::isUInt<CHAR_BIT>(short_option) &&
+           llvm::isPrint(short_option);
   }
 };
 } // namespace lldb_private

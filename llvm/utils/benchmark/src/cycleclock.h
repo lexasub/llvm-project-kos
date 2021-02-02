@@ -90,10 +90,11 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   return tb;
 #else
   uint32_t tbl, tbu0, tbu1;
-  asm volatile("mftbu %0\n"
-               "mftb %1\n"
-               "mftbu %2"
-               : "=r"(tbu0), "=r"(tbl), "=r"(tbu1));
+  asm volatile(
+      "mftbu %0\n"
+      "mftb %1\n"
+      "mftbu %2"
+      : "=r"(tbu0), "=r"(tbl), "=r"(tbu1));
   tbl &= -static_cast<int32_t>(tbu0 == tbu1);
   // high 32 bits in tbu1; low 32 bits in tbl  (tbu0 is no longer needed)
   return (static_cast<uint64_t>(tbu1) << 32) | tbl;
@@ -128,7 +129,7 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   // because is provides nanosecond resolution (which is noticable at
   // least for PNaCl modules running on x86 Mac & Linux).
   // Initialize to always return 0 if clock_gettime fails.
-  struct timespec ts = {0, 0};
+  struct timespec ts = { 0, 0 };
   clock_gettime(CLOCK_MONOTONIC, &ts);
   return static_cast<int64_t>(ts.tv_sec) * 1000000000 + ts.tv_nsec;
 #elif defined(__aarch64__)
@@ -148,12 +149,12 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   uint32_t pmcntenset;
   // Read the user mode perf monitor counter access permissions.
   asm volatile("mrc p15, 0, %0, c9, c14, 0" : "=r"(pmuseren));
-  if (pmuseren & 1) { // Allows reading perfmon counters for user mode code.
+  if (pmuseren & 1) {  // Allows reading perfmon counters for user mode code.
     asm volatile("mrc p15, 0, %0, c9, c12, 1" : "=r"(pmcntenset));
-    if (pmcntenset & 0x80000000ul) { // Is it counting?
+    if (pmcntenset & 0x80000000ul) {  // Is it counting?
       asm volatile("mrc p15, 0, %0, c9, c13, 0" : "=r"(pmccntr));
       // The counter is set up to count every 64th cycle
-      return static_cast<int64_t>(pmccntr) * 64; // Should optimize to << 6
+      return static_cast<int64_t>(pmccntr) * 64;  // Should optimize to << 6
     }
   }
 #endif
@@ -169,7 +170,7 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
 #elif defined(__s390__) // Covers both s390 and s390x.
   // Return the CPU clock.
   uint64_t tsc;
-  asm("stck %0" : "=Q"(tsc) : : "cc");
+  asm("stck %0" : "=Q" (tsc) : : "cc");
   return tsc;
 #elif defined(__riscv) // RISC-V
   // Use RDCYCLE (and RDCYCLEH on riscv32)
@@ -177,14 +178,15 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
   uint32_t cycles_lo, cycles_hi0, cycles_hi1;
   // This asm also includes the PowerPC overflow handling strategy, as above.
   // Implemented in assembly because Clang insisted on branching.
-  asm volatile("rdcycleh %0\n"
-               "rdcycle %1\n"
-               "rdcycleh %2\n"
-               "sub %0, %0, %2\n"
-               "seqz %0, %0\n"
-               "sub %0, zero, %0\n"
-               "and %1, %1, %0\n"
-               : "=r"(cycles_hi0), "=r"(cycles_lo), "=r"(cycles_hi1));
+  asm volatile(
+      "rdcycleh %0\n"
+      "rdcycle %1\n"
+      "rdcycleh %2\n"
+      "sub %0, %0, %2\n"
+      "seqz %0, %0\n"
+      "sub %0, zero, %0\n"
+      "and %1, %1, %0\n"
+      : "=r"(cycles_hi0), "=r"(cycles_lo), "=r"(cycles_hi1));
   return (static_cast<uint64_t>(cycles_hi1) << 32) | cycles_lo;
 #else
   uint64_t cycles;
@@ -198,7 +200,7 @@ inline BENCHMARK_ALWAYS_INLINE int64_t Now() {
 #error You need to define CycleTimer for your OS and CPU
 #endif
 }
-} // end namespace cycleclock
-} // end namespace benchmark
+}  // end namespace cycleclock
+}  // end namespace benchmark
 
-#endif // BENCHMARK_CYCLECLOCK_H_
+#endif  // BENCHMARK_CYCLECLOCK_H_

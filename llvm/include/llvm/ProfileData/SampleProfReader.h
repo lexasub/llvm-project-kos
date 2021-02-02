@@ -451,8 +451,8 @@ public:
   /// Return whether names in the profile are all MD5 numbers.
   virtual bool useMD5() { return false; }
 
-  /// Don't read profile without context if the flag is set. This is only
-  /// meaningful for ExtBinary format.
+  /// Don't read profile without context if the flag is set. This is only meaningful
+  /// for ExtBinary format.
   virtual void setSkipFlatProf(bool Skip) {}
 
   SampleProfileReaderItaniumRemapper *getRemapper() { return Remapper.get(); }

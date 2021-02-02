@@ -8,15 +8,15 @@
 
 int main() {
   std::aligned_storage<sizeof(Mutex), alignof(Mutex)>::type mu1_store;
-  Mutex *mu1 = reinterpret_cast<Mutex *>(&mu1_store);
-  new (&mu1_store) Mutex(false, 0);
+  Mutex* mu1 = reinterpret_cast<Mutex*>(&mu1_store);
+  new(&mu1_store) Mutex(false, 0);
   mu1->Lock();
   mu1->~Mutex();
   mu1->Unlock();
 
   std::aligned_storage<sizeof(Mutex), alignof(Mutex)>::type mu2_store;
-  Mutex *mu2 = reinterpret_cast<Mutex *>(&mu2_store);
-  new (&mu2_store)
+  Mutex* mu2 = reinterpret_cast<Mutex*>(&mu2_store);
+  new(&mu2_store)
       Mutex(false, __tsan_mutex_not_static, __tsan_mutex_not_static);
   mu2->Lock();
   mu2->~Mutex();

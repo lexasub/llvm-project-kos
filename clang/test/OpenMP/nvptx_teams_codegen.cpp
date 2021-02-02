@@ -19,11 +19,12 @@ int tmain(T argc) {
   return 0;
 }
 
-int main(int argc, char **argv) {
+
+int main (int argc, char **argv) {
 #pragma omp target
 #pragma omp teams
   {
-    argc = 0;
+  argc = 0;
   }
   return tmain(argv);
 }
@@ -81,6 +82,7 @@ int main(int argc, char **argv) {
 // CK1: store i{{[0-9]+}}** null, i{{[0-9]+}}*** %
 // CK1-NOT: call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_teams(
 
+
 #endif // CK1
 
 // Test target codegen - host bc file has to be created first.
@@ -100,18 +102,18 @@ int tmain(T argc) {
 #pragma omp target
 #pragma omp teams num_teams(a) thread_limit(b)
   {
-    argc = 0;
+  argc = 0;
   }
   return 0;
 }
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   int a = 20;
   int b = 5;
 #pragma omp target
 #pragma omp teams num_teams(a) thread_limit(b)
   {
-    argc = 0;
+  argc = 0;
   }
   return tmain(argv);
 }

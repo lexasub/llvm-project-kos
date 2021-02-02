@@ -17,9 +17,9 @@
 
 int main(int, char**) {
 #if !defined(TEST_HAS_QUICK_EXIT)
-  std::quick_exit(0);
+    std::quick_exit(0);
 #else
-#error
+#   error
 #endif
-  return 0;
+    return 0;
 }

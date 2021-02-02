@@ -14,7 +14,7 @@ struct S2 {
 
 struct Base {
   // Use variadic args to cause inlining the inherited constructor.
-  Base(const S1 &, const S2 &, const char *fmt, ...) {}
+  Base(const S1&, const S2&, const char *fmt, ...) {}
 };
 
 struct NonTrivialDtor {

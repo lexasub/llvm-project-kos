@@ -8,16 +8,18 @@
 
 #include "sanitizer_platform.h"
 
-#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_MAC || SANITIZER_NETBSD
+#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_MAC || \
+    SANITIZER_NETBSD
 
-#include "sanitizer_flags.h"
 #include "sanitizer_libignore.h"
+#include "sanitizer_flags.h"
 #include "sanitizer_posix.h"
 #include "sanitizer_procmaps.h"
 
 namespace __sanitizer {
 
-LibIgnore::LibIgnore(LinkerInitialized) {}
+LibIgnore::LibIgnore(LinkerInitialized) {
+}
 
 void LibIgnore::AddIgnoredLibrary(const char *name_templ) {
   BlockingMutexLock lock(&mutex_);
@@ -41,7 +43,8 @@ void LibIgnore::OnLibraryLoaded(const char *name) {
       buf[0]) {
     for (uptr i = 0; i < count_; i++) {
       Lib *lib = &libs_[i];
-      if (!lib->loaded && (!lib->real_name) && TemplateMatch(lib->templ, name))
+      if (!lib->loaded && (!lib->real_name) &&
+          TemplateMatch(lib->templ, name))
         lib->real_name = internal_strdup(buf.data());
     }
   }
@@ -58,13 +61,12 @@ void LibIgnore::OnLibraryLoaded(const char *name) {
           continue;
         if (!TemplateMatch(lib->templ, mod.full_name()) &&
             !(lib->real_name &&
-              internal_strcmp(lib->real_name, mod.full_name()) == 0))
+            internal_strcmp(lib->real_name, mod.full_name()) == 0))
           continue;
         if (loaded) {
-          Report(
-              "%s: called_from_lib suppression '%s' is matched against"
-              " 2 libraries: '%s' and '%s'\n",
-              SanitizerToolName, lib->templ, lib->name, mod.full_name());
+          Report("%s: called_from_lib suppression '%s' is matched against"
+                 " 2 libraries: '%s' and '%s'\n",
+                 SanitizerToolName, lib->templ, lib->name, mod.full_name());
           Die();
         }
         loaded = true;
@@ -86,10 +88,9 @@ void LibIgnore::OnLibraryLoaded(const char *name) {
       }
     }
     if (lib->loaded && !loaded) {
-      Report(
-          "%s: library '%s' that was matched against called_from_lib"
-          " suppression '%s' is unloaded\n",
-          SanitizerToolName, lib->name, lib->templ);
+      Report("%s: library '%s' that was matched against called_from_lib"
+             " suppression '%s' is unloaded\n",
+             SanitizerToolName, lib->name, lib->templ);
       Die();
     }
   }
@@ -118,9 +119,11 @@ void LibIgnore::OnLibraryLoaded(const char *name) {
   }
 }
 
-void LibIgnore::OnLibraryUnloaded() { OnLibraryLoaded(nullptr); }
+void LibIgnore::OnLibraryUnloaded() {
+  OnLibraryLoaded(nullptr);
+}
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 #endif  // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_MAC ||
         // SANITIZER_NETBSD

@@ -2,7 +2,7 @@
 
 // CHECK: @"??_C@_19DPFBEKIN@?$AAf?$AAu?$AAn?$AAc?$AA?$AA@" = linkonce_odr dso_local unnamed_addr constant [5 x i16] [i16 102, i16 117, i16 110, i16 99, i16 0], comdat, align 2
 
-void wprint(const wchar_t *);
+void wprint(const wchar_t*);
 
 #define __STR2WSTR(str) L##str
 #define _STR2WSTR(str) __STR2WSTR(str)
@@ -17,3 +17,4 @@ int main() {
 
   return 0;
 }
+

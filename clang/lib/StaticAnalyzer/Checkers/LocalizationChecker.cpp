@@ -14,13 +14,13 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/StmtVisitor.h"
 #include "clang/Lex/Lexer.h"
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
@@ -64,8 +64,7 @@ class NonLocalizedStringChecker
 
   // Methods that require a localized string
   mutable llvm::DenseMap<const IdentifierInfo *,
-                         llvm::DenseMap<Selector, uint8_t>>
-      UIMethods;
+                         llvm::DenseMap<Selector, uint8_t>> UIMethods;
   // Methods that return a localized string
   mutable llvm::SmallSet<std::pair<const IdentifierInfo *, Selector>, 12> LSM;
   // C Functions that return a localized string
@@ -136,9 +135,8 @@ public:
 
 #define NEW_RECEIVER(receiver)                                                 \
   llvm::DenseMap<Selector, uint8_t> &receiver##M =                             \
-      UIMethods                                                                \
-          .insert({&Ctx.Idents.get(#receiver),                                 \
-                   llvm::DenseMap<Selector, uint8_t>()})                       \
+      UIMethods.insert({&Ctx.Idents.get(#receiver),                            \
+                        llvm::DenseMap<Selector, uint8_t>()})                  \
           .first->second;
 #define ADD_NULLARY_METHOD(receiver, method, argument)                         \
   receiver##M.insert(                                                          \
@@ -716,6 +714,7 @@ void NonLocalizedStringChecker::setNonLocalizedState(const SVal S,
   }
 }
 
+
 static bool isDebuggingName(std::string name) {
   return StringRef(name).lower().find("debug") != StringRef::npos;
 }
@@ -744,6 +743,7 @@ static bool isDebuggingContext(CheckerContext &C) {
   return false;
 }
 
+
 /// Reports a localization error for the passed in method call and SVal
 void NonLocalizedStringChecker::reportLocalizationError(
     SVal S, const CallEvent &M, CheckerContext &C, int argumentNumber) const {
@@ -755,8 +755,7 @@ void NonLocalizedStringChecker::reportLocalizationError(
 
   static CheckerProgramPointTag Tag("NonLocalizedStringChecker",
                                     "UnlocalizedString");
-  ExplodedNode *ErrNode =
-      C.addTransition(C.getState(), C.getPredecessor(), &Tag);
+  ExplodedNode *ErrNode = C.addTransition(C.getState(), C.getPredecessor(), &Tag);
 
   if (!ErrNode)
     return;
@@ -889,8 +888,7 @@ void NonLocalizedStringChecker::checkPreCall(const CallEvent &Call,
 
   auto formals = FD->parameters();
   for (unsigned i = 0, ei = std::min(static_cast<unsigned>(formals.size()),
-                                     Call.getNumArgs());
-       i != ei; ++i) {
+                                     Call.getNumArgs()); i != ei; ++i) {
     if (isAnnotatedAsTakingLocalized(formals[i])) {
       auto actual = Call.getArgSVal(i);
       if (hasNonLocalizedState(actual, C)) {
@@ -1399,8 +1397,9 @@ void PluralMisuseChecker::MethodCrawler::reportPluralMisuseError(
 void ento::registerNonLocalizedStringChecker(CheckerManager &mgr) {
   NonLocalizedStringChecker *checker =
       mgr.registerChecker<NonLocalizedStringChecker>();
-  checker->IsAggressive = mgr.getAnalyzerOptions().getCheckerBooleanOption(
-      checker, "AggressiveReport");
+  checker->IsAggressive =
+      mgr.getAnalyzerOptions().getCheckerBooleanOption(
+          checker, "AggressiveReport");
 }
 
 bool ento::shouldRegisterNonLocalizedStringChecker(const CheckerManager &mgr) {
@@ -1412,7 +1411,7 @@ void ento::registerEmptyLocalizationContextChecker(CheckerManager &mgr) {
 }
 
 bool ento::shouldRegisterEmptyLocalizationContextChecker(
-    const CheckerManager &mgr) {
+                                                    const CheckerManager &mgr) {
   return true;
 }
 

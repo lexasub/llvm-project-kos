@@ -17,13 +17,13 @@ bool f3() {
   return !false;
 }
 
-void *f4(int *w) {
-  return reinterpret_cast<void *&>(w);
+void *f4(int* w) {
+  return reinterpret_cast<void*&>(w);
 }
 
 namespace {
 
-struct A {};
+struct A { };
 struct B {
   operator A() { return A(); }
 };
@@ -33,46 +33,46 @@ A f(char *dst) {
   return b;
 }
 
-} // namespace
+}
 
 namespace {
 
 struct S {
-  void *p;
+    void *p;
 };
 
-void *f(S *w) {
-  return &reinterpret_cast<void *&>(*w);
+void *f(S* w) {
+    return &reinterpret_cast<void*&>(*w);
 }
 
-} // namespace
+}
 
 namespace {
 
-struct C {
+struct C { 
   void *p;
   static void f();
 };
 
-void C::f() {}
+void C::f() { }
 
-} // namespace
+}
+
 
 void vla(int n) {
   int nums[n];
   nums[0] = 1;
   clang_analyzer_eval(nums[0] == 1); // expected-warning{{TRUE}}
-
+  
   // This used to fail with MallocChecker on, and /only/ in C++ mode.
   // This struct is POD, though, so it should be fine to put it in a VLA.
-  struct {
-    int x;
-  } structs[n];
+  struct { int x; } structs[n];
   structs[0].x = 1;
   clang_analyzer_eval(structs[0].x == 1); // expected-warning{{TRUE}}
 }
 
-void useIntArray(int[]);
+void useIntArray(int []);
 void testIntArrayLiteral() {
-  useIntArray((int[]){1, 2, 3});
+  useIntArray((int []){ 1, 2, 3 });
 }
+

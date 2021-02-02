@@ -22,13 +22,13 @@ private:
   // Reset the data needed for the test.
   void reset(const StringRef Name, const StringRef IRType) {
     M = parseAssemblyString("declare void @dummy()", Err, Ctx);
-    EXPECT_NE(M.get(), nullptr)
-        << "Loading an invalid module.\n " << Err.getMessage() << "\n";
+    EXPECT_NE(M.get(), nullptr) << "Loading an invalid module.\n "
+                                << Err.getMessage() << "\n";
     Type *Ty = parseType(IRType, Err, *(M.get()));
     FunctionType *FTy = dyn_cast<FunctionType>(Ty);
-    EXPECT_NE(FTy, nullptr)
-        << "Invalid function type string: " << IRType << "\n"
-        << Err.getMessage() << "\n";
+    EXPECT_NE(FTy, nullptr) << "Invalid function type string: " << IRType
+                            << "\n"
+                            << Err.getMessage() << "\n";
     FunctionCallee F = M->getOrInsertFunction(Name, FTy);
     EXPECT_NE(F.getCallee(), nullptr)
         << "The function must be present in the module\n";

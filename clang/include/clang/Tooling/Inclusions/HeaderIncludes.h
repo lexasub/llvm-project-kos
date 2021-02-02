@@ -127,6 +127,7 @@ private:
   llvm::Regex IncludeRegex;
 };
 
+
 } // namespace tooling
 } // namespace clang
 

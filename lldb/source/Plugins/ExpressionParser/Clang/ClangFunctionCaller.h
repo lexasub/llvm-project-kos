@@ -80,9 +80,9 @@ class ClangFunctionCaller : public FunctionCaller {
   private:
     ClangFunctionCaller &m_owner;
     std::unique_ptr<ASTStructExtractor> m_struct_extractor; ///< The class that
-                                                            /// generates the
-                                                            /// argument struct
-                                                            /// layout.
+                                                            ///generates the
+                                                            ///argument struct
+                                                            ///layout.
   };
 
   // LLVM RTTI support

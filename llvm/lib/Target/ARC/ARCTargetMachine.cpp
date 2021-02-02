@@ -74,8 +74,8 @@ bool ARCPassConfig::addInstSelector() {
 void ARCPassConfig::addPreEmitPass() { addPass(createARCBranchFinalizePass()); }
 
 void ARCPassConfig::addPreRegAlloc() {
-  addPass(createARCExpandPseudosPass());
-  addPass(createARCOptAddrMode());
+    addPass(createARCExpandPseudosPass());
+    addPass(createARCOptAddrMode());
 }
 
 // Force static initialization.

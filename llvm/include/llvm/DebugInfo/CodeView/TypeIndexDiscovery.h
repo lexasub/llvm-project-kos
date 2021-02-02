@@ -40,7 +40,7 @@ bool discoverTypeIndicesInSymbol(ArrayRef<uint8_t> RecordData,
                                  SmallVectorImpl<TiReference> &Refs);
 bool discoverTypeIndicesInSymbol(ArrayRef<uint8_t> RecordData,
                                  SmallVectorImpl<TypeIndex> &Indices);
-} // namespace codeview
-} // namespace llvm
+}
+}
 
 #endif

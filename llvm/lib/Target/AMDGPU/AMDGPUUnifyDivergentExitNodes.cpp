@@ -58,8 +58,7 @@ public:
   static char ID; // Pass identification, replacement for typeid
 
   AMDGPUUnifyDivergentExitNodes() : FunctionPass(ID) {
-    initializeAMDGPUUnifyDivergentExitNodesPass(
-        *PassRegistry::getPassRegistry());
+    initializeAMDGPUUnifyDivergentExitNodesPass(*PassRegistry::getPassRegistry());
   }
 
   // We can preserve non-critical-edgeness when we unify function exit nodes
@@ -74,14 +73,14 @@ char AMDGPUUnifyDivergentExitNodes::ID = 0;
 char &llvm::AMDGPUUnifyDivergentExitNodesID = AMDGPUUnifyDivergentExitNodes::ID;
 
 INITIALIZE_PASS_BEGIN(AMDGPUUnifyDivergentExitNodes, DEBUG_TYPE,
-                      "Unify divergent function exit nodes", false, false)
+                     "Unify divergent function exit nodes", false, false)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(PostDominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(LegacyDivergenceAnalysis)
 INITIALIZE_PASS_END(AMDGPUUnifyDivergentExitNodes, DEBUG_TYPE,
                     "Unify divergent function exit nodes", false, false)
 
-void AMDGPUUnifyDivergentExitNodes::getAnalysisUsage(AnalysisUsage &AU) const {
+void AMDGPUUnifyDivergentExitNodes::getAnalysisUsage(AnalysisUsage &AU) const{
   if (RequireAndPreserveDomTree)
     AU.addRequired<DominatorTreeWrapperPass>();
 
@@ -161,13 +160,13 @@ static BasicBlock *unifyReturnBlockSet(Function &F, DomTreeUpdater &DTU,
     removeDoneExport(F);
 
     Value *Undef = UndefValue::get(B.getFloatTy());
-    B.CreateIntrinsic(Intrinsic::amdgcn_exp, {B.getFloatTy()},
+    B.CreateIntrinsic(Intrinsic::amdgcn_exp, { B.getFloatTy() },
                       {
-                          B.getInt32(AMDGPU::Exp::ET_NULL),
-                          B.getInt32(0),              // enabled channels
-                          Undef, Undef, Undef, Undef, // values
-                          B.getTrue(),                // done
-                          B.getTrue(),                // valid mask
+                        B.getInt32(AMDGPU::Exp::ET_NULL),
+                        B.getInt32(0), // enabled channels
+                        Undef, Undef, Undef, Undef, // values
+                        B.getTrue(), // done
+                        B.getTrue(), // valid mask
                       });
   }
 
@@ -176,8 +175,8 @@ static BasicBlock *unifyReturnBlockSet(Function &F, DomTreeUpdater &DTU,
     B.CreateRetVoid();
   } else {
     // If the function doesn't return void... add a PHI node to the block...
-    PN =
-        B.CreatePHI(F.getReturnType(), ReturningBlocks.size(), "UnifiedRetVal");
+    PN = B.CreatePHI(F.getReturnType(), ReturningBlocks.size(),
+                     "UnifiedRetVal");
     assert(!InsertExport);
     B.CreateRet(PN);
   }
@@ -253,8 +252,8 @@ bool AMDGPUUnifyDivergentExitNodes::runOnFunction(Function &F) {
 
       ConstantInt *BoolTrue = ConstantInt::getTrue(F.getContext());
       if (DummyReturnBB == nullptr) {
-        DummyReturnBB =
-            BasicBlock::Create(F.getContext(), "DummyReturnBlock", &F);
+        DummyReturnBB = BasicBlock::Create(F.getContext(),
+                                           "DummyReturnBlock", &F);
         Type *RetTy = F.getReturnType();
         Value *RetVal = RetTy->isVoidTy() ? nullptr : UndefValue::get(RetTy);
 
@@ -282,7 +281,8 @@ bool AMDGPUUnifyDivergentExitNodes::runOnFunction(Function &F) {
         // even though this forces an extra unnecessary export wait, we assume
         // that this happens rare enough in practice to that we don't have to
         // worry about performance.
-        if (F.getCallingConv() == CallingConv::AMDGPU_PS && RetTy->isVoidTy()) {
+        if (F.getCallingConv() == CallingConv::AMDGPU_PS &&
+            RetTy->isVoidTy()) {
           InsertExport = true;
         }
 
@@ -328,8 +328,8 @@ bool AMDGPUUnifyDivergentExitNodes::runOnFunction(Function &F) {
     if (UnreachableBlocks.size() == 1) {
       UnreachableBlock = UnreachableBlocks.front();
     } else {
-      UnreachableBlock =
-          BasicBlock::Create(F.getContext(), "UnifiedUnreachableBlock", &F);
+      UnreachableBlock = BasicBlock::Create(F.getContext(),
+                                            "UnifiedUnreachableBlock", &F);
       new UnreachableInst(F.getContext(), UnreachableBlock);
 
       Updates.reserve(Updates.size() + UnreachableBlocks.size());
@@ -351,8 +351,8 @@ bool AMDGPUUnifyDivergentExitNodes::runOnFunction(Function &F) {
       // Remove and delete the unreachable inst.
       UnreachableBlock->getTerminator()->eraseFromParent();
 
-      Function *UnreachableIntrin = Intrinsic::getDeclaration(
-          F.getParent(), Intrinsic::amdgcn_unreachable);
+      Function *UnreachableIntrin =
+        Intrinsic::getDeclaration(F.getParent(), Intrinsic::amdgcn_unreachable);
 
       // Insert a call to an intrinsic tracking that this is an unreachable
       // point, in case we want to kill the active lanes or something later.
@@ -380,8 +380,8 @@ bool AMDGPUUnifyDivergentExitNodes::runOnFunction(Function &F) {
   if (ReturningBlocks.size() == 1 && !InsertExport)
     return Changed; // Already has a single return block
 
-  const TargetTransformInfo &TTI =
-      getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
+  const TargetTransformInfo &TTI
+    = getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
 
   // Unify returning blocks. If we are going to insert the export it is also
   // necessary to include blocks that are uniformly reached, because in addition

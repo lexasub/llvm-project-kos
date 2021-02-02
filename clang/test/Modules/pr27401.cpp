@@ -17,20 +17,21 @@ class vector : __vector_base<_Tp, _Allocator> {
 public:
   vector() noexcept(is_nothrow_default_constructible<_Allocator>::value);
   vector(const vector &);
-  vector(vector &&) noexcept(is_nothrow_move_constructible<_Allocator>::value);
+  vector(vector &&)
+      noexcept(is_nothrow_move_constructible<_Allocator>::value);
 };
 
 template <class _Tp, class _Allocator>
 vector<_Tp, _Allocator>::vector(const vector &__x) : __vector_base<_Tp, _Allocator>(__x.__alloc()) {}
 
-struct CommentOptions {
-  vector<char> ParseAllComments;
-  CommentOptions() {}
-};
-struct PrintingPolicy {
-  PrintingPolicy(CommentOptions LO) : LangOpts(LO) {}
-  CommentOptions LangOpts;
-};
+  struct CommentOptions {
+    vector<char>  ParseAllComments;
+    CommentOptions() {}
+  };
+  struct PrintingPolicy {
+    PrintingPolicy(CommentOptions LO) : LangOpts(LO) {}
+    CommentOptions LangOpts;
+  };
 
 #include "b.h"
 CommentOptions fn1() { return fn1(); }

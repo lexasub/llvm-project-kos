@@ -10,9 +10,9 @@
 
 #include "llvm/DebugInfo/CodeView/LazyRandomTypeCollection.h"
 #include "llvm/DebugInfo/PDB/Native/NativeEnumTypes.h"
+#include "llvm/DebugInfo/PDB/PDBExtras.h"
 #include "llvm/DebugInfo/PDB/Native/PDBFile.h"
 #include "llvm/DebugInfo/PDB/Native/TpiStream.h"
-#include "llvm/DebugInfo/PDB/PDBExtras.h"
 
 using namespace llvm;
 using namespace llvm::codeview;
@@ -136,7 +136,7 @@ NativeTypeFunctionSig::findChildren(PDB_SymType Type) const {
     return std::make_unique<NullEnumerator<PDBSymbol>>();
 
   auto NET = std::make_unique<NativeEnumTypes>(Session,
-                                               /* copy */ ArgList.ArgIndices);
+                                                /* copy */ ArgList.ArgIndices);
   return std::unique_ptr<IPDBEnumSymbols>(
       new NativeEnumFunctionArgs(Session, std::move(NET)));
 }

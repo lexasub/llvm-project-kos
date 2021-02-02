@@ -22,8 +22,10 @@
 #include "test_macros.h"
 #include "../AB.h"
 
-void test() {
-  {
+void
+test()
+{
+    {
     B* p = new B(1);
     std::auto_ptr<B> ap1(p);
     std::auto_ptr<A> ap2(ap1);
@@ -31,13 +33,14 @@ void test() {
     assert(ap2.get() == p);
     assert(A::count == 1);
     assert(B::count == 1);
-  }
-  assert(A::count == 0);
-  assert(B::count == 0);
+    }
+    assert(A::count == 0);
+    assert(B::count == 0);
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 
   return 0;
 }

@@ -17,10 +17,10 @@
 #include "llvm/IR/Instruction.h"
 
 namespace llvm {
-class AssumptionCache;
-class DominatorTree;
-class DataLayout;
-class TargetLibraryInfo;
+  class AssumptionCache;
+  class DominatorTree;
+  class DataLayout;
+  class TargetLibraryInfo;
 
 /// PHITransAddr - An address value which tracks and handles phi translation.
 /// As we walk "up" the CFG through predecessors, we need to ensure that the
@@ -46,7 +46,7 @@ class PHITransAddr {
   AssumptionCache *AC;
 
   /// InstInputs - The inputs for our symbolic address.
-  SmallVector<Instruction *, 4> InstInputs;
+  SmallVector<Instruction*, 4> InstInputs;
 
 public:
   PHITransAddr(Value *addr, const DataLayout &DL, AssumptionCache *AC)

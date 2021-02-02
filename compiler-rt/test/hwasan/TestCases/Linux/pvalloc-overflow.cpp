@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   if (!untag_strcmp(action, "m1")) {
     p = pvalloc((uintptr_t)-1);
   } else if (!untag_strcmp(action, "psm1")) {
-    p = pvalloc((uintptr_t) - (page_size - 1));
+    p = pvalloc((uintptr_t)-(page_size - 1));
   } else {
     assert(0);
   }

@@ -57,19 +57,20 @@
 #include "test_macros.h"
 
 struct TriviallyCopyable {
-  TriviallyCopyable(int i) : i_(i) {}
-  int i_;
-};
+    TriviallyCopyable ( int i ) : i_(i) {}
+    int i_;
+    };
 
 template <class T>
-void test(T t) {
-  std::atomic<T> t0(t);
-}
+void test ( T t ) {
+    std::atomic<T> t0(t);
+    }
 
-int main(int, char**) {
-  test(TriviallyCopyable(42));
-  test(std::this_thread::get_id());
-  test(std::chrono::nanoseconds(2));
+int main(int, char**)
+{
+    test(TriviallyCopyable(42));
+    test(std::this_thread::get_id());
+    test(std::chrono::nanoseconds(2));
 
   return 0;
 }

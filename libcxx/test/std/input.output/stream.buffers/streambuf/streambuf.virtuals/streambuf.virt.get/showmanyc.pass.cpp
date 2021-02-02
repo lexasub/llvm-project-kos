@@ -21,13 +21,16 @@
 int showmanyc_called = 0;
 
 template <class CharT>
-struct test : public std::basic_streambuf<CharT> {
-  test() {}
+struct test
+    : public std::basic_streambuf<CharT>
+{
+    test() {}
 };
 
-int main(int, char**) {
-  test<char> t;
-  assert(t.in_avail() == 0);
+int main(int, char**)
+{
+    test<char> t;
+    assert(t.in_avail() == 0);
 
   return 0;
 }

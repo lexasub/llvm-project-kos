@@ -575,7 +575,7 @@ ExtractLibcxxStringInfo(ValueObject &valobj) {
     return {};
 
   ValueObjectSP layout_decider(
-      D->GetChildAtIndexPath(llvm::ArrayRef<size_t>({0, 0})));
+    D->GetChildAtIndexPath(llvm::ArrayRef<size_t>({0, 0})));
 
   // this child should exist
   if (!layout_decider)
@@ -674,6 +674,7 @@ bool lldb_private::formatters::LibcxxWStringSummaryProvider(
   }
   if (!location_sp)
     return false;
+
 
   StringPrinter::ReadBufferAndDumpToStreamOptions options(valobj);
   if (summary_options.GetCapping() == TypeSummaryCapping::eTypeSummaryCapped) {

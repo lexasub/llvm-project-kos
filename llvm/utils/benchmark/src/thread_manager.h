@@ -10,11 +10,11 @@ namespace benchmark {
 namespace internal {
 
 class ThreadManager {
-public:
+ public:
   ThreadManager(int num_threads)
       : alive_threads_(num_threads), start_stop_barrier_(num_threads) {}
 
-  Mutex &GetBenchmarkMutex() const RETURN_CAPABILITY(benchmark_mutex_) {
+  Mutex& GetBenchmarkMutex() const RETURN_CAPABILITY(benchmark_mutex_) {
     return benchmark_mutex_;
   }
 
@@ -36,7 +36,7 @@ public:
                         [this]() { return alive_threads_ == 0; });
   }
 
-public:
+ public:
   struct Result {
     int64_t iterations = 0;
     double real_time_used = 0;
@@ -52,7 +52,7 @@ public:
   };
   GUARDED_BY(GetBenchmarkMutex()) Result results;
 
-private:
+ private:
   mutable Mutex benchmark_mutex_;
   std::atomic<int> alive_threads_;
   Barrier start_stop_barrier_;
@@ -60,7 +60,7 @@ private:
   Condition end_condition_;
 };
 
-} // namespace internal
-} // namespace benchmark
+}  // namespace internal
+}  // namespace benchmark
 
-#endif // BENCHMARK_THREAD_MANAGER_H
+#endif  // BENCHMARK_THREAD_MANAGER_H

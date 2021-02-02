@@ -45,10 +45,11 @@ public:
 
   CodeCompleteOptions()
       : IncludeMacros(0), IncludeCodePatterns(0), IncludeGlobals(1),
-        IncludeNamespaceLevelDecls(1), IncludeBriefComments(0), LoadExternal(1),
-        IncludeFixIts(0) {}
+        IncludeNamespaceLevelDecls(1), IncludeBriefComments(0),
+        LoadExternal(1), IncludeFixIts(0) {}
 };
 
 } // namespace clang
 
 #endif
+

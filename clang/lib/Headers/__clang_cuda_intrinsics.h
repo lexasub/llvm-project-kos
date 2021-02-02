@@ -45,7 +45,7 @@
     _Static_assert(sizeof(__val) == sizeof(__Bits));                           \
     _Static_assert(sizeof(__Bits) == 2 * sizeof(int));                         \
     __Bits __tmp;                                                              \
-    memcpy(&__tmp, &__val, sizeof(__val));                                     \
+    memcpy(&__tmp, &__val, sizeof(__val));                                \
     __tmp.__a = ::__FnName(__tmp.__a, __offset, __width);                      \
     __tmp.__b = ::__FnName(__tmp.__b, __offset, __width);                      \
     long long __ret;                                                           \

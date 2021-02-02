@@ -47,10 +47,8 @@ using namespace llvm;
 /// PHI nodes or outside of the basic block that defines it, or used by a
 /// switch or atomic instruction, which may expand to multiple basic blocks.
 static bool isUsedOutsideOfDefiningBlock(const Instruction *I) {
-  if (I->use_empty())
-    return false;
-  if (isa<PHINode>(I))
-    return true;
+  if (I->use_empty()) return false;
+  if (isa<PHINode>(I)) return true;
   const BasicBlock *BB = I->getParent();
   for (const User *U : I->users())
     if (cast<Instruction>(U)->getParent() != BB || isa<PHINode>(U))
@@ -161,9 +159,8 @@ void FunctionLoweringInfo::set(const Function &fn, MachineFunction &mf,
           uint64_t TySize =
               MF->getDataLayout().getTypeAllocSize(Ty).getKnownMinSize();
 
-          TySize *= CUI->getZExtValue(); // Get total allocated size.
-          if (TySize == 0)
-            TySize = 1; // Don't create zero-sized stack objects.
+          TySize *= CUI->getZExtValue();   // Get total allocated size.
+          if (TySize == 0) TySize = 1; // Don't create zero-sized stack objects.
           int FrameIndex = INT_MAX;
           auto Iter = CatchObjects.find(AI);
           if (Iter != CatchObjects.end() && TLI->needsFixedCatchObjects()) {
@@ -394,8 +391,7 @@ Register FunctionLoweringInfo::CreateRegs(Type *Ty, bool isDivergent) {
     unsigned NumRegs = TLI->getNumRegisters(Ty->getContext(), ValueVT);
     for (unsigned i = 0; i != NumRegs; ++i) {
       Register R = CreateReg(RegisterVT, isDivergent);
-      if (!FirstReg)
-        FirstReg = R;
+      if (!FirstReg) FirstReg = R;
     }
   }
   return FirstReg;
@@ -403,7 +399,7 @@ Register FunctionLoweringInfo::CreateRegs(Type *Ty, bool isDivergent) {
 
 Register FunctionLoweringInfo::CreateRegs(const Value *V) {
   return CreateRegs(V->getType(), DA && DA->isDivergent(V) &&
-                                      !TLI->requiresUniformRegister(*MF, V));
+                    !TLI->requiresUniformRegister(*MF, V));
 }
 
 /// GetLiveOutRegInfo - Gets LiveOutInfo for a register, returning NULL if the
@@ -519,7 +515,8 @@ void FunctionLoweringInfo::ComputePHILiveOutRegInfo(const PHINode *PN) {
 /// setArgumentFrameIndex - Record frame index for the byval
 /// argument. This overrides previous frame index entry for this argument,
 /// if any.
-void FunctionLoweringInfo::setArgumentFrameIndex(const Argument *A, int FI) {
+void FunctionLoweringInfo::setArgumentFrameIndex(const Argument *A,
+                                                 int FI) {
   ByValArgFrameIndexMap[A] = FI;
 }
 
@@ -545,7 +542,8 @@ Register FunctionLoweringInfo::getCatchPadExceptionPointerVReg(
   return VReg;
 }
 
-const Value *FunctionLoweringInfo::getValueFromVirtualReg(Register Vreg) {
+const Value *
+FunctionLoweringInfo::getValueFromVirtualReg(Register Vreg) {
   if (VirtReg2Value.empty()) {
     SmallVector<EVT, 4> ValueVTs;
     for (auto &P : ValueMap) {

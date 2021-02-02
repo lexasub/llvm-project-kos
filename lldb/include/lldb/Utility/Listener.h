@@ -29,7 +29,7 @@
 namespace lldb_private {
 class ConstString;
 class Event;
-} // namespace lldb_private
+}
 
 namespace lldb_private {
 

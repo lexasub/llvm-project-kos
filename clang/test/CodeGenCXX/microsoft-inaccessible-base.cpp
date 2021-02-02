@@ -5,19 +5,15 @@
 // CHECK: %struct.C = type { %struct.A, %struct.B }
 // CHECK: %struct.D = type { %struct.B, %struct.A }
 
-struct A {
-  int a;
-};
-struct B : A {
-  int b;
-};
+struct A { int a; };
+struct B : A { int b; };
 
-struct C : A, B {};
+struct C : A, B { };
 extern "C" A *a_from_c(C *p) { return p; }
 // CHECK-LABEL: define dso_local %struct.A* @a_from_c(%struct.C* %{{.*}})
 // CHECK: bitcast %struct.C* %{{.*}} to %struct.A*
 
-struct D : B, A {};
+struct D : B, A { };
 extern "C" A *a_from_d(D *p) { return p; }
 // CHECK-LABEL: define dso_local %struct.A* @a_from_d(%struct.D* %{{.*}})
 // CHECK: %[[p_i8:[^ ]*]] = bitcast %struct.D* %{{.*}} to i8*

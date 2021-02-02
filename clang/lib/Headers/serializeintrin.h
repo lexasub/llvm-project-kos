@@ -21,9 +21,10 @@
 /// This intrinsic corresponds to the <c> SERIALIZE </c> instruction.
 ///
 static __inline__ void
-    __attribute__((__always_inline__, __nodebug__, __target__("serialize")))
-    _serialize(void) {
-  __builtin_ia32_serialize();
+__attribute__((__always_inline__, __nodebug__, __target__("serialize")))
+_serialize (void)
+{
+  __builtin_ia32_serialize ();
 }
 
 #endif /* __SERIALIZEINTRIN_H */

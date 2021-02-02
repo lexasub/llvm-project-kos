@@ -24,7 +24,7 @@ namespace __sanitizer {
 // and an object with all zero fields should represent a valid empty list.
 // This class does not have a CTOR, so clear() should be called on all
 // non-zero-initialized objects before using.
-template <class Item>
+template<class Item>
 struct IntrusiveList {
   friend class Iterator;
 
@@ -119,17 +119,16 @@ struct IntrusiveList {
       CHECK_EQ(last_, 0);
     } else {
       uptr count = 0;
-      for (Item *i = first_;; i = i->next) {
+      for (Item *i = first_; ; i = i->next) {
         count++;
-        if (i == last_)
-          break;
+        if (i == last_) break;
       }
       CHECK_EQ(size(), count);
       CHECK_EQ(last_->next, 0);
     }
   }
 
-  template <class ItemTy>
+  template<class ItemTy>
   class IteratorBase {
    public:
     explicit IteratorBase(ItemTy *current) : current_(current) {}
@@ -140,8 +139,9 @@ struct IntrusiveList {
     bool operator!=(IteratorBase other) const {
       return current_ != other.current_;
     }
-    ItemTy &operator*() { return *current_; }
-
+    ItemTy &operator*() {
+      return *current_;
+    }
    private:
     ItemTy *current_;
   };
@@ -155,12 +155,12 @@ struct IntrusiveList {
   ConstIterator begin() const { return ConstIterator(first_); }
   ConstIterator end() const { return ConstIterator(0); }
 
-  // private, don't use directly.
+// private, don't use directly.
   uptr size_;
   Item *first_;
   Item *last_;
 };
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_LIST_H
+#endif // SANITIZER_LIST_H

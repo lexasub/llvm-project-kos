@@ -104,6 +104,6 @@ private:
   std::mutex m_get_queues_retbuffer_mutex;
 };
 
-} // namespace lldb_private
+} // using namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_SYSTEMRUNTIME_MACOSX_APPLEGETQUEUESHANDLER_H

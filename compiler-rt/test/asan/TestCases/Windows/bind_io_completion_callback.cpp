@@ -4,14 +4,15 @@
 // RUN: %clangxx_asan %s -o %t.exe
 // RUN: %run %t.exe 2>&1 | FileCheck %s
 
-#include <stdio.h>
 #include <windows.h>
+#include <stdio.h>
 
 void ThrowAndCatch();
 
-__declspec(noinline) void Throw() {
+__declspec(noinline)
+void Throw() {
   fprintf(stderr, "Throw\n");
-  // CHECK: Throw
+// CHECK: Throw
   throw 1;
 }
 
@@ -19,9 +20,9 @@ void ThrowAndCatch() {
   int local;
   try {
     Throw();
-  } catch (...) {
+  } catch(...) {
     fprintf(stderr, "Catch\n");
-    // CHECK: Catch
+// CHECK: Catch
   }
 }
 
@@ -56,5 +57,5 @@ int main(int argc, char **argv) {
   if (WAIT_OBJECT_0 != WaitForSingleObject(done, 10 * 1000))
     return 5;
   fprintf(stderr, "Done!\n");
-  // CHECK: Done!
+// CHECK: Done!
 }

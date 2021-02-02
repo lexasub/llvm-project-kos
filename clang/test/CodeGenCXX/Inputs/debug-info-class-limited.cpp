@@ -20,7 +20,7 @@ foo *bar(foo *a) {
   foo *b = new foo(*a);
   return b;
 }
-} // namespace PR14467
+}
 
 namespace test1 {
 // CHECK: !DICompositeType(tag: DW_TAG_structure_type, name: "foo",{{.*}} line: [[@LINE+1]],{{.*}} flags: DIFlagFwdDecl
@@ -31,7 +31,7 @@ extern int bar(foo *a);
 int baz(foo *a) {
   return bar(a);
 }
-} // namespace test1
+}
 
 namespace test2 {
 // FIXME: if we were a bit fancier, we could realize that the 'foo' type is only
@@ -49,4 +49,4 @@ struct bar {
 void func() {
   foo *f;
 }
-} // namespace test2
+}

@@ -12,7 +12,8 @@ void *fiber, *orig_fiber[2];
 
 const unsigned N = 1000;
 
-__attribute__((noinline)) void switch0() {
+__attribute__((noinline))
+void switch0() {
   if (!sigsetjmp(jmpbuf, 0)) {
     __tsan_switch_to_fiber(orig_fiber[0], 0);
     siglongjmp(orig_jmpbuf[0], 1);

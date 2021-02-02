@@ -152,8 +152,8 @@ static Value *foldSelectICmpAnd(SelectInst &Sel, ICmpInst *Cmp,
       return nullptr;
 
     AndMask = *AndRHS;
-  } else if (decomposeBitTestICmp(Cmp->getOperand(0), Cmp->getOperand(1), Pred,
-                                  V, AndMask)) {
+  } else if (decomposeBitTestICmp(Cmp->getOperand(0), Cmp->getOperand(1),
+                                  Pred, V, AndMask)) {
     assert(ICmpInst::isEquality(Pred) && "Not equality test?");
     if (!AndMask.isPowerOf2())
       return nullptr;
@@ -253,14 +253,14 @@ static unsigned getSelectFoldableOperands(BinaryOperator *I) {
   case Instruction::And:
   case Instruction::Or:
   case Instruction::Xor:
-    return 3;            // Can fold through either operand.
-  case Instruction::Sub: // Can only fold on the amount subtracted.
-  case Instruction::Shl: // Can only fold on the shift amount.
+    return 3;              // Can fold through either operand.
+  case Instruction::Sub:   // Can only fold on the amount subtracted.
+  case Instruction::Shl:   // Can only fold on the shift amount.
   case Instruction::LShr:
   case Instruction::AShr:
     return 1;
   default:
-    return 0; // Cannot fold
+    return 0;              // Cannot fold
   }
 }
 
@@ -312,8 +312,9 @@ Instruction *InstCombinerImpl::foldSelectOpOp(SelectInst &SI, Instruction *TI,
     }
 
     // Fold this by inserting a select from the input values.
-    Value *NewSI = Builder.CreateSelect(
-        Cond, TI->getOperand(0), FI->getOperand(0), SI.getName() + ".v", &SI);
+    Value *NewSI =
+        Builder.CreateSelect(Cond, TI->getOperand(0), FI->getOperand(0),
+                             SI.getName() + ".v", &SI);
     return CastInst::Create(Instruction::CastOps(TI->getOpcode()), NewSI,
                             TI->getType());
   }
@@ -339,24 +340,24 @@ Instruction *InstCombinerImpl::foldSelectOpOp(SelectInst &SI, Instruction *TI,
   Value *MatchOp, *OtherOpT, *OtherOpF;
   bool MatchIsOpZero;
   if (TI->getOperand(0) == FI->getOperand(0)) {
-    MatchOp = TI->getOperand(0);
+    MatchOp  = TI->getOperand(0);
     OtherOpT = TI->getOperand(1);
     OtherOpF = FI->getOperand(1);
     MatchIsOpZero = true;
   } else if (TI->getOperand(1) == FI->getOperand(1)) {
-    MatchOp = TI->getOperand(1);
+    MatchOp  = TI->getOperand(1);
     OtherOpT = TI->getOperand(0);
     OtherOpF = FI->getOperand(0);
     MatchIsOpZero = false;
   } else if (!TI->isCommutative()) {
     return nullptr;
   } else if (TI->getOperand(0) == FI->getOperand(1)) {
-    MatchOp = TI->getOperand(0);
+    MatchOp  = TI->getOperand(0);
     OtherOpT = TI->getOperand(1);
     OtherOpF = FI->getOperand(0);
     MatchIsOpZero = true;
   } else if (TI->getOperand(1) == FI->getOperand(0)) {
-    MatchOp = TI->getOperand(1);
+    MatchOp  = TI->getOperand(1);
     OtherOpT = TI->getOperand(0);
     OtherOpF = FI->getOperand(1);
     MatchIsOpZero = true;
@@ -372,8 +373,8 @@ Instruction *InstCombinerImpl::foldSelectOpOp(SelectInst &SI, Instruction *TI,
     return nullptr;
 
   // If we reach here, they do have operations in common.
-  Value *NewSI =
-      Builder.CreateSelect(Cond, OtherOpT, OtherOpF, SI.getName() + ".v", &SI);
+  Value *NewSI = Builder.CreateSelect(Cond, OtherOpT, OtherOpF,
+                                      SI.getName() + ".v", &SI);
   Value *Op0 = MatchIsOpZero ? MatchOp : NewSI;
   Value *Op1 = MatchIsOpZero ? NewSI : MatchOp;
   if (auto *BO = dyn_cast<BinaryOperator>(TI)) {
@@ -396,8 +397,8 @@ Instruction *InstCombinerImpl::foldSelectOpOp(SelectInst &SI, Instruction *TI,
 static bool isSelect01(const APInt &C1I, const APInt &C2I) {
   if (!C1I.isNullValue() && !C2I.isNullValue()) // One side must be zero.
     return false;
-  return C1I.isOneValue() || C1I.isAllOnesValue() || C2I.isOneValue() ||
-         C2I.isAllOnesValue();
+  return C1I.isOneValue() || C1I.isAllOnesValue() ||
+         C2I.isOneValue() || C2I.isAllOnesValue();
 }
 
 /// Try to fold the select into one of the operands to allow further
@@ -419,7 +420,7 @@ Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
         if (OpToFold) {
           Constant *C = ConstantExpr::getBinOpIdentity(TVI->getOpcode(),
                                                        TVI->getType(), true);
-          Value *OOp = TVI->getOperand(2 - OpToFold);
+          Value *OOp = TVI->getOperand(2-OpToFold);
           // Avoid creating select between 2 constants unless it's selecting
           // between 0, 1 and -1.
           const APInt *OOpC;
@@ -428,8 +429,8 @@ Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
               (OOpIsAPInt && isSelect01(C->getUniqueInteger(), *OOpC))) {
             Value *NewSel = Builder.CreateSelect(SI.getCondition(), OOp, C);
             NewSel->takeName(TVI);
-            BinaryOperator *BO =
-                BinaryOperator::Create(TVI->getOpcode(), FalseVal, NewSel);
+            BinaryOperator *BO = BinaryOperator::Create(TVI->getOpcode(),
+                                                        FalseVal, NewSel);
             BO->copyIRFlags(TVI);
             return BO;
           }
@@ -451,7 +452,7 @@ Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
         if (OpToFold) {
           Constant *C = ConstantExpr::getBinOpIdentity(FVI->getOpcode(),
                                                        FVI->getType(), true);
-          Value *OOp = FVI->getOperand(2 - OpToFold);
+          Value *OOp = FVI->getOperand(2-OpToFold);
           // Avoid creating select between 2 constants unless it's selecting
           // between 0, 1 and -1.
           const APInt *OOpC;
@@ -460,8 +461,8 @@ Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
               (OOpIsAPInt && isSelect01(C->getUniqueInteger(), *OOpC))) {
             Value *NewSel = Builder.CreateSelect(SI.getCondition(), C, OOp);
             NewSel->takeName(FVI);
-            BinaryOperator *BO =
-                BinaryOperator::Create(FVI->getOpcode(), TrueVal, NewSel);
+            BinaryOperator *BO = BinaryOperator::Create(FVI->getOpcode(),
+                                                        TrueVal, NewSel);
             BO->copyIRFlags(FVI);
             return BO;
           }
@@ -762,8 +763,8 @@ static Value *canonicalizeSaturatedAdd(ICmpInst *Cmp, Value *TVal, Value *FVal,
       match(TVal, m_Add(m_Value(X), m_APInt(C))) && X == Cmp0 &&
       match(FVal, m_AllOnes()) && match(Cmp1, m_APInt(CmpC)) && *CmpC == ~*C) {
     // (X u< ~C) ? (X + C) : -1 --> uadd.sat(X, C)
-    return Builder.CreateBinaryIntrinsic(Intrinsic::uadd_sat, X,
-                                         ConstantInt::get(X->getType(), *C));
+    return Builder.CreateBinaryIntrinsic(
+        Intrinsic::uadd_sat, X, ConstantInt::get(X->getType(), *C));
   }
 
   // Match unsigned saturated add of 2 variables with an unnecessary 'not'.
@@ -801,8 +802,8 @@ static Value *canonicalizeSaturatedAdd(ICmpInst *Cmp, Value *TVal, Value *FVal,
     // (X u< Y) ? -1 : (~X + Y) --> uadd.sat(~X, Y)
     // (X u< Y) ? -1 : (Y + ~X) --> uadd.sat(Y, ~X)
     BinaryOperator *BO = cast<BinaryOperator>(FVal);
-    return Builder.CreateBinaryIntrinsic(Intrinsic::uadd_sat, BO->getOperand(0),
-                                         BO->getOperand(1));
+    return Builder.CreateBinaryIntrinsic(
+        Intrinsic::uadd_sat, BO->getOperand(0), BO->getOperand(1));
   }
   // The overflow may be detected via the add wrapping round.
   // This is only valid for strict comparison!
@@ -835,7 +836,8 @@ static Instruction *foldSelectCtlzToCttz(ICmpInst *ICI, Value *TrueVal,
   if (ICI->getPredicate() == ICmpInst::ICMP_NE)
     std::swap(TrueVal, FalseVal);
 
-  if (!match(FalseVal, m_Xor(m_Deferred(TrueVal), m_SpecificInt(BitWidth - 1))))
+  if (!match(FalseVal,
+             m_Xor(m_Deferred(TrueVal), m_SpecificInt(BitWidth - 1))))
     return nullptr;
 
   if (!match(TrueVal, m_Intrinsic<Intrinsic::ctlz>()))
@@ -1535,8 +1537,7 @@ static bool canSelectOperandBeMappingIntoPredBlock(const Value *V,
   // If the value is a non-instruction value like a constant or argument, it
   // can always be mapped.
   const Instruction *I = dyn_cast<Instruction>(V);
-  if (!I)
-    return true;
+  if (!I) return true;
 
   // If V is a PHI node defined in the same block as the condition PHI, we can
   // map the arguments.
@@ -1630,13 +1631,14 @@ Instruction *InstCombinerImpl::foldSPFofSPF(Instruction *Inner,
   if ((SPF1 == SPF_ABS && SPF2 == SPF_NABS) ||
       (SPF1 == SPF_NABS && SPF2 == SPF_ABS)) {
     SelectInst *SI = cast<SelectInst>(Inner);
-    Value *NewSI = Builder.CreateSelect(SI->getCondition(), SI->getFalseValue(),
-                                        SI->getTrueValue(), SI->getName(), SI);
+    Value *NewSI =
+        Builder.CreateSelect(SI->getCondition(), SI->getFalseValue(),
+                             SI->getTrueValue(), SI->getName(), SI);
     return replaceInstUsesWith(Outer, NewSI);
   }
 
-  auto IsFreeOrProfitableToInvert = [&](Value *V, Value *&NotV,
-                                        bool &ElidesXor) {
+  auto IsFreeOrProfitableToInvert =
+      [&](Value *V, Value *&NotV, bool &ElidesXor) {
     if (match(V, m_Not(m_Value(NotV)))) {
       // If V has at most 2 uses then we can get rid of the xor operation
       // entirely.
@@ -1675,8 +1677,8 @@ Instruction *InstCombinerImpl::foldSPFofSPF(Instruction *Inner,
     if (!NotC)
       NotC = Builder.CreateNot(C);
 
-    Value *NewInner =
-        createMinMax(Builder, getInverseMinMaxFlavor(SPF1), NotA, NotB);
+    Value *NewInner = createMinMax(Builder, getInverseMinMaxFlavor(SPF1), NotA,
+                                   NotB);
     Value *NewOuter = Builder.CreateNot(
         createMinMax(Builder, getInverseMinMaxFlavor(SPF2), NewInner, NotC));
     return replaceInstUsesWith(Outer, NewOuter);
@@ -2141,8 +2143,8 @@ static Instruction *moveAddAfterMinMax(SelectPatternFlavor SPF, Value *X,
     if (!Overflow) {
       // smin (add nsw A, C1), C2 --> add nsw (smin A, C2 - C1), C1
       // smax (add nsw A, C1), C2 --> add nsw (smax A, C2 - C1), C1
-      Value *NewMinMax =
-          createMinMax(Builder, SPF, A, ConstantInt::get(X->getType(), Diff));
+      Value *NewMinMax = createMinMax(Builder, SPF, A,
+                                      ConstantInt::get(X->getType(), Diff));
       return BinaryOperator::CreateNSW(BinaryOperator::Add, NewMinMax,
                                        ConstantInt::get(X->getType(), *C1));
     }
@@ -2191,7 +2193,7 @@ Instruction *InstCombinerImpl::matchSAddSubSat(SelectInst &MinMax1) {
   Type *NewTy = Ty->getWithNewBitWidth(NewBitWidth);
   // Match the two extends from the add/sub
   Value *A, *B;
-  if (!match(AddSub, m_BinOp(m_SExt(m_Value(A)), m_SExt(m_Value(B)))))
+  if(!match(AddSub, m_BinOp(m_SExt(m_Value(A)), m_SExt(m_Value(B)))))
     return nullptr;
   // And check the incoming values are of a type smaller than or equal to the
   // size of the saturation. Otherwise the higher bits can cause different
@@ -2209,8 +2211,7 @@ Instruction *InstCombinerImpl::matchSAddSubSat(SelectInst &MinMax1) {
     return nullptr;
 
   // Finally create and return the sat intrinsic, truncated to the new type
-  Function *F =
-      Intrinsic::getDeclaration(MinMax1.getModule(), IntrinsicID, NewTy);
+  Function *F = Intrinsic::getDeclaration(MinMax1.getModule(), IntrinsicID, NewTy);
   Value *AT = Builder.CreateSExt(A, NewTy);
   Value *BT = Builder.CreateSExt(B, NewTy);
   Value *Sat = Builder.CreateCall(F, {AT, BT});
@@ -2345,12 +2346,12 @@ static Instruction *foldSelectFunnelShift(SelectInst &Sel,
       SV0 = Builder.CreateFreeze(SV0);
   }
 
-  // This is a funnel/rotate that avoids shift-by-bitwidth UB in a suboptimal
-  // way. Convert to funnel shift intrinsic.
+  // This is a funnel/rotate that avoids shift-by-bitwidth UB in a suboptimal way.
+  // Convert to funnel shift intrinsic.
   Intrinsic::ID IID = IsFshl ? Intrinsic::fshl : Intrinsic::fshr;
   Function *F = Intrinsic::getDeclaration(Sel.getModule(), IID, Sel.getType());
   ShAmt = Builder.CreateZExt(ShAmt, Sel.getType());
-  return IntrinsicInst::Create(F, {SV0, SV1, ShAmt});
+  return IntrinsicInst::Create(F, { SV0, SV1, ShAmt });
 }
 
 static Instruction *foldSelectToCopysign(SelectInst &Sel,
@@ -2391,7 +2392,7 @@ static Instruction *foldSelectToCopysign(SelectInst &Sel,
   Value *MagArg = TC->isNegative() ? FVal : TVal;
   Function *F = Intrinsic::getDeclaration(Sel.getModule(), Intrinsic::copysign,
                                           Sel.getType());
-  Instruction *CopySign = IntrinsicInst::Create(F, {MagArg, X});
+  Instruction *CopySign = IntrinsicInst::Create(F, { MagArg, X });
   CopySign->setFastMathFlags(Sel.getFastMathFlags());
   return CopySign;
 }
@@ -2526,8 +2527,7 @@ static Instruction *foldSelectToPhi(SelectInst &Sel, const DominatorTree &DT,
   return nullptr;
 }
 
-static Value *foldSelectWithFrozenICmp(SelectInst &Sel,
-                                       InstCombiner::BuilderTy &Builder) {
+static Value *foldSelectWithFrozenICmp(SelectInst &Sel, InstCombiner::BuilderTy &Builder) {
   FreezeInst *FI = dyn_cast<FreezeInst>(Sel.getCondition());
   if (!FI)
     return nullptr;
@@ -2677,8 +2677,8 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
         IRBuilder<>::FastMathFlagGuard FMFG(Builder);
         // FIXME: The FMF should propagate from the select, not the fcmp.
         Builder.setFastMathFlags(FCI->getFastMathFlags());
-        Value *NewCond =
-            Builder.CreateFCmp(InvPred, Cmp0, Cmp1, FCI->getName() + ".inv");
+        Value *NewCond = Builder.CreateFCmp(InvPred, Cmp0, Cmp1,
+                                            FCI->getName() + ".inv");
         Value *NewSel = Builder.CreateSelect(NewCond, FalseVal, TrueVal);
         return replaceInstUsesWith(SI, NewSel);
       }
@@ -2716,8 +2716,8 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   Instruction *FNeg;
   if (match(CondVal, m_FCmp(Pred, m_Specific(FalseVal), m_AnyZeroFP())) &&
       match(TrueVal, m_FNeg(m_Specific(FalseVal))) &&
-      match(TrueVal, m_Instruction(FNeg)) && FNeg->hasNoNaNs() &&
-      FNeg->hasNoSignedZeros() &&
+      match(TrueVal, m_Instruction(FNeg)) &&
+      FNeg->hasNoNaNs() && FNeg->hasNoSignedZeros() &&
       (Pred == FCmpInst::FCMP_OLT || Pred == FCmpInst::FCMP_OLE ||
        Pred == FCmpInst::FCMP_ULT || Pred == FCmpInst::FCMP_ULE)) {
     Value *Fabs = Builder.CreateUnaryIntrinsic(Intrinsic::fabs, FalseVal, FNeg);
@@ -2728,8 +2728,8 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   // (X >= +/-0.0) ? X : -X --> fabs(X)
   if (match(CondVal, m_FCmp(Pred, m_Specific(TrueVal), m_AnyZeroFP())) &&
       match(FalseVal, m_FNeg(m_Specific(TrueVal))) &&
-      match(FalseVal, m_Instruction(FNeg)) && FNeg->hasNoNaNs() &&
-      FNeg->hasNoSignedZeros() &&
+      match(FalseVal, m_Instruction(FNeg)) &&
+      FNeg->hasNoNaNs() && FNeg->hasNoSignedZeros() &&
       (Pred == FCmpInst::FCMP_OGT || Pred == FCmpInst::FCMP_OGE ||
        Pred == FCmpInst::FCMP_UGT || Pred == FCmpInst::FCMP_UGE)) {
     Value *Fabs = Builder.CreateUnaryIntrinsic(Intrinsic::fabs, TrueVal, FNeg);
@@ -2789,9 +2789,10 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
       bool IsCastNeeded = LHS->getType() != SelType;
       Value *CmpLHS = cast<CmpInst>(CondVal)->getOperand(0);
       Value *CmpRHS = cast<CmpInst>(CondVal)->getOperand(1);
-      if (IsCastNeeded || (LHS->getType()->isFPOrFPVectorTy() &&
-                           ((CmpLHS != LHS && CmpLHS != RHS) ||
-                            (CmpRHS != LHS && CmpRHS != RHS)))) {
+      if (IsCastNeeded ||
+          (LHS->getType()->isFPOrFPVectorTy() &&
+           ((CmpLHS != LHS && CmpLHS != RHS) ||
+            (CmpRHS != LHS && CmpRHS != RHS)))) {
         CmpInst::Predicate MinMaxPred = getMinMaxPred(SPF, SPR.Ordered);
 
         Value *Cmp;
@@ -2824,8 +2825,8 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
             // Passing false to only consider m_Not and constants.
             isFreeToInvert(Y, false)) {
           Value *B = Builder.CreateNot(Y);
-          Value *NewMinMax =
-              createMinMax(Builder, getInverseMinMaxFlavor(SPF), A, B);
+          Value *NewMinMax = createMinMax(Builder, getInverseMinMaxFlavor(SPF),
+                                          A, B);
           // Copy the profile metadata.
           if (MDNode *MD = SI.getMetadata(LLVMContext::MD_prof)) {
             cast<SelectInst>(NewMinMax)->setMetadata(LLVMContext::MD_prof, MD);

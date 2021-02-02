@@ -9,7 +9,7 @@
 // CHECK: Preprocessed source(s) and associated run script(s) are located at:
 // CHECK-NEXT: note: diagnostic msg: {{.*}}.h
 FOO
-    // CHECKSRC: FOO
-    // CHECKSH: "-cc1"
-    // CHECKSH: "-main-file-name" "crash-report-header.h"
-    // CHECKSH: "crash-report-header-{{[^ ]*}}.h"
+// CHECKSRC: FOO
+// CHECKSH: "-cc1"
+// CHECKSH: "-main-file-name" "crash-report-header.h"
+// CHECKSH: "crash-report-header-{{[^ ]*}}.h"

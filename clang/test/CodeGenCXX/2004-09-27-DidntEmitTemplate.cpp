@@ -6,7 +6,7 @@
 // CHECK-NOT: declare{{.*}}callDefaultCtor
 struct Pass {};
 
-template <typename PassName>
+template<typename PassName>
 Pass *callDefaultCtor() { return new Pass(); }
 
 void foo(Pass *(*C)());
@@ -14,6 +14,7 @@ void foo(Pass *(*C)());
 struct basic_string {
   bool empty() const { return true; }
 };
+
 
 bool foo2(basic_string &X) {
   return X.empty();

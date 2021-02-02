@@ -29,9 +29,12 @@ namespace {
 static int MaxStaticSize;
 
 static cl::opt<int, true> MemIntrinsicExpandSizeThresholdOpt(
-    "amdgpu-mem-intrinsic-expand-size",
-    cl::desc("Set minimum mem intrinsic size to expand in IR"),
-    cl::location(MaxStaticSize), cl::init(1024), cl::Hidden);
+  "amdgpu-mem-intrinsic-expand-size",
+  cl::desc("Set minimum mem intrinsic size to expand in IR"),
+  cl::location(MaxStaticSize),
+  cl::init(1024),
+  cl::Hidden);
+
 
 class AMDGPULowerIntrinsics : public ModulePass {
 private:
@@ -44,14 +47,16 @@ public:
 
   bool runOnModule(Module &M) override;
   bool expandMemIntrinsicUses(Function &F);
-  StringRef getPassName() const override { return "AMDGPU Lower Intrinsics"; }
+  StringRef getPassName() const override {
+    return "AMDGPU Lower Intrinsics";
+  }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<TargetTransformInfoWrapperPass>();
   }
 };
 
-} // namespace
+}
 
 char AMDGPULowerIntrinsics::ID = 0;
 

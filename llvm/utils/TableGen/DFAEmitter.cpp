@@ -146,8 +146,8 @@ void DfaEmitter::emit(StringRef Name, raw_ostream &OS) {
 
   OS << "// A table of DFA transitions, ordered by {FromDfaState, Action}.\n";
   OS << "// The initial state is 1, not zero.\n";
-  OS << "const std::array<" << Name << "Transition, " << DfaTransitions.size()
-     << "> " << Name << "Transitions = {{\n";
+  OS << "const std::array<" << Name << "Transition, "
+     << DfaTransitions.size() << "> " << Name << "Transitions = {{\n";
   for (auto &KV : DfaTransitions) {
     dfa_state_type From = KV.first.first;
     dfa_state_type To = KV.second.first;
@@ -366,7 +366,9 @@ bool Transition::canTransitionFrom(uint64_t State) {
   return false;
 }
 
-uint64_t Transition::transitionFrom(uint64_t State) { return State | NewState; }
+uint64_t Transition::transitionFrom(uint64_t State) {
+  return State | NewState;
+}
 
 void CustomDfaEmitter::printActionType(raw_ostream &OS) { OS << TypeName; }
 

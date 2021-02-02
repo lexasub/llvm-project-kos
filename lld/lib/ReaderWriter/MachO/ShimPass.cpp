@@ -86,7 +86,8 @@ public:
   }
 
 private:
-  void updateBranchToUseShim(bool thumbToArm, const DefinedAtom &target,
+
+  void updateBranchToUseShim(bool thumbToArm, const DefinedAtom& target,
                              const Reference *ref) {
     // Make file-format specific stub and other support atoms.
     const DefinedAtom *shim = this->getShim(thumbToArm, target);
@@ -95,27 +96,29 @@ private:
     const_cast<Reference *>(ref)->setTarget(shim);
   }
 
-  const DefinedAtom *getShim(bool thumbToArm, const DefinedAtom &target) {
+  const DefinedAtom* getShim(bool thumbToArm, const DefinedAtom& target) {
     auto pos = _targetToShim.find(&target);
-    if (pos != _targetToShim.end()) {
+    if ( pos != _targetToShim.end() ) {
       // Reuse an existing shim.
       assert(pos->second != nullptr);
       return pos->second;
     } else {
       // There is no existing shim, so create a new one.
-      const DefinedAtom *shim =
-          _archHandler.createShim(_file, thumbToArm, target);
-      _targetToShim[&target] = shim;
-      return shim;
+      const DefinedAtom *shim = _archHandler.createShim(_file, thumbToArm,
+                                                        target);
+       _targetToShim[&target] = shim;
+       return shim;
     }
   }
 
   const MachOLinkingContext &_ctx;
-  mach_o::ArchHandler &_archHandler;
-  const ArchHandler::StubInfo &_stubInfo;
-  MachOFile &_file;
-  llvm::DenseMap<const Atom *, const DefinedAtom *> _targetToShim;
+  mach_o::ArchHandler                            &_archHandler;
+  const ArchHandler::StubInfo                    &_stubInfo;
+  MachOFile                                      &_file;
+  llvm::DenseMap<const Atom*, const DefinedAtom*> _targetToShim;
 };
+
+
 
 void addShimPass(PassManager &pm, const MachOLinkingContext &ctx) {
   pm.add(std::make_unique<ShimPass>(ctx));

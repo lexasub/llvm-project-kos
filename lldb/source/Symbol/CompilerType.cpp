@@ -492,8 +492,7 @@ CompilerType::GetByteSize(ExecutionContextScope *exe_scope) const {
   return {};
 }
 
-llvm::Optional<size_t>
-CompilerType::GetTypeBitAlign(ExecutionContextScope *exe_scope) const {
+llvm::Optional<size_t> CompilerType::GetTypeBitAlign(ExecutionContextScope *exe_scope) const {
   if (IsValid())
     return m_type_system->GetTypeBitAlign(m_type, exe_scope);
   return {};
@@ -528,7 +527,8 @@ lldb::BasicType CompilerType::GetBasicTypeEnumeration() const {
 }
 
 void CompilerType::ForEachEnumerator(
-    std::function<bool(const CompilerType &integer_type, ConstString name,
+    std::function<bool(const CompilerType &integer_type,
+                       ConstString name,
                        const llvm::APSInt &value)> const &callback) const {
   if (IsValid())
     return m_type_system->ForEachEnumerator(m_type, callback);

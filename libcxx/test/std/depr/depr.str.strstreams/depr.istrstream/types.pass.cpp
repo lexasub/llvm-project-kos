@@ -18,8 +18,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert((std::is_base_of<std::istream, std::istrstream>::value), "");
+int main(int, char**)
+{
+    static_assert((std::is_base_of<std::istream, std::istrstream>::value), "");
 
   return 0;
 }

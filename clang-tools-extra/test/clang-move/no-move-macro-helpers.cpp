@@ -20,6 +20,7 @@
 
 // CHECK-NEW-TEST-CASE1-CPP-NOT: DEFINE(test)
 
+
 // -----------------------------------------------------------------------------
 // Test moving all.
 // -----------------------------------------------------------------------------
@@ -34,6 +35,7 @@
 
 // CHECK-NEW-TEST-CASE2-H: class A {};
 // CHECK-NEW-TEST-CASE2-H-NEXT:void f1();
+
 
 // CHECK-NEW-TEST-CASE2-CPP: DEFINE(test)
 // CHECK-NEW-TEST-CASE2-CPP: void f1() {}

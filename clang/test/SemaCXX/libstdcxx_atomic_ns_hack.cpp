@@ -12,15 +12,15 @@
 #pragma clang system_header
 
 namespace std {
-namespace __atomic0 {
-typedef int foobar;
-}
-namespace __atomic1 {
-typedef void foobar;
-}
+  namespace __atomic0 {
+    typedef int foobar;
+  }
+  namespace __atomic1 {
+    typedef void foobar;
+  }
 
-inline namespace __atomic0 {}
-} // namespace std
+  inline namespace __atomic0 {}
+}
 
 #else
 
@@ -29,7 +29,7 @@ inline namespace __atomic0 {}
 
 std::foobar fb;
 
-using T = void;        // expected-note {{here}}
+using T = void; // expected-note {{here}}
 using T = std::foobar; // expected-error {{different types ('std::foobar' (aka 'int') vs 'void')}}
 
 #endif

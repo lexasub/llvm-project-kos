@@ -26,26 +26,30 @@
 using namespace llvm;
 
 // Provide DenseMapInfo for C API opaque types.
-template <typename T> struct CAPIDenseMap {};
+template<typename T>
+struct CAPIDenseMap {};
 
 // The default DenseMapInfo require to know about pointer alignment.
 // Because the C API uses opaque pointer types, their alignment is unknown.
 // As a result, we need to roll out our own implementation.
-template <typename T> struct CAPIDenseMap<T *> {
+template<typename T>
+struct CAPIDenseMap<T*> {
   struct CAPIDenseMapInfo {
-    static inline T *getEmptyKey() {
+    static inline T* getEmptyKey() {
       uintptr_t Val = static_cast<uintptr_t>(-1);
-      return reinterpret_cast<T *>(Val);
+      return reinterpret_cast<T*>(Val);
     }
-    static inline T *getTombstoneKey() {
+    static inline T* getTombstoneKey() {
       uintptr_t Val = static_cast<uintptr_t>(-2);
-      return reinterpret_cast<T *>(Val);
+      return reinterpret_cast<T*>(Val);
     }
-    static unsigned getHashValue(const T *PtrVal) { return hash_value(PtrVal); }
+    static unsigned getHashValue(const T *PtrVal) {
+      return hash_value(PtrVal);
+    }
     static bool isEqual(const T *LHS, const T *RHS) { return LHS == RHS; }
   };
 
-  typedef DenseMap<T *, T *, CAPIDenseMapInfo> Map;
+  typedef DenseMap<T*, T*, CAPIDenseMapInfo> Map;
 };
 
 typedef CAPIDenseMap<LLVMValueRef>::Map ValueMap;
@@ -55,94 +59,102 @@ struct TypeCloner {
   LLVMModuleRef M;
   LLVMContextRef Ctx;
 
-  TypeCloner(LLVMModuleRef M) : M(M), Ctx(LLVMGetModuleContext(M)) {}
+  TypeCloner(LLVMModuleRef M): M(M), Ctx(LLVMGetModuleContext(M)) {}
 
-  LLVMTypeRef Clone(LLVMValueRef Src) { return Clone(LLVMTypeOf(Src)); }
+  LLVMTypeRef Clone(LLVMValueRef Src) {
+    return Clone(LLVMTypeOf(Src));
+  }
 
   LLVMTypeRef Clone(LLVMTypeRef Src) {
     LLVMTypeKind Kind = LLVMGetTypeKind(Src);
     switch (Kind) {
-    case LLVMVoidTypeKind:
-      return LLVMVoidTypeInContext(Ctx);
-    case LLVMHalfTypeKind:
-      return LLVMHalfTypeInContext(Ctx);
-    case LLVMBFloatTypeKind:
-      return LLVMHalfTypeInContext(Ctx);
-    case LLVMFloatTypeKind:
-      return LLVMFloatTypeInContext(Ctx);
-    case LLVMDoubleTypeKind:
-      return LLVMDoubleTypeInContext(Ctx);
-    case LLVMX86_FP80TypeKind:
-      return LLVMX86FP80TypeInContext(Ctx);
-    case LLVMFP128TypeKind:
-      return LLVMFP128TypeInContext(Ctx);
-    case LLVMPPC_FP128TypeKind:
-      return LLVMPPCFP128TypeInContext(Ctx);
-    case LLVMLabelTypeKind:
-      return LLVMLabelTypeInContext(Ctx);
-    case LLVMIntegerTypeKind:
-      return LLVMIntTypeInContext(Ctx, LLVMGetIntTypeWidth(Src));
-    case LLVMFunctionTypeKind: {
-      unsigned ParamCount = LLVMCountParamTypes(Src);
-      LLVMTypeRef *Params = nullptr;
-      if (ParamCount > 0) {
-        Params = static_cast<LLVMTypeRef *>(
-            safe_malloc(ParamCount * sizeof(LLVMTypeRef)));
-        LLVMGetParamTypes(Src, Params);
-        for (unsigned i = 0; i < ParamCount; i++)
-          Params[i] = Clone(Params[i]);
-      }
+      case LLVMVoidTypeKind:
+        return LLVMVoidTypeInContext(Ctx);
+      case LLVMHalfTypeKind:
+        return LLVMHalfTypeInContext(Ctx);
+      case LLVMBFloatTypeKind:
+        return LLVMHalfTypeInContext(Ctx);
+      case LLVMFloatTypeKind:
+        return LLVMFloatTypeInContext(Ctx);
+      case LLVMDoubleTypeKind:
+        return LLVMDoubleTypeInContext(Ctx);
+      case LLVMX86_FP80TypeKind:
+        return LLVMX86FP80TypeInContext(Ctx);
+      case LLVMFP128TypeKind:
+        return LLVMFP128TypeInContext(Ctx);
+      case LLVMPPC_FP128TypeKind:
+        return LLVMPPCFP128TypeInContext(Ctx);
+      case LLVMLabelTypeKind:
+        return LLVMLabelTypeInContext(Ctx);
+      case LLVMIntegerTypeKind:
+        return LLVMIntTypeInContext(Ctx, LLVMGetIntTypeWidth(Src));
+      case LLVMFunctionTypeKind: {
+        unsigned ParamCount = LLVMCountParamTypes(Src);
+        LLVMTypeRef* Params = nullptr;
+        if (ParamCount > 0) {
+          Params = static_cast<LLVMTypeRef*>(
+              safe_malloc(ParamCount * sizeof(LLVMTypeRef)));
+          LLVMGetParamTypes(Src, Params);
+          for (unsigned i = 0; i < ParamCount; i++)
+            Params[i] = Clone(Params[i]);
+        }
 
-      LLVMTypeRef FunTy =
-          LLVMFunctionType(Clone(LLVMGetReturnType(Src)), Params, ParamCount,
-                           LLVMIsFunctionVarArg(Src));
-      if (ParamCount > 0)
-        free(Params);
-      return FunTy;
-    }
-    case LLVMStructTypeKind: {
-      LLVMTypeRef S = nullptr;
-      const char *Name = LLVMGetStructName(Src);
-      if (Name) {
-        S = LLVMGetTypeByName2(Ctx, Name);
-        if (S)
-          return S;
-        S = LLVMStructCreateNamed(Ctx, Name);
-        if (LLVMIsOpaqueStruct(Src))
-          return S;
+        LLVMTypeRef FunTy = LLVMFunctionType(Clone(LLVMGetReturnType(Src)),
+                                             Params, ParamCount,
+                                             LLVMIsFunctionVarArg(Src));
+        if (ParamCount > 0)
+          free(Params);
+        return FunTy;
       }
+      case LLVMStructTypeKind: {
+        LLVMTypeRef S = nullptr;
+        const char *Name = LLVMGetStructName(Src);
+        if (Name) {
+          S = LLVMGetTypeByName2(Ctx, Name);
+          if (S)
+            return S;
+          S = LLVMStructCreateNamed(Ctx, Name);
+          if (LLVMIsOpaqueStruct(Src))
+            return S;
+        }
 
-      unsigned EltCount = LLVMCountStructElementTypes(Src);
-      SmallVector<LLVMTypeRef, 8> Elts;
-      for (unsigned i = 0; i < EltCount; i++)
-        Elts.push_back(Clone(LLVMStructGetTypeAtIndex(Src, i)));
-      if (Name)
-        LLVMStructSetBody(S, Elts.data(), EltCount, LLVMIsPackedStruct(Src));
-      else
-        S = LLVMStructTypeInContext(Ctx, Elts.data(), EltCount,
-                                    LLVMIsPackedStruct(Src));
-      return S;
-    }
-    case LLVMArrayTypeKind:
-      return LLVMArrayType(Clone(LLVMGetElementType(Src)),
-                           LLVMGetArrayLength(Src));
-    case LLVMPointerTypeKind:
-      return LLVMPointerType(Clone(LLVMGetElementType(Src)),
-                             LLVMGetPointerAddressSpace(Src));
-    case LLVMVectorTypeKind:
-      return LLVMVectorType(Clone(LLVMGetElementType(Src)),
-                            LLVMGetVectorSize(Src));
-    case LLVMScalableVectorTypeKind:
-      return LLVMScalableVectorType(Clone(LLVMGetElementType(Src)),
-                                    LLVMGetVectorSize(Src));
-    case LLVMMetadataTypeKind:
-      return LLVMMetadataTypeInContext(Ctx);
-    case LLVMX86_AMXTypeKind:
-      return LLVMX86AMXTypeInContext(Ctx);
-    case LLVMX86_MMXTypeKind:
-      return LLVMX86MMXTypeInContext(Ctx);
-    case LLVMTokenTypeKind:
-      return LLVMTokenTypeInContext(Ctx);
+        unsigned EltCount = LLVMCountStructElementTypes(Src);
+        SmallVector<LLVMTypeRef, 8> Elts;
+        for (unsigned i = 0; i < EltCount; i++)
+          Elts.push_back(Clone(LLVMStructGetTypeAtIndex(Src, i)));
+        if (Name)
+          LLVMStructSetBody(S, Elts.data(), EltCount, LLVMIsPackedStruct(Src));
+        else
+          S = LLVMStructTypeInContext(Ctx, Elts.data(), EltCount,
+                                      LLVMIsPackedStruct(Src));
+        return S;
+      }
+      case LLVMArrayTypeKind:
+        return LLVMArrayType(
+          Clone(LLVMGetElementType(Src)),
+          LLVMGetArrayLength(Src)
+        );
+      case LLVMPointerTypeKind:
+        return LLVMPointerType(
+          Clone(LLVMGetElementType(Src)),
+          LLVMGetPointerAddressSpace(Src)
+        );
+      case LLVMVectorTypeKind:
+        return LLVMVectorType(
+          Clone(LLVMGetElementType(Src)),
+          LLVMGetVectorSize(Src)
+        );
+      case LLVMScalableVectorTypeKind:
+        return LLVMScalableVectorType(Clone(LLVMGetElementType(Src)),
+                                      LLVMGetVectorSize(Src));
+      case LLVMMetadataTypeKind:
+        return LLVMMetadataTypeInContext(Ctx);
+      case LLVMX86_AMXTypeKind:
+        return LLVMX86AMXTypeInContext(Ctx);
+      case LLVMX86_MMXTypeKind:
+        return LLVMX86MMXTypeInContext(Ctx);
+      case LLVMTokenTypeKind:
+        return LLVMTokenTypeInContext(Ctx);
     }
 
     fprintf(stderr, "%d is not a supported typekind\n", Kind);
@@ -275,8 +287,8 @@ static LLVMValueRef clone_constant_impl(LLVMValueRef Cst, LLVMModuleRef M) {
   // Try integer literal
   if (LLVMIsAConstantInt(Cst)) {
     check_value_kind(Cst, LLVMConstantIntValueKind);
-    return LLVMConstInt(TypeCloner(M).Clone(Cst), LLVMConstIntGetZExtValue(Cst),
-                        false);
+    return LLVMConstInt(TypeCloner(M).Clone(Cst),
+                        LLVMConstIntGetZExtValue(Cst), false);
   }
 
   // Try zeroinitializer
@@ -384,14 +396,14 @@ static LLVMValueRef clone_constant_impl(LLVMValueRef Cst, LLVMModuleRef M) {
   check_value_kind(Cst, LLVMConstantExprValueKind);
 
   LLVMOpcode Op = LLVMGetConstOpcode(Cst);
-  switch (Op) {
-  case LLVMBitCast:
-    return LLVMConstBitCast(clone_constant(LLVMGetOperand(Cst, 0), M),
-                            TypeCloner(M).Clone(Cst));
-  default:
-    fprintf(stderr, "%d is not a supported opcode for constant expressions\n",
-            Op);
-    exit(-1);
+  switch(Op) {
+    case LLVMBitCast:
+      return LLVMConstBitCast(clone_constant(LLVMGetOperand(Cst, 0), M),
+                              TypeCloner(M).Clone(Cst));
+    default:
+      fprintf(stderr, "%d is not a supported opcode for constant expressions\n",
+              Op);
+      exit(-1);
   }
 }
 
@@ -402,12 +414,16 @@ struct FunCloner {
   ValueMap VMap;
   BasicBlockMap BBMap;
 
-  FunCloner(LLVMValueRef Src, LLVMValueRef Dst)
-      : Fun(Dst), M(LLVMGetGlobalParent(Fun)), VMap(clone_params(Src, Dst)) {}
+  FunCloner(LLVMValueRef Src, LLVMValueRef Dst): Fun(Dst),
+    M(LLVMGetGlobalParent(Fun)), VMap(clone_params(Src, Dst)) {}
 
-  LLVMTypeRef CloneType(LLVMTypeRef Src) { return TypeCloner(M).Clone(Src); }
+  LLVMTypeRef CloneType(LLVMTypeRef Src) {
+    return TypeCloner(M).Clone(Src);
+  }
 
-  LLVMTypeRef CloneType(LLVMValueRef Src) { return TypeCloner(M).Clone(Src); }
+  LLVMTypeRef CloneType(LLVMValueRef Src) {
+    return TypeCloner(M).Clone(Src);
+  }
 
   // Try to clone everything in the llvm::Value hierarchy.
   LLVMValueRef CloneValue(LLVMValueRef Src) {
@@ -473,351 +489,351 @@ struct FunCloner {
     LLVMValueRef Dst = nullptr;
 
     LLVMOpcode Op = LLVMGetInstructionOpcode(Src);
-    switch (Op) {
-    case LLVMRet: {
-      int OpCount = LLVMGetNumOperands(Src);
-      if (OpCount == 0)
-        Dst = LLVMBuildRetVoid(Builder);
-      else
-        Dst = LLVMBuildRet(Builder, CloneValue(LLVMGetOperand(Src, 0)));
-      break;
-    }
-    case LLVMBr: {
-      if (!LLVMIsConditional(Src)) {
-        LLVMValueRef SrcOp = LLVMGetOperand(Src, 0);
-        LLVMBasicBlockRef SrcBB = LLVMValueAsBasicBlock(SrcOp);
-        Dst = LLVMBuildBr(Builder, DeclareBB(SrcBB));
+    switch(Op) {
+      case LLVMRet: {
+        int OpCount = LLVMGetNumOperands(Src);
+        if (OpCount == 0)
+          Dst = LLVMBuildRetVoid(Builder);
+        else
+          Dst = LLVMBuildRet(Builder, CloneValue(LLVMGetOperand(Src, 0)));
         break;
       }
-
-      LLVMValueRef Cond = LLVMGetCondition(Src);
-      LLVMValueRef Else = LLVMGetOperand(Src, 1);
-      LLVMBasicBlockRef ElseBB = DeclareBB(LLVMValueAsBasicBlock(Else));
-      LLVMValueRef Then = LLVMGetOperand(Src, 2);
-      LLVMBasicBlockRef ThenBB = DeclareBB(LLVMValueAsBasicBlock(Then));
-      Dst = LLVMBuildCondBr(Builder, CloneValue(Cond), ThenBB, ElseBB);
-      break;
-    }
-    case LLVMSwitch:
-    case LLVMIndirectBr:
-      break;
-    case LLVMInvoke: {
-      SmallVector<LLVMValueRef, 8> Args;
-      int ArgCount = LLVMGetNumArgOperands(Src);
-      for (int i = 0; i < ArgCount; i++)
-        Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
-      LLVMValueRef Fn = CloneValue(LLVMGetCalledValue(Src));
-      LLVMBasicBlockRef Then = DeclareBB(LLVMGetNormalDest(Src));
-      LLVMBasicBlockRef Unwind = DeclareBB(LLVMGetUnwindDest(Src));
-      Dst = LLVMBuildInvoke(Builder, Fn, Args.data(), ArgCount, Then, Unwind,
-                            Name);
-      CloneAttrs(Src, Dst);
-      break;
-    }
-    case LLVMUnreachable:
-      Dst = LLVMBuildUnreachable(Builder);
-      break;
-    case LLVMAdd: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildAdd(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMSub: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildSub(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMMul: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildMul(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMUDiv: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildUDiv(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMSDiv: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildSDiv(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMURem: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildURem(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMSRem: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildSRem(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMShl: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildShl(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMLShr: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildLShr(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMAShr: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildAShr(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMAnd: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildAnd(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMOr: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildOr(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMXor: {
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildXor(Builder, LHS, RHS, Name);
-      break;
-    }
-    case LLVMAlloca: {
-      LLVMTypeRef Ty = CloneType(LLVMGetAllocatedType(Src));
-      Dst = LLVMBuildAlloca(Builder, Ty, Name);
-      LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
-      break;
-    }
-    case LLVMLoad: {
-      LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
-      Dst = LLVMBuildLoad(Builder, Ptr, Name);
-      LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
-      LLVMSetOrdering(Dst, LLVMGetOrdering(Src));
-      LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
-      break;
-    }
-    case LLVMStore: {
-      LLVMValueRef Val = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildStore(Builder, Val, Ptr);
-      LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
-      LLVMSetOrdering(Dst, LLVMGetOrdering(Src));
-      LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
-      break;
-    }
-    case LLVMGetElementPtr: {
-      LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
-      SmallVector<LLVMValueRef, 8> Idx;
-      int NumIdx = LLVMGetNumIndices(Src);
-      for (int i = 1; i <= NumIdx; i++)
-        Idx.push_back(CloneValue(LLVMGetOperand(Src, i)));
-      if (LLVMIsInBounds(Src))
-        Dst = LLVMBuildInBoundsGEP(Builder, Ptr, Idx.data(), NumIdx, Name);
-      else
-        Dst = LLVMBuildGEP(Builder, Ptr, Idx.data(), NumIdx, Name);
-      break;
-    }
-    case LLVMAtomicRMW: {
-      LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef Val = CloneValue(LLVMGetOperand(Src, 1));
-      LLVMAtomicRMWBinOp BinOp = LLVMGetAtomicRMWBinOp(Src);
-      LLVMAtomicOrdering Ord = LLVMGetOrdering(Src);
-      LLVMBool SingleThread = LLVMIsAtomicSingleThread(Src);
-      Dst = LLVMBuildAtomicRMW(Builder, BinOp, Ptr, Val, Ord, SingleThread);
-      LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
-      LLVMSetValueName2(Dst, Name, NameLen);
-      break;
-    }
-    case LLVMAtomicCmpXchg: {
-      LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef Cmp = CloneValue(LLVMGetOperand(Src, 1));
-      LLVMValueRef New = CloneValue(LLVMGetOperand(Src, 2));
-      LLVMAtomicOrdering Succ = LLVMGetCmpXchgSuccessOrdering(Src);
-      LLVMAtomicOrdering Fail = LLVMGetCmpXchgFailureOrdering(Src);
-      LLVMBool SingleThread = LLVMIsAtomicSingleThread(Src);
-
-      Dst = LLVMBuildAtomicCmpXchg(Builder, Ptr, Cmp, New, Succ, Fail,
-                                   SingleThread);
-      LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
-      LLVMSetWeak(Dst, LLVMGetWeak(Src));
-      LLVMSetValueName2(Dst, Name, NameLen);
-      break;
-    }
-    case LLVMBitCast: {
-      LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 0));
-      Dst = LLVMBuildBitCast(Builder, V, CloneType(Src), Name);
-      break;
-    }
-    case LLVMICmp: {
-      LLVMIntPredicate Pred = LLVMGetICmpPredicate(Src);
-      LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildICmp(Builder, Pred, LHS, RHS, Name);
-      break;
-    }
-    case LLVMPHI: {
-      // We need to aggressively set things here because of loops.
-      VMap[Src] = Dst = LLVMBuildPhi(Builder, CloneType(Src), Name);
-
-      SmallVector<LLVMValueRef, 8> Values;
-      SmallVector<LLVMBasicBlockRef, 8> Blocks;
-
-      unsigned IncomingCount = LLVMCountIncoming(Src);
-      for (unsigned i = 0; i < IncomingCount; ++i) {
-        Blocks.push_back(DeclareBB(LLVMGetIncomingBlock(Src, i)));
-        Values.push_back(CloneValue(LLVMGetIncomingValue(Src, i)));
-      }
-
-      LLVMAddIncoming(Dst, Values.data(), Blocks.data(), IncomingCount);
-      return Dst;
-    }
-    case LLVMCall: {
-      SmallVector<LLVMValueRef, 8> Args;
-      int ArgCount = LLVMGetNumArgOperands(Src);
-      for (int i = 0; i < ArgCount; i++)
-        Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
-      LLVMValueRef Fn = CloneValue(LLVMGetCalledValue(Src));
-      Dst = LLVMBuildCall(Builder, Fn, Args.data(), ArgCount, Name);
-      LLVMSetTailCall(Dst, LLVMIsTailCall(Src));
-      CloneAttrs(Src, Dst);
-      break;
-    }
-    case LLVMResume: {
-      Dst = LLVMBuildResume(Builder, CloneValue(LLVMGetOperand(Src, 0)));
-      break;
-    }
-    case LLVMLandingPad: {
-      // The landing pad API is a bit screwed up for historical reasons.
-      Dst = LLVMBuildLandingPad(Builder, CloneType(Src), nullptr, 0, Name);
-      unsigned NumClauses = LLVMGetNumClauses(Src);
-      for (unsigned i = 0; i < NumClauses; ++i)
-        LLVMAddClause(Dst, CloneValue(LLVMGetClause(Src, i)));
-      LLVMSetCleanup(Dst, LLVMIsCleanup(Src));
-      break;
-    }
-    case LLVMCleanupRet: {
-      LLVMValueRef CatchPad = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMBasicBlockRef Unwind = nullptr;
-      if (LLVMBasicBlockRef UDest = LLVMGetUnwindDest(Src))
-        Unwind = DeclareBB(UDest);
-      Dst = LLVMBuildCleanupRet(Builder, CatchPad, Unwind);
-      break;
-    }
-    case LLVMCatchRet: {
-      LLVMValueRef CatchPad = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMBasicBlockRef SuccBB = DeclareBB(LLVMGetSuccessor(Src, 0));
-      Dst = LLVMBuildCatchRet(Builder, CatchPad, SuccBB);
-      break;
-    }
-    case LLVMCatchPad: {
-      LLVMValueRef ParentPad = CloneValue(LLVMGetParentCatchSwitch(Src));
-      SmallVector<LLVMValueRef, 8> Args;
-      int ArgCount = LLVMGetNumArgOperands(Src);
-      for (int i = 0; i < ArgCount; i++)
-        Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
-      Dst = LLVMBuildCatchPad(Builder, ParentPad, Args.data(), ArgCount, Name);
-      break;
-    }
-    case LLVMCleanupPad: {
-      LLVMValueRef ParentPad = CloneValue(LLVMGetOperand(Src, 0));
-      SmallVector<LLVMValueRef, 8> Args;
-      int ArgCount = LLVMGetNumArgOperands(Src);
-      for (int i = 0; i < ArgCount; i++)
-        Args.push_back(CloneValue(LLVMGetArgOperand(Src, i)));
-      Dst =
-          LLVMBuildCleanupPad(Builder, ParentPad, Args.data(), ArgCount, Name);
-      break;
-    }
-    case LLVMCatchSwitch: {
-      LLVMValueRef ParentPad = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMBasicBlockRef UnwindBB = nullptr;
-      if (LLVMBasicBlockRef UDest = LLVMGetUnwindDest(Src)) {
-        UnwindBB = DeclareBB(UDest);
-      }
-      unsigned NumHandlers = LLVMGetNumHandlers(Src);
-      Dst =
-          LLVMBuildCatchSwitch(Builder, ParentPad, UnwindBB, NumHandlers, Name);
-      if (NumHandlers > 0) {
-        LLVMBasicBlockRef *Handlers = static_cast<LLVMBasicBlockRef *>(
-            safe_malloc(NumHandlers * sizeof(LLVMBasicBlockRef)));
-        LLVMGetHandlers(Src, Handlers);
-        for (unsigned i = 0; i < NumHandlers; i++)
-          LLVMAddHandler(Dst, DeclareBB(Handlers[i]));
-        free(Handlers);
-      }
-      break;
-    }
-    case LLVMExtractValue: {
-      LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
-      if (LLVMGetNumIndices(Src) > 1)
-        report_fatal_error("ExtractValue: Expected only one index");
-      else if (LLVMGetNumIndices(Src) < 1)
-        report_fatal_error("ExtractValue: Expected an index");
-      auto I = LLVMGetIndices(Src)[0];
-      Dst = LLVMBuildExtractValue(Builder, Agg, I, Name);
-      break;
-    }
-    case LLVMInsertValue: {
-      LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 1));
-      if (LLVMGetNumIndices(Src) > 1)
-        report_fatal_error("InsertValue: Expected only one index");
-      else if (LLVMGetNumIndices(Src) < 1)
-        report_fatal_error("InsertValue: Expected an index");
-      auto I = LLVMGetIndices(Src)[0];
-      Dst = LLVMBuildInsertValue(Builder, Agg, V, I, Name);
-      break;
-    }
-    case LLVMExtractElement: {
-      LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef Index = CloneValue(LLVMGetOperand(Src, 1));
-      Dst = LLVMBuildExtractElement(Builder, Agg, Index, Name);
-      break;
-    }
-    case LLVMInsertElement: {
-      LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 1));
-      LLVMValueRef Index = CloneValue(LLVMGetOperand(Src, 2));
-      Dst = LLVMBuildInsertElement(Builder, Agg, V, Index, Name);
-      break;
-    }
-    case LLVMShuffleVector: {
-      LLVMValueRef Agg0 = CloneValue(LLVMGetOperand(Src, 0));
-      LLVMValueRef Agg1 = CloneValue(LLVMGetOperand(Src, 1));
-      SmallVector<LLVMValueRef, 8> MaskElts;
-      unsigned NumMaskElts = LLVMGetNumMaskElements(Src);
-      for (unsigned i = 0; i < NumMaskElts; i++) {
-        int Val = LLVMGetMaskValue(Src, i);
-        if (Val == LLVMGetUndefMaskElem()) {
-          MaskElts.push_back(LLVMGetUndef(LLVMInt64Type()));
-        } else {
-          MaskElts.push_back(LLVMConstInt(LLVMInt64Type(), Val, true));
+      case LLVMBr: {
+        if (!LLVMIsConditional(Src)) {
+          LLVMValueRef SrcOp = LLVMGetOperand(Src, 0);
+          LLVMBasicBlockRef SrcBB = LLVMValueAsBasicBlock(SrcOp);
+          Dst = LLVMBuildBr(Builder, DeclareBB(SrcBB));
+          break;
         }
+
+        LLVMValueRef Cond = LLVMGetCondition(Src);
+        LLVMValueRef Else = LLVMGetOperand(Src, 1);
+        LLVMBasicBlockRef ElseBB = DeclareBB(LLVMValueAsBasicBlock(Else));
+        LLVMValueRef Then = LLVMGetOperand(Src, 2);
+        LLVMBasicBlockRef ThenBB = DeclareBB(LLVMValueAsBasicBlock(Then));
+        Dst = LLVMBuildCondBr(Builder, CloneValue(Cond), ThenBB, ElseBB);
+        break;
       }
-      LLVMValueRef Mask = LLVMConstVector(MaskElts.data(), NumMaskElts);
-      Dst = LLVMBuildShuffleVector(Builder, Agg0, Agg1, Mask, Name);
-      break;
-    }
-    case LLVMFreeze: {
-      LLVMValueRef Arg = CloneValue(LLVMGetOperand(Src, 0));
-      Dst = LLVMBuildFreeze(Builder, Arg, Name);
-      break;
-    }
-    default:
-      break;
+      case LLVMSwitch:
+      case LLVMIndirectBr:
+        break;
+      case LLVMInvoke: {
+        SmallVector<LLVMValueRef, 8> Args;
+        int ArgCount = LLVMGetNumArgOperands(Src);
+        for (int i = 0; i < ArgCount; i++)
+          Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
+        LLVMValueRef Fn = CloneValue(LLVMGetCalledValue(Src));
+        LLVMBasicBlockRef Then = DeclareBB(LLVMGetNormalDest(Src));
+        LLVMBasicBlockRef Unwind = DeclareBB(LLVMGetUnwindDest(Src));
+        Dst = LLVMBuildInvoke(Builder, Fn, Args.data(), ArgCount,
+                              Then, Unwind, Name);
+        CloneAttrs(Src, Dst);
+        break;
+      }
+      case LLVMUnreachable:
+        Dst = LLVMBuildUnreachable(Builder);
+        break;
+      case LLVMAdd: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildAdd(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMSub: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildSub(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMMul: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildMul(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMUDiv: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildUDiv(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMSDiv: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildSDiv(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMURem: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildURem(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMSRem: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildSRem(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMShl: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildShl(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMLShr: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildLShr(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMAShr: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildAShr(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMAnd: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildAnd(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMOr: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildOr(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMXor: {
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildXor(Builder, LHS, RHS, Name);
+        break;
+      }
+      case LLVMAlloca: {
+        LLVMTypeRef Ty = CloneType(LLVMGetAllocatedType(Src));
+        Dst = LLVMBuildAlloca(Builder, Ty, Name);
+        LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
+        break;
+      }
+      case LLVMLoad: {
+        LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
+        Dst = LLVMBuildLoad(Builder, Ptr, Name);
+        LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
+        LLVMSetOrdering(Dst, LLVMGetOrdering(Src));
+        LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
+        break;
+      }
+      case LLVMStore: {
+        LLVMValueRef Val = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildStore(Builder, Val, Ptr);
+        LLVMSetAlignment(Dst, LLVMGetAlignment(Src));
+        LLVMSetOrdering(Dst, LLVMGetOrdering(Src));
+        LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
+        break;
+      }
+      case LLVMGetElementPtr: {
+        LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
+        SmallVector<LLVMValueRef, 8> Idx;
+        int NumIdx = LLVMGetNumIndices(Src);
+        for (int i = 1; i <= NumIdx; i++)
+          Idx.push_back(CloneValue(LLVMGetOperand(Src, i)));
+        if (LLVMIsInBounds(Src))
+          Dst = LLVMBuildInBoundsGEP(Builder, Ptr, Idx.data(), NumIdx, Name);
+        else
+          Dst = LLVMBuildGEP(Builder, Ptr, Idx.data(), NumIdx, Name);
+        break;
+      }
+      case LLVMAtomicRMW: {
+        LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Val = CloneValue(LLVMGetOperand(Src, 1));
+        LLVMAtomicRMWBinOp BinOp = LLVMGetAtomicRMWBinOp(Src);
+        LLVMAtomicOrdering Ord = LLVMGetOrdering(Src);
+        LLVMBool SingleThread = LLVMIsAtomicSingleThread(Src);
+        Dst = LLVMBuildAtomicRMW(Builder, BinOp, Ptr, Val, Ord, SingleThread);
+        LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
+        LLVMSetValueName2(Dst, Name, NameLen);
+        break;
+      }
+      case LLVMAtomicCmpXchg: {
+        LLVMValueRef Ptr = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Cmp = CloneValue(LLVMGetOperand(Src, 1));
+        LLVMValueRef New = CloneValue(LLVMGetOperand(Src, 2));
+        LLVMAtomicOrdering Succ = LLVMGetCmpXchgSuccessOrdering(Src);
+        LLVMAtomicOrdering Fail = LLVMGetCmpXchgFailureOrdering(Src);
+        LLVMBool SingleThread = LLVMIsAtomicSingleThread(Src);
+
+        Dst = LLVMBuildAtomicCmpXchg(Builder, Ptr, Cmp, New, Succ, Fail,
+                                     SingleThread);
+        LLVMSetVolatile(Dst, LLVMGetVolatile(Src));
+        LLVMSetWeak(Dst, LLVMGetWeak(Src));
+        LLVMSetValueName2(Dst, Name, NameLen);
+        break;
+      }
+      case LLVMBitCast: {
+        LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 0));
+        Dst = LLVMBuildBitCast(Builder, V, CloneType(Src), Name);
+        break;
+      }
+      case LLVMICmp: {
+        LLVMIntPredicate Pred = LLVMGetICmpPredicate(Src);
+        LLVMValueRef LHS = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef RHS = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildICmp(Builder, Pred, LHS, RHS, Name);
+        break;
+      }
+      case LLVMPHI: {
+        // We need to aggressively set things here because of loops.
+        VMap[Src] = Dst = LLVMBuildPhi(Builder, CloneType(Src), Name);
+
+        SmallVector<LLVMValueRef, 8> Values;
+        SmallVector<LLVMBasicBlockRef, 8> Blocks;
+
+        unsigned IncomingCount = LLVMCountIncoming(Src);
+        for (unsigned i = 0; i < IncomingCount; ++i) {
+          Blocks.push_back(DeclareBB(LLVMGetIncomingBlock(Src, i)));
+          Values.push_back(CloneValue(LLVMGetIncomingValue(Src, i)));
+        }
+
+        LLVMAddIncoming(Dst, Values.data(), Blocks.data(), IncomingCount);
+        return Dst;
+      }
+      case LLVMCall: {
+        SmallVector<LLVMValueRef, 8> Args;
+        int ArgCount = LLVMGetNumArgOperands(Src);
+        for (int i = 0; i < ArgCount; i++)
+          Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
+        LLVMValueRef Fn = CloneValue(LLVMGetCalledValue(Src));
+        Dst = LLVMBuildCall(Builder, Fn, Args.data(), ArgCount, Name);
+        LLVMSetTailCall(Dst, LLVMIsTailCall(Src));
+        CloneAttrs(Src, Dst);
+        break;
+      }
+      case LLVMResume: {
+        Dst = LLVMBuildResume(Builder, CloneValue(LLVMGetOperand(Src, 0)));
+        break;
+      }
+      case LLVMLandingPad: {
+        // The landing pad API is a bit screwed up for historical reasons.
+        Dst = LLVMBuildLandingPad(Builder, CloneType(Src), nullptr, 0, Name);
+        unsigned NumClauses = LLVMGetNumClauses(Src);
+        for (unsigned i = 0; i < NumClauses; ++i)
+          LLVMAddClause(Dst, CloneValue(LLVMGetClause(Src, i)));
+        LLVMSetCleanup(Dst, LLVMIsCleanup(Src));
+        break;
+      }
+      case LLVMCleanupRet: {
+        LLVMValueRef CatchPad = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMBasicBlockRef Unwind = nullptr;
+        if (LLVMBasicBlockRef UDest = LLVMGetUnwindDest(Src))
+          Unwind = DeclareBB(UDest);
+        Dst = LLVMBuildCleanupRet(Builder, CatchPad, Unwind);
+        break;
+      }
+      case LLVMCatchRet: {
+        LLVMValueRef CatchPad = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMBasicBlockRef SuccBB = DeclareBB(LLVMGetSuccessor(Src, 0));
+        Dst = LLVMBuildCatchRet(Builder, CatchPad, SuccBB);
+        break;
+      }
+      case LLVMCatchPad: {
+        LLVMValueRef ParentPad = CloneValue(LLVMGetParentCatchSwitch(Src));
+        SmallVector<LLVMValueRef, 8> Args;
+        int ArgCount = LLVMGetNumArgOperands(Src);
+        for (int i = 0; i < ArgCount; i++)
+          Args.push_back(CloneValue(LLVMGetOperand(Src, i)));
+        Dst = LLVMBuildCatchPad(Builder, ParentPad,
+                                Args.data(), ArgCount, Name);
+        break;
+      }
+      case LLVMCleanupPad: {
+        LLVMValueRef ParentPad = CloneValue(LLVMGetOperand(Src, 0));
+        SmallVector<LLVMValueRef, 8> Args;
+        int ArgCount = LLVMGetNumArgOperands(Src);
+        for (int i = 0; i < ArgCount; i++)
+          Args.push_back(CloneValue(LLVMGetArgOperand(Src, i)));
+        Dst = LLVMBuildCleanupPad(Builder, ParentPad,
+                                  Args.data(), ArgCount, Name);
+        break;
+      }
+      case LLVMCatchSwitch: {
+        LLVMValueRef ParentPad = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMBasicBlockRef UnwindBB = nullptr;
+        if (LLVMBasicBlockRef UDest = LLVMGetUnwindDest(Src)) {
+          UnwindBB = DeclareBB(UDest);
+        }
+        unsigned NumHandlers = LLVMGetNumHandlers(Src);
+        Dst = LLVMBuildCatchSwitch(Builder, ParentPad, UnwindBB, NumHandlers, Name);
+        if (NumHandlers > 0) {
+          LLVMBasicBlockRef *Handlers = static_cast<LLVMBasicBlockRef*>(
+                       safe_malloc(NumHandlers * sizeof(LLVMBasicBlockRef)));
+          LLVMGetHandlers(Src, Handlers);
+          for (unsigned i = 0; i < NumHandlers; i++)
+            LLVMAddHandler(Dst, DeclareBB(Handlers[i]));
+          free(Handlers);
+        }
+        break;
+      }
+      case LLVMExtractValue: {
+        LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
+        if (LLVMGetNumIndices(Src) > 1)
+          report_fatal_error("ExtractValue: Expected only one index");
+        else if (LLVMGetNumIndices(Src) < 1)
+          report_fatal_error("ExtractValue: Expected an index");
+        auto I = LLVMGetIndices(Src)[0];
+        Dst = LLVMBuildExtractValue(Builder, Agg, I, Name);
+        break;
+      }
+      case LLVMInsertValue: {
+        LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 1));
+        if (LLVMGetNumIndices(Src) > 1)
+          report_fatal_error("InsertValue: Expected only one index");
+        else if (LLVMGetNumIndices(Src) < 1)
+          report_fatal_error("InsertValue: Expected an index");
+        auto I = LLVMGetIndices(Src)[0];
+        Dst = LLVMBuildInsertValue(Builder, Agg, V, I, Name);
+        break;
+      }
+      case LLVMExtractElement: {
+        LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Index = CloneValue(LLVMGetOperand(Src, 1));
+        Dst = LLVMBuildExtractElement(Builder, Agg, Index, Name);
+        break;
+      }
+      case LLVMInsertElement: {
+        LLVMValueRef Agg = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef V = CloneValue(LLVMGetOperand(Src, 1));
+        LLVMValueRef Index = CloneValue(LLVMGetOperand(Src, 2));
+        Dst = LLVMBuildInsertElement(Builder, Agg, V, Index, Name);
+        break;
+      }
+      case LLVMShuffleVector: {
+        LLVMValueRef Agg0 = CloneValue(LLVMGetOperand(Src, 0));
+        LLVMValueRef Agg1 = CloneValue(LLVMGetOperand(Src, 1));
+        SmallVector<LLVMValueRef, 8> MaskElts;
+        unsigned NumMaskElts = LLVMGetNumMaskElements(Src);
+        for (unsigned i = 0; i < NumMaskElts; i++) {
+          int Val = LLVMGetMaskValue(Src, i);
+          if (Val == LLVMGetUndefMaskElem()) {
+            MaskElts.push_back(LLVMGetUndef(LLVMInt64Type()));
+          } else {
+            MaskElts.push_back(LLVMConstInt(LLVMInt64Type(), Val, true));
+          }
+        }
+        LLVMValueRef Mask = LLVMConstVector(MaskElts.data(), NumMaskElts);
+        Dst = LLVMBuildShuffleVector(Builder, Agg0, Agg1, Mask, Name);
+        break;
+      }
+      case LLVMFreeze: {
+        LLVMValueRef Arg = CloneValue(LLVMGetOperand(Src, 0));
+        Dst = LLVMBuildFreeze(Builder, Arg, Name);
+        break;
+      }
+      default:
+        break;
     }
 
     if (Dst == nullptr) {
@@ -827,8 +843,9 @@ struct FunCloner {
 
     auto Ctx = LLVMGetModuleContext(M);
     size_t NumMetadataEntries;
-    auto *AllMetadata = LLVMInstructionGetAllMetadataOtherThanDebugLoc(
-        Src, &NumMetadataEntries);
+    auto *AllMetadata =
+        LLVMInstructionGetAllMetadataOtherThanDebugLoc(Src,
+                                                       &NumMetadataEntries);
     for (unsigned i = 0; i < NumMetadataEntries; ++i) {
       unsigned Kind = LLVMValueMetadataEntriesGetKind(AllMetadata, i);
       LLVMMetadataRef MD = LLVMValueMetadataEntriesGetMetadata(AllMetadata, i);
@@ -887,7 +904,7 @@ struct FunCloner {
 
     LLVMValueRef Cur = First;
     LLVMValueRef Next = nullptr;
-    while (true) {
+    while(true) {
       CloneInstruction(Cur, Builder);
       Next = LLVMGetNextInstruction(Cur);
       if (Next == nullptr) {
@@ -917,7 +934,7 @@ struct FunCloner {
 
     LLVMBasicBlockRef Cur = First;
     LLVMBasicBlockRef Next = nullptr;
-    while (true) {
+    while(true) {
       CloneBB(Cur);
       Count--;
       Next = LLVMGetNextBasicBlock(Cur);
@@ -994,8 +1011,8 @@ FunDecl:
     auto F = LLVMAddFunction(M, Name, Ty);
 
     // Copy attributes
-    for (int i = LLVMAttributeFunctionIndex, c = LLVMCountParams(F); i <= c;
-         ++i) {
+    for (int i = LLVMAttributeFunctionIndex, c = LLVMCountParams(F);
+         i <= c; ++i) {
       for (unsigned k = 0, e = LLVMGetLastEnumAttributeKind(); k < e; ++k) {
         if (auto SrcA = LLVMGetEnumAttributeAtIndex(Cur, i, k)) {
           auto Val = LLVMGetEnumAttributeValue(SrcA);
@@ -1071,8 +1088,8 @@ GlobalIFuncDecl:
       report_fatal_error("Global ifunc already cloned");
     LLVMTypeRef CurType = TypeCloner(M).Clone(LLVMGlobalGetValueType(Cur));
     // FIXME: Allow NULL resolver.
-    LLVMAddGlobalIFunc(M, Name, NameLen, CurType, /*addressSpace*/ 0,
-                       LLVMGetUndef(CurType));
+    LLVMAddGlobalIFunc(M, Name, NameLen,
+                       CurType, /*addressSpace*/ 0, LLVMGetUndef(CurType));
 
     Next = LLVMGetNextGlobalIFunc(Cur);
     if (Next == nullptr) {
@@ -1195,8 +1212,8 @@ FunClone:
 
     if (LLVMHasPersonalityFn(Cur)) {
       size_t FNameLen;
-      const char *FName =
-          LLVMGetValueName2(LLVMGetPersonalityFn(Cur), &FNameLen);
+      const char *FName = LLVMGetValueName2(LLVMGetPersonalityFn(Cur),
+                                           &FNameLen);
       LLVMValueRef P = LLVMGetNamedFunction(M, FName);
       if (!P)
         report_fatal_error("Could not find personality function");
@@ -1327,7 +1344,7 @@ NamedMDClone:
 
     unsigned OperandCount = LLVMGetNamedMetadataNumOperands(Src, Name);
     LLVMValueRef *OperandBuf = static_cast<LLVMValueRef *>(
-        safe_malloc(OperandCount * sizeof(LLVMValueRef)));
+              safe_malloc(OperandCount * sizeof(LLVMValueRef)));
     LLVMGetNamedMetadataOperands(Src, Name, OperandBuf);
     for (unsigned i = 0, e = OperandCount; i != e; ++i) {
       LLVMAddNamedMetadataOperand(M, Name, OperandBuf[i]);

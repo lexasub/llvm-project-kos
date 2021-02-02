@@ -16,17 +16,21 @@
 
 #include <exception>
 
-namespace std {
+namespace std
+{
 
-_LIBCXXABI_HIDDEN _LIBCXXABI_NORETURN void
+_LIBCXXABI_HIDDEN _LIBCXXABI_NORETURN
+void
 __unexpected(unexpected_handler func);
 
-_LIBCXXABI_HIDDEN _LIBCXXABI_NORETURN void
+_LIBCXXABI_HIDDEN _LIBCXXABI_NORETURN
+void
 __terminate(terminate_handler func) _NOEXCEPT;
 
-} // namespace std
+}  // std
 
-extern "C" {
+extern "C"
+{
 
 _LIBCXXABI_DATA_VIS extern void (*__cxa_terminate_handler)();
 _LIBCXXABI_DATA_VIS extern void (*__cxa_unexpected_handler)();
@@ -48,4 +52,4 @@ _LIBCXXABI_DATA_VIS extern void (*__cxa_new_handler)();
 
 } // extern "C"
 
-#endif // _CXA_HANDLERS_H
+#endif  // _CXA_HANDLERS_H

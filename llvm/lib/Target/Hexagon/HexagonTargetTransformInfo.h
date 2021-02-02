@@ -51,8 +51,8 @@ class HexagonTTIImpl : public BasicTTIImplBase<HexagonTTIImpl> {
 
 public:
   explicit HexagonTTIImpl(const HexagonTargetMachine *TM, const Function &F)
-      : BaseT(TM, F.getParent()->getDataLayout()), ST(*TM->getSubtargetImpl(F)),
-        TLI(*ST.getTargetLowering()) {}
+      : BaseT(TM, F.getParent()->getDataLayout()),
+        ST(*TM->getSubtargetImpl(F)), TLI(*ST.getTargetLowering()) {}
 
   /// \name Scalar TTI Implementations
   /// @{
@@ -84,32 +84,45 @@ public:
   unsigned getMinVectorRegisterBitWidth() const;
   unsigned getMinimumVF(unsigned ElemWidth) const;
 
-  bool shouldMaximizeVectorBandwidth(bool OptSize) const { return true; }
-  bool supportsEfficientVectorElementLoadStore() { return false; }
-  bool hasBranchDivergence() { return false; }
-  bool enableAggressiveInterleaving(bool LoopHasReductions) { return false; }
-  bool prefersVectorizedAddressing() { return false; }
-  bool enableInterleavedAccessVectorization() { return true; }
+  bool shouldMaximizeVectorBandwidth(bool OptSize) const {
+    return true;
+  }
+  bool supportsEfficientVectorElementLoadStore() {
+    return false;
+  }
+  bool hasBranchDivergence() {
+    return false;
+  }
+  bool enableAggressiveInterleaving(bool LoopHasReductions) {
+    return false;
+  }
+  bool prefersVectorizedAddressing() {
+    return false;
+  }
+  bool enableInterleavedAccessVectorization() {
+    return true;
+  }
 
   unsigned getScalarizationOverhead(VectorType *Ty, const APInt &DemandedElts,
                                     bool Insert, bool Extract);
   unsigned getOperandsScalarizationOverhead(ArrayRef<const Value *> Args,
                                             unsigned VF);
-  unsigned getCallInstrCost(Function *F, Type *RetTy, ArrayRef<Type *> Tys,
+  unsigned getCallInstrCost(Function *F, Type *RetTy, ArrayRef<Type*> Tys,
                             TTI::TargetCostKind CostKind);
   unsigned getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                  TTI::TargetCostKind CostKind);
   unsigned getAddressComputationCost(Type *Tp, ScalarEvolution *SE,
-                                     const SCEV *S);
+            const SCEV *S);
   unsigned getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                           unsigned AddressSpace, TTI::TargetCostKind CostKind,
+                           unsigned AddressSpace,
+                           TTI::TargetCostKind CostKind,
                            const Instruction *I = nullptr);
   unsigned
   getMaskedMemoryOpCost(unsigned Opcode, Type *Src, Align Alignment,
                         unsigned AddressSpace,
                         TTI::TargetCostKind CostKind = TTI::TCK_SizeAndLatency);
   unsigned getShuffleCost(TTI::ShuffleKind Kind, Type *Tp, int Index,
-                          Type *SubTp);
+            Type *SubTp);
   unsigned getGatherScatterOpCost(unsigned Opcode, Type *DataTy,
                                   const Value *Ptr, bool VariableMask,
                                   Align Alignment, TTI::TargetCostKind CostKind,

@@ -1,13 +1,13 @@
 // This test is line- and column-sensitive, so test commands are at the bottom.
 namespace N {
-struct X {
-  int f(X);
-};
-} // namespace N
+  struct X {
+    int f(X);
+  };
+}
 
 int g(int a);
 
-struct Y {};
+struct Y { };
 
 struct Z {
   int member;
@@ -40,3 +40,4 @@ struct Z {
 // CHECK-CC4: NotImplemented:{TypedText volatile} (40)
 // CHECK-CC4: StructDecl:{TypedText Y}{Text ::} (75)
 // CHECK-CC4: StructDecl:{TypedText Z}{Text ::} (75)
+

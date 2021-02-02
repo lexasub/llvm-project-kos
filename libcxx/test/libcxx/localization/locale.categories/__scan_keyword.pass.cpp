@@ -40,82 +40,82 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  const std::ctype<char>& ct =
-      std::use_facet<std::ctype<char> >(std::locale::classic());
-  std::ios_base::iostate err = std::ios_base::goodbit;
-  {
-    const char input[] = "a";
-    const char* in = input;
-    std::string keys[] = {"a", "abb"};
-    err = std::ios_base::goodbit;
-    std::string* k =
-        std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                            keys + sizeof(keys) / sizeof(keys[0]), ct, err);
-    assert(k - keys == 0);
-    assert(in == input + 1);
-    assert(err == std::ios_base::eofbit);
-  }
-  {
-    const char input[] = "abc";
-    const char* in = input;
-    std::string keys[] = {"a", "abb"};
-    err = std::ios_base::goodbit;
-    std::string* k =
-        std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                            keys + sizeof(keys) / sizeof(keys[0]), ct, err);
-    assert(k - keys == 2);
-    assert(in == input + 2);
-    assert(err == std::ios_base::failbit);
-  }
-  {
-    const char input[] = "abb";
-    const char* in = input;
-    std::string keys[] = {"a", "abb"};
-    err = std::ios_base::goodbit;
-    std::string* k =
-        std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                            keys + sizeof(keys) / sizeof(keys[0]), ct, err);
-    assert(k - keys == 1);
-    assert(in == input + 3);
-    assert(err == std::ios_base::eofbit);
-  }
-  {
-    const char input[] = "Tue ";
-    const char* in = input;
-    std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
-    err = std::ios_base::goodbit;
-    std::string* k =
-        std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                            keys + sizeof(keys) / sizeof(keys[0]), ct, err);
-    assert(k - keys == 2);
-    assert(in == input + 3);
-    assert(err == std::ios_base::goodbit);
-  }
-  {
-    const char input[] = "tue ";
-    const char* in = input;
-    std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
-    err = std::ios_base::goodbit;
-    std::string* k =
-        std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                            keys + sizeof(keys) / sizeof(keys[0]), ct, err);
-    assert(k - keys == 4);
-    assert(in == input + 0);
-    assert(err == std::ios_base::failbit);
-  }
-  {
-    const char input[] = "tue ";
-    const char* in = input;
-    std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
-    err = std::ios_base::goodbit;
-    std::string* k = std::__scan_keyword(in, input + sizeof(input) - 1, keys,
-                                         keys + sizeof(keys) / sizeof(keys[0]),
-                                         ct, err, false);
-    assert(k - keys == 2);
-    assert(in == input + 3);
-    assert(err == std::ios_base::goodbit);
-  }
+int main(int, char**)
+{
+    const std::ctype<char>& ct = std::use_facet<std::ctype<char> >(std::locale::classic());
+    std::ios_base::iostate err = std::ios_base::goodbit;
+    {
+        const char input[] = "a";
+        const char* in = input;
+        std::string keys[] = {"a", "abb"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err);
+        assert(k - keys == 0);
+        assert(in == input+1);
+        assert(err == std::ios_base::eofbit);
+    }
+    {
+        const char input[] = "abc";
+        const char* in = input;
+        std::string keys[] = {"a", "abb"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err);
+        assert(k - keys == 2);
+        assert(in == input+2);
+        assert(err == std::ios_base::failbit);
+    }
+    {
+        const char input[] = "abb";
+        const char* in = input;
+        std::string keys[] = {"a", "abb"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err);
+        assert(k - keys == 1);
+        assert(in == input+3);
+        assert(err == std::ios_base::eofbit);
+    }
+    {
+        const char input[] = "Tue ";
+        const char* in = input;
+        std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err);
+        assert(k - keys == 2);
+        assert(in == input+3);
+        assert(err == std::ios_base::goodbit);
+    }
+    {
+        const char input[] = "tue ";
+        const char* in = input;
+        std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err);
+        assert(k - keys == 4);
+        assert(in == input+0);
+        assert(err == std::ios_base::failbit);
+    }
+    {
+        const char input[] = "tue ";
+        const char* in = input;
+        std::string keys[] = {"Mon", "Monday", "Tue", "Tuesday"};
+        err = std::ios_base::goodbit;
+        std::string* k = std::__scan_keyword(in, input+sizeof(input)-1,
+                                             keys, keys+sizeof(keys)/sizeof(keys[0]),
+                                             ct, err, false);
+        assert(k - keys == 2);
+        assert(in == input+3);
+        assert(err == std::ios_base::goodbit);
+    }
 
   return 0;
 }

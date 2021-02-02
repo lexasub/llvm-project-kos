@@ -2,10 +2,13 @@
 // RUN: %clang_cc1 -triple i686-pc-win32 -fms-compatibility -fms-extensions -fsyntax-only -verify -std=c++11 -DMS %s
 
 template <bool> struct enable_if {};
-template <> struct enable_if<true> { typedef void type; };
+template<> struct enable_if<true> { typedef void type; };
 
 template <typename, typename> struct is_same { static constexpr bool value = false; };
 template <typename T> struct is_same<T, T> { static constexpr bool value = true; };
+
+
+
 
 struct S {
   // The only numeric types S can be converted to are [unsigned] __int128 and __float128.

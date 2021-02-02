@@ -43,6 +43,7 @@
 // RUN: %clang -target powerpc-unknown-linux-gnu %s -mfloat-abi=x -### -o %t.o 2>&1 | FileCheck --check-prefix=CHECK-ERRMSG %s
 // CHECK-ERRMSG: error: invalid float ABI '-mfloat-abi=x'
 
+
 /// Check default CC1 and linker options for ppc64.
 // RUN: %clang -### -target powerpc64le-unknown-linux-gnu %s 2>&1 | FileCheck --check-prefixes=PPC64,PPC64LE %s
 // RUN: %clang -### -target powerpc64-unknown-linux-gnu %s 2>&1 | FileCheck --check-prefixes=PPC64,PPC64BE %s

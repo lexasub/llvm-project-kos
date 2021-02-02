@@ -602,13 +602,13 @@ class X86SavedState : public ExegesisTarget::SavedState {
 public:
   X86SavedState() {
 #ifdef __x86_64__
-#if defined(_MSC_VER)
+# if defined(_MSC_VER)
     _fxsave64(FPState);
     Eflags = __readeflags();
-#elif defined(__GNUC__)
+# elif defined(__GNUC__)
     __builtin_ia32_fxsave64(FPState);
     Eflags = __builtin_ia32_readeflags_u64();
-#endif
+# endif
 #else
     llvm_unreachable("X86 exegesis running on non-X86 target");
 #endif
@@ -618,15 +618,15 @@ public:
     // Restoring the X87 state does not flush pending exceptions, make sure
     // these exceptions are flushed now.
 #ifdef __x86_64__
-#if defined(_MSC_VER)
+# if defined(_MSC_VER)
     _clearfp();
     _fxrstor64(FPState);
     __writeeflags(Eflags);
-#elif defined(__GNUC__)
+# elif defined(__GNUC__)
     asm volatile("fwait");
     __builtin_ia32_fxrstor64(FPState);
     __builtin_ia32_writeeflags_u64(Eflags);
-#endif
+# endif
 #else
     llvm_unreachable("X86 exegesis running on non-X86 target");
 #endif

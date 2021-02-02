@@ -26,10 +26,10 @@ namespace llvm {
 MachOYAML::LoadCommand::~LoadCommand() = default;
 
 bool MachOYAML::LinkEditData::isEmpty() const {
-  return 0 == RebaseOpcodes.size() + BindOpcodes.size() +
-                  WeakBindOpcodes.size() + LazyBindOpcodes.size() +
-                  ExportTrie.Children.size() + NameList.size() +
-                  StringTable.size();
+  return 0 ==
+         RebaseOpcodes.size() + BindOpcodes.size() + WeakBindOpcodes.size() +
+             LazyBindOpcodes.size() + ExportTrie.Children.size() +
+             NameList.size() + StringTable.size();
 }
 
 namespace yaml {
@@ -110,10 +110,10 @@ void MappingTraits<MachOYAML::Object>::mapping(IO &IO,
   Object.DWARF.Is64BitAddrSize = Object.Header.magic == MachO::MH_MAGIC_64 ||
                                  Object.Header.magic == MachO::MH_CIGAM_64;
   IO.mapOptional("LoadCommands", Object.LoadCommands);
-  if (!Object.LinkEdit.isEmpty() || !IO.outputting())
+  if(!Object.LinkEdit.isEmpty() || !IO.outputting())
     IO.mapOptional("LinkEditData", Object.LinkEdit);
 
-  if (!Object.DWARF.isEmpty() || !IO.outputting())
+  if(!Object.DWARF.isEmpty() || !IO.outputting())
     IO.mapOptional("DWARF", Object.DWARF);
 
   if (IO.getContext() == &Object)

@@ -3,7 +3,7 @@
 #import "Bar.h"
 
 @interface Foo : NSObject {
-  Bar *_bar;
+    Bar *_bar;
 }
 
 - (NSString *)description;

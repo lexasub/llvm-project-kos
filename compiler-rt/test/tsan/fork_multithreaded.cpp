@@ -6,7 +6,7 @@
 #include <sys/wait.h>
 
 static void *sleeper(void *p) {
-  sleep(1000); // not intended to exit during test
+  sleep(1000);  // not intended to exit during test
   return 0;
 }
 
@@ -19,18 +19,17 @@ int main() {
   pthread_t th;
   pthread_create(&th, 0, sleeper, 0);
   switch (fork()) {
-  default: // parent
-    while (wait(0) < 0) {
+  default:  // parent
+    while (wait(0) < 0) {}
+    break;
+  case 0:  // child
+    {
+      pthread_t th2;
+      pthread_create(&th2, 0, nop, 0);
+      exit(0);
+      break;
     }
-    break;
-  case 0: // child
-  {
-    pthread_t th2;
-    pthread_create(&th2, 0, nop, 0);
-    exit(0);
-    break;
-  }
-  case -1: // error
+  case -1:  // error
     fprintf(stderr, "failed to fork (%d)\n", errno);
     exit(1);
   }
@@ -42,3 +41,4 @@ int main() {
 
 // CHECK-NODIE-NOT: ThreadSanitizer: starting new threads after multi-threaded fork is not supported
 // CHECK-NODIE: OK
+

@@ -41,8 +41,9 @@ public:
                            size_t EHFrameSectionSize) override;
 };
 
-using StoreFrameRangeFunction = std::function<void(
-    JITTargetAddress EHFrameSectionAddr, size_t EHFrameSectionSize)>;
+using StoreFrameRangeFunction =
+  std::function<void(JITTargetAddress EHFrameSectionAddr,
+                     size_t EHFrameSectionSize)>;
 
 /// Creates a pass that records the address and size of the EH frame section.
 /// If no eh-frame section is found then the address and size will both be given

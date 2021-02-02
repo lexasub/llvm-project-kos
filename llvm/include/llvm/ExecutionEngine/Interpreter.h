@@ -19,9 +19,9 @@
 extern "C" void LLVMLinkInInterpreter();
 
 namespace {
-struct ForceInterpreterLinking {
-  ForceInterpreterLinking() { LLVMLinkInInterpreter(); }
-} ForceInterpreterLinking;
-} // namespace
+  struct ForceInterpreterLinking {
+    ForceInterpreterLinking() { LLVMLinkInInterpreter(); }
+  } ForceInterpreterLinking;
+}
 
 #endif

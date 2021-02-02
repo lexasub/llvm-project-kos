@@ -31,30 +31,30 @@ void closeBrackets(std::string &Code, const format::FormatStyle &Style) {
   Token Tok;
   std::vector<char> Brackets;
   while (!Lex.LexFromRawLexer(Tok)) {
-    switch (Tok.getKind()) {
-    case tok::l_paren:
-      Brackets.push_back(')');
-      break;
-    case tok::l_brace:
-      Brackets.push_back('}');
-      break;
-    case tok::l_square:
-      Brackets.push_back(']');
-      break;
-    case tok::r_paren:
-      if (!Brackets.empty() && Brackets.back() == ')')
-        Brackets.pop_back();
-      break;
-    case tok::r_brace:
-      if (!Brackets.empty() && Brackets.back() == '}')
-        Brackets.pop_back();
-      break;
-    case tok::r_square:
-      if (!Brackets.empty() && Brackets.back() == ']')
-        Brackets.pop_back();
-      break;
-    default:
-      continue;
+    switch(Tok.getKind()) {
+      case tok::l_paren:
+        Brackets.push_back(')');
+        break;
+      case tok::l_brace:
+        Brackets.push_back('}');
+        break;
+      case tok::l_square:
+        Brackets.push_back(']');
+        break;
+      case tok::r_paren:
+        if (!Brackets.empty() && Brackets.back() == ')')
+          Brackets.pop_back();
+        break;
+      case tok::r_brace:
+        if (!Brackets.empty() && Brackets.back() == '}')
+          Brackets.pop_back();
+        break;
+      case tok::r_square:
+        if (!Brackets.empty() && Brackets.back() == ']')
+          Brackets.pop_back();
+        break;
+      default:
+        continue;
     }
   }
   // Attempt to end any open comments first.
@@ -63,7 +63,7 @@ void closeBrackets(std::string &Code, const format::FormatStyle &Style) {
 }
 
 static StringRef commentMarker(llvm::StringRef Line) {
-  for (StringRef Marker : {"///", "//"}) {
+  for (StringRef Marker : {"///", "//"}){
     auto I = Line.rfind(Marker);
     if (I != StringRef::npos)
       return Line.substr(I, Marker.size());
@@ -91,8 +91,8 @@ tooling::Replacement replacement(llvm::StringRef Code, llvm::StringRef From,
                                  llvm::StringRef To) {
   assert(From.begin() >= Code.begin() && From.end() <= Code.end());
   // The filename is required but ignored.
-  return tooling::Replacement(Filename, From.data() - Code.data(), From.size(),
-                              To);
+  return tooling::Replacement(Filename, From.data() - Code.data(),
+                              From.size(), To);
 }
 
 // High-level representation of incremental formatting changes.
@@ -291,10 +291,10 @@ formatIncremental(llvm::StringRef OriginalCode, unsigned OriginalCursor,
            Style, CodeToFormat, RangesToFormat, Filename, &Status)) {
     if (R.getOffset() + R.getLength() <= FormatLimit) // Before limit.
       cantFail(FormattingChanges.add(R));
-    else if (R.getOffset() < FormatLimit) { // Overlaps limit.
-      if (R.getReplacementText().empty())   // Deletions are easy to handle.
-        cantFail(FormattingChanges.add(tooling::Replacement(
-            Filename, R.getOffset(), FormatLimit - R.getOffset(), "")));
+    else if(R.getOffset() < FormatLimit) { // Overlaps limit.
+      if (R.getReplacementText().empty()) // Deletions are easy to handle.
+        cantFail(FormattingChanges.add(tooling::Replacement(Filename,
+            R.getOffset(), FormatLimit - R.getOffset(), "")));
       else
         // Hopefully won't happen in practice?
         elog("Incremental clang-format edit overlapping cursor @ {0}!\n{1}",

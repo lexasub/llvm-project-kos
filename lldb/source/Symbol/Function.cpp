@@ -67,7 +67,8 @@ InlineFunctionInfo::InlineFunctionInfo(const char *name,
     : FunctionInfo(name, decl_ptr), m_mangled(mangled),
       m_call_decl(call_decl_ptr) {}
 
-InlineFunctionInfo::InlineFunctionInfo(ConstString name, const Mangled &mangled,
+InlineFunctionInfo::InlineFunctionInfo(ConstString name,
+                                       const Mangled &mangled,
                                        const Declaration *decl_ptr,
                                        const Declaration *call_decl_ptr)
     : FunctionInfo(name, decl_ptr), m_mangled(mangled),
@@ -301,7 +302,7 @@ llvm::ArrayRef<std::unique_ptr<CallEdge>> Function::GetCallEdges() {
   m_call_edges_resolved = true;
 
   // Find the SymbolFile which provided this function's definition.
-  Block &block = GetBlock(/*can_create*/ true);
+  Block &block = GetBlock(/*can_create*/true);
   SymbolFile *sym_file = block.GetSymbolFile();
   if (!sym_file)
     return llvm::None;
@@ -652,7 +653,9 @@ lldb::LanguageType Function::GetLanguage() const {
   return lldb::eLanguageTypeUnknown;
 }
 
-ConstString Function::GetName() const { return m_mangled.GetName(); }
+ConstString Function::GetName() const {
+  return m_mangled.GetName();
+}
 
 ConstString Function::GetNameNoArguments() const {
   return m_mangled.GetName(Mangled::ePreferDemangledWithoutArguments);

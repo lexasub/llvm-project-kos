@@ -76,7 +76,8 @@ public:
   static const RefactoringDescriptor &describe();
 
 private:
-  QualifiedRenameRule(const NamedDecl *ND, std::string NewQualifiedName)
+  QualifiedRenameRule(const NamedDecl *ND,
+                      std::string NewQualifiedName)
       : ND(ND), NewQualifiedName(std::move(NewQualifiedName)) {}
 
   Expected<AtomicChanges>

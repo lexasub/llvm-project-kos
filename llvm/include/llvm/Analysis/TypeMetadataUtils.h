@@ -57,6 +57,6 @@ void findDevirtualizableCallsForTypeCheckedLoad(
     const CallInst *CI, DominatorTree &DT);
 
 Constant *getPointerAtOffset(Constant *I, uint64_t Offset, Module &M);
-} // namespace llvm
+}
 
 #endif

@@ -20,11 +20,12 @@
 
 struct A {};
 
-const A source() { return A(); }
+const A source() {return A();}
 
-int main(int, char**) {
-  std::reference_wrapper<const A> r = std::ref(source());
-  (void)r;
+int main(int, char**)
+{
+    std::reference_wrapper<const A> r = std::ref(source());
+    (void)r;
 
-  return 0;
+    return 0;
 }

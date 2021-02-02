@@ -23,22 +23,24 @@
 // Define all methods as no-ops if threading is explicitly disabled
 namespace llvm {
 using namespace sys;
-ThreadLocalImpl::ThreadLocalImpl() : data() {}
-ThreadLocalImpl::~ThreadLocalImpl() {}
-void ThreadLocalImpl::setInstance(const void *d) {
+ThreadLocalImpl::ThreadLocalImpl() : data() { }
+ThreadLocalImpl::~ThreadLocalImpl() { }
+void ThreadLocalImpl::setInstance(const void* d) {
   static_assert(sizeof(d) <= sizeof(data), "size too big");
-  void **pd = reinterpret_cast<void **>(&data);
-  *pd = const_cast<void *>(d);
+  void **pd = reinterpret_cast<void**>(&data);
+  *pd = const_cast<void*>(d);
 }
 void *ThreadLocalImpl::getInstance() {
-  void **pd = reinterpret_cast<void **>(&data);
+  void **pd = reinterpret_cast<void**>(&data);
   return *pd;
 }
-void ThreadLocalImpl::removeInstance() { setInstance(nullptr); }
-} // namespace llvm
+void ThreadLocalImpl::removeInstance() {
+  setInstance(nullptr);
+}
+}
 #elif defined(LLVM_ON_UNIX)
 #include "Unix/ThreadLocal.inc"
-#elif defined(_WIN32)
+#elif defined( _WIN32)
 #include "Windows/ThreadLocal.inc"
 #else
 #warning Neither LLVM_ON_UNIX nor _WIN32 set in Support/ThreadLocal.cpp

@@ -80,7 +80,8 @@ public:
         {R"(internal_.*\.h$)", TopHeader.c_str()},
     };
 
-    std::string InternalCode = "#include \"private.inc\"\nclass Internal {};";
+    std::string InternalCode =
+        "#include \"private.inc\"\nclass Internal {};";
     SymbolInfo InternalSymbol("Internal", SymbolInfo::SymbolKind::Class,
                               TopHeader, {});
     SymbolInfo IncSymbol("IncHeaderClass", SymbolInfo::SymbolKind::Class,
@@ -129,7 +130,7 @@ public:
 #if !defined(_MSC_VER) && !defined(__MINGW32__)
     EXPECT_EQ(1, seen(DirtySymbol));
     EXPECT_EQ(1, seen(DirtyMacro));
-#endif // _MSC_VER && __MINGW32__
+#endif  // _MSC_VER && __MINGW32__
     return true;
   }
 

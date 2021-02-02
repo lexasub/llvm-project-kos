@@ -21,19 +21,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::exponential_distribution<> D;
-    D d1(.25);
-    D d2(.25);
-    assert(d1 == d2);
-  }
-  {
-    typedef std::exponential_distribution<> D;
-    D d1(.28);
-    D d2(.25);
-    assert(d1 != d2);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::exponential_distribution<> D;
+        D d1(.25);
+        D d2(.25);
+        assert(d1 == d2);
+    }
+    {
+        typedef std::exponential_distribution<> D;
+        D d1(.28);
+        D d2(.25);
+        assert(d1 != d2);
+    }
 
   return 0;
 }

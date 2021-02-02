@@ -138,8 +138,14 @@ enum class CursorLocation {
 };
 
 /// Operation for the history.
-enum class HistoryOperation { Oldest, Older, Current, Newer, Newest };
-} // namespace line_editor
+enum class HistoryOperation {
+  Oldest,
+  Older,
+  Current,
+  Newer,
+  Newest
+};
+}
 
 using namespace line_editor;
 
@@ -371,7 +377,7 @@ private:
   std::size_t m_previous_autosuggestion_size = 0;
   std::mutex m_output_mutex;
 };
-} // namespace lldb_private
+}
 
 #endif // #if defined(__cplusplus)
 #endif // LLDB_HOST_EDITLINE_H

@@ -4,13 +4,13 @@
 #include <isl/aff.h>
 #include <isl/arg.h>
 #include <isl/ast_build.h>
+#include <isl/set.h>
+#include <isl/map.h>
+#include <isl/union_map.h>
+#include <isl/printer.h>
 #include <isl/id_to_ast_expr.h>
 #include <isl/id_to_pw_aff.h>
-#include <isl/map.h>
-#include <isl/printer.h>
 #include <isl/schedule.h>
-#include <isl/set.h>
-#include <isl/union_map.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -39,8 +39,8 @@ int pet_options_get_detect_conditional_assignment(isl_ctx *ctx);
 int pet_options_set_encapsulate_dynamic_control(isl_ctx *ctx, int val);
 int pet_options_get_encapsulate_dynamic_control(isl_ctx *ctx);
 
-#define PET_OVERFLOW_AVOID 0
-#define PET_OVERFLOW_IGNORE 1
+#define	PET_OVERFLOW_AVOID	0
+#define	PET_OVERFLOW_IGNORE	1
 int pet_options_set_signed_overflow(isl_ctx *ctx, int val);
 int pet_options_get_signed_overflow(isl_ctx *ctx);
 
@@ -62,70 +62,79 @@ int pet_loc_get_line(__isl_keep pet_loc *loc);
 __isl_keep const char *pet_loc_get_indent(__isl_keep pet_loc *loc);
 
 enum pet_expr_type {
-  pet_expr_error = -1,
-  pet_expr_access,
-  pet_expr_call,
-  pet_expr_cast,
-  pet_expr_int,
-  pet_expr_double,
-  pet_expr_op
+	pet_expr_error = -1,
+	pet_expr_access,
+	pet_expr_call,
+	pet_expr_cast,
+	pet_expr_int,
+	pet_expr_double,
+	pet_expr_op
 };
 
 enum pet_op_type {
-  /* only compound assignments operators before assignment */
-  pet_op_add_assign,
-  pet_op_sub_assign,
-  pet_op_mul_assign,
-  pet_op_div_assign,
-  pet_op_and_assign,
-  pet_op_xor_assign,
-  pet_op_or_assign,
-  pet_op_assign,
-  pet_op_add,
-  pet_op_sub,
-  pet_op_mul,
-  pet_op_div,
-  pet_op_mod,
-  pet_op_shl,
-  pet_op_shr,
-  pet_op_eq,
-  pet_op_ne,
-  pet_op_le,
-  pet_op_ge,
-  pet_op_lt,
-  pet_op_gt,
-  pet_op_minus,
-  pet_op_post_inc,
-  pet_op_post_dec,
-  pet_op_pre_inc,
-  pet_op_pre_dec,
-  pet_op_address_of,
-  pet_op_assume,
-  pet_op_kill,
-  pet_op_and,
-  pet_op_xor,
-  pet_op_or,
-  pet_op_not,
-  pet_op_land,
-  pet_op_lor,
-  pet_op_lnot,
-  pet_op_cond,
-  pet_op_last
+	/* only compound assignments operators before assignment */
+	pet_op_add_assign,
+	pet_op_sub_assign,
+	pet_op_mul_assign,
+	pet_op_div_assign,
+	pet_op_and_assign,
+	pet_op_xor_assign,
+	pet_op_or_assign,
+	pet_op_assign,
+	pet_op_add,
+	pet_op_sub,
+	pet_op_mul,
+	pet_op_div,
+	pet_op_mod,
+	pet_op_shl,
+	pet_op_shr,
+	pet_op_eq,
+	pet_op_ne,
+	pet_op_le,
+	pet_op_ge,
+	pet_op_lt,
+	pet_op_gt,
+	pet_op_minus,
+	pet_op_post_inc,
+	pet_op_post_dec,
+	pet_op_pre_inc,
+	pet_op_pre_dec,
+	pet_op_address_of,
+	pet_op_assume,
+	pet_op_kill,
+	pet_op_and,
+	pet_op_xor,
+	pet_op_or,
+	pet_op_not,
+	pet_op_land,
+	pet_op_lor,
+	pet_op_lnot,
+	pet_op_cond,
+	pet_op_last
 };
 
 /* Index into the pet_expr->args array when pet_expr->type == pet_expr_unary
  */
-enum pet_un_arg_type { pet_un_arg };
+enum pet_un_arg_type {
+	pet_un_arg
+};
 
 /* Indices into the pet_expr->args array when
  * pet_expr->type == pet_expr_binary
  */
-enum pet_bin_arg_type { pet_bin_lhs, pet_bin_rhs };
+enum pet_bin_arg_type {
+	pet_bin_lhs,
+	pet_bin_rhs
+};
 
 /* Indices into the pet_expr->args array when
  * pet_expr->type == pet_expr_ternary
  */
-enum pet_ter_arg_type { pet_ter_cond, pet_ter_true, pet_ter_false };
+enum pet_ter_arg_type {
+	pet_ter_cond,
+	pet_ter_true,
+	pet_ter_false
+};
 
 struct pet_expr;
 typedef struct pet_expr pet_expr;
@@ -148,13 +157,13 @@ __isl_give pet_expr *pet_expr_set_n_arg(__isl_take pet_expr *expr, int n);
 __isl_give pet_expr *pet_expr_get_arg(__isl_keep pet_expr *expr, int pos);
 /* Replace the argument of "expr" at position "pos" by "arg". */
 __isl_give pet_expr *pet_expr_set_arg(__isl_take pet_expr *expr, int pos,
-                                      __isl_take pet_expr *arg);
+	__isl_take pet_expr *arg);
 
 /* Return the operation type of operation expression "expr". */
 enum pet_op_type pet_expr_op_get_type(__isl_keep pet_expr *expr);
 /* Replace the operation type of operation expression "expr" by "type". */
 __isl_give pet_expr *pet_expr_op_set_type(__isl_take pet_expr *expr,
-                                          enum pet_op_type type);
+	enum pet_op_type type);
 
 /* Construct a (read) access pet_expr from an index expression. */
 __isl_give pet_expr *pet_expr_from_index(__isl_take isl_multi_pw_aff *index);
@@ -169,83 +178,80 @@ isl_bool pet_expr_access_is_write(__isl_keep pet_expr *expr);
 isl_bool pet_expr_access_is_kill(__isl_keep pet_expr *expr);
 /* Mark "expr" as a read depending on "read". */
 __isl_give pet_expr *pet_expr_access_set_read(__isl_take pet_expr *expr,
-                                              int read);
+	int read);
 /* Mark "expr" as a write depending on "write". */
 __isl_give pet_expr *pet_expr_access_set_write(__isl_take pet_expr *expr,
-                                               int write);
+	int write);
 /* Mark "expr" as a kill depending on "kill". */
 __isl_give pet_expr *pet_expr_access_set_kill(__isl_take pet_expr *expr,
-                                              int kill);
+	int kill);
 /* Return the reference identifier of access expression "expr". */
 __isl_give isl_id *pet_expr_access_get_ref_id(__isl_keep pet_expr *expr);
 /* Replace the reference identifier of access expression "expr" by "ref_id". */
 __isl_give pet_expr *pet_expr_access_set_ref_id(__isl_take pet_expr *expr,
-                                                __isl_take isl_id *ref_id);
+	__isl_take isl_id *ref_id);
 /* Return the identifier of the outer array accessed by "expr". */
 __isl_give isl_id *pet_expr_access_get_id(__isl_keep pet_expr *expr);
 /* Return the index expression of access expression "expr". */
-__isl_give isl_multi_pw_aff *
-pet_expr_access_get_index(__isl_keep pet_expr *expr);
+__isl_give isl_multi_pw_aff *pet_expr_access_get_index(
+	__isl_keep pet_expr *expr);
 
 /* Return the potential read access relation of access expression "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_may_read(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_may_read(
+	__isl_keep pet_expr *expr);
 /* Return the potential write access relation of access expression "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_may_write(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_may_write(
+	__isl_keep pet_expr *expr);
 /* Return the definite write access relation of access expression "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_must_write(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_must_write(
+	__isl_keep pet_expr *expr);
 /* Return the argument dependent potential read access relation of "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_dependent_may_read(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_dependent_may_read(
+	__isl_keep pet_expr *expr);
 /* Return the argument dependent potential write access relation of "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_dependent_may_write(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_dependent_may_write(
+	__isl_keep pet_expr *expr);
 /* Return the argument dependent definite write access relation of "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_dependent_must_write(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_dependent_must_write(
+	__isl_keep pet_expr *expr);
 /* Return the tagged potential read access relation of access "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_tagged_may_read(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_tagged_may_read(
+	__isl_keep pet_expr *expr);
 /* Return the tagged potential write access relation of access "expr". */
-__isl_give isl_union_map *
-pet_expr_access_get_tagged_may_write(__isl_keep pet_expr *expr);
+__isl_give isl_union_map *pet_expr_access_get_tagged_may_write(
+	__isl_keep pet_expr *expr);
 
 /* Return the name of the function called by "expr". */
 __isl_keep const char *pet_expr_call_get_name(__isl_keep pet_expr *expr);
 /* Replace the name of the function called by "expr" by "name". */
 __isl_give pet_expr *pet_expr_call_set_name(__isl_take pet_expr *expr,
-                                            __isl_keep const char *name);
+	__isl_keep const char *name);
 
 /* Create a pet_expr representing a cast of "arg" to "type_name". */
 __isl_give pet_expr *pet_expr_new_cast(const char *type_name,
-                                       __isl_take pet_expr *arg);
+	__isl_take pet_expr *arg);
 /* Replace the type of the cast performed by "expr" by "name". */
 __isl_give pet_expr *pet_expr_cast_set_type_name(__isl_take pet_expr *expr,
-                                                 __isl_keep const char *name);
+	__isl_keep const char *name);
 
 /* Return the value of the integer represented by "expr". */
 __isl_give isl_val *pet_expr_int_get_val(__isl_keep pet_expr *expr);
 /* Replace the value of the integer represented by "expr" by "v". */
 __isl_give pet_expr *pet_expr_int_set_val(__isl_take pet_expr *expr,
-                                          __isl_take isl_val *v);
+	__isl_take isl_val *v);
 
 /* Return a string representation of the double expression "expr". */
 __isl_give char *pet_expr_double_get_str(__isl_keep pet_expr *expr);
 /* Replace value and string representation of the double expression "expr" */
-__isl_give pet_expr *pet_expr_double_set(__isl_take pet_expr *expr, double d,
-                                         __isl_keep const char *s);
+__isl_give pet_expr *pet_expr_double_set(__isl_take pet_expr *expr,
+	double d, __isl_keep const char *s);
 
 /* Call "fn" on each of the subexpressions of "expr" of type pet_expr_access. */
 int pet_expr_foreach_access_expr(__isl_keep pet_expr *expr,
-                                 int (*fn)(__isl_keep pet_expr *expr,
-                                           void *user),
-                                 void *user);
+	int (*fn)(__isl_keep pet_expr *expr, void *user), void *user);
 /* Call "fn" on each of the subexpressions of "expr" of type pet_expr_call. */
 int pet_expr_foreach_call_expr(__isl_keep pet_expr *expr,
-                               int (*fn)(__isl_keep pet_expr *expr, void *user),
-                               void *user);
+	int (*fn)(__isl_keep pet_expr *expr, void *user), void *user);
 
 struct pet_context;
 typedef struct pet_context pet_context;
@@ -264,24 +270,24 @@ isl_ctx *pet_context_get_ctx(__isl_keep pet_context *pc);
  * or return NaN.
  */
 __isl_give isl_pw_aff *pet_expr_extract_affine(__isl_keep pet_expr *expr,
-                                               __isl_keep pet_context *pc);
+	__isl_keep pet_context *pc);
 
 void pet_expr_dump(__isl_keep pet_expr *expr);
 
 enum pet_tree_type {
-  pet_tree_error = -1,
-  pet_tree_expr,
-  pet_tree_block,
-  pet_tree_break,
-  pet_tree_continue,
-  pet_tree_decl,      /* A declaration without initialization */
-  pet_tree_decl_init, /* A declaration with initialization */
-  pet_tree_if,        /* An if without an else branch */
-  pet_tree_if_else,   /* An if with an else branch */
-  pet_tree_for,
-  pet_tree_infinite_loop,
-  pet_tree_while,
-  pet_tree_return,
+	pet_tree_error = -1,
+	pet_tree_expr,
+	pet_tree_block,
+	pet_tree_break,
+	pet_tree_continue,
+	pet_tree_decl,		/* A declaration without initialization */
+	pet_tree_decl_init,	/* A declaration with initialization */
+	pet_tree_if,		/* An if without an else branch */
+	pet_tree_if_else,	/* An if with an else branch */
+	pet_tree_for,
+	pet_tree_infinite_loop,
+	pet_tree_while,
+	pet_tree_return,
 };
 
 struct pet_tree;
@@ -311,7 +317,7 @@ __isl_give pet_expr *pet_tree_return_get_expr(__isl_keep pet_tree *tree);
 int pet_tree_block_n_child(__isl_keep pet_tree *tree);
 /* Return child "pos" of the block tree "tree". */
 __isl_give pet_tree *pet_tree_block_get_child(__isl_keep pet_tree *tree,
-                                              int pos);
+	int pos);
 
 /* Is "tree" a declaration (with or without initialization)? */
 int pet_tree_is_decl(__isl_keep pet_tree *tree);
@@ -342,18 +348,14 @@ __isl_give pet_tree *pet_tree_loop_get_body(__isl_keep pet_tree *tree);
 
 /* Call "fn" on each top-level expression in the nodes of "tree" */
 int pet_tree_foreach_expr(__isl_keep pet_tree *tree,
-                          int (*fn)(__isl_keep pet_expr *expr, void *user),
-                          void *user);
+	int (*fn)(__isl_keep pet_expr *expr, void *user), void *user);
 /* Call "fn" on each access subexpression in the nodes of "tree" */
 int pet_tree_foreach_access_expr(__isl_keep pet_tree *tree,
-                                 int (*fn)(__isl_keep pet_expr *expr,
-                                           void *user),
-                                 void *user);
+	int (*fn)(__isl_keep pet_expr *expr, void *user), void *user);
 /* Modify all call subexpressions in the nodes of "tree" through "fn". */
-__isl_give pet_tree *pet_tree_map_call_expr(
-    __isl_take pet_tree *tree,
-    __isl_give pet_expr *(*fn)(__isl_take pet_expr *expr, void *user),
-    void *user);
+__isl_give pet_tree *pet_tree_map_call_expr(__isl_take pet_tree *tree,
+	__isl_give pet_expr *(*fn)(__isl_take pet_expr *expr, void *user),
+	void *user);
 
 void pet_tree_dump(__isl_keep pet_tree *tree);
 
@@ -372,12 +374,12 @@ void pet_tree_dump(__isl_keep pet_tree *tree);
  * for all of those accessed elements.
  */
 struct pet_stmt {
-  pet_loc *loc;
-  isl_set *domain;
-  pet_tree *body;
+	pet_loc *loc;
+	isl_set *domain;
+	pet_tree *body;
 
-  unsigned n_arg;
-  pet_expr **args;
+	unsigned n_arg;
+	pet_expr **args;
 };
 
 /* Return the iteration space of "stmt". */
@@ -401,31 +403,29 @@ int pet_stmt_can_build_ast_exprs(struct pet_stmt *stmt);
  * Finally, the AST expression is transformed using "fn_expr"
  * (if not NULL).
  */
-__isl_give isl_id_to_ast_expr *pet_stmt_build_ast_exprs(
-    struct pet_stmt *stmt, __isl_keep isl_ast_build *build,
-    __isl_give isl_multi_pw_aff *(*fn_index)(__isl_take isl_multi_pw_aff *mpa,
-                                             __isl_keep isl_id *id, void *user),
-    void *user_index,
-    __isl_give isl_ast_expr *(*fn_expr)(__isl_take isl_ast_expr *expr,
-                                        __isl_keep isl_id *id, void *user),
-    void *user_expr);
+__isl_give isl_id_to_ast_expr *pet_stmt_build_ast_exprs(struct pet_stmt *stmt,
+	__isl_keep isl_ast_build *build,
+	__isl_give isl_multi_pw_aff *(*fn_index)(
+		__isl_take isl_multi_pw_aff *mpa, __isl_keep isl_id *id,
+		void *user), void *user_index,
+	__isl_give isl_ast_expr *(*fn_expr)(__isl_take isl_ast_expr *expr,
+		__isl_keep isl_id *id, void *user), void *user_expr);
 
 /* Print "stmt" to "p".
  *
  * The access expressions in "stmt" are replaced by the isl_ast_expr
  * associated to its reference identifier in "ref2expr".
  */
-__isl_give isl_printer *
-pet_stmt_print_body(struct pet_stmt *stmt, __isl_take isl_printer *p,
-                    __isl_keep isl_id_to_ast_expr *ref2expr);
+__isl_give isl_printer *pet_stmt_print_body(struct pet_stmt *stmt,
+	__isl_take isl_printer *p, __isl_keep isl_id_to_ast_expr *ref2expr);
 
 /* This structure represents a defined type.
  * "name" is the name of the type, while "definition" is a string
  * representation of its definition.
  */
 struct pet_type {
-  char *name;
-  char *definition;
+	char *name;
+	char *definition;
 };
 
 /* context holds constraints on the parameter that ensure that
@@ -452,17 +452,17 @@ struct pet_type {
  * the fields of this record are represented by separate pet_array structures.
  */
 struct pet_array {
-  isl_set *context;
-  isl_set *extent;
-  isl_set *value_bounds;
-  char *element_type;
-  int element_is_record;
-  int element_size;
-  int live_out;
-  int uniquely_defined;
-  int declared;
-  int exposed;
-  int outer;
+	isl_set *context;
+	isl_set *extent;
+	isl_set *value_bounds;
+	char *element_type;
+	int element_is_record;
+	int element_size;
+	int live_out;
+	int uniquely_defined;
+	int declared;
+	int exposed;
+	int outer;
 };
 
 /* This structure represents an implication on a boolean filter.
@@ -472,8 +472,8 @@ struct pet_array {
  * to "satisfied".
  */
 struct pet_implication {
-  int satisfied;
-  isl_map *extension;
+	int satisfied;
+	isl_map *extension;
 };
 
 /* This structure represents an independence implied by a for loop
@@ -486,8 +486,8 @@ struct pet_implication {
  * marked independent.
  */
 struct pet_independence {
-  isl_union_map *filter;
-  isl_union_set *local;
+	isl_union_map *filter;
+	isl_union_set *local;
 };
 
 /* "loc" represents the region of the source code that is represented
@@ -511,26 +511,26 @@ struct pet_independence {
  * by for loops that are marked independent in the source code.
  */
 struct pet_scop {
-  pet_loc *loc;
+	pet_loc *loc;
 
-  isl_set *context;
-  isl_set *context_value;
-  isl_schedule *schedule;
+	isl_set *context;
+	isl_set *context_value;
+	isl_schedule *schedule;
 
-  int n_type;
-  struct pet_type **types;
+	int n_type;
+	struct pet_type **types;
 
-  int n_array;
-  struct pet_array **arrays;
+	int n_array;
+	struct pet_array **arrays;
 
-  int n_stmt;
-  struct pet_stmt **stmts;
+	int n_stmt;
+	struct pet_stmt **stmts;
 
-  int n_implication;
-  struct pet_implication **implications;
+	int n_implication;
+	struct pet_implication **implications;
 
-  int n_independence;
-  struct pet_independence **independences;
+	int n_independence;
+	struct pet_independence **independences;
 };
 typedef struct pet_scop pet_scop;
 
@@ -543,23 +543,20 @@ int pet_op_is_inc_dec(enum pet_op_type op);
  * a function with that name.
  */
 __isl_give pet_scop *pet_scop_extract_from_C_source(isl_ctx *ctx,
-                                                    const char *filename,
-                                                    const char *function);
+	const char *filename, const char *function);
 
 /* Transform the C source file "input" by rewriting each scop
  * When autodetecting scops, at most one scop per function is rewritten.
  * The transformed C code is written to "output".
  */
-int pet_transform_C_source(
-    isl_ctx *ctx, const char *input, FILE *output,
-    __isl_give isl_printer *(*transform)(__isl_take isl_printer *p,
-                                         __isl_take pet_scop *scop, void *user),
-    void *user);
+int pet_transform_C_source(isl_ctx *ctx, const char *input, FILE *output,
+	__isl_give isl_printer *(*transform)(__isl_take isl_printer *p,
+		__isl_take pet_scop *scop, void *user), void *user);
 /* Given a scop and a printer passed to a pet_transform_C_source callback,
  * print the original corresponding code to the printer.
  */
 __isl_give isl_printer *pet_scop_print_original(__isl_keep pet_scop *scop,
-                                                __isl_take isl_printer *p);
+	__isl_take isl_printer *p);
 
 /* Update all isl_sets and isl_maps such that they all have the same
  * parameters in the same order.
@@ -589,34 +586,34 @@ __isl_give isl_union_set *pet_scop_get_instance_set(__isl_keep pet_scop *scop);
 /* Return the potential read access relation. */
 __isl_give isl_union_map *pet_scop_get_may_reads(__isl_keep pet_scop *scop);
 /* Return the tagged potential read access relation. */
-__isl_give isl_union_map *
-pet_scop_get_tagged_may_reads(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_get_tagged_may_reads(
+	__isl_keep pet_scop *scop);
 /* Return the potential write access relation. */
 __isl_give isl_union_map *pet_scop_get_may_writes(__isl_keep pet_scop *scop);
 /* Return the definite write access relation. */
 __isl_give isl_union_map *pet_scop_get_must_writes(__isl_keep pet_scop *scop);
 /* Return the tagged potential write access relation. */
-__isl_give isl_union_map *
-pet_scop_get_tagged_may_writes(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_get_tagged_may_writes(
+	__isl_keep pet_scop *scop);
 /* Return the tagged definite write access relation. */
-__isl_give isl_union_map *
-pet_scop_get_tagged_must_writes(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_get_tagged_must_writes(
+	__isl_keep pet_scop *scop);
 /* Return the definite kill access relation. */
 __isl_give isl_union_map *pet_scop_get_must_kills(__isl_keep pet_scop *scop);
 /* Return the tagged definite kill access relation. */
-__isl_give isl_union_map *
-pet_scop_get_tagged_must_kills(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_get_tagged_must_kills(
+	__isl_keep pet_scop *scop);
 
 /* Compute a mapping from all outermost arrays (of structs) in scop
  * to their innermost members.
  */
-__isl_give isl_union_map *
-pet_scop_compute_outer_to_inner(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_compute_outer_to_inner(
+	__isl_keep pet_scop *scop);
 /* Compute a mapping from all outermost arrays (of structs) in scop
  * to their members, including the outermost arrays themselves.
  */
-__isl_give isl_union_map *
-pet_scop_compute_outer_to_any(__isl_keep pet_scop *scop);
+__isl_give isl_union_map *pet_scop_compute_outer_to_any(
+	__isl_keep pet_scop *scop);
 
 #if defined(__cplusplus)
 }

@@ -312,3 +312,4 @@ void PatternRewriter::cloneRegionBefore(Region &region, Region &parent,
 void PatternRewriter::cloneRegionBefore(Region &region, Block *before) {
   cloneRegionBefore(region, *before->getParent(), before->getIterator());
 }
+

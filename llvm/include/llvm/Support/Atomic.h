@@ -1,5 +1,4 @@
-//===- llvm/Support/Atomic.h - Atomic Operations -----------------*- C++
-//-*-===//
+//===- llvm/Support/Atomic.h - Atomic Operations -----------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -26,17 +25,18 @@
 #endif
 
 namespace llvm {
-namespace sys {
-void MemoryFence();
+  namespace sys {
+    void MemoryFence();
 
 #ifdef _MSC_VER
-typedef long cas_flag;
+    typedef long cas_flag;
 #else
-typedef uint32_t cas_flag;
+    typedef uint32_t cas_flag;
 #endif
-cas_flag CompareAndSwap(volatile cas_flag *ptr, cas_flag new_value,
-                        cas_flag old_value);
-} // namespace sys
-} // namespace llvm
+    cas_flag CompareAndSwap(volatile cas_flag* ptr,
+                            cas_flag new_value,
+                            cas_flag old_value);
+  }
+}
 
 #endif

@@ -11,7 +11,8 @@
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
-namespace __itoa {
+namespace __itoa
+{
 
 static constexpr char cDigitsLut[200] = {
     '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0',
@@ -30,104 +31,130 @@ static constexpr char cDigitsLut[200] = {
     '7', '9', '8', '9', '9'};
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append1(char* buffer, T i) noexcept {
-  *buffer = '0' + static_cast<char>(i);
-  return buffer + 1;
+inline _LIBCPP_INLINE_VISIBILITY char*
+append1(char* buffer, T i) noexcept
+{
+    *buffer = '0' + static_cast<char>(i);
+    return buffer + 1;
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append2(char* buffer, T i) noexcept {
-  memcpy(buffer, &cDigitsLut[(i)*2], 2);
-  return buffer + 2;
+inline _LIBCPP_INLINE_VISIBILITY char*
+append2(char* buffer, T i) noexcept
+{
+    memcpy(buffer, &cDigitsLut[(i)*2], 2);
+    return buffer + 2;
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append3(char* buffer, T i) noexcept {
-  return append2(append1(buffer, (i) / 100), (i) % 100);
+inline _LIBCPP_INLINE_VISIBILITY char*
+append3(char* buffer, T i) noexcept
+{
+    return append2(append1(buffer, (i) / 100), (i) % 100);
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append4(char* buffer, T i) noexcept {
-  return append2(append2(buffer, (i) / 100), (i) % 100);
+inline _LIBCPP_INLINE_VISIBILITY char*
+append4(char* buffer, T i) noexcept
+{
+    return append2(append2(buffer, (i) / 100), (i) % 100);
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append2_no_zeros(char* buffer,
-                                                        T v) noexcept {
-  if (v < 10)
-    return append1(buffer, v);
-  else
-    return append2(buffer, v);
+inline _LIBCPP_INLINE_VISIBILITY char*
+append2_no_zeros(char* buffer, T v) noexcept
+{
+    if (v < 10)
+        return append1(buffer, v);
+    else
+        return append2(buffer, v);
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append4_no_zeros(char* buffer,
-                                                        T v) noexcept {
-  if (v < 100)
-    return append2_no_zeros(buffer, v);
-  else if (v < 1000)
-    return append3(buffer, v);
-  else
-    return append4(buffer, v);
+inline _LIBCPP_INLINE_VISIBILITY char*
+append4_no_zeros(char* buffer, T v) noexcept
+{
+    if (v < 100)
+        return append2_no_zeros(buffer, v);
+    else if (v < 1000)
+        return append3(buffer, v);
+    else
+        return append4(buffer, v);
 }
 
 template <typename T>
-inline _LIBCPP_INLINE_VISIBILITY char* append8_no_zeros(char* buffer,
-                                                        T v) noexcept {
-  if (v < 10000) {
-    buffer = append4_no_zeros(buffer, v);
-  } else {
-    buffer = append4_no_zeros(buffer, v / 10000);
-    buffer = append4(buffer, v % 10000);
-  }
-  return buffer;
+inline _LIBCPP_INLINE_VISIBILITY char*
+append8_no_zeros(char* buffer, T v) noexcept
+{
+    if (v < 10000)
+    {
+        buffer = append4_no_zeros(buffer, v);
+    }
+    else
+    {
+        buffer = append4_no_zeros(buffer, v / 10000);
+        buffer = append4(buffer, v % 10000);
+    }
+    return buffer;
 }
 
-char* __u32toa(uint32_t value, char* buffer) _NOEXCEPT {
-  if (value < 100000000) {
-    buffer = append8_no_zeros(buffer, value);
-  } else {
-    // value = aabbbbcccc in decimal
-    const uint32_t a = value / 100000000; // 1 to 42
-    value %= 100000000;
+char*
+__u32toa(uint32_t value, char* buffer) _NOEXCEPT
+{
+    if (value < 100000000)
+    {
+        buffer = append8_no_zeros(buffer, value);
+    }
+    else
+    {
+        // value = aabbbbcccc in decimal
+        const uint32_t a = value / 100000000;  // 1 to 42
+        value %= 100000000;
 
-    buffer = append2_no_zeros(buffer, a);
-    buffer = append4(buffer, value / 10000);
-    buffer = append4(buffer, value % 10000);
-  }
+        buffer = append2_no_zeros(buffer, a);
+        buffer = append4(buffer, value / 10000);
+        buffer = append4(buffer, value % 10000);
+    }
 
-  return buffer;
+    return buffer;
 }
 
-char* __u64toa(uint64_t value, char* buffer) _NOEXCEPT {
-  if (value < 100000000) {
-    uint32_t v = static_cast<uint32_t>(value);
-    buffer = append8_no_zeros(buffer, v);
-  } else if (value < 10000000000000000) {
-    const uint32_t v0 = static_cast<uint32_t>(value / 100000000);
-    const uint32_t v1 = static_cast<uint32_t>(value % 100000000);
+char*
+__u64toa(uint64_t value, char* buffer) _NOEXCEPT
+{
+    if (value < 100000000)
+    {
+        uint32_t v = static_cast<uint32_t>(value);
+        buffer = append8_no_zeros(buffer, v);
+    }
+    else if (value < 10000000000000000)
+    {
+        const uint32_t v0 = static_cast<uint32_t>(value / 100000000);
+        const uint32_t v1 = static_cast<uint32_t>(value % 100000000);
 
-    buffer = append8_no_zeros(buffer, v0);
-    buffer = append4(buffer, v1 / 10000);
-    buffer = append4(buffer, v1 % 10000);
-  } else {
-    const uint32_t a =
-        static_cast<uint32_t>(value / 10000000000000000); // 1 to 1844
-    value %= 10000000000000000;
+        buffer = append8_no_zeros(buffer, v0);
+        buffer = append4(buffer, v1 / 10000);
+        buffer = append4(buffer, v1 % 10000);
+    }
+    else
+    {
+        const uint32_t a =
+            static_cast<uint32_t>(value / 10000000000000000);  // 1 to 1844
+        value %= 10000000000000000;
 
-    buffer = append4_no_zeros(buffer, a);
+        buffer = append4_no_zeros(buffer, a);
 
-    const uint32_t v0 = static_cast<uint32_t>(value / 100000000);
-    const uint32_t v1 = static_cast<uint32_t>(value % 100000000);
-    buffer = append4(buffer, v0 / 10000);
-    buffer = append4(buffer, v0 % 10000);
-    buffer = append4(buffer, v1 / 10000);
-    buffer = append4(buffer, v1 % 10000);
-  }
+        const uint32_t v0 = static_cast<uint32_t>(value / 100000000);
+        const uint32_t v1 = static_cast<uint32_t>(value % 100000000);
+        buffer = append4(buffer, v0 / 10000);
+        buffer = append4(buffer, v0 % 10000);
+        buffer = append4(buffer, v1 / 10000);
+        buffer = append4(buffer, v1 % 10000);
+    }
 
-  return buffer;
+    return buffer;
 }
 
-} // namespace __itoa
+}  // namespace __itoa
 
 _LIBCPP_END_NAMESPACE_STD

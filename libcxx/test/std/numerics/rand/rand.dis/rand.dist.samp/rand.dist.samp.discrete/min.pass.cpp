@@ -18,13 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::discrete_distribution<> D;
-    double p0[] = {.3, .1, .6};
-    D d(p0, p0 + 3);
-    assert(d.min() == 0);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::discrete_distribution<> D;
+        double p0[] = {.3, .1, .6};
+        D d(p0, p0+3);
+        assert(d.min() == 0);
+    }
 
   return 0;
 }

@@ -46,13 +46,15 @@ public:
                    const DebugLoc &DL, MCRegister DestReg, MCRegister SrcReg,
                    bool KillSrc) const override;
 
-  void storeRegToStack(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,
+  void storeRegToStack(MachineBasicBlock &MBB,
+                       MachineBasicBlock::iterator MI,
                        Register SrcReg, bool isKill, int FrameIndex,
                        const TargetRegisterClass *RC,
                        const TargetRegisterInfo *TRI,
                        int64_t Offset) const override;
 
-  void loadRegFromStack(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,
+  void loadRegFromStack(MachineBasicBlock &MBB,
+                        MachineBasicBlock::iterator MI,
                         Register DestReg, int FrameIndex,
                         const TargetRegisterClass *RC,
                         const TargetRegisterInfo *TRI,
@@ -115,12 +117,13 @@ private:
   void expandExtractElementF64(MachineBasicBlock &MBB,
                                MachineBasicBlock::iterator I, bool isMicroMips,
                                bool FP64) const;
-  void expandBuildPairF64(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                          bool isMicroMips, bool FP64) const;
+  void expandBuildPairF64(MachineBasicBlock &MBB,
+                          MachineBasicBlock::iterator I, bool isMicroMips,
+                          bool FP64) const;
   void expandEhReturn(MachineBasicBlock &MBB,
                       MachineBasicBlock::iterator I) const;
 };
 
-} // namespace llvm
+}
 
 #endif

@@ -93,3 +93,4 @@ struct y : w, x {
 // MACHO: CXXMethod=m{{.*}} (virtual) {{.*}} [mangled=__ZN1y1mEi] [mangled=__ZThn4_N1y1mEi]
 
 // MSVC: CXXMethod=m{{.*}} (virtual) {{.*}} [mangled=?m@y@@UAEHH@Z] [mangled=?m@y@@W3AEHH@Z]
+

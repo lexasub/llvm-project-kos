@@ -11,9 +11,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/RISCVMCExpr.h"
 #include "RISCV.h"
 #include "RISCVSubtarget.h"
+#include "MCTargetDesc/RISCVMCExpr.h"
 #include "llvm/CodeGen/AsmPrinter.h"
 #include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/CodeGen/MachineInstr.h"
@@ -179,8 +179,7 @@ static bool lowerRISCVVMachineInstrToMCInst(const MachineInstr *MI,
         Reg = TRI->getSubReg(Reg, RISCV::sub_vrm1_0);
         assert(Reg && "Subregister does not exist");
       } else if (RISCV::FPR16RegClass.contains(Reg)) {
-        Reg =
-            TRI->getMatchingSuperReg(Reg, RISCV::sub_16, &RISCV::FPR32RegClass);
+        Reg = TRI->getMatchingSuperReg(Reg, RISCV::sub_16, &RISCV::FPR32RegClass);
         assert(Reg && "Subregister does not exist");
       } else if (RISCV::FPR64RegClass.contains(Reg)) {
         Reg = TRI->getSubReg(Reg, RISCV::sub_32);
@@ -228,8 +227,8 @@ void llvm::LowerRISCVMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
 
   if (OutMI.getOpcode() == RISCV::PseudoReadVL) {
     OutMI.setOpcode(RISCV::CSRRS);
-    OutMI.addOperand(
-        MCOperand::createImm(RISCVSysReg::lookupSysRegByName("VL")->Encoding));
+    OutMI.addOperand(MCOperand::createImm(
+        RISCVSysReg::lookupSysRegByName("VL")->Encoding));
     OutMI.addOperand(MCOperand::createReg(RISCV::X0));
     return;
   }

@@ -18,52 +18,52 @@
 #include "llvm/Support/raw_ostream.h"
 #include <string>
 
+
 namespace diagtool {
 
 class DiagTool {
   const std::string cmd;
   const std::string description;
-
 public:
   DiagTool(llvm::StringRef toolCmd, llvm::StringRef toolDesc);
   virtual ~DiagTool();
-
-  llvm::StringRef getName() const { return cmd; }
-  llvm::StringRef getDescription() const { return description; }
+  
+  llvm::StringRef getName() const { return cmd; }  
+  llvm::StringRef getDescription() const { return description; }  
 
   virtual int run(unsigned argc, char *argv[], llvm::raw_ostream &out) = 0;
 };
-
+  
 class DiagTools {
   void *tools;
-
 public:
   DiagTools();
   ~DiagTools();
-
+  
   DiagTool *getTool(llvm::StringRef toolCmd);
-  void registerTool(DiagTool *tool);
-  void printCommands(llvm::raw_ostream &out);
+  void registerTool(DiagTool *tool);  
+  void printCommands(llvm::raw_ostream &out);  
 };
 
 extern llvm::ManagedStatic<DiagTools> diagTools;
 
-template <typename DIAGTOOL> class RegisterDiagTool {
+template <typename DIAGTOOL>
+class RegisterDiagTool {
 public:
   RegisterDiagTool() { diagTools->registerTool(new DIAGTOOL()); }
 };
 
-} // namespace diagtool
+} // end diagtool namespace
 
-#define DEF_DIAGTOOL(NAME, DESC, CLSNAME)                                      \
-  namespace {                                                                  \
-  class CLSNAME : public diagtool::DiagTool {                                  \
-  public:                                                                      \
-    CLSNAME() : DiagTool(NAME, DESC) {}                                        \
-    virtual ~CLSNAME() {}                                                      \
-    int run(unsigned argc, char *argv[], llvm::raw_ostream &out) override;     \
-  };                                                                           \
-  diagtool::RegisterDiagTool<CLSNAME> Register##CLSNAME;                       \
-  }
+#define DEF_DIAGTOOL(NAME, DESC, CLSNAME)\
+namespace {\
+class CLSNAME : public diagtool::DiagTool {\
+public:\
+  CLSNAME() : DiagTool(NAME, DESC) {}\
+  virtual ~CLSNAME() {}\
+  int run(unsigned argc, char *argv[], llvm::raw_ostream &out) override;\
+};\
+diagtool::RegisterDiagTool<CLSNAME> Register##CLSNAME;\
+}
 
 #endif

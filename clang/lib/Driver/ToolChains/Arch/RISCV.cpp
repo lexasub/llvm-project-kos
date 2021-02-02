@@ -7,15 +7,15 @@
 //===----------------------------------------------------------------------===//
 
 #include "RISCV.h"
-#include "ToolChains/CommonArgs.h"
 #include "clang/Basic/CharInfo.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/Option/ArgList.h"
+#include "llvm/ADT/Optional.h"
 #include "llvm/Support/TargetParser.h"
 #include "llvm/Support/raw_ostream.h"
+#include "ToolChains/CommonArgs.h"
 
 using namespace clang::driver;
 using namespace clang::driver::tools;
@@ -56,7 +56,8 @@ static StringRef getExtensionType(StringRef Ext) {
 
 // If the extension is supported as experimental, return the version of that
 // extension that the compiler currently supports.
-static Optional<RISCVExtensionVersion> isExperimentalExtension(StringRef Ext) {
+static Optional<RISCVExtensionVersion>
+isExperimentalExtension(StringRef Ext) {
   if (Ext == "b" || Ext == "zba" || Ext == "zbb" || Ext == "zbc" ||
       Ext == "zbe" || Ext == "zbf" || Ext == "zbm" || Ext == "zbp" ||
       Ext == "zbr" || Ext == "zbs" || Ext == "zbt" || Ext == "zbproposedc")
@@ -95,9 +96,9 @@ static bool getExtensionVersion(const Driver &D, const ArgList &Args,
     // Expected 'p' to be followed by minor version number.
     if (Minor.empty()) {
       std::string Error =
-          "minor version number missing after 'p' for extension";
+        "minor version number missing after 'p' for extension";
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << Error << Ext;
+        << MArch << Error << Ext;
       return false;
     }
   }
@@ -115,8 +116,8 @@ static bool getExtensionVersion(const Driver &D, const ArgList &Args,
   // If experimental extension, require use of current version number number
   if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
     if (!Args.hasArg(options::OPT_menable_experimental_extensions)) {
-      std::string Error = "requires '-menable-experimental-extensions' for "
-                          "experimental extension";
+      std::string Error =
+          "requires '-menable-experimental-extensions' for experimental extension";
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
           << MArch << Error << Ext;
       return false;
@@ -129,12 +130,13 @@ static bool getExtensionVersion(const Driver &D, const ArgList &Args,
     }
     auto SupportedVers = *ExperimentalExtension;
     if (Major != SupportedVers.Major || Minor != SupportedVers.Minor) {
-      std::string Error = "unsupported version number " + Major;
+      std::string Error =
+          "unsupported version number " + Major;
       if (!Minor.empty())
         Error += "." + Minor;
-      Error += " for experimental extension (this compiler supports " +
-               SupportedVers.Major.str() + "." + SupportedVers.Minor.str() +
-               ")";
+      Error += " for experimental extension (this compiler supports "
+            + SupportedVers.Major.str() + "."
+            + SupportedVers.Minor.str() + ")";
 
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
           << MArch << Error << Ext;
@@ -166,7 +168,8 @@ static bool getExtensionVersion(const Driver &D, const ArgList &Args,
 // canonical order, might have a version number (major, minor)
 // and are separated by a single underscore '_'.
 // Set the hardware features for the extensions that are supported.
-static void getExtensionFeatures(const Driver &D, const ArgList &Args,
+static void getExtensionFeatures(const Driver &D,
+                                 const ArgList &Args,
                                  std::vector<StringRef> &Features,
                                  StringRef &MArch, StringRef &Exts) {
   if (Exts.empty())
@@ -185,8 +188,8 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
 
   for (StringRef Ext : Split) {
     if (Ext.empty()) {
-      D.Diag(diag::err_drv_invalid_riscv_arch_name)
-          << MArch << "extension name missing after separator '_'";
+      D.Diag(diag::err_drv_invalid_riscv_arch_name) << MArch
+        << "extension name missing after separator '_'";
       return;
     }
 
@@ -198,7 +201,7 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
 
     if (Type.empty()) {
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << "invalid extension prefix" << Ext;
+        << MArch << "invalid extension prefix" << Ext;
       return;
     }
 
@@ -210,7 +213,7 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
       std::string Error = std::string(Desc);
       Error += " not given in canonical order";
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << Error << Ext;
+        << MArch <<  Error << Ext;
       return;
     }
 
@@ -221,7 +224,7 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
       std::string Error = std::string(Desc);
       Error += " name missing after";
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << Error << Type;
+        << MArch << Error << Type;
       return;
     }
 
@@ -234,7 +237,7 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
       std::string Error = "duplicated ";
       Error += Desc;
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << Error << Name;
+        << MArch << Error << Name;
       return;
     }
 
@@ -252,7 +255,7 @@ static void getExtensionFeatures(const Driver &D, const ArgList &Args,
       std::string Error = "unsupported ";
       Error += Desc;
       D.Diag(diag::err_drv_invalid_riscv_ext_arch_name)
-          << MArch << Error << Ext;
+        << MArch << Error << Ext;
       return;
     }
     if (Ext == "zvamo" || Ext == "zvlsseg") {
@@ -355,7 +358,7 @@ static bool getArchFeatures(const Driver &D, StringRef MArch,
   auto StdExtsItr = StdExts.begin();
   auto StdExtsEnd = StdExts.end();
 
-  for (auto I = Exts.begin(), E = Exts.end(); I != E;) {
+  for (auto I = Exts.begin(), E = Exts.end(); I != E; ) {
     char c = *I;
 
     // Check ISA extensions are specified in the canonical order.
@@ -559,16 +562,14 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
 
   // GCC Compatibility: -mno-save-restore is default, unless -msave-restore is
   // specified.
-  if (Args.hasFlag(options::OPT_msave_restore, options::OPT_mno_save_restore,
-                   false))
+  if (Args.hasFlag(options::OPT_msave_restore, options::OPT_mno_save_restore, false))
     Features.push_back("+save-restore");
   else
     Features.push_back("-save-restore");
 
   // Now add any that the user explicitly requested on the command line,
   // which may override the defaults.
-  handleTargetFeaturesGroup(Args, Features,
-                            options::OPT_m_riscv_Features_Group);
+  handleTargetFeaturesGroup(Args, Features, options::OPT_m_riscv_Features_Group);
 }
 
 StringRef riscv::getRISCVABI(const ArgList &Args, const llvm::Triple &Triple) {

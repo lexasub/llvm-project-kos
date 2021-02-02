@@ -5,9 +5,9 @@
 // RUN: %env_asan_opts=quarantine_size_mb=0 %run %t
 
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #ifdef __ANDROID__

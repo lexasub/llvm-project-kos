@@ -28,16 +28,16 @@ FunctionPass *createBPFMIPeepholeTruncElimPass();
 FunctionPass *createBPFMIPreEmitPeepholePass();
 FunctionPass *createBPFMIPreEmitCheckingPass();
 
-void initializeBPFAdjustOptPass(PassRegistry &);
-void initializeBPFCheckAndAdjustIRPass(PassRegistry &);
+void initializeBPFAdjustOptPass(PassRegistry&);
+void initializeBPFCheckAndAdjustIRPass(PassRegistry&);
 
 void initializeBPFAbstractMemberAccessLegacyPassPass(PassRegistry &);
-void initializeBPFPreserveDITypePass(PassRegistry &);
-void initializeBPFMISimplifyPatchablePass(PassRegistry &);
-void initializeBPFMIPeepholePass(PassRegistry &);
-void initializeBPFMIPeepholeTruncElimPass(PassRegistry &);
-void initializeBPFMIPreEmitPeepholePass(PassRegistry &);
-void initializeBPFMIPreEmitCheckingPass(PassRegistry &);
+void initializeBPFPreserveDITypePass(PassRegistry&);
+void initializeBPFMISimplifyPatchablePass(PassRegistry&);
+void initializeBPFMIPeepholePass(PassRegistry&);
+void initializeBPFMIPeepholeTruncElimPass(PassRegistry&);
+void initializeBPFMIPreEmitPeepholePass(PassRegistry&);
+void initializeBPFMIPreEmitCheckingPass(PassRegistry&);
 
 class BPFAbstractMemberAccessPass
     : public PassInfoMixin<BPFAbstractMemberAccessPass> {

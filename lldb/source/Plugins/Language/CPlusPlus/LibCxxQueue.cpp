@@ -43,7 +43,7 @@ private:
   // objects are only destroyed when every shared pointer to any of them
   // is destroyed, so we must not store a shared pointer to any ValueObject
   // derived from our backend ValueObject (since we're in the same cluster).
-  ValueObject *m_container_sp = nullptr;
+  ValueObject* m_container_sp = nullptr;
 };
 } // namespace
 

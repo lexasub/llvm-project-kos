@@ -1,5 +1,4 @@
-//===-- AMDGPULowerKernelAttributes.cpp
-//------------------------------------------===//
+//===-- AMDGPULowerKernelAttributes.cpp ------------------------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -50,11 +49,13 @@ public:
 
   bool runOnModule(Module &M) override;
 
-  StringRef getPassName() const override { return "AMDGPU Kernel Attributes"; }
+  StringRef getPassName() const override {
+    return "AMDGPU Kernel Attributes";
+  }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();
-  }
+ }
 };
 
 } // end anonymous namespace
@@ -66,7 +67,7 @@ static bool processUse(CallInst *CI) {
   const bool HasReqdWorkGroupSize = MD && MD->getNumOperands() == 3;
 
   const bool HasUniformWorkGroupSize =
-      F->getFnAttribute("uniform-work-group-size").getValueAsString() == "true";
+    F->getFnAttribute("uniform-work-group-size").getValueAsString() == "true";
 
   if (!HasReqdWorkGroupSize && !HasUniformWorkGroupSize)
     return false;
@@ -153,8 +154,8 @@ static bool processUse(CallInst *CI) {
   // the same).
 
   bool MadeChange = false;
-  Value *WorkGroupSizes[3] = {WorkGroupSizeX, WorkGroupSizeY, WorkGroupSizeZ};
-  Value *GridSizes[3] = {GridSizeX, GridSizeY, GridSizeZ};
+  Value *WorkGroupSizes[3] = { WorkGroupSizeX, WorkGroupSizeY, WorkGroupSizeZ };
+  Value *GridSizes[3] = { GridSizeX, GridSizeY, GridSizeZ };
 
   for (int I = 0; HasUniformWorkGroupSize && I < 3; ++I) {
     Value *GroupSize = WorkGroupSizes[I];
@@ -173,23 +174,26 @@ static bool processUse(CallInst *CI) {
           continue;
 
         using namespace llvm::PatternMatch;
-        auto GroupIDIntrin =
-            I == 0 ? m_Intrinsic<Intrinsic::amdgcn_workgroup_id_x>()
-                   : (I == 1 ? m_Intrinsic<Intrinsic::amdgcn_workgroup_id_y>()
-                             : m_Intrinsic<Intrinsic::amdgcn_workgroup_id_z>());
+        auto GroupIDIntrin = I == 0 ?
+          m_Intrinsic<Intrinsic::amdgcn_workgroup_id_x>() :
+            (I == 1 ? m_Intrinsic<Intrinsic::amdgcn_workgroup_id_y>() :
+                      m_Intrinsic<Intrinsic::amdgcn_workgroup_id_z>());
 
         auto SubExpr = m_Sub(m_Specific(GridSize),
                              m_Mul(GroupIDIntrin, m_Specific(ZextGroupSize)));
 
         ICmpInst::Predicate Pred;
-        if (match(SI, m_Select(m_ICmp(Pred, SubExpr, m_Specific(ZextGroupSize)),
-                               SubExpr, m_Specific(ZextGroupSize))) &&
+        if (match(SI,
+                  m_Select(m_ICmp(Pred, SubExpr, m_Specific(ZextGroupSize)),
+                           SubExpr,
+                           m_Specific(ZextGroupSize))) &&
             Pred == ICmpInst::ICMP_ULT) {
           if (HasReqdWorkGroupSize) {
-            ConstantInt *KnownSize =
-                mdconst::extract<ConstantInt>(MD->getOperand(I));
-            SI->replaceAllUsesWith(
-                ConstantExpr::getIntegerCast(KnownSize, SI->getType(), false));
+            ConstantInt *KnownSize
+              = mdconst::extract<ConstantInt>(MD->getOperand(I));
+            SI->replaceAllUsesWith(ConstantExpr::getIntegerCast(KnownSize,
+                                                                SI->getType(),
+                                                                false));
           } else {
             SI->replaceAllUsesWith(ZextGroupSize);
           }
@@ -211,7 +215,9 @@ static bool processUse(CallInst *CI) {
 
     ConstantInt *KnownSize = mdconst::extract<ConstantInt>(MD->getOperand(I));
     GroupSize->replaceAllUsesWith(
-        ConstantExpr::getIntegerCast(KnownSize, GroupSize->getType(), false));
+      ConstantExpr::getIntegerCast(KnownSize,
+                                   GroupSize->getType(),
+                                   false));
     MadeChange = true;
   }
 
@@ -221,8 +227,8 @@ static bool processUse(CallInst *CI) {
 // TODO: Move makeLIDRangeMetadata usage into here. Seem to not get
 // TargetPassConfig for subtarget.
 bool AMDGPULowerKernelAttributes::runOnModule(Module &M) {
-  StringRef DispatchPtrName =
-      Intrinsic::getName(Intrinsic::amdgcn_dispatch_ptr);
+  StringRef DispatchPtrName
+    = Intrinsic::getName(Intrinsic::amdgcn_dispatch_ptr);
 
   Function *DispatchPtr = M.getFunction(DispatchPtrName);
   if (!DispatchPtr) // Dispatch ptr not used.
@@ -244,8 +250,8 @@ bool AMDGPULowerKernelAttributes::runOnModule(Module &M) {
 
 INITIALIZE_PASS_BEGIN(AMDGPULowerKernelAttributes, DEBUG_TYPE,
                       "AMDGPU IR optimizations", false, false)
-INITIALIZE_PASS_END(AMDGPULowerKernelAttributes, DEBUG_TYPE,
-                    "AMDGPU IR optimizations", false, false)
+INITIALIZE_PASS_END(AMDGPULowerKernelAttributes, DEBUG_TYPE, "AMDGPU IR optimizations",
+                    false, false)
 
 char AMDGPULowerKernelAttributes::ID = 0;
 

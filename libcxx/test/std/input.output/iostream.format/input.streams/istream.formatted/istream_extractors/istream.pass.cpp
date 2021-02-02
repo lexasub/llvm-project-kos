@@ -22,17 +22,20 @@
 int f_called = 0;
 
 template <class CharT>
-std::basic_istream<CharT>& f(std::basic_istream<CharT>& is) {
-  ++f_called;
-  return is;
+std::basic_istream<CharT>&
+f(std::basic_istream<CharT>& is)
+{
+    ++f_called;
+    return is;
 }
 
-int main(int, char**) {
-  {
-    std::istream is((std::streambuf*)0);
-    is >> f;
-    assert(f_called == 1);
-  }
+int main(int, char**)
+{
+    {
+        std::istream is((std::streambuf*)0);
+        is >> f;
+        assert(f_called == 1);
+    }
 
   return 0;
 }

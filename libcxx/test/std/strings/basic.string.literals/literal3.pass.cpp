@@ -14,10 +14,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using namespace std;
+int main(int, char**)
+{
+    using namespace std;
 
-  string foo = "" s;
+    string foo  =   ""s;
 
   return 0;
 }

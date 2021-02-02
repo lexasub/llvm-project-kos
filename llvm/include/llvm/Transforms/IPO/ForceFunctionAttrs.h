@@ -26,6 +26,6 @@ struct ForceFunctionAttrsPass : PassInfoMixin<ForceFunctionAttrsPass> {
 /// Create a legacy pass manager instance of a pass to force function attrs.
 Pass *createForceFunctionAttrsLegacyPass();
 
-} // namespace llvm
+}
 
 #endif // LLVM_TRANSFORMS_IPO_FORCEFUNCTIONATTRS_H

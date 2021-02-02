@@ -201,7 +201,7 @@ BitcodeCompiler::BitcodeCompiler() {
   }
 
   ltoObj = std::make_unique<lto::LTO>(createConfig(), backend,
-                                      config->ltoPartitions);
+                                       config->ltoPartitions);
 
   // Initialize usedStartStop.
   for (Symbol *sym : symtab->symbols()) {
@@ -243,8 +243,7 @@ void BitcodeCompiler::add(BitcodeFile &f) {
     //    for doing final link.
     // 2) Symbols that are used in regular objects.
     // 3) C named sections if we have corresponding __start_/__stop_ symbol.
-    // 4) Symbols that are defined in bitcode files and used for dynamic
-    // linking.
+    // 4) Symbols that are defined in bitcode files and used for dynamic linking.
     r.VisibleToRegularObj = config->relocatable || sym->isUsedInRegularObj ||
                             (r.Prevailing && sym->includeInDynsym()) ||
                             usedStartStop.count(objSym.getSectionName());

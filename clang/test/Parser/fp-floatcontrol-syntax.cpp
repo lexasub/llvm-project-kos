@@ -1,4 +1,4 @@
-// RUN: %clang_cc1 -triple x86_64-linux-gnu -fsyntax-only -DCHECK_ERROR %s -verify
+// RUN: %clang_cc1 -triple x86_64-linux-gnu -fsyntax-only -DCHECK_ERROR %s -verify 
 
 float function_scope(float a) {
 #pragma float_control(precise, on) junk // expected-warning {{extra tokens at end of '#pragma float_control' - ignored}}
@@ -10,10 +10,10 @@ float function_scope(float a) {
 #pragma float_control(pop)
 #pragma float_control(precise, on, push)
 void check_stack() {
-#pragma float_control(push) // expected-error {{can only appear at file scope or namespace scope}}
-#pragma float_control(pop) // expected-error {{can only appear at file scope or namespace scope}}
-#pragma float_control(precise, on, push) // expected-error {{can only appear at file scope or namespace scope}}
-#pragma float_control(except, on, push) // expected-error {{can only appear at file scope or namespace scope}}
+#pragma float_control(push)                   // expected-error {{can only appear at file scope or namespace scope}}
+#pragma float_control(pop)                    // expected-error {{can only appear at file scope or namespace scope}}
+#pragma float_control(precise, on, push)      // expected-error {{can only appear at file scope or namespace scope}}
+#pragma float_control(except, on, push)       // expected-error {{can only appear at file scope or namespace scope}}
 #pragma float_control(except, on, push, junk) // expected-error {{float_control is malformed}}
   return;
 }

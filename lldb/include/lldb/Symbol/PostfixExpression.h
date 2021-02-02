@@ -76,7 +76,7 @@ private:
 };
 
 /// A node representing the canonical frame address.
-class InitialValueNode : public Node {
+class InitialValueNode: public Node {
 public:
   InitialValueNode() : Node(InitialValue) {}
 
@@ -204,7 +204,7 @@ bool ResolveSymbols(Node *&node,
                     llvm::function_ref<Node *(SymbolNode &symbol)> replacer);
 
 template <typename T, typename... Args>
-inline T *MakeNode(llvm::BumpPtrAllocator &alloc, Args &&...args) {
+inline T *MakeNode(llvm::BumpPtrAllocator &alloc, Args &&... args) {
   static_assert(std::is_trivially_destructible<T>::value,
                 "This object will not be destroyed!");
   return new (alloc.Allocate<T>()) T(std::forward<Args>(args)...);

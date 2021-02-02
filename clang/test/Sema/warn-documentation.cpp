@@ -118,7 +118,7 @@ int test_block_command4(int);
 // There is trailing whitespace on one of the following lines, don't remove it!
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief
-///
+/// 
 /// \returns Aaa
 int test_block_command5(int);
 
@@ -149,6 +149,7 @@ int test_duplicate_brief2(int);
 /// \brief Ccc
 int test_duplicate_brief3(int);
 
+
 /// \return Aaa
 ///
 /// Bbb
@@ -176,6 +177,7 @@ int test_multiple_returns3(int);
 ///
 /// \return Ccc
 int test_multiple_returns4(int);
+
 
 // expected-warning@+1 {{'\param' command used in a comment that is not attached to a function declaration}}
 /// \param a Blah blah.
@@ -266,12 +268,12 @@ class C {
 
   // expected-warning@+1 {{parameter 'aaa' not found in the function declaration}}
   /// \param aaa Blah blah.
-  int test_param19(int bbb, int ccc);
+ int test_param19(int bbb, int ccc);
 };
 
 // expected-warning@+1 {{parameter 'aab' not found in the function declaration}}
 /// \param aab Blah blah.
-template <typename T>
+template<typename T>
 void test_param20(int bbb, int ccc);
 
 // expected-warning@+3 {{parameter 'a' is already documented}}
@@ -301,14 +303,14 @@ int test_param24(int a);
 //===---
 
 namespace foo {
-inline namespace bar {
-template <typename>
-struct function_wrapper {};
+  inline namespace bar {
+    template<typename>
+    struct function_wrapper {};
 
-template <unsigned>
-struct not_a_function_wrapper {};
-} // namespace bar
-}; // namespace foo
+    template<unsigned>
+    struct not_a_function_wrapper {};
+  }
+};
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
@@ -326,7 +328,7 @@ typedef int (*test_function_like_typedef2)(int aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-typedef int (*const test_function_like_typedef3)(int aaa, int ccc);
+typedef int (* const test_function_like_typedef3)(int aaa, int ccc);
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
@@ -338,25 +340,26 @@ typedef int (C::*test_function_like_typedef4)(int aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-typedef foo::function_wrapper<int(int aaa, int ccc)> test_function_like_typedef5;
+typedef foo::function_wrapper<int (int aaa, int ccc)> test_function_like_typedef5;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-typedef foo::function_wrapper<int(int aaa, int ccc)> *test_function_like_typedef6;
+typedef foo::function_wrapper<int (int aaa, int ccc)> *test_function_like_typedef6;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-typedef foo::function_wrapper<int(int aaa, int ccc)> &test_function_like_typedef7;
+typedef foo::function_wrapper<int (int aaa, int ccc)> &test_function_like_typedef7;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-typedef foo::function_wrapper<int(int aaa, int ccc)> &&test_function_like_typedef8;
+typedef foo::function_wrapper<int (int aaa, int ccc)> &&test_function_like_typedef8;
+
 
 typedef int (*test_not_function_like_typedef1)(int aaa);
 
@@ -378,7 +381,7 @@ typedef foo::not_a_function_wrapper<1> test_not_function_like_typedef4;
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using1 = int(int aaa, int ccc);
+using test_function_like_using1 = int (int aaa, int ccc);
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
@@ -390,7 +393,7 @@ using test_function_like_using2 = int (*)(int aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using3 = int (*const)(int aaa, int ccc);
+using test_function_like_using3 = int (* const)(int aaa, int ccc);
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
@@ -402,32 +405,32 @@ using test_function_like_using4 = int (C::*)(int aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using5 = foo::function_wrapper<int(int aaa, int ccc)>;
+using test_function_like_using5 = foo::function_wrapper<int (int aaa, int ccc)>;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using6 = foo::function_wrapper<int(int aaa, int ccc)> *;
+using test_function_like_using6 = foo::function_wrapper<int (int aaa, int ccc)> *;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using7 = foo::function_wrapper<int(int aaa, int ccc)> &;
+using test_function_like_using7 = foo::function_wrapper<int (int aaa, int ccc)> &;
 
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \returns aaa.
-using test_function_like_using8 = foo::function_wrapper<int(int aaa, int ccc)> &&;
+using test_function_like_using8 = foo::function_wrapper<int (int aaa, int ccc)> &&;
 
 // expected-warning@+4 {{template parameter 'U' not found in the template declaration}} expected-note@+4 {{did you mean 'T'?}}
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \tparam U Uuu.
-template <typename T>
+template<typename T>
 using test_function_like_using9 = int(T aaa, int ccc);
 
 // expected-warning@+4 {{template parameter 'U' not found in the template declaration}} expected-note@+4 {{did you mean 'T'?}}
@@ -435,7 +438,7 @@ using test_function_like_using9 = int(T aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \tparam U Uuu.
-template <typename T>
+template<typename T>
 using test_function_like_using10 = int (*)(T aaa, int ccc);
 
 // expected-warning@+4 {{template parameter 'U' not found in the template declaration}} expected-note@+4 {{did you mean 'T'?}}
@@ -443,16 +446,16 @@ using test_function_like_using10 = int (*)(T aaa, int ccc);
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \tparam U Uuu.
-template <typename T>
-using test_function_like_using11 = foo::function_wrapper<int(T aaa, int ccc)>;
+template<typename T>
+using test_function_like_using11 = foo::function_wrapper<int (T aaa, int ccc)>;
 
 // expected-warning@+4 {{template parameter 'U' not found in the template declaration}} expected-note@+4 {{did you mean 'T'?}}
 // expected-warning@+2 {{parameter 'bbb' not found in the function declaration}} expected-note@+2 {{did you mean 'ccc'?}}
 /// \param aaa Meow.
 /// \param bbb Bbb.
 /// \tparam U Uuu.
-template <typename T>
-using test_function_like_using12 = foo::function_wrapper<int(T aaa, int ccc)> *;
+template<typename T>
+using test_function_like_using12 = foo::function_wrapper<int (T aaa, int ccc)> *;
 
 using test_not_function_like_using1 = int (*)(int aaa);
 
@@ -484,24 +487,26 @@ int test_vararg_param3(int aaa);
 /// \param ... Vararg
 int test_vararg_param4();
 
+
 /// \param aaa Aaa
 /// \param ... Vararg
-template <typename T>
+template<typename T>
 int test_template_vararg_param1(int aaa, ...);
 
 /// \param ... Vararg
-template <typename T>
+template<typename T>
 int test_template_vararg_param2(...);
 
 // expected-warning@+1 {{parameter '...' not found in the function declaration}} expected-note@+1 {{did you mean 'aaa'?}}
 /// \param ... Vararg
-template <typename T>
+template<typename T>
 int test_template_vararg_param3(int aaa);
 
 // expected-warning@+1 {{parameter '...' not found in the function declaration}}
 /// \param ... Vararg
-template <typename T>
+template<typename T>
 int test_template_vararg_param4();
+
 
 // expected-warning@+1 {{'\tparam' command used in a comment that is not attached to a template declaration}}
 /// \tparam T Aaa
@@ -514,88 +519,88 @@ void test_tparam2(int aaa);
 // expected-warning@+1 {{empty paragraph passed to '\tparam' command}}
 /// \tparam
 /// \param aaa Blah blah
-template <typename T>
+template<typename T>
 void test_tparam3(T aaa);
 
 // expected-warning@+1 {{template parameter 'T' not found in the template declaration}} expected-note@+1 {{did you mean 'TT'?}}
 /// \tparam T Aaa
-template <typename TT>
+template<typename TT>
 void test_tparam4(TT aaa);
 
 // expected-warning@+1 {{template parameter 'T' not found in the template declaration}} expected-note@+1 {{did you mean 'TT'?}}
 /// \tparam T Aaa
-template <typename TT>
+template<typename TT>
 class test_tparam5 {
   // expected-warning@+1 {{template parameter 'T' not found in the template declaration}} expected-note@+1 {{did you mean 'TTT'?}}
   /// \tparam T Aaa
-  template <typename TTT>
+  template<typename TTT>
   void test_tparam6(TTT aaa);
 };
 
 /// \tparam T1 Aaa
 /// \tparam T2 Bbb
-template <typename T1, typename T2>
+template<typename T1, typename T2>
 void test_tparam7(T1 aaa, T2 bbb);
 
 // expected-warning@+1 {{template parameter 'SomTy' not found in the template declaration}} expected-note@+1 {{did you mean 'SomeTy'?}}
 /// \tparam SomTy Aaa
 /// \tparam OtherTy Bbb
-template <typename SomeTy, typename OtherTy>
+template<typename SomeTy, typename OtherTy>
 void test_tparam8(SomeTy aaa, OtherTy bbb);
 
 // expected-warning@+2 {{template parameter 'T1' is already documented}} expected-note@+1 {{previous documentation}}
 /// \tparam T1 Aaa
 /// \tparam T1 Bbb
-template <typename T1, typename T2>
+template<typename T1, typename T2>
 void test_tparam9(T1 aaa, T2 bbb);
 
 /// \tparam T Aaa
 /// \tparam TT Bbb
-template <template <typename T> class TT>
+template<template<typename T> class TT>
 void test_tparam10(TT<int> aaa);
 
 /// \tparam T Aaa
 /// \tparam TT Bbb
 /// \tparam TTT Ccc
-template <template <template <typename T> class TT, class C> class TTT>
+template<template<template<typename T> class TT, class C> class TTT>
 void test_tparam11();
 
 /// \tparam I Aaa
-template <int I>
+template<int I>
 void test_tparam12();
 
-template <typename T, typename U>
-class test_tparam13 {};
+template<typename T, typename U>
+class test_tparam13 { };
 
 /// \tparam T Aaa
-template <typename T>
+template<typename T>
 using test_tparam14 = test_tparam13<T, int>;
 
 // expected-warning@+1 {{template parameter 'U' not found in the template declaration}} expected-note@+1 {{did you mean 'T'?}}
 /// \tparam U Aaa
-template <typename T>
+template<typename T>
 using test_tparam15 = test_tparam13<T, int>;
 
 // ----
 
 /// \tparam T Aaa
-template <typename T>
-class test_tparam16 {};
+template<typename T>
+class test_tparam16 { };
 
 typedef test_tparam16<int> test_tparam17;
 typedef test_tparam16<double> test_tparam18;
 
 // ----
 
-template <typename T>
+template<typename T>
 class test_tparam19;
 
 typedef test_tparam19<int> test_tparam20;
 typedef test_tparam19<double> test_tparam21;
 
 /// \tparam T Aaa
-template <typename T>
-class test_tparam19 {};
+template<typename T>
+class test_tparam19 { };
 
 // ----
 
@@ -604,6 +609,7 @@ class test_tparam19 {};
 int test_tparam22;
 
 // ----
+
 
 /// Aaa
 /// \deprecated Bbb
@@ -624,7 +630,7 @@ void test_deprecated_2(int a) __attribute__((deprecated));
 
 /// Aaa
 /// \deprecated
-void test_deprecated_3(int a) __attribute__((availability(macosx, introduced = 10.4)));
+void test_deprecated_3(int a) __attribute__((availability(macosx,introduced=10.4)));
 
 /// Aaa
 /// \deprecated
@@ -644,7 +650,7 @@ void test_deprecated_6(int a) {
 // expected-warning@+2 {{declaration is marked with '\deprecated' command but does not have a deprecation attribute}}
 /// Aaa
 /// \deprecated
-template <typename T>
+template<typename T>
 void test_deprecated_7(T aaa);
 
 class PR43753 {
@@ -693,12 +699,14 @@ private:
 /// \headerfile foo.h
 int test__headerfile_1(int a);
 
+
 /// \invariant aaa
 void test_invariant_1(int a);
 
 // expected-warning@+1 {{empty paragraph passed to '\invariant' command}}
 /// \invariant
 void test_invariant_2(int a);
+
 
 // no-warning
 /// \returns Aaa
@@ -712,16 +720,16 @@ class test_returns_right_decl_2 {
 
 // no-warning
 /// \returns Aaa
-template <typename T>
+template<typename T>
 int test_returns_right_decl_4(T aaa);
 
 // no-warning
 /// \returns Aaa
-template <>
+template<>
 int test_returns_right_decl_4(int aaa);
 
 /// \returns Aaa
-template <typename T>
+template<typename T>
 T test_returns_right_decl_5(T aaa);
 
 // expected-warning@+1 {{'\returns' command used in a comment that is not attached to a function or method declaration}}
@@ -748,17 +756,17 @@ void test_returns_wrong_decl_4(int);
 
 // expected-warning@+1 {{'\returns' command used in a comment that is attached to a function returning void}}
 /// \returns Aaa
-template <typename T>
+template<typename T>
 void test_returns_wrong_decl_5(T aaa);
 
 // expected-warning@+1 {{'\returns' command used in a comment that is attached to a function returning void}}
 /// \returns Aaa
-template <>
+template<>
 void test_returns_wrong_decl_5(int aaa);
 
 // expected-warning@+1 {{'\returns' command used in a comment that is not attached to a function or method declaration}}
 /// \returns Aaa
-struct test_returns_wrong_decl_6 {};
+struct test_returns_wrong_decl_6 { };
 
 // expected-warning@+1 {{'\returns' command used in a comment that is not attached to a function or method declaration}}
 /// \returns Aaa
@@ -782,7 +790,7 @@ enum test_returns_wrong_decl_8 {
 
 // expected-warning@+1 {{'\returns' command used in a comment that is not attached to a function or method declaration}}
 /// \returns Aaa
-namespace test_returns_wrong_decl_10 {};
+namespace test_returns_wrong_decl_10 { };
 
 // rdar://13094352
 // expected-warning@+1 {{'@function' command should be used in a comment attached to a function declaration}}
@@ -814,6 +822,7 @@ int test_verbatim_2();
 /// \endcode
 int test_verbatim_3();
 
+
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 int test1; ///< \brief\author Aaa
 
@@ -825,6 +834,7 @@ int test2, ///< \brief\author Aaa
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 int test4; ///< \brief
            ///< \author Aaa
+
 
 class TestRelates {};
 
@@ -843,6 +853,7 @@ void test_relates_3();
 /// \relatedalso TestRelates
 /// \brief Aaa
 void test_relates_4();
+
 
 // Check that we attach the comment to the declaration during parsing in the
 // following cases.  The test is based on the fact that we don't parse
@@ -907,13 +918,9 @@ typedef struct test_noattach14 *test_attach15;
 
 // expected-warning@+1 + {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
-typedef struct test_attach16 {
-  int a;
-} test_attach17;
+typedef struct test_attach16 { int a; } test_attach17;
 
-struct S {
-  int a;
-};
+struct S { int a; };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
@@ -938,35 +945,35 @@ typedef struct test_attach21 {
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 namespace test_attach24 {
-// expected-warning@+1 {{empty paragraph passed to '\brief' command}}
-/// \brief\author Aaa
-namespace test_attach25 {
+  // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
+  /// \brief\author Aaa
+  namespace test_attach25 {
+  }
 }
-} // namespace test_attach24
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T>
+template<typename T>
 void test_attach26(T aaa);
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T, typename U>
+template<typename T, typename U>
 void test_attach27(T aaa, U bbb);
 
 // expected-warning@+2 {{empty paragraph passed to '\brief' command}}
 // expected-warning@+2 {{template parameter 'T' not found in the template declaration}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <>
+template<>
 void test_attach27(int aaa, int bbb);
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T>
+template<typename T>
 class test_attach28 {
   T aaa;
 };
@@ -978,49 +985,49 @@ using test_attach29 = test_attach28<int>;
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T, typename U>
-class test_attach30 {};
+template<typename T, typename U>
+class test_attach30 { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T>
-class test_attach30<T, int> {};
+template<typename T>
+class test_attach30<T, int> { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
-template <>
-class test_attach30<int, int> {};
+template<>
+class test_attach30<int, int> { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
-template <typename T>
+template<typename T>
 using test_attach31 = test_attach30<T, int>;
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T, typename U, typename V>
-class test_attach32 {};
+template<typename T, typename U, typename V>
+class test_attach32 { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T, typename U>
-class test_attach32<T, U, int> {};
+template<typename T, typename U>
+class test_attach32<T, U, int> { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T>
-class test_attach32<T, int, int> {};
+template<typename T>
+class test_attach32<T, int, int> { };
 
 // expected-warning@+2 {{empty paragraph passed to '\brief' command}}
 // expected-warning@+2 {{template parameter 'T' not found in the template declaration}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <>
-class test_attach32<int, int, int> {};
+template<>
+class test_attach32<int, int, int> { };
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
@@ -1028,17 +1035,17 @@ class test_attach33 {
   // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
   /// \brief\author Aaa
   /// \tparam T Aaa
-  template <typename T, typename U>
+  template<typename T, typename U>
   void test_attach34(T aaa, U bbb);
 };
 
-template <typename T>
+template<typename T>
 class test_attach35 {
   // expected-warning@+2 {{empty paragraph passed to '\brief' command}}
   // expected-warning@+2 {{template parameter 'T' not found in the template declaration}}
   /// \brief\author Aaa
   /// \tparam T Aaa
-  template <typename TT, typename UU>
+  template<typename TT, typename UU>
   void test_attach36(TT aaa, UU bbb);
 };
 
@@ -1046,10 +1053,10 @@ class test_attach35 {
 // expected-warning@+2 {{template parameter 'T' not found in the template declaration}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <> template <>
+template<> template<>
 void test_attach35<int>::test_attach36(int aaa, int bbb) {}
 
-template <typename T>
+template<typename T>
 class test_attach37 {
   // expected-warning@+2 {{empty paragraph passed to '\brief' command}}
   // expected-warning@+2 {{'\tparam' command used in a comment that is not attached to a template declaration}}
@@ -1064,13 +1071,13 @@ class test_attach37 {
 // expected-warning@+2 {{template parameter 'T' not found in the template declaration}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <>
+template<>
 void test_attach37<int>::test_attach38(int aaa, int bbb) {}
 
 // expected-warning@+1 {{empty paragraph passed to '\brief' command}}
 /// \brief\author Aaa
 /// \tparam T Aaa
-template <typename T>
+template<typename T>
 void test_attach37<T>::test_attach39(int aaa, int bbb) {}
 
 // We used to emit warning that parameter 'a' is not found because we parsed
@@ -1162,10 +1169,11 @@ void test_nocrash3();
 
 /// Foo
 template <typename, typename>
-void test_nocrash4() {}
+void test_nocrash4() { }
 
 template <typename>
-void test_nocrash3() {
+void test_nocrash3()
+{
 }
 
 // PR13593, example 3
@@ -1174,15 +1182,17 @@ void test_nocrash3() {
  * aaa
  */
 template <typename T>
-inline T test_nocrash5(T a1) {
-  return a1;
+inline T test_nocrash5(T a1)
+{
+    return a1;
 }
 
 ///
 //,
 
-inline void test_nocrash6() {
-  test_nocrash5(1);
+inline void test_nocrash6()
+{
+    test_nocrash5(1);
 }
 
 // We used to crash on this.
@@ -1190,7 +1200,7 @@ inline void test_nocrash6() {
 /*!
   Blah.
 */
-typedef const struct test_nocrash7 *test_nocrash8;
+typedef const struct test_nocrash7 * test_nocrash8;
 
 // We used to crash on this.
 
@@ -1236,16 +1246,12 @@ int test_nocrash14();
 /*!
    @union U This is new 
 */
-struct U {
-  int iS;
-};
+struct U { int iS; };
 
 /*!
   @union U1
 */
-union U1 {
-  int i;
-};
+union U1 {int i; };
 
 // expected-warning@+2 {{'@struct' command should not be used in a comment attached to a non-struct declaration}}
 /*!
@@ -1273,7 +1279,8 @@ class S3;
 /// specified values.
 //----------------------------------------------------------------------
 template <class T, class T1>
-class Predicate {
+class Predicate
+{
 };
 
 //----------------------------------------------------------------------
@@ -1283,7 +1290,8 @@ class Predicate {
 ///
 /// A template specialization class.
 //----------------------------------------------------------------------
-template <> class Predicate<int, char> {
+template<> class Predicate<int, char>
+{
 };
 
 //----------------------------------------------------------------------
@@ -1293,16 +1301,17 @@ template <> class Predicate<int, char> {
 ///
 /// A partial specialization template class.
 //----------------------------------------------------------------------
-template <class T> class Predicate<T, int> {
+template<class T> class Predicate<T, int>
+{
 };
 
 /*!     @function test_function
 */
-template <class T> T test_function(T arg);
+template <class T> T test_function (T arg);
 
 /*!     @function test_function<int>
 */
-template <> int test_function<int>(int arg);
+template <> int test_function<int> (int arg);
 
 namespace AllowParamAndReturnsOnFunctionPointerVars {
 
@@ -1374,7 +1383,7 @@ struct HasMoreFields {
   FunctionPointerTypealias functionPointerTypealiasField;
 };
 
-} // namespace AllowParamAndReturnsOnFunctionPointerVars
+}
 
 /*!
  * Function pointer typedef with variadic params.
@@ -1422,7 +1431,7 @@ typedef void C();
 C &c = CC; ///< \return none
 // expected-warning@-1 {{'\return' command used in a comment that is not attached to a function or method declaration}}
 
-using DD = void (*)();
+using DD = void(*)();
 using D = DD();
 D *d; ///< \return none
 // expected-warning@-1 {{'\return' command used in a comment that is not attached to a function or method declaration}}

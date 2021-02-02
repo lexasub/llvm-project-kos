@@ -3,9 +3,9 @@
 
 #include <dispatch/dispatch.h>
 
-#include <cstdio>
 #include <memory>
 #include <stdatomic.h>
+#include <cstdio>
 
 _Atomic(long) destructor_counter = 0;
 

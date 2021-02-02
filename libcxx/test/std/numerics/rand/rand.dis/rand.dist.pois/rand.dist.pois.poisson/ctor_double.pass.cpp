@@ -34,20 +34,21 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**) {
-  {
-    typedef std::poisson_distribution<> D;
-    D d;
-    assert(d.mean() == 1);
-  }
-  {
-    typedef std::poisson_distribution<> D;
-    D d(3.5);
-    assert(d.mean() == 3.5);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::poisson_distribution<> D;
+        D d;
+        assert(d.mean() == 1);
+    }
+    {
+        typedef std::poisson_distribution<> D;
+        D d(3.5);
+        assert(d.mean() == 3.5);
+    }
 
-  test_implicit<int>();
-  test_implicit<long>();
+    test_implicit<int>();
+    test_implicit<long>();
 
-  return 0;
+    return 0;
 }

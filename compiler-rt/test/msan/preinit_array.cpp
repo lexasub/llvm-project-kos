@@ -9,7 +9,7 @@ static void pre_ctor() {
   local = 42;
 }
 
-__attribute__((section(".preinit_array"), used)) void (*__local_pre_ctor)(void) = pre_ctor;
+__attribute__((section(".preinit_array"), used)) void(*__local_pre_ctor)(void) = pre_ctor;
 
 int main(void) {
   return 0;

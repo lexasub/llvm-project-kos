@@ -303,8 +303,8 @@ void LinkerDriver::enqueueArchiveMember(const Archive::Child &c,
 
   auto reportBufferError = [=](Error &&e, StringRef childName) {
     fatal("could not get the buffer for the member defining symbol " +
-          toCOFFString(sym) + ": " + parentName + "(" + childName +
-          "): " + toString(std::move(e)));
+          toCOFFString(sym) + ": " + parentName + "(" + childName + "): " +
+          toString(std::move(e)));
   };
 
   if (!c.getParent()->isThin()) {
@@ -320,12 +320,12 @@ void LinkerDriver::enqueueArchiveMember(const Archive::Child &c,
     return;
   }
 
-  std::string childName =
-      CHECK(c.getFullName(),
-            "could not get the filename for the member defining symbol " +
-                toCOFFString(sym));
-  auto future =
-      std::make_shared<std::future<MBErrPair>>(createFutureForFile(childName));
+  std::string childName = CHECK(
+      c.getFullName(),
+      "could not get the filename for the member defining symbol " +
+      toCOFFString(sym));
+  auto future = std::make_shared<std::future<MBErrPair>>(
+      createFutureForFile(childName));
   enqueueTask([=]() {
     auto mbOrErr = future->get();
     if (mbOrErr.second)
@@ -566,7 +566,9 @@ StringRef LinkerDriver::mangleMaybe(Symbol *s) {
 // There are four different entry point functions for Windows executables,
 // each of which corresponds to a user-defined "main" function. This function
 // infers an entry point from a user-defined "main" function.
-StringRef LinkerDriver::findDefaultEntry() { return mangle("__start"); }
+StringRef LinkerDriver::findDefaultEntry() {
+  return mangle("__start");
+}
 
 WindowsSubsystem LinkerDriver::inferSubsystem() {
   if (config->dll)
@@ -593,7 +595,9 @@ WindowsSubsystem LinkerDriver::inferSubsystem() {
   return IMAGE_SUBSYSTEM_UNKNOWN;
 }
 
-static uint64_t getDefaultImageBase() { return 0; }
+static uint64_t getDefaultImageBase() {
+  return 0;
+}
 
 static std::string createResponseFile(const opt::InputArgList &args,
                                       ArrayRef<StringRef> filePaths,
@@ -647,14 +651,14 @@ static DebugKind parseDebugKind(const opt::InputArgList &args) {
     return DebugKind::Full;
 
   DebugKind debug = StringSwitch<DebugKind>(a->getValue())
-                        .CaseLower("none", DebugKind::None)
-                        .CaseLower("full", DebugKind::Full)
-                        .CaseLower("fastlink", DebugKind::FastLink)
-                        // LLD extensions
-                        .CaseLower("ghash", DebugKind::GHash)
-                        .CaseLower("dwarf", DebugKind::Dwarf)
-                        .CaseLower("symtab", DebugKind::Symtab)
-                        .Default(DebugKind::Unknown);
+                     .CaseLower("none", DebugKind::None)
+                     .CaseLower("full", DebugKind::Full)
+                     .CaseLower("fastlink", DebugKind::FastLink)
+                     // LLD extensions
+                     .CaseLower("ghash", DebugKind::GHash)
+                     .CaseLower("dwarf", DebugKind::Dwarf)
+                     .CaseLower("symtab", DebugKind::Symtab)
+                     .Default(DebugKind::Unknown);
 
   if (debug == DebugKind::FastLink) {
     warn("/debug:fastlink unsupported; using /debug:full");
@@ -905,7 +909,8 @@ static void parseOrderFile(StringRef arg) {
     if (set.count(s) == 0) {
       if (config->warnMissingOrderSymbol)
         warn("/order:" + arg + ": missing symbol: " + s + " [LNK4037]");
-    } else
+    }
+    else
       config->order[s] = INT_MIN + config->order.size();
   }
 }
@@ -1041,8 +1046,8 @@ static void parsePDBAltPath(StringRef altPath) {
     else if (var.equals_lower("%_ext%"))
       buf.append(binaryExtension);
     else {
-      warn("only %_PDB% and %_EXT% supported in /pdbaltpath:, keeping " + var +
-           " as literal");
+      warn("only %_PDB% and %_EXT% supported in /pdbaltpath:, keeping " +
+           var + " as literal");
       buf.append(var);
     }
 
@@ -1980,16 +1985,14 @@ void LinkerDriver::linkerMain(ArrayRef<const char *> argsArr) {
     for (auto *arg : args.filtered(OPT_include_optional))
       if (dyn_cast_or_null<LazyArchive>(symtab->find(arg->getValue())))
         addUndefined(arg->getValue());
-    while (run())
-      ;
+    while (run());
   }
 
   // Create wrapped symbols for -wrap option.
   std::vector<WrappedSymbol> wrapped = addWrappedSymbols(args);
   // Load more object files that might be needed for wrapped symbols.
   if (!wrapped.empty())
-    while (run())
-      ;
+    while (run());
 
   if (config->autoImport) {
     // MinGW specific.

@@ -25,44 +25,48 @@
 #include "incomplete_type_helper.h"
 
 template <class T>
-struct A {
-  typedef T value_type;
+struct A
+{
+    typedef T value_type;
 
-  TEST_CONSTEXPR_CXX20 A(int& called) : called_(called) {}
+    TEST_CONSTEXPR_CXX20 A(int& called) : called_(called) {}
 
-  TEST_CONSTEXPR_CXX20 void deallocate(value_type* p, std::size_t n) {
-    assert(p == &storage);
-    assert(n == 10);
-    ++called_;
-  }
+    TEST_CONSTEXPR_CXX20 void deallocate(value_type* p, std::size_t n)
+    {
+        assert(p == &storage);
+        assert(n == 10);
+        ++called_;
+    }
 
-  int& called_;
+    int& called_;
 
-  value_type storage;
+    value_type storage;
 };
 
-TEST_CONSTEXPR_CXX20 bool test() {
-  {
-    int called = 0;
-    A<int> a(called);
-    std::allocator_traits<A<int> >::deallocate(a, &a.storage, 10);
-    assert(called == 1);
-  }
-  {
-    int called = 0;
-    typedef A<IncompleteHolder*> Alloc;
-    Alloc a(called);
-    std::allocator_traits<Alloc>::deallocate(a, &a.storage, 10);
-    assert(called == 1);
-  }
+TEST_CONSTEXPR_CXX20 bool test()
+{
+    {
+        int called = 0;
+        A<int> a(called);
+        std::allocator_traits<A<int> >::deallocate(a, &a.storage, 10);
+        assert(called == 1);
+    }
+    {
+        int called = 0;
+        typedef A<IncompleteHolder*> Alloc;
+        Alloc a(called);
+        std::allocator_traits<Alloc>::deallocate(a, &a.storage, 10);
+        assert(called == 1);
+    }
 
-  return true;
+    return true;
 }
 
-int main(int, char**) {
-  test();
+int main(int, char**)
+{
+    test();
 #if TEST_STD_VER > 17
-  static_assert(test());
+    static_assert(test());
 #endif
-  return 0;
+    return 0;
 }

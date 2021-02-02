@@ -23,7 +23,7 @@ static bool VerifyPathExists(const char *path) {
   else
     return false;
 }
-} // namespace
+}
 
 void OptionValuePathMappings::DumpValue(const ExecutionContext *exe_ctx,
                                         Stream &strm, uint32_t dump_mask) {

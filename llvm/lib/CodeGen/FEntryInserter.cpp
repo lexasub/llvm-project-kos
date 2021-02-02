@@ -32,7 +32,7 @@ struct FEntryInserter : public MachineFunctionPass {
 
   bool runOnMachineFunction(MachineFunction &F) override;
 };
-} // namespace
+}
 
 bool FEntryInserter::runOnMachineFunction(MachineFunction &MF) {
   const std::string FEntryName = std::string(

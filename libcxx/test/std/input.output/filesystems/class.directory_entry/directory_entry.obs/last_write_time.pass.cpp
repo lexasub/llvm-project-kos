@@ -31,11 +31,10 @@ TEST_CASE(signatures) {
   {
     const fs::directory_entry e = {};
     std::error_code ec;
-    static_assert(
-        std::is_same<decltype(e.last_write_time()), file_time_type>::value, "");
-    static_assert(
-        std::is_same<decltype(e.last_write_time(ec)), file_time_type>::value,
-        "");
+    static_assert(std::is_same<decltype(e.last_write_time()), file_time_type>::value,
+                  "");
+    static_assert(std::is_same<decltype(e.last_write_time(ec)), file_time_type>::value,
+                  "");
     static_assert(noexcept(e.last_write_time()) == false, "");
     static_assert(noexcept(e.last_write_time(ec)) == true, "");
   }

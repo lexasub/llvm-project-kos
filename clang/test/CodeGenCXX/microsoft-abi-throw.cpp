@@ -26,9 +26,8 @@
 // CHECK-DAG: @_CTA2PAPFAH = linkonce_odr unnamed_addr constant %eh.CatchableTypeArray.2 { i32 2, [2 x %eh.CatchableType*] [%eh.CatchableType* @"_CT??_R0PAPFAH@84", %eh.CatchableType* @"_CT??_R0PAX@84"] }, section ".xdata", comdat
 // CHECK-DAG: @"_TI1?AUFoo@?A0x{{[^@]*}}@@" = internal unnamed_addr constant %eh.ThrowInfo { i32 0, i8* null, i8* null, i8* bitcast (%eh.CatchableTypeArray.1* @"_CTA1?AUFoo@?A0x{{[^@]*}}@@" to i8*) }, section ".xdata"
 
-struct N {
-  ~N();
-};
+
+struct N { ~N(); };
 struct M : private N {};
 struct X {};
 struct Z {};
@@ -50,7 +49,7 @@ void g(const int *const *y) {
   throw y;
 }
 
-void h(__unaligned int *__unaligned *y) {
+void h(__unaligned int * __unaligned *y) {
   // CHECK-LABEL: @"?h@@YAXPFAPFAH@Z"
   // CHECK: call void @_CxxThrowException(i8* %{{.*}}, %eh.ThrowInfo* @_TIU2PAPFAH)
   throw y;
@@ -80,6 +79,7 @@ struct DeletedCopy {
   DeletedCopy(const DeletedCopy &) = delete;
 };
 void throwDeletedCopy() { throw DeletedCopy(); }
+
 
 struct MoveOnly {
   MoveOnly();
@@ -129,6 +129,7 @@ void j(TemplateWithDefault &twd) {
   throw twd;
 }
 
+
 void h() {
   throw nullptr;
 }
@@ -145,25 +146,22 @@ void *__GetExceptionInfo(T);
 using namespace std;
 
 void *GetExceptionInfo_test0() {
-  // CHECK-LABEL: @"?GetExceptionInfo_test0@@YAPAXXZ"
-  // CHECK:  ret i8* bitcast (%eh.ThrowInfo* @_TI1H to i8*)
+// CHECK-LABEL: @"?GetExceptionInfo_test0@@YAPAXXZ"
+// CHECK:  ret i8* bitcast (%eh.ThrowInfo* @_TI1H to i8*)
   return __GetExceptionInfo(0);
 }
 
 void *GetExceptionInfo_test1() {
-  // CHECK-LABEL: @"?GetExceptionInfo_test1@@YAPAXXZ"
-  // CHECK:  ret i8* bitcast (%eh.ThrowInfo* @_TI1P6AXXZ to i8*)
+// CHECK-LABEL: @"?GetExceptionInfo_test1@@YAPAXXZ"
+// CHECK:  ret i8* bitcast (%eh.ThrowInfo* @_TI1P6AXXZ to i8*)
   return __GetExceptionInfo<void (*)()>(&h);
 }
 
 // PR36327: Try an exception type with no linkage.
-namespace {
-struct Foo {
-} foo_exc;
-} // namespace
+namespace { struct Foo { } foo_exc; }
 
 void *GetExceptionInfo_test2() {
-  // CHECK-LABEL: @"?GetExceptionInfo_test2@@YAPAXXZ"
-  // CHECK:  ret i8* bitcast (%eh.ThrowInfo* @"_TI1?AUFoo@?A0x{{[^@]*}}@@" to i8*)
+// CHECK-LABEL: @"?GetExceptionInfo_test2@@YAPAXXZ"
+// CHECK:  ret i8* bitcast (%eh.ThrowInfo* @"_TI1?AUFoo@?A0x{{[^@]*}}@@" to i8*)
   return __GetExceptionInfo(foo_exc);
 }

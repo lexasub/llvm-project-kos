@@ -57,8 +57,8 @@ struct InstNamer : public FunctionPass {
   }
 };
 
-char InstNamer::ID = 0;
-} // namespace
+  char InstNamer::ID = 0;
+  } // namespace
 
 INITIALIZE_PASS(InstNamer, "instnamer",
                 "Assign names to anonymous instructions", false, false)
@@ -67,7 +67,9 @@ char &llvm::InstructionNamerID = InstNamer::ID;
 //
 // InstructionNamer - Give any unnamed non-void instructions "tmp" names.
 //
-FunctionPass *llvm::createInstructionNamerPass() { return new InstNamer(); }
+FunctionPass *llvm::createInstructionNamerPass() {
+  return new InstNamer();
+}
 
 PreservedAnalyses InstructionNamerPass::run(Function &F,
                                             FunctionAnalysisManager &FAM) {

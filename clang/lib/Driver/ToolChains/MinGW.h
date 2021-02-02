@@ -70,8 +70,8 @@ public:
 
   SanitizerMask getSupportedSanitizers() const override;
 
-  llvm::ExceptionHandling
-  GetExceptionModel(const llvm::opt::ArgList &Args) const override;
+  llvm::ExceptionHandling GetExceptionModel(
+      const llvm::opt::ArgList &Args) const override;
 
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,

@@ -34,22 +34,22 @@ public:
   ///
   /// \param InConditional Whether we're inside a preprocessor conditional
   /// already.
-  virtual void CodeCompleteDirective(bool InConditional) {}
+  virtual void CodeCompleteDirective(bool InConditional) { }
 
   /// Callback invoked when performing code completion within a block of
   /// code that was excluded due to preprocessor conditionals.
-  virtual void CodeCompleteInConditionalExclusion() {}
+  virtual void CodeCompleteInConditionalExclusion() { }
 
   /// Callback invoked when performing code completion in a context
   /// where the name of a macro is expected.
   ///
   /// \param IsDefinition Whether this is the definition of a macro, e.g.,
   /// in a \#define.
-  virtual void CodeCompleteMacroName(bool IsDefinition) {}
+  virtual void CodeCompleteMacroName(bool IsDefinition) { }
 
   /// Callback invoked when performing code completion in a preprocessor
   /// expression, such as the condition of an \#if or \#elif directive.
-  virtual void CodeCompletePreprocessorExpression() {}
+  virtual void CodeCompletePreprocessorExpression() { }
 
   /// Callback invoked when performing code completion inside a
   /// function-like macro argument.
@@ -59,7 +59,7 @@ public:
   /// callback is invoked inside a macro argument.
   virtual void CodeCompleteMacroArgument(IdentifierInfo *Macro,
                                          MacroInfo *MacroInfo,
-                                         unsigned ArgumentIndex) {}
+                                         unsigned ArgumentIndex) { }
 
   /// Callback invoked when performing code completion inside the filename
   /// part of an #include directive. (Also #import, #include_next, etc).
@@ -69,9 +69,9 @@ public:
   /// Callback invoked when performing code completion in a part of the
   /// file where we expect natural language, e.g., a comment, string, or
   /// \#error directive.
-  virtual void CodeCompleteNaturalLanguage() {}
+  virtual void CodeCompleteNaturalLanguage() { }
 };
 
-} // namespace clang
+}
 
 #endif // LLVM_CLANG_LEX_CODECOMPLETIONHANDLER_H

@@ -18,7 +18,7 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  static_assert(!std::is_literal_type<std::any>::value, "");
+    static_assert(!std::is_literal_type<std::any>::value, "");
 
   return 0;
 }

@@ -37,8 +37,8 @@ SBSection::SBSection(const lldb::SectionSP &section_sp)
 }
 
 const SBSection &SBSection::operator=(const SBSection &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBSection &, SBSection, operator=,
-                     (const lldb::SBSection &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBSection &,
+                     SBSection, operator=,(const lldb::SBSection &), rhs);
 
   m_opaque_wp = rhs.m_opaque_wp;
   return LLDB_RECORD_RESULT(*this);
@@ -251,7 +251,7 @@ uint32_t SBSection::GetTargetByteSize() {
 }
 
 bool SBSection::operator==(const SBSection &rhs) {
-  LLDB_RECORD_METHOD(bool, SBSection, operator==, (const lldb::SBSection &),
+  LLDB_RECORD_METHOD(bool, SBSection, operator==,(const lldb::SBSection &),
                      rhs);
 
   SectionSP lhs_section_sp(GetSP());
@@ -262,7 +262,7 @@ bool SBSection::operator==(const SBSection &rhs) {
 }
 
 bool SBSection::operator!=(const SBSection &rhs) {
-  LLDB_RECORD_METHOD(bool, SBSection, operator!=, (const lldb::SBSection &),
+  LLDB_RECORD_METHOD(bool, SBSection, operator!=,(const lldb::SBSection &),
                      rhs);
 
   SectionSP lhs_section_sp(GetSP());
@@ -292,11 +292,12 @@ bool SBSection::GetDescription(SBStream &description) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBSection>(Registry &R) {
+template <>
+void RegisterMethods<SBSection>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBSection, ());
   LLDB_REGISTER_CONSTRUCTOR(SBSection, (const lldb::SBSection &));
-  LLDB_REGISTER_METHOD(const lldb::SBSection &, SBSection, operator=,
-                       (const lldb::SBSection &));
+  LLDB_REGISTER_METHOD(const lldb::SBSection &,
+                       SBSection, operator=,(const lldb::SBSection &));
   LLDB_REGISTER_METHOD_CONST(bool, SBSection, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBSection, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBSection, GetName, ());
@@ -318,10 +319,10 @@ template <> void RegisterMethods<SBSection>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SectionType, SBSection, GetSectionType, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBSection, GetPermissions, ());
   LLDB_REGISTER_METHOD(uint32_t, SBSection, GetTargetByteSize, ());
-  LLDB_REGISTER_METHOD(bool, SBSection, operator==, (const lldb::SBSection &));
-  LLDB_REGISTER_METHOD(bool, SBSection, operator!=, (const lldb::SBSection &));
+  LLDB_REGISTER_METHOD(bool, SBSection, operator==,(const lldb::SBSection &));
+  LLDB_REGISTER_METHOD(bool, SBSection, operator!=,(const lldb::SBSection &));
   LLDB_REGISTER_METHOD(bool, SBSection, GetDescription, (lldb::SBStream &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

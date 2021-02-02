@@ -17,15 +17,15 @@
 #include <memory>
 
 namespace llvm {
-class MemoryBuffer;
-class MemoryBufferRef;
-} // namespace llvm
+  class MemoryBuffer;
+  class MemoryBufferRef;
+}
 
 namespace clang {
-class FileManager;
-class FileEntry;
-class DiagnosticsEngine;
-class PreprocessorOptions;
+  class FileManager;
+  class FileEntry;
+  class DiagnosticsEngine;
+  class PreprocessorOptions;
 
 namespace arcmt {
 
@@ -79,6 +79,6 @@ private:
 
 } // end namespace arcmt
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

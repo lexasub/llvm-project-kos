@@ -2,16 +2,16 @@
 // RUN: %run %t 2>&1 | FileCheck %s
 
 #include <pthread.h>
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <sys/mman.h>
-#include <time.h>
+#include <stddef.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/mman.h>
 
 const long kSmallPage = 4 << 10;
 const long kLargePage = 2 << 20;
-const long kStride = 1 << 10;
+const long kStride    = 1 << 10;
 
 typedef unsigned long uptr;
 
@@ -45,3 +45,4 @@ int main(int argc, const char **argv) {
 }
 
 // CHECK: DONE
+

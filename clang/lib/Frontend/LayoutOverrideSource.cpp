@@ -43,7 +43,7 @@ LayoutOverrideSource::LayoutOverrideSource(StringRef Filename) {
     StringRef LineStr(Line);
 
     // Determine whether the following line will start a
-    if (LineStr.find("*** Dumping AST Record Layout") != StringRef::npos) {
+    if (LineStr.find("*** Dumping AST Record Layout") != StringRef::npos)  {
       // Flush the last type/layout, if there is one.
       if (!CurrentType.empty())
         Layouts[CurrentType] = CurrentLayout;
@@ -151,11 +151,13 @@ LayoutOverrideSource::LayoutOverrideSource(StringRef Filename) {
     Layouts[CurrentType] = CurrentLayout;
 }
 
-bool LayoutOverrideSource::layoutRecordType(
-    const RecordDecl *Record, uint64_t &Size, uint64_t &Alignment,
-    llvm::DenseMap<const FieldDecl *, uint64_t> &FieldOffsets,
-    llvm::DenseMap<const CXXRecordDecl *, CharUnits> &BaseOffsets,
-    llvm::DenseMap<const CXXRecordDecl *, CharUnits> &VirtualBaseOffsets) {
+bool
+LayoutOverrideSource::layoutRecordType(const RecordDecl *Record,
+  uint64_t &Size, uint64_t &Alignment,
+  llvm::DenseMap<const FieldDecl *, uint64_t> &FieldOffsets,
+  llvm::DenseMap<const CXXRecordDecl *, CharUnits> &BaseOffsets,
+  llvm::DenseMap<const CXXRecordDecl *, CharUnits> &VirtualBaseOffsets)
+{
   // We can't override unnamed declarations.
   if (!Record->getIdentifier())
     return false;
@@ -168,7 +170,7 @@ bool LayoutOverrideSource::layoutRecordType(
   // Provide field layouts.
   unsigned NumFields = 0;
   for (RecordDecl::field_iterator F = Record->field_begin(),
-                                  FEnd = Record->field_end();
+                               FEnd = Record->field_end();
        F != FEnd; ++F, ++NumFields) {
     if (NumFields >= Known->second.FieldOffsets.size())
       continue;
@@ -188,7 +190,7 @@ bool LayoutOverrideSource::layoutRecordType(
 LLVM_DUMP_METHOD void LayoutOverrideSource::dump() {
   raw_ostream &OS = llvm::errs();
   for (llvm::StringMap<Layout>::iterator L = Layouts.begin(),
-                                         LEnd = Layouts.end();
+                                      LEnd = Layouts.end();
        L != LEnd; ++L) {
     OS << "Type: blah " << L->first() << '\n';
     OS << "  Size:" << L->second.Size << '\n';
@@ -202,3 +204,4 @@ LLVM_DUMP_METHOD void LayoutOverrideSource::dump() {
     OS << "]\n";
   }
 }
+

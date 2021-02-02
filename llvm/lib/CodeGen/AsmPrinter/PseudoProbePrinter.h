@@ -43,7 +43,7 @@ public:
   void endFunction(const MachineFunction *MF) override {}
   void beginInstruction(const MachineInstr *MI) override {}
   void endInstruction() override {}
-
+  
 #ifndef NDEBUG
   void dump() const;
 #endif

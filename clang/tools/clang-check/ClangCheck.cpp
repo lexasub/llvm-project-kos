@@ -51,7 +51,8 @@ static cl::extrahelp MoreHelp(
     "\n"
     "\tNote, that path/in/subtree and current directory should follow the\n"
     "\trules described above.\n"
-    "\n");
+    "\n"
+);
 
 static cl::OptionCategory ClangCheckCategory("clang-check options");
 static const opt::OptTable &Options = getDriverOptTable();
@@ -94,13 +95,15 @@ namespace {
 // into a header file and reuse that.
 class FixItOptions : public clang::FixItOptions {
 public:
-  FixItOptions() { FixWhatYouCan = ::FixWhatYouCan; }
+  FixItOptions() {
+    FixWhatYouCan = ::FixWhatYouCan;
+  }
 
-  std::string RewriteFilename(const std::string &filename, int &fd) override {
+  std::string RewriteFilename(const std::string& filename, int &fd) override {
     // We don't need to do permission checking here since clang will diagnose
     // any I/O errors itself.
 
-    fd = -1; // No file descriptor for file.
+    fd = -1;  // No file descriptor for file.
 
     return filename;
   }
@@ -113,11 +116,12 @@ public:
 /// successfully fixing all errors.
 class FixItRewriter : public clang::FixItRewriter {
 public:
-  FixItRewriter(clang::DiagnosticsEngine &Diags,
-                clang::SourceManager &SourceMgr,
-                const clang::LangOptions &LangOpts,
-                clang::FixItOptions *FixItOpts)
-      : clang::FixItRewriter(Diags, SourceMgr, LangOpts, FixItOpts) {}
+  FixItRewriter(clang::DiagnosticsEngine& Diags,
+                clang::SourceManager& SourceMgr,
+                const clang::LangOptions& LangOpts,
+                clang::FixItOptions* FixItOpts)
+      : clang::FixItRewriter(Diags, SourceMgr, LangOpts, FixItOpts) {
+  }
 
   bool IncludeInDiagnosticCounts() const override { return false; }
 };
@@ -126,7 +130,7 @@ public:
 /// \c FixItRewriter.
 class ClangCheckFixItAction : public clang::FixItAction {
 public:
-  bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
+  bool BeginSourceFileAction(clang::CompilerInstance& CI) override {
     FixItOpts.reset(new FixItOptions);
     Rewriter.reset(new FixItRewriter(CI.getDiagnostics(), CI.getSourceManager(),
                                      CI.getLangOpts(), FixItOpts.get()));

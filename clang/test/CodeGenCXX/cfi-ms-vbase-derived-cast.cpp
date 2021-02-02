@@ -15,7 +15,7 @@ struct bar : virtual public foo {
     // CHECK: load
     // CHECK: load
     // CHECK: @llvm.type.test{{.*}}!"?AUfoo@@"
-    static_cast<T &>(*this);
+    static_cast<T&>(*this);
   }
 };
 

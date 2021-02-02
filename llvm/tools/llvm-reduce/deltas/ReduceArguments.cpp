@@ -23,7 +23,7 @@ using namespace llvm;
 static void replaceFunctionCalls(Function &OldF, Function &NewF,
                                  const std::set<int> &ArgIndexesToKeep) {
   const auto &Users = OldF.users();
-  for (auto I = Users.begin(), E = Users.end(); I != E;)
+  for (auto I = Users.begin(), E = Users.end(); I != E; )
     if (auto *CI = dyn_cast<CallInst>(*I++)) {
       SmallVector<Value *, 8> Args;
       for (auto ArgI = CI->arg_begin(), E = CI->arg_end(); ArgI != E; ++ArgI)

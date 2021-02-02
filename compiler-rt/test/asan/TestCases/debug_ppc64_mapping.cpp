@@ -6,14 +6,14 @@
 #include <stdio.h>
 
 int main() {
-  // CHECK-PPC64: || `[{{0x200|0x180|0x0a0|0x040}}000000000, {{0x7ff|0x3ff|0x0ff}}fffffffff]` || HighMem    ||
-  // CHECK-PPC64: || `[{{0x140|0x130|0x034|0x028}}000000000, {{0x1ff|0x17f|0x09f|0x03f}}fffffffff]` || HighShadow ||
-  // CHECK-PPC64: || `[{{0x120|0x024|0x024}}000000000, {{0x12f|0x13f|0x033|0x027}}fffffffff]` || ShadowGap  ||
-  // CHECK-PPC64: || `[{{0x100|0x020}}000000000, {{0x11f|0x023}}fffffffff]`       || LowShadow  ||
-  // CHECK-PPC64: || `[0x000000000000, {{0x0ff|0x01f}}fffffffff]`       || LowMem     ||
-  //
+// CHECK-PPC64: || `[{{0x200|0x180|0x0a0|0x040}}000000000, {{0x7ff|0x3ff|0x0ff}}fffffffff]` || HighMem    ||
+// CHECK-PPC64: || `[{{0x140|0x130|0x034|0x028}}000000000, {{0x1ff|0x17f|0x09f|0x03f}}fffffffff]` || HighShadow ||
+// CHECK-PPC64: || `[{{0x120|0x024|0x024}}000000000, {{0x12f|0x13f|0x033|0x027}}fffffffff]` || ShadowGap  ||
+// CHECK-PPC64: || `[{{0x100|0x020}}000000000, {{0x11f|0x023}}fffffffff]`       || LowShadow  ||
+// CHECK-PPC64: || `[0x000000000000, {{0x0ff|0x01f}}fffffffff]`       || LowMem     ||
+//
   printf("ppc64 eyecatcher \n");
-  // CHECK-PPC64-V0: ppc64 eyecatcher
+// CHECK-PPC64-V0: ppc64 eyecatcher
 
   return 0;
 }
@@ -49,3 +49,4 @@ Oldish kernel:
 || `[0x020000000000, 0x023fffffffff]` || LowShadow  ||
 || `[0x000000000000, 0x01ffffffffff]` || LowMem     ||
 */
+

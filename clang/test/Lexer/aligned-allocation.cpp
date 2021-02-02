@@ -22,11 +22,11 @@
 
 // expected-no-diagnostics
 #ifdef EXPECT_DEFINED
-#ifndef __cpp_aligned_new
-#error "__cpp_aligned_new" should be defined
-#endif
+# ifndef __cpp_aligned_new
+#   error "__cpp_aligned_new" should be defined
+# endif
 #else
-#ifdef __cpp_aligned_new
-#error "__cpp_aligned_new" should not be defined
-#endif
+# ifdef __cpp_aligned_new
+#   error "__cpp_aligned_new" should not be defined
+# endif
 #endif

@@ -15,9 +15,7 @@ void *Thread1(void *x) {
 void *Thread2(void *x) {
   barrier_wait(&barrier);
   char *p1 = reinterpret_cast<char *>(&Global[0]);
-  struct __attribute__((packed, aligned(1))) u_uint64_t {
-    uint64_t val;
-  };
+  struct __attribute__((packed, aligned(1))) u_uint64_t { uint64_t val; };
   u_uint64_t *p4 = reinterpret_cast<u_uint64_t *>(p1 + 1);
   (*p4).val++;
   return NULL;

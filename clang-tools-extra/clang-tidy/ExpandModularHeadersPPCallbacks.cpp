@@ -49,8 +49,8 @@ public:
     FilesToRecord.erase(File);
   }
 
-  /// Makes sure we have contents for all the files we were interested in.
-  /// Ideally `FilesToRecord` should be empty.
+  /// Makes sure we have contents for all the files we were interested in. Ideally
+  /// `FilesToRecord` should be empty.
   void checkAllFilesRecorded() {
     LLVM_DEBUG({
       for (auto FileEntry : FilesToRecord)
@@ -86,15 +86,15 @@ ExpandModularHeadersPPCallbacks::ExpandModularHeadersPPCallbacks(
   *HSO = Compiler.getHeaderSearchOpts();
 
   HeaderInfo = std::make_unique<HeaderSearch>(HSO, Sources, Diags, LangOpts,
-                                              &Compiler.getTarget());
+                                               &Compiler.getTarget());
 
   auto PO = std::make_shared<PreprocessorOptions>();
   *PO = Compiler.getPreprocessorOpts();
 
   PP = std::make_unique<clang::Preprocessor>(PO, Diags, LangOpts, Sources,
-                                             *HeaderInfo, ModuleLoader,
-                                             /*IILookup=*/nullptr,
-                                             /*OwnsHeaderSearch=*/false);
+                                              *HeaderInfo, ModuleLoader,
+                                              /*IILookup=*/nullptr,
+                                              /*OwnsHeaderSearch=*/false);
   PP->Initialize(Compiler.getTarget(), Compiler.getAuxTarget());
   InitializePreprocessor(*PP, *PO, Compiler.getPCHContainerReader(),
                          Compiler.getFrontendOpts());

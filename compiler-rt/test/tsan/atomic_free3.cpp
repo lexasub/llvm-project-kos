@@ -4,7 +4,7 @@
 // Test for https://github.com/google/sanitizers/issues/602
 
 void *Thread(void *a) {
-  __atomic_store_n((int *)a, 1, __ATOMIC_RELAXED);
+  __atomic_store_n((int*)a, 1, __ATOMIC_RELAXED);
   return 0;
 }
 

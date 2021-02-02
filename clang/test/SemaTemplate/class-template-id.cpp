@@ -1,5 +1,5 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
-template <typename T, typename U = float> struct A {};
+template<typename T, typename U = float> struct A { };
 
 typedef A<int> A_int;
 
@@ -15,10 +15,10 @@ A<int, FLOAT> *foo(A<int> *ptr, A<int> const *ptr2, A<int, double> *ptr3) {
   }
 }
 
-template <int I> struct B;
+template<int I> struct B;
 
 const int value = 12;
-B<17 + 2> *bar(B<(19)> *ptr1, B<(::value + 7)> *ptr2, B<19 - 3> *ptr3) {
+B<17 + 2> *bar(B<(19)> *ptr1, B< (::value + 7) > *ptr2, B<19 - 3> *ptr3) {
   if (ptr1)
     return ptr1;
   else if (ptr2)
@@ -29,15 +29,16 @@ B<17 + 2> *bar(B<(19)> *ptr1, B<(::value + 7)> *ptr2, B<19 - 3> *ptr3) {
 
 typedef B<5> B5;
 
+
 namespace N {
-template <typename T> struct C {};
-} // namespace N
+  template<typename T> struct C {};
+}
 
 N::C<int> c1;
 typedef N::C<float> c2;
 
 // PR5655
-template <typename T> struct Foo {}; // expected-note{{template is declared here}}
+template<typename T> struct Foo { }; // expected-note{{template is declared here}}
 
 void f(void) { Foo bar; } // expected-error{{use of class template 'Foo' requires template arguments}}
 

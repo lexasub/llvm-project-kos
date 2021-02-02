@@ -46,8 +46,9 @@ void SubstituteForFlagValue(const char *s, char *out, uptr out_size) {
       case 'b': {
         const char *base = GetProcessName();
         CHECK(base);
-        while (*base && out < out_end - 1) *out++ = *base++;
-        s += 2;  // skip "%b"
+        while (*base && out < out_end - 1)
+          *out++ = *base++;
+        s += 2; // skip "%b"
         break;
       }
       case 'p': {
@@ -58,8 +59,9 @@ void SubstituteForFlagValue(const char *s, char *out, uptr out_size) {
           *--buf_pos = (pid % 10) + '0';
           pid /= 10;
         } while (pid);
-        while (buf_pos < buf + 32 && out < out_end - 1) *out++ = *buf_pos++;
-        s += 2;  // skip "%p"
+        while (buf_pos < buf + 32 && out < out_end - 1)
+          *out++ = *buf_pos++;
+        s += 2; // skip "%p"
         break;
       }
       default:

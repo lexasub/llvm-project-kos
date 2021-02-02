@@ -292,8 +292,7 @@ void wholeprogramdevirt::setAfterReturnValues(
 
 VirtualCallTarget::VirtualCallTarget(Function *Fn, const TypeMemberInfo *TM)
     : Fn(Fn), TM(TM),
-      IsBigEndian(Fn->getParent()->getDataLayout().isBigEndian()),
-      WasDevirt(false) {}
+      IsBigEndian(Fn->getParent()->getDataLayout().isBigEndian()), WasDevirt(false) {}
 
 namespace {
 
@@ -322,7 +321,8 @@ template <> struct DenseMapInfo<VTableSlot> {
     return DenseMapInfo<Metadata *>::getHashValue(I.TypeID) ^
            DenseMapInfo<uint64_t>::getHashValue(I.ByteOffset);
   }
-  static bool isEqual(const VTableSlot &LHS, const VTableSlot &RHS) {
+  static bool isEqual(const VTableSlot &LHS,
+                      const VTableSlot &RHS) {
     return LHS.TypeID == RHS.TypeID && LHS.ByteOffset == RHS.ByteOffset;
   }
 };
@@ -991,8 +991,8 @@ bool DevirtModule::tryFindVirtualCallTargets(
 }
 
 bool DevirtIndex::tryFindVirtualCallTargets(
-    std::vector<ValueInfo> &TargetsForSlot,
-    const TypeIdCompatibleVtableInfo TIdInfo, uint64_t ByteOffset) {
+    std::vector<ValueInfo> &TargetsForSlot, const TypeIdCompatibleVtableInfo TIdInfo,
+    uint64_t ByteOffset) {
   for (const TypeIdOffsetVtableInfo &P : TIdInfo) {
     // Find the first non-available_externally linkage vtable initializer.
     // We can have multiple available_externally, linkonce_odr and weak_odr
@@ -1312,7 +1312,7 @@ void DevirtModule::applyICallBranchFunnel(VTableSlotInfo &SlotInfo,
       NewArgAttrs.push_back(AttributeSet::get(
           M.getContext(), ArrayRef<Attribute>{Attribute::get(
                               M.getContext(), Attribute::Nest)}));
-      for (unsigned I = 0; I + 2 < Attrs.getNumAttrSets(); ++I)
+      for (unsigned I = 0; I + 2 <  Attrs.getNumAttrSets(); ++I)
         NewArgAttrs.push_back(Attrs.getParamAttributes(I));
       NewCS->setAttributes(
           AttributeList::get(M.getContext(), Attrs.getFnAttributes(),
@@ -1645,6 +1645,7 @@ bool DevirtModule::tryVirtualConstProp(
     if (RemarksEnabled)
       for (auto &&Target : TargetsForSlot)
         Target.WasDevirt = true;
+
 
     if (CSByConstantArg.second.isExported()) {
       ResByArg->TheKind = WholeProgramDevirtResolution::ByArg::VirtualConstProp;
@@ -2065,7 +2066,7 @@ bool DevirtModule::run() {
 
   // For each (type, offset) pair:
   bool DidVirtualConstProp = false;
-  std::map<std::string, Function *> DevirtTargets;
+  std::map<std::string, Function*> DevirtTargets;
   for (auto &S : CallSlots) {
     // Search each of the members of the type identifier for the virtual
     // function implementation at offset S.first.ByteOffset, and add to
@@ -2124,7 +2125,8 @@ bool DevirtModule::run() {
 
       using namespace ore;
       OREGetter(F).emit(OptimizationRemark(DEBUG_TYPE, "Devirtualized", F)
-                        << "devirtualized " << NV("FunctionName", DT.first));
+                        << "devirtualized "
+                        << NV("FunctionName", DT.first));
     }
   }
 
@@ -2197,8 +2199,7 @@ void DevirtIndex::run() {
     // function implementation at offset S.first.ByteOffset, and add to
     // TargetsForSlot.
     std::vector<ValueInfo> TargetsForSlot;
-    auto TidSummary =
-        ExportSummary.getTypeIdCompatibleVtableSummary(S.first.TypeID);
+    auto TidSummary = ExportSummary.getTypeIdCompatibleVtableSummary(S.first.TypeID);
     assert(TidSummary);
     // Create the type id summary resolution regardlness of whether we can
     // devirtualize, so that lower type tests knows the type id is used on

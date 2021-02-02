@@ -94,12 +94,11 @@ Status RemoteAwarePlatform::ResolveExecutable(
   if (error.Success()) {
     if (resolved_module_spec.GetArchitecture().IsValid()) {
       error = ModuleList::GetSharedModule(resolved_module_spec, exe_module_sp,
-                                          module_search_paths_ptr, nullptr,
-                                          nullptr);
+                                          module_search_paths_ptr, nullptr, nullptr);
       if (error.Fail()) {
         // If we failed, it may be because the vendor and os aren't known. If
-        // that is the case, try setting them to the host architecture and give
-        // it another try.
+	// that is the case, try setting them to the host architecture and give
+	// it another try.
         llvm::Triple &module_triple =
             resolved_module_spec.GetArchitecture().GetTriple();
         bool is_vendor_specified =
@@ -115,9 +114,8 @@ Status RemoteAwarePlatform::ResolveExecutable(
           if (!is_os_specified)
             module_triple.setOSName(host_triple.getOSName());
 
-          error = ModuleList::GetSharedModule(
-              resolved_module_spec, exe_module_sp, module_search_paths_ptr,
-              nullptr, nullptr);
+          error = ModuleList::GetSharedModule(resolved_module_spec,
+                                              exe_module_sp, module_search_paths_ptr, nullptr, nullptr);
         }
       }
 
@@ -138,8 +136,7 @@ Status RemoteAwarePlatform::ResolveExecutable(
                idx, resolved_module_spec.GetArchitecture());
            ++idx) {
         error = ModuleList::GetSharedModule(resolved_module_spec, exe_module_sp,
-                                            module_search_paths_ptr, nullptr,
-                                            nullptr);
+                                            module_search_paths_ptr, nullptr, nullptr);
         // Did we find an executable using one of the
         if (error.Success()) {
           if (exe_module_sp && exe_module_sp->GetObjectFile())

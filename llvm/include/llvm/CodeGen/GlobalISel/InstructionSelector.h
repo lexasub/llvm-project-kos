@@ -349,8 +349,7 @@ enum {
   /// reading from a specific operand.
   /// - InsnID - Instruction ID to modify
   /// - OldInsnID - Instruction ID to get the matched operand from
-  /// - OpIdx - Operand index in OldInsnID the render function should read
-  /// from..
+  /// - OpIdx - Operand index in OldInsnID the render function should read from..
   /// - RendererFnID - Custom renderer function to call
   GIR_CustomOperandRenderer,
 
@@ -436,7 +435,8 @@ public:
   }
 
   /// Setup per-MF selector state.
-  virtual void setupMF(MachineFunction &mf, GISelKnownBits &KB,
+  virtual void setupMF(MachineFunction &mf,
+                       GISelKnownBits &KB,
                        CodeGenCoverage &covinfo) {
     CoverageInfo = &covinfo;
     KnownBits = &KB;
@@ -471,7 +471,8 @@ public:
                const PredicateBitset *FeatureBitsets,
                const ComplexMatcherMemFn *ComplexPredicates,
                const CustomRendererFn *CustomRenderers)
-        : TypeObjects(TypeObjects), FeatureBitsets(FeatureBitsets),
+        : TypeObjects(TypeObjects),
+          FeatureBitsets(FeatureBitsets),
           ComplexPredicates(ComplexPredicates),
           CustomRenderers(CustomRenderers) {
 
@@ -528,8 +529,8 @@ protected:
   bool isOperandImmEqual(const MachineOperand &MO, int64_t Value,
                          const MachineRegisterInfo &MRI) const;
 
-  /// Return true if the specified operand is a G_PTR_ADD with a G_CONSTANT on
-  /// the right-hand side. GlobalISel's separation of pointer and integer types
+  /// Return true if the specified operand is a G_PTR_ADD with a G_CONSTANT on the
+  /// right-hand side. GlobalISel's separation of pointer and integer types
   /// means that we don't need to worry about G_OR with equivalent semantics.
   bool isBaseWithConstantOffset(const MachineOperand &Root,
                                 const MachineRegisterInfo &MRI) const;

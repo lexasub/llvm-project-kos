@@ -51,10 +51,10 @@ using namespace ento;
 
 STATISTIC(NumFunctionTopLevel, "The # of functions at top level.");
 STATISTIC(NumFunctionsAnalyzed,
-          "The # of functions and blocks analyzed (as top level "
-          "with inlining turned on).");
+                      "The # of functions and blocks analyzed (as top level "
+                      "with inlining turned on).");
 STATISTIC(NumBlocksInAnalyzedFunctions,
-          "The # of basic blocks in the analyzed functions.");
+                      "The # of basic blocks in the analyzed functions.");
 STATISTIC(NumVisitedBlocksInAnalyzedFunctions,
           "The # of visited basic blocks in the analyzed functions.");
 STATISTIC(PercentReachableBlocks, "The % of reachable basic blocks.");
@@ -68,7 +68,11 @@ namespace {
 
 class AnalysisConsumer : public AnalysisASTConsumer,
                          public RecursiveASTVisitor<AnalysisConsumer> {
-  enum { AM_None = 0, AM_Syntax = 0x1, AM_Path = 0x2 };
+  enum {
+    AM_None = 0,
+    AM_Syntax = 0x1,
+    AM_Path = 0x2
+  };
   typedef unsigned AnalysisMode;
 
   /// Mode of the analyzes while recursively visiting Decls.
@@ -121,8 +125,8 @@ public:
         Plugins(plugins), Injector(injector), CTU(CI) {
     DigestAnalyzerOptions();
     if (Opts->PrintStats || Opts->ShouldSerializeStats) {
-      AnalyzerTimers =
-          std::make_unique<llvm::TimerGroup>("analyzer", "Analyzer timers");
+      AnalyzerTimers = std::make_unique<llvm::TimerGroup>(
+          "analyzer", "Analyzer timers");
       SyntaxCheckTimer = std::make_unique<llvm::Timer>(
           "syntaxchecks", "Syntax-based analysis time", *AnalyzerTimers);
       ExprEngineTimer = std::make_unique<llvm::Timer>(
@@ -157,20 +161,16 @@ public:
     switch (Opts->AnalysisStoreOpt) {
     default:
       llvm_unreachable("Unknown store manager.");
-#define ANALYSIS_STORE(NAME, CMDFLAG, DESC, CREATEFN)                          \
-  case NAME##Model:                                                            \
-    CreateStoreMgr = CREATEFN;                                                 \
-    break;
+#define ANALYSIS_STORE(NAME, CMDFLAG, DESC, CREATEFN)           \
+      case NAME##Model: CreateStoreMgr = CREATEFN; break;
 #include "clang/StaticAnalyzer/Core/Analyses.def"
     }
 
     switch (Opts->AnalysisConstraintsOpt) {
     default:
       llvm_unreachable("Unknown constraint manager.");
-#define ANALYSIS_CONSTRAINTS(NAME, CMDFLAG, DESC, CREATEFN)                    \
-  case NAME##Model:                                                            \
-    CreateConstraintMgr = CREATEFN;                                            \
-    break;
+#define ANALYSIS_CONSTRAINTS(NAME, CMDFLAG, DESC, CREATEFN)     \
+      case NAME##Model: CreateConstraintMgr = CREATEFN; break;
 #include "clang/StaticAnalyzer/Core/Analyses.def"
     }
   }
@@ -227,7 +227,7 @@ public:
   /// analyzed. This allows to redefine the default inlining policies when
   /// analyzing a given function.
   ExprEngine::InliningModes
-  getInliningModeForFunction(const Decl *D, const SetOfConstDecls &Visited);
+    getInliningModeForFunction(const Decl *D, const SetOfConstDecls &Visited);
 
   /// Build the call graph for all the top level decls of this TU and
   /// use it to define the order in which the functions should be visited.
@@ -243,7 +243,8 @@ public:
                   ExprEngine::InliningModes IMode = ExprEngine::Inline_Minimal,
                   SetOfConstDecls *VisitedCallees = nullptr);
 
-  void RunPathSensitiveChecks(Decl *D, ExprEngine::InliningModes IMode,
+  void RunPathSensitiveChecks(Decl *D,
+                              ExprEngine::InliningModes IMode,
                               SetOfConstDecls *VisitedCallees);
 
   /// Visitors for the RecursiveASTVisitor.
@@ -277,8 +278,9 @@ public:
     if (VD->getAnyInitializer())
       return true;
 
-    llvm::Expected<const VarDecl *> CTUDeclOrError = CTU.getCrossTUDefinition(
-        VD, Opts->CTUDir, Opts->CTUIndexName, Opts->DisplayCTUProgress);
+    llvm::Expected<const VarDecl *> CTUDeclOrError =
+      CTU.getCrossTUDefinition(VD, Opts->CTUDir, Opts->CTUIndexName,
+                               Opts->DisplayCTUProgress);
 
     if (!CTUDeclOrError) {
       handleAllErrors(CTUDeclOrError.takeError(),
@@ -297,7 +299,8 @@ public:
 
     // We skip function template definitions, as their semantics is
     // only determined when they are instantiated.
-    if (FD->isThisDeclarationADefinition() && !FD->isDependentContext()) {
+    if (FD->isThisDeclarationADefinition() &&
+        !FD->isDependentContext()) {
       assert(RecVisitorMode == AM_Syntax || Mgr->shouldInlineCall() == false);
       HandleCode(FD, RecVisitorMode);
     }
@@ -328,8 +331,7 @@ public:
     PathConsumers.push_back(Consumer);
   }
 
-  void
-  AddCheckerRegistrationFn(std::function<void(CheckerRegistry &)> Fn) override {
+  void AddCheckerRegistrationFn(std::function<void(CheckerRegistry&)> Fn) override {
     CheckerRegistrationFns.push_back(std::move(Fn));
   }
 
@@ -345,6 +347,7 @@ private:
   void reportAnalyzerProgress(StringRef S);
 }; // namespace
 } // end anonymous namespace
+
 
 //===----------------------------------------------------------------------===//
 // AnalysisConsumer implementation.
@@ -370,7 +373,8 @@ void AnalysisConsumer::storeTopLevelDecls(DeclGroupRef DG) {
   }
 }
 
-static bool shouldSkipFunction(const Decl *D, const SetOfConstDecls &Visited,
+static bool shouldSkipFunction(const Decl *D,
+                               const SetOfConstDecls &Visited,
                                const SetOfConstDecls &VisitedAsTopLevel) {
   if (VisitedAsTopLevel.count(D))
     return true;
@@ -424,7 +428,7 @@ void AnalysisConsumer::HandleDeclsCallGraph(const unsigned LocalTUDeclsSize) {
   // (though HandleInterestingDecl); triggering additions to LocalTUDecls.
   // We rely on random access to add the initially processed Decls to CG.
   CallGraph CG;
-  for (unsigned i = 0; i < LocalTUDeclsSize; ++i) {
+  for (unsigned i = 0 ; i < LocalTUDeclsSize ; ++i) {
     CG.addToCallGraph(LocalTUDecls[i]);
   }
 
@@ -436,11 +440,9 @@ void AnalysisConsumer::HandleDeclsCallGraph(const unsigned LocalTUDeclsSize) {
   // often.
   SetOfConstDecls Visited;
   SetOfConstDecls VisitedAsTopLevel;
-  llvm::ReversePostOrderTraversal<clang::CallGraph *> RPOT(&CG);
-  for (llvm::ReversePostOrderTraversal<clang::CallGraph *>::rpo_iterator
-           I = RPOT.begin(),
-           E = RPOT.end();
-       I != E; ++I) {
+  llvm::ReversePostOrderTraversal<clang::CallGraph*> RPOT(&CG);
+  for (llvm::ReversePostOrderTraversal<clang::CallGraph*>::rpo_iterator
+         I = RPOT.begin(), E = RPOT.end(); I != E; ++I) {
     NumFunctionTopLevel++;
 
     CallGraphNode *N = *I;
@@ -504,7 +506,7 @@ void AnalysisConsumer::runAnalysisOnTranslationUnit(ASTContext &C) {
   // random access.  By doing so, we automatically compensate for iterators
   // possibly being invalidated, although this is a bit slower.
   const unsigned LocalTUDeclsSize = LocalTUDecls.size();
-  for (unsigned i = 0; i < LocalTUDeclsSize; ++i) {
+  for (unsigned i = 0 ; i < LocalTUDeclsSize ; ++i) {
     TraverseDecl(LocalTUDecls[i]);
   }
 
@@ -548,7 +550,7 @@ void AnalysisConsumer::HandleTranslationUnit(ASTContext &C) {
       FunctionSummaries.getTotalNumVisitedBasicBlocks();
   if (NumBlocksInAnalyzedFunctions > 0)
     PercentReachableBlocks =
-        (FunctionSummaries.getTotalNumVisitedBasicBlocks() * 100) /
+      (FunctionSummaries.getTotalNumVisitedBasicBlocks() * 100) /
         NumBlocksInAnalyzedFunctions;
 
   // Explicitly destroy the PathDiagnosticConsumer.  This will flush its output.
@@ -601,9 +603,11 @@ std::string AnalysisConsumer::getFunctionName(const Decl *D) {
            << OC->getIdentifier()->getNameStart() << ')';
       }
     } else if (const auto *OCD = dyn_cast<ObjCCategoryImplDecl>(DC)) {
-      OS << OCD->getClassInterface()->getName() << '(' << OCD->getName() << ')';
+      OS << OCD->getClassInterface()->getName() << '('
+         << OCD->getName() << ')';
     }
     OS << ' ' << OMD->getSelector().getAsString() << ']';
+
   }
 
   return OS.str();

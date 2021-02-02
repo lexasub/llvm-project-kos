@@ -28,6 +28,6 @@ StringRef machineToStr(COFF::MachineTypes MT);
 // Only returns ARMNT, ARM64, AMD64, I386, or IMAGE_FILE_MACHINE_UNKNOWN.
 COFF::MachineTypes getMachineType(StringRef S);
 
-} // namespace llvm
+}
 
 #endif

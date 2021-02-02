@@ -156,7 +156,7 @@ private:
   }
 
   void addUSRsOfCtorDtors(const CXXRecordDecl *RD) {
-    const auto *RecordDecl = RD->getDefinition();
+    const auto* RecordDecl = RD->getDefinition();
 
     // Skip if the CXXRecordDecl doesn't have definition.
     if (!RecordDecl) {

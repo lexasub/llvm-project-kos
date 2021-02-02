@@ -8,5 +8,5 @@
 // CHECK-NEXT: ...
 
 // NamespaceAliasDecl
-namespace NS {}
+namespace NS { }
 namespace B = NS;

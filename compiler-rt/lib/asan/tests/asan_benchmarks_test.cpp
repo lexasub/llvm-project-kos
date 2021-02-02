@@ -13,9 +13,9 @@
 
 #include "asan_test_utils.h"
 
-template <class T>
-__attribute__((noinline)) static void ManyAccessFunc(T *x, size_t n_elements,
-                                                     size_t n_iter) {
+template<class T>
+__attribute__((noinline))
+static void ManyAccessFunc(T *x, size_t n_elements, size_t n_iter) {
   for (size_t iter = 0; iter < n_iter; iter++) {
     break_optimization(0);
     // hand unroll the loop to stress the reg alloc.
@@ -44,11 +44,12 @@ TEST(AddressSanitizer, ManyAccessBenchmark) {
   size_t kLen = 1024;
   int *int_array = new int[kLen];
   ManyAccessFunc(int_array, kLen, 1 << 24);
-  delete[] int_array;
+  delete [] int_array;
 }
 
 // access 7 char elements in a 7 byte array (i.e. on the border).
-__attribute__((noinline)) static void BorderAccessFunc(char *x, size_t n_iter) {
+__attribute__((noinline))
+static void BorderAccessFunc(char *x, size_t n_iter) {
   for (size_t iter = 0; iter < n_iter; iter++) {
     break_optimization(x);
     x[0] = 0;
@@ -64,7 +65,7 @@ __attribute__((noinline)) static void BorderAccessFunc(char *x, size_t n_iter) {
 TEST(AddressSanitizer, BorderAccessBenchmark) {
   char *char_7_array = new char[7];
   BorderAccessFunc(char_7_array, 1 << 30);
-  delete[] char_7_array;
+  delete [] char_7_array;
 }
 
 static void FunctionWithLargeStack() {
@@ -73,7 +74,8 @@ static void FunctionWithLargeStack() {
 }
 
 TEST(AddressSanitizer, FakeStackBenchmark) {
-  for (int i = 0; i < 10000000; i++) Ident (&FunctionWithLargeStack)();
+  for (int i = 0; i < 10000000; i++)
+    Ident(&FunctionWithLargeStack)();
 }
 
 int main(int argc, char **argv) {

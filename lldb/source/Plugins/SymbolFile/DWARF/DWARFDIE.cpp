@@ -233,8 +233,7 @@ void DWARFDIE::GetName(Stream &s) const {
     s.PutCString("NULL");
     return;
   }
-  const char *name =
-      GetDIE()->GetAttributeValueAsString(GetCU(), DW_AT_name, nullptr, true);
+  const char *name = GetDIE()->GetAttributeValueAsString(GetCU(), DW_AT_name, nullptr, true);
   if (!name)
     return;
   s.PutCString(name);

@@ -53,7 +53,7 @@ public:
 } // namespace lldb_private
 
 namespace llvm {
-template <typename Ratio>
+template<typename Ratio>
 struct format_provider<lldb_private::Timeout<Ratio>, void> {
   static void format(const lldb_private::Timeout<Ratio> &timeout,
                      raw_ostream &OS, StringRef Options) {
@@ -65,6 +65,6 @@ struct format_provider<lldb_private::Timeout<Ratio>, void> {
       format_provider<Dur>::format(*timeout, OS, Options);
   }
 };
-} // namespace llvm
+}
 
 #endif // LLDB_UTILITY_TIMEOUT_H

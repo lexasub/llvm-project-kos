@@ -97,8 +97,8 @@ private:
   MPIBugReporter BReporter;
 };
 
-} // namespace mpi
-} // namespace ento
-} // namespace clang
+} // end of namespace: mpi
+} // end of namespace: ento
+} // end of namespace: clang
 
 #endif

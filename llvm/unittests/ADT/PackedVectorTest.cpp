@@ -97,6 +97,6 @@ TEST(PackedVectorTest, SignedValues) {
 
 #endif
 
-} // namespace
+}
 
 #endif

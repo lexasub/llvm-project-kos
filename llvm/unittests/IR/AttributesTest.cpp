@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/IR/Attributes.h"
-#include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/DerivedTypes.h"
 #include "gtest/gtest.h"
 using namespace llvm;
 
@@ -59,8 +59,7 @@ TEST(Attributes, AddAttributes) {
   AttributeList AL;
   AttrBuilder B;
   B.addAttribute(Attribute::NoReturn);
-  AL = AL.addAttributes(C, AttributeList::FunctionIndex,
-                        AttributeSet::get(C, B));
+  AL = AL.addAttributes(C, AttributeList::FunctionIndex, AttributeSet::get(C, B));
   EXPECT_TRUE(AL.hasFnAttribute(Attribute::NoReturn));
   B.clear();
   B.addAttribute(Attribute::SExt);
@@ -167,9 +166,8 @@ TEST(Attributes, EmptyGet) {
 
 TEST(Attributes, OverflowGet) {
   LLVMContext C;
-  std::pair<unsigned, Attribute> Attrs[] = {
-      {AttributeList::ReturnIndex, Attribute::get(C, Attribute::SExt)},
-      {AttributeList::FunctionIndex, Attribute::get(C, Attribute::ReadOnly)}};
+  std::pair<unsigned, Attribute> Attrs[] = { { AttributeList::ReturnIndex, Attribute::get(C, Attribute::SExt) },
+                                             { AttributeList::FunctionIndex, Attribute::get(C, Attribute::ReadOnly) } };
   AttributeList AL = AttributeList::get(C, Attrs);
   EXPECT_EQ(2U, AL.getNumAttrSets());
 }

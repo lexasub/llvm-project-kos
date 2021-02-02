@@ -10,20 +10,20 @@
 //
 //===----------------------------------------------------------------------===//
 #if !defined(INCLUDED_FROM_SANITIZER_TEST_UTILS_H)
-#error "This file should be included into sanitizer_test_utils.h only"
+# error "This file should be included into sanitizer_test_utils.h only"
 #endif
 
 #ifndef SANITIZER_TEST_CONFIG_H
 #define SANITIZER_TEST_CONFIG_H
 
-#include <map>
-#include <string>
 #include <vector>
+#include <string>
+#include <map>
 
 #if SANITIZER_USE_DEJAGNU_GTEST
-#include "dejagnu-gtest.h"
+# include "dejagnu-gtest.h"
 #else
-#include "gtest/gtest.h"
+# include "gtest/gtest.h"
 #endif
 
 #endif  // SANITIZER_TEST_CONFIG_H

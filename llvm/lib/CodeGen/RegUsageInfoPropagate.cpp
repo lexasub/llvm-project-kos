@@ -19,8 +19,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/CodeGen/MachineBasicBlock.h"
-#include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
+#include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/Passes.h"
@@ -63,12 +63,10 @@ public:
 private:
   static void setRegMask(MachineInstr &MI, ArrayRef<uint32_t> RegMask) {
     assert(RegMask.size() ==
-               MachineOperand::getRegMaskSize(MI.getParent()
-                                                  ->getParent()
-                                                  ->getRegInfo()
-                                                  .getTargetRegisterInfo()
-                                                  ->getNumRegs()) &&
-           "expected register mask size");
+           MachineOperand::getRegMaskSize(MI.getParent()->getParent()
+                                          ->getRegInfo().getTargetRegisterInfo()
+                                          ->getNumRegs())
+           && "expected register mask size");
     for (MachineOperand &MO : MI.operands()) {
       if (MO.isRegMask())
         MO.setRegMask(RegMask.data());
@@ -81,8 +79,8 @@ private:
 INITIALIZE_PASS_BEGIN(RegUsageInfoPropagation, "reg-usage-propagation",
                       RUIP_NAME, false, false)
 INITIALIZE_PASS_DEPENDENCY(PhysicalRegisterUsageInfo)
-INITIALIZE_PASS_END(RegUsageInfoPropagation, "reg-usage-propagation", RUIP_NAME,
-                    false, false)
+INITIALIZE_PASS_END(RegUsageInfoPropagation, "reg-usage-propagation",
+                    RUIP_NAME, false, false)
 
 char RegUsageInfoPropagation::ID = 0;
 

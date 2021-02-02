@@ -6,6 +6,7 @@
 //
 //===--------------------------------------------------------------------===//
 
+
 #include "clang/AST/ASTTypeTraits.h"
 #include "MatchVerifier.h"
 #include "gtest/gtest.h"
@@ -87,9 +88,8 @@ TEST(ASTNodeKind, MostDerivedType) {
   // Not related. Returns nothing.
   EXPECT_TRUE(
       ASTNodeKind::getMostDerivedType(DNT<IfStmt>(), DNT<VarDecl>()).isNone());
-  EXPECT_TRUE(
-      ASTNodeKind::getMostDerivedType(DNT<IfStmt>(), DNT<BinaryOperator>())
-          .isNone());
+  EXPECT_TRUE(ASTNodeKind::getMostDerivedType(DNT<IfStmt>(),
+                                              DNT<BinaryOperator>()).isNone());
 }
 
 TEST(ASTNodeKind, MostDerivedCommonAncestor) {
@@ -101,13 +101,13 @@ TEST(ASTNodeKind, MostDerivedCommonAncestor) {
       DNT<VarDecl>(), DNT<VarDecl>())));
 
   // A little related. Returns the ancestor.
-  EXPECT_TRUE(DNT<NamedDecl>().isSame(ASTNodeKind::getMostDerivedCommonAncestor(
-      DNT<CXXMethodDecl>(), DNT<RecordDecl>())));
+  EXPECT_TRUE(
+      DNT<NamedDecl>().isSame(ASTNodeKind::getMostDerivedCommonAncestor(
+          DNT<CXXMethodDecl>(), DNT<RecordDecl>())));
 
   // Not related. Returns nothing.
-  EXPECT_TRUE(
-      ASTNodeKind::getMostDerivedCommonAncestor(DNT<IfStmt>(), DNT<VarDecl>())
-          .isNone());
+  EXPECT_TRUE(ASTNodeKind::getMostDerivedCommonAncestor(
+                  DNT<IfStmt>(), DNT<VarDecl>()).isNone());
 }
 
 struct Foo {};
@@ -192,4 +192,4 @@ TEST(DynTypedNode, QualType) {
 }
 
 } // namespace
-} // namespace clang
+}  // namespace clang

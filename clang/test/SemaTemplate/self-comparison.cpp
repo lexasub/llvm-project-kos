@@ -40,13 +40,9 @@ template <int X> void foo2() {
 
 void test() {
   foo<1, 1>();
-  S1<1, 1> s1;
-  s1.foo();
-  S2<1, 1> s2;
-  s2.foo<void>();
-  S3 s3;
-  s3.foo<1, 1>();
-  S4<1> s4;
-  s4.foo<1>();
+  S1<1, 1> s1; s1.foo();
+  S2<1, 1> s2; s2.foo<void>();
+  S3 s3; s3.foo<1, 1>();
+  S4<1> s4; s4.foo<1>();
   foo2<N>();
 }

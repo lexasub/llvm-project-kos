@@ -22,7 +22,7 @@ namespace llvm {
 namespace json {
 class Object;
 class Value;
-} // namespace json
+}
 } // namespace llvm
 
 namespace lldb_private {

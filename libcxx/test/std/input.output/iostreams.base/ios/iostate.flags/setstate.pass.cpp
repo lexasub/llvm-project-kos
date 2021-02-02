@@ -20,41 +20,51 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**) {
-  {
-    std::ios ios(0);
-    ios.setstate(std::ios::goodbit);
-    assert(ios.rdstate() == std::ios::badbit);
+int main(int, char**)
+{
+    {
+        std::ios ios(0);
+        ios.setstate(std::ios::goodbit);
+        assert(ios.rdstate() == std::ios::badbit);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try {
-      ios.exceptions(std::ios::badbit);
-      assert(false);
-    } catch (...) {
-    }
-    try {
-      ios.setstate(std::ios::goodbit);
-      assert(false);
-    } catch (std::ios::failure&) {
-      assert(ios.rdstate() == std::ios::badbit);
-    }
-    try {
-      ios.setstate(std::ios::eofbit);
-      assert(false);
-    } catch (std::ios::failure&) {
-      assert(ios.rdstate() == (std::ios::eofbit | std::ios::badbit));
-    }
+        try
+        {
+            ios.exceptions(std::ios::badbit);
+            assert(false);
+        }
+        catch (...)
+        {
+        }
+        try
+        {
+            ios.setstate(std::ios::goodbit);
+            assert(false);
+        }
+        catch (std::ios::failure&)
+        {
+            assert(ios.rdstate() == std::ios::badbit);
+        }
+        try
+        {
+            ios.setstate(std::ios::eofbit);
+            assert(false);
+        }
+        catch (std::ios::failure&)
+        {
+            assert(ios.rdstate() == (std::ios::eofbit | std::ios::badbit));
+        }
 #endif
-  }
-  {
-    testbuf sb;
-    std::ios ios(&sb);
-    ios.setstate(std::ios::goodbit);
-    assert(ios.rdstate() == std::ios::goodbit);
-    ios.setstate(std::ios::eofbit);
-    assert(ios.rdstate() == std::ios::eofbit);
-    ios.setstate(std::ios::failbit);
-    assert(ios.rdstate() == (std::ios::eofbit | std::ios::failbit));
-  }
+    }
+    {
+        testbuf sb;
+        std::ios ios(&sb);
+        ios.setstate(std::ios::goodbit);
+        assert(ios.rdstate() == std::ios::goodbit);
+        ios.setstate(std::ios::eofbit);
+        assert(ios.rdstate() == std::ios::eofbit);
+        ios.setstate(std::ios::failbit);
+        assert(ios.rdstate() == (std::ios::eofbit | std::ios::failbit));
+    }
 
   return 0;
 }

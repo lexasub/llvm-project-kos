@@ -8,7 +8,7 @@ char *data2 = new char[10];
 
 void *Thread1(void *x) {
   static volatile int size = 1;
-  memcpy(data + 5, data1, size);
+  memcpy(data+5, data1, size);
   barrier_wait(&barrier);
   return NULL;
 }
@@ -16,7 +16,7 @@ void *Thread1(void *x) {
 void *Thread2(void *x) {
   static volatile int size = 4;
   barrier_wait(&barrier);
-  memcpy(data + 3, data2, size);
+  memcpy(data+3, data2, size);
   return NULL;
 }
 

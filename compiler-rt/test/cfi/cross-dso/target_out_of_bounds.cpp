@@ -16,8 +16,8 @@
 // https://android-review.googlesource.com/c/platform/bionic/+/1333960
 // UNSUPPORTED: android
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>

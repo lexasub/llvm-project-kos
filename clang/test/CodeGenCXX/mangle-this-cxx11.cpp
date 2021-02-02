@@ -1,14 +1,14 @@
 // RUN: %clang_cc1 -std=c++11 -emit-llvm %s -o - -triple=x86_64-apple-darwin9 | FileCheck %s
 
 struct B {
-  template <class U> U f();
+ template <class U> U f();
 };
 
 struct A {
-  B b;
-  // implicitly rewritten to (*this).b.f<U>()
-  template <class U> auto f() -> decltype(b.f<U>());
-  template <class U> auto g() -> decltype(this->b.f<U>());
+ B b;
+ // implicitly rewritten to (*this).b.f<U>()
+ template <class U> auto f() -> decltype (b.f<U>());
+ template <class U> auto g() -> decltype (this->b.f<U>());
 };
 
 int main() {

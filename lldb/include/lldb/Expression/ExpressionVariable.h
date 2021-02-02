@@ -80,26 +80,26 @@ public:
   enum Flags {
     EVNone = 0,
     EVIsLLDBAllocated = 1 << 0, ///< This variable is resident in a location
-                                /// specifically allocated for it by LLDB in the
-                                /// target process
+                                ///specifically allocated for it by LLDB in the
+                                ///target process
     EVIsProgramReference = 1 << 1, ///< This variable is a reference to a
                                    ///(possibly invalid) area managed by the
-                                   /// target program
+                                   ///target program
     EVNeedsAllocation = 1 << 2,    ///< Space for this variable has yet to be
-                                   /// allocated in the target process
+                                   ///allocated in the target process
     EVIsFreezeDried = 1 << 3, ///< This variable's authoritative version is in
-                              /// m_frozen_sp (for example, for
-                              /// statically-computed results)
+                              ///m_frozen_sp (for example, for
+                              ///statically-computed results)
     EVNeedsFreezeDry =
         1 << 4, ///< Copy from m_live_sp to m_frozen_sp during dematerialization
     EVKeepInTarget = 1 << 5, ///< Keep the allocation after the expression is
-                             /// complete rather than freeze drying its contents
-                             /// and freeing it
+                             ///complete rather than freeze drying its contents
+                             ///and freeing it
     EVTypeIsReference = 1 << 6, ///< The original type of this variable is a
-                                /// reference, so materialize the value rather
-                                /// than the location
+                                ///reference, so materialize the value rather
+                                ///than the location
     EVBareRegister = 1 << 7 ///< This variable is a direct reference to $pc or
-                            /// some other entity.
+                            ///some other entity.
   };
 
   typedef uint16_t FlagType;
@@ -215,8 +215,9 @@ public:
   CreatePersistentVariable(const lldb::ValueObjectSP &valobj_sp) = 0;
 
   virtual lldb::ExpressionVariableSP
-  CreatePersistentVariable(ExecutionContextScope *exe_scope, ConstString name,
-                           const CompilerType &type, lldb::ByteOrder byte_order,
+  CreatePersistentVariable(ExecutionContextScope *exe_scope,
+                           ConstString name, const CompilerType &type,
+                           lldb::ByteOrder byte_order,
                            uint32_t addr_byte_size) = 0;
 
   /// Return a new persistent variable name with the specified prefix.

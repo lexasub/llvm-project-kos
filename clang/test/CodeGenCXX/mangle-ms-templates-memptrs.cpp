@@ -1,52 +1,20 @@
 // RUN: %clang_cc1 -Wno-microsoft -fno-rtti -std=c++11 -emit-llvm %s -o - -triple=i386-pc-win32 | FileCheck %s
 
 struct U;
-static_assert(sizeof(void (U::*)()) == 2 * sizeof(void *) + 2 * sizeof(int), "");
+static_assert(sizeof(void (U::*)()) == 2 * sizeof(void*) + 2 * sizeof(int), "");
 
-struct A {
-  int a;
-};
-struct B {
-  int b;
-};
-struct I {
-  union {
-    struct {
-      int a, b;
-    };
-  };
-};
+struct A { int a; };
+struct B { int b; };
+struct I { union { struct { int a, b; }; }; };
 
-struct S {
-  int a, b;
-  void f();
-  virtual void g();
-};
-struct M : A, B {
-  int a, b;
-  void f();
-  virtual void g();
-};
-struct V : virtual A {
-  int a, b;
-  void f();
-  virtual void g();
-};
-struct U {
-  int a, b;
-  void f();
-  virtual void g();
-};
+struct S             { int a, b; void f(); virtual void g(); };
+struct M : A, B      { int a, b; void f(); virtual void g(); };
+struct V : virtual A { int a, b; void f(); virtual void g(); };
+struct U             { int a, b; void f(); virtual void g(); };
 
-struct C {
-  virtual void f();
-};
-struct D {
-  virtual void g();
-};
-struct O : C, D {
-  virtual void g();
-}; // override of non-primary
+struct C        { virtual void f(); };
+struct D        { virtual void g(); };
+struct O : C, D { virtual void g(); }; // override of non-primary
 
 // Test data member pointers.
 template <typename T, int T::*F>
@@ -180,7 +148,7 @@ struct B : virtual A {};
 struct C : B {
   virtual void f();
 };
-} // namespace NegativeNVOffset
+}
 
 template void CallMethod<NegativeNVOffset::C, &NegativeNVOffset::C::f>(NegativeNVOffset::C &);
 

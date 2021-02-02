@@ -60,6 +60,6 @@ struct ObjCARCExpandPass : public PassInfoMixin<ObjCARCExpandPass> {
   PreservedAnalyses run(Function &M, FunctionAnalysisManager &AM);
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

@@ -2,7 +2,7 @@
 
 namespace my_namespace {
 class C {};
-} // namespace my_namespace
+}
 
 namespace unused_alias = ::my_namespace; // eol-comments aren't removed (yet)
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: namespace alias decl 'unused_alias' is unused

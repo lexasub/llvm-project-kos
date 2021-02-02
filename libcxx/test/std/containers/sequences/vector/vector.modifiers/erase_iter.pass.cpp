@@ -20,50 +20,39 @@
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
 struct Throws {
-  Throws() : v_(0) {}
-  Throws(int v) : v_(v) {}
-  Throws(const Throws& rhs) : v_(rhs.v_) {
-    if (sThrows)
-      throw 1;
-  }
-  Throws(Throws&& rhs) : v_(rhs.v_) {
-    if (sThrows)
-      throw 1;
-  }
-  Throws& operator=(const Throws& rhs) {
-    v_ = rhs.v_;
-    return *this;
-  }
-  Throws& operator=(Throws&& rhs) {
-    v_ = rhs.v_;
-    return *this;
-  }
-  int v_;
-  static bool sThrows;
-};
+    Throws() : v_(0) {}
+    Throws(int v) : v_(v) {}
+    Throws(const Throws  &rhs) : v_(rhs.v_) { if (sThrows) throw 1; }
+    Throws(      Throws &&rhs) : v_(rhs.v_) { if (sThrows) throw 1; }
+    Throws& operator=(const Throws  &rhs) { v_ = rhs.v_; return *this; }
+    Throws& operator=(      Throws &&rhs) { v_ = rhs.v_; return *this; }
+    int v_;
+    static bool sThrows;
+    };
 
 bool Throws::sThrows = false;
 #endif
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     int a1[] = {1, 2, 3, 4, 5};
-    std::vector<int> l1(a1, a1 + 5);
+    std::vector<int> l1(a1, a1+5);
     l1.erase(l1.begin());
     assert(is_contiguous_container_asan_correct(l1));
-    assert(l1 == std::vector<int>(a1 + 1, a1 + 5));
-  }
-  {
+    assert(l1 == std::vector<int>(a1+1, a1+5));
+    }
+    {
     int a1[] = {1, 2, 3, 4, 5};
     int e1[] = {1, 3, 4, 5};
-    std::vector<int> l1(a1, a1 + 5);
+    std::vector<int> l1(a1, a1+5);
     l1.erase(l1.begin() + 1);
     assert(is_contiguous_container_asan_correct(l1));
-    assert(l1 == std::vector<int>(e1, e1 + 4));
-  }
-  {
+    assert(l1 == std::vector<int>(e1, e1+4));
+    }
+    {
     int a1[] = {1, 2, 3};
-    std::vector<int> l1(a1, a1 + 3);
+    std::vector<int> l1(a1, a1+3);
     std::vector<int>::const_iterator i = l1.begin();
     assert(is_contiguous_container_asan_correct(l1));
     ++i;
@@ -85,15 +74,15 @@ int main(int, char**) {
     assert(l1.size() == 0);
     assert(distance(l1.begin(), l1.end()) == 0);
     assert(is_contiguous_container_asan_correct(l1));
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
+    {
     int a1[] = {1, 2, 3};
-    std::vector<int, min_allocator<int> > l1(a1, a1 + 3);
-    std::vector<int, min_allocator<int> >::const_iterator i = l1.begin();
+    std::vector<int, min_allocator<int>> l1(a1, a1+3);
+    std::vector<int, min_allocator<int>>::const_iterator i = l1.begin();
     assert(is_contiguous_container_asan_correct(l1));
     ++i;
-    std::vector<int, min_allocator<int> >::iterator j = l1.erase(i);
+    std::vector<int, min_allocator<int>>::iterator j = l1.erase(i);
     assert(l1.size() == 2);
     assert(distance(l1.begin(), l1.end()) == 2);
     assert(*j == 3);
@@ -111,20 +100,20 @@ int main(int, char**) {
     assert(l1.size() == 0);
     assert(distance(l1.begin(), l1.end()) == 0);
     assert(is_contiguous_container_asan_correct(l1));
-  }
+    }
 #endif
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  // Test for LWG2853:
-  // Throws: Nothing unless an exception is thrown by the assignment operator or move assignment operator of T.
-  {
+// Test for LWG2853:
+// Throws: Nothing unless an exception is thrown by the assignment operator or move assignment operator of T.
+    {
     Throws arr[] = {1, 2, 3};
-    std::vector<Throws> v(arr, arr + 3);
+    std::vector<Throws> v(arr, arr+3);
     Throws::sThrows = true;
     v.erase(v.begin());
     v.erase(--v.end());
     v.erase(v.begin());
     assert(v.size() == 0);
-  }
+    }
 #endif
 
   return 0;

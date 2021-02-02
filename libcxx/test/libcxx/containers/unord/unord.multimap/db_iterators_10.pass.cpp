@@ -26,15 +26,13 @@
 #include "min_allocator.h"
 
 int main(int, char**) {
-  typedef std::unordered_multimap<
-      int, std::string, std::hash<int>, std::equal_to<int>,
-      min_allocator<std::pair<const int, std::string> > >
-      C;
-  C c;
-  c.insert(std::make_pair(1, "one"));
-  C::iterator i = c.end();
-  C::value_type j = *i;
-  assert(false);
+    typedef std::unordered_multimap<int, std::string, std::hash<int>, std::equal_to<int>,
+                        min_allocator<std::pair<const int, std::string>>> C;
+    C c;
+    c.insert(std::make_pair(1, "one"));
+    C::iterator i = c.end();
+    C::value_type j = *i;
+    assert(false);
 
-  return 0;
+    return 0;
 }

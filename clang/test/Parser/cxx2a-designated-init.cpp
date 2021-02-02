@@ -22,4 +22,4 @@ struct D {
 };
 
 D d1 = {.c = {1, 2000}}; // cxx98-warning {{changes value}} expected-error {{narrow}} expected-warning {{changes value}} expected-note {{}}
-D d2 = {.c{1, 2000}};    // cxx98-error {{expected '='}} expected-error {{narrow}} expected-warning {{changes value}} expected-note {{}}
+D d2 = {.c{1, 2000}}; // cxx98-error {{expected '='}} expected-error {{narrow}} expected-warning {{changes value}} expected-note {{}}

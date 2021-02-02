@@ -80,7 +80,7 @@ public:
     Stream << Item;
   }
 };
-} // namespace detail
+}
 
 template <typename T>
 detail::AlignAdapter<T> fmt_align(T &&Item, AlignStyle Where, size_t Amount,
@@ -104,6 +104,6 @@ detail::RepeatAdapter<T> fmt_repeat(T &&Item, size_t Count) {
 inline detail::ErrorAdapter fmt_consume(Error &&Item) {
   return detail::ErrorAdapter(std::move(Item));
 }
-} // namespace llvm
+}
 
 #endif

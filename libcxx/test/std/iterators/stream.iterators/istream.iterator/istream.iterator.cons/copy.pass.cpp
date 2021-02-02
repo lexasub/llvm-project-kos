@@ -20,21 +20,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::istream_iterator<int> io;
-    std::istream_iterator<int> i = io;
-    assert(i == std::istream_iterator<int>());
-  }
-  {
-    std::istringstream inf(" 1 23");
-    std::istream_iterator<int> io(inf);
-    std::istream_iterator<int> i = io;
-    assert(i != std::istream_iterator<int>());
-    int j = 0;
-    j = *i;
-    assert(j == 1);
-  }
+int main(int, char**)
+{
+    {
+        std::istream_iterator<int> io;
+        std::istream_iterator<int> i = io;
+        assert(i == std::istream_iterator<int>());
+    }
+    {
+        std::istringstream inf(" 1 23");
+        std::istream_iterator<int> io(inf);
+        std::istream_iterator<int> i = io;
+        assert(i != std::istream_iterator<int>());
+        int j = 0;
+        j = *i;
+        assert(j == 1);
+    }
 
   return 0;
 }

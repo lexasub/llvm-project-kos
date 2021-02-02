@@ -113,3 +113,4 @@ Block *mlir::edsc::buildInNewBlock(Region &region, TypeRange argTypes,
   builderFn(block->getArguments());
   return block;
 }
+

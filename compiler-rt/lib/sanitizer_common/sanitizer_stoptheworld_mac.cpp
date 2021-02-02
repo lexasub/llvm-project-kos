@@ -12,8 +12,8 @@
 
 #include "sanitizer_platform.h"
 
-#if SANITIZER_MAC && \
-    (defined(__x86_64__) || defined(__aarch64__) || defined(__i386))
+#if SANITIZER_MAC && (defined(__x86_64__) || defined(__aarch64__) || \
+                      defined(__i386))
 
 #include <mach/mach.h>
 #include <mach/thread_info.h>
@@ -64,8 +64,7 @@ void *RunThread(void *arg) {
 
   thread_t thread_self = mach_thread_self();
   for (unsigned int i = 0; i < num_threads; ++i) {
-    if (threads[i] == thread_self)
-      continue;
+    if (threads[i] == thread_self) continue;
 
     thread_suspend(threads[i]);
     suspended_threads_list.Append(threads[i]);
@@ -94,11 +93,11 @@ typedef x86_thread_state64_t regs_struct;
 #elif defined(__aarch64__)
 typedef arm_thread_state64_t regs_struct;
 
-#if __DARWIN_UNIX03
-#define SP_REG __sp
-#else
-#define SP_REG sp
-#endif
+# if __DARWIN_UNIX03
+#  define SP_REG __sp
+# else
+#  define SP_REG sp
+# endif
 
 #elif defined(__i386)
 typedef x86_thread_state32_t regs_struct;
@@ -119,12 +118,13 @@ thread_t SuspendedThreadsListMac::GetThread(uptr index) const {
   return threads_[index].thread;
 }
 
-uptr SuspendedThreadsListMac::ThreadCount() const { return threads_.size(); }
+uptr SuspendedThreadsListMac::ThreadCount() const {
+  return threads_.size();
+}
 
 bool SuspendedThreadsListMac::ContainsThread(thread_t thread) const {
   for (uptr i = 0; i < threads_.size(); i++) {
-    if (threads_[i].thread == thread)
-      return true;
+    if (threads_[i].thread == thread) return true;
   }
   return false;
 }
@@ -169,13 +169,12 @@ PtraceRegistersStatus SuspendedThreadsListMac::GetRegistersAndSP(
 
   // On x86_64 and aarch64, we must account for the stack redzone, which is 128
   // bytes.
-  if (SANITIZER_WORDSIZE == 64)
-    *sp -= 128;
+  if (SANITIZER_WORDSIZE == 64) *sp -= 128;
 
   return REGISTERS_AVAILABLE;
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 #endif  // SANITIZER_MAC && (defined(__x86_64__) || defined(__aarch64__)) ||
         //                   defined(__i386))

@@ -18,10 +18,10 @@
 #include "llvm/IR/CallingConv.h"
 
 namespace llvm {
-class Type;
-class IntegerType;
-class PointerType;
-} // namespace llvm
+  class Type;
+  class IntegerType;
+  class PointerType;
+}
 
 namespace clang {
 namespace CodeGen {
@@ -118,7 +118,7 @@ struct CodeGenTypeCache {
   LangAS getASTAllocaAddressSpace() const { return ASTAllocaAddressSpace; }
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

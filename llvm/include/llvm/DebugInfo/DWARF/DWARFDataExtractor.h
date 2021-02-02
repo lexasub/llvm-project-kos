@@ -32,7 +32,7 @@ public:
 
   /// Constructor for cases when there are no relocations.
   DWARFDataExtractor(StringRef Data, bool IsLittleEndian, uint8_t AddressSize)
-      : DataExtractor(Data, IsLittleEndian, AddressSize) {}
+    : DataExtractor(Data, IsLittleEndian, AddressSize) {}
   DWARFDataExtractor(ArrayRef<uint8_t> Data, bool IsLittleEndian,
                      uint8_t AddressSize)
       : DataExtractor(

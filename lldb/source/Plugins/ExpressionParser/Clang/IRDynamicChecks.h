@@ -16,7 +16,7 @@
 namespace llvm {
 class BasicBlock;
 class Module;
-} // namespace llvm
+}
 
 namespace lldb_private {
 

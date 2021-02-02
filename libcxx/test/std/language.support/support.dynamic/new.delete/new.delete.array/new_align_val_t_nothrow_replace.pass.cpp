@@ -39,11 +39,11 @@ constexpr auto OverAligned = __STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2;
 
 int A_constructed = 0;
 
-struct alignas(OverAligned) A{A(){++A_constructed;
-}
-~A() { --A_constructed; }
-}
-;
+struct alignas(OverAligned) A
+{
+    A() {++A_constructed;}
+    ~A() {--A_constructed;}
+};
 
 int B_constructed = 0;
 
@@ -56,41 +56,43 @@ struct B {
 int new_called = 0;
 alignas(OverAligned) char Buff[OverAligned * 3];
 
-void* operator new[](std::size_t s, std::align_val_t a)
-    TEST_THROW_SPEC(std::bad_alloc) {
-  assert(!new_called);
-  assert(s <= sizeof(Buff));
-  assert(static_cast<std::size_t>(a) == OverAligned);
-  ++new_called;
-  return Buff;
+void* operator new[](std::size_t s, std::align_val_t a) TEST_THROW_SPEC(std::bad_alloc)
+{
+    assert(!new_called);
+    assert(s <= sizeof(Buff));
+    assert(static_cast<std::size_t>(a) == OverAligned);
+    ++new_called;
+    return Buff;
 }
 
-void operator delete[](void* p, std::align_val_t a) TEST_NOEXCEPT {
-  assert(p == Buff);
-  assert(static_cast<std::size_t>(a) == OverAligned);
-  assert(new_called);
-  --new_called;
-}
-
-int main(int, char**) {
-  {
-    A* ap = new (std::nothrow) A[2];
-    assert(ap);
-    assert(A_constructed == 2);
+void  operator delete[](void* p, std::align_val_t a) TEST_NOEXCEPT
+{
+    assert(p == Buff);
+    assert(static_cast<std::size_t>(a) == OverAligned);
     assert(new_called);
-    delete[] ap;
-    assert(A_constructed == 0);
-    assert(!new_called);
-  }
-  {
-    B* bp = new (std::nothrow) B[2];
-    assert(bp);
-    assert(B_constructed == 2);
-    assert(!new_called);
-    delete[] bp;
-    assert(!new_called);
-    assert(!B_constructed);
-  }
+    --new_called;
+}
+
+int main(int, char**)
+{
+    {
+        A* ap = new (std::nothrow) A[2];
+        assert(ap);
+        assert(A_constructed == 2);
+        assert(new_called);
+        delete [] ap;
+        assert(A_constructed == 0);
+        assert(!new_called);
+    }
+    {
+        B* bp = new (std::nothrow) B[2];
+        assert(bp);
+        assert(B_constructed == 2);
+        assert(!new_called);
+        delete [] bp;
+        assert(!new_called);
+        assert(!B_constructed);
+    }
 
   return 0;
 }

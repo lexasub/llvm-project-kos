@@ -27,8 +27,7 @@ template <unsigned N> void loop() {
   // T0USE: br {{.*}} !prof ![[T01:[0-9]+]]
   // T100GEN: store {{.*}} @[[T100C]], i64 0, i64 1
   // T100USE: br {{.*}} !prof ![[T1001:[0-9]+]]
-  for (unsigned I = 0; I < N; ++I) {
-  }
+  for (unsigned I = 0; I < N; ++I) {}
 
   // ALL: ret
 }

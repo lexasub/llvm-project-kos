@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -templight-dump %s 2>&1 | FileCheck %s
 
 template <class T>
-int foo(T) { return 0; }
+int foo(T){return 0;}
 
 // CHECK-LABEL: {{^---$}}
 // CHECK: {{^name:[ ]+foo$}}

@@ -155,8 +155,7 @@ tools::unifyTargetFeatures(const std::vector<StringRef> &Features) {
   for (unsigned I = 0, N = Features.size(); I < N; ++I) {
     // If this feature was overridden, ignore it.
     StringRef Name = Features[I];
-    llvm::StringMap<unsigned>::iterator LastI =
-        LastOpt.find(Name.drop_front(1));
+    llvm::StringMap<unsigned>::iterator LastI = LastOpt.find(Name.drop_front(1));
     assert(LastI != LastOpt.end());
     unsigned Last = LastI->second;
     if (Last != I)
@@ -522,8 +521,9 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
   }
 
   if (Args.hasArg(options::OPT_gsplit_dwarf)) {
-    CmdArgs.push_back(Args.MakeArgString(Twine("-plugin-opt=dwo_dir=") +
-                                         Output.getFilename() + "_dwo"));
+    CmdArgs.push_back(
+        Args.MakeArgString(Twine("-plugin-opt=dwo_dir=") +
+            Output.getFilename() + "_dwo"));
   }
 
   if (IsThinLTO)
@@ -535,8 +535,8 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
         Args.MakeArgString("-plugin-opt=jobs=" + Twine(Parallelism)));
 
   // If an explicit debugger tuning argument appeared, pass it along.
-  if (Arg *A =
-          Args.getLastArg(options::OPT_gTune_Group, options::OPT_ggdbN_Group)) {
+  if (Arg *A = Args.getLastArg(options::OPT_gTune_Group,
+                               options::OPT_ggdbN_Group)) {
     if (A->getOption().matches(options::OPT_glldb))
       CmdArgs.push_back("-plugin-opt=-debugger-tune=lldb");
     else if (A->getOption().matches(options::OPT_gsce))
@@ -592,8 +592,8 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
         ProfileUseArg->getNumValues() == 0 ? "" : ProfileUseArg->getValue());
     if (Path.empty() || llvm::sys::fs::is_directory(Path))
       llvm::sys::path::append(Path, "default.profdata");
-    CmdArgs.push_back(
-        Args.MakeArgString(Twine("-plugin-opt=cs-profile-path=") + Path));
+    CmdArgs.push_back(Args.MakeArgString(Twine("-plugin-opt=cs-profile-path=") +
+                                         Path));
   }
 
   // Pass an option to enable/disable the new pass manager.
@@ -679,7 +679,7 @@ bool tools::addOpenMPRuntime(ArgStringList &CmdArgs, const ToolChain &TC,
     CmdArgs.push_back("-Bdynamic");
 
   if (RTKind == Driver::OMPRT_GOMP && GompNeedsRT)
-    CmdArgs.push_back("-lrt");
+      CmdArgs.push_back("-lrt");
 
   if (IsOffloadingHost)
     CmdArgs.push_back("-lomptarget");
@@ -694,12 +694,10 @@ static void addSanitizerRuntime(const ToolChain &TC, const ArgList &Args,
                                 bool IsShared, bool IsWhole) {
   // Wrap any static runtimes that must be forced into executable in
   // whole-archive.
-  if (IsWhole)
-    CmdArgs.push_back("--whole-archive");
+  if (IsWhole) CmdArgs.push_back("--whole-archive");
   CmdArgs.push_back(TC.getCompilerRTArgString(
       Args, Sanitizer, IsShared ? ToolChain::FT_Shared : ToolChain::FT_Static));
-  if (IsWhole)
-    CmdArgs.push_back("--no-whole-archive");
+  if (IsWhole) CmdArgs.push_back("--no-whole-archive");
 
   if (IsShared) {
     addArchSpecificRPath(TC, Args, CmdArgs);
@@ -757,12 +755,14 @@ void tools::linkSanitizerRuntimeDeps(const ToolChain &TC,
   }
   CmdArgs.push_back("-lm");
   // There's no libdl on all OSes.
-  if (!TC.getTriple().isOSFreeBSD() && !TC.getTriple().isOSNetBSD() &&
+  if (!TC.getTriple().isOSFreeBSD() &&
+      !TC.getTriple().isOSNetBSD() &&
       !TC.getTriple().isOSOpenBSD() &&
-      TC.getTriple().getOS() != llvm::Triple::RTEMS)
+       TC.getTriple().getOS() != llvm::Triple::RTEMS)
     CmdArgs.push_back("-ldl");
   // Required for backtrace on some OSes
-  if (TC.getTriple().isOSFreeBSD() || TC.getTriple().isOSNetBSD())
+  if (TC.getTriple().isOSFreeBSD() ||
+      TC.getTriple().isOSNetBSD())
     CmdArgs.push_back("-lexecinfo");
 }
 
@@ -817,8 +817,7 @@ collectSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
   // Each static runtime that has a DSO counterpart above is excluded below,
   // but runtimes that exist only as static are not affected by needsSharedRt.
 
-  if (!SanArgs.needsSharedRt() && SanArgs.needsAsanRt() &&
-      SanArgs.linkRuntimes()) {
+  if (!SanArgs.needsSharedRt() && SanArgs.needsAsanRt() && SanArgs.linkRuntimes()) {
     StaticRuntimes.push_back("asan");
     if (SanArgs.linkCXXRuntimes())
       StaticRuntimes.push_back("asan_cxx");
@@ -831,8 +830,7 @@ collectSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
       StaticRuntimes.push_back("memprof_cxx");
   }
 
-  if (!SanArgs.needsSharedRt() && SanArgs.needsHwasanRt() &&
-      SanArgs.linkRuntimes()) {
+  if (!SanArgs.needsSharedRt() && SanArgs.needsHwasanRt() && SanArgs.linkRuntimes()) {
     StaticRuntimes.push_back("hwasan");
     if (SanArgs.linkCXXRuntimes())
       StaticRuntimes.push_back("hwasan_cxx");
@@ -852,8 +850,7 @@ collectSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
     if (SanArgs.linkCXXRuntimes())
       StaticRuntimes.push_back("tsan_cxx");
   }
-  if (!SanArgs.needsSharedRt() && SanArgs.needsUbsanRt() &&
-      SanArgs.linkRuntimes()) {
+  if (!SanArgs.needsSharedRt() && SanArgs.needsUbsanRt() && SanArgs.linkRuntimes()) {
     if (SanArgs.requiresMinimalRuntime()) {
       StaticRuntimes.push_back("ubsan_minimal");
     } else {
@@ -866,8 +863,7 @@ collectSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
     NonWholeStaticRuntimes.push_back("safestack");
     RequiredSymbols.push_back("__safestack_init");
   }
-  if (!(SanArgs.needsSharedRt() && SanArgs.needsUbsanRt() &&
-        SanArgs.linkRuntimes())) {
+  if (!(SanArgs.needsSharedRt() && SanArgs.needsUbsanRt() && SanArgs.linkRuntimes())) {
     if (SanArgs.needsCfiRt() && SanArgs.linkRuntimes())
       StaticRuntimes.push_back("cfi");
     if (SanArgs.needsCfiDiagRt() && SanArgs.linkRuntimes()) {
@@ -880,8 +876,7 @@ collectSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
     NonWholeStaticRuntimes.push_back("stats");
     RequiredSymbols.push_back("__sanitizer_stats_register");
   }
-  if (!SanArgs.needsSharedRt() && SanArgs.needsScudoRt() &&
-      SanArgs.linkRuntimes()) {
+  if (!SanArgs.needsSharedRt() && SanArgs.needsScudoRt() && SanArgs.linkRuntimes()) {
     if (SanArgs.requiresMinimalRuntime()) {
       StaticRuntimes.push_back("scudo_minimal");
       if (SanArgs.linkCXXRuntimes())
@@ -952,8 +947,7 @@ bool tools::addSanitizerRuntimes(const ToolChain &TC, const ArgList &Args,
   return !StaticRuntimes.empty() || !NonWholeStaticRuntimes.empty();
 }
 
-bool tools::addXRayRuntime(const ToolChain &TC, const ArgList &Args,
-                           ArgStringList &CmdArgs) {
+bool tools::addXRayRuntime(const ToolChain&TC, const ArgList &Args, ArgStringList &CmdArgs) {
   if (Args.hasArg(options::OPT_shared))
     return false;
 
@@ -976,7 +970,8 @@ void tools::linkXRayRuntimeDeps(const ToolChain &TC, ArgStringList &CmdArgs) {
     CmdArgs.push_back("-lrt");
   CmdArgs.push_back("-lm");
 
-  if (!TC.getTriple().isOSFreeBSD() && !TC.getTriple().isOSNetBSD() &&
+  if (!TC.getTriple().isOSFreeBSD() &&
+      !TC.getTriple().isOSNetBSD() &&
       !TC.getTriple().isOSOpenBSD())
     CmdArgs.push_back("-ldl");
 }
@@ -1167,8 +1162,9 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
                                     options::OPT_fPIE, options::OPT_fno_PIE,
                                     options::OPT_fpie, options::OPT_fno_pie);
   if (Triple.isOSWindows() && LastPICArg &&
-      LastPICArg == Args.getLastArg(options::OPT_fPIC, options::OPT_fpic,
-                                    options::OPT_fPIE, options::OPT_fpie)) {
+      LastPICArg ==
+          Args.getLastArg(options::OPT_fPIC, options::OPT_fpic,
+                          options::OPT_fPIE, options::OPT_fpie)) {
     ToolChain.getDriver().Diag(diag::err_drv_unsupported_opt_for_target)
         << LastPICArg->getSpelling() << Triple.str();
     if (Triple.getArch() == llvm::Triple::x86_64)
@@ -1235,19 +1231,19 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
 
   bool EmbeddedPISupported;
   switch (Triple.getArch()) {
-  case llvm::Triple::arm:
-  case llvm::Triple::armeb:
-  case llvm::Triple::thumb:
-  case llvm::Triple::thumbeb:
-    EmbeddedPISupported = true;
-    break;
-  default:
-    EmbeddedPISupported = false;
-    break;
+    case llvm::Triple::arm:
+    case llvm::Triple::armeb:
+    case llvm::Triple::thumb:
+    case llvm::Triple::thumbeb:
+      EmbeddedPISupported = true;
+      break;
+    default:
+      EmbeddedPISupported = false;
+      break;
   }
 
   bool ROPI = false, RWPI = false;
-  Arg *LastROPIArg = Args.getLastArg(options::OPT_fropi, options::OPT_fno_ropi);
+  Arg* LastROPIArg = Args.getLastArg(options::OPT_fropi, options::OPT_fno_ropi);
   if (LastROPIArg && LastROPIArg->getOption().matches(options::OPT_fropi)) {
     if (!EmbeddedPISupported)
       ToolChain.getDriver().Diag(diag::err_drv_unsupported_opt_for_target)
@@ -1276,7 +1272,7 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
     if (ABIName == "n64")
       PIC = true;
     // When targettng MIPS with -mno-abicalls, it's always static.
-    if (Args.hasArg(options::OPT_mno_abicalls))
+    if(Args.hasArg(options::OPT_mno_abicalls))
       return std::make_tuple(llvm::Reloc::Static, 0U, false);
     // Unlike other architectures, MIPS, even with -fPIC/-mxgot/multigot,
     // does not use PIC level 2 for historical reasons.
@@ -1392,7 +1388,8 @@ static void AddUnwindLibrary(const ToolChain &TC, const Driver &D,
   ToolChain::UnwindLibType UNW = TC.GetUnwindLibType(Args);
   // Targets that don't use unwind libraries.
   if (TC.getTriple().isAndroid() || TC.getTriple().isOSIAMCU() ||
-      TC.getTriple().isOSBinFormatWasm() || UNW == ToolChain::UNW_None)
+      TC.getTriple().isOSBinFormatWasm() ||
+      UNW == ToolChain::UNW_None)
     return;
 
   LibGccType LGT = getLibGccType(D, Args);
@@ -1606,8 +1603,8 @@ void tools::addMachineOutlinerArgs(const Driver &D,
     }
   };
 
-  if (Arg *A =
-          Args.getLastArg(options::OPT_moutline, options::OPT_mno_outline)) {
+  if (Arg *A = Args.getLastArg(options::OPT_moutline,
+                               options::OPT_mno_outline)) {
     if (A->getOption().matches(options::OPT_moutline)) {
       // We only support -moutline in AArch64 and ARM targets right now. If
       // we're not compiling for these, emit a warning and ignore the flag.

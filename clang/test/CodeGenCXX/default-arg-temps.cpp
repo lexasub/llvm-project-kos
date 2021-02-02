@@ -5,12 +5,12 @@ struct T {
   ~T();
 };
 
-void f(const T &t = T());
+void f(const T& t = T());
 
 class X { // ...
 public:
-  X();
-  X(const X &, const T &t = T());
+        X();
+        X(const X&, const T& t = T());
 };
 
 // CHECK-LABEL: define{{.*}} void @_Z1gv()
@@ -39,11 +39,8 @@ void g() {
   X c = a;
 }
 
-class obj {
-  int a;
-  float b;
-  double d;
-};
+
+class obj{ int a; float b; double d; };
 // CHECK-LABEL: define{{.*}} void @_Z1hv()
 void h() {
   // CHECK: call void @llvm.memset.p0i8.i64(
@@ -52,40 +49,32 @@ void h() {
 
 // PR7028 - mostly this shouldn't crash
 namespace test1 {
-struct A {
-  A();
-};
-struct B {
-  B();
-  ~B();
-};
+  struct A { A(); };
+  struct B { B(); ~B(); };
 
-struct C {
-  C(const B &file = B());
-};
-C::C(const B &file) {}
+  struct C {
+    C(const B &file = B());
+  };
+  C::C(const B &file) {}
 
-struct D {
-  C c;
-  A a;
+  struct D {
+    C c;
+    A a;
 
-  // CHECK-LABEL: define linkonce_odr void @_ZN5test11DC2Ev(%"struct.test1::D"* {{[^,]*}} %this) unnamed_addr
-  // CHECK:      call void @_ZN5test11BC1Ev(
-  // CHECK-NEXT: call void @_ZN5test11CC1ERKNS_1BE(
-  // CHECK-NEXT: call void @_ZN5test11BD1Ev(
-  // CHECK:      call void @_ZN5test11AC1Ev(
-  D() : c(), a() {}
-};
+    // CHECK-LABEL: define linkonce_odr void @_ZN5test11DC2Ev(%"struct.test1::D"* {{[^,]*}} %this) unnamed_addr
+    // CHECK:      call void @_ZN5test11BC1Ev(
+    // CHECK-NEXT: call void @_ZN5test11CC1ERKNS_1BE(
+    // CHECK-NEXT: call void @_ZN5test11BD1Ev(
+    // CHECK:      call void @_ZN5test11AC1Ev(
+    D() : c(), a() {}
+  };
 
-D d;
-} // namespace test1
+  D d;
+}
 
 namespace test2 {
-// CHECK:  define linkonce_odr void @_ZN5test21AIiED2Ev(
-template <typename T> struct A {
-  A() {}
-  ~A() {}
-};
-template <typename> void f(const A<int> & = {}) {}
-void g() { f<int>(); }
-} // namespace test2
+  // CHECK:  define linkonce_odr void @_ZN5test21AIiED2Ev(
+  template <typename T> struct A { A() {} ~A() {} };
+  template <typename> void f(const A<int> & = {}) {}
+  void g() { f<int>(); }
+}

@@ -24,20 +24,25 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  {
-    typedef ex::polymorphic_allocator<void> A;
-    static_assert(std::is_convertible<decltype(nullptr), A>::value,
-                  "Must be convertible");
-    static_assert(std::is_convertible<ex::memory_resource*, A>::value,
-                  "Must be convertible");
-  }
-  {
-    typedef ex::polymorphic_allocator<void> A;
-    TestResource R;
-    A const a(&R);
-    assert(a.resource() == &R);
-  }
+int main(int, char**)
+{
+    {
+        typedef ex::polymorphic_allocator<void> A;
+        static_assert(
+            std::is_convertible<decltype(nullptr), A>::value
+          , "Must be convertible"
+          );
+        static_assert(
+            std::is_convertible<ex::memory_resource *, A>::value
+          , "Must be convertible"
+          );
+    }
+    {
+        typedef ex::polymorphic_allocator<void> A;
+        TestResource R;
+        A const a(&R);
+        assert(a.resource() == &R);
+    }
 
   return 0;
 }

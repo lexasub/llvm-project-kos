@@ -17,6 +17,7 @@
 // Test that these types can be constructed w/o an initializer in a constexpr
 // context. This is specifically testing gcc.gnu.org/PR83921
 
+
 #include <functional>
 #include "test_macros.h"
 
@@ -40,4 +41,9 @@ constexpr bool test_constexpr_context() {
 static_assert(test_constexpr_context<int>(), "");
 static_assert(test_constexpr_context<void>(), "");
 
-int main(int, char**) { return 0; }
+
+int main(int, char**) {
+
+
+  return 0;
+}

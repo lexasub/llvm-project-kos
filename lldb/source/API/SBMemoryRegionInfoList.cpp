@@ -48,7 +48,8 @@ public:
 
   void Clear() { m_regions.clear(); }
 
-  bool GetMemoryRegionInfoAtIndex(size_t index, MemoryRegionInfo &region_info) {
+  bool GetMemoryRegionInfoAtIndex(size_t index,
+                                  MemoryRegionInfo &region_info) {
     if (index >= GetSize())
       return false;
     region_info = m_regions[index];
@@ -83,11 +84,12 @@ SBMemoryRegionInfoList::SBMemoryRegionInfoList(
 
 SBMemoryRegionInfoList::~SBMemoryRegionInfoList() = default;
 
-const SBMemoryRegionInfoList &
-SBMemoryRegionInfoList::operator=(const SBMemoryRegionInfoList &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBMemoryRegionInfoList &,
-                     SBMemoryRegionInfoList, operator=,
-                     (const lldb::SBMemoryRegionInfoList &), rhs);
+const SBMemoryRegionInfoList &SBMemoryRegionInfoList::
+operator=(const SBMemoryRegionInfoList &rhs) {
+  LLDB_RECORD_METHOD(
+      const lldb::SBMemoryRegionInfoList &,
+      SBMemoryRegionInfoList, operator=,(const lldb::SBMemoryRegionInfoList &),
+      rhs);
 
   if (this != &rhs) {
     *m_opaque_up = *rhs.m_opaque_up;
@@ -141,13 +143,15 @@ const MemoryRegionInfoListImpl &SBMemoryRegionInfoList::operator*() const {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBMemoryRegionInfoList>(Registry &R) {
+template <>
+void RegisterMethods<SBMemoryRegionInfoList>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBMemoryRegionInfoList, ());
   LLDB_REGISTER_CONSTRUCTOR(SBMemoryRegionInfoList,
                             (const lldb::SBMemoryRegionInfoList &));
-  LLDB_REGISTER_METHOD(const lldb::SBMemoryRegionInfoList &,
-                       SBMemoryRegionInfoList, operator=,
-                       (const lldb::SBMemoryRegionInfoList &));
+  LLDB_REGISTER_METHOD(
+      const lldb::SBMemoryRegionInfoList &,
+      SBMemoryRegionInfoList, operator=,(
+                                  const lldb::SBMemoryRegionInfoList &));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBMemoryRegionInfoList, GetSize, ());
   LLDB_REGISTER_METHOD(bool, SBMemoryRegionInfoList, GetMemoryRegionAtIndex,
                        (uint32_t, lldb::SBMemoryRegionInfo &));
@@ -158,5 +162,5 @@ template <> void RegisterMethods<SBMemoryRegionInfoList>(Registry &R) {
                        (lldb::SBMemoryRegionInfoList &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

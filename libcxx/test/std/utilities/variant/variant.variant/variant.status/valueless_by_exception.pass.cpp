@@ -24,6 +24,7 @@
 #include "test_macros.h"
 #include "variant_test_helpers.h"
 
+
 int main(int, char**) {
   {
     using V = std::variant<int, long>;

@@ -20,21 +20,25 @@
 
 int xsgetn_called = 0;
 
-struct test : public std::basic_streambuf<char> {
-  test() {}
+struct test
+    : public std::basic_streambuf<char>
+{
+    test() {}
 
 protected:
-  std::streamsize xsgetn(char_type*, std::streamsize) {
-    ++xsgetn_called;
-    return 10;
-  }
+    std::streamsize xsgetn(char_type*, std::streamsize)
+    {
+        ++xsgetn_called;
+        return 10;
+    }
 };
 
-int main(int, char**) {
-  test t;
-  assert(xsgetn_called == 0);
-  assert(t.sgetn(0, 0) == 10);
-  assert(xsgetn_called == 1);
+int main(int, char**)
+{
+    test t;
+    assert(xsgetn_called == 0);
+    assert(t.sgetn(0, 0) == 10);
+    assert(xsgetn_called == 1);
 
   return 0;
 }

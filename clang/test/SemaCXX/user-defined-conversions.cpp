@@ -1,13 +1,13 @@
-// RUN: %clang_cc1 -fsyntax-only -verify %s
+// RUN: %clang_cc1 -fsyntax-only -verify %s 
 struct X {
   operator bool();
 };
 
-int &f(bool);
-float &f(int);
+int& f(bool);
+float& f(int);
 
 void f_test(X x) {
-  int &i1 = f(x);
+  int& i1 = f(x);
 }
 
 struct Y {
@@ -23,15 +23,15 @@ void g_test(Y y) {
   s = y;
 }
 
-struct A {};
-struct B : A {};
+struct A { };
+struct B : A { };
 
 struct C {
-  operator B &();
+  operator B&();
 };
 
 // Test reference binding via an lvalue conversion function.
-void h(volatile A &);
+void h(volatile A&);
 void h_test(C c) {
   h(c);
 }
@@ -39,13 +39,13 @@ void h_test(C c) {
 // Test conversion followed by copy-construction
 struct FunkyDerived;
 
-struct Base {
-  Base(const FunkyDerived &);
+struct Base { 
+  Base(const FunkyDerived&);
 };
 
-struct Derived : Base {};
+struct Derived : Base { };
 
-struct FunkyDerived : Base {};
+struct FunkyDerived : Base { };
 
 struct ConvertibleToBase {
   operator Base();
@@ -69,7 +69,7 @@ void test_conversion(ConvertibleToBase ctb, ConvertibleToDerived ctd,
 }
 
 struct X1 {
-  X1(X1 &); // expected-note{{candidate constructor not viable: expects an lvalue for 1st argument}}
+  X1(X1&); // expected-note{{candidate constructor not viable: expects an lvalue for 1st argument}}
 };
 
 struct X2 {
@@ -84,16 +84,16 @@ void g(X2 b) {
 }
 
 namespace rdar10202900 {
-class A {
-public:
-  A();
+  class A {
+  public:
+    A();
 
-private:
-  A(int i); // expected-note{{declared private here}}
-};
+  private:
+    A(int i); // expected-note{{declared private here}}
+  };
 
-void testA(A a) {
-  int b = 10;
-  a = b; // expected-error{{calling a private constructor of class 'rdar10202900::A'}}
+  void testA(A a) {
+    int b = 10;
+    a = b; // expected-error{{calling a private constructor of class 'rdar10202900::A'}}
+  }
 }
-} // namespace rdar10202900

@@ -27,7 +27,7 @@ class TypeIndexer : public RecursiveASTVisitor<TypeIndexer> {
 public:
   TypeIndexer(IndexingContext &indexCtx, const NamedDecl *parent,
               const DeclContext *DC, bool isBase, bool isIBType)
-      : IndexCtx(indexCtx), Parent(parent), ParentDC(DC), IsBase(isBase) {
+    : IndexCtx(indexCtx), Parent(parent), ParentDC(DC), IsBase(isBase) {
     if (IsBase) {
       assert(Parent);
       Relations.emplace_back((unsigned)SymbolRole::RelationBaseOf, Parent);
@@ -58,20 +58,21 @@ public:
     TypedefNameDecl *ND = TL.getTypedefNameDecl();
     if (ND->isTransparentTag()) {
       TagDecl *Underlying = ND->getUnderlyingType()->getAsTagDecl();
-      return IndexCtx.handleReference(Underlying, Loc, Parent, ParentDC,
-                                      SymbolRoleSet(), Relations);
+      return IndexCtx.handleReference(Underlying, Loc, Parent,
+                                      ParentDC, SymbolRoleSet(), Relations);
     }
     if (IsBase) {
-      TRY_TO(
-          IndexCtx.handleReference(ND, Loc, Parent, ParentDC, SymbolRoleSet()));
+      TRY_TO(IndexCtx.handleReference(ND, Loc,
+                                      Parent, ParentDC, SymbolRoleSet()));
       if (auto *CD = TL.getType()->getAsCXXRecordDecl()) {
         TRY_TO(IndexCtx.handleReference(CD, Loc, Parent, ParentDC,
                                         (unsigned)SymbolRole::Implicit,
                                         Relations));
       }
     } else {
-      TRY_TO(IndexCtx.handleReference(ND, Loc, Parent, ParentDC,
-                                      SymbolRoleSet(), Relations));
+      TRY_TO(IndexCtx.handleReference(ND, Loc,
+                                      Parent, ParentDC, SymbolRoleSet(),
+                                      Relations));
     }
     return true;
   }
@@ -115,19 +116,20 @@ public:
       return true;
     }
 
-    return IndexCtx.handleReference(D, TL.getNameLoc(), Parent, ParentDC,
-                                    SymbolRoleSet(), Relations);
+    return IndexCtx.handleReference(D, TL.getNameLoc(),
+                                    Parent, ParentDC, SymbolRoleSet(),
+                                    Relations);
   }
 
   bool VisitObjCInterfaceTypeLoc(ObjCInterfaceTypeLoc TL) {
-    return IndexCtx.handleReference(TL.getIFaceDecl(), TL.getNameLoc(), Parent,
-                                    ParentDC, SymbolRoleSet(), Relations);
+    return IndexCtx.handleReference(TL.getIFaceDecl(), TL.getNameLoc(),
+                                    Parent, ParentDC, SymbolRoleSet(), Relations);
   }
 
   bool VisitObjCObjectTypeLoc(ObjCObjectTypeLoc TL) {
     for (unsigned i = 0, e = TL.getNumProtocols(); i != e; ++i) {
-      IndexCtx.handleReference(TL.getProtocol(i), TL.getProtocolLoc(i), Parent,
-                               ParentDC, SymbolRoleSet(), Relations);
+      IndexCtx.handleReference(TL.getProtocol(i), TL.getProtocolLoc(i),
+                               Parent, ParentDC, SymbolRoleSet(), Relations);
     }
     return true;
   }
@@ -179,8 +181,7 @@ public:
     return true;
   }
 
-  bool VisitDeducedTemplateSpecializationTypeLoc(
-      DeducedTemplateSpecializationTypeLoc TL) {
+  bool VisitDeducedTemplateSpecializationTypeLoc(DeducedTemplateSpecializationTypeLoc TL) {
     auto *T = TL.getTypePtr();
     if (!T)
       return true;
@@ -233,7 +234,8 @@ public:
 
 void IndexingContext::indexTypeSourceInfo(TypeSourceInfo *TInfo,
                                           const NamedDecl *Parent,
-                                          const DeclContext *DC, bool isBase,
+                                          const DeclContext *DC,
+                                          bool isBase,
                                           bool isIBType) {
   if (!TInfo || TInfo->getTypeLoc().isNull())
     return;
@@ -241,8 +243,10 @@ void IndexingContext::indexTypeSourceInfo(TypeSourceInfo *TInfo,
   indexTypeLoc(TInfo->getTypeLoc(), Parent, DC, isBase, isIBType);
 }
 
-void IndexingContext::indexTypeLoc(TypeLoc TL, const NamedDecl *Parent,
-                                   const DeclContext *DC, bool isBase,
+void IndexingContext::indexTypeLoc(TypeLoc TL,
+                                   const NamedDecl *Parent,
+                                   const DeclContext *DC,
+                                   bool isBase,
                                    bool isIBType) {
   if (TL.isNull())
     return;
@@ -272,12 +276,12 @@ void IndexingContext::indexNestedNameSpecifierLoc(NestedNameSpecifierLoc NNS,
     break;
 
   case NestedNameSpecifier::Namespace:
-    handleReference(NNS.getNestedNameSpecifier()->getAsNamespace(), Loc, Parent,
-                    DC, SymbolRoleSet());
+    handleReference(NNS.getNestedNameSpecifier()->getAsNamespace(),
+                    Loc, Parent, DC, SymbolRoleSet());
     break;
   case NestedNameSpecifier::NamespaceAlias:
-    handleReference(NNS.getNestedNameSpecifier()->getAsNamespaceAlias(), Loc,
-                    Parent, DC, SymbolRoleSet());
+    handleReference(NNS.getNestedNameSpecifier()->getAsNamespaceAlias(),
+                    Loc, Parent, DC, SymbolRoleSet());
     break;
 
   case NestedNameSpecifier::TypeSpec:
@@ -299,8 +303,7 @@ void IndexingContext::indexTagDecl(const TagDecl *D,
       indexNestedNameSpecifierLoc(D->getQualifierLoc(), D);
       if (auto CXXRD = dyn_cast<CXXRecordDecl>(D)) {
         for (const auto &I : CXXRD->bases()) {
-          indexTypeSourceInfo(I.getTypeSourceInfo(), CXXRD, CXXRD,
-                              /*isBase=*/true);
+          indexTypeSourceInfo(I.getTypeSourceInfo(), CXXRD, CXXRD, /*isBase=*/true);
         }
       }
       indexDeclContext(D);

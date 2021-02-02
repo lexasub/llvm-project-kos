@@ -435,8 +435,7 @@ void SourceManager::File::CommonInitializer(const FileSpec &file_spec,
             sc_list.GetContextAtIndex(0, sc);
             if (sc.comp_unit)
               m_file_spec = sc.comp_unit->GetPrimaryFile();
-            m_mod_time =
-                FileSystem::Instance().GetModificationTime(m_file_spec);
+            m_mod_time = FileSystem::Instance().GetModificationTime(m_file_spec);
           }
         }
       }

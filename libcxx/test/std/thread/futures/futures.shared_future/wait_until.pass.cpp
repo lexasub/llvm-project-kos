@@ -29,16 +29,19 @@ typedef std::chrono::milliseconds ms;
 
 std::atomic<WorkerThreadState> thread_state(WorkerThreadState::Uninitialized);
 
-void set_worker_thread_state(WorkerThreadState state) {
+void set_worker_thread_state(WorkerThreadState state)
+{
   thread_state.store(state, std::memory_order_relaxed);
 }
 
-void wait_for_worker_thread_state(WorkerThreadState state) {
+void wait_for_worker_thread_state(WorkerThreadState state)
+{
   while (thread_state.load(std::memory_order_relaxed) != state)
     std::this_thread::yield();
 }
 
-void func1(std::promise<int> p) {
+void func1(std::promise<int> p)
+{
   wait_for_worker_thread_state(WorkerThreadState::AllowedToRun);
   p.set_value(3);
   set_worker_thread_state(WorkerThreadState::Exiting);
@@ -46,20 +49,23 @@ void func1(std::promise<int> p) {
 
 int j = 0;
 
-void func3(std::promise<int&> p) {
+void func3(std::promise<int&> p)
+{
   wait_for_worker_thread_state(WorkerThreadState::AllowedToRun);
   j = 5;
   p.set_value(j);
   set_worker_thread_state(WorkerThreadState::Exiting);
 }
 
-void func5(std::promise<void> p) {
+void func5(std::promise<void> p)
+{
   wait_for_worker_thread_state(WorkerThreadState::AllowedToRun);
   p.set_value();
   set_worker_thread_state(WorkerThreadState::Exiting);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   typedef std::chrono::high_resolution_clock Clock;
 
   {

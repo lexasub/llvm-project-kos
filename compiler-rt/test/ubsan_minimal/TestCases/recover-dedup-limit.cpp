@@ -8,32 +8,32 @@
 
 int main() {
   int32_t x;
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
 
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
 
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
 
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
-  OVERFLOW; // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
+  OVERFLOW;  // CHECK: add-overflow
 
   // CHECK-NOT: add-overflow
-  OVERFLOW; // CHECK: too many errors
+  OVERFLOW;  // CHECK: too many errors
   // CHECK-NOT: add-overflow
   OVERFLOW;
   OVERFLOW;

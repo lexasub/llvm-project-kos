@@ -15,19 +15,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::locale l;
-  assert(!std::isgraph(' ', l));
-  assert(std::isgraph('<', l));
-  assert(!std::isgraph('\x8', l));
-  assert(std::isgraph('A', l));
-  assert(std::isgraph('a', l));
-  assert(std::isgraph('z', l));
-  assert(std::isgraph('3', l));
-  assert(std::isgraph('.', l));
-  assert(std::isgraph('f', l));
-  assert(std::isgraph('9', l));
-  assert(std::isgraph('+', l));
+int main(int, char**)
+{
+    std::locale l;
+    assert(!std::isgraph(' ', l));
+    assert( std::isgraph('<', l));
+    assert(!std::isgraph('\x8', l));
+    assert( std::isgraph('A', l));
+    assert( std::isgraph('a', l));
+    assert( std::isgraph('z', l));
+    assert( std::isgraph('3', l));
+    assert( std::isgraph('.', l));
+    assert( std::isgraph('f', l));
+    assert( std::isgraph('9', l));
+    assert( std::isgraph('+', l));
 
   return 0;
 }

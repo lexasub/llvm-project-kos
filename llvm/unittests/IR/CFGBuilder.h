@@ -57,7 +57,8 @@ public:
     StringRef To;
 
     friend bool operator<(const Arc &LHS, const Arc &RHS) {
-      return std::tie(LHS.From, LHS.To) < std::tie(RHS.From, RHS.To);
+      return std::tie(LHS.From, LHS.To) <
+             std::tie(RHS.From, RHS.To);
     }
   };
 

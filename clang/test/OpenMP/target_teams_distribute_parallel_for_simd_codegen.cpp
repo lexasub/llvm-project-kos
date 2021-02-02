@@ -39,50 +39,45 @@
 #ifdef CK1
 
 // HCK1: define{{.*}} i32 @{{.+}}target_teams_fun{{.*}}(
-int target_teams_fun(int *g) {
+int target_teams_fun(int *g){
   int n = 1000;
   int a[1000];
   int te = n / 128;
   int th = 128;
-  // discard n_addr
-  // HCK1: alloca i32,
-  // HCK1: [[TE:%.+]] alloca i32,
-  // HCK1: [[TH:%.+]] = alloca i32,
-  // HCK1: [[I:%.+]] = alloca i32,
-  // discard capture expressions for te and th
-  // HCK1: = alloca i32,
-  // HCK1: = alloca i32,
-  // HCK1: [[I_CAST:%.+]] = alloca i{{32|64}},
-  // HCK1: [[N_CAST:%.+]] = alloca i{{32|64}},
-  // HCK1: [[TE_CAST:%.+]] = alloca i{{32|64}},
-  // HCK1: [[TH_CAST:%.+]] = alloca i{{32|64}},
-  // HCK1: [[I_PAR:%.+]] = load{{.+}}, {{.+}} [[I_CAST]],
-  // HCK1: [[N_PAR:%.+]] = load{{.+}}, {{.+}} [[N_CAST]],
-  // HCK1: [[TE_PAR:%.+]] = load{{.+}}, {{.+}} [[TE_CAST]],
-  // HCK1: [[TH_PAR:%.+]] = load{{.+}}, {{.+}} [[TH_CAST]],
-  // HCK1: call void @__kmpc_push_target_tripcount(%struct.ident_t* @{{.+}}, i64 -1, i64 %{{.+}})
-  // HCK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 5, i8** %{{[^,]+}}, i8** %{{[^,]+}},
+// discard n_addr
+// HCK1: alloca i32,
+// HCK1: [[TE:%.+]] alloca i32,
+// HCK1: [[TH:%.+]] = alloca i32,
+// HCK1: [[I:%.+]] = alloca i32,
+// discard capture expressions for te and th
+// HCK1: = alloca i32,
+// HCK1: = alloca i32,
+// HCK1: [[I_CAST:%.+]] = alloca i{{32|64}},
+// HCK1: [[N_CAST:%.+]] = alloca i{{32|64}},
+// HCK1: [[TE_CAST:%.+]] = alloca i{{32|64}},
+// HCK1: [[TH_CAST:%.+]] = alloca i{{32|64}},
+// HCK1: [[I_PAR:%.+]] = load{{.+}}, {{.+}} [[I_CAST]],
+// HCK1: [[N_PAR:%.+]] = load{{.+}}, {{.+}} [[N_CAST]],
+// HCK1: [[TE_PAR:%.+]] = load{{.+}}, {{.+}} [[TE_CAST]],
+// HCK1: [[TH_PAR:%.+]] = load{{.+}}, {{.+}} [[TH_CAST]],
+// HCK1: call void @__kmpc_push_target_tripcount(%struct.ident_t* @{{.+}}, i64 -1, i64 %{{.+}})
+// HCK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 5, i8** %{{[^,]+}}, i8** %{{[^,]+}},
 
-  // HCK1: call void @[[OFFL1:.+]](i{{32|64}} [[I_PAR]], i{{32|64}} [[N_PAR]], {{.+}}, i{{32|64}} [[TE_PAR]], i{{32|64}} [[TH_PAR]])
+// HCK1: call void @[[OFFL1:.+]](i{{32|64}} [[I_PAR]], i{{32|64}} [[N_PAR]], {{.+}}, i{{32|64}} [[TE_PAR]], i{{32|64}} [[TH_PAR]])
   int i;
-#pragma omp target teams distribute parallel for simd num_teams(te), thread_limit(th) aligned(a : 8) safelen(16) simdlen(4) linear(i \
-                                                                                                                                   : n)
-  for (i = 0; i < n; i++) {
+#pragma omp target teams distribute parallel for simd num_teams(te), thread_limit(th) aligned(a : 8) safelen(16) simdlen(4) linear(i : n)
+  for(i = 0; i < n; i++) {
     a[i] = 0;
   }
 
   // HCK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 3, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null,
   // HCK1: call void @[[OFFL2:.+]](i{{64|32}} %{{.+}})
-  {
-    {
-      {
-#pragma omp target teams distribute parallel for simd is_device_ptr(g) simdlen(8)
-        for (int i = 0; i < n; i++) {
-          a[i] = g[0];
-        }
-      }
-    }
+  {{{
+  #pragma omp target teams distribute parallel for simd is_device_ptr(g) simdlen(8)
+  for(int i = 0; i < n; i++) {
+    a[i] = g[0];
   }
+  }}}
 
   // outlined target regions
   // HCK1: define internal void @[[OFFL1]](i{{32|64}} [[I_ARG:%.+]], i{{32|64}} [[N_ARG:%.+]], {{.+}}, i{{32|64}} [[TE_ARG:%.+]], i{{32|64}} [[TH_ARG:%.+]])

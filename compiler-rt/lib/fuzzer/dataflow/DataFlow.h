@@ -19,8 +19,8 @@
 struct CallbackData {
   size_t NumFuncs, NumGuards;
   const uintptr_t *PCsBeg, *PCsEnd;
-  dfsan_label *FuncLabels; // Array of NumFuncs elements.
-  bool *BBExecuted;        // Array of NumGuards elements.
+  dfsan_label *FuncLabels;  // Array of NumFuncs elements.
+  bool *BBExecuted;         // Array of NumGuards elements.
 };
 
 extern CallbackData __dft;
@@ -29,4 +29,4 @@ enum {
   PCFLAG_FUNC_ENTRY = 1,
 };
 
-#endif // __LIBFUZZER_DATAFLOW_H
+#endif  // __LIBFUZZER_DATAFLOW_H

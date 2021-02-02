@@ -36,7 +36,9 @@ INTERCEPTOR_ATTRIBUTE void *calloc(size_t nmemb, size_t size) {
   return scudoCalloc(nmemb, size);
 }
 
-INTERCEPTOR_ATTRIBUTE void *valloc(size_t size) { return scudoValloc(size); }
+INTERCEPTOR_ATTRIBUTE void *valloc(size_t size) {
+  return scudoValloc(size);
+}
 
 INTERCEPTOR_ATTRIBUTE
 int posix_memalign(void **memptr, size_t alignment, size_t size) {
@@ -57,7 +59,9 @@ void *__libc_memalign(size_t alignment, size_t size) ALIAS("memalign");
 #endif
 
 #if SANITIZER_INTERCEPT_PVALLOC
-INTERCEPTOR_ATTRIBUTE void *pvalloc(size_t size) { return scudoPvalloc(size); }
+INTERCEPTOR_ATTRIBUTE void *pvalloc(size_t size) {
+  return scudoPvalloc(size);
+}
 #endif
 
 #if SANITIZER_INTERCEPT_ALIGNED_ALLOC
@@ -73,6 +77,8 @@ INTERCEPTOR_ATTRIBUTE size_t malloc_usable_size(void *ptr) {
 #endif
 
 #if SANITIZER_INTERCEPT_MALLOPT_AND_MALLINFO
-INTERCEPTOR_ATTRIBUTE int mallopt(int cmd, int value) { return 0; }
+INTERCEPTOR_ATTRIBUTE int mallopt(int cmd, int value) {
+  return 0;
+}
 #endif
-} // extern "C"
+}  // extern "C"

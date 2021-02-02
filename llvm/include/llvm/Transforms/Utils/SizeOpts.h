@@ -49,7 +49,7 @@ static inline bool isPGSOColdCodeOnly(ProfileSummaryInfo *PSI) {
          (PGSOLargeWorkingSetSizeOnly && !PSI->hasLargeWorkingSetSize());
 }
 
-template <typename AdapterT, typename FuncT, typename BFIT>
+template<typename AdapterT, typename FuncT, typename BFIT>
 bool shouldFuncOptimizeForSizeImpl(const FuncT *F, ProfileSummaryInfo *PSI,
                                    BFIT *BFI, PGSOQueryType QueryType) {
   assert(F);
@@ -70,10 +70,9 @@ bool shouldFuncOptimizeForSizeImpl(const FuncT *F, ProfileSummaryInfo *PSI,
                                                           F, PSI, *BFI);
 }
 
-template <typename AdapterT, typename BlockTOrBlockFreq, typename BFIT>
-bool shouldOptimizeForSizeImpl(BlockTOrBlockFreq BBOrBlockFreq,
-                               ProfileSummaryInfo *PSI, BFIT *BFI,
-                               PGSOQueryType QueryType) {
+template<typename AdapterT, typename BlockTOrBlockFreq, typename BFIT>
+bool shouldOptimizeForSizeImpl(BlockTOrBlockFreq BBOrBlockFreq, ProfileSummaryInfo *PSI,
+                               BFIT *BFI, PGSOQueryType QueryType) {
   if (!PSI || !BFI || !PSI->hasProfileSummary())
     return false;
   if (ForcePGSO)

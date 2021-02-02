@@ -23,17 +23,17 @@ using namespace clang;
 using namespace diagtool;
 
 namespace {
-struct PrettyDiag {
-  StringRef Name;
-  StringRef Flag;
-  DiagnosticsEngine::Level Level;
+  struct PrettyDiag {
+    StringRef Name;
+    StringRef Flag;
+    DiagnosticsEngine::Level Level;
 
-  PrettyDiag(StringRef name, StringRef flag, DiagnosticsEngine::Level level)
-      : Name(name), Flag(flag), Level(level) {}
+    PrettyDiag(StringRef name, StringRef flag, DiagnosticsEngine::Level level)
+    : Name(name), Flag(flag), Level(level) {}
 
-  bool operator<(const PrettyDiag &x) const { return Name < x.Name; }
-};
-} // namespace
+    bool operator<(const PrettyDiag &x) const { return Name < x.Name; }
+  };
+}
 
 static void printUsage() {
   llvm::errs() << "Usage: diagtool show-enabled [<flags>] <single-input.c>\n";
@@ -41,18 +41,12 @@ static void printUsage() {
 
 static char getCharForLevel(DiagnosticsEngine::Level Level) {
   switch (Level) {
-  case DiagnosticsEngine::Ignored:
-    return ' ';
-  case DiagnosticsEngine::Note:
-    return '-';
-  case DiagnosticsEngine::Remark:
-    return 'R';
-  case DiagnosticsEngine::Warning:
-    return 'W';
-  case DiagnosticsEngine::Error:
-    return 'E';
-  case DiagnosticsEngine::Fatal:
-    return 'F';
+  case DiagnosticsEngine::Ignored: return ' ';
+  case DiagnosticsEngine::Note:    return '-';
+  case DiagnosticsEngine::Remark:  return 'R';
+  case DiagnosticsEngine::Warning: return 'W';
+  case DiagnosticsEngine::Error:   return 'E';
+  case DiagnosticsEngine::Fatal:   return 'F';
   }
 
   llvm_unreachable("Unknown diagnostic level");
@@ -66,7 +60,7 @@ createDiagnostics(unsigned int argc, char **argv) {
   // well formed diagnostic object.
   TextDiagnosticBuffer *DiagsBuffer = new TextDiagnosticBuffer;
   IntrusiveRefCntPtr<DiagnosticsEngine> InterimDiags(
-      new DiagnosticsEngine(DiagIDs, new DiagnosticOptions(), DiagsBuffer));
+    new DiagnosticsEngine(DiagIDs, new DiagnosticOptions(), DiagsBuffer));
 
   // Try to build a CompilerInvocation.
   SmallVector<const char *, 4> Args;
@@ -79,7 +73,7 @@ createDiagnostics(unsigned int argc, char **argv) {
 
   // Build the diagnostics parser
   IntrusiveRefCntPtr<DiagnosticsEngine> FinalDiags =
-      CompilerInstance::createDiagnostics(&Invocation->getDiagnosticOpts());
+    CompilerInstance::createDiagnostics(&Invocation->getDiagnosticOpts());
   if (!FinalDiags)
     return nullptr;
 
@@ -129,7 +123,7 @@ int ShowEnabledWarnings::run(unsigned int argc, char **argv, raw_ostream &Out) {
       continue;
 
     DiagnosticsEngine::Level DiagLevel =
-        Diags->getDiagnosticLevel(DiagID, SourceLocation());
+      Diags->getDiagnosticLevel(DiagID, SourceLocation());
     if (DiagLevel == DiagnosticsEngine::Ignored)
       continue;
 

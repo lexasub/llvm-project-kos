@@ -1,18 +1,18 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 // expected-no-diagnostics
 
-template <typename T> struct A {};
+template<typename T> struct A { };
 
-template <typename T, typename U = A<T *>>
-struct B : U {};
+template<typename T, typename U = A<T*> >
+  struct B : U { };
 
-template <>
-struct A<int *> {
+template<>
+struct A<int*> { 
   void foo();
 };
 
-template <>
-struct A<float *> {
+template<>
+struct A<float*> { 
   void bar();
 };
 

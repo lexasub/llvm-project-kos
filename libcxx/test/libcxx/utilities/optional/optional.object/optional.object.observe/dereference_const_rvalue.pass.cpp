@@ -23,10 +23,9 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  std::optional<int> opt;
-  int x = *std::move(opt);
-  (void)x;
-  assert(false);
+    std::optional<int> opt;
+    int x = *std::move(opt); (void)x;
+    assert(false);
 
-  return 0;
+    return 0;
 }

@@ -75,6 +75,6 @@ public:
 
   unsigned GetEhDataReg(unsigned I) const;
 };
-} // namespace llvm
+}
 
 #endif

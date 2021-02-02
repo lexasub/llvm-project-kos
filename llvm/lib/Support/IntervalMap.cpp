@@ -116,6 +116,7 @@ void Path::moveRight(unsigned Level) {
   path[l] = Entry(NR, 0);
 }
 
+
 IdxPair distribute(unsigned Nodes, unsigned Elements, unsigned Capacity,
                    const unsigned *CurSize, unsigned NewSize[],
                    unsigned Position, bool Grow) {
@@ -157,3 +158,4 @@ IdxPair distribute(unsigned Nodes, unsigned Elements, unsigned Capacity,
 
 } // namespace IntervalMapImpl
 } // namespace llvm
+

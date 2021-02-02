@@ -25,4 +25,4 @@ private:
   type *ptr;
 };
 
-} // namespace std
+}  // namespace std

@@ -100,8 +100,7 @@ void OptionValueFileSpec::AutoComplete(CommandInterpreter &interpreter,
 
 const lldb::DataBufferSP &OptionValueFileSpec::GetFileContents() {
   if (m_current_value) {
-    const auto file_mod_time =
-        FileSystem::Instance().GetModificationTime(m_current_value);
+    const auto file_mod_time = FileSystem::Instance().GetModificationTime(m_current_value);
     if (m_data_sp && m_data_mod_time == file_mod_time)
       return m_data_sp;
     m_data_sp =

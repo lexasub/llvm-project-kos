@@ -18,9 +18,7 @@ class OSSomething {
     kern_return_t ret;
     IORPC rpc;
     // Test the DriverKit specific suppression in the dead stores checker.
-    if (supermethod)
-      ret = supermethod((OSObject *)this, rpc); // no-warning
-    else
-      ret = ((OSObject *)this)->Invoke(rpc); // no-warning
+    if (supermethod) ret = supermethod((OSObject *)this, rpc); // no-warning
+    else             ret = ((OSObject *)this)->Invoke(rpc); // no-warning
   }
 };

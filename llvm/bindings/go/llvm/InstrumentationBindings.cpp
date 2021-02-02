@@ -37,7 +37,8 @@ void LLVMAddMemorySanitizerLegacyPassPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createMemorySanitizerLegacyPassPass());
 }
 
-void LLVMAddDataFlowSanitizerPass(LLVMPassManagerRef PM, int ABIListFilesNum,
+void LLVMAddDataFlowSanitizerPass(LLVMPassManagerRef PM,
+                                  int ABIListFilesNum,
                                   const char **ABIListFiles) {
   std::vector<std::string> ABIListFilesVec;
   for (int i = 0; i != ABIListFilesNum; ++i) {

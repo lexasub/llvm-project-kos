@@ -189,9 +189,7 @@ unsigned callFunction5(char *buf) {
 void f6(int **p);
 void callFunction6(int *p) { f6(&p); }
 
-typedef union {
-  void *v;
-} t;
+typedef union { void *v; } t;
 void f7(t obj);
 void callFunction7(int *p) {
   f7((t){p});

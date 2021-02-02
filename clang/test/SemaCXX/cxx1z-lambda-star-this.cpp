@@ -220,7 +220,7 @@ struct X {
   X(X &) = delete;
   auto foo() const {
     //OK - the object used to initialize our capture is a const object and so prefers the non-deleted ctor.
-    const auto &&L = [*this] {};
+    const auto &&L = [*this]{};
   }
 };
 int main() {
@@ -287,13 +287,14 @@ class A {
   }
   int data = 0;
   auto m2() {
-    return [this] { return []() -> decltype(data) { return 0; }; };
+    return [this] { return [] () -> decltype(data){ return 0; }; };
   }
   auto m3() {
-    return [] { return []() -> decltype(data) { return 0; }; };
+    return [] { return [] () -> decltype(data){ return 0; }; };
   }
 };
 
 } // namespace ns2
 
 } // namespace PR32831
+

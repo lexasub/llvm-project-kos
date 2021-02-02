@@ -43,7 +43,7 @@ public:
   }
   void print(raw_ostream &O, const Module *M) const override;
 };
-} // namespace
+}
 
 char ModuleDebugInfoLegacyPrinter::ID = 0;
 INITIALIZE_PASS(ModuleDebugInfoLegacyPrinter, "module-debuginfo",

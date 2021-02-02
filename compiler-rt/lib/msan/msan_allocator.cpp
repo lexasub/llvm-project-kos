@@ -11,17 +11,16 @@
 // MemorySanitizer allocator.
 //===----------------------------------------------------------------------===//
 
-#include "msan_allocator.h"
-
-#include "msan.h"
-#include "msan_origin.h"
-#include "msan_poisoning.h"
-#include "msan_thread.h"
 #include "sanitizer_common/sanitizer_allocator.h"
 #include "sanitizer_common/sanitizer_allocator_checks.h"
 #include "sanitizer_common/sanitizer_allocator_interface.h"
 #include "sanitizer_common/sanitizer_allocator_report.h"
 #include "sanitizer_common/sanitizer_errno.h"
+#include "msan.h"
+#include "msan_allocator.h"
+#include "msan_origin.h"
+#include "msan_thread.h"
+#include "msan_poisoning.h"
 
 namespace __msan {
 
@@ -223,7 +222,7 @@ void MsanDeallocate(StackTrace *stack, void *p) {
 
 void *MsanReallocate(StackTrace *stack, void *old_p, uptr new_size,
                      uptr alignment) {
-  Metadata *meta = reinterpret_cast<Metadata *>(allocator.GetMetaData(old_p));
+  Metadata *meta = reinterpret_cast<Metadata*>(allocator.GetMetaData(old_p));
   uptr old_size = meta->requested_size;
   uptr actually_allocated_size = allocator.GetActuallyAllocatedSize(old_p);
   if (new_size <= actually_allocated_size) {
@@ -256,11 +255,9 @@ void *MsanCalloc(StackTrace *stack, uptr nmemb, uptr size) {
 }
 
 static uptr AllocationSize(const void *p) {
-  if (!p)
-    return 0;
+  if (!p) return 0;
   const void *beg = allocator.GetBlockBegin(p);
-  if (beg != p)
-    return 0;
+  if (beg != p) return 0;
   Metadata *b = (Metadata *)allocator.GetMetaData(p);
   return b->requested_size;
 }
@@ -346,7 +343,7 @@ int msan_posix_memalign(void **memptr, uptr alignment, uptr size,
   return 0;
 }
 
-}  // namespace __msan
+} // namespace __msan
 
 using namespace __msan;
 

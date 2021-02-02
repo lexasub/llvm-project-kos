@@ -10,10 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_suppressions.h"
+#include "gtest/gtest.h"
 
 #include <string.h>
-
-#include "gtest/gtest.h"
 
 namespace __sanitizer {
 
@@ -122,8 +121,8 @@ TEST_F(SuppressionContextTest, ParseType) {
 
 TEST_F(SuppressionContextTest, HasSuppressionType) {
   ctx_.Parse(
-      "race:foo\n"
-      "thread:bar\n");
+    "race:foo\n"
+    "thread:bar\n");
   EXPECT_TRUE(ctx_.HasSuppressionType("race"));
   EXPECT_TRUE(ctx_.HasSuppressionType("thread"));
   EXPECT_FALSE(ctx_.HasSuppressionType("mutex"));
@@ -134,5 +133,6 @@ TEST_F(SuppressionContextTest, RegressionTestForBufferOverflowInSuppressions) {
   EXPECT_DEATH(ctx_.Parse("race"), "failed to parse suppressions");
   EXPECT_DEATH(ctx_.Parse("foo"), "failed to parse suppressions");
 }
+
 
 }  // namespace __sanitizer

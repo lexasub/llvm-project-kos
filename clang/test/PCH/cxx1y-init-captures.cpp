@@ -11,11 +11,11 @@
 #ifndef HEADER
 #define HEADER
 
-auto counter = [a(0)]() mutable { return a++; };
+auto counter = [a(0)] () mutable { return a++; };
 int x = counter();
 
-template <typename T> void f(T t) {
-  [t(t)] { int n = t; }();
+template<typename T> void f(T t) {
+  [t(t)] { int n = t; } ();
 }
 
 #else

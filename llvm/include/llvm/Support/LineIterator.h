@@ -88,6 +88,6 @@ private:
   /// Advance the iterator to the next line.
   void advance();
 };
-} // namespace llvm
+}
 
 #endif

@@ -21,13 +21,12 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class BoolAssignmentChecker : public Checker<check::Bind> {
-  mutable std::unique_ptr<BuiltinBug> BT;
-  void emitReport(ProgramStateRef state, CheckerContext &C) const;
-
-public:
-  void checkBind(SVal loc, SVal val, const Stmt *S, CheckerContext &C) const;
-};
+  class BoolAssignmentChecker : public Checker< check::Bind > {
+    mutable std::unique_ptr<BuiltinBug> BT;
+    void emitReport(ProgramStateRef state, CheckerContext &C) const;
+  public:
+    void checkBind(SVal loc, SVal val, const Stmt *S, CheckerContext &C) const;
+  };
 } // end anonymous namespace
 
 void BoolAssignmentChecker::emitReport(ProgramStateRef state,
@@ -46,9 +45,9 @@ static bool isBooleanType(QualType Ty) {
     return true;
 
   if (const TypedefType *TT = Ty->getAs<TypedefType>())
-    return TT->getDecl()->getName() == "BOOL" ||  // Objective-C
-           TT->getDecl()->getName() == "_Bool" || // stdbool.h < C99
-           TT->getDecl()->getName() == "Boolean"; // MacTypes.h
+    return TT->getDecl()->getName() == "BOOL"   || // Objective-C
+           TT->getDecl()->getName() == "_Bool"  || // stdbool.h < C99
+           TT->getDecl()->getName() == "Boolean";  // MacTypes.h
 
   return false;
 }
@@ -58,7 +57,7 @@ void BoolAssignmentChecker::checkBind(SVal loc, SVal val, const Stmt *S,
 
   // We are only interested in stores into Booleans.
   const TypedValueRegion *TR =
-      dyn_cast_or_null<TypedValueRegion>(loc.getAsRegion());
+    dyn_cast_or_null<TypedValueRegion>(loc.getAsRegion());
 
   if (!TR)
     return;
@@ -94,7 +93,7 @@ void BoolAssignmentChecker::checkBind(SVal loc, SVal val, const Stmt *S,
 }
 
 void ento::registerBoolAssignmentChecker(CheckerManager &mgr) {
-  mgr.registerChecker<BoolAssignmentChecker>();
+    mgr.registerChecker<BoolAssignmentChecker>();
 }
 
 bool ento::shouldRegisterBoolAssignmentChecker(const CheckerManager &mgr) {

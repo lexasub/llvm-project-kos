@@ -63,8 +63,8 @@ void test_float() {
       {IsSigned ? static_cast<IntT>(-1) : 0,
        IsSigned ? static_cast<IntT>(-1) : 0, true},
       {Lim::lowest(), Lim::lowest(), true},
-      {static_cast<float>(Lim::max()), Lim::max(), MaxIsRepresentable},
-      {nextafter(static_cast<float>(Lim::max()), INFINITY), Lim::max(), false},
+      {static_cast<float>(Lim::max()), Lim::max(), MaxIsRepresentable },
+       {nextafter(static_cast<float>(Lim::max()), INFINITY), Lim::max(), false},
   };
   for (TestCase TC : TestCases) {
     auto res = std::__clamp_to_integral<IntT>(TC.Input);

@@ -14,34 +14,33 @@
 #define ASAN_TEST_UTILS_H
 
 #if !defined(SANITIZER_EXTERNAL_TEST_CONFIG)
-#define INCLUDED_FROM_ASAN_TEST_UTILS_H
-#include "asan_test_config.h"
-#undef INCLUDED_FROM_ASAN_TEST_UTILS_H
+# define INCLUDED_FROM_ASAN_TEST_UTILS_H
+# include "asan_test_config.h"
+# undef INCLUDED_FROM_ASAN_TEST_UTILS_H
 #endif
 
-#include <assert.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <stdint.h>
+#include "sanitizer_test_utils.h"
+#include "sanitizer_pthread_wrappers.h"
+
 #include <stdio.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdint.h>
+#include <assert.h>
 #include <algorithm>
-
-#include "sanitizer_pthread_wrappers.h"
-#include "sanitizer_test_utils.h"
+#include <setjmp.h>
 
 #if !defined(_WIN32)
-#include <strings.h>
-#include <sys/mman.h>
+# include <strings.h>
+# include <sys/mman.h>
 #endif
 
 #ifdef __linux__
-#include <fcntl.h>
-#include <sys/prctl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+# include <sys/prctl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 #include <unistd.h>
 #endif
 
@@ -50,15 +49,15 @@
 #endif
 
 #if ASAN_HAS_EXCEPTIONS
-#define ASAN_THROW(x) throw(x)
+# define ASAN_THROW(x) throw (x)
 #else
-#define ASAN_THROW(x)
+# define ASAN_THROW(x)
 #endif
 
-typedef uint8_t U1;
-typedef uint16_t U2;
-typedef uint32_t U4;
-typedef uint64_t U8;
+typedef uint8_t   U1;
+typedef uint16_t  U2;
+typedef uint32_t  U4;
+typedef uint64_t  U8;
 
 static const int kPageSize = 4096;
 
@@ -69,7 +68,7 @@ const size_t kLargeMalloc = 1 << 22;
 extern void free_aaa(void *p);
 extern void *malloc_aaa(size_t size);
 
-template <typename T>
+template<typename T>
 NOINLINE void asan_write(T *a) {
   *a = 0;
 }
@@ -81,8 +80,8 @@ std::string LeftOOBErrorMessage(int oob_distance, bool is_write);
 std::string LeftOOBWriteMessage(int oob_distance);
 std::string LeftOOBReadMessage(int oob_distance);
 std::string LeftOOBAccessMessage(int oob_distance);
-char *MallocAndMemsetString(size_t size, char ch);
-char *MallocAndMemsetString(size_t size);
+char* MallocAndMemsetString(size_t size, char ch);
+char* MallocAndMemsetString(size_t size);
 
 extern char glob1[1];
 extern char glob2[2];

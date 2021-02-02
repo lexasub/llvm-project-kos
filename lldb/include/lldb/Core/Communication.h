@@ -96,11 +96,12 @@ public:
       eBroadcastBitPacketAvailable =
           (1u << 4), ///< Sent when data received makes a complete packet.
       eBroadcastBitNoMorePendingInput = (1u << 5), ///< Sent by the read thread
-                                                   /// to indicate all pending
-                                                   /// input has been processed.
+                                                   ///to indicate all pending
+                                                   ///input has been processed.
       kLoUserBroadcastBit =
           (1u << 16), ///< Subclasses can used bits 31:16 for any needed events.
-      kHiUserBroadcastBit = (1u << 31), eAllEventBits = 0xffffffff};
+      kHiUserBroadcastBit = (1u << 31),
+      eAllEventBits = 0xffffffff};
 
   typedef void (*ReadThreadBytesReceived)(void *baton, const void *src,
                                           size_t src_len);
@@ -298,15 +299,15 @@ public:
 
 protected:
   lldb::ConnectionSP m_connection_sp; ///< The connection that is current in use
-                                      /// by this communications class.
+                                      ///by this communications class.
   HostThread m_read_thread; ///< The read thread handle in case we need to
-                            /// cancel the thread.
+                            ///cancel the thread.
   std::atomic<bool> m_read_thread_enabled;
   std::atomic<bool> m_read_thread_did_exit;
   std::string
       m_bytes; ///< A buffer to cache bytes read in the ReadThread function.
   std::recursive_mutex m_bytes_mutex; ///< A mutex to protect multi-threaded
-                                      /// access to the cached bytes.
+                                      ///access to the cached bytes.
   std::mutex
       m_write_mutex; ///< Don't let multiple threads write at the same time...
   std::mutex m_synchronize_mutex;

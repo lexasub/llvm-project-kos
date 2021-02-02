@@ -20,21 +20,26 @@
 
 #include "test_macros.h"
 
-void test1() {
-  static_assert(
-      (std::is_same<std::ranlux24::result_type, std::uint_fast32_t>::value),
-      "");
+void
+test1()
+{
+    static_assert((std::is_same<
+        std::ranlux24::result_type,
+        std::uint_fast32_t>::value), "");
 }
 
-void test2() {
-  static_assert(
-      (std::is_same<std::ranlux48::result_type, std::uint_fast64_t>::value),
-      "");
+void
+test2()
+{
+    static_assert((std::is_same<
+        std::ranlux48::result_type,
+        std::uint_fast64_t>::value), "");
 }
 
-int main(int, char**) {
-  test1();
-  test2();
+int main(int, char**)
+{
+    test1();
+    test2();
 
   return 0;
 }

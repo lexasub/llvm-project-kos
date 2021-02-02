@@ -4,12 +4,12 @@
 
 // Source code for a simple DSO.
 #ifdef _WIN32
-__declspec(dllexport)
+__declspec( dllexport )
 #endif
-    int DSO1(int a) {
+int DSO1(int a) {
   if (a < 123456)
     return 0;
   return 1;
 }
 
-void Uncovered1() {}
+void Uncovered1() { }

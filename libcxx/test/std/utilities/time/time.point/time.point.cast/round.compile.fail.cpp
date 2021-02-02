@@ -19,8 +19,9 @@
 
 #include <chrono>
 
-int main(int, char**) {
-  std::chrono::round<int>(std::chrono::system_clock::now());
+int main(int, char**)
+{
+    std::chrono::round<int>(std::chrono::system_clock::now());
 
   return 0;
 }

@@ -58,7 +58,7 @@ inline llvm::SpecificBumpPtrAllocator<T> &getSpecificAllocSingleton() {
 
 // Use this arena if your object has a destructor.
 // Your destructor will be invoked from freeArena().
-template <typename T, typename... U> T *make(U &&...args) {
+template <typename T, typename... U> T *make(U &&... args) {
   return new (getSpecificAllocSingleton<T>().Allocate())
       T(std::forward<U>(args)...);
 }

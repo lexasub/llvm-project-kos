@@ -9,24 +9,24 @@
 // This file is a part of ThreadSanitizer/AddressSanitizer runtime.
 //
 //===----------------------------------------------------------------------===//
-#include "sanitizer_common/sanitizer_common.h"
-
 #include <algorithm>
 
-#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_allocator_internal.h"
+#include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_file.h"
 #include "sanitizer_common/sanitizer_flags.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_platform.h"
+
 #include "sanitizer_pthread_wrappers.h"
+
+#include "gtest/gtest.h"
 
 namespace __sanitizer {
 
 static bool IsSorted(const uptr *array, uptr n) {
   for (uptr i = 1; i < n; i++) {
-    if (array[i] < array[i - 1])
-      return false;
+    if (array[i] < array[i - 1]) return false;
   }
   return true;
 }
@@ -80,8 +80,8 @@ TEST(SanitizerCommon, MmapAlignedOrDieOnFatalError) {
         uptr res = (uptr)MmapAlignedOrDieOnFatalError(
             size * PageSize, alignment * PageSize, "MmapAlignedOrDieTest");
         EXPECT_EQ(0U, res % (alignment * PageSize));
-        internal_memset((void *)res, 1, size * PageSize);
-        UnmapOrDie((void *)res, size * PageSize);
+        internal_memset((void*)res, 1, size * PageSize);
+        UnmapOrDie((void*)res, size * PageSize);
       }
     }
   }
@@ -199,8 +199,8 @@ void TestThreadInfo(bool main) {
   // Ensure that tls and stack do not intersect.
   uptr tls_end = tls_addr + tls_size;
   EXPECT_TRUE(tls_addr < stk_addr || tls_addr >= stk_addr + stk_size);
-  EXPECT_TRUE(tls_end < stk_addr || tls_end >= stk_addr + stk_size);
-  EXPECT_TRUE((tls_addr < stk_addr) == (tls_end < stk_addr));
+  EXPECT_TRUE(tls_end  < stk_addr || tls_end  >=  stk_addr + stk_size);
+  EXPECT_TRUE((tls_addr < stk_addr) == (tls_end  < stk_addr));
 #endif
 }
 
@@ -221,7 +221,9 @@ TEST(SanitizerCommon, ThreadStackTlsWorker) {
   PTHREAD_JOIN(t, 0);
 }
 
-bool UptrLess(uptr a, uptr b) { return a < b; }
+bool UptrLess(uptr a, uptr b) {
+  return a < b;
+}
 
 TEST(SanitizerCommon, InternalLowerBound) {
   std::vector<int> arr = {1, 3, 5, 7, 11};
@@ -243,7 +245,7 @@ TEST(SanitizerCommon, InternalLowerBound) {
 
 TEST(SanitizerCommon, InternalLowerBoundVsStdLowerBound) {
   std::vector<int> data;
-  auto create_item = [](size_t i, size_t j) {
+  auto create_item = [] (size_t i, size_t j) {
     auto v = i * 10000 + j;
     return ((v << 6) + (v >> 6) + 0x9e3779b9) % 100;
   };
@@ -299,7 +301,7 @@ INSTANTIATE_TEST_CASE_P(SortAndDedupTest, SortAndDedupTest,
 #if SANITIZER_LINUX && !SANITIZER_ANDROID
 TEST(SanitizerCommon, FindPathToBinary) {
   char *true_path = FindPathToBinary("true");
-  EXPECT_NE((char *)0, internal_strstr(true_path, "/bin/true"));
+  EXPECT_NE((char*)0, internal_strstr(true_path, "/bin/true"));
   InternalFree(true_path);
   EXPECT_EQ(0, FindPathToBinary("unexisting_binary.ergjeorj"));
 }
@@ -308,7 +310,7 @@ TEST(SanitizerCommon, FindPathToBinary) {
   // ntdll.dll should be on PATH in all supported test environments on all
   // supported Windows versions.
   char *ntdll_path = FindPathToBinary("ntdll.dll");
-  EXPECT_NE((char *)0, internal_strstr(ntdll_path, "ntdll.dll"));
+  EXPECT_NE((char*)0, internal_strstr(ntdll_path, "ntdll.dll"));
   InternalFree(ntdll_path);
   EXPECT_EQ(0, FindPathToBinary("unexisting_binary.ergjeorj"));
 }
@@ -326,34 +328,23 @@ TEST(SanitizerCommon, StripPathPrefix) {
 TEST(SanitizerCommon, RemoveANSIEscapeSequencesFromString) {
   RemoveANSIEscapeSequencesFromString(nullptr);
   const char *buffs[22] = {
-      "Default",
-      "Default",
-      "\033[95mLight magenta",
-      "Light magenta",
-      "\033[30mBlack\033[32mGreen\033[90mGray",
-      "BlackGreenGray",
-      "\033[106mLight cyan \033[107mWhite ",
-      "Light cyan White ",
-      "\033[31mHello\033[0m World",
-      "Hello World",
-      "\033[38;5;82mHello \033[38;5;198mWorld",
-      "Hello World",
-      "123[653456789012",
-      "123[653456789012",
-      "Normal \033[5mBlink \033[25mNormal",
-      "Normal Blink Normal",
-      "\033[106m\033[107m",
-      "",
-      "",
-      "",
-      " ",
-      " ",
+    "Default",                                "Default",
+    "\033[95mLight magenta",                  "Light magenta",
+    "\033[30mBlack\033[32mGreen\033[90mGray", "BlackGreenGray",
+    "\033[106mLight cyan \033[107mWhite ",    "Light cyan White ",
+    "\033[31mHello\033[0m World",             "Hello World",
+    "\033[38;5;82mHello \033[38;5;198mWorld", "Hello World",
+    "123[653456789012",                       "123[653456789012",
+    "Normal \033[5mBlink \033[25mNormal",     "Normal Blink Normal",
+    "\033[106m\033[107m",                     "",
+    "",                                       "",
+    " ",                                      " ",
   };
 
-  for (size_t i = 0; i < ARRAY_SIZE(buffs); i += 2) {
+  for (size_t i = 0; i < ARRAY_SIZE(buffs); i+=2) {
     char *buffer_copy = internal_strdup(buffs[i]);
     RemoveANSIEscapeSequencesFromString(buffer_copy);
-    EXPECT_STREQ(buffer_copy, buffs[i + 1]);
+    EXPECT_STREQ(buffer_copy, buffs[i+1]);
     InternalFree(buffer_copy);
   }
 }
@@ -385,10 +376,11 @@ TEST(SanitizerCommon, InternalScopedString) {
   EXPECT_STREQ("012345678", str.data());
 }
 
-#if SANITIZER_LINUX || SANITIZER_FREEBSD || SANITIZER_MAC || SANITIZER_IOS
+#if SANITIZER_LINUX || SANITIZER_FREEBSD || \
+  SANITIZER_MAC || SANITIZER_IOS
 TEST(SanitizerCommon, GetRandom) {
   u8 buffer_1[32], buffer_2[32];
-  for (bool blocking : {false, true}) {
+  for (bool blocking : { false, true }) {
     EXPECT_FALSE(GetRandom(nullptr, 32, blocking));
     EXPECT_FALSE(GetRandom(buffer_1, 0, blocking));
     EXPECT_FALSE(GetRandom(buffer_1, 512, blocking));
@@ -408,8 +400,8 @@ TEST(SanitizerCommon, ReservedAddressRangeInit) {
   uptr init_size = 0xffff;
   ReservedAddressRange address_range;
   uptr res = address_range.Init(init_size);
-  CHECK_NE(res, (void *)-1);
-  UnmapOrDie((void *)res, init_size);
+  CHECK_NE(res, (void*)-1);
+  UnmapOrDie((void*)res, init_size);
   // Should be able to map into the same space now.
   ReservedAddressRange address_range2;
   uptr res2 = address_range2.Init(init_size, nullptr, res);
@@ -424,7 +416,7 @@ TEST(SanitizerCommon, ReservedAddressRangeMap) {
   constexpr uptr init_size = 0xffff;
   ReservedAddressRange address_range;
   uptr res = address_range.Init(init_size);
-  CHECK_NE(res, (void *)-1);
+  CHECK_NE(res, (void*) -1);
 
   // Valid mappings should succeed.
   CHECK_EQ(res, address_range.Map(res, init_size));
@@ -442,7 +434,7 @@ TEST(SanitizerCommon, ReservedAddressRangeUnmap) {
   uptr init_size = PageSize * 8;
   ReservedAddressRange address_range;
   uptr base_addr = address_range.Init(init_size);
-  CHECK_NE(base_addr, (void *)-1);
+  CHECK_NE(base_addr, (void*)-1);
   CHECK_EQ(base_addr, address_range.Map(base_addr, init_size));
 
   // Unmapping the entire range should succeed.
@@ -452,8 +444,8 @@ TEST(SanitizerCommon, ReservedAddressRangeUnmap) {
   base_addr = address_range.Init(init_size);
   CHECK_EQ(base_addr, address_range.Map(base_addr, init_size));
 
-// Windows doesn't allow partial unmappings.
-#if !SANITIZER_WINDOWS
+  // Windows doesn't allow partial unmappings.
+  #if !SANITIZER_WINDOWS
 
   // Unmapping at the beginning should succeed.
   address_range.Unmap(base_addr, PageSize);
@@ -463,7 +455,7 @@ TEST(SanitizerCommon, ReservedAddressRangeUnmap) {
                    address_range.size() - PageSize;
   address_range.Unmap(new_start, PageSize);
 
-#endif
+  #endif
 
   // Unmapping in the middle of the ReservedAddressRange should fail.
   EXPECT_DEATH(address_range.Unmap(base_addr + (PageSize * 2), PageSize), ".*");

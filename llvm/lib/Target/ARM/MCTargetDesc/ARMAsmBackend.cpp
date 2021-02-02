@@ -17,7 +17,6 @@
 #include "llvm/BinaryFormat/ELF.h"
 #include "llvm/BinaryFormat/MachO.h"
 #include "llvm/MC/MCAsmBackend.h"
-#include "llvm/MC/MCAsmLayout.h"
 #include "llvm/MC/MCAssembler.h"
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCDirectives.h"
@@ -30,6 +29,7 @@
 #include "llvm/MC/MCSectionMachO.h"
 #include "llvm/MC/MCSubtargetInfo.h"
 #include "llvm/MC/MCValue.h"
+#include "llvm/MC/MCAsmLayout.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/EndianStream.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -116,7 +116,8 @@ const MCFixupKindInfo &ARMAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
       {"fixup_bfc_target", 0, 32, MCFixupKindInfo::FKF_IsPCRel},
       {"fixup_bfcsel_else_target", 0, 32, 0},
       {"fixup_wls", 0, 32, MCFixupKindInfo::FKF_IsPCRel},
-      {"fixup_le", 0, 32, MCFixupKindInfo::FKF_IsPCRel}};
+      {"fixup_le", 0, 32, MCFixupKindInfo::FKF_IsPCRel}
+  };
   const static MCFixupKindInfo InfosBE[ARM::NumTargetFixupKinds] = {
       // This table *must* be in the order that the fixup_* kinds are defined in
       // ARMFixupKinds.h.
@@ -169,7 +170,8 @@ const MCFixupKindInfo &ARMAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
       {"fixup_bfc_target", 0, 32, MCFixupKindInfo::FKF_IsPCRel},
       {"fixup_bfcsel_else_target", 0, 32, 0},
       {"fixup_wls", 0, 32, MCFixupKindInfo::FKF_IsPCRel},
-      {"fixup_le", 0, 32, MCFixupKindInfo::FKF_IsPCRel}};
+      {"fixup_le", 0, 32, MCFixupKindInfo::FKF_IsPCRel}
+  };
 
   // Fixup kinds from .reloc directive are like R_ARM_NONE. They do not require
   // any extra processing.
@@ -421,7 +423,7 @@ unsigned ARMAsmBackend::adjustFixupValue(const MCAssembler &Asm,
                                          const MCFixup &Fixup,
                                          const MCValue &Target, uint64_t Value,
                                          bool IsResolved, MCContext &Ctx,
-                                         const MCSubtargetInfo *STI) const {
+                                         const MCSubtargetInfo* STI) const {
   unsigned Kind = Fixup.getKind();
 
   // MachO tries to make .o files that look vaguely pre-linked, so for MOVW/MOVT
@@ -595,7 +597,8 @@ unsigned ARMAsmBackend::adjustFixupValue(const MCAssembler &Asm,
     if (!isInt<25>(Value - 4) ||
         (!STI->getFeatureBits()[ARM::FeatureThumb2] &&
          !STI->getFeatureBits()[ARM::HasV8MBaselineOps] &&
-         !STI->getFeatureBits()[ARM::HasV6MOps] && !isInt<23>(Value - 4))) {
+         !STI->getFeatureBits()[ARM::HasV6MOps] &&
+         !isInt<23>(Value - 4))) {
       Ctx.reportError(Fixup.getLoc(), "Relocation out of range");
       return 0;
     }
@@ -828,9 +831,8 @@ unsigned ARMAsmBackend::adjustFixupValue(const MCAssembler &Asm,
       return 0;
     }
     uint32_t out = 0;
-    uint32_t HighBitMask = (Kind == ARM::fixup_bf_target    ? 0xf800
-                            : Kind == ARM::fixup_bfl_target ? 0x3f800
-                                                            : 0x800);
+    uint32_t HighBitMask = (Kind == ARM::fixup_bf_target ? 0xf800 :
+                            Kind == ARM::fixup_bfl_target ? 0x3f800 : 0x800);
     out |= (((Value - 4) >> 1) & 0x1) << 11;
     out |= (((Value - 4) >> 1) & 0x7fe);
     out |= (((Value - 4) >> 1) & HighBitMask) << 5;
@@ -1034,7 +1036,7 @@ void ARMAsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
                                const MCValue &Target,
                                MutableArrayRef<char> Data, uint64_t Value,
                                bool IsResolved,
-                               const MCSubtargetInfo *STI) const {
+                               const MCSubtargetInfo* STI) const {
   unsigned Kind = Fixup.getKind();
   if (Kind >= FirstLiteralRelocationKind)
     return;
@@ -1068,29 +1070,29 @@ namespace CU {
 
 /// Compact unwind encoding values.
 enum CompactUnwindEncodings {
-  UNWIND_ARM_MODE_MASK = 0x0F000000,
-  UNWIND_ARM_MODE_FRAME = 0x01000000,
-  UNWIND_ARM_MODE_FRAME_D = 0x02000000,
-  UNWIND_ARM_MODE_DWARF = 0x04000000,
+  UNWIND_ARM_MODE_MASK                         = 0x0F000000,
+  UNWIND_ARM_MODE_FRAME                        = 0x01000000,
+  UNWIND_ARM_MODE_FRAME_D                      = 0x02000000,
+  UNWIND_ARM_MODE_DWARF                        = 0x04000000,
 
-  UNWIND_ARM_FRAME_STACK_ADJUST_MASK = 0x00C00000,
+  UNWIND_ARM_FRAME_STACK_ADJUST_MASK           = 0x00C00000,
 
-  UNWIND_ARM_FRAME_FIRST_PUSH_R4 = 0x00000001,
-  UNWIND_ARM_FRAME_FIRST_PUSH_R5 = 0x00000002,
-  UNWIND_ARM_FRAME_FIRST_PUSH_R6 = 0x00000004,
+  UNWIND_ARM_FRAME_FIRST_PUSH_R4               = 0x00000001,
+  UNWIND_ARM_FRAME_FIRST_PUSH_R5               = 0x00000002,
+  UNWIND_ARM_FRAME_FIRST_PUSH_R6               = 0x00000004,
 
-  UNWIND_ARM_FRAME_SECOND_PUSH_R8 = 0x00000008,
-  UNWIND_ARM_FRAME_SECOND_PUSH_R9 = 0x00000010,
-  UNWIND_ARM_FRAME_SECOND_PUSH_R10 = 0x00000020,
-  UNWIND_ARM_FRAME_SECOND_PUSH_R11 = 0x00000040,
-  UNWIND_ARM_FRAME_SECOND_PUSH_R12 = 0x00000080,
+  UNWIND_ARM_FRAME_SECOND_PUSH_R8              = 0x00000008,
+  UNWIND_ARM_FRAME_SECOND_PUSH_R9              = 0x00000010,
+  UNWIND_ARM_FRAME_SECOND_PUSH_R10             = 0x00000020,
+  UNWIND_ARM_FRAME_SECOND_PUSH_R11             = 0x00000040,
+  UNWIND_ARM_FRAME_SECOND_PUSH_R12             = 0x00000080,
 
-  UNWIND_ARM_FRAME_D_REG_COUNT_MASK = 0x00000F00,
+  UNWIND_ARM_FRAME_D_REG_COUNT_MASK            = 0x00000F00,
 
-  UNWIND_ARM_DWARF_SECTION_OFFSET = 0x00FFFFFF
+  UNWIND_ARM_DWARF_SECTION_OFFSET              = 0x00FFFFFF
 };
 
-} // namespace CU
+} // end CU namespace
 
 /// Generate compact unwind encoding for the function based on the CFI
 /// instructions. If the CFI instructions describe a frame that cannot be
@@ -1148,8 +1150,8 @@ uint32_t ARMAsmBackendDarwin::generateCompactUnwindEncoding(
       DEBUG_WITH_TYPE("compact-unwind",
                       llvm::dbgs()
                           << "CFI directive not compatiable with comact "
-                             "unwind encoding, opcode="
-                          << Inst.getOperation() << "\n");
+                             "unwind encoding, opcode=" << Inst.getOperation()
+                          << "\n");
       return CU::UNWIND_ARM_MODE_DWARF;
       break;
     }
@@ -1161,9 +1163,9 @@ uint32_t ARMAsmBackendDarwin::generateCompactUnwindEncoding(
 
   // Verify standard frame (lr/r7) was used.
   if (CFARegister != ARM::R7) {
-    DEBUG_WITH_TYPE("compact-unwind", llvm::dbgs()
-                                          << "frame register is " << CFARegister
-                                          << " instead of r7\n");
+    DEBUG_WITH_TYPE("compact-unwind", llvm::dbgs() << "frame register is "
+                                                   << CFARegister
+                                                   << " instead of r7\n");
     return CU::UNWIND_ARM_MODE_DWARF;
   }
   int StackAdjust = CFARegisterOffset - 8;
@@ -1225,9 +1227,9 @@ uint32_t ARMAsmBackendDarwin::generateCompactUnwindEncoding(
     int RegOffset = Offset->second;
     if (RegOffset != CurOffset - 4) {
       DEBUG_WITH_TYPE("compact-unwind",
-                      llvm::dbgs()
-                          << MRI.getName(CSReg.Reg) << " saved at " << RegOffset
-                          << " but only supported at " << CurOffset << "\n");
+                      llvm::dbgs() << MRI.getName(CSReg.Reg) << " saved at "
+                                   << RegOffset << " but only supported at "
+                                   << CurOffset << "\n");
       return CU::UNWIND_ARM_MODE_DWARF;
     }
     CompactUnwindEncoding |= CSReg.Encoding;
@@ -1248,28 +1250,28 @@ uint32_t ARMAsmBackendDarwin::generateCompactUnwindEncoding(
     DEBUG_WITH_TYPE("compact-unwind",
                     llvm::dbgs() << "unsupported number of D registers saved ("
                                  << FloatRegCount << ")\n");
-    return CU::UNWIND_ARM_MODE_DWARF;
+      return CU::UNWIND_ARM_MODE_DWARF;
   }
 
   // Floating point registers must either be saved sequentially, or we defer to
   // DWARF. No gaps allowed here so check that each saved d-register is
   // precisely where it should be.
-  static unsigned FPRCSRegs[] = {ARM::D8, ARM::D10, ARM::D12, ARM::D14};
+  static unsigned FPRCSRegs[] = { ARM::D8, ARM::D10, ARM::D12, ARM::D14 };
   for (int Idx = FloatRegCount - 1; Idx >= 0; --Idx) {
     auto Offset = RegOffsets.find(FPRCSRegs[Idx]);
     if (Offset == RegOffsets.end()) {
       DEBUG_WITH_TYPE("compact-unwind",
-                      llvm::dbgs()
-                          << FloatRegCount << " D-regs saved, but "
-                          << MRI.getName(FPRCSRegs[Idx]) << " not saved\n");
+                      llvm::dbgs() << FloatRegCount << " D-regs saved, but "
+                                   << MRI.getName(FPRCSRegs[Idx])
+                                   << " not saved\n");
       return CU::UNWIND_ARM_MODE_DWARF;
     } else if (Offset->second != CurOffset - 8) {
       DEBUG_WITH_TYPE("compact-unwind",
-                      llvm::dbgs()
-                          << FloatRegCount << " D-regs saved, but "
-                          << MRI.getName(FPRCSRegs[Idx]) << " saved at "
-                          << Offset->second << ", expected at " << CurOffset - 8
-                          << "\n");
+                      llvm::dbgs() << FloatRegCount << " D-regs saved, but "
+                                   << MRI.getName(FPRCSRegs[Idx])
+                                   << " saved at " << Offset->second
+                                   << ", expected at " << CurOffset - 8
+                                   << "\n");
       return CU::UNWIND_ARM_MODE_DWARF;
     }
     CurOffset -= 8;

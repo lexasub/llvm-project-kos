@@ -7,32 +7,28 @@
 //   enclosing namespace.
 
 namespace N {
-struct S0 {
-  friend struct F0;
-  friend void f0(int);
-  struct F0 member_func();
-};
-struct F0 {};
-F0 f0() { return S0().member_func(); }
-} // namespace N
+  struct S0 {
+    friend struct F0;
+    friend void f0(int);
+    struct F0 member_func();
+  };
+  struct F0 { };
+  F0 f0() { return S0().member_func(); }
+}
 N::F0 f0_var = N::f0();
 
 // Ensure we can handle attaching friend declarations to an enclosing namespace
 // with multiple contexts.
+namespace N { struct S1 { struct IS1; }; }
 namespace N {
-struct S1 {
-  struct IS1;
-};
-} // namespace N
-namespace N {
-struct S1::IS1 {
-  friend struct F1;
-  friend void f1(int);
-  struct F1 member_func();
-};
-struct F1 {};
-F1 f1() { return S1::IS1().member_func(); }
-} // namespace N
+  struct S1::IS1 {
+    friend struct F1;
+    friend void f1(int);
+    struct F1 member_func();
+  };
+  struct F1 { };
+  F1 f1() { return S1::IS1().member_func(); }
+}
 N::F1 f1_var = N::f1();
 
 //   The name of the friend is not found by unqualified lookup (3.4.1) or by
@@ -46,28 +42,28 @@ N::F1 f1_var = N::f1();
 //   determine whether the entity has been previously declared shall not
 //   consider any scopes outside the innermost enclosing namespace.
 
-template <typename T> struct X0 {};
-struct X1 {};
+template<typename T> struct X0 { };
+struct X1 { };
 
 struct Y {
-  template <typename T> union X0;
-  template <typename T> friend union X0;
-
+  template<typename T> union X0;
+  template<typename T> friend union X0;
+  
   union X1;
   friend union X1;
 };
 
 namespace N {
-namespace M {
-template <typename T> class X;
+  namespace M {
+    template<typename T> class X;
+  }
 }
-} // namespace N
 
 namespace N3 {
-class Y {
-  template <typename T> friend class N::M::X;
-};
-} // namespace N3
+  class Y {
+    template<typename T> friend class N::M::X;
+  };
+}
 
 // FIXME: Woefully inadequate for testing
 
@@ -75,124 +71,124 @@ class Y {
 // on innermost namespaces.
 // rdar://problem/8552377
 namespace test5 {
-template <class T> void f(T);
-namespace ns {
-class A {
-  friend void f<int>(int);
-  static void foo(); // expected-note 2 {{declared private here}}
-};
+  template <class T> void f(T);  
+  namespace ns {
+    class A {
+      friend void f<int>(int);
+      static void foo(); // expected-note 2 {{declared private here}}
+    };
 
-// Note that this happens without instantiation.
-template <class T> void f(T) {
-  A::foo(); // expected-error {{'foo' is a private member of 'test5::ns::A'}}
+    // Note that this happens without instantiation.
+    template <class T> void f(T) {
+      A::foo(); // expected-error {{'foo' is a private member of 'test5::ns::A'}}
+    }
+  }
+
+  template <class T> void f(T) {
+    ns::A::foo(); // expected-error {{'foo' is a private member of 'test5::ns::A'}}
+  }
+
+  template void f<int>(int);
+  template void f<long>(long); //expected-note {{instantiation}}
 }
-} // namespace ns
-
-template <class T> void f(T) {
-  ns::A::foo(); // expected-error {{'foo' is a private member of 'test5::ns::A'}}
-}
-
-template void f<int>(int);
-template void f<long>(long); //expected-note {{instantiation}}
-} // namespace test5
 
 // rdar://13393749
 namespace test6 {
-class A;
-namespace ns {
-class B {
-  static void foo(); // expected-note {{implicitly declared private here}}
-  friend union A;
-};
+  class A;
+  namespace ns {
+    class B {
+      static void foo(); // expected-note {{implicitly declared private here}}
+      friend union A;
+    };
 
-union A {
-  void test() {
-    B::foo();
+    union A {
+      void test() {
+        B::foo();
+      }
+    };
   }
-};
-} // namespace ns
 
-class A {
-  void test() {
-    ns::B::foo(); // expected-error {{'foo' is a private member of 'test6::ns::B'}}
-  }
-};
-} // namespace test6
+  class A {
+    void test() {
+      ns::B::foo(); // expected-error {{'foo' is a private member of 'test6::ns::B'}}
+    }
+  };
+}
 
 // We seem to be following a correct interpretation with these, but
 // the standard could probably be a bit clearer.
 namespace test7a {
-namespace ns {
-class A;
-}
-
-using namespace ns;
-class B {
-  static void foo();
-  friend class A;
-};
-
-class ns::A {
-  void test() {
-    B::foo();
+  namespace ns {
+    class A;
   }
-};
-} // namespace test7a
+
+  using namespace ns;
+  class B {
+    static void foo();
+    friend class A;
+  };
+
+  class ns::A {
+    void test() {
+      B::foo();
+    }
+  };
+}
 namespace test7b {
-namespace ns {
-class A;
-}
-
-using ns::A;
-class B {
-  static void foo();
-  friend class A;
-};
-
-class ns::A {
-  void test() {
-    B::foo();
+  namespace ns {
+    class A;
   }
-};
-} // namespace test7b
+
+  using ns::A;
+  class B {
+    static void foo();
+    friend class A;
+  };
+
+  class ns::A {
+    void test() {
+      B::foo();
+    }
+  };
+}
 namespace test7c {
-namespace ns1 {
-class A;
-}
-
-namespace ns2 {
-// ns1::A appears as if declared in test7c according to [namespace.udir]p2.
-// I think that means we aren't supposed to find it.
-using namespace ns1;
-class B {
-  static void foo(); // expected-note {{implicitly declared private here}}
-  friend class A;
-};
-} // namespace ns2
-
-class ns1::A {
-  void test() {
-    ns2::B::foo(); // expected-error {{'foo' is a private member of 'test7c::ns2::B'}}
+  namespace ns1 {
+    class A;
   }
-};
-} // namespace test7c
+
+  namespace ns2 {
+    // ns1::A appears as if declared in test7c according to [namespace.udir]p2.
+    // I think that means we aren't supposed to find it.
+    using namespace ns1;
+    class B {
+      static void foo(); // expected-note {{implicitly declared private here}}
+      friend class A;
+    };
+  }
+
+  class ns1::A {
+    void test() {
+      ns2::B::foo(); // expected-error {{'foo' is a private member of 'test7c::ns2::B'}}
+    }
+  };
+}
 namespace test7d {
-namespace ns1 {
-class A;
-}
-
-namespace ns2 {
-// Honor the lexical context of a using-declaration, though.
-using ns1::A;
-class B {
-  static void foo();
-  friend class A;
-};
-} // namespace ns2
-
-class ns1::A {
-  void test() {
-    ns2::B::foo();
+  namespace ns1 {
+    class A;
   }
-};
-} // namespace test7d
+
+  namespace ns2 {
+    // Honor the lexical context of a using-declaration, though.
+    using ns1::A;
+    class B {
+      static void foo();
+      friend class A;
+    };
+  }
+
+  class ns1::A {
+    void test() {
+      ns2::B::foo();
+    }
+  };
+}

@@ -47,8 +47,7 @@ class RewritePattern;
 class Type;
 class Value;
 class ValueRange;
-template <typename ValueRangeT>
-class ValueTypeRange;
+template <typename ValueRangeT> class ValueTypeRange;
 
 class OwningRewritePatternList;
 
@@ -155,14 +154,12 @@ public:
   /// Returns an instance of the concept object for the given interface if it
   /// was registered to this operation, null otherwise. This should not be used
   /// directly.
-  template <typename T>
-  typename T::Concept *getInterface() const {
+  template <typename T> typename T::Concept *getInterface() const {
     return interfaceMap.lookup<T>();
   }
 
   /// Returns true if the operation has a particular trait.
-  template <template <typename T> class Trait>
-  bool hasTrait() const {
+  template <template <typename T> class Trait> bool hasTrait() const {
     return hasTraitFn(TypeID::get<Trait>());
   }
 
@@ -173,8 +170,7 @@ public:
 
   /// This constructor is used by Dialect objects when they register the list of
   /// operations they contain.
-  template <typename T>
-  static void insert(Dialect &dialect) {
+  template <typename T> static void insert(Dialect &dialect) {
     insert(T::getOperationName(), dialect, T::getOperationProperties(),
            TypeID::get<T>(), T::getParseAssemblyFn(), T::getPrintAssemblyFn(),
            T::getVerifyInvariantsFn(), T::getFoldHookFn(),
@@ -251,8 +247,7 @@ public:
   void append(NamedAttribute attr) { push_back(attr); }
 
   /// Add an array of named attributes.
-  template <typename RangeT>
-  void append(RangeT &&newAttributes) {
+  template <typename RangeT> void append(RangeT &&newAttributes) {
     append(std::begin(newAttributes), std::end(newAttributes));
   }
 
@@ -912,8 +907,7 @@ LLVM_ENABLE_BITMASK_ENUMS_IN_NAMESPACE();
 
 namespace llvm {
 // Identifiers hash just like pointers, there is no need to hash the bytes.
-template <>
-struct DenseMapInfo<mlir::OperationName> {
+template <> struct DenseMapInfo<mlir::OperationName> {
   static mlir::OperationName getEmptyKey() {
     auto pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::OperationName::getFromOpaquePointer(pointer);
@@ -933,8 +927,7 @@ struct DenseMapInfo<mlir::OperationName> {
 /// The pointer inside of an identifier comes from a StringMap, so its alignment
 /// is always at least 4 and probably 8 (on 64-bit machines).  Allow LLVM to
 /// steal the low bits.
-template <>
-struct PointerLikeTypeTraits<mlir::OperationName> {
+template <> struct PointerLikeTypeTraits<mlir::OperationName> {
 public:
   static inline void *getAsVoidPointer(mlir::OperationName I) {
     return const_cast<void *>(I.getAsOpaquePointer());

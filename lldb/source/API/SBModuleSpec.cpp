@@ -30,8 +30,8 @@ SBModuleSpec::SBModuleSpec(const SBModuleSpec &rhs) : m_opaque_up() {
 }
 
 const SBModuleSpec &SBModuleSpec::operator=(const SBModuleSpec &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBModuleSpec &, SBModuleSpec, operator=,
-                     (const lldb::SBModuleSpec &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBModuleSpec &,
+                     SBModuleSpec, operator=,(const lldb::SBModuleSpec &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -160,8 +160,9 @@ SBModuleSpecList::SBModuleSpecList(const SBModuleSpecList &rhs)
 }
 
 SBModuleSpecList &SBModuleSpecList::operator=(const SBModuleSpecList &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBModuleSpecList &, SBModuleSpecList, operator=,
-                     (const lldb::SBModuleSpecList &), rhs);
+  LLDB_RECORD_METHOD(
+      lldb::SBModuleSpecList &,
+      SBModuleSpecList, operator=,(const lldb::SBModuleSpecList &), rhs);
 
   if (this != &rhs)
     *m_opaque_up = *rhs.m_opaque_up;
@@ -246,18 +247,20 @@ bool SBModuleSpecList::GetDescription(lldb::SBStream &description) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBModuleSpec>(Registry &R) {
+template <>
+void RegisterMethods<SBModuleSpec>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBModuleSpec, ());
   LLDB_REGISTER_CONSTRUCTOR(SBModuleSpec, (const lldb::SBModuleSpec &));
-  LLDB_REGISTER_METHOD(const lldb::SBModuleSpec &, SBModuleSpec, operator=,
-                       (const lldb::SBModuleSpec &));
+  LLDB_REGISTER_METHOD(const lldb::SBModuleSpec &,
+                       SBModuleSpec, operator=,(const lldb::SBModuleSpec &));
   LLDB_REGISTER_METHOD_CONST(bool, SBModuleSpec, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBModuleSpec, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBModuleSpec, Clear, ());
   LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBModuleSpec, GetFileSpec, ());
   LLDB_REGISTER_METHOD(void, SBModuleSpec, SetFileSpec,
                        (const lldb::SBFileSpec &));
-  LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBModuleSpec, GetPlatformFileSpec, ());
+  LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBModuleSpec, GetPlatformFileSpec,
+                       ());
   LLDB_REGISTER_METHOD(void, SBModuleSpec, SetPlatformFileSpec,
                        (const lldb::SBFileSpec &));
   LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBModuleSpec, GetSymbolFileSpec, ());
@@ -268,11 +271,14 @@ template <> void RegisterMethods<SBModuleSpec>(Registry &R) {
   LLDB_REGISTER_METHOD(const char *, SBModuleSpec, GetTriple, ());
   LLDB_REGISTER_METHOD(void, SBModuleSpec, SetTriple, (const char *));
   LLDB_REGISTER_METHOD(size_t, SBModuleSpec, GetUUIDLength, ());
-  LLDB_REGISTER_METHOD(bool, SBModuleSpec, GetDescription, (lldb::SBStream &));
+  LLDB_REGISTER_METHOD(bool, SBModuleSpec, GetDescription,
+                       (lldb::SBStream &));
   LLDB_REGISTER_CONSTRUCTOR(SBModuleSpecList, ());
-  LLDB_REGISTER_CONSTRUCTOR(SBModuleSpecList, (const lldb::SBModuleSpecList &));
-  LLDB_REGISTER_METHOD(lldb::SBModuleSpecList &, SBModuleSpecList, operator=,
-                       (const lldb::SBModuleSpecList &));
+  LLDB_REGISTER_CONSTRUCTOR(SBModuleSpecList,
+                            (const lldb::SBModuleSpecList &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBModuleSpecList &,
+      SBModuleSpecList, operator=,(const lldb::SBModuleSpecList &));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBModuleSpecList, SBModuleSpecList,
                               GetModuleSpecifications, (const char *));
   LLDB_REGISTER_METHOD(void, SBModuleSpecList, Append,
@@ -290,5 +296,5 @@ template <> void RegisterMethods<SBModuleSpec>(Registry &R) {
                        (lldb::SBStream &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

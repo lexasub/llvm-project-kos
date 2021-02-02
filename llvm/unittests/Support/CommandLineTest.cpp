@@ -41,8 +41,9 @@ MATCHER(StringEquality, "Checks if two char* are equal as strings") {
 }
 
 class TempEnvVar {
-public:
-  TempEnvVar(const char *name, const char *value) : name(name) {
+ public:
+  TempEnvVar(const char *name, const char *value)
+      : name(name) {
     const char *old_value = getenv(name);
     EXPECT_EQ(nullptr, old_value) << old_value;
 #if HAVE_SETENV
@@ -59,7 +60,7 @@ public:
 #endif
   }
 
-private:
+ private:
   const char *const name;
 };
 
@@ -67,7 +68,7 @@ template <typename T, typename Base = cl::opt<T>>
 class StackOption : public Base {
 public:
   template <class... Ts>
-  explicit StackOption(Ts &&...Ms) : Base(std::forward<Ts>(Ms)...) {}
+  explicit StackOption(Ts &&... Ms) : Base(std::forward<Ts>(Ms)...) {}
 
   ~StackOption() override { this->removeArgument(); }
 
@@ -79,13 +80,15 @@ public:
 
 class StackSubCommand : public cl::SubCommand {
 public:
-  StackSubCommand(StringRef Name, StringRef Description = StringRef())
+  StackSubCommand(StringRef Name,
+                  StringRef Description = StringRef())
       : SubCommand(Name, Description) {}
 
   StackSubCommand() : SubCommand() {}
 
   ~StackSubCommand() { unregisterSubCommand(); }
 };
+
 
 cl::OptionCategory TestCategory("Test Options", "Description");
 TEST(CommandLineTest, ModifyExisitingOption) {
@@ -98,7 +101,8 @@ TEST(CommandLineTest, ModifyExisitingOption) {
   StringMap<cl::Option *> &Map =
       cl::getRegisteredOptions(*cl::TopLevelSubCommand);
 
-  ASSERT_TRUE(Map.count("test-option") == 1) << "Could not find option in map.";
+  ASSERT_TRUE(Map.count("test-option") == 1) <<
+    "Could not find option in map.";
 
   cl::Option *Retrieved = Map["test-option"];
   ASSERT_EQ(&TestOption, Retrieved) << "Retrieved wrong option.";
@@ -131,8 +135,8 @@ TEST(CommandLineTest, ModifyExisitingOption) {
       << "Failed to modify option's Value string.";
 
   Retrieved->setHiddenFlag(cl::Hidden);
-  ASSERT_EQ(cl::Hidden, TestOption.getOptionHiddenFlag())
-      << "Failed to modify option's hidden flag.";
+  ASSERT_EQ(cl::Hidden, TestOption.getOptionHiddenFlag()) <<
+    "Failed to modify option's hidden flag.";
 }
 
 TEST(CommandLineTest, UseOptionCategory) {
@@ -140,9 +144,9 @@ TEST(CommandLineTest, UseOptionCategory) {
 
   ASSERT_NE(TestOption2.Categories.end(),
             find_if(TestOption2.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &TestCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &TestCategory;
+                         }))
       << "Failed to assign Option Category.";
 }
 
@@ -156,15 +160,15 @@ TEST(CommandLineTest, UseMultipleCategories) {
 
   ASSERT_NE(TestOption2.Categories.end(),
             find_if(TestOption2.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &TestCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &TestCategory;
+                         }))
       << "Failed to assign Option Category.";
   ASSERT_NE(TestOption2.Categories.end(),
             find_if(TestOption2.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &cl::GeneralCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &cl::GeneralCategory;
+                         }))
       << "Failed to assign General Category.";
 
   cl::OptionCategory AnotherCategory("Additional test Options", "Description");
@@ -172,21 +176,21 @@ TEST(CommandLineTest, UseMultipleCategories) {
                               cl::cat(AnotherCategory));
   ASSERT_EQ(TestOption.Categories.end(),
             find_if(TestOption.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &cl::GeneralCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &cl::GeneralCategory;
+                         }))
       << "Failed to remove General Category.";
   ASSERT_NE(TestOption.Categories.end(),
             find_if(TestOption.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &TestCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &TestCategory;
+                         }))
       << "Failed to assign Option Category.";
   ASSERT_NE(TestOption.Categories.end(),
             find_if(TestOption.Categories,
-                    [&](const llvm::cl::OptionCategory *Cat) {
-                      return Cat == &AnotherCategory;
-                    }))
+                         [&](const llvm::cl::OptionCategory *Cat) {
+                           return Cat == &AnotherCategory;
+                         }))
       << "Failed to assign Another Category.";
 }
 
@@ -213,23 +217,23 @@ TEST(CommandLineTest, TokenizeGNUCommandLine) {
   const char Input[] =
       "foo\\ bar \"foo bar\" \'foo bar\' 'foo\\\\bar' -DFOO=bar\\(\\) "
       "foo\"bar\"baz C:\\\\src\\\\foo.cpp \"C:\\src\\foo.cpp\"";
-  const char *const Output[] = {"foo bar",          "foo bar",     "foo bar",
-                                "foo\\bar",         "-DFOO=bar()", "foobarbaz",
-                                "C:\\src\\foo.cpp", "C:srcfoo.cpp"};
+  const char *const Output[] = {
+      "foo bar",     "foo bar",   "foo bar",          "foo\\bar",
+      "-DFOO=bar()", "foobarbaz", "C:\\src\\foo.cpp", "C:srcfoo.cpp"};
   testCommandLineTokenizer(cl::TokenizeGNUCommandLine, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeWindowsCommandLine1) {
   const char Input[] =
       R"(a\b c\\d e\\"f g" h\"i j\\\"k "lmn" o pqr "st \"u" \v)";
-  const char *const Output[] = {"a\\b", "c\\\\d", "e\\f g", "h\"i",   "j\\\"k",
-                                "lmn",  "o",      "pqr",    "st \"u", "\\v"};
+  const char *const Output[] = { "a\\b", "c\\\\d", "e\\f g", "h\"i", "j\\\"k",
+                                 "lmn", "o", "pqr", "st \"u", "\\v" };
   testCommandLineTokenizer(cl::TokenizeWindowsCommandLine, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeWindowsCommandLine2) {
   const char Input[] = "clang -c -DFOO=\"\"\"ABC\"\"\" x.cpp";
-  const char *const Output[] = {"clang", "-c", "-DFOO=\"ABC\"", "x.cpp"};
+  const char *const Output[] = { "clang", "-c", "-DFOO=\"ABC\"", "x.cpp"};
   testCommandLineTokenizer(cl::TokenizeWindowsCommandLine, Input, Output);
 }
 
@@ -265,43 +269,43 @@ TEST(CommandLineTest, TokenizeAndMarkEOLs) {
 
 TEST(CommandLineTest, TokenizeConfigFile1) {
   const char *Input = "\\";
-  const char *const Output[] = {"\\"};
+  const char *const Output[] = { "\\" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile2) {
   const char *Input = "\\abc";
-  const char *const Output[] = {"abc"};
+  const char *const Output[] = { "abc" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile3) {
   const char *Input = "abc\\";
-  const char *const Output[] = {"abc\\"};
+  const char *const Output[] = { "abc\\" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile4) {
   const char *Input = "abc\\\n123";
-  const char *const Output[] = {"abc123"};
+  const char *const Output[] = { "abc123" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile5) {
   const char *Input = "abc\\\r\n123";
-  const char *const Output[] = {"abc123"};
+  const char *const Output[] = { "abc123" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile6) {
   const char *Input = "abc\\\n";
-  const char *const Output[] = {"abc"};
+  const char *const Output[] = { "abc" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile7) {
   const char *Input = "abc\\\r\n";
-  const char *const Output[] = {"abc"};
+  const char *const Output[] = { "abc" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
@@ -323,22 +327,24 @@ TEST(CommandLineTest, TokenizeConfigFile9) {
 
 TEST(CommandLineTest, TokenizeConfigFile10) {
   const char *Input = "\\\nabc";
-  const char *const Output[] = {"abc"};
+  const char *const Output[] = { "abc" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, TokenizeConfigFile11) {
   const char *Input = "\\\r\nabc";
-  const char *const Output[] = {"abc"};
+  const char *const Output[] = { "abc" };
   testCommandLineTokenizer(cl::tokenizeConfigFile, Input, Output);
 }
 
 TEST(CommandLineTest, AliasesWithArguments) {
   static const size_t ARGC = 3;
-  const char *const Inputs[][ARGC] = {{"-tool", "-actual=x", "-extra"},
-                                      {"-tool", "-actual", "x"},
-                                      {"-tool", "-alias=x", "-extra"},
-                                      {"-tool", "-alias", "x"}};
+  const char *const Inputs[][ARGC] = {
+    { "-tool", "-actual=x", "-extra" },
+    { "-tool", "-actual", "x" },
+    { "-tool", "-alias=x", "-extra" },
+    { "-tool", "-alias", "x" }
+  };
 
   for (size_t i = 0, e = array_lengthof(Inputs); i < e; ++i) {
     StackOption<std::string> Actual("actual");
@@ -367,8 +373,8 @@ void testAliasRequired(int argc, const char *const *argv) {
 }
 
 TEST(CommandLineTest, AliasRequired) {
-  const char *opts1[] = {"-tool", "-option=x"};
-  const char *opts2[] = {"-tool", "-o", "x"};
+  const char *opts1[] = { "-tool", "-option=x" };
+  const char *opts2[] = { "-tool", "-o", "x" };
   testAliasRequired(array_lengthof(opts1), opts1);
   testAliasRequired(array_lengthof(opts2), opts2);
 }
@@ -717,8 +723,8 @@ TEST(CommandLineTest, DefaultOptions) {
 
   cl::ResetAllOptionOccurrences();
 
-  const char *args2[] = {"prog", "sc2",  "-b",        "args2 bar string",
-                         "-f",   "-foo", "foo string"};
+  const char *args2[] = {"prog", "sc2", "-b", "args2 bar string",
+                         "-f", "-foo", "foo string"};
   EXPECT_TRUE(cl::ParseCommandLineOptions(sizeof(args2) / sizeof(char *), args2,
                                           StringRef(), &llvm::nulls()));
   EXPECT_TRUE(Bar == "args2 bar string");
@@ -908,10 +914,8 @@ TEST(CommandLineTest, ResponseFilesAtArguments) {
 
   std::string ResponseFileContents;
   raw_string_ostream ResponseFile(ResponseFileContents);
-  ResponseFile << "-foo"
-               << "\n";
-  ResponseFile << "-bar"
-               << "\n";
+  ResponseFile << "-foo" << "\n";
+  ResponseFile << "-bar" << "\n";
   FS.addFile(ResponseFilePath, 0,
              MemoryBuffer::getMemBuffer(ResponseFile.str()));
 
@@ -1005,7 +1009,7 @@ TEST(CommandLineTest, SetDefautValue) {
   const char *args[] = {"prog", "-opt1=false", "-opt2", "-opt3"};
 
   EXPECT_TRUE(
-      cl::ParseCommandLineOptions(2, args, StringRef(), &llvm::nulls()));
+    cl::ParseCommandLineOptions(2, args, StringRef(), &llvm::nulls()));
 
   EXPECT_TRUE(Opt1 == "false");
   EXPECT_TRUE(Opt2);
@@ -1093,22 +1097,15 @@ TEST(CommandLineTest, PositionalEatArgsError) {
 
   std::string Errs;
   raw_string_ostream OS(Errs);
-  EXPECT_FALSE(cl::ParseCommandLineOptions(2, args, StringRef(), &OS));
-  OS.flush();
-  EXPECT_FALSE(Errs.empty());
-  Errs.clear();
-  EXPECT_FALSE(cl::ParseCommandLineOptions(3, args2, StringRef(), &OS));
-  OS.flush();
-  EXPECT_FALSE(Errs.empty());
-  Errs.clear();
-  EXPECT_TRUE(cl::ParseCommandLineOptions(3, args3, StringRef(), &OS));
-  OS.flush();
-  EXPECT_TRUE(Errs.empty());
-  Errs.clear();
+  EXPECT_FALSE(cl::ParseCommandLineOptions(2, args, StringRef(), &OS)); OS.flush();
+  EXPECT_FALSE(Errs.empty()); Errs.clear();
+  EXPECT_FALSE(cl::ParseCommandLineOptions(3, args2, StringRef(), &OS)); OS.flush();
+  EXPECT_FALSE(Errs.empty()); Errs.clear();
+  EXPECT_TRUE(cl::ParseCommandLineOptions(3, args3, StringRef(), &OS)); OS.flush();
+  EXPECT_TRUE(Errs.empty()); Errs.clear();
 
   cl::ResetAllOptionOccurrences();
-  EXPECT_TRUE(cl::ParseCommandLineOptions(6, args4, StringRef(), &OS));
-  OS.flush();
+  EXPECT_TRUE(cl::ParseCommandLineOptions(6, args4, StringRef(), &OS)); OS.flush();
   EXPECT_TRUE(PosEatArgs.size() == 1);
   EXPECT_TRUE(PosEatArgs2.size() == 2);
   EXPECT_TRUE(Errs.empty());
@@ -1125,8 +1122,8 @@ TEST(CommandLineTest, GetCommandLineArguments) {
   EXPECT_EQ(llvm::sys::path::is_absolute(argv[0]),
             llvm::sys::path::is_absolute(__argv[0]));
 
-  EXPECT_TRUE(
-      llvm::sys::path::filename(argv[0]).equals_lower("supporttests.exe"))
+  EXPECT_TRUE(llvm::sys::path::filename(argv[0])
+              .equals_lower("supporttests.exe"))
       << "Filename of test executable is "
       << llvm::sys::path::filename(argv[0]);
 }
@@ -1171,7 +1168,7 @@ public:
   // Return std::string because the output of a failing EXPECT check is
   // unreadable for StringRef. It also avoids any lifetime issues.
   template <typename... Ts> std::string runTest(Ts... OptionAttributes) {
-    outs().flush(); // flush any output from previous tests
+    outs().flush();  // flush any output from previous tests
     AutoDeleteFile File;
     {
       OutputRedirector Stdout(fileno(stdout));
@@ -1635,31 +1632,28 @@ TEST(CommandLineTest, LongOptions) {
   // longest string.
   //
 
-  EXPECT_TRUE(cl::ParseCommandLineOptions(4, args1, StringRef(), &OS));
-  OS.flush();
+  EXPECT_TRUE(
+      cl::ParseCommandLineOptions(4, args1, StringRef(), &OS)); OS.flush();
   EXPECT_TRUE(OptA);
   EXPECT_FALSE(OptBLong);
   EXPECT_STREQ("val1", OptAB.c_str());
-  EXPECT_TRUE(Errs.empty());
-  Errs.clear();
+  EXPECT_TRUE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 
-  EXPECT_TRUE(cl::ParseCommandLineOptions(4, args2, StringRef(), &OS));
-  OS.flush();
+  EXPECT_TRUE(
+      cl::ParseCommandLineOptions(4, args2, StringRef(), &OS)); OS.flush();
   EXPECT_TRUE(OptA);
   EXPECT_FALSE(OptBLong);
   EXPECT_STREQ("val1", OptAB.c_str());
-  EXPECT_TRUE(Errs.empty());
-  Errs.clear();
+  EXPECT_TRUE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 
   // Fails because `-ab` and `--ab` are treated the same and appear more than
   // once.  Also, `val1` is unexpected.
-  EXPECT_FALSE(cl::ParseCommandLineOptions(4, args3, StringRef(), &OS));
-  OS.flush();
-  outs() << Errs << "\n";
-  EXPECT_FALSE(Errs.empty());
-  Errs.clear();
+  EXPECT_FALSE(
+      cl::ParseCommandLineOptions(4, args3, StringRef(), &OS)); OS.flush();
+  outs()<< Errs << "\n";
+  EXPECT_FALSE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 
   //
@@ -1669,30 +1663,25 @@ TEST(CommandLineTest, LongOptions) {
 
   // Fails because `-ab` is treated as `-a -b`, so `-a` is seen twice, and
   // `val1` is unexpected.
-  EXPECT_FALSE(
-      cl::ParseCommandLineOptions(4, args1, StringRef(), &OS, nullptr, true));
-  OS.flush();
-  EXPECT_FALSE(Errs.empty());
-  Errs.clear();
+  EXPECT_FALSE(cl::ParseCommandLineOptions(4, args1, StringRef(),
+                                           &OS, nullptr, true)); OS.flush();
+  EXPECT_FALSE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 
   // Works because `-a` is treated differently than `--ab`.
-  EXPECT_TRUE(
-      cl::ParseCommandLineOptions(4, args2, StringRef(), &OS, nullptr, true));
-  OS.flush();
-  EXPECT_TRUE(Errs.empty());
-  Errs.clear();
+  EXPECT_TRUE(cl::ParseCommandLineOptions(4, args2, StringRef(),
+                                           &OS, nullptr, true)); OS.flush();
+  EXPECT_TRUE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 
   // Works because `-ab` is treated as `-a -b`, and `--ab` is a long option.
-  EXPECT_TRUE(
-      cl::ParseCommandLineOptions(4, args3, StringRef(), &OS, nullptr, true));
+  EXPECT_TRUE(cl::ParseCommandLineOptions(4, args3, StringRef(),
+                                           &OS, nullptr, true));
   EXPECT_TRUE(OptA);
   EXPECT_TRUE(OptBLong);
   EXPECT_STREQ("val1", OptAB.c_str());
   OS.flush();
-  EXPECT_TRUE(Errs.empty());
-  Errs.clear();
+  EXPECT_TRUE(Errs.empty()); Errs.clear();
   cl::ResetAllOptionOccurrences();
 }
 
@@ -1773,9 +1762,9 @@ TEST(CommandLineTest, Callback) {
   cl::ResetCommandLineParser();
 
   StackOption<bool> OptA("a", cl::desc("option a"));
-  StackOption<bool> OptB("b",
-                         cl::desc("option b -- This option turns on option a"),
-                         cl::callback([&](const bool &) { OptA = true; }));
+  StackOption<bool> OptB(
+      "b", cl::desc("option b -- This option turns on option a"),
+      cl::callback([&](const bool &) { OptA = true; }));
   StackOption<bool> OptC(
       "c", cl::desc("option c -- This option turns on options a and b"),
       cl::callback([&](const bool &) { OptB = true; }));
@@ -1783,7 +1772,8 @@ TEST(CommandLineTest, Callback) {
       "list",
       cl::desc("option list -- This option turns on options a, b, and c when "
                "'foo' is included in list"),
-      cl::CommaSeparated, cl::callback([&](const std::string &Str) {
+      cl::CommaSeparated,
+      cl::callback([&](const std::string &Str) {
         if (Str == "foo")
           OptC = true;
       }));
@@ -1831,10 +1821,11 @@ TEST(CommandLineTest, Callback) {
 }
 
 enum Enum { Val1, Val2 };
-static cl::bits<Enum>
-    ExampleBits(cl::desc("An example cl::bits to ensure it compiles"),
-                cl::values(clEnumValN(Val1, "bits-val1", "The Val1 value"),
-                           clEnumValN(Val1, "bits-val2", "The Val2 value")));
+static cl::bits<Enum> ExampleBits(
+    cl::desc("An example cl::bits to ensure it compiles"),
+    cl::values(
+      clEnumValN(Val1, "bits-val1", "The Val1 value"),
+      clEnumValN(Val1, "bits-val2", "The Val2 value")));
 
 TEST(CommandLineTest, ConsumeAfterOnePositional) {
   cl::ResetCommandLineParser();

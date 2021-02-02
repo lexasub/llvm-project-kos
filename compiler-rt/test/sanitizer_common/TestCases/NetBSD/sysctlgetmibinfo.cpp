@@ -13,7 +13,7 @@ void test_sysctlgetmibinfo() {
   int mib[CTL_MAXNAME];
   unsigned int mib_len = __arraycount(mib);
   int rv = sysctlgetmibinfo("kern.ostype", &mib[0], &mib_len, NULL, NULL, NULL,
-                            SYSCTL_VERSION);
+                       SYSCTL_VERSION);
   assert(!rv);
 
   char buf[100];

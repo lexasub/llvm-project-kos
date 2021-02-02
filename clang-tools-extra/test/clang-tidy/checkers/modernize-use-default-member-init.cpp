@@ -5,7 +5,7 @@ struct S {
 };
 
 struct PositiveValueChar {
-  PositiveValueChar() : c0(), c1() /*, c2(), c3()*/ {}
+  PositiveValueChar() : c0(), c1()/*, c2(), c3()*/ {}
   // CHECK-FIXES: PositiveValueChar()  {}
   const char c0;
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: use default member initializer for 'c0' [modernize-use-default-member-init]
@@ -157,8 +157,7 @@ struct PositiveNullPointer {
   // CHECK-FIXES: int *q{nullptr};
 };
 
-enum Enum { Foo,
-            Bar };
+enum Enum { Foo, Bar };
 struct PositiveEnum {
   PositiveEnum() : e(Foo) {}
   // CHECK-FIXES: PositiveEnum()  {}
@@ -195,8 +194,8 @@ struct PositiveStruct {
 
 template <typename T>
 struct NegativeTemplate {
-  NegativeTemplate() : t() {}
-  T t;
+    NegativeTemplate() : t() {}
+    T t;
 };
 
 NegativeTemplate<int> nti;
@@ -216,7 +215,7 @@ struct NegativeBase : S {
   NegativeBase() : S() {}
 };
 
-struct NegativeDefaultOtherMember {
+struct NegativeDefaultOtherMember{
   NegativeDefaultOtherMember() : i(3) {}
   int i = 4;
 };
@@ -229,17 +228,20 @@ struct NegativeUnion {
   };
 };
 
-struct NegativeBitField {
+struct NegativeBitField
+{
   NegativeBitField() : i(6) {}
   int i : 5;
 };
 
-struct NegativeNotDefaultInt {
+struct NegativeNotDefaultInt
+{
   NegativeNotDefaultInt(int) : i(7) {}
   int i;
 };
 
-struct NegativeDefaultArg {
+struct NegativeDefaultArg
+{
   NegativeDefaultArg(int i = 4) : i(i) {}
   int i;
 };
@@ -409,21 +411,20 @@ NegativeTemplateExisting<int> ntei(0);
 NegativeTemplateExisting<double> nted(0);
 
 // This resulted in a warning by default.
-#define MACRO()              \
-  struct MacroS {            \
-    void *P;                 \
+#define MACRO() \
+  struct MacroS { \
+    void *P; \
     MacroS() : P(nullptr) {} \
   };
 
 MACRO();
 
+
 class FunctionTryBlock {
 public:
-  FunctionTryBlock() try : i(5), k(8) {
-  }
+  FunctionTryBlock() try : i(5), k(8) {}
   // CHECK-FIXES: FunctionTryBlock() try  {}
-  catch (...) {
-  }
+  catch (...) {}
 
 private:
   int i, k;

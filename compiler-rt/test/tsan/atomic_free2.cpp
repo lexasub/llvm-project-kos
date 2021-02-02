@@ -3,7 +3,7 @@
 
 void *Thread(void *a) {
   barrier_wait(&barrier);
-  __atomic_fetch_add((int *)a, 1, __ATOMIC_SEQ_CST);
+  __atomic_fetch_add((int*)a, 1, __ATOMIC_SEQ_CST);
   return 0;
 }
 

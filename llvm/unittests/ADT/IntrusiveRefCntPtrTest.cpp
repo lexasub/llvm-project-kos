@@ -71,9 +71,9 @@ TYPED_TEST(IntrusiveRefCntPtrTest, MakeIntrusiveRefCnt) {
 
 struct InterceptRefCounted : public RefCountedBase<InterceptRefCounted> {
   InterceptRefCounted(bool *Released, bool *Retained)
-      : Released(Released), Retained(Retained) {}
-  bool *const Released;
-  bool *const Retained;
+    : Released(Released), Retained(Retained) {}
+  bool * const Released;
+  bool * const Retained;
 };
 template <> struct IntrusiveRefCntPtrInfo<InterceptRefCounted> {
   static void retain(InterceptRefCounted *I) {

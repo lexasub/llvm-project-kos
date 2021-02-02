@@ -20,33 +20,34 @@
 
 struct Dummy {
   Dummy(Dummy const&) = delete;
-  Dummy(Dummy&&) = default;
+  Dummy(Dummy &&) = default;
 };
 
-int main(int, char**) {
-  typedef std::pair<int, short> P;
-  {
-    static_assert(std::is_copy_constructible<P>::value, "");
+int main(int, char**)
+{
+    typedef std::pair<int, short> P;
+    {
+        static_assert(std::is_copy_constructible<P>::value, "");
 #if !defined(_LIBCPP_DEPRECATED_ABI_DISABLE_PAIR_TRIVIAL_COPY_CTOR)
-    static_assert(std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_trivially_copy_constructible<P>::value, "");
 #endif
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    static_assert(std::is_move_constructible<P>::value, "");
+    {
+        static_assert(std::is_move_constructible<P>::value, "");
 #if !defined(_LIBCPP_DEPRECATED_ABI_DISABLE_PAIR_TRIVIAL_COPY_CTOR)
-    static_assert(std::is_trivially_move_constructible<P>::value, "");
+        static_assert(std::is_trivially_move_constructible<P>::value, "");
 #endif
-  }
-  {
-    using P1 = std::pair<Dummy, int>;
-    static_assert(!std::is_copy_constructible<P1>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P1>::value, "");
-    static_assert(std::is_move_constructible<P1>::value, "");
+    }
+    {
+        using P1 = std::pair<Dummy, int>;
+        static_assert(!std::is_copy_constructible<P1>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P1>::value, "");
+        static_assert(std::is_move_constructible<P1>::value, "");
 #if !defined(_LIBCPP_DEPRECATED_ABI_DISABLE_PAIR_TRIVIAL_COPY_CTOR)
-    static_assert(std::is_trivially_move_constructible<P1>::value, "");
+        static_assert(std::is_trivially_move_constructible<P1>::value, "");
 #endif
-  }
+    }
 #endif
 
   return 0;

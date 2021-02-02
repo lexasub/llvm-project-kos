@@ -13,11 +13,12 @@
 #include <string>
 #include <string_view>
 
-void foo(const string& s) {}
+void foo ( const string &s ) {}
 
-int main(int, char**) {
-  std::string_view sv = "ABCDE";
-  foo(sv); // requires implicit conversion from string_view to string
+int main(int, char**)
+{
+    std::string_view sv = "ABCDE";
+    foo(sv);    // requires implicit conversion from string_view to string
 
   return 0;
 }

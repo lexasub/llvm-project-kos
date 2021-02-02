@@ -12,8 +12,8 @@
 // UNSUPPORTED: libunwind-arm-ehabi
 
 #include <assert.h>
-#include <libunwind.h>
 #include <stdlib.h>
+#include <libunwind.h>
 
 void test() {
   asm(".cfi_signal_frame");
@@ -25,7 +25,7 @@ void test() {
   assert(unw_is_signal_frame(&cursor));
 }
 
-int main(int, char **) {
+int main(int, char**) {
   test();
   return 0;
 }

@@ -5,19 +5,19 @@ struct S {
   int *end();
 };
 
-struct T {};
+struct T { };
 char *begin(T);
 char *end(T);
 
 namespace NS {
-struct U {};
-char *begin(U);
-char *end(U);
-} // namespace NS
+  struct U { };
+  char *begin(U);
+  char *end(U);
+}
 using NS::U;
 
 void f() {
-  char a[3] = {0, 1, 2};
+  char a[3] = { 0, 1, 2 };
   for (auto w : a)
     for (auto x : S())
       for (auto y : T())
@@ -25,9 +25,9 @@ void f() {
           ;
 }
 
-template <typename A>
+template<typename A>
 void g() {
-  A a[3] = {0, 1, 2};
+  A a[3] = { 0, 1, 2 };
   for (auto &v : a)
     for (auto x : S())
       for (auto y : T())

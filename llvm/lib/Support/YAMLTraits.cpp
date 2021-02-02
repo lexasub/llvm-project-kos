@@ -40,9 +40,13 @@ IO::IO(void *Context) : Ctxt(Context) {}
 
 IO::~IO() = default;
 
-void *IO::getContext() const { return Ctxt; }
+void *IO::getContext() const {
+  return Ctxt;
+}
 
-void IO::setContext(void *Context) { Ctxt = Context; }
+void IO::setContext(void *Context) {
+  Ctxt = Context;
+}
 
 void IO::setAllowUnknownKeys(bool Allow) {
   llvm_unreachable("Only supported for Input");
@@ -79,7 +83,9 @@ void Input::ScalarHNode::anchor() {}
 void Input::MapHNode::anchor() {}
 void Input::SequenceHNode::anchor() {}
 
-bool Input::outputting() const { return false; }
+bool Input::outputting() const {
+  return false;
+}
 
 bool Input::setCurrentDocument() {
   if (DocIterator != Strm->end()) {
@@ -101,7 +107,9 @@ bool Input::setCurrentDocument() {
   return false;
 }
 
-bool Input::nextDocument() { return ++DocIterator != Strm->end(); }
+bool Input::nextDocument() {
+  return ++DocIterator != Strm->end();
+}
 
 const Node *Input::getCurrentNode() const {
   return CurrentNode ? CurrentNode->_node : nullptr;
@@ -222,7 +230,8 @@ unsigned Input::beginSequence() {
   return 0;
 }
 
-void Input::endSequence() {}
+void Input::endSequence() {
+}
 
 bool Input::preflightElement(unsigned Index, void *&SaveInfo) {
   if (EC)
@@ -256,9 +265,12 @@ void Input::postflightFlowElement(void *SaveInfo) {
   CurrentNode = reinterpret_cast<HNode *>(SaveInfo);
 }
 
-void Input::endFlowSequence() {}
+void Input::endFlowSequence() {
+}
 
-void Input::beginEnumScalar() { ScalarMatchFound = false; }
+void Input::beginEnumScalar() {
+  ScalarMatchFound = false;
+}
 
 bool Input::matchEnumScalar(const char *Str, bool) {
   if (ScalarMatchFound)
@@ -340,9 +352,7 @@ void Input::scalarString(StringRef &S, QuotingType) {
   }
 }
 
-void Input::blockScalarString(StringRef &S) {
-  scalarString(S, QuotingType::None);
-}
+void Input::blockScalarString(StringRef &S) { scalarString(S, QuotingType::None); }
 
 void Input::scalarTag(std::string &Tag) {
   Tag = CurrentNode->_node->getVerbatimTag();
@@ -441,11 +451,15 @@ std::unique_ptr<Input::HNode> Input::createHNodes(Node *N) {
   }
 }
 
-void Input::setError(const Twine &Message) { setError(CurrentNode, Message); }
+void Input::setError(const Twine &Message) {
+  setError(CurrentNode, Message);
+}
 
 void Input::setAllowUnknownKeys(bool Allow) { AllowUnknownKeys = Allow; }
 
-bool Input::canElideEmptySequence() { return false; }
+bool Input::canElideEmptySequence() {
+  return false;
+}
 
 //===----------------------------------------------------------------------===//
 //  Output
@@ -456,7 +470,9 @@ Output::Output(raw_ostream &yout, void *context, int WrapColumn)
 
 Output::~Output() = default;
 
-bool Output::outputting() const { return true; }
+bool Output::outputting() const {
+  return true;
+}
 
 void Output::beginMapping() {
   StateStack.push_back(inMapFirstKey);
@@ -506,7 +522,9 @@ void Output::endMapping() {
   StateStack.pop_back();
 }
 
-std::vector<StringRef> Output::keys() { report_fatal_error("invalid call"); }
+std::vector<StringRef> Output::keys() {
+  report_fatal_error("invalid call");
+}
 
 bool Output::preflightKey(const char *Key, bool Required, bool SameAsDefault,
                           bool &UseDefault, void *&) {
@@ -546,7 +564,9 @@ void Output::endFlowMapping() {
   outputUpToEndOfLine(" }");
 }
 
-void Output::beginDocuments() { outputUpToEndOfLine("---"); }
+void Output::beginDocuments() {
+  outputUpToEndOfLine("---");
+}
 
 bool Output::preflightDocument(unsigned index) {
   if (index > 0)
@@ -554,9 +574,12 @@ bool Output::preflightDocument(unsigned index) {
   return true;
 }
 
-void Output::postflightDocument() {}
+void Output::postflightDocument() {
+}
 
-void Output::endDocuments() { output("\n...\n"); }
+void Output::endDocuments() {
+  output("\n...\n");
+}
 
 unsigned Output::beginSequence() {
   StateStack.push_back(inSeqFirstElement);
@@ -576,7 +599,9 @@ void Output::endSequence() {
   StateStack.pop_back();
 }
 
-bool Output::preflightElement(unsigned, void *&) { return true; }
+bool Output::preflightElement(unsigned, void *&) {
+  return true;
+}
 
 void Output::postflightElement(void *) {
   if (StateStack.back() == inSeqFirstElement) {
@@ -615,9 +640,13 @@ bool Output::preflightFlowElement(unsigned, void *&) {
   return true;
 }
 
-void Output::postflightFlowElement(void *) { NeedFlowSequenceComma = true; }
+void Output::postflightFlowElement(void *) {
+  NeedFlowSequenceComma = true;
+}
 
-void Output::beginEnumScalar() { EnumerationMatchFound = false; }
+void Output::beginEnumScalar() {
+  EnumerationMatchFound = false;
+}
 
 bool Output::matchEnumScalar(const char *Str, bool Match) {
   if (Match && !EnumerationMatchFound) {
@@ -658,7 +687,9 @@ bool Output::bitSetMatch(const char *Str, bool Matches) {
   return false;
 }
 
-void Output::endBitSetScalar() { outputUpToEndOfLine(" ]"); }
+void Output::endBitSetScalar() {
+  outputUpToEndOfLine(" ]");
+}
 
 void Output::scalarString(StringRef &S, QuotingType MustQuote) {
   newLineCheck();
@@ -677,10 +708,9 @@ void Output::scalarString(StringRef &S, QuotingType MustQuote) {
   const char *const Quote = MustQuote == QuotingType::Single ? "'" : "\"";
   output(Quote); // Starting quote.
 
-  // When using double-quoted strings (and only in that case), non-printable
-  // characters may be present, and will be escaped using a variety of
-  // unicode-scalar and special short-form escapes. This is handled in
-  // yaml::escape.
+  // When using double-quoted strings (and only in that case), non-printable characters may be
+  // present, and will be escaped using a variety of unicode-scalar and special short-form
+  // escapes. This is handled in yaml::escape.
   if (MustQuote == QuotingType::Double) {
     output(yaml::escape(S, /* EscapePrintable= */ false));
     outputUpToEndOfLine(Quote);
@@ -692,12 +722,11 @@ void Output::scalarString(StringRef &S, QuotingType MustQuote) {
   unsigned End = S.size();
   const char *Base = S.data();
 
-  // When using single-quoted strings, any single quote ' must be doubled to be
-  // escaped.
+  // When using single-quoted strings, any single quote ' must be doubled to be escaped.
   while (j < End) {
-    if (S[j] == '\'') {                   // Escape quotes.
-      output(StringRef(&Base[i], j - i)); // "flush".
-      output(StringLiteral("''"));        // Print it as ''
+    if (S[j] == '\'') {                    // Escape quotes.
+      output(StringRef(&Base[i], j - i));  // "flush".
+      output(StringLiteral("''"));         // Print it as ''
       i = j + 1;
     }
     ++j;
@@ -732,7 +761,8 @@ void Output::scalarTag(std::string &Tag) {
   output(" ");
 }
 
-void Output::setError(const Twine &message) {}
+void Output::setError(const Twine &message) {
+}
 
 bool Output::canElideEmptySequence() {
   // Normally, with an optional key/value where the value is an empty sequence,

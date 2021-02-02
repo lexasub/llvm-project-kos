@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 #if defined(WAIT3)
     res = wait3(status, WNOHANG, NULL);
 #elif defined(WAIT3_RUSAGE)
-    struct rusage *ru = (struct rusage *)(x + argc * 3);
+    struct rusage *ru = (struct rusage*)(x + argc * 3);
     int good_status;
     res = wait3(&good_status, WNOHANG, ru);
 #endif

@@ -15,7 +15,7 @@ struct D {
 
 D::~D() {}
 #pragma clang optimize on
-} // namespace testBaseDestructor
+}
 
 // CHECK: define{{.*}} void @_ZN18testBaseDestructor1DD2Ev({{.*}}) unnamed_addr #[[ATTR0:.*]] align 2 {
 
@@ -25,12 +25,9 @@ D::~D() {}
 
 // rdar://11241230
 namespace test0 {
-struct A {
-  A();
-  ~A();
-};
-A a;
-} // namespace test0
+  struct A { A(); ~A(); };
+  A a;
+}
 // CHECK:    define internal void [[CTOR0_:@.*]]()
 // CHECK:      call void @_ZN5test01AC1Ev([[A]]* {{[^,]*}} @_ZN5test01aE)
 // CHECK-NEXT: ret void

@@ -19,8 +19,9 @@
 #include "min_allocator.h"
 #include "asan_testing.h"
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     std::vector<int> d;
     d = {3, 4, 5, 6};
     assert(d.size() == 4);
@@ -29,9 +30,9 @@ int main(int, char**) {
     assert(d[1] == 4);
     assert(d[2] == 5);
     assert(d[3] == 6);
-  }
-  {
-    std::vector<int, min_allocator<int> > d;
+    }
+    {
+    std::vector<int, min_allocator<int>> d;
     d = {3, 4, 5, 6};
     assert(d.size() == 4);
     assert(is_contiguous_container_asan_correct(d));
@@ -39,7 +40,7 @@ int main(int, char**) {
     assert(d[1] == 4);
     assert(d[2] == 5);
     assert(d[3] == 6);
-  }
+    }
 
   return 0;
 }

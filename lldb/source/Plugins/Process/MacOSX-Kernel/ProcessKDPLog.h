@@ -37,6 +37,6 @@ public:
     return g_channel.GetLogIfAll(mask);
   }
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_MACOSX_KERNEL_PROCESSKDPLOG_H

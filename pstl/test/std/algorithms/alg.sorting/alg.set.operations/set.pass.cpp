@@ -193,16 +193,17 @@ test_set(Compare compare)
             std::sort(in1.begin(), in1.end(), compare);
             std::sort(in2.begin(), in2.end(), compare);
 
-            invoke_on_all_policies(test_set_union<T1>(), in1.begin(), in1.end(), in2.cbegin(), in2.cend(), compare);
+            invoke_on_all_policies(test_set_union<T1>(), in1.begin(), in1.end(), in2.cbegin(), in2.cend(),
+                                        compare);
 
             invoke_on_all_policies(test_set_intersection<T1>(), in1.begin(), in1.end(), in2.cbegin(), in2.cend(),
-                                   compare);
+                                        compare);
 
             invoke_on_all_policies(test_set_difference<T1>(), in1.begin(), in1.end(), in2.cbegin(), in2.cend(),
-                                   compare);
+                                        compare);
 
             invoke_on_all_policies(test_set_symmetric_difference<T1>(), in1.begin(), in1.end(), in2.cbegin(),
-                                   in2.cend(), compare);
+                                        in2.cend(), compare);
         }
     }
 }
@@ -259,12 +260,11 @@ main()
     test_set<float64_t, float64_t>(std::less<>());
     test_set<Num<int64_t>, Num<int32_t>>([](const Num<int64_t>& x, const Num<int32_t>& y) { return x < y; });
 
-    test_set<MemoryChecker, MemoryChecker>(
-        [](const MemoryChecker& val1, const MemoryChecker& val2) -> bool { return val1.value() < val2.value(); });
-    EXPECT_FALSE(MemoryChecker::alive_objects() < 0,
-                 "wrong effect from set algorithms: number of ctors calls < num of dtors calls");
-    EXPECT_FALSE(MemoryChecker::alive_objects() > 0,
-                 "wrong effect from set algorithms: number of ctors calls > num of dtors calls");
+    test_set<MemoryChecker, MemoryChecker>([](const MemoryChecker& val1, const MemoryChecker& val2) -> bool {
+        return val1.value() < val2.value();
+    });
+    EXPECT_FALSE(MemoryChecker::alive_objects() < 0, "wrong effect from set algorithms: number of ctors calls < num of dtors calls");
+    EXPECT_FALSE(MemoryChecker::alive_objects() > 0, "wrong effect from set algorithms: number of ctors calls > num of dtors calls");
 
     test_algo_basic_double<int32_t>(run_for_rnd_fw<test_non_const_set_difference<int32_t>>());
 

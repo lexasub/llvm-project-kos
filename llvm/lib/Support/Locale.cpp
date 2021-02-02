@@ -10,7 +10,9 @@ int columnWidth(StringRef Text) {
   return llvm::sys::unicode::columnWidthUTF8(Text);
 }
 
-bool isPrint(int UCS) { return llvm::sys::unicode::isPrintable(UCS); }
+bool isPrint(int UCS) {
+  return llvm::sys::unicode::isPrintable(UCS);
+}
 
 } // namespace locale
 } // namespace sys

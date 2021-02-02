@@ -339,8 +339,7 @@ Error WasmObjectFile::parseSection(WasmSection &Sec) {
 }
 
 Error WasmObjectFile::parseDylinkSection(ReadContext &Ctx) {
-  // See
-  // https://github.com/WebAssembly/tool-conventions/blob/master/DynamicLinking.md
+  // See https://github.com/WebAssembly/tool-conventions/blob/master/DynamicLinking.md
   HasDylinkSection = true;
   DylinkInfo.MemorySize = readVaruint32(Ctx);
   DylinkInfo.MemoryAlignment = readVaruint32(Ctx);
@@ -1304,7 +1303,7 @@ Error WasmObjectFile::parseCodeSection(ReadContext &Ctx) {
   }
 
   for (uint32_t i = 0; i < FunctionCount; i++) {
-    wasm::WasmFunction &Function = Functions[i];
+    wasm::WasmFunction& Function = Functions[i];
     const uint8_t *FunctionStart = Ctx.Ptr;
     uint32_t Size = readVaruint32(Ctx);
     const uint8_t *FunctionEnd = Ctx.Ptr + Size;

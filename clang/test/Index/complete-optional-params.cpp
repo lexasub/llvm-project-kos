@@ -4,23 +4,17 @@
 void foo(int a = 42, int = 42);
 void bar(int a, int b = 42, int c = 42);
 void baz(int a = 42, ...);
-struct S {
-  S(int a = 42, int = 42) {}
-};
+struct S{ S(int a = 42, int = 42) {} };
 
-class Bar1 {
-public:
-  Bar1() {}
-};
-class Bar2;
+class Bar1 { public: Bar1() {} }; class Bar2;
 void foo_2(Bar1 b1 = Bar1(), Bar2 b2 = Bar2());
 
 int main() {
-  foo(42, 42);
-  bar(42, 42, 42);
-  baz(42, 42, 42);
-  S s(42, 42);
-  foo_2();
+    foo(42, 42);
+    bar(42, 42, 42);
+    baz(42, 42, 42);
+    S s(42, 42);
+    foo_2();
 }
 
 // RUN: c-index-test -code-completion-at=%s:13:9 %s | FileCheck -check-prefix=CHECK-CC1 %s

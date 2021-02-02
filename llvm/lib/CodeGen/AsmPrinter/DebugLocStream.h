@@ -56,12 +56,16 @@ private:
   bool GenerateComments;
 
 public:
-  DebugLocStream(bool GenerateComments) : GenerateComments(GenerateComments) {}
+  DebugLocStream(bool GenerateComments) : GenerateComments(GenerateComments) { }
   size_t getNumLists() const { return Lists.size(); }
   const List &getList(size_t LI) const { return Lists[LI]; }
   ArrayRef<List> getLists() const { return Lists; }
-  MCSymbol *getSym() const { return Sym; }
-  void setSym(MCSymbol *Sym) { this->Sym = Sym; }
+  MCSymbol *getSym() const {
+    return Sym;
+  }
+  void setSym(MCSymbol *Sym) {
+    this->Sym = Sym;
+  }
 
   class ListBuilder;
   class EntryBuilder;
@@ -105,8 +109,8 @@ public:
 
   ArrayRef<Entry> getEntries(const List &L) const {
     size_t LI = getIndex(L);
-    return makeArrayRef(Entries).slice(Lists[LI].EntryOffset,
-                                       getNumEntries(LI));
+    return makeArrayRef(Entries)
+        .slice(Lists[LI].EntryOffset, getNumEntries(LI));
   }
 
   ArrayRef<char> getBytes(const Entry &E) const {
@@ -116,8 +120,8 @@ public:
   }
   ArrayRef<std::string> getComments(const Entry &E) const {
     size_t EI = getIndex(E);
-    return makeArrayRef(Comments).slice(Entries[EI].CommentOffset,
-                                        getNumComments(EI));
+    return makeArrayRef(Comments)
+        .slice(Entries[EI].CommentOffset, getNumComments(EI));
   }
 
 private:
@@ -163,7 +167,9 @@ public:
       : Locs(Locs), Asm(Asm), V(V), MI(MI), ListIndex(Locs.startList(&CU)),
         TagOffset(None) {}
 
-  void setTagOffset(uint8_t TO) { TagOffset = TO; }
+  void setTagOffset(uint8_t TO) {
+    TagOffset = TO;
+  }
 
   /// Finalize the list.
   ///

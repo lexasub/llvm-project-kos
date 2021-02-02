@@ -11,8 +11,6 @@ struct S {
 
   void m() {
     __block S0 x;
-    func(^{
-      return foo(x);
-    });
+    func(^{ return foo(x); });
   }
 };

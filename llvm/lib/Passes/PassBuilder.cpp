@@ -1273,13 +1273,12 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
     OptimizePM.addPass(InstCombinePass());
     LoopPassManager LPM(DebugLogging);
     LPM.addPass(LICMPass(PTO.LicmMssaOptCap, PTO.LicmMssaNoAccForPromotionCap));
-    LPM.addPass(SimpleLoopUnswitchPass(/* NonTrivial */ Level ==
-                                       OptimizationLevel::O3));
-    OptimizePM.addPass(
-        RequireAnalysisPass<OptimizationRemarkEmitterAnalysis, Function>());
+    LPM.addPass(
+        SimpleLoopUnswitchPass(/* NonTrivial */ Level == OptimizationLevel::O3));
+    OptimizePM.addPass(RequireAnalysisPass<OptimizationRemarkEmitterAnalysis, Function>());
     OptimizePM.addPass(createFunctionToLoopPassAdaptor(
-        std::move(LPM), EnableMSSALoopDependency,
-        /*UseBlockFrequencyInfo=*/true, DebugLogging));
+        std::move(LPM), EnableMSSALoopDependency, /*UseBlockFrequencyInfo=*/true,
+        DebugLogging));
     OptimizePM.addPass(SimplifyCFGPass());
     OptimizePM.addPass(InstCombinePass());
   }
@@ -1329,8 +1328,7 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
       PTO.ForgetAllSCEVInLoopUnroll)));
   OptimizePM.addPass(WarnMissedTransformationsPass());
   OptimizePM.addPass(InstCombinePass());
-  OptimizePM.addPass(
-      RequireAnalysisPass<OptimizationRemarkEmitterAnalysis, Function>());
+  OptimizePM.addPass(RequireAnalysisPass<OptimizationRemarkEmitterAnalysis, Function>());
   OptimizePM.addPass(createFunctionToLoopPassAdaptor(
       LICMPass(PTO.LicmMssaOptCap, PTO.LicmMssaNoAccForPromotionCap),
       EnableMSSALoopDependency, /*UseBlockFrequencyInfo=*/true, DebugLogging));
@@ -1613,8 +1611,8 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   }
 
   // Now deduce any function attributes based in the current code.
-  MPM.addPass(
-      createModuleToPostOrderCGSCCPassAdaptor(PostOrderFunctionAttrsPass()));
+  MPM.addPass(createModuleToPostOrderCGSCCPassAdaptor(
+              PostOrderFunctionAttrsPass()));
 
   // Do RPO function attribute inference across the module to forward-propagate
   // attributes where applicable.
@@ -1714,8 +1712,8 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   // Run a few AA driver optimizations here and now to cleanup the code.
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
 
-  MPM.addPass(
-      createModuleToPostOrderCGSCCPassAdaptor(PostOrderFunctionAttrsPass()));
+  MPM.addPass(createModuleToPostOrderCGSCCPassAdaptor(
+              PostOrderFunctionAttrsPass()));
   // FIXME: here we run IP alias analysis in the legacy PM.
 
   FunctionPassManager MainFPM;
@@ -2090,8 +2088,7 @@ Expected<SimplifyCFGOptions> parseSimplifyCFGOptions(StringRef Params) {
         return make_error<StringError>(
             formatv("invalid argument to SimplifyCFG pass bonus-threshold "
                     "parameter: '{0}' ",
-                    ParamName)
-                .str(),
+                    ParamName).str(),
             inconvertibleErrorCode());
       Result.bonusInstThreshold(BonusInstThreshold.getSExtValue());
     } else {

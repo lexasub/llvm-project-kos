@@ -11,41 +11,41 @@ void xxx(int argc) {
 int foo();
 
 int main() {
-#pragma omp master
+  #pragma omp master
   ;
-#pragma omp master nowait // expected-error {{unexpected OpenMP clause 'nowait' in directive '#pragma omp master'}}
-#pragma omp master unknown // expected-warning {{extra tokens at the end of '#pragma omp master' are ignored}}
+  #pragma omp master nowait // expected-error {{unexpected OpenMP clause 'nowait' in directive '#pragma omp master'}}
+  #pragma omp master unknown // expected-warning {{extra tokens at the end of '#pragma omp master' are ignored}}
   foo();
   {
-#pragma omp master
+    #pragma omp master
   } // expected-error {{expected statement}}
-#pragma omp for
+  #pragma omp for
   for (int i = 0; i < 10; ++i) {
     foo();
-#pragma omp master // expected-error {{region cannot be closely nested inside 'for' region}}
+    #pragma omp master // expected-error {{region cannot be closely nested inside 'for' region}}
     foo();
   }
-#pragma omp sections
+  #pragma omp sections
   {
     foo();
-#pragma omp master // expected-error {{region cannot be closely nested inside 'sections' region}}
+    #pragma omp master // expected-error {{region cannot be closely nested inside 'sections' region}}
     foo();
   }
-#pragma omp single
+  #pragma omp single
   for (int i = 0; i < 10; ++i) {
     foo();
-#pragma omp master allocate(i) // expected-error {{region cannot be closely nested inside 'single' region}} expected-error {{unexpected OpenMP clause 'allocate' in directive '#pragma omp master'}}
+    #pragma omp master allocate(i) // expected-error {{region cannot be closely nested inside 'single' region}} expected-error {{unexpected OpenMP clause 'allocate' in directive '#pragma omp master'}}
     foo();
   }
-#pragma omp master
+  #pragma omp master
   for (int i = 0; i < 10; ++i) {
     foo();
-#pragma omp master
+    #pragma omp master
     foo();
   }
-#pragma omp for ordered
+  #pragma omp for ordered
   for (int i = 0; i < 10; ++i)
-#pragma omp master // expected-error {{region cannot be closely nested inside 'for' region}}
+  #pragma omp master // expected-error {{region cannot be closely nested inside 'for' region}}
   {
     foo();
   }
@@ -54,17 +54,17 @@ int main() {
 }
 
 int foo() {
-L1: // expected-note {{jump exits scope of OpenMP structured block}}
-  foo();
-#pragma omp master
+  L1: // expected-note {{jump exits scope of OpenMP structured block}}
+    foo();
+  #pragma omp master
   {
     foo();
     goto L1; // expected-error {{cannot jump from this goto statement to its label}}
   }
   goto L2; // expected-error {{cannot jump from this goto statement to its label}}
-#pragma omp master
+  #pragma omp master
   { // expected-note {{jump bypasses OpenMP structured block}}
-  L2:
+    L2:
     foo();
   }
 

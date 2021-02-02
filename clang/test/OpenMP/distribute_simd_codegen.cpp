@@ -73,12 +73,12 @@
 
 // CHECK-LABEL: define {{.*void}} @{{.*}}without_schedule_clause{{.*}}(float* {{.+}}, float* {{.+}}, float* {{.+}}, float* {{.+}})
 void without_schedule_clause(float *a, float *b, float *c, float *d) {
-#pragma omp target
-#pragma omp teams
+  #pragma omp target
+  #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute simd simdlen(8) aligned(a) if (true)
+  #pragma omp distribute simd simdlen(8) aligned(a) if(true)
 #else
-#pragma omp distribute simd simdlen(8) aligned(a)
+  #pragma omp distribute simd simdlen(8) aligned(a)
 #endif // OMP5
   for (int i = 33; i < 32000000; i += 7) {
     a[i] = b[i] * c[i] * d[i];
@@ -137,18 +137,18 @@ void without_schedule_clause(float *a, float *b, float *c, float *d) {
 // CHECK:  call void @__kmpc_for_static_fini(%struct.ident_t* [[DEF_LOC_DISTRIBUTE_0]], i32 [[GBL_TIDV]])
 // CHECK:  ret void
 
+
 // CHECK-LABEL: define {{.*void}} @{{.*}}static_not_chunked{{.*}}(float* {{.+}}, float* {{.+}}, float* {{.+}}, float* {{.+}})
 void static_not_chunked(float *a, float *b, float *c, float *d) {
-#pragma omp target
-#pragma omp teams
+  #pragma omp target
+  #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute simd dist_schedule(static) safelen(32) if (simd \
-                                                                  : true) nontemporal(a, b)
+  #pragma omp distribute simd dist_schedule(static) safelen(32) if(simd: true) nontemporal(a, b)
 #else
-#pragma omp distribute simd dist_schedule(static) safelen(32)
+  #pragma omp distribute simd dist_schedule(static) safelen(32)
 #endif // OMP5
   for (int i = 32000000; i > 33; i += -7) {
-    a[i] = b[i] * c[i] * d[i];
+        a[i] = b[i] * c[i] * d[i];
   }
 }
 
@@ -208,10 +208,11 @@ void static_not_chunked(float *a, float *b, float *c, float *d) {
 // CHECK:  call void @__kmpc_for_static_fini(%struct.ident_t* [[DEF_LOC_DISTRIBUTE_0]], i32 [[GBL_TIDV]])
 // CHECK:  ret void
 
+
 // CHECK-LABEL: define {{.*void}} @{{.*}}static_chunked{{.*}}(float* {{.+}}, float* {{.+}}, float* {{.+}}, float* {{.+}})
 void static_chunked(float *a, float *b, float *c, float *d) {
-#pragma omp target
-#pragma omp teams
+  #pragma omp target
+  #pragma omp teams
 #pragma omp distribute simd dist_schedule(static, 5)
   for (unsigned i = 131071; i <= 2147483647; i += 127) {
     a[i] = b[i] * c[i] * d[i];
@@ -271,17 +272,15 @@ void static_chunked(float *a, float *b, float *c, float *d) {
 
 // CHECK-LABEL: test_precond
 void test_precond() {
-  char a = 0;
-  char i;
-#pragma omp target
-#pragma omp teams
+  char a = 0; char i;
+  #pragma omp target
+  #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute simd linear(i) if (a) nontemporal(i)
+  #pragma omp distribute simd linear(i) if(a) nontemporal(i)
 #else
-#pragma omp distribute simd linear(i)
+  #pragma omp distribute simd linear(i)
 #endif // OMP5
-  for (i = a; i < 10; ++i)
-    ;
+  for(i = a; i < 10; ++i);
 }
 
 // a is passed as a parameter to the outlined functions

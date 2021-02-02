@@ -7,51 +7,51 @@
 // inline (7.3.1), any namespace from its enclosing namespace set.
 
 namespace has_inline_namespaces {
-inline namespace inner {
-template <class T> void f(T &) {}
+  inline namespace inner {
+    template<class T> void f(T&) {}
 
-template <class T>
-struct X0 {
-  struct MemberClass {};
+    template<class T> 
+    struct X0 {
+      struct MemberClass {};
 
-  void mem_func() {}
+      void mem_func() {}
 
-  template <typename U>
-  struct MemberClassTemplate {};
+      template<typename U>
+      struct MemberClassTemplate {};
 
-  template <typename U>
-  void mem_func_template(U &) {}
+      template<typename U>
+      void mem_func_template(U&) {}
 
-  static int value;
-};
-} // namespace inner
+      static int value;
+    };
+  }
 
-template <typename T> int X0<T>::value = 17;
+  template<typename T> int X0<T>::value = 17;
 
-struct X1 {};
-struct X2 {};
+  struct X1 {};
+  struct X2 {};
 
-template void f(X1 &);
-template void f<X2>(X2 &);
+  template void f(X1&);
+  template void f<X2>(X2&);
 
-template struct X0<X1>;
+  template struct X0<X1>;
 
-template struct X0<X2>::MemberClass;
+  template struct X0<X2>::MemberClass;
 
-template void X0<X2>::mem_func();
+  template void X0<X2>::mem_func();
 
-template struct X0<X2>::MemberClassTemplate<X1>;
+  template struct X0<X2>::MemberClassTemplate<X1>;
 
-template void X0<X2>::mem_func_template(X1 &);
+  template void X0<X2>::mem_func_template(X1&);
 
-template int X0<X2>::value;
-} // namespace has_inline_namespaces
+  template int X0<X2>::value;
+}
 
 struct X3;
 struct X4;
 
-template void has_inline_namespaces::f(X3 &);
-template void has_inline_namespaces::f<X4>(X4 &);
+template void has_inline_namespaces::f(X3&);
+template void has_inline_namespaces::f<X4>(X4&);
 
 template struct has_inline_namespaces::X0<X3>;
 
@@ -59,6 +59,8 @@ template struct has_inline_namespaces::X0<X4>::MemberClass;
 
 template void has_inline_namespaces::X0<X4>::mem_func();
 
-template struct has_inline_namespaces::X0<X4>::MemberClassTemplate<X3>;
+template 
+struct has_inline_namespaces::X0<X4>::MemberClassTemplate<X3>;
 
-template void has_inline_namespaces::X0<X4>::mem_func_template(X3 &);
+template
+void has_inline_namespaces::X0<X4>::mem_func_template(X3&);

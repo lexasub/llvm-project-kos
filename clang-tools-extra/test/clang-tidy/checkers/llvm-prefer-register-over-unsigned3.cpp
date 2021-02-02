@@ -1,6 +1,6 @@
 // RUN: %check_clang_tidy %s llvm-prefer-register-over-unsigned %t
 
-namespace llvm {};
+namespace llvm { };
 
 // This class shouldn't trigger it despite the similarity as it's not inside the llvm namespace
 class Register {

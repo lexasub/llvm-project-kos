@@ -78,6 +78,6 @@ private:
   void pad();
 };
 
-} // namespace llvm
+} // end llvm namespace
 
 #endif

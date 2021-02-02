@@ -2,73 +2,72 @@
 
 // Example from the standard.
 namespace X {
-void p() {
-  q(); // expected-error {{undeclared}}
-  extern void q();
+  void p() {
+    q(); // expected-error {{undeclared}}
+    extern void q();
+  }
+  void middle() {
+    q(); // expected-error {{undeclared}}
+  }
+  void q() { /*...*/ }
+  void bottom() {
+    q();
+  }
 }
-void middle() {
-  q(); // expected-error {{undeclared}}
-}
-void q() { /*...*/
-}
-void bottom() {
-  q();
-}
-} // namespace X
 int q();
 
 namespace Test1 {
-void f() {
-  extern int a; // expected-note {{previous}}
-  int g(void);  // expected-note {{previous}}
+  void f() {
+    extern int a; // expected-note {{previous}}
+    int g(void); // expected-note {{previous}}
+  }
+  double a; // expected-error {{different type: 'double' vs 'int'}}
+  double g(); // expected-error {{differ only in their return type}}
 }
-double a;   // expected-error {{different type: 'double' vs 'int'}}
-double g(); // expected-error {{differ only in their return type}}
-} // namespace Test1
 
 namespace Test2 {
-void f() {
-  extern int a; // expected-note {{previous}}
-  int g(void);  // expected-note {{previous}}
+  void f() {
+    extern int a; // expected-note {{previous}}
+    int g(void); // expected-note {{previous}}
+  }
+  void h() {
+    extern double a; // expected-error {{different type: 'double' vs 'int'}}
+    double g(void); // expected-error {{differ only in their return type}}
+  }
 }
-void h() {
-  extern double a; // expected-error {{different type: 'double' vs 'int'}}
-  double g(void);  // expected-error {{differ only in their return type}}
-}
-} // namespace Test2
 
 namespace Test3 {
-constexpr void (*f())() {
-  void h();
-  return &h;
+  constexpr void (*f())() {
+    void h();
+    return &h;
+  }
+  constexpr void (*g())() {
+    void h();
+    return &h;
+  }
+  static_assert(f() == g(), "");
 }
-constexpr void (*g())() {
-  void h();
-  return &h;
-}
-static_assert(f() == g(), "");
-} // namespace Test3
 
 namespace Test4 {
-template <typename T>
-constexpr void (*f())() {
+  template<typename T>
+  constexpr void (*f())() {
+    void h();
+    return &h;
+  }
+  static_assert(f<int>() == f<char>(), "");
   void h();
-  return &h;
+  static_assert(f<int>() == &h, "");
 }
-static_assert(f<int>() == f<char>(), "");
-void h();
-static_assert(f<int>() == &h, "");
-} // namespace Test4
 
 namespace Test5 {
-constexpr auto f() -> void (*)() {
+  constexpr auto f() -> void (*)() {
+    void g();
+    struct X {
+      friend void g();
+      static constexpr auto h() -> void (*)() { return g; }
+    };
+    return X::h();
+  }
   void g();
-  struct X {
-    friend void g();
-    static constexpr auto h() -> void (*)() { return g; }
-  };
-  return X::h();
+  static_assert(f() == g, "");
 }
-void g();
-static_assert(f() == g, "");
-} // namespace Test5

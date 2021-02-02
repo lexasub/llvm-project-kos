@@ -9,13 +9,13 @@ int main() {
   // shadow for the destination.
   int const kHeapSize = 1024 * 1024;
   jptr jheap = (jptr)mmap(0, kHeapSize, PROT_READ | PROT_WRITE,
-                          MAP_ANON | MAP_PRIVATE, -1, 0);
+      MAP_ANON | MAP_PRIVATE, -1, 0);
   if (jheap == (jptr)MAP_FAILED)
     return printf("mmap failed with %d\n", errno);
-  __atomic_store_n((int *)jheap, 1, __ATOMIC_RELEASE);
-  munmap((void *)jheap, kHeapSize);
-  jheap = (jptr)mmap((void *)jheap, kHeapSize, PROT_READ | PROT_WRITE,
-                     MAP_ANON | MAP_PRIVATE, -1, 0);
+  __atomic_store_n((int*)jheap, 1, __ATOMIC_RELEASE);
+  munmap((void*)jheap, kHeapSize);
+  jheap = (jptr)mmap((void*)jheap, kHeapSize, PROT_READ | PROT_WRITE,
+      MAP_ANON | MAP_PRIVATE, -1, 0);
   if (jheap == (jptr)MAP_FAILED)
     return printf("second mmap failed with %d\n", errno);
   __tsan_java_init(jheap, kHeapSize);

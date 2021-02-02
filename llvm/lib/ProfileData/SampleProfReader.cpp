@@ -728,7 +728,8 @@ std::error_code SampleProfileReaderExtBinaryBase::decompressSection(
                               *CompressSize);
   char *Buffer = Allocator.Allocate<char>(DecompressBufSize);
   size_t UCSize = DecompressBufSize;
-  llvm::Error E = zlib::uncompress(CompressedStrings, Buffer, UCSize);
+  llvm::Error E =
+      zlib::uncompress(CompressedStrings, Buffer, UCSize);
   if (E)
     return sampleprof_error::uncompress_failed;
   DecompressBuf = reinterpret_cast<const uint8_t *>(Buffer);
@@ -787,7 +788,8 @@ std::error_code SampleProfileReaderCompactBinary::readImpl() {
     for (auto FuncEntry : FuncOffsetTable) {
       OffsetsToUse.push_back(FuncEntry.second);
     }
-  } else {
+  }
+  else {
     for (auto Name : FuncsToUse) {
       auto GUID = std::to_string(MD5Hash(Name));
       auto iter = FuncOffsetTable.find(StringRef(GUID));
@@ -1392,8 +1394,8 @@ std::error_code SampleProfileReaderGCC::readOneFunctionProfile(
         return sampleprof_error::truncated;
 
       if (Update)
-        FProfile->addCalledTargetSamples(LineOffset, Discriminator, TargetName,
-                                         TargetCount);
+        FProfile->addCalledTargetSamples(LineOffset, Discriminator,
+                                         TargetName, TargetCount);
     }
   }
 

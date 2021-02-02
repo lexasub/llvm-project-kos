@@ -8,25 +8,25 @@
 
 struct X1 {
   X1();
-  explicit X1(const X1 &);
+  explicit X1(const X1&);
 };
 
 struct X2 {
   X2();
 
 private:
-  X2(const X2 &); // expected-note{{declared private here}}
+  X2(const X2&); // expected-note{{declared private here}}
 };
 
 struct X3 {
   X3(); // expected-note{{requires 0 arguments, but 1 was provided}}
 
 private:
-  X3(X3 &); // expected-note{{candidate constructor not viable: expects an lvalue for 1st argument}}
+  X3(X3&); // expected-note{{candidate constructor not viable: expects an lvalue for 1st argument}}
 };
 
 // Check for instantiation of default arguments
-template <typename T>
+template<typename T>
 T get_value_badly() {
   double *dp = 0;
   // The extension doesn't extend far enough to turn this error into a warning.
@@ -34,23 +34,23 @@ T get_value_badly() {
   return T();
 }
 
-template <typename T>
+template<typename T>
 struct X4 {
   X4();
-  X4(const X4 &, T = get_value_badly<T>()); // expected-note{{in instantiation of}}
-};
+  X4(const X4&, T = get_value_badly<T>()); // expected-note{{in instantiation of}}
+}; 
 
 // Check for "dangerous" default arguments that could cause recursion.
 struct X5 {
   X5();
-  X5(const X5 &, const X5 & = X5()); // expected-error {{recursive evaluation of default argument}} expected-note {{used here}}
+  X5(const X5&, const X5& = X5()); // expected-error {{recursive evaluation of default argument}} expected-note {{used here}}
 };
 
-void g1(const X1 &);
-void g2(const X2 &);
-void g3(const X3 &);
-void g4(const X4<int> &);
-void g5(const X5 &);
+void g1(const X1&);
+void g2(const X2&);
+void g3(const X3&);
+void g4(const X4<int>&);
+void g5(const X5&);
 
 void test() {
   g1(X1());
@@ -61,17 +61,17 @@ void test() {
 }
 
 // Check that unavailable copy constructors still cause SFINAE failures.
-template <int> struct int_c {};
+template<int> struct int_c { };
 
-template <typename T> T f(const T &);
+template<typename T> T f(const T&);
 
 // Would be ambiguous with the next g(), except the instantiation failure in
 // sizeof() prevents that.
-template <typename T>
+template<typename T>
 int &g(int_c<sizeof(f(T()))> * = 0);
 
-template <typename T> float &g();
+template<typename T> float &g();
 
 void h() {
-  float &fp2 = g<X3>(); // Not ambiguous.
+  float &fp2 = g<X3>();  // Not ambiguous.
 }

@@ -60,7 +60,9 @@ public:
   /// of DefinedAtoms that should be marked live (along with all Atoms they
   /// reference). Only Atoms with scope scopeLinkageUnit or scopeGlobal can
   /// be kept live using this method.
-  ArrayRef<StringRef> deadStripRoots() const { return _deadStripRoots; }
+  ArrayRef<StringRef> deadStripRoots() const {
+    return _deadStripRoots;
+  }
 
   /// Add the given symbol name to the dead strip root set. Only used if
   /// deadStrip() returns true.
@@ -111,7 +113,9 @@ public:
   // Set the entry symbol name. You may also need to call addDeadStripRoot() for
   // the symbol if your platform supports dead-stripping, so that the symbol
   // will not be removed from the output.
-  void setEntrySymbolName(StringRef name) { _entrySymbolName = name; }
+  void setEntrySymbolName(StringRef name) {
+    _entrySymbolName = name;
+  }
 
   void setDeadStripping(bool enable) { _deadStrip = enable; }
   void setGlobalsAreDeadStripRoots(bool v) { _globalsAreDeadStripRoots = v; }

@@ -4,7 +4,7 @@
 extern void work();
 
 void testLoop() {
-  int z[] = {1, 2};
+  int z[] = {1,2};
   for (int y : z) {
     work();
     work();
@@ -48,6 +48,7 @@ void testLoopOpaqueCollection() {
   *(volatile int *)0 = 1; // expected-warning {{Dereference of null pointer}}
 }
 
+
 class MagicVector2 {
 public:
   MagicVector2();
@@ -82,6 +83,7 @@ void testLoopOpaqueIterator() {
   *(volatile int *)0 = 1; // expected-warning {{Dereference of null pointer}}
 }
 
+
 void testLoopErrorInRange() {
   for (int y : get(true)) { // error inside get()
     work();
@@ -98,5 +100,5 @@ void testLoopErrorInRange() {
 
 void testForRangeInit() {
   for (int *arr[3] = {nullptr, nullptr, nullptr}; int *p : arr) // expected-warning {{extension}}
-    *p = 1;                                                     // expected-warning {{Dereference of null pointer}}
+    *p = 1; // expected-warning {{Dereference of null pointer}}
 }

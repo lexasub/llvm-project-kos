@@ -46,12 +46,14 @@ namespace llvm {
 class UnaryConstantExpr final : public ConstantExpr {
 public:
   UnaryConstantExpr(unsigned Opcode, Constant *C, Type *Ty)
-      : ConstantExpr(Ty, Opcode, &Op<0>(), 1) {
+    : ConstantExpr(Ty, Opcode, &Op<0>(), 1) {
     Op<0>() = C;
   }
 
   // allocate space for exactly one operand
-  void *operator new(size_t s) { return User::operator new(s, 1); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 1);
+  }
 
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);
 
@@ -70,14 +72,16 @@ class BinaryConstantExpr final : public ConstantExpr {
 public:
   BinaryConstantExpr(unsigned Opcode, Constant *C1, Constant *C2,
                      unsigned Flags)
-      : ConstantExpr(C1->getType(), Opcode, &Op<0>(), 2) {
+    : ConstantExpr(C1->getType(), Opcode, &Op<0>(), 2) {
     Op<0>() = C1;
     Op<1>() = C2;
     SubclassOptionalData = Flags;
   }
 
   // allocate space for exactly two operands
-  void *operator new(size_t s) { return User::operator new(s, 2); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 2);
+  }
 
   /// Transparently provide more efficient getOperand methods.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);
@@ -95,14 +99,16 @@ public:
 class SelectConstantExpr final : public ConstantExpr {
 public:
   SelectConstantExpr(Constant *C1, Constant *C2, Constant *C3)
-      : ConstantExpr(C2->getType(), Instruction::Select, &Op<0>(), 3) {
+    : ConstantExpr(C2->getType(), Instruction::Select, &Op<0>(), 3) {
     Op<0>() = C1;
     Op<1>() = C2;
     Op<2>() = C3;
   }
 
   // allocate space for exactly three operands
-  void *operator new(size_t s) { return User::operator new(s, 3); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 3);
+  }
 
   /// Transparently provide more efficient getOperand methods.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);
@@ -121,14 +127,16 @@ public:
 class ExtractElementConstantExpr final : public ConstantExpr {
 public:
   ExtractElementConstantExpr(Constant *C1, Constant *C2)
-      : ConstantExpr(cast<VectorType>(C1->getType())->getElementType(),
-                     Instruction::ExtractElement, &Op<0>(), 2) {
+    : ConstantExpr(cast<VectorType>(C1->getType())->getElementType(),
+                   Instruction::ExtractElement, &Op<0>(), 2) {
     Op<0>() = C1;
     Op<1>() = C2;
   }
 
   // allocate space for exactly two operands
-  void *operator new(size_t s) { return User::operator new(s, 2); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 2);
+  }
 
   /// Transparently provide more efficient getOperand methods.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);
@@ -147,14 +155,17 @@ public:
 class InsertElementConstantExpr final : public ConstantExpr {
 public:
   InsertElementConstantExpr(Constant *C1, Constant *C2, Constant *C3)
-      : ConstantExpr(C1->getType(), Instruction::InsertElement, &Op<0>(), 3) {
+    : ConstantExpr(C1->getType(), Instruction::InsertElement,
+                   &Op<0>(), 3) {
     Op<0>() = C1;
     Op<1>() = C2;
     Op<2>() = C3;
   }
 
   // allocate space for exactly three operands
-  void *operator new(size_t s) { return User::operator new(s, 3); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 3);
+  }
 
   /// Transparently provide more efficient getOperand methods.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);
@@ -215,7 +226,9 @@ public:
   }
 
   // allocate space for exactly one operand
-  void *operator new(size_t s) { return User::operator new(s, 1); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 1);
+  }
 
   /// Indices - These identify which value to extract.
   const SmallVector<unsigned, 4> Indices;
@@ -245,7 +258,9 @@ public:
   }
 
   // allocate space for exactly one operand
-  void *operator new(size_t s) { return User::operator new(s, 2); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 2);
+  }
 
   /// Indices - These identify the position for the insertion.
   const SmallVector<unsigned, 4> Indices;
@@ -300,15 +315,17 @@ public:
 class CompareConstantExpr final : public ConstantExpr {
 public:
   unsigned short predicate;
-  CompareConstantExpr(Type *ty, Instruction::OtherOps opc, unsigned short pred,
-                      Constant *LHS, Constant *RHS)
-      : ConstantExpr(ty, opc, &Op<0>(), 2), predicate(pred) {
+  CompareConstantExpr(Type *ty, Instruction::OtherOps opc,
+                      unsigned short pred,  Constant* LHS, Constant* RHS)
+    : ConstantExpr(ty, opc, &Op<0>(), 2), predicate(pred) {
     Op<0>() = LHS;
     Op<1>() = RHS;
   }
 
   // allocate space for exactly two operands
-  void *operator new(size_t s) { return User::operator new(s, 2); }
+  void *operator new(size_t s) {
+    return User::operator new(s, 2);
+  }
 
   /// Transparently provide more efficient getOperand methods.
   DECLARE_TRANSPARENT_OPERAND_ACCESSORS(Value);

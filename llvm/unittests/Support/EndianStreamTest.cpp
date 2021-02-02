@@ -45,6 +45,7 @@ TEST(EndianStream, WriteInt32BE) {
   EXPECT_EQ(static_cast<uint8_t>(data[3]), 0xCD);
 }
 
+
 TEST(EndianStream, WriteFloatLE) {
   SmallString<16> data;
 
@@ -202,4 +203,5 @@ TEST(EndianStream, WriteFloatArrayLE) {
   EXPECT_EQ(static_cast<uint8_t>(Data[7]), 0x46);
 }
 
-} // namespace
+
+} // end anon namespace

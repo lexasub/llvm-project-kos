@@ -29,9 +29,9 @@
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerHelpers.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/Path.h"
@@ -415,7 +415,7 @@ static bool checkInvariantViolation(ProgramStateRef State, ExplodedNode *N,
   if (!D)
     return false;
 
-  ArrayRef<ParmVarDecl *> Params;
+  ArrayRef<ParmVarDecl*> Params;
   if (const auto *BD = dyn_cast<BlockDecl>(D))
     Params = BD->parameters();
   else if (const auto *FD = dyn_cast<FunctionDecl>(D))
@@ -615,7 +615,7 @@ void NullabilityChecker::checkPreStmt(const ReturnStmt *S,
   // function with a _Nonnull return type:
   //    return (NSString * _Nonnull)0;
   Nullability RetExprTypeLevelNullability =
-      getNullabilityAnnotation(lookThroughImplicitCasts(RetExpr)->getType());
+        getNullabilityAnnotation(lookThroughImplicitCasts(RetExpr)->getType());
 
   bool NullReturnedFromNonNull = (RequiredNullability == Nullability::Nonnull &&
                                   Nullness == NullConstraint::IsNull);
@@ -630,8 +630,8 @@ void NullabilityChecker::checkPreStmt(const ReturnStmt *S,
     SmallString<256> SBuf;
     llvm::raw_svector_ostream OS(SBuf);
     OS << (RetExpr->getType()->isObjCObjectPointerType() ? "nil" : "Null");
-    OS << " returned from a " << C.getDeclDescription(D)
-       << " that is expected to return a non-null value";
+    OS << " returned from a " << C.getDeclDescription(D) <<
+          " that is expected to return a non-null value";
     reportBugIfInvariantHolds(OS.str(), ErrorKind::NilReturnedToNonnull,
                               CK_NullReturnedFromNonnull, N, nullptr, C,
                               RetExpr);
@@ -663,8 +663,8 @@ void NullabilityChecker::checkPreStmt(const ReturnStmt *S,
 
       SmallString<256> SBuf;
       llvm::raw_svector_ostream OS(SBuf);
-      OS << "Nullable pointer is returned from a " << C.getDeclDescription(D)
-         << " that is expected to return a non-null value";
+      OS << "Nullable pointer is returned from a " << C.getDeclDescription(D) <<
+            " that is expected to return a non-null value";
 
       reportBugIfInvariantHolds(OS.str(), ErrorKind::NullableReturnedToNonnull,
                                 CK_NullableReturnedFromNonnull, N, Region, C);
@@ -672,8 +672,9 @@ void NullabilityChecker::checkPreStmt(const ReturnStmt *S,
     return;
   }
   if (RequiredNullability == Nullability::Nullable) {
-    State = State->set<NullabilityMap>(
-        Region, NullabilityState(RequiredNullability, S));
+    State = State->set<NullabilityMap>(Region,
+                                       NullabilityState(RequiredNullability,
+                                                        S));
     C.addTransition(State);
   }
 }
@@ -892,8 +893,9 @@ void NullabilityChecker::checkPostObjCMessage(const ObjCMethodCall &M,
     }
     // For similar reasons ignore some methods of Cocoa arrays.
     StringRef FirstSelectorSlot = M.getSelector().getNameForSlot(0);
-    if (Name.contains("Array") && (FirstSelectorSlot == "firstObject" ||
-                                   FirstSelectorSlot == "lastObject")) {
+    if (Name.contains("Array") &&
+        (FirstSelectorSlot == "firstObject" ||
+         FirstSelectorSlot == "lastObject")) {
       State =
           State->set<NullabilityMap>(ReturnRegion, Nullability::Contradicted);
       C.addTransition(State);
@@ -1023,7 +1025,7 @@ void NullabilityChecker::checkPostStmt(const ExplicitCastExpr *CE,
 
 /// For a given statement performing a bind, attempt to syntactically
 /// match the expression resulting in the bound value.
-static const Expr *matchValueExprForBind(const Stmt *S) {
+static const Expr * matchValueExprForBind(const Stmt *S) {
   // For `x = e` the value expression is the right-hand side.
   if (auto *BinOp = dyn_cast<BinaryOperator>(S)) {
     if (BinOp->getOpcode() == BO_Assign)
@@ -1031,7 +1033,7 @@ static const Expr *matchValueExprForBind(const Stmt *S) {
   }
 
   // For `int x = e` the value expression is the initializer.
-  if (auto *DS = dyn_cast<DeclStmt>(S)) {
+  if (auto *DS = dyn_cast<DeclStmt>(S))  {
     if (DS->isSingleDecl()) {
       auto *VD = dyn_cast<VarDecl>(DS->getSingleDecl());
       if (!VD)
@@ -1074,7 +1076,7 @@ static bool isARCNilInitializedLocal(CheckerContext &C, const Stmt *S) {
     return false;
 
   // Sema only zero-initializes locals with ObjCLifetimes.
-  if (!VD->getType().getQualifiers().hasObjCLifetime())
+  if(!VD->getType().getQualifiers().hasObjCLifetime())
     return false;
 
   const Expr *Init = VD->getInit();
@@ -1121,8 +1123,8 @@ void NullabilityChecker::checkBind(SVal L, SVal V, const Stmt *S,
   Nullability ValueExprTypeLevelNullability = Nullability::Unspecified;
   const Expr *ValueExpr = matchValueExprForBind(S);
   if (ValueExpr) {
-    ValueExprTypeLevelNullability = getNullabilityAnnotation(
-        lookThroughImplicitCasts(ValueExpr)->getType());
+    ValueExprTypeLevelNullability =
+      getNullabilityAnnotation(lookThroughImplicitCasts(ValueExpr)->getType());
   }
 
   bool NullAssignedToNonNull = (LocNullability == Nullability::Nonnull &&
@@ -1135,6 +1137,7 @@ void NullabilityChecker::checkBind(SVal L, SVal V, const Stmt *S,
     ExplodedNode *N = C.generateErrorNode(State, &Tag);
     if (!N)
       return;
+
 
     const Stmt *ValueStmt = S;
     if (ValueExpr)

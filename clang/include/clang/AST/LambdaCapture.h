@@ -46,7 +46,7 @@ class LambdaCapture {
   //   capture of '*this' by value or reference.
   // - or, is a nullptr and Capture_This is not set in Bits if this represents
   //   a capture of a VLA type.
-  llvm::PointerIntPair<Decl *, 3> DeclAndBits;
+  llvm::PointerIntPair<Decl*, 3> DeclAndBits;
 
   SourceLocation Loc;
   SourceLocation EllipsisLoc;
@@ -81,7 +81,7 @@ public:
   /// pointer.
   bool capturesThis() const {
     return DeclAndBits.getPointer() == nullptr &&
-           (DeclAndBits.getInt() & Capture_This);
+          (DeclAndBits.getInt() & Capture_This);
   }
 
   /// Determine whether this capture handles a variable.
@@ -108,7 +108,9 @@ public:
 
   /// Determine whether this was an implicit capture (not
   /// written between the square brackets introducing the lambda).
-  bool isImplicit() const { return DeclAndBits.getInt() & Capture_Implicit; }
+  bool isImplicit() const {
+    return DeclAndBits.getInt() & Capture_Implicit;
+  }
 
   /// Determine whether this was an explicit capture (written
   /// between the square brackets introducing the lambda).

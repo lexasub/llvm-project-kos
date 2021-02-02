@@ -4,8 +4,8 @@
 // This test verifies that we don't warn when the global operator new is
 // overridden. That's why we can't merge this with the other test file.
 
-void *operator new(unsigned long);
-void *operator new[](unsigned long);
+void* operator new(unsigned long);
+void* operator new[](unsigned long);
 
 struct Test {
   template <typename T>

@@ -59,9 +59,9 @@ public:
   /// for details on the Profile function.
   void Profile(FoldingSetNodeID &ID) const;
 
-  /// A helper that behaves like Profile() but is also usable without the
-  /// object. We use size_t here to match enumerate<...>::index(). If we don't
-  /// match that the hashes won't be equal.
+  /// A helper that behaves like Profile() but is also usable without the object.
+  /// We use size_t here to match enumerate<...>::index(). If we don't match
+  /// that the hashes won't be equal.
   static void Profile(FoldingSetNodeID &ID, size_t Idx, StringRef Name,
                       bool IsDef);
 };

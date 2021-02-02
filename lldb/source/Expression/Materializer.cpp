@@ -290,8 +290,7 @@ public:
         Status read_error;
 
         map.ReadMemory(m_persistent_variable_sp->GetValueBytes(), mem,
-                       m_persistent_variable_sp->GetByteSize().getValueOr(0),
-                       read_error);
+                       m_persistent_variable_sp->GetByteSize().getValueOr(0), read_error);
 
         if (!read_error.Success()) {
           err.SetErrorStringWithFormat(
@@ -376,8 +375,7 @@ public:
             m_persistent_variable_sp->GetByteSize().getValueOr(0), 0);
 
         map.ReadMemory(data.GetBytes(), target_address,
-                       m_persistent_variable_sp->GetByteSize().getValueOr(0),
-                       err);
+                       m_persistent_variable_sp->GetByteSize().getValueOr(0), err);
 
         if (!err.Success()) {
           dump_stream.Printf("  <could not be read>\n");
@@ -537,8 +535,7 @@ public:
         }
 
         llvm::Optional<size_t> opt_bit_align =
-            m_variable_sp->GetType()->GetLayoutCompilerType().GetTypeBitAlign(
-                scope);
+            m_variable_sp->GetType()->GetLayoutCompilerType().GetTypeBitAlign(scope);
         if (!opt_bit_align) {
           err.SetErrorStringWithFormat("can't get the type alignment for %s",
                                        m_variable_sp->GetName().AsCString());

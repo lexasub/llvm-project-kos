@@ -31,7 +31,8 @@ class TargetLibraryInfo;
 /// Return true if this is always a dereferenceable pointer. If the context
 /// instruction is specified perform context-sensitive analysis and return true
 /// if the pointer is dereferenceable at the specified instruction.
-bool isDereferenceablePointer(const Value *V, Type *Ty, const DataLayout &DL,
+bool isDereferenceablePointer(const Value *V, Type *Ty,
+                              const DataLayout &DL,
                               const Instruction *CtxI = nullptr,
                               const DominatorTree *DT = nullptr,
                               const TargetLibraryInfo *TLI = nullptr);
@@ -77,9 +78,10 @@ bool isSafeToLoadUnconditionally(Value *V, Align Alignment, APInt &Size,
 /// its placement within the loop. (i.e. does not require predication beyond
 /// that required by the the header itself and could be hoisted into the header
 /// if desired.)  This is more powerful than the variants above when the
-/// address loaded from is analyzeable by SCEV.
+/// address loaded from is analyzeable by SCEV.  
 bool isDereferenceableAndAlignedInLoop(LoadInst *LI, Loop *L,
-                                       ScalarEvolution &SE, DominatorTree &DT);
+                                       ScalarEvolution &SE,
+                                       DominatorTree &DT);
 
 /// Return true if we know that executing a load from this value cannot trap.
 ///
@@ -123,7 +125,8 @@ extern cl::opt<unsigned> DefMaxInstsToScan;
 /// location in memory, as opposed to the value operand of a store.
 ///
 /// \returns The found value, or nullptr if no value is found.
-Value *FindAvailableLoadedValue(LoadInst *Load, BasicBlock *ScanBB,
+Value *FindAvailableLoadedValue(LoadInst *Load,
+                                BasicBlock *ScanBB,
                                 BasicBlock::iterator &ScanFrom,
                                 unsigned MaxInstsToScan = DefMaxInstsToScan,
                                 AAResults *AA = nullptr,
@@ -167,6 +170,6 @@ Value *FindAvailablePtrLoadStore(Value *Ptr, Type *AccessTy, bool AtLeastAtomic,
 /// particular this means returning true means unknown if replacement is safe.
 bool canReplacePointersIfEqual(Value *A, Value *B, const DataLayout &DL,
                                Instruction *CtxI);
-} // namespace llvm
+}
 
 #endif

@@ -44,6 +44,7 @@
 //   nonnull, and use optionals where necessary.
 //
 
+
 #ifndef LLDB_PLUGINS_SCRIPTINTERPRETER_PYTHON_PYTHONDATAOBJECTS_H
 #define LLDB_PLUGINS_SCRIPTINTERPRETER_PYTHON_PYTHONDATAOBJECTS_H
 
@@ -116,6 +117,7 @@ enum class PyRefType {
   Owned     // We have ownership of the incoming PyObject.  We should
             // not call Py_INCREF.
 };
+
 
 // Take a reference that you already own, and turn it into
 // a PythonObject.
@@ -321,7 +323,7 @@ public:
 
   template <typename... T>
   llvm::Expected<PythonObject> CallMethod(const char *name,
-                                          const T &...t) const {
+                                          const T &... t) const {
     const char format[] = {'(', PythonFormat<T>::format..., ')', 0};
     PyObject *obj =
         PyObject_CallMethod(m_py_obj, py2_const_cast(name),
@@ -332,7 +334,7 @@ public:
   }
 
   template <typename... T>
-  llvm::Expected<PythonObject> Call(const T &...t) const {
+  llvm::Expected<PythonObject> Call(const T &... t) const {
     const char format[] = {'(', PythonFormat<T>::format..., ')', 0};
     PyObject *obj = PyObject_CallFunction(m_py_obj, py2_const_cast(format),
                                           PythonFormat<T>::get(t)...);
@@ -379,6 +381,7 @@ protected:
   PyObject *m_py_obj;
 };
 
+
 // This is why C++ needs monads.
 template <typename T> llvm::Expected<T> As(llvm::Expected<PythonObject> &&obj) {
   if (!obj)
@@ -400,6 +403,7 @@ As<unsigned long long>(llvm::Expected<PythonObject> &&obj);
 
 template <>
 llvm::Expected<std::string> As<std::string>(llvm::Expected<PythonObject> &&obj);
+
 
 template <class T> class TypedPythonObject : public PythonObject {
 public:
@@ -555,8 +559,7 @@ class PythonDictionary : public TypedPythonObject<PythonDictionary> {
 public:
   using TypedPythonObject::TypedPythonObject;
 
-  PythonDictionary()
-      : TypedPythonObject() {} // MSVC requires this for some reason
+  PythonDictionary() : TypedPythonObject() {} // MSVC requires this for some reason
 
   explicit PythonDictionary(PyInitialValue value);
 
@@ -745,7 +748,7 @@ public:
   PythonScript(const char *script) : script(script), function() {}
 
   template <typename... Args>
-  llvm::Expected<PythonObject> operator()(Args &&...args) {
+  llvm::Expected<PythonObject> operator()(Args &&... args) {
     if (llvm::Error error = Init())
       return std::move(error);
     return function.Call(std::forward<Args>(args)...);

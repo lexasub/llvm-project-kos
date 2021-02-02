@@ -11,7 +11,7 @@ void test_tme_funcs() {
   (void)__ttest();
   __tcommit();
   __tcancel(0x789a);
-  __tcancel(f() + A);
+	__tcancel(f() + A);
 }
 #else
 void test_tme_funcs() {
@@ -19,7 +19,7 @@ void test_tme_funcs() {
   (void)__builtin_arm_ttest();
   __builtin_arm_tcommit();
   __builtin_arm_tcancel(0x789a);
-  __builtin_arm_tcancel(f() + A);
+	__builtin_arm_tcancel(f() + A);
 }
 #endif
 // CHECK: call i64 @llvm.aarch64.tstart()
@@ -39,3 +39,4 @@ extern "C" void arm_feature_tme_defined() {}
 // CHECK: define{{.*}} void @arm_feature_tme_defined()
 
 // CHECK: attributes #1 = { nounwind willreturn }
+

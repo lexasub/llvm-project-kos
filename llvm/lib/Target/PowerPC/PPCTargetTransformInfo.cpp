@@ -25,31 +25,29 @@ using namespace llvm;
 
 #define DEBUG_TYPE "ppctti"
 
-static cl::opt<bool>
-    DisablePPCConstHoist("disable-ppc-constant-hoisting",
-                         cl::desc("disable constant hoisting on PPC"),
-                         cl::init(false), cl::Hidden);
+static cl::opt<bool> DisablePPCConstHoist("disable-ppc-constant-hoisting",
+cl::desc("disable constant hoisting on PPC"), cl::init(false), cl::Hidden);
 
 // This is currently only used for the data prefetch pass
 static cl::opt<unsigned>
-    CacheLineSize("ppc-loop-prefetch-cache-line", cl::Hidden, cl::init(64),
-                  cl::desc("The loop prefetch cache line size"));
+CacheLineSize("ppc-loop-prefetch-cache-line", cl::Hidden, cl::init(64),
+              cl::desc("The loop prefetch cache line size"));
 
 static cl::opt<bool>
-    EnablePPCColdCC("ppc-enable-coldcc", cl::Hidden, cl::init(false),
-                    cl::desc("Enable using coldcc calling conv for cold "
-                             "internal functions"));
+EnablePPCColdCC("ppc-enable-coldcc", cl::Hidden, cl::init(false),
+                cl::desc("Enable using coldcc calling conv for cold "
+                         "internal functions"));
 
 static cl::opt<bool>
-    LsrNoInsnsCost("ppc-lsr-no-insns-cost", cl::Hidden, cl::init(false),
-                   cl::desc("Do not add instruction count to lsr cost model"));
+LsrNoInsnsCost("ppc-lsr-no-insns-cost", cl::Hidden, cl::init(false),
+               cl::desc("Do not add instruction count to lsr cost model"));
 
 // The latency of mtctr is only justified if there are more than 4
 // comparisons that will be removed as a result.
-static cl::opt<unsigned> SmallCTRLoopThreshold(
-    "min-ctr-loop-threshold", cl::init(4), cl::Hidden,
-    cl::desc("Loops with a constant trip count smaller than "
-             "this value will not use the count register."));
+static cl::opt<unsigned>
+SmallCTRLoopThreshold("min-ctr-loop-threshold", cl::init(4), cl::Hidden,
+                      cl::desc("Loops with a constant trip count smaller than "
+                               "this value will not use the count register."));
 
 //===----------------------------------------------------------------------===//
 //
@@ -61,9 +59,8 @@ TargetTransformInfo::PopcntSupportKind
 PPCTTIImpl::getPopcntSupport(unsigned TyWidth) {
   assert(isPowerOf2_32(TyWidth) && "Ty width must be power of 2");
   if (ST->hasPOPCNTD() != PPCSubtarget::POPCNTD_Unavailable && TyWidth <= 64)
-    return ST->hasPOPCNTD() == PPCSubtarget::POPCNTD_Slow
-               ? TTI::PSK_SlowHardware
-               : TTI::PSK_FastHardware;
+    return ST->hasPOPCNTD() == PPCSubtarget::POPCNTD_Slow ?
+             TTI::PSK_SlowHardware : TTI::PSK_FastHardware;
   return TTI::PSK_Software;
 }
 
@@ -300,12 +297,14 @@ int PPCTTIImpl::getIntImmCostInst(unsigned Opcode, unsigned Idx,
       return TTI::TCC_Free;
 
     if (RunFree) {
-      if (Imm.getBitWidth() <= 32 && (isShiftedMask_32(Imm.getZExtValue()) ||
-                                      isShiftedMask_32(~Imm.getZExtValue())))
+      if (Imm.getBitWidth() <= 32 &&
+          (isShiftedMask_32(Imm.getZExtValue()) ||
+           isShiftedMask_32(~Imm.getZExtValue())))
         return TTI::TCC_Free;
 
-      if (ST->isPPC64() && (isShiftedMask_64(Imm.getZExtValue()) ||
-                            isShiftedMask_64(~Imm.getZExtValue())))
+      if (ST->isPPC64() &&
+          (isShiftedMask_64(Imm.getZExtValue()) ||
+           isShiftedMask_64(~Imm.getZExtValue())))
         return TTI::TCC_Free;
     }
 
@@ -319,9 +318,9 @@ int PPCTTIImpl::getIntImmCostInst(unsigned Opcode, unsigned Idx,
   return PPCTTIImpl::getIntImmCost(Imm, Ty, CostKind);
 }
 
-unsigned PPCTTIImpl::getUserCost(const User *U,
-                                 ArrayRef<const Value *> Operands,
-                                 TTI::TargetCostKind CostKind) {
+unsigned
+PPCTTIImpl::getUserCost(const User *U, ArrayRef<const Value *> Operands,
+                        TTI::TargetCostKind CostKind) {
   // We already implement getCastInstrCost and getMemoryOpCost where we perform
   // the vector adjustment there.
   if (isa<CastInst>(U) || isa<LoadInst>(U) || isa<StoreInst>(U))
@@ -400,7 +399,8 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
     }
   };
 
-  for (BasicBlock::iterator J = BB->begin(), JE = BB->end(); J != JE; ++J) {
+  for (BasicBlock::iterator J = BB->begin(), JE = BB->end();
+       J != JE; ++J) {
     // There are no direct operations on half precision so assume that
     // anything with that type requires a call except for a few select
     // operations with Power9.
@@ -425,8 +425,7 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
         unsigned Opcode = 0;
         if (F->getIntrinsicID() != Intrinsic::not_intrinsic) {
           switch (F->getIntrinsicID()) {
-          default:
-            continue;
+          default: continue;
           // If we have a call to loop_decrement or set_loop_iterations,
           // we're definitely using CTR.
           case Intrinsic::set_loop_iterations:
@@ -486,55 +485,25 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
           case Intrinsic::experimental_constrained_cos:
             return true;
           case Intrinsic::copysign:
-            if (CI->getArgOperand(0)
-                    ->getType()
-                    ->getScalarType()
-                    ->isPPC_FP128Ty())
+            if (CI->getArgOperand(0)->getType()->getScalarType()->
+                isPPC_FP128Ty())
               return true;
             else
               continue; // ISD::FCOPYSIGN is never a library call.
-          case Intrinsic::fma:
-            Opcode = ISD::FMA;
-            break;
-          case Intrinsic::sqrt:
-            Opcode = ISD::FSQRT;
-            break;
-          case Intrinsic::floor:
-            Opcode = ISD::FFLOOR;
-            break;
-          case Intrinsic::ceil:
-            Opcode = ISD::FCEIL;
-            break;
-          case Intrinsic::trunc:
-            Opcode = ISD::FTRUNC;
-            break;
-          case Intrinsic::rint:
-            Opcode = ISD::FRINT;
-            break;
-          case Intrinsic::lrint:
-            Opcode = ISD::LRINT;
-            break;
-          case Intrinsic::llrint:
-            Opcode = ISD::LLRINT;
-            break;
-          case Intrinsic::nearbyint:
-            Opcode = ISD::FNEARBYINT;
-            break;
-          case Intrinsic::round:
-            Opcode = ISD::FROUND;
-            break;
-          case Intrinsic::lround:
-            Opcode = ISD::LROUND;
-            break;
-          case Intrinsic::llround:
-            Opcode = ISD::LLROUND;
-            break;
-          case Intrinsic::minnum:
-            Opcode = ISD::FMINNUM;
-            break;
-          case Intrinsic::maxnum:
-            Opcode = ISD::FMAXNUM;
-            break;
+          case Intrinsic::fma:                Opcode = ISD::FMA;        break;
+          case Intrinsic::sqrt:               Opcode = ISD::FSQRT;      break;
+          case Intrinsic::floor:              Opcode = ISD::FFLOOR;     break;
+          case Intrinsic::ceil:               Opcode = ISD::FCEIL;      break;
+          case Intrinsic::trunc:              Opcode = ISD::FTRUNC;     break;
+          case Intrinsic::rint:               Opcode = ISD::FRINT;      break;
+          case Intrinsic::lrint:              Opcode = ISD::LRINT;      break;
+          case Intrinsic::llrint:             Opcode = ISD::LLRINT;     break;
+          case Intrinsic::nearbyint:          Opcode = ISD::FNEARBYINT; break;
+          case Intrinsic::round:              Opcode = ISD::FROUND;     break;
+          case Intrinsic::lround:             Opcode = ISD::LROUND;     break;
+          case Intrinsic::llround:            Opcode = ISD::LLROUND;    break;
+          case Intrinsic::minnum:             Opcode = ISD::FMINNUM;    break;
+          case Intrinsic::maxnum:             Opcode = ISD::FMAXNUM;    break;
           case Intrinsic::experimental_constrained_fcmp:
             Opcode = ISD::STRICT_FSETCC;
             break;
@@ -583,12 +552,8 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
           case Intrinsic::experimental_constrained_maxnum:
             Opcode = ISD::STRICT_FMAXNUM;
             break;
-          case Intrinsic::umul_with_overflow:
-            Opcode = ISD::UMULO;
-            break;
-          case Intrinsic::smul_with_overflow:
-            Opcode = ISD::SMULO;
-            break;
+          case Intrinsic::umul_with_overflow: Opcode = ISD::UMULO;      break;
+          case Intrinsic::smul_with_overflow: Opcode = ISD::SMULO;      break;
           }
         }
 
@@ -610,8 +575,7 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
             return true;
 
           switch (Func) {
-          default:
-            return true;
+          default: return true;
           case LibFunc_copysign:
           case LibFunc_copysignf:
             continue; // ISD::FCOPYSIGN is never a library call.
@@ -624,48 +588,39 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
           case LibFunc_sqrt:
           case LibFunc_sqrtf:
           case LibFunc_sqrtl:
-            Opcode = ISD::FSQRT;
-            break;
+            Opcode = ISD::FSQRT; break;
           case LibFunc_floor:
           case LibFunc_floorf:
           case LibFunc_floorl:
-            Opcode = ISD::FFLOOR;
-            break;
+            Opcode = ISD::FFLOOR; break;
           case LibFunc_nearbyint:
           case LibFunc_nearbyintf:
           case LibFunc_nearbyintl:
-            Opcode = ISD::FNEARBYINT;
-            break;
+            Opcode = ISD::FNEARBYINT; break;
           case LibFunc_ceil:
           case LibFunc_ceilf:
           case LibFunc_ceill:
-            Opcode = ISD::FCEIL;
-            break;
+            Opcode = ISD::FCEIL; break;
           case LibFunc_rint:
           case LibFunc_rintf:
           case LibFunc_rintl:
-            Opcode = ISD::FRINT;
-            break;
+            Opcode = ISD::FRINT; break;
           case LibFunc_round:
           case LibFunc_roundf:
           case LibFunc_roundl:
-            Opcode = ISD::FROUND;
-            break;
+            Opcode = ISD::FROUND; break;
           case LibFunc_trunc:
           case LibFunc_truncf:
           case LibFunc_truncl:
-            Opcode = ISD::FTRUNC;
-            break;
+            Opcode = ISD::FTRUNC; break;
           case LibFunc_fmin:
           case LibFunc_fminf:
           case LibFunc_fminl:
-            Opcode = ISD::FMINNUM;
-            break;
+            Opcode = ISD::FMINNUM; break;
           case LibFunc_fmax:
           case LibFunc_fmaxf:
           case LibFunc_fmaxl:
-            Opcode = ISD::FMAXNUM;
-            break;
+            Opcode = ISD::FMAXNUM; break;
           }
         }
 
@@ -692,15 +647,16 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
                 J->getType()->getScalarType()->isPPC_FP128Ty())) {
       // Most operations on f128 or ppc_f128 values become calls.
       return true;
-    } else if (isa<UIToFPInst>(J) || isa<SIToFPInst>(J) || isa<FPToUIInst>(J) ||
-               isa<FPToSIInst>(J)) {
+    } else if (isa<UIToFPInst>(J) || isa<SIToFPInst>(J) ||
+               isa<FPToUIInst>(J) || isa<FPToSIInst>(J)) {
       CastInst *CI = cast<CastInst>(J);
       if (CI->getSrcTy()->getScalarType()->isPPC_FP128Ty() ||
           CI->getDestTy()->getScalarType()->isPPC_FP128Ty() ||
           isLargeIntegerTy(!TM.isPPC64(), CI->getSrcTy()->getScalarType()) ||
           isLargeIntegerTy(!TM.isPPC64(), CI->getDestTy()->getScalarType()))
         return true;
-    } else if (isLargeIntegerTy(!TM.isPPC64(), J->getType()->getScalarType()) &&
+    } else if (isLargeIntegerTy(!TM.isPPC64(),
+                                J->getType()->getScalarType()) &&
                (J->getOpcode() == Instruction::UDiv ||
                 J->getOpcode() == Instruction::SDiv ||
                 J->getOpcode() == Instruction::URem ||
@@ -727,7 +683,7 @@ bool PPCTTIImpl::mightUseCTR(BasicBlock *BB, TargetLibraryInfo *LibInfo,
       return true;
 
     if (ST->useSoftFloat()) {
-      switch (J->getOpcode()) {
+      switch(J->getOpcode()) {
       case Instruction::FAdd:
       case Instruction::FSub:
       case Instruction::FMul:
@@ -775,20 +731,19 @@ bool PPCTTIImpl::isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
   // We don't want to spill/restore the counter register, and so we don't
   // want to use the counter register if the loop contains calls.
   SmallPtrSet<const Value *, 4> Visited;
-  for (Loop::block_iterator I = L->block_begin(), IE = L->block_end(); I != IE;
-       ++I)
+  for (Loop::block_iterator I = L->block_begin(), IE = L->block_end();
+       I != IE; ++I)
     if (mightUseCTR(*I, LibInfo, Visited))
       return false;
 
-  SmallVector<BasicBlock *, 4> ExitingBlocks;
+  SmallVector<BasicBlock*, 4> ExitingBlocks;
   L->getExitingBlocks(ExitingBlocks);
 
   // If there is an exit edge known to be frequently taken,
   // we should not transform this loop.
   for (auto &BB : ExitingBlocks) {
     Instruction *TI = BB->getTerminator();
-    if (!TI)
-      continue;
+    if (!TI) continue;
 
     if (BranchInst *BI = dyn_cast<BranchInst>(TI)) {
       uint64_t TrueWeight = 0, FalseWeight = 0;
@@ -799,7 +754,7 @@ bool PPCTTIImpl::isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
       // If the exit path is more frequent than the loop path,
       // we return here without further analysis for this loop.
       bool TrueIsExit = !L->contains(BI->getSuccessor(0));
-      if ((TrueIsExit && FalseWeight < TrueWeight) ||
+      if (( TrueIsExit && FalseWeight < TrueWeight) ||
           (!TrueIsExit && FalseWeight > TrueWeight))
         return false;
     }
@@ -824,8 +779,8 @@ bool PPCTTIImpl::isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
   }
 
   LLVMContext &C = L->getHeader()->getContext();
-  HWLoopInfo.CountType =
-      TM.isPPC64() ? Type::getInt64Ty(C) : Type::getInt32Ty(C);
+  HWLoopInfo.CountType = TM.isPPC64() ?
+    Type::getInt64Ty(C) : Type::getInt32Ty(C);
   HWLoopInfo.LoopDecrement = ConstantInt::get(HWLoopInfo.CountType, 1);
   return true;
 }
@@ -853,7 +808,9 @@ void PPCTTIImpl::getPeelingPreferences(Loop *L, ScalarEvolution &SE,
 // Returning true results in coldcc being used for functions which are cold at
 // all call sites when the callers of the functions are not calling any other
 // non coldcc functions.
-bool PPCTTIImpl::useColdCCForColdCall(Function &F) { return EnablePPCColdCC; }
+bool PPCTTIImpl::useColdCCForColdCall(Function &F) {
+  return EnablePPCColdCC;
+}
 
 bool PPCTTIImpl::enableAggressiveInterleaving(bool LoopHasReductions) {
   // On the A2, always unroll aggressively.
@@ -871,11 +828,13 @@ PPCTTIImpl::enableMemCmpExpansion(bool OptSize, bool IsZeroCmp) const {
   return Options;
 }
 
-bool PPCTTIImpl::enableInterleavedAccessVectorization() { return true; }
+bool PPCTTIImpl::enableInterleavedAccessVectorization() {
+  return true;
+}
 
 unsigned PPCTTIImpl::getNumberOfRegisters(unsigned ClassID) const {
-  assert(ClassID == GPRRC || ClassID == FPRRC || ClassID == VRRC ||
-         ClassID == VSXRC);
+  assert(ClassID == GPRRC || ClassID == FPRRC ||
+         ClassID == VRRC || ClassID == VSXRC);
   if (ST->hasVSX()) {
     assert(ClassID == GPRRC || ClassID == VSXRC || ClassID == VRRC);
     return ClassID == VSXRC ? 64 : 32;
@@ -899,33 +858,29 @@ unsigned PPCTTIImpl::getRegisterClassForType(bool Vector, Type *Ty) const {
     return GPRRC;
 }
 
-const char *PPCTTIImpl::getRegisterClassName(unsigned ClassID) const {
+const char* PPCTTIImpl::getRegisterClassName(unsigned ClassID) const {
 
   switch (ClassID) {
-  default:
-    llvm_unreachable("unknown register class");
-    return "PPC::unknown register class";
-  case GPRRC:
-    return "PPC::GPRRC";
-  case FPRRC:
-    return "PPC::FPRRC";
-  case VRRC:
-    return "PPC::VRRC";
-  case VSXRC:
-    return "PPC::VSXRC";
+    default:
+      llvm_unreachable("unknown register class");
+      return "PPC::unknown register class";
+    case GPRRC:       return "PPC::GPRRC";
+    case FPRRC:       return "PPC::FPRRC";
+    case VRRC:        return "PPC::VRRC";
+    case VSXRC:       return "PPC::VSXRC";
   }
 }
 
 unsigned PPCTTIImpl::getRegisterBitWidth(bool Vector) const {
   if (Vector) {
-    if (ST->hasAltivec())
-      return 128;
+    if (ST->hasAltivec()) return 128;
     return 0;
   }
 
   if (ST->isPPC64())
     return 64;
   return 32;
+
 }
 
 unsigned PPCTTIImpl::getCacheLineSize() const {
@@ -945,7 +900,9 @@ unsigned PPCTTIImpl::getCacheLineSize() const {
   return 64;
 }
 
-unsigned PPCTTIImpl::getPrefetchDistance() const { return 300; }
+unsigned PPCTTIImpl::getPrefetchDistance() const {
+  return 300;
+}
 
 unsigned PPCTTIImpl::getMaxInterleaveFactor(unsigned VF) {
   unsigned Directive = ST->getCPUDirective();
@@ -1016,13 +973,14 @@ int PPCTTIImpl::getArithmeticInstrCost(unsigned Opcode, Type *Ty,
   assert(TLI->InstructionOpcodeToISD(Opcode) && "Invalid opcode");
   // TODO: Handle more cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
-    return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info,
-                                         Opd1PropInfo, Opd2PropInfo, Args,
-                                         CxtI);
+    return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info,
+                                         Op2Info, Opd1PropInfo,
+                                         Opd2PropInfo, Args, CxtI);
 
   // Fallback to the default implementation.
   int Cost = BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info,
-                                           Op2Info, Opd1PropInfo, Opd2PropInfo);
+                                           Op2Info,
+                                           Opd1PropInfo, Opd2PropInfo);
   return vectorCostAdjustment(Cost, Opcode, Ty, nullptr);
 }
 
@@ -1132,7 +1090,8 @@ int PPCTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val, unsigned Index) {
   // because they require store and reload with the attendant
   // processor stall for load-hit-store.  Until VSX is available,
   // these need to be estimated as very costly.
-  if (ISD == ISD::EXTRACT_VECTOR_ELT || ISD == ISD::INSERT_VECTOR_ELT)
+  if (ISD == ISD::EXTRACT_VECTOR_ELT ||
+      ISD == ISD::INSERT_VECTOR_ELT)
     return LHSPenalty + Cost;
 
   return Cost;
@@ -1142,7 +1101,7 @@ int PPCTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
                                 MaybeAlign Alignment, unsigned AddressSpace,
                                 TTI::TargetCostKind CostKind,
                                 const Instruction *I) {
-  if (TLI->getValueType(DL, Src, true) == MVT::Other)
+  if (TLI->getValueType(DL, Src,  true) == MVT::Other)
     return BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                   CostKind);
   // Legalize the type.
@@ -1150,19 +1109,19 @@ int PPCTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   assert((Opcode == Instruction::Load || Opcode == Instruction::Store) &&
          "Invalid Opcode");
 
-  int Cost =
-      BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace, CostKind);
+  int Cost = BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
+                                    CostKind);
   // TODO: Handle other cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
     return Cost;
 
   Cost = vectorCostAdjustment(Cost, Opcode, Src, nullptr);
 
-  bool IsAltivecType =
-      ST->hasAltivec() && (LT.second == MVT::v16i8 || LT.second == MVT::v8i16 ||
-                           LT.second == MVT::v4i32 || LT.second == MVT::v4f32);
-  bool IsVSXType =
-      ST->hasVSX() && (LT.second == MVT::v2f64 || LT.second == MVT::v2i64);
+  bool IsAltivecType = ST->hasAltivec() &&
+                       (LT.second == MVT::v16i8 || LT.second == MVT::v8i16 ||
+                        LT.second == MVT::v4i32 || LT.second == MVT::v4f32);
+  bool IsVSXType = ST->hasVSX() &&
+                   (LT.second == MVT::v2f64 || LT.second == MVT::v2i64);
 
   // VSX has 32b/64b load instructions. Legalization can handle loading of
   // 32b/64b to VSR correctly and cheaply. But BaseT::getMemoryOpCost and
@@ -1234,15 +1193,16 @@ int PPCTTIImpl::getInterleavedMemoryOpCost(
   std::pair<int, MVT> LT = TLI->getTypeLegalizationCost(DL, VecTy);
 
   // Firstly, the cost of load/store operation.
-  int Cost = getMemoryOpCost(Opcode, VecTy, MaybeAlign(Alignment), AddressSpace,
-                             CostKind);
+  int Cost =
+      getMemoryOpCost(Opcode, VecTy, MaybeAlign(Alignment), AddressSpace,
+                      CostKind);
 
   // PPC, for both Altivec/VSX, support cheap arbitrary permutations
   // (at least in the sense that there need only be one non-loop-invariant
   // instruction). For each result vector, we need one shuffle per incoming
   // vector (except that the first shuffle can take two incoming vectors
   // because it does not need to take itself).
-  Cost += Factor * (LT.first - 1);
+  Cost += Factor*(LT.first-1);
 
   return Cost;
 }
@@ -1288,7 +1248,9 @@ bool PPCTTIImpl::isLSRCostLess(TargetTransformInfo::LSRCost &C1,
     return TargetTransformInfoImplBase::isLSRCostLess(C1, C2);
 }
 
-bool PPCTTIImpl::isNumRegsMajorCostOfLSR() { return false; }
+bool PPCTTIImpl::isNumRegsMajorCostOfLSR() {
+  return false;
+}
 
 bool PPCTTIImpl::getTgtMemIntrinsic(IntrinsicInst *Inst,
                                     MemIntrinsicInfo &Info) {

@@ -42,8 +42,8 @@ static_assert(RISCV::V1 == RISCV::V0 + 1, "Register list not consecutive");
 static_assert(RISCV::V31 == RISCV::V0 + 31, "Register list not consecutive");
 
 RISCVRegisterInfo::RISCVRegisterInfo(unsigned HwMode)
-    : RISCVGenRegisterInfo(RISCV::X1, /*DwarfFlavour*/ 0, /*EHFlavor*/ 0,
-                           /*PC*/ 0, HwMode) {}
+    : RISCVGenRegisterInfo(RISCV::X1, /*DwarfFlavour*/0, /*EHFlavor*/0,
+                           /*PC*/0, HwMode) {}
 
 const MCPhysReg *
 RISCVRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
@@ -121,13 +121,20 @@ const uint32_t *RISCVRegisterInfo::getNoPreservedMask() const {
 // Frame indexes representing locations of CSRs which are given a fixed location
 // by save/restore libcalls.
 static const std::map<unsigned, int> FixedCSRFIMap = {
-    {/*ra*/ RISCV::X1, -1},   {/*s0*/ RISCV::X8, -2},
-    {/*s1*/ RISCV::X9, -3},   {/*s2*/ RISCV::X18, -4},
-    {/*s3*/ RISCV::X19, -5},  {/*s4*/ RISCV::X20, -6},
-    {/*s5*/ RISCV::X21, -7},  {/*s6*/ RISCV::X22, -8},
-    {/*s7*/ RISCV::X23, -9},  {/*s8*/ RISCV::X24, -10},
-    {/*s9*/ RISCV::X25, -11}, {/*s10*/ RISCV::X26, -12},
-    {/*s11*/ RISCV::X27, -13}};
+  {/*ra*/  RISCV::X1,   -1},
+  {/*s0*/  RISCV::X8,   -2},
+  {/*s1*/  RISCV::X9,   -3},
+  {/*s2*/  RISCV::X18,  -4},
+  {/*s3*/  RISCV::X19,  -5},
+  {/*s4*/  RISCV::X20,  -6},
+  {/*s5*/  RISCV::X21,  -7},
+  {/*s6*/  RISCV::X22,  -8},
+  {/*s7*/  RISCV::X23,  -9},
+  {/*s8*/  RISCV::X24,  -10},
+  {/*s9*/  RISCV::X25,  -11},
+  {/*s10*/ RISCV::X26,  -12},
+  {/*s11*/ RISCV::X27,  -13}
+};
 
 bool RISCVRegisterInfo::hasReservedSpillSlot(const MachineFunction &MF,
                                              Register Reg,
@@ -195,7 +202,7 @@ Register RISCVRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
 }
 
 const uint32_t *
-RISCVRegisterInfo::getCallPreservedMask(const MachineFunction &MF,
+RISCVRegisterInfo::getCallPreservedMask(const MachineFunction & MF,
                                         CallingConv::ID CC) const {
   auto &Subtarget = MF.getSubtarget<RISCVSubtarget>();
 

@@ -4,16 +4,17 @@
 extern "C" int printf(const char *, ...);
 
 struct Foo {
-  Foo() : iFoo(2) {
-    printf("%p\n", this);
-  }
-  int iFoo;
+ Foo() : iFoo (2) {
+  printf("%p\n", this);
+ }
+ int iFoo;
 };
+
 
 typedef Foo (*T)[3][4];
 
 T bar() {
-  return new Foo[2][3][4];
+ return new Foo[2][3][4];
 }
 
 T bug(int i) {
@@ -22,8 +23,8 @@ T bug(int i) {
 
 void pr(T a) {
   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 4; j++)
-      printf("%p\n", a[i][j]);
+   for (int j = 0; j < 4; j++)
+     printf("%p\n", a[i][j]);
 }
 
 Foo *test() {
@@ -31,15 +32,15 @@ Foo *test() {
 }
 
 int main() {
-  T f = bar();
-  pr(f);
-  f = bug(3);
-  pr(f);
+ T f =  bar();
+ pr(f);
+ f = bug(3);
+ pr(f);
 
-  Foo *g = test();
-  for (int i = 0; i < 5; i++)
-    printf("%d\n", g[i].iFoo);
-  return 0;
+ Foo * g = test();
+ for (int i = 0; i < 5; i++)
+ printf("%d\n", g[i].iFoo);
+ return 0;
 }
 
 // CHECK: call noalias nonnull i8* @_Znam

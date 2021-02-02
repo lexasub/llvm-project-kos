@@ -11,13 +11,13 @@ constexpr A class_ = {};
 constexpr A arr_class[5] = {{}, {}};
 
 struct Mutable {
-  mutable int member = 1;                       // expected-note {{declared here}}
+  mutable int member = 1; // expected-note {{declared here}}
   constexpr ~Mutable() { member = member + 1; } // expected-note {{read of mutable member}}
 };
 constexpr Mutable mut_member; // expected-error {{must have constant destruction}} expected-note {{in call}}
 
 struct MutableStore {
-  mutable int member = 1;                   // expected-note {{declared here}}
+  mutable int member = 1; // expected-note {{declared here}}
   constexpr ~MutableStore() { member = 2; } // expected-note {{assignment to mutable member}}
 };
 constexpr MutableStore mut_store; // expected-error {{must have constant destruction}} expected-note {{in call}}

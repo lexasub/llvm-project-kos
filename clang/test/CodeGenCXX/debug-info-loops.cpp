@@ -18,7 +18,7 @@ int main() {
       ++b;
     else
       ++a;
-      // CHECK: br label {{.*}}, !dbg [[DBG2:![0-9]*]], !llvm.loop [[L2:![0-9]*]]
+  // CHECK: br label {{.*}}, !dbg [[DBG2:![0-9]*]], !llvm.loop [[L2:![0-9]*]]
 
 #line 300
   for (unsigned i = 0; i < 100; i++) {
@@ -29,6 +29,7 @@ int main() {
 
   // CHECK: br label {{.*}}, !dbg [[DBG3:![0-9]*]], !llvm.loop [[L3:![0-9]*]]
   // CHECK: br label {{.*}}, !dbg [[DBG3:![0-9]*]], !llvm.loop [[L4:![0-9]*]]
+
 
   // CHECK-DAG: [[L1]] = distinct !{[[L1]], [[SLDBG1:![0-9]*]], [[ELDBG1:![0-9]*]]}
   // CHECK-DAG: [[SLDBG1]] = !DILocation(line: 100, column: 3, scope: !{{.*}})

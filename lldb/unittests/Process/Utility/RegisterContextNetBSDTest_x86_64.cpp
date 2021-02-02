@@ -34,9 +34,10 @@ static std::pair<size_t, size_t> GetRegParams(RegisterInfoInterface &ctx,
               ::testing::Pair(offset + base_offset, size))
 
 #define EXPECT_GPR_X86_64(regname, regconst)                                   \
-  EXPECT_THAT(GetRegParams(reg_ctx, lldb_##regname##_x86_64),                  \
-              ::testing::Pair(offsetof(reg, regs[regconst]),                   \
-                              sizeof(reg::regs[regconst])))
+  EXPECT_THAT(                                                                 \
+      GetRegParams(reg_ctx, lldb_##regname##_x86_64),                          \
+      ::testing::Pair(offsetof(reg, regs[regconst]),                           \
+                      sizeof(reg::regs[regconst])))
 #define EXPECT_DBR_X86_64(num)                                                 \
   EXPECT_OFF(dr##num##_x86_64, offsetof(dbreg, dr[num]), sizeof(dbreg::dr[num]))
 

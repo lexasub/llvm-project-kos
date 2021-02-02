@@ -20,23 +20,19 @@
 
 #include <functional>
 
+
 struct Foo;
 Foo& get_foo();
 
 void test() {
-  std::reference_wrapper<Foo> ref = get_foo();
-  ref(0); // incomplete at the point of call
+    std::reference_wrapper<Foo> ref = get_foo();
+    ref(0); // incomplete at the point of call
 }
 
-struct Foo {
-  void operator()(int) const {}
-};
-Foo& get_foo() {
-  static Foo foo;
-  return foo;
-}
+struct Foo { void operator()(int) const { } };
+Foo& get_foo() { static Foo foo; return foo; }
 
 int main(int, char**) {
-  test();
-  return 0;
+    test();
+    return 0;
 }

@@ -2,12 +2,12 @@
 
 struct X {
   X();
-  X(const X &);
-  X(const char *);
+  X(const X&);
+  X(const char*);
   ~X();
 };
 
-struct Y {
+struct Y { 
   int i;
   X x;
 };
@@ -32,7 +32,7 @@ int f() {
 // CHECK-LABEL: define{{.*}} i32 @_Z1gv()
 int g() {
   // CHECK: store [2 x i32]* %{{[a-z0-9.]+}}, [2 x i32]** [[V:%[a-z0-9.]+]]
-  const int(&v)[2] = (int[2]){1, 2};
+  const int (&v)[2] = (int [2]) {1,2};
 
   // CHECK: [[A:%[a-z0-9.]+]] = load [2 x i32]*, [2 x i32]** [[V]]
   // CHECK-NEXT: [[A0ADDR:%[a-z0-9.]+]] = getelementptr inbounds [2 x i32], [2 x i32]* [[A]], i32 0, {{.*}} 0
@@ -47,24 +47,22 @@ int g() {
 //  - it has array type
 //  - it has a constant initializer
 
-struct Z {
-  int i[3];
-};
-int *p = (Z){{1, 2, 3}}.i;
+struct Z { int i[3]; };
+int *p = (Z){ {1, 2, 3} }.i;
 // CHECK: define {{.*}}__cxx_global_var_init()
 // CHECK: alloca %struct.Z
 // CHECK: store i32* %{{.*}}, i32** @p
 
-int *q = (int[5]){1, 2, 3, 4, 5};
+int *q = (int [5]){1, 2, 3, 4, 5};
 // (constant initialization, checked above)
 
 extern int n;
-int *r = (int[5]){1, 2, 3, 4, 5} + n;
+int *r = (int [5]){1, 2, 3, 4, 5} + n;
 // CHECK-LABEL: define {{.*}}__cxx_global_var_init.1()
 // CHECK: %[[PTR:.*]] = getelementptr inbounds i32, i32* getelementptr inbounds ([5 x i32], [5 x i32]* @.compoundliteral.2, i32 0, i32 0), i32 %
 // CHECK: store i32* %[[PTR]], i32** @r
 
-int *PR21912_1 = (int[]){} + n;
+int *PR21912_1 = (int []){} + n;
 // CHECK-LABEL: define {{.*}}__cxx_global_var_init.3()
 // CHECK: %[[PTR:.*]] = getelementptr inbounds i32, i32* getelementptr inbounds ([0 x i32], [0 x i32]* @.compoundliteral.4, i32 0, i32 0), i32 %
 // CHECK: store i32* %[[PTR]], i32** @PR21912_1
@@ -80,7 +78,7 @@ union PR21912Ty *PR21912_2 = (union PR21912Ty[]){{.d = 2.0}, {.l = 3}} + n;
 
 // This compound literal should have local scope.
 int computed_with_lambda = [] {
-  int *array = (int[]){1, 3, 5, 7};
+  int *array = (int[]) { 1, 3, 5, 7 };
   return array[0];
 }();
 // CHECK-LABEL: define internal i32 @{{.*}}clEv

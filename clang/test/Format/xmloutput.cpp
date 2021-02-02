@@ -6,8 +6,7 @@
 // CHECK-NEXT: {{<replacement.*#include &lt;a>&#10;#include &lt;b><}}
 // CHECK-NEXT: {{<replacement.*>&#10;<}}
 // CHECK-NEXT: {{<replacement.*> <}}
-#include <a>
 #include <b>
+#include <a>
 
-int a;
-int *b;
+int a;int*b;

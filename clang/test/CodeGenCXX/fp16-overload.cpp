@@ -7,4 +7,4 @@ __fp16 a;
 
 // CHECK: call i32 @_Z3foof
 // CHECK-NOT: call i32 @_Z3food
-int bar(void) { return foo(a); }
+int bar (void) { return foo(a); }

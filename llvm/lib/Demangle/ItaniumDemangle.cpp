@@ -10,8 +10,8 @@
 // file does not yet support:
 //   - C++ modules TS
 
-#include "llvm/Demangle/ItaniumDemangle.h"
 #include "llvm/Demangle/Demangle.h"
+#include "llvm/Demangle/ItaniumDemangle.h"
 
 #include <cassert>
 #include <cctype>
@@ -66,13 +66,13 @@ struct DumpVisitor {
   unsigned Depth = 0;
   bool PendingNewline = false;
 
-  template <typename NodeT> static constexpr bool wantsNewline(const NodeT *) {
+  template<typename NodeT> static constexpr bool wantsNewline(const NodeT *) {
     return true;
   }
   static bool wantsNewline(NodeArray A) { return !A.empty(); }
   static constexpr bool wantsNewline(...) { return false; }
 
-  template <typename... Ts> static bool anyWantNewline(Ts... Vs) {
+  template<typename ...Ts> static bool anyWantNewline(Ts ...Vs) {
     for (bool B : {wantsNewline(Vs)...})
       if (B)
         return true;
@@ -134,22 +134,17 @@ struct DumpVisitor {
     }
   }
   void print(Qualifiers Qs) {
-    if (!Qs)
-      return printStr("QualNone");
-    struct QualName {
-      Qualifiers Q;
-      const char *Name;
-    } Names[] = {
-        {QualConst, "QualConst"},
-        {QualVolatile, "QualVolatile"},
-        {QualRestrict, "QualRestrict"},
+    if (!Qs) return printStr("QualNone");
+    struct QualName { Qualifiers Q; const char *Name; } Names[] = {
+      {QualConst, "QualConst"},
+      {QualVolatile, "QualVolatile"},
+      {QualRestrict, "QualRestrict"},
     };
     for (QualName Name : Names) {
       if (Qs & Name.Q) {
         printStr(Name.Name);
         Qs = Qualifiers(Qs & ~Name.Q);
-        if (Qs)
-          printStr(" | ");
+        if (Qs) printStr(" | ");
       }
     }
   }
@@ -187,13 +182,13 @@ struct DumpVisitor {
     PendingNewline = false;
   }
 
-  template <typename T> void printWithPendingNewline(T V) {
+  template<typename T> void printWithPendingNewline(T V) {
     print(V);
     if (wantsNewline(V))
       PendingNewline = true;
   }
 
-  template <typename T> void printWithComma(T V) {
+  template<typename T> void printWithComma(T V) {
     if (PendingNewline || wantsNewline(V)) {
       printStr(",");
       newLine();
@@ -207,16 +202,16 @@ struct DumpVisitor {
   struct CtorArgPrinter {
     DumpVisitor &Visitor;
 
-    template <typename T, typename... Rest> void operator()(T V, Rest... Vs) {
+    template<typename T, typename ...Rest> void operator()(T V, Rest ...Vs) {
       if (Visitor.anyWantNewline(V, Vs...))
         Visitor.newLine();
       Visitor.printWithPendingNewline(V);
-      int PrintInOrder[] = {(Visitor.printWithComma(Vs), 0)..., 0};
+      int PrintInOrder[] = { (Visitor.printWithComma(Vs), 0)..., 0 };
       (void)PrintInOrder;
     }
   };
 
-  template <typename NodeT> void operator()(const NodeT *Node) {
+  template<typename NodeT> void operator()(const NodeT *Node) {
     Depth += 2;
     fprintf(stderr, "%s(", itanium_demangle::NodeKind<NodeT>::name());
     Node->match(CtorArgPrinter{*this});
@@ -238,7 +233,7 @@ struct DumpVisitor {
     Depth -= 2;
   }
 };
-} // namespace
+}
 
 void itanium_demangle::Node::dump() const {
   DumpVisitor V;
@@ -250,7 +245,7 @@ void itanium_demangle::Node::dump() const {
 namespace {
 class BumpPointerAllocator {
   struct BlockMeta {
-    BlockMeta *Next;
+    BlockMeta* Next;
     size_t Current;
   };
 
@@ -258,29 +253,29 @@ class BumpPointerAllocator {
   static constexpr size_t UsableAllocSize = AllocSize - sizeof(BlockMeta);
 
   alignas(long double) char InitialBuffer[AllocSize];
-  BlockMeta *BlockList = nullptr;
+  BlockMeta* BlockList = nullptr;
 
   void grow() {
-    char *NewMeta = static_cast<char *>(std::malloc(AllocSize));
+    char* NewMeta = static_cast<char *>(std::malloc(AllocSize));
     if (NewMeta == nullptr)
       std::terminate();
     BlockList = new (NewMeta) BlockMeta{BlockList, 0};
   }
 
-  void *allocateMassive(size_t NBytes) {
+  void* allocateMassive(size_t NBytes) {
     NBytes += sizeof(BlockMeta);
-    BlockMeta *NewMeta = reinterpret_cast<BlockMeta *>(std::malloc(NBytes));
+    BlockMeta* NewMeta = reinterpret_cast<BlockMeta*>(std::malloc(NBytes));
     if (NewMeta == nullptr)
       std::terminate();
     BlockList->Next = new (NewMeta) BlockMeta{BlockList->Next, 0};
-    return static_cast<void *>(NewMeta + 1);
+    return static_cast<void*>(NewMeta + 1);
   }
 
 public:
   BumpPointerAllocator()
       : BlockList(new (InitialBuffer) BlockMeta{nullptr, 0}) {}
 
-  void *allocate(size_t N) {
+  void* allocate(size_t N) {
     N = (N + 15u) & ~15u;
     if (N + BlockList->Current >= UsableAllocSize) {
       if (N > UsableAllocSize)
@@ -288,15 +283,15 @@ public:
       grow();
     }
     BlockList->Current += N;
-    return static_cast<void *>(reinterpret_cast<char *>(BlockList + 1) +
-                               BlockList->Current - N);
+    return static_cast<void*>(reinterpret_cast<char*>(BlockList + 1) +
+                              BlockList->Current - N);
   }
 
   void reset() {
     while (BlockList) {
-      BlockMeta *Tmp = BlockList;
+      BlockMeta* Tmp = BlockList;
       BlockList = BlockList->Next;
-      if (reinterpret_cast<char *>(Tmp) != InitialBuffer)
+      if (reinterpret_cast<char*>(Tmp) != InitialBuffer)
         std::free(Tmp);
     }
     BlockList = new (InitialBuffer) BlockMeta{nullptr, 0};
@@ -311,15 +306,16 @@ class DefaultAllocator {
 public:
   void reset() { Alloc.reset(); }
 
-  template <typename T, typename... Args> T *makeNode(Args &&...args) {
-    return new (Alloc.allocate(sizeof(T))) T(std::forward<Args>(args)...);
+  template<typename T, typename ...Args> T *makeNode(Args &&...args) {
+    return new (Alloc.allocate(sizeof(T)))
+        T(std::forward<Args>(args)...);
   }
 
   void *allocateNodeArray(size_t sz) {
     return Alloc.allocate(sizeof(Node *) * sz);
   }
 };
-} // unnamed namespace
+}  // unnamed namespace
 
 //===----------------------------------------------------------------------===//
 // Code beyond this point should not be synchronized with libc++abi.
@@ -327,8 +323,8 @@ public:
 
 using Demangler = itanium_demangle::ManglingParser<DefaultAllocator>;
 
-char *llvm::itaniumDemangle(const char *MangledName, char *Buf, size_t *N,
-                            int *Status) {
+char *llvm::itaniumDemangle(const char *MangledName, char *Buf,
+                            size_t *N, int *Status) {
   if (MangledName == nullptr || (Buf != nullptr && N == nullptr)) {
     if (Status)
       *Status = demangle_invalid_args;
@@ -372,8 +368,8 @@ ItaniumPartialDemangler::ItaniumPartialDemangler(
   Other.Context = Other.RootNode = nullptr;
 }
 
-ItaniumPartialDemangler &
-ItaniumPartialDemangler::operator=(ItaniumPartialDemangler &&Other) {
+ItaniumPartialDemangler &ItaniumPartialDemangler::
+operator=(ItaniumPartialDemangler &&Other) {
   std::swap(RootNode, Other.RootNode);
   std::swap(Context, Other.Context);
   return *this;
@@ -438,7 +434,7 @@ char *ItaniumPartialDemangler::getFunctionDeclContextName(char *Buf,
   if (!initializeOutputStream(Buf, N, S, 128))
     return nullptr;
 
-KeepGoingLocalFunction:
+ KeepGoingLocalFunction:
   while (true) {
     if (Name->getKind() == Node::KAbiTagAttr) {
       Name = static_cast<const AbiTagAttr *>(Name)->Base;
@@ -500,8 +496,8 @@ char *ItaniumPartialDemangler::getFunctionParameters(char *Buf,
   return S.getBuffer();
 }
 
-char *ItaniumPartialDemangler::getFunctionReturnType(char *Buf,
-                                                     size_t *N) const {
+char *ItaniumPartialDemangler::getFunctionReturnType(
+    char *Buf, size_t *N) const {
   if (!isFunction())
     return nullptr;
 

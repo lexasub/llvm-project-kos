@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     foo();
 
 #pragma omp target parallel for default(none) // expected-note {{explicit data sharing attribute requested here}}
-  for (i = 0; i < argc; ++i) // expected-error {{variable 'argc' must have explicitly specified data sharing attributes}}
+  for (i = 0; i < argc; ++i)  // expected-error {{variable 'argc' must have explicitly specified data sharing attributes}}
     foo();
 
 #pragma omp parallel default(none) // expected-note {{explicit data sharing attribute requested here}}

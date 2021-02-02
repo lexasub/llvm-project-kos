@@ -49,7 +49,9 @@ class TextTokenRetokenizer {
   /// Current position in Toks.
   Position Pos;
 
-  bool isEnd() const { return Pos.CurToken >= Toks.size(); }
+  bool isEnd() const {
+    return Pos.CurToken >= Toks.size();
+  }
 
   /// Sets up the buffer pointers to point to current token.
   void setupBuffer() {
@@ -125,8 +127,10 @@ class TextTokenRetokenizer {
     }
   }
 
-  void formTokenWithChars(Token &Result, SourceLocation Loc,
-                          const char *TokBegin, unsigned TokLength,
+  void formTokenWithChars(Token &Result,
+                          SourceLocation Loc,
+                          const char *TokBegin,
+                          unsigned TokLength,
                           StringRef Text) {
     Result.setLocation(Loc);
     Result.setKind(tok::text);
@@ -139,8 +143,8 @@ class TextTokenRetokenizer {
   }
 
 public:
-  TextTokenRetokenizer(llvm::BumpPtrAllocator &Allocator, Parser &P)
-      : Allocator(Allocator), P(P), NoMoreInterestingTokens(false) {
+  TextTokenRetokenizer(llvm::BumpPtrAllocator &Allocator, Parser &P):
+      Allocator(Allocator), P(P), NoMoreInterestingTokens(false) {
     Pos.CurToken = 0;
     addToken();
   }
@@ -220,7 +224,8 @@ public:
     memcpy(TextPtr, WordText.c_str(), Length + 1);
     StringRef Text = StringRef(TextPtr, Length);
 
-    formTokenWithChars(Tok, Loc, WordBegin, Pos.BufferPtr - WordBegin, Text);
+    formTokenWithChars(Tok, Loc, WordBegin,
+                       Pos.BufferPtr - WordBegin, Text);
     return true;
   }
 
@@ -232,10 +237,10 @@ public:
     bool HavePartialTok = false;
     Token PartialTok;
     if (Pos.BufferPtr != Pos.BufferStart) {
-      formTokenWithChars(
-          PartialTok, getSourceLocation(), Pos.BufferPtr,
-          Pos.BufferEnd - Pos.BufferPtr,
-          StringRef(Pos.BufferPtr, Pos.BufferEnd - Pos.BufferPtr));
+      formTokenWithChars(PartialTok, getSourceLocation(),
+                         Pos.BufferPtr, Pos.BufferEnd - Pos.BufferPtr,
+                         StringRef(Pos.BufferPtr,
+                                   Pos.BufferEnd - Pos.BufferPtr));
       HavePartialTok = true;
       Pos.CurToken++;
     }
@@ -250,9 +255,9 @@ public:
 
 Parser::Parser(Lexer &L, Sema &S, llvm::BumpPtrAllocator &Allocator,
                const SourceManager &SourceMgr, DiagnosticsEngine &Diags,
-               const CommandTraits &Traits)
-    : L(L), S(S), Allocator(Allocator), SourceMgr(SourceMgr), Diags(Diags),
-      Traits(Traits) {
+               const CommandTraits &Traits):
+    L(L), S(S), Allocator(Allocator), SourceMgr(SourceMgr), Diags(Diags),
+    Traits(Traits) {
   consumeToken();
 }
 
@@ -262,11 +267,15 @@ void Parser::parseParamCommandArgs(ParamCommandComment *PC,
   // Check if argument looks like direction specification: [dir]
   // e.g., [in], [out], [in,out]
   if (Retokenizer.lexDelimitedSeq(Arg, '[', ']'))
-    S.actOnParamCommandDirectionArg(PC, Arg.getLocation(), Arg.getEndLocation(),
+    S.actOnParamCommandDirectionArg(PC,
+                                    Arg.getLocation(),
+                                    Arg.getEndLocation(),
                                     Arg.getText());
 
   if (Retokenizer.lexWord(Arg))
-    S.actOnParamCommandParamNameArg(PC, Arg.getLocation(), Arg.getEndLocation(),
+    S.actOnParamCommandParamNameArg(PC,
+                                    Arg.getLocation(),
+                                    Arg.getEndLocation(),
                                     Arg.getText());
 }
 
@@ -274,8 +283,10 @@ void Parser::parseTParamCommandArgs(TParamCommandComment *TPC,
                                     TextTokenRetokenizer &Retokenizer) {
   Token Arg;
   if (Retokenizer.lexWord(Arg))
-    S.actOnTParamCommandParamNameArg(TPC, Arg.getLocation(),
-                                     Arg.getEndLocation(), Arg.getText());
+    S.actOnTParamCommandParamNameArg(TPC,
+                                     Arg.getLocation(),
+                                     Arg.getEndLocation(),
+                                     Arg.getText());
 }
 
 void Parser::parseBlockCommandArgs(BlockCommandComment *BC,
@@ -287,8 +298,9 @@ void Parser::parseBlockCommandArgs(BlockCommandComment *BC,
   unsigned ParsedArgs = 0;
   Token Arg;
   while (ParsedArgs < NumArgs && Retokenizer.lexWord(Arg)) {
-    Args[ParsedArgs] = Argument(
-        SourceRange(Arg.getLocation(), Arg.getEndLocation()), Arg.getText());
+    Args[ParsedArgs] = Argument(SourceRange(Arg.getLocation(),
+                                            Arg.getEndLocation()),
+                                Arg.getText());
     ParsedArgs++;
   }
 
@@ -305,14 +317,20 @@ BlockCommandComment *Parser::parseBlockCommand() {
   CommandMarkerKind CommandMarker =
       Tok.is(tok::backslash_command) ? CMK_Backslash : CMK_At;
   if (Info->IsParamCommand) {
-    PC = S.actOnParamCommandStart(Tok.getLocation(), Tok.getEndLocation(),
-                                  Tok.getCommandID(), CommandMarker);
+    PC = S.actOnParamCommandStart(Tok.getLocation(),
+                                  Tok.getEndLocation(),
+                                  Tok.getCommandID(),
+                                  CommandMarker);
   } else if (Info->IsTParamCommand) {
-    TPC = S.actOnTParamCommandStart(Tok.getLocation(), Tok.getEndLocation(),
-                                    Tok.getCommandID(), CommandMarker);
+    TPC = S.actOnTParamCommandStart(Tok.getLocation(),
+                                    Tok.getEndLocation(),
+                                    Tok.getCommandID(),
+                                    CommandMarker);
   } else {
-    BC = S.actOnBlockCommandStart(Tok.getLocation(), Tok.getEndLocation(),
-                                  Tok.getCommandID(), CommandMarker);
+    BC = S.actOnBlockCommandStart(Tok.getLocation(),
+                                  Tok.getEndLocation(),
+                                  Tok.getCommandID(),
+                                  CommandMarker);
   }
   consumeToken();
 
@@ -396,8 +414,10 @@ InlineCommandComment *Parser::parseInlineCommand() {
   if (ArgTokValid) {
     IC = S.actOnInlineCommand(CommandTok.getLocation(),
                               CommandTok.getEndLocation(),
-                              CommandTok.getCommandID(), ArgTok.getLocation(),
-                              ArgTok.getEndLocation(), ArgTok.getText());
+                              CommandTok.getCommandID(),
+                              ArgTok.getLocation(),
+                              ArgTok.getEndLocation(),
+                              ArgTok.getText());
   } else {
     IC = S.actOnInlineCommand(CommandTok.getLocation(),
                               CommandTok.getEndLocation(),
@@ -418,7 +438,8 @@ InlineCommandComment *Parser::parseInlineCommand() {
 HTMLStartTagComment *Parser::parseHTMLStartTag() {
   assert(Tok.is(tok::html_start_tag));
   HTMLStartTagComment *HST =
-      S.actOnHTMLStartTagStart(Tok.getLocation(), Tok.getHTMLTagStartName());
+      S.actOnHTMLStartTagStart(Tok.getLocation(),
+                               Tok.getHTMLTagStartName());
   consumeToken();
 
   SmallVector<HTMLStartTagComment::Attribute, 2> Attrs;
@@ -437,30 +458,36 @@ HTMLStartTagComment *Parser::parseHTMLStartTag() {
       if (Tok.isNot(tok::html_quoted_string)) {
         Diag(Tok.getLocation(),
              diag::warn_doc_html_start_tag_expected_quoted_string)
-            << SourceRange(Equals.getLocation());
+          << SourceRange(Equals.getLocation());
         Attrs.push_back(HTMLStartTagComment::Attribute(Ident.getLocation(),
                                                        Ident.getHTMLIdent()));
-        while (Tok.is(tok::html_equals) || Tok.is(tok::html_quoted_string))
+        while (Tok.is(tok::html_equals) ||
+               Tok.is(tok::html_quoted_string))
           consumeToken();
         continue;
       }
       Attrs.push_back(HTMLStartTagComment::Attribute(
-          Ident.getLocation(), Ident.getHTMLIdent(), Equals.getLocation(),
-          SourceRange(Tok.getLocation(), Tok.getEndLocation()),
-          Tok.getHTMLQuotedString()));
+                              Ident.getLocation(),
+                              Ident.getHTMLIdent(),
+                              Equals.getLocation(),
+                              SourceRange(Tok.getLocation(),
+                                          Tok.getEndLocation()),
+                              Tok.getHTMLQuotedString()));
       consumeToken();
       continue;
     }
 
     case tok::html_greater:
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(llvm::makeArrayRef(Attrs)),
+      S.actOnHTMLStartTagFinish(HST,
+                                S.copyArray(llvm::makeArrayRef(Attrs)),
                                 Tok.getLocation(),
                                 /* IsSelfClosing = */ false);
       consumeToken();
       return HST;
 
     case tok::html_slash_greater:
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(llvm::makeArrayRef(Attrs)),
+      S.actOnHTMLStartTagFinish(HST,
+                                S.copyArray(llvm::makeArrayRef(Attrs)),
                                 Tok.getLocation(),
                                 /* IsSelfClosing = */ true);
       consumeToken();
@@ -470,37 +497,43 @@ HTMLStartTagComment *Parser::parseHTMLStartTag() {
     case tok::html_quoted_string:
       Diag(Tok.getLocation(),
            diag::warn_doc_html_start_tag_expected_ident_or_greater);
-      while (Tok.is(tok::html_equals) || Tok.is(tok::html_quoted_string))
+      while (Tok.is(tok::html_equals) ||
+             Tok.is(tok::html_quoted_string))
         consumeToken();
-      if (Tok.is(tok::html_ident) || Tok.is(tok::html_greater) ||
+      if (Tok.is(tok::html_ident) ||
+          Tok.is(tok::html_greater) ||
           Tok.is(tok::html_slash_greater))
         continue;
 
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(llvm::makeArrayRef(Attrs)),
+      S.actOnHTMLStartTagFinish(HST,
+                                S.copyArray(llvm::makeArrayRef(Attrs)),
                                 SourceLocation(),
                                 /* IsSelfClosing = */ false);
       return HST;
 
     default:
       // Not a token from an HTML start tag.  Thus HTML tag prematurely ended.
-      S.actOnHTMLStartTagFinish(HST, S.copyArray(llvm::makeArrayRef(Attrs)),
+      S.actOnHTMLStartTagFinish(HST,
+                                S.copyArray(llvm::makeArrayRef(Attrs)),
                                 SourceLocation(),
                                 /* IsSelfClosing = */ false);
       bool StartLineInvalid;
       const unsigned StartLine = SourceMgr.getPresumedLineNumber(
-          HST->getLocation(), &StartLineInvalid);
+                                                  HST->getLocation(),
+                                                  &StartLineInvalid);
       bool EndLineInvalid;
-      const unsigned EndLine =
-          SourceMgr.getPresumedLineNumber(Tok.getLocation(), &EndLineInvalid);
+      const unsigned EndLine = SourceMgr.getPresumedLineNumber(
+                                                  Tok.getLocation(),
+                                                  &EndLineInvalid);
       if (StartLineInvalid || EndLineInvalid || StartLine == EndLine)
         Diag(Tok.getLocation(),
              diag::warn_doc_html_start_tag_expected_ident_or_greater)
-            << HST->getSourceRange();
+          << HST->getSourceRange();
       else {
         Diag(Tok.getLocation(),
              diag::warn_doc_html_start_tag_expected_ident_or_greater);
         Diag(HST->getLocation(), diag::note_doc_html_tag_started_here)
-            << HST->getSourceRange();
+          << HST->getSourceRange();
       }
       return HST;
     }
@@ -517,7 +550,8 @@ HTMLEndTagComment *Parser::parseHTMLEndTag() {
     consumeToken();
   }
 
-  return S.actOnHTMLEndTag(TokEndTag.getLocation(), Loc,
+  return S.actOnHTMLEndTag(TokEndTag.getLocation(),
+                           Loc,
                            TokEndTag.getHTMLTagEndName());
 }
 
@@ -547,15 +581,18 @@ BlockContentComment *Parser::parseParagraphOrBlockCommand() {
         break; // Block command ahead, finish this parapgaph.
       }
       if (Info->IsVerbatimBlockEndCommand) {
-        Diag(Tok.getLocation(), diag::warn_verbatim_block_end_without_start)
-            << Tok.is(tok::at_command) << Info->Name
-            << SourceRange(Tok.getLocation(), Tok.getEndLocation());
+        Diag(Tok.getLocation(),
+             diag::warn_verbatim_block_end_without_start)
+          << Tok.is(tok::at_command)
+          << Info->Name
+          << SourceRange(Tok.getLocation(), Tok.getEndLocation());
         consumeToken();
         continue;
       }
       if (Info->IsUnknownCommand) {
-        Content.push_back(S.actOnUnknownCommand(
-            Tok.getLocation(), Tok.getEndLocation(), Info->getID()));
+        Content.push_back(S.actOnUnknownCommand(Tok.getLocation(),
+                                                Tok.getEndLocation(),
+                                                Info->getID()));
         consumeToken();
         continue;
       }
@@ -597,8 +634,9 @@ BlockContentComment *Parser::parseParagraphOrBlockCommand() {
       continue;
 
     case tok::text:
-      Content.push_back(
-          S.actOnText(Tok.getLocation(), Tok.getEndLocation(), Tok.getText()));
+      Content.push_back(S.actOnText(Tok.getLocation(),
+                                    Tok.getEndLocation(),
+                                    Tok.getText()));
       consumeToken();
       continue;
 
@@ -622,7 +660,8 @@ VerbatimBlockComment *Parser::parseVerbatimBlock() {
   assert(Tok.is(tok::verbatim_block_begin));
 
   VerbatimBlockComment *VB =
-      S.actOnVerbatimBlockStart(Tok.getLocation(), Tok.getVerbatimBlockID());
+      S.actOnVerbatimBlockStart(Tok.getLocation(),
+                                Tok.getVerbatimBlockID());
   consumeToken();
 
   // Don't create an empty line if verbatim opening command is followed
@@ -631,7 +670,8 @@ VerbatimBlockComment *Parser::parseVerbatimBlock() {
     consumeToken();
 
   SmallVector<VerbatimBlockLineComment *, 8> Lines;
-  while (Tok.is(tok::verbatim_block_line) || Tok.is(tok::newline)) {
+  while (Tok.is(tok::verbatim_block_line) ||
+         Tok.is(tok::newline)) {
     VerbatimBlockLineComment *Line;
     if (Tok.is(tok::verbatim_block_line)) {
       Line = S.actOnVerbatimBlockLine(Tok.getLocation(),
@@ -650,7 +690,8 @@ VerbatimBlockComment *Parser::parseVerbatimBlock() {
 
   if (Tok.is(tok::verbatim_block_end)) {
     const CommandInfo *Info = Traits.getCommandInfo(Tok.getVerbatimBlockID());
-    S.actOnVerbatimBlockFinish(VB, Tok.getLocation(), Info->Name,
+    S.actOnVerbatimBlockFinish(VB, Tok.getLocation(),
+                               Info->Name,
                                S.copyArray(llvm::makeArrayRef(Lines)));
     consumeToken();
   } else {
@@ -680,8 +721,10 @@ VerbatimLineComment *Parser::parseVerbatimLine() {
     Text = "";
   }
 
-  VerbatimLineComment *VL = S.actOnVerbatimLine(
-      NameTok.getLocation(), NameTok.getVerbatimLineID(), TextBegin, Text);
+  VerbatimLineComment *VL = S.actOnVerbatimLine(NameTok.getLocation(),
+                                                NameTok.getVerbatimLineID(),
+                                                TextBegin,
+                                                Text);
   consumeToken();
   return VL;
 }

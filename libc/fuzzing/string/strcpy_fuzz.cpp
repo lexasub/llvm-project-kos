@@ -14,29 +14,25 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   // Validate input
-  if (!size)
-    return 0;
-  if (data[size - 1] != '\0')
-    return 0;
+  if (!size) return 0;
+  if (data[size - 1] != '\0') return 0;
   const char *src = (const char *)data;
 
   char *dest = new char[size];
-  if (!dest)
-    __builtin_trap();
+  if (!dest) __builtin_trap();
 
   __llvm_libc::strcpy(dest, src);
 
   size_t i;
   for (i = 0; src[i] != '\0'; i++) {
     // Ensure correctness of strcpy
-    if (dest[i] != src[i])
-      __builtin_trap();
+    if (dest[i] != src[i]) __builtin_trap();
   }
   // Ensure strcpy null terminates dest
-  if (dest[i] != src[i])
-    __builtin_trap();
+  if (dest[i] != src[i]) __builtin_trap();
 
   delete[] dest;
 
   return 0;
 }
+

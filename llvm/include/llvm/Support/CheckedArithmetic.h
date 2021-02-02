@@ -36,7 +36,7 @@ checkedOp(T LHS, T RHS, F Op, bool Signed = true) {
     return llvm::None;
   return Signed ? Out.getSExtValue() : Out.getZExtValue();
 }
-} // namespace
+}
 
 namespace llvm {
 
@@ -107,6 +107,6 @@ checkedMulAddUnsigned(T A, T B, T C) {
   return llvm::None;
 }
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

@@ -28,20 +28,20 @@ using namespace llvm;
 
 namespace {
 
-static cl::opt<bool>
-    DisablePromoteAllocaToVector("disable-promote-alloca-to-vector",
-                                 cl::desc("Disable promote alloca to vector"),
-                                 cl::init(false));
+static cl::opt<bool> DisablePromoteAllocaToVector(
+  "disable-promote-alloca-to-vector",
+  cl::desc("Disable promote alloca to vector"),
+  cl::init(false));
 
-static cl::opt<bool>
-    DisablePromoteAllocaToLDS("disable-promote-alloca-to-lds",
-                              cl::desc("Disable promote alloca to LDS"),
-                              cl::init(false));
+static cl::opt<bool> DisablePromoteAllocaToLDS(
+  "disable-promote-alloca-to-lds",
+  cl::desc("Disable promote alloca to LDS"),
+  cl::init(false));
 
 static cl::opt<unsigned> PromoteAllocaToVectorLimit(
-    "amdgpu-promote-alloca-to-vector-limit",
-    cl::desc("Maximum byte size to consider promote alloca to vector"),
-    cl::init(0));
+  "amdgpu-promote-alloca-to-vector-limit",
+  cl::desc("Maximum byte size to consider promote alloca to vector"),
+  cl::init(0));
 
 // FIXME: This can create globals so should be a module pass.
 class AMDGPUPromoteAlloca : public FunctionPass {
@@ -81,16 +81,17 @@ private:
 
   /// BaseAlloca is the alloca root the search started from.
   /// Val may be that alloca or a recursive user of it.
-  bool collectUsesWithPtrTypes(Value *BaseAlloca, Value *Val,
-                               std::vector<Value *> &WorkList) const;
+  bool collectUsesWithPtrTypes(Value *BaseAlloca,
+                               Value *Val,
+                               std::vector<Value*> &WorkList) const;
 
   /// Val is a derived pointer from Alloca. OpIdx0/OpIdx1 are the operand
   /// indices to an instruction with 2 pointer inputs (e.g. select, icmp).
   /// Returns true if both operands are derived from the same alloca. Val should
   /// be the same value as one of the input operands of UseInst.
   bool binaryOpIsDerivedFromSameAlloca(Value *Alloca, Value *Val,
-                                       Instruction *UseInst, int OpIdx0,
-                                       int OpIdx1) const;
+                                       Instruction *UseInst,
+                                       int OpIdx0, int OpIdx1) const;
 
   /// Check whether we have enough local memory for promotion.
   bool hasSufficientLocalMem(const Function &F);
@@ -198,10 +199,10 @@ AMDGPUPromoteAllocaImpl::getLocalSizeYZ(IRBuilder<> &Builder) {
   const AMDGPUSubtarget &ST = AMDGPUSubtarget::get(TM, F);
 
   if (!IsAMDHSA) {
-    Function *LocalSizeYFn =
-        Intrinsic::getDeclaration(Mod, Intrinsic::r600_read_local_size_y);
-    Function *LocalSizeZFn =
-        Intrinsic::getDeclaration(Mod, Intrinsic::r600_read_local_size_z);
+    Function *LocalSizeYFn
+      = Intrinsic::getDeclaration(Mod, Intrinsic::r600_read_local_size_y);
+    Function *LocalSizeZFn
+      = Intrinsic::getDeclaration(Mod, Intrinsic::r600_read_local_size_z);
 
     CallInst *LocalSizeY = Builder.CreateCall(LocalSizeYFn, {});
     CallInst *LocalSizeZ = Builder.CreateCall(LocalSizeZFn, {});
@@ -246,8 +247,8 @@ AMDGPUPromoteAllocaImpl::getLocalSizeYZ(IRBuilder<> &Builder) {
   //     hsa_signal_t completion_signal; // uint64_t wrapper
   //   } hsa_kernel_dispatch_packet_t
   //
-  Function *DispatchPtrFn =
-      Intrinsic::getDeclaration(Mod, Intrinsic::amdgcn_dispatch_ptr);
+  Function *DispatchPtrFn
+    = Intrinsic::getDeclaration(Mod, Intrinsic::amdgcn_dispatch_ptr);
 
   CallInst *DispatchPtr = Builder.CreateCall(DispatchPtrFn, {});
   DispatchPtr->addAttribute(AttributeList::ReturnIndex, Attribute::NoAlias);
@@ -258,7 +259,7 @@ AMDGPUPromoteAllocaImpl::getLocalSizeYZ(IRBuilder<> &Builder) {
 
   Type *I32Ty = Type::getInt32Ty(Mod->getContext());
   Value *CastDispatchPtr = Builder.CreateBitCast(
-      DispatchPtr, PointerType::get(I32Ty, AMDGPUAS::CONSTANT_ADDRESS));
+    DispatchPtr, PointerType::get(I32Ty, AMDGPUAS::CONSTANT_ADDRESS));
 
   // We could do a single 64-bit load here, but it's likely that the basic
   // 32-bit and extract sequence is already present, and it is probably easier
@@ -336,7 +337,7 @@ calculateVectorIndex(Value *Ptr,
   return I == GEPIdx.end() ? nullptr : I->second;
 }
 
-static Value *GEPToVectorIndex(GetElementPtrInst *GEP) {
+static Value* GEPToVectorIndex(GetElementPtrInst *GEP) {
   // FIXME we only support simple cases
   if (GEP->getNumOperands() != 3)
     return nullptr;
@@ -419,8 +420,8 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
                                               : (MaxVGPRs * 32);
 
   if (DL.getTypeSizeInBits(AllocaTy) * 4 > Limit) {
-    LLVM_DEBUG(dbgs() << "  Alloca too big for vectorization with " << MaxVGPRs
-                      << " registers available\n");
+    LLVM_DEBUG(dbgs() << "  Alloca too big for vectorization with "
+                      << MaxVGPRs << " registers available\n");
     return false;
   }
 
@@ -428,16 +429,15 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
 
   // FIXME: There is no reason why we can't support larger arrays, we
   // are just being conservative for now.
-  // FIXME: We also reject alloca's of the form [ 2 x [ 2 x i32 ]] or
-  // equivalent. Potentially these could also be promoted but we don't currently
-  // handle this case
+  // FIXME: We also reject alloca's of the form [ 2 x [ 2 x i32 ]] or equivalent. Potentially these
+  // could also be promoted but we don't currently handle this case
   if (!VectorTy || VectorTy->getNumElements() > 16 ||
       VectorTy->getNumElements() < 2) {
     LLVM_DEBUG(dbgs() << "  Cannot convert type to vector\n");
     return false;
   }
 
-  std::map<GetElementPtrInst *, Value *> GEPVectorIdx;
+  std::map<GetElementPtrInst*, Value*> GEPVectorIdx;
   std::vector<Value *> WorkList;
   SmallVector<User *, 8> Users(Alloca->users());
   SmallVector<User *, 8> UseUsers(Users.size(), Alloca);
@@ -509,8 +509,7 @@ static bool tryPromoteAllocaToVector(AllocaInst *Alloca, const DataLayout &DL,
       Value *VecValue = Builder.CreateLoad(VectorTy, BitCast);
       Value *ExtractElement = Builder.CreateExtractElement(VecValue, Index);
       if (Inst->getType() != VecEltTy)
-        ExtractElement =
-            Builder.CreateBitOrPointerCast(ExtractElement, Inst->getType());
+        ExtractElement = Builder.CreateBitOrPointerCast(ExtractElement, Inst->getType());
       Inst->replaceAllUsesWith(ExtractElement);
       Inst->eraseFromParent();
       break;
@@ -793,8 +792,8 @@ bool AMDGPUPromoteAllocaImpl::hasSufficientLocalMem(const Function &F) {
     CurrentLocalMemUsage += Alloc.first;
   }
 
-  unsigned MaxOccupancy =
-      ST.getOccupancyWithLocalMemSize(CurrentLocalMemUsage, F);
+  unsigned MaxOccupancy = ST.getOccupancyWithLocalMemSize(CurrentLocalMemUsage,
+                                                          F);
 
   // Restrict local memory usage so that we don't drastically reduce occupancy,
   // unless it is already significantly reduced.
@@ -812,9 +811,10 @@ bool AMDGPUPromoteAllocaImpl::hasSufficientLocalMem(const Function &F) {
   // usage.
   MaxOccupancy = std::min(OccupancyHint, MaxOccupancy);
 
+
   // Round up to the next tier of usage.
-  unsigned MaxSizeWithWaveCount =
-      ST.getMaxLocalMemSizeWithWaveCount(MaxOccupancy, F);
+  unsigned MaxSizeWithWaveCount
+    = ST.getMaxLocalMemSizeWithWaveCount(MaxOccupancy, F);
 
   // Program is possibly broken by using more local mem than available.
   if (CurrentLocalMemUsage > MaxSizeWithWaveCount)
@@ -898,7 +898,7 @@ bool AMDGPUPromoteAllocaImpl::handleAlloca(AllocaInst &I, bool SufficientLDS) {
 
   CurrentLocalMemUsage = NewSize;
 
-  std::vector<Value *> WorkList;
+  std::vector<Value*> WorkList;
 
   if (!collectUsesWithPtrTypes(&I, &I, WorkList)) {
     LLVM_DEBUG(dbgs() << " Do not know how to convert all uses\n");
@@ -911,9 +911,12 @@ bool AMDGPUPromoteAllocaImpl::handleAlloca(AllocaInst &I, bool SufficientLDS) {
 
   Type *GVTy = ArrayType::get(I.getAllocatedType(), WorkGroupSize);
   GlobalVariable *GV = new GlobalVariable(
-      *Mod, GVTy, false, GlobalValue::InternalLinkage, UndefValue::get(GVTy),
-      Twine(F->getName()) + Twine('.') + I.getName(), nullptr,
-      GlobalVariable::NotThreadLocal, AMDGPUAS::LOCAL_ADDRESS);
+      *Mod, GVTy, false, GlobalValue::InternalLinkage,
+      UndefValue::get(GVTy),
+      Twine(F->getName()) + Twine('.') + I.getName(),
+      nullptr,
+      GlobalVariable::NotThreadLocal,
+      AMDGPUAS::LOCAL_ADDRESS);
   GV->setUnnamedAddr(GlobalValue::UnnamedAddr::Global);
   GV->setAlignment(MaybeAlign(I.getAlignment()));
 
@@ -931,7 +934,9 @@ bool AMDGPUPromoteAllocaImpl::handleAlloca(AllocaInst &I, bool SufficientLDS) {
   TID = Builder.CreateAdd(TID, TIdZ);
 
   Value *Indices[] = {
-      Constant::getNullValue(Type::getInt32Ty(Mod->getContext())), TID};
+    Constant::getNullValue(Type::getInt32Ty(Mod->getContext())),
+    TID
+  };
 
   Value *Offset = Builder.CreateInBoundsGEP(GVTy, GV, Indices);
   I.mutateType(Offset->getType());
@@ -1028,9 +1033,10 @@ bool AMDGPUPromoteAllocaImpl::handleAlloca(AllocaInst &I, bool SufficientLDS) {
     case Intrinsic::objectsize: {
       Value *Src = Intr->getOperand(0);
       Type *SrcTy = Src->getType()->getPointerElementType();
-      Function *ObjectSize = Intrinsic::getDeclaration(
-          Mod, Intrinsic::objectsize,
-          {Intr->getType(), PointerType::get(SrcTy, AMDGPUAS::LOCAL_ADDRESS)});
+      Function *ObjectSize = Intrinsic::getDeclaration(Mod,
+        Intrinsic::objectsize,
+        { Intr->getType(), PointerType::get(SrcTy, AMDGPUAS::LOCAL_ADDRESS) }
+      );
 
       CallInst *NewCall = Builder.CreateCall(
           ObjectSize,

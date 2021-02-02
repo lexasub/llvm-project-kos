@@ -152,9 +152,10 @@ const char *Section::GetTypeAsCString() const {
 }
 
 Section::Section(const ModuleSP &module_sp, ObjectFile *obj_file,
-                 user_id_t sect_id, ConstString name, SectionType sect_type,
-                 addr_t file_addr, addr_t byte_size, lldb::offset_t file_offset,
-                 lldb::offset_t file_size, uint32_t log2align, uint32_t flags,
+                 user_id_t sect_id, ConstString name,
+                 SectionType sect_type, addr_t file_addr, addr_t byte_size,
+                 lldb::offset_t file_offset, lldb::offset_t file_size,
+                 uint32_t log2align, uint32_t flags,
                  uint32_t target_byte_size /*=1*/)
     : ModuleChild(module_sp), UserID(sect_id), Flags(flags),
       m_obj_file(obj_file), m_type(sect_type), m_parent_wp(), m_name(name),
@@ -162,8 +163,7 @@ Section::Section(const ModuleSP &module_sp, ObjectFile *obj_file,
       m_file_offset(file_offset), m_file_size(file_size),
       m_log2align(log2align), m_children(), m_fake(false), m_encrypted(false),
       m_thread_specific(false), m_readable(false), m_writable(false),
-      m_executable(false), m_relocated(false),
-      m_target_byte_size(target_byte_size) {
+      m_executable(false), m_relocated(false), m_target_byte_size(target_byte_size) {
   //    printf ("Section::Section(%p): module=%p, sect_id = 0x%16.16" PRIx64 ",
   //    addr=[0x%16.16" PRIx64 " - 0x%16.16" PRIx64 "), file [0x%16.16" PRIx64 "
   //    - 0x%16.16" PRIx64 "), flags = 0x%8.8x, name = %s\n",
@@ -174,9 +174,10 @@ Section::Section(const ModuleSP &module_sp, ObjectFile *obj_file,
 
 Section::Section(const lldb::SectionSP &parent_section_sp,
                  const ModuleSP &module_sp, ObjectFile *obj_file,
-                 user_id_t sect_id, ConstString name, SectionType sect_type,
-                 addr_t file_addr, addr_t byte_size, lldb::offset_t file_offset,
-                 lldb::offset_t file_size, uint32_t log2align, uint32_t flags,
+                 user_id_t sect_id, ConstString name,
+                 SectionType sect_type, addr_t file_addr, addr_t byte_size,
+                 lldb::offset_t file_offset, lldb::offset_t file_size,
+                 uint32_t log2align, uint32_t flags,
                  uint32_t target_byte_size /*=1*/)
     : ModuleChild(module_sp), UserID(sect_id), Flags(flags),
       m_obj_file(obj_file), m_type(sect_type), m_parent_wp(), m_name(name),
@@ -184,8 +185,7 @@ Section::Section(const lldb::SectionSP &parent_section_sp,
       m_file_offset(file_offset), m_file_size(file_size),
       m_log2align(log2align), m_children(), m_fake(false), m_encrypted(false),
       m_thread_specific(false), m_readable(false), m_writable(false),
-      m_executable(false), m_relocated(false),
-      m_target_byte_size(target_byte_size) {
+      m_executable(false), m_relocated(false), m_target_byte_size(target_byte_size) {
   //    printf ("Section::Section(%p): module=%p, sect_id = 0x%16.16" PRIx64 ",
   //    addr=[0x%16.16" PRIx64 " - 0x%16.16" PRIx64 "), file [0x%16.16" PRIx64 "
   //    - 0x%16.16" PRIx64 "), flags = 0x%8.8x, name = %s.%s\n",
@@ -480,7 +480,8 @@ SectionSP SectionList::GetSectionAtIndex(size_t idx) const {
   return sect_sp;
 }
 
-SectionSP SectionList::FindSectionByName(ConstString section_dstr) const {
+SectionSP
+SectionList::FindSectionByName(ConstString section_dstr) const {
   SectionSP sect_sp;
   // Check if we have a valid section string
   if (section_dstr && !m_sections.empty()) {

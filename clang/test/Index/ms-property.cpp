@@ -10,7 +10,7 @@ struct Simple {
   // CHECK: [[@LINE-1]]:8 | instance-method/C++ | PutX | [[PutX_USR:.*]] | __ZN6Simple4PutXEi | Decl,RelChild | rel: 1
   // CHECK-NEXT: RelChild | Simple | [[Simple_USR]]
 
-  __declspec(property(get = GetX, put = PutX)) int propX;
+  __declspec(property(get=GetX, put=PutX)) int propX;
   // CHECK: [[@LINE-1]]:48 | instance-property/C++ | propX | [[propX_USR:.*]] | <no-cgname> | Def,RelChild | rel: 1
   // CHECK-NEXT: RelChild | Simple | [[Simple_USR]]
 };

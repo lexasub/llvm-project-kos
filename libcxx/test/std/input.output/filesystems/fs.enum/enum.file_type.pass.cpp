@@ -18,6 +18,7 @@
 
 #include "test_macros.h"
 
+
 constexpr fs::file_type ME(int val) { return static_cast<fs::file_type>(val); }
 
 int main(int, char**) {
@@ -28,16 +29,21 @@ int main(int, char**) {
   typedef std::underlying_type<E>::type UT;
   static_assert(!std::is_convertible<E, UT>::value, "");
 
-  LIBCPP_ONLY(static_assert(std::is_same<UT, signed char>::value,
-                            "")); // Implementation detail
+  LIBCPP_ONLY(static_assert(std::is_same<UT, signed char>::value, "")); // Implementation detail
 
   // The standard doesn't specify the numeric values of the enum.
-  LIBCPP_STATIC_ASSERT(E::none == ME(0) && E::not_found == ME(-1) &&
-                           E::regular == ME(1) && E::directory == ME(2) &&
-                           E::symlink == ME(3) && E::block == ME(4) &&
-                           E::character == ME(5) && E::fifo == ME(6) &&
-                           E::socket == ME(7) && E::unknown == ME(8),
-                       "Expected enumeration values do not match");
+  LIBCPP_STATIC_ASSERT(
+          E::none == ME(0) &&
+          E::not_found == ME(-1) &&
+          E::regular == ME(1) &&
+          E::directory == ME(2) &&
+          E::symlink == ME(3) &&
+          E::block == ME(4) &&
+          E::character == ME(5) &&
+          E::fifo == ME(6) &&
+          E::socket == ME(7) &&
+          E::unknown == ME(8),
+        "Expected enumeration values do not match");
 
   return 0;
 }

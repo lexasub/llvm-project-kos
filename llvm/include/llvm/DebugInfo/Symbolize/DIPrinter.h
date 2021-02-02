@@ -53,7 +53,7 @@ public:
   DIPrinter &operator<<(const DIGlobal &Global);
   DIPrinter &operator<<(const DILocal &Local);
 };
-} // namespace symbolize
-} // namespace llvm
+}
+}
 
 #endif

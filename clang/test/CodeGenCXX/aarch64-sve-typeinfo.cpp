@@ -3,9 +3,7 @@
 // RUN: %clang_cc1 -triple aarch64-none-linux-gnu %s -emit-llvm -o - \
 // RUN:   -target-feature +sve,+bf16 | FileCheck %s
 
-namespace std {
-class type_info;
-};
+namespace std { class type_info; };
 
 auto &s8 = typeid(__SVInt8_t);
 auto &s16 = typeid(__SVInt16_t);

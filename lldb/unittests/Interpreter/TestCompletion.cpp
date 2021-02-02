@@ -99,7 +99,9 @@ protected:
     ASSERT_NO_ERROR(fs::current_path(OriginalWorkingDir));
   }
 
-  void TearDown() override { ASSERT_NO_ERROR(fs::remove_directories(BaseDir)); }
+  void TearDown() override {
+    ASSERT_NO_ERROR(fs::remove_directories(BaseDir));
+  }
 
   static bool HasEquivalentFile(const Twine &Path, const StringList &Paths) {
     for (size_t I = 0; I < Paths.GetSize(); ++I) {

@@ -6,6 +6,6 @@
 // RUN: clang-apply-replacements %T/Inputs/identical-in-TU
 // RUN: FileCheck -input-file=%T/Inputs/identical-in-TU/identical-in-TU.cpp %S/Inputs/identical-in-TU/identical-in-TU.cpp
 
-// Similar to identical test but each yaml file contains the same fix twice.
-// This check ensures that only the duplicated replacements in a single yaml
+// Similar to identical test but each yaml file contains the same fix twice. 
+// This check ensures that only the duplicated replacements in a single yaml 
 // file are applied twice. Addresses PR45150.

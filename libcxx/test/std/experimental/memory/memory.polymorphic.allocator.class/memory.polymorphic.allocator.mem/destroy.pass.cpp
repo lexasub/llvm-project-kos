@@ -27,26 +27,28 @@ namespace ex = std::experimental::pmr;
 
 int count = 0;
 
-struct destroyable {
-  destroyable() { ++count; }
-  ~destroyable() { --count; }
+struct destroyable
+{
+    destroyable() { ++count; }
+    ~destroyable() { --count; }
 };
 
-int main(int, char**) {
-  typedef ex::polymorphic_allocator<double> A;
-  {
-    A a;
-    static_assert(
-        std::is_same<decltype(a.destroy((destroyable*)nullptr)), void>::value,
-        "");
-  }
-  {
-    destroyable* ptr = ::new (std::malloc(sizeof(destroyable))) destroyable();
-    assert(count == 1);
-    A{}.destroy(ptr);
-    assert(count == 0);
-    std::free(ptr);
-  }
+int main(int, char**)
+{
+    typedef ex::polymorphic_allocator<double> A;
+    {
+        A a;
+        static_assert(
+            std::is_same<decltype(a.destroy((destroyable*)nullptr)), void>::value,
+            "");
+    }
+    {
+        destroyable * ptr = ::new (std::malloc(sizeof(destroyable))) destroyable();
+        assert(count == 1);
+        A{}.destroy(ptr);
+        assert(count == 0);
+        std::free(ptr);
+    }
 
   return 0;
 }

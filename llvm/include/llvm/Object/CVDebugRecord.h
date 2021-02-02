@@ -24,7 +24,7 @@ struct Signature {
   support::ulittle32_t CVSignature;
   support::ulittle32_t Offset;
 };
-} // namespace OMF
+}
 
 namespace codeview {
 struct PDB70DebugInfo {
@@ -47,7 +47,8 @@ union DebugInfo {
   struct PDB20DebugInfo PDB20;
   struct PDB70DebugInfo PDB70;
 };
-} // namespace codeview
-} // namespace llvm
+}
+}
 
 #endif
+

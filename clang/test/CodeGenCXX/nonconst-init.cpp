@@ -2,6 +2,4 @@
 
 int a();
 // CHECK: call i32 @_Z1av()
-struct x {
-  int x, y : 10;
-} x = {1, a()};
+struct x {int x, y : 10;} x = {1, a()};

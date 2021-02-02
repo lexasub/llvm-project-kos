@@ -14,6 +14,7 @@
 
 #include <new>
 
+
 int main(int, char**) {
   std::nothrow_t x = std::nothrow;
   (void)x;

@@ -8,8 +8,8 @@
 #include "../Inputs/system-header-simulator-cxx-std-suppression.h"
 
 void testList_pop_front(std::list<int> list) {
-  while (!list.empty())
-    list.pop_front(); // no-warning
+  while(!list.empty())
+    list.pop_front();  // no-warning
 }
 
 void testBasicStringSuppression() {
@@ -28,7 +28,7 @@ void testBasicStringSuppression_assign(std::basic_string<char32_t> &v,
 }
 
 class MyEngine;
-void testSuppression_independent_bits_engine(MyEngine &e) {
+void testSuppression_independent_bits_engine(MyEngine& e) {
   std::__independent_bits_engine<MyEngine, unsigned int> x(e, 64); // no-warning
 }
 

@@ -90,6 +90,7 @@ public:
   static void zap(Use *Start, const Use *Stop, bool del = false);
 
 private:
+
   Value *Val = nullptr;
   Use *Next = nullptr;
   Use **Prev = nullptr;

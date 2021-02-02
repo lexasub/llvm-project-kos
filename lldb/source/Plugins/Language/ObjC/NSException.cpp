@@ -124,18 +124,16 @@ public:
 
   ~NSExceptionSyntheticFrontEnd() override = default;
 
-  size_t CalculateNumChildren() override { return 4; }
+  size_t CalculateNumChildren() override {
+    return 4;
+  }
 
   lldb::ValueObjectSP GetChildAtIndex(size_t idx) override {
     switch (idx) {
-    case 0:
-      return m_name_sp;
-    case 1:
-      return m_reason_sp;
-    case 2:
-      return m_userinfo_sp;
-    case 3:
-      return m_reserved_sp;
+      case 0: return m_name_sp;
+      case 1: return m_reason_sp;
+      case 2: return m_userinfo_sp;
+      case 3: return m_reserved_sp;
     }
     return lldb::ValueObjectSP();
   }
@@ -162,14 +160,10 @@ public:
     static ConstString g___reason("reason");
     static ConstString g___userInfo("userInfo");
     static ConstString g___reserved("reserved");
-    if (name == g___name)
-      return 0;
-    if (name == g___reason)
-      return 1;
-    if (name == g___userInfo)
-      return 2;
-    if (name == g___reserved)
-      return 3;
+    if (name == g___name) return 0;
+    if (name == g___reason) return 1;
+    if (name == g___userInfo) return 2;
+    if (name == g___reserved) return 3;
     return UINT32_MAX;
   }
 

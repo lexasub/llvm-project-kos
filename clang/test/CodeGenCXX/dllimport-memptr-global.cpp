@@ -9,12 +9,8 @@ struct __declspec(dllimport) Single {
   virtual void virt();
 };
 
-struct A {
-  int a;
-};
-struct B {
-  int b;
-};
+struct A { int a; };
+struct B { int b; };
 struct __declspec(dllimport) Multi : A, B {
   void nonvirt();
   virtual void virt();
@@ -32,8 +28,8 @@ struct __declspec(dllimport) General {
   virtual void virt();
 };
 
-auto mp_single_nv = &Single::nonvirt;   // expected-warning {{global constructor}}
-auto mp_multi_nv = &Multi::nonvirt;     // expected-warning {{global constructor}}
+auto mp_single_nv = &Single::nonvirt; // expected-warning {{global constructor}}
+auto mp_multi_nv = &Multi::nonvirt; // expected-warning {{global constructor}}
 auto mp_virtual_nv = &Virtual::nonvirt; // expected-warning {{global constructor}}
 auto mp_general_nv = &General::nonvirt; // expected-warning {{global constructor}}
 

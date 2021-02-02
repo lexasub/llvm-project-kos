@@ -46,17 +46,20 @@ RegionBase<Tr>::RegionBase(BlockT *Entry, BlockT *Exit,
                            RegionT *Parent)
     : RegionNodeBase<Tr>(Parent, Entry, 1), RI(RInfo), DT(dt), exit(Exit) {}
 
-template <class Tr> RegionBase<Tr>::~RegionBase() {
+template <class Tr>
+RegionBase<Tr>::~RegionBase() {
   // Only clean the cache for this Region. Caches of child Regions will be
   // cleaned when the child Regions are deleted.
   BBNodeMap.clear();
 }
 
-template <class Tr> void RegionBase<Tr>::replaceEntry(BlockT *BB) {
+template <class Tr>
+void RegionBase<Tr>::replaceEntry(BlockT *BB) {
   this->entry.setPointer(BB);
 }
 
-template <class Tr> void RegionBase<Tr>::replaceExit(BlockT *BB) {
+template <class Tr>
+void RegionBase<Tr>::replaceExit(BlockT *BB) {
   assert(exit && "No exit to replace!");
   exit = BB;
 }
@@ -79,7 +82,8 @@ void RegionBase<Tr>::replaceEntryRecursive(BlockT *NewEntry) {
   }
 }
 
-template <class Tr> void RegionBase<Tr>::replaceExitRecursive(BlockT *NewExit) {
+template <class Tr>
+void RegionBase<Tr>::replaceExitRecursive(BlockT *NewExit) {
   std::vector<RegionT *> RegionQueue;
   BlockT *OldExit = getExit();
 
@@ -96,7 +100,8 @@ template <class Tr> void RegionBase<Tr>::replaceExitRecursive(BlockT *NewExit) {
   }
 }
 
-template <class Tr> bool RegionBase<Tr>::contains(const BlockT *B) const {
+template <class Tr>
+bool RegionBase<Tr>::contains(const BlockT *B) const {
   BlockT *BB = const_cast<BlockT *>(B);
 
   if (!DT->getNode(BB))
@@ -112,7 +117,8 @@ template <class Tr> bool RegionBase<Tr>::contains(const BlockT *B) const {
           !(DT->dominates(exit, BB) && DT->dominates(entry, exit)));
 }
 
-template <class Tr> bool RegionBase<Tr>::contains(const LoopT *L) const {
+template <class Tr>
+bool RegionBase<Tr>::contains(const LoopT *L) const {
   // BBs that are not part of any loop are element of the Loop
   // described by the NULL pointer. This loop is not part of any region,
   // except if the region describes the whole function.
@@ -215,11 +221,13 @@ typename RegionBase<Tr>::BlockT *RegionBase<Tr>::getExitingBlock() const {
   return exitingBlock;
 }
 
-template <class Tr> bool RegionBase<Tr>::isSimple() const {
+template <class Tr>
+bool RegionBase<Tr>::isSimple() const {
   return !isTopLevelRegion() && getEnteringBlock() && getExitingBlock();
 }
 
-template <class Tr> std::string RegionBase<Tr>::getNameStr() const {
+template <class Tr>
+std::string RegionBase<Tr>::getNameStr() const {
   std::string exitName;
   std::string entryName;
 
@@ -243,7 +251,8 @@ template <class Tr> std::string RegionBase<Tr>::getNameStr() const {
   return entryName + " => " + exitName;
 }
 
-template <class Tr> void RegionBase<Tr>::verifyBBInRegion(BlockT *BB) const {
+template <class Tr>
+void RegionBase<Tr>::verifyBBInRegion(BlockT *BB) const {
   if (!contains(BB))
     report_fatal_error("Broken region found: enumerated BB not in region!");
 
@@ -252,18 +261,16 @@ template <class Tr> void RegionBase<Tr>::verifyBBInRegion(BlockT *BB) const {
   for (BlockT *Succ :
        make_range(BlockTraits::child_begin(BB), BlockTraits::child_end(BB))) {
     if (!contains(Succ) && exit != Succ)
-      report_fatal_error(
-          "Broken region found: edges leaving the region must go "
-          "to the exit node!");
+      report_fatal_error("Broken region found: edges leaving the region must go "
+                         "to the exit node!");
   }
 
   if (entry != BB) {
     for (BlockT *Pred : make_range(InvBlockTraits::child_begin(BB),
                                    InvBlockTraits::child_end(BB))) {
       if (!contains(Pred))
-        report_fatal_error(
-            "Broken region found: edges entering the region must "
-            "go to the entry node!");
+        report_fatal_error("Broken region found: edges entering the region must "
+                           "go to the entry node!");
     }
   }
 }
@@ -283,7 +290,8 @@ void RegionBase<Tr>::verifyWalk(BlockT *BB, std::set<BlockT *> *visited) const {
   }
 }
 
-template <class Tr> void RegionBase<Tr>::verifyRegion() const {
+template <class Tr>
+void RegionBase<Tr>::verifyRegion() const {
   // Only do verification when user wants to, otherwise this expensive check
   // will be invoked by PMDataManager::verifyPreservedAnalysis when
   // a regionpass (marked PreservedAll) finish.
@@ -294,7 +302,8 @@ template <class Tr> void RegionBase<Tr>::verifyRegion() const {
   verifyWalk(getEntry(), &visited);
 }
 
-template <class Tr> void RegionBase<Tr>::verifyRegionNest() const {
+template <class Tr>
+void RegionBase<Tr>::verifyRegionNest() const {
   for (const std::unique_ptr<RegionT> &R : *this)
     R->verifyRegionNest();
 
@@ -355,7 +364,8 @@ typename Tr::RegionNodeT *RegionBase<Tr>::getBBNode(BlockT *BB) const {
   if (at == BBNodeMap.end()) {
     auto Deconst = const_cast<RegionBase<Tr> *>(this);
     typename BBNodeMapT::value_type V = {
-        BB, std::make_unique<RegionNodeT>(static_cast<RegionT *>(Deconst), BB)};
+        BB,
+        std::make_unique<RegionNodeT>(static_cast<RegionT *>(Deconst), BB)};
     at = BBNodeMap.insert(std::move(V)).first;
   }
   return at->second.get();
@@ -370,7 +380,8 @@ typename Tr::RegionNodeT *RegionBase<Tr>::getNode(BlockT *BB) const {
   return getBBNode(BB);
 }
 
-template <class Tr> void RegionBase<Tr>::transferChildrenTo(RegionT *To) {
+template <class Tr>
+void RegionBase<Tr>::transferChildrenTo(RegionT *To) {
   for (std::unique_ptr<RegionT> &R : *this) {
     R->parent = To;
     To->children.push_back(std::move(R));
@@ -434,7 +445,8 @@ typename Tr::RegionT *RegionBase<Tr>::removeSubRegion(RegionT *Child) {
   return Child;
 }
 
-template <class Tr> unsigned RegionBase<Tr>::getDepth() const {
+template <class Tr>
+unsigned RegionBase<Tr>::getDepth() const {
   unsigned Depth = 0;
 
   for (RegionT *R = getParent(); R != nullptr; R = R->getParent())
@@ -510,12 +522,14 @@ void RegionBase<Tr>::print(raw_ostream &OS, bool print_tree, unsigned level,
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-template <class Tr> void RegionBase<Tr>::dump() const {
+template <class Tr>
+void RegionBase<Tr>::dump() const {
   print(dbgs(), true, getDepth(), RegionInfoBase<Tr>::printStyle);
 }
 #endif
 
-template <class Tr> void RegionBase<Tr>::clearNodeCache() {
+template <class Tr>
+void RegionBase<Tr>::clearNodeCache() {
   BBNodeMap.clear();
   for (std::unique_ptr<RegionT> &R : *this)
     R->clearNodeCache();
@@ -525,9 +539,13 @@ template <class Tr> void RegionBase<Tr>::clearNodeCache() {
 // RegionInfoBase implementation
 //
 
-template <class Tr> RegionInfoBase<Tr>::RegionInfoBase() = default;
+template <class Tr>
+RegionInfoBase<Tr>::RegionInfoBase() = default;
 
-template <class Tr> RegionInfoBase<Tr>::~RegionInfoBase() { releaseMemory(); }
+template <class Tr>
+RegionInfoBase<Tr>::~RegionInfoBase() {
+  releaseMemory();
+}
 
 template <class Tr>
 void RegionInfoBase<Tr>::verifyBBMap(const RegionT *R) const {
@@ -751,33 +769,39 @@ void RegionInfoBase<Tr>::buildRegionsTree(DomTreeNodeT *N, RegionT *region) {
 }
 
 #ifdef EXPENSIVE_CHECKS
-template <class Tr> bool RegionInfoBase<Tr>::VerifyRegionInfo = true;
+template <class Tr>
+bool RegionInfoBase<Tr>::VerifyRegionInfo = true;
 #else
-template <class Tr> bool RegionInfoBase<Tr>::VerifyRegionInfo = false;
+template <class Tr>
+bool RegionInfoBase<Tr>::VerifyRegionInfo = false;
 #endif
 
 template <class Tr>
 typename Tr::RegionT::PrintStyle RegionInfoBase<Tr>::printStyle =
     RegionBase<Tr>::PrintNone;
 
-template <class Tr> void RegionInfoBase<Tr>::print(raw_ostream &OS) const {
+template <class Tr>
+void RegionInfoBase<Tr>::print(raw_ostream &OS) const {
   OS << "Region tree:\n";
   TopLevelRegion->print(OS, true, 0, printStyle);
   OS << "End region tree\n";
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-template <class Tr> void RegionInfoBase<Tr>::dump() const { print(dbgs()); }
+template <class Tr>
+void RegionInfoBase<Tr>::dump() const { print(dbgs()); }
 #endif
 
-template <class Tr> void RegionInfoBase<Tr>::releaseMemory() {
+template <class Tr>
+void RegionInfoBase<Tr>::releaseMemory() {
   BBtoRegion.clear();
   if (TopLevelRegion)
     delete TopLevelRegion;
   TopLevelRegion = nullptr;
 }
 
-template <class Tr> void RegionInfoBase<Tr>::verifyAnalysis() const {
+template <class Tr>
+void RegionInfoBase<Tr>::verifyAnalysis() const {
   // Do only verify regions if explicitely activated using EXPENSIVE_CHECKS or
   // -verify-region-info
   if (!RegionInfoBase<Tr>::VerifyRegionInfo)
@@ -882,7 +906,8 @@ RegionInfoBase<Tr>::getCommonRegion(SmallVectorImpl<BlockT *> &BBs) const {
   return ret;
 }
 
-template <class Tr> void RegionInfoBase<Tr>::calculate(FuncT &F) {
+template <class Tr>
+void RegionInfoBase<Tr>::calculate(FuncT &F) {
   using FuncPtrT = std::add_pointer_t<FuncT>;
 
   // ShortCut a function where for every BB the exit of the largest region

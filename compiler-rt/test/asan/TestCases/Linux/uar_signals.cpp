@@ -2,19 +2,19 @@
 // is async-signal-safe.
 // RUN: %clangxx_asan -std=c++11 -O1 %s -o %t -pthread && %run %t
 // REQUIRES: stable-runtime
-#include <initializer_list>
-#include <pthread.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/time.h>
+#include <pthread.h>
+#include <initializer_list>
 
 int *g;
 int n_signals;
 
 typedef void (*Sigaction)(int, siginfo_t *, void *);
 
-void SignalHandler(int, siginfo_t *, void *) {
+void SignalHandler(int, siginfo_t*, void*) {
   int local;
   g = &local;
   n_signals++;
@@ -40,8 +40,7 @@ static void EnableSigprof(Sigaction SignalHandler) {
 }
 
 void RecursiveFunction(int depth) {
-  if (depth == 0)
-    return;
+  if (depth == 0) return;
   int local;
   g = &local;
   // printf("r: %p\n", &local);
@@ -66,7 +65,7 @@ int main(int argc, char **argv) {
   for (auto Thread : {&FastThread, &SlowThread}) {
     for (int i = 0; i < 1000; i++) {
       fprintf(stderr, ".");
-      const int kNumThread = sizeof(void *) == 8 ? 32 : 8;
+      const int kNumThread = sizeof(void*) == 8 ? 32 : 8;
       pthread_t t[kNumThread];
       for (int i = 0; i < kNumThread; i++)
         pthread_create(&t[i], 0, Thread, 0);

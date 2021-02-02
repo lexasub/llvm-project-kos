@@ -95,7 +95,7 @@ struct TX<long> {
 
 template <typename T>
 struct TTX {
-  template <typename S>
+  template<typename S>
   void f(T, S) {
     clang_analyzer_hashDump(5); // expected-warning {{debug.ExprInspection$void TTX::f(T, S)$29$clang_analyzer_hashDump(5);$Category}}
   }

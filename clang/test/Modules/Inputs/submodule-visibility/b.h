@@ -1,7 +1,7 @@
 int m = n;
 
-#include "c.h"
 #include "other.h"
+#include "c.h"
 
 #if defined(A) && !defined(ALLOW_NAME_LEAKAGE)
 #warning A is defined
@@ -9,6 +9,6 @@ int m = n;
 
 #define B
 
-template <typename T> void b_template() {
+template<typename T> void b_template() {
   N::C::f(0);
 }

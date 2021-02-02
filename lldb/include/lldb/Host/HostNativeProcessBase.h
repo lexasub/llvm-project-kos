@@ -44,6 +44,6 @@ public:
 protected:
   lldb::process_t m_process;
 };
-} // namespace lldb_private
+}
 
 #endif

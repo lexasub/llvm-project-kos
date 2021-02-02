@@ -57,8 +57,7 @@ void dwarfgen::DIE::addAttribute(uint16_t A, dwarf::Form Form, uint64_t U) {
                 DIEInteger(U));
 }
 
-void dwarfgen::DIE::addAttribute(uint16_t A, dwarf::Form Form,
-                                 const MCExpr &Expr) {
+void dwarfgen::DIE::addAttribute(uint16_t A, dwarf::Form Form, const MCExpr &Expr) {
   auto &DG = CU->getGenerator();
   Die->addValue(DG.getAllocator(), static_cast<dwarf::Attribute>(A), Form,
                 DIEExpr(&Expr));
@@ -485,6 +484,7 @@ llvm::Error dwarfgen::Generator::init(Triple TheTriple, uint16_t V) {
     return make_error<StringError>("no object streamer for target " +
                                        TripleName,
                                    inconvertibleErrorCode());
+
 
   // Finally create the AsmPrinter we'll use to emit the DIEs.
   Asm.reset(TheTarget->createAsmPrinter(*TM, std::unique_ptr<MCStreamer>(MS)));

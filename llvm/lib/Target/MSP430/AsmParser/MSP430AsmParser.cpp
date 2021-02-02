@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/MSP430MCTargetDesc.h"
 #include "MSP430.h"
 #include "MSP430RegisterInfo.h"
+#include "MCTargetDesc/MSP430MCTargetDesc.h"
 #include "TargetInfo/MSP430TargetInfo.h"
 
 #include "llvm/ADT/APInt.h"
@@ -90,7 +90,14 @@ public:
 class MSP430Operand : public MCParsedAsmOperand {
   typedef MCParsedAsmOperand Base;
 
-  enum KindTy { k_Imm, k_Reg, k_Tok, k_Mem, k_IndReg, k_PostIndReg } Kind;
+  enum KindTy {
+    k_Imm,
+    k_Reg,
+    k_Tok,
+    k_Mem,
+    k_IndReg,
+    k_PostIndReg
+  } Kind;
 
   struct Memory {
     unsigned Reg;
@@ -98,9 +105,9 @@ class MSP430Operand : public MCParsedAsmOperand {
   };
   union {
     const MCExpr *Imm;
-    unsigned Reg;
-    StringRef Tok;
-    Memory Mem;
+    unsigned      Reg;
+    StringRef     Tok;
+    Memory        Mem;
   };
 
   SMLoc Start, End;
@@ -112,13 +119,12 @@ public:
       : Base(), Kind(Kind), Reg(Reg), Start(S), End(E) {}
   MSP430Operand(MCExpr const *Imm, SMLoc const &S, SMLoc const &E)
       : Base(), Kind(k_Imm), Imm(Imm), Start(S), End(E) {}
-  MSP430Operand(unsigned Reg, MCExpr const *Expr, SMLoc const &S,
-                SMLoc const &E)
+  MSP430Operand(unsigned Reg, MCExpr const *Expr, SMLoc const &S, SMLoc const &E)
       : Base(), Kind(k_Mem), Mem({Reg, Expr}), Start(S), End(E) {}
 
   void addRegOperands(MCInst &Inst, unsigned N) const {
     assert((Kind == k_Reg || Kind == k_IndReg || Kind == k_PostIndReg) &&
-           "Unexpected operand kind");
+        "Unexpected operand kind");
     assert(N == 1 && "Invalid number of operands!");
 
     Inst.addOperand(MCOperand::createReg(Reg));
@@ -149,12 +155,12 @@ public:
     addExprOperand(Inst, Mem.Offset);
   }
 
-  bool isReg() const override { return Kind == k_Reg; }
-  bool isImm() const override { return Kind == k_Imm; }
+  bool isReg()   const override { return Kind == k_Reg; }
+  bool isImm()   const override { return Kind == k_Imm; }
   bool isToken() const override { return Kind == k_Tok; }
-  bool isMem() const override { return Kind == k_Mem; }
-  bool isIndReg() const { return Kind == k_IndReg; }
-  bool isPostIndReg() const { return Kind == k_PostIndReg; }
+  bool isMem()   const override { return Kind == k_Mem; }
+  bool isIndReg()         const { return Kind == k_IndReg; }
+  bool isPostIndReg()     const { return Kind == k_PostIndReg; }
 
   bool isCGImm() const {
     if (Kind != k_Imm)
@@ -163,7 +169,7 @@ public:
     int64_t Val;
     if (!Imm->evaluateAsAbsolute(Val))
       return false;
-
+    
     if (Val == 0 || Val == 1 || Val == 2 || Val == 4 || Val == 8 || Val == -1)
       return true;
 
@@ -199,18 +205,19 @@ public:
     return std::make_unique<MSP430Operand>(Val, S, E);
   }
 
-  static std::unique_ptr<MSP430Operand>
-  CreateMem(unsigned RegNum, const MCExpr *Val, SMLoc S, SMLoc E) {
+  static std::unique_ptr<MSP430Operand> CreateMem(unsigned RegNum,
+                                                  const MCExpr *Val,
+                                                  SMLoc S, SMLoc E) {
     return std::make_unique<MSP430Operand>(RegNum, Val, S, E);
   }
 
   static std::unique_ptr<MSP430Operand> CreateIndReg(unsigned RegNum, SMLoc S,
-                                                     SMLoc E) {
+                                                  SMLoc E) {
     return std::make_unique<MSP430Operand>(k_IndReg, RegNum, S, E);
   }
 
-  static std::unique_ptr<MSP430Operand> CreatePostIndReg(unsigned RegNum,
-                                                         SMLoc S, SMLoc E) {
+  static std::unique_ptr<MSP430Operand> CreatePostIndReg(unsigned RegNum, SMLoc S,
+                                                  SMLoc E) {
     return std::make_unique<MSP430Operand>(k_PostIndReg, RegNum, S, E);
   }
 
@@ -366,8 +373,8 @@ bool MSP430AsmParser::parseJccInstruction(ParseInstructionInfo &Info,
     if (Res < -512 || Res > 511)
       return Error(ExprLoc, "invalid jump offset");
 
-  Operands.push_back(
-      MSP430Operand::CreateImm(Val, ExprLoc, getLexer().getLoc()));
+  Operands.push_back(MSP430Operand::CreateImm(Val, ExprLoc,
+    getLexer().getLoc()));
 
   if (getLexer().isNot(AsmToken::EndOfStatement)) {
     SMLoc Loc = getLexer().getLoc();
@@ -418,13 +425,13 @@ bool MSP430AsmParser::ParseInstruction(ParseInstructionInfo &Info,
 }
 
 bool MSP430AsmParser::ParseDirectiveRefSym(AsmToken DirectiveID) {
-  StringRef Name;
-  if (getParser().parseIdentifier(Name))
-    return TokError("expected identifier in directive");
+    StringRef Name;
+    if (getParser().parseIdentifier(Name))
+      return TokError("expected identifier in directive");
 
-  MCSymbol *Sym = getContext().getOrCreateSymbol(Name);
-  getStreamer().emitSymbolAttribute(Sym, MCSA_Global);
-  return false;
+    MCSymbol *Sym = getContext().getOrCreateSymbol(Name);
+    getStreamer().emitSymbolAttribute(Sym, MCSA_Global);
+    return false;
 }
 
 bool MSP430AsmParser::ParseDirective(AsmToken DirectiveID) {
@@ -443,89 +450,87 @@ bool MSP430AsmParser::ParseDirective(AsmToken DirectiveID) {
 
 bool MSP430AsmParser::ParseOperand(OperandVector &Operands) {
   switch (getLexer().getKind()) {
-  default:
-    return true;
-  case AsmToken::Identifier: {
-    // try rN
-    unsigned RegNo;
-    SMLoc StartLoc, EndLoc;
-    if (!ParseRegister(RegNo, StartLoc, EndLoc)) {
-      Operands.push_back(MSP430Operand::CreateReg(RegNo, StartLoc, EndLoc));
-      return false;
-    }
-    LLVM_FALLTHROUGH;
-  }
-  case AsmToken::Integer:
-  case AsmToken::Plus:
-  case AsmToken::Minus: {
-    SMLoc StartLoc = getParser().getTok().getLoc();
-    const MCExpr *Val;
-    // Try constexpr[(rN)]
-    if (!getParser().parseExpression(Val)) {
-      unsigned RegNo = MSP430::PC;
-      SMLoc EndLoc = getParser().getTok().getLoc();
-      // Try (rN)
-      if (getLexer().getKind() == AsmToken::LParen) {
-        getLexer().Lex(); // Eat '('
-        SMLoc RegStartLoc;
-        if (ParseRegister(RegNo, RegStartLoc, EndLoc))
-          return true;
-        if (getLexer().getKind() != AsmToken::RParen)
-          return true;
-        EndLoc = getParser().getTok().getEndLoc();
-        getLexer().Lex(); // Eat ')'
+    default: return true;
+    case AsmToken::Identifier: {
+      // try rN
+      unsigned RegNo;
+      SMLoc StartLoc, EndLoc;
+      if (!ParseRegister(RegNo, StartLoc, EndLoc)) {
+        Operands.push_back(MSP430Operand::CreateReg(RegNo, StartLoc, EndLoc));
+        return false;
       }
-      Operands.push_back(
-          MSP430Operand::CreateMem(RegNo, Val, StartLoc, EndLoc));
-      return false;
+      LLVM_FALLTHROUGH;
     }
-    return true;
-  }
-  case AsmToken::Amp: {
-    // Try &constexpr
-    SMLoc StartLoc = getParser().getTok().getLoc();
-    getLexer().Lex(); // Eat '&'
-    const MCExpr *Val;
-    if (!getParser().parseExpression(Val)) {
-      SMLoc EndLoc = getParser().getTok().getLoc();
-      Operands.push_back(
-          MSP430Operand::CreateMem(MSP430::SR, Val, StartLoc, EndLoc));
-      return false;
-    }
-    return true;
-  }
-  case AsmToken::At: {
-    // Try @rN[+]
-    SMLoc StartLoc = getParser().getTok().getLoc();
-    getLexer().Lex(); // Eat '@'
-    unsigned RegNo;
-    SMLoc RegStartLoc, EndLoc;
-    if (ParseRegister(RegNo, RegStartLoc, EndLoc))
+    case AsmToken::Integer:
+    case AsmToken::Plus:
+    case AsmToken::Minus: {
+      SMLoc StartLoc = getParser().getTok().getLoc();
+      const MCExpr *Val;
+      // Try constexpr[(rN)]
+      if (!getParser().parseExpression(Val)) {
+        unsigned RegNo = MSP430::PC;
+        SMLoc EndLoc = getParser().getTok().getLoc();
+        // Try (rN)
+        if (getLexer().getKind() == AsmToken::LParen) {
+          getLexer().Lex(); // Eat '('
+          SMLoc RegStartLoc;
+          if (ParseRegister(RegNo, RegStartLoc, EndLoc))
+            return true;
+          if (getLexer().getKind() != AsmToken::RParen)
+            return true;
+          EndLoc = getParser().getTok().getEndLoc();
+          getLexer().Lex(); // Eat ')'
+        }
+        Operands.push_back(MSP430Operand::CreateMem(RegNo, Val, StartLoc,
+          EndLoc));
+        return false;
+      }
       return true;
-    if (getLexer().getKind() == AsmToken::Plus) {
-      Operands.push_back(
-          MSP430Operand::CreatePostIndReg(RegNo, StartLoc, EndLoc));
-      getLexer().Lex(); // Eat '+'
+    }
+    case AsmToken::Amp: {
+      // Try &constexpr
+      SMLoc StartLoc = getParser().getTok().getLoc();
+      getLexer().Lex(); // Eat '&'
+      const MCExpr *Val;
+      if (!getParser().parseExpression(Val)) {
+        SMLoc EndLoc = getParser().getTok().getLoc();
+        Operands.push_back(MSP430Operand::CreateMem(MSP430::SR, Val, StartLoc,
+          EndLoc));
+        return false;
+      }
+      return true;
+    }
+    case AsmToken::At: {
+      // Try @rN[+]
+      SMLoc StartLoc = getParser().getTok().getLoc();
+      getLexer().Lex(); // Eat '@'
+      unsigned RegNo;
+      SMLoc RegStartLoc, EndLoc;
+      if (ParseRegister(RegNo, RegStartLoc, EndLoc))
+        return true;
+      if (getLexer().getKind() == AsmToken::Plus) {
+        Operands.push_back(MSP430Operand::CreatePostIndReg(RegNo, StartLoc, EndLoc));
+        getLexer().Lex(); // Eat '+'
+        return false;
+      }
+      if (Operands.size() > 1) // Emulate @rd in destination position as 0(rd)
+        Operands.push_back(MSP430Operand::CreateMem(RegNo,
+            MCConstantExpr::create(0, getContext()), StartLoc, EndLoc));
+      else
+        Operands.push_back(MSP430Operand::CreateIndReg(RegNo, StartLoc, EndLoc));
       return false;
     }
-    if (Operands.size() > 1) // Emulate @rd in destination position as 0(rd)
-      Operands.push_back(MSP430Operand::CreateMem(
-          RegNo, MCConstantExpr::create(0, getContext()), StartLoc, EndLoc));
-    else
-      Operands.push_back(MSP430Operand::CreateIndReg(RegNo, StartLoc, EndLoc));
-    return false;
-  }
-  case AsmToken::Hash:
-    // Try #constexpr
-    SMLoc StartLoc = getParser().getTok().getLoc();
-    getLexer().Lex(); // Eat '#'
-    const MCExpr *Val;
-    if (!getParser().parseExpression(Val)) {
-      SMLoc EndLoc = getParser().getTok().getLoc();
-      Operands.push_back(MSP430Operand::CreateImm(Val, StartLoc, EndLoc));
-      return false;
-    }
-    return true;
+    case AsmToken::Hash:
+      // Try #constexpr
+      SMLoc StartLoc = getParser().getTok().getLoc();
+      getLexer().Lex(); // Eat '#'
+      const MCExpr *Val;
+      if (!getParser().parseExpression(Val)) {
+        SMLoc EndLoc = getParser().getTok().getLoc();
+        Operands.push_back(MSP430Operand::CreateImm(Val, StartLoc, EndLoc));
+        return false;
+      }
+      return true;
   }
 }
 
@@ -552,38 +557,22 @@ static unsigned convertGR16ToGR8(unsigned Reg) {
   switch (Reg) {
   default:
     llvm_unreachable("Unknown GR16 register");
-  case MSP430::PC:
-    return MSP430::PCB;
-  case MSP430::SP:
-    return MSP430::SPB;
-  case MSP430::SR:
-    return MSP430::SRB;
-  case MSP430::CG:
-    return MSP430::CGB;
-  case MSP430::R4:
-    return MSP430::R4B;
-  case MSP430::R5:
-    return MSP430::R5B;
-  case MSP430::R6:
-    return MSP430::R6B;
-  case MSP430::R7:
-    return MSP430::R7B;
-  case MSP430::R8:
-    return MSP430::R8B;
-  case MSP430::R9:
-    return MSP430::R9B;
-  case MSP430::R10:
-    return MSP430::R10B;
-  case MSP430::R11:
-    return MSP430::R11B;
-  case MSP430::R12:
-    return MSP430::R12B;
-  case MSP430::R13:
-    return MSP430::R13B;
-  case MSP430::R14:
-    return MSP430::R14B;
-  case MSP430::R15:
-    return MSP430::R15B;
+  case MSP430::PC:  return MSP430::PCB;
+  case MSP430::SP:  return MSP430::SPB;
+  case MSP430::SR:  return MSP430::SRB;
+  case MSP430::CG:  return MSP430::CGB;
+  case MSP430::R4:  return MSP430::R4B;
+  case MSP430::R5:  return MSP430::R5B;
+  case MSP430::R6:  return MSP430::R6B;
+  case MSP430::R7:  return MSP430::R7B;
+  case MSP430::R8:  return MSP430::R8B;
+  case MSP430::R9:  return MSP430::R9B;
+  case MSP430::R10: return MSP430::R10B;
+  case MSP430::R11: return MSP430::R11B;
+  case MSP430::R12: return MSP430::R12B;
+  case MSP430::R13: return MSP430::R13B;
+  case MSP430::R14: return MSP430::R14B;
+  case MSP430::R15: return MSP430::R15B;
   }
 }
 
@@ -595,7 +584,8 @@ unsigned MSP430AsmParser::validateTargetOperandClass(MCParsedAsmOperand &AsmOp,
     return Match_InvalidOperand;
 
   unsigned Reg = Op.getReg();
-  bool isGR16 = MSP430MCRegisterClasses[MSP430::GR16RegClassID].contains(Reg);
+  bool isGR16 =
+      MSP430MCRegisterClasses[MSP430::GR16RegClassID].contains(Reg);
 
   if (isGR16 && (Kind == MCK_GR8)) {
     Op.setReg(convertGR16ToGR8(Reg));

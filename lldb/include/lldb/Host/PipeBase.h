@@ -62,6 +62,6 @@ public:
                                  size_t &bytes_read) = 0;
   Status Read(void *buf, size_t size, size_t &bytes_read);
 };
-} // namespace lldb_private
+}
 
 #endif

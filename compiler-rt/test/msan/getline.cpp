@@ -8,7 +8,7 @@
 // RUN: %clang_msan -O2 -xc -D_GNU_SOURCE=1 %s -o %t && %run %t %t-testdata
 
 #if defined(__FreeBSD__)
-#define _WITH_GETLINE // To declare getline().
+#define _WITH_GETLINE  // To declare getline().
 #endif
 
 #include <assert.h>

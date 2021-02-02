@@ -57,6 +57,6 @@ CreateAnalysisConsumer(CompilerInstance &CI);
 
 } // namespace ento
 
-} // namespace clang
+} // end clang namespace
 
 #endif

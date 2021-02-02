@@ -18,27 +18,28 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::istringstream inf;
-    std::istreambuf_iterator<char> i(inf);
-    assert(i == std::istreambuf_iterator<char>());
-  }
-  {
-    std::istringstream inf("a");
-    std::istreambuf_iterator<char> i(inf);
-    assert(i != std::istreambuf_iterator<char>());
-  }
-  {
-    std::wistringstream inf;
-    std::istreambuf_iterator<wchar_t> i(inf);
-    assert(i == std::istreambuf_iterator<wchar_t>());
-  }
-  {
-    std::wistringstream inf(L"a");
-    std::istreambuf_iterator<wchar_t> i(inf);
-    assert(i != std::istreambuf_iterator<wchar_t>());
-  }
+int main(int, char**)
+{
+    {
+        std::istringstream inf;
+        std::istreambuf_iterator<char> i(inf);
+        assert(i == std::istreambuf_iterator<char>());
+    }
+    {
+        std::istringstream inf("a");
+        std::istreambuf_iterator<char> i(inf);
+        assert(i != std::istreambuf_iterator<char>());
+    }
+    {
+        std::wistringstream inf;
+        std::istreambuf_iterator<wchar_t> i(inf);
+        assert(i == std::istreambuf_iterator<wchar_t>());
+    }
+    {
+        std::wistringstream inf(L"a");
+        std::istreambuf_iterator<wchar_t> i(inf);
+        assert(i != std::istreambuf_iterator<wchar_t>());
+    }
 
   return 0;
 }

@@ -2,7 +2,7 @@
 
 // CHECK: store i32 59, i32* %size
 // CHECK: store i32 65, i32* %size
-template <typename T>
+template<typename T>
 class TemplateClass {
 public:
   void templateClassFunction() {
@@ -12,7 +12,7 @@ public:
 
 // CHECK: store i32 35, i32* %size
 // CHECK: store i32 38, i32* %size
-template <typename T>
+template<typename T>
 void functionTemplate(T t) {
   int size = sizeof(__PRETTY_FUNCTION__);
 }

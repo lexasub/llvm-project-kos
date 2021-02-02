@@ -12,8 +12,8 @@
 #ifndef LIB
 
 #include <dlfcn.h>
-#include <libgen.h>
 #include <stdio.h>
+#include <libgen.h>
 #include <string>
 
 int main(int argc, char **argv) {
@@ -24,12 +24,13 @@ int main(int argc, char **argv) {
   fprintf(stderr, "OK\n");
 }
 
-#else // #ifdef LIB
+#else  // #ifdef LIB
 
 extern "C" void libfunc() {
 }
 
-#endif // #ifdef LIB
+#endif  // #ifdef LIB
 
 // CHECK: ThreadSanitizer: called_from_lib suppression 'ignore_lib2' is matched against 2 libraries
 // CHECK-NOT: OK
+

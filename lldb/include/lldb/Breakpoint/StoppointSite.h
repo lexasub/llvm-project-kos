@@ -19,8 +19,8 @@ class StoppointSite {
 public:
   StoppointSite(lldb::break_id_t bid, lldb::addr_t m_addr, bool hardware);
 
-  StoppointSite(lldb::break_id_t bid, lldb::addr_t m_addr, uint32_t byte_size,
-                bool hardware);
+  StoppointSite(lldb::break_id_t bid, lldb::addr_t m_addr,
+                uint32_t byte_size, bool hardware);
 
   virtual ~StoppointSite() = default;
 
@@ -42,9 +42,9 @@ public:
 
   void SetHardwareIndex(uint32_t index) { m_hardware_index = index; }
 
-  virtual bool ShouldStop(StoppointCallbackContext *context) = 0;
+  virtual bool ShouldStop(StoppointCallbackContext* context) = 0;
 
-  virtual void Dump(Stream *stream) const = 0;
+  virtual void Dump(Stream* stream) const = 0;
 
   lldb::break_id_t GetID() const { return m_id; }
 

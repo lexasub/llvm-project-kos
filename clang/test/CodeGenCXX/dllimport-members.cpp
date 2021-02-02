@@ -17,45 +17,43 @@ struct ExplicitSpec_NotImported {};
 #define JOIN2(x, y) x##y
 #define JOIN(x, y) JOIN2(x, y)
 #define UNIQ(name) JOIN(name, __LINE__)
-#define USE(func) \
-  void UNIQ(use)() { func(); }
-#define USEMV(cls, var) \
-  int UNIQ(use)() { return ref(cls::var); }
-#define USEMF(cls, fun) \
-  template <> void useMemFun<__LINE__, cls>() { cls().fun(); }
-#define USESPECIALS(cls) \
-  void UNIQ(use)() { useSpecials<cls>(); }
+#define USE(func) void UNIQ(use)() { func(); }
+#define USEMV(cls, var) int UNIQ(use)() { return ref(cls::var); }
+#define USEMF(cls, fun) template<> void useMemFun<__LINE__, cls>() { cls().fun(); }
+#define USESPECIALS(cls) void UNIQ(use)() { useSpecials<cls>(); }
 
-template <typename T>
-T ref(T const &v) { return v; }
+template<typename T>
+T ref(T const& v) { return v; }
 
-template <int Line, typename T>
+template<int Line, typename T>
 void useMemFun();
 
-template <typename T>
+template<typename T>
 void useSpecials() {
   T v; // Default constructor
 
-  T c1(static_cast<const T &>(v));  // Copy constructor
-  T c2 = static_cast<const T &>(v); // Copy constructor
+  T c1(static_cast<const T&>(v)); // Copy constructor
+  T c2 = static_cast<const T&>(v); // Copy constructor
   T c3;
-  c3 = static_cast<const T &>(v); // Copy assignment
+  c3 = static_cast<const T&>(v); // Copy assignment
 
-  T m1(static_cast<T &&>(v));  // Move constructor
-  T m2 = static_cast<T &&>(v); // Move constructor
+  T m1(static_cast<T&&>(v)); // Move constructor
+  T m2 = static_cast<T&&>(v); // Move constructor
   T m3;
-  m3 = static_cast<T &&>(v); // Move assignment
+  m3 = static_cast<T&&>(v); // Move assignment
 }
 
 // Used to force non-trivial special members.
 struct __declspec(dllimport) ForceNonTrivial {
   ForceNonTrivial();
   ~ForceNonTrivial();
-  ForceNonTrivial(const ForceNonTrivial &);
-  ForceNonTrivial &operator=(const ForceNonTrivial &);
-  ForceNonTrivial(ForceNonTrivial &&);
-  ForceNonTrivial &operator=(ForceNonTrivial &&);
+  ForceNonTrivial(const ForceNonTrivial&);
+  ForceNonTrivial& operator=(const ForceNonTrivial&);
+  ForceNonTrivial(ForceNonTrivial&&);
+  ForceNonTrivial& operator=(ForceNonTrivial&&);
 };
+
+
 
 //===----------------------------------------------------------------------===//
 // Class members
@@ -91,11 +89,11 @@ struct ImportMembers {
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers13normalInclassEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers15normalInlineDefEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers16normalInlineDeclEv(
-  __declspec(dllimport) void normalDef(); // dllimport ignored
-  __declspec(dllimport) void normalDecl();
-  __declspec(dllimport) void normalInclass() {}
-  __declspec(dllimport) void normalInlineDef();
-  __declspec(dllimport) inline void normalInlineDecl();
+  __declspec(dllimport)                void normalDef(); // dllimport ignored
+  __declspec(dllimport)                void normalDecl();
+  __declspec(dllimport)                void normalInclass() {}
+  __declspec(dllimport)                void normalInlineDef();
+  __declspec(dllimport)         inline void normalInlineDecl();
 
   // M32-DAG: define  dso_local dllexport   x86_thiscallcc void @"?virtualDef@ImportMembers@@UAEXXZ"(%struct.ImportMembers* {{[^,]*}} %this)
   // M64-DAG: define  dso_local dllexport                  void @"?virtualDef@ImportMembers@@UEAAXXZ"(%struct.ImportMembers* {{[^,]*}} %this)
@@ -123,10 +121,10 @@ struct ImportMembers {
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers14virtualInclassEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers16virtualInlineDefEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers17virtualInlineDeclEv(
-  __declspec(dllimport) virtual void virtualDef(); // dllimport ignored
-  __declspec(dllimport) virtual void virtualDecl();
-  __declspec(dllimport) virtual void virtualInclass() {}
-  __declspec(dllimport) virtual void virtualInlineDef();
+  __declspec(dllimport) virtual        void virtualDef(); // dllimport ignored
+  __declspec(dllimport) virtual        void virtualDecl();
+  __declspec(dllimport) virtual        void virtualInclass() {}
+  __declspec(dllimport) virtual        void virtualInlineDef();
   __declspec(dllimport) virtual inline void virtualInlineDecl();
 
   // MSC-DAG: define  dso_local dllexport                void @"?staticDef@ImportMembers@@SAXXZ"()
@@ -145,11 +143,11 @@ struct ImportMembers {
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers13staticInclassEv()
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers15staticInlineDefEv()
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers16staticInlineDeclEv()
-  __declspec(dllimport) static void staticDef(); // dllimport ignored
-  __declspec(dllimport) static void staticDecl();
-  __declspec(dllimport) static void staticInclass() {}
-  __declspec(dllimport) static void staticInlineDef();
-  __declspec(dllimport) static inline void staticInlineDecl();
+  __declspec(dllimport) static         void staticDef(); // dllimport ignored
+  __declspec(dllimport) static         void staticDecl();
+  __declspec(dllimport) static         void staticInclass() {}
+  __declspec(dllimport) static         void staticInlineDef();
+  __declspec(dllimport) static  inline void staticInlineDecl();
 
   // M32-DAG: declare dllimport x86_thiscallcc void @"?protectedNormalDecl@ImportMembers@@IAEXXZ"(%struct.ImportMembers* {{[^,]*}})
   // M64-DAG: declare dllimport                void @"?protectedNormalDecl@ImportMembers@@IEAAXXZ"(%struct.ImportMembers* {{[^,]*}})
@@ -158,8 +156,8 @@ struct ImportMembers {
   // MSC-DAG: declare dllimport                void @"?protectedStaticDecl@ImportMembers@@KAXXZ"()
   // GNU-DAG: declare dllimport                void @_ZN13ImportMembers19protectedStaticDeclEv()
 protected:
-  __declspec(dllimport) void protectedNormalDecl();
-  __declspec(dllimport) static void protectedStaticDecl();
+  __declspec(dllimport)                void protectedNormalDecl();
+  __declspec(dllimport) static         void protectedStaticDecl();
 
   // M32-DAG: declare dllimport x86_thiscallcc void @"?privateNormalDecl@ImportMembers@@AAEXXZ"(%struct.ImportMembers* {{[^,]*}})
   // M64-DAG: declare dllimport                void @"?privateNormalDecl@ImportMembers@@AEAAXXZ"(%struct.ImportMembers* {{[^,]*}})
@@ -168,8 +166,8 @@ protected:
   // MSC-DAG: declare dllimport                void @"?privateStaticDecl@ImportMembers@@CAXXZ"()
   // GNU-DAG: declare dllimport                void @_ZN13ImportMembers17privateStaticDeclEv()
 private:
-  __declspec(dllimport) void privateNormalDecl();
-  __declspec(dllimport) static void privateStaticDecl();
+  __declspec(dllimport)                void privateNormalDecl();
+  __declspec(dllimport) static         void privateStaticDecl();
 
   // M32-DAG: declare dso_local          x86_thiscallcc void @"?ignored@ImportMembers@@QAEXXZ"(%struct.ImportMembers* {{[^,]*}})
   // M64-DAG: declare dso_local                         void @"?ignored@ImportMembers@@QEAAXXZ"(%struct.ImportMembers* {{[^,]*}})
@@ -188,24 +186,24 @@ public:
   // GNU-DAG: @_ZN13ImportMembers25StaticConstFieldEqualInitE     = external dllimport constant i32
   // GNU-DAG: @_ZN13ImportMembers25StaticConstFieldBraceInitE     = external dllimport constant i32
   // GNU-DAG: @_ZN13ImportMembers14ConstexprFieldE                = external dllimport constant i32
-  __declspec(dllimport) static int StaticField;
-  __declspec(dllimport) static const int StaticConstField;
-  __declspec(dllimport) static const int StaticConstFieldEqualInit = 1;
-  __declspec(dllimport) static const int StaticConstFieldBraceInit{1};
+  __declspec(dllimport) static         int  StaticField;
+  __declspec(dllimport) static  const  int  StaticConstField;
+  __declspec(dllimport) static  const  int  StaticConstFieldEqualInit = 1;
+  __declspec(dllimport) static  const  int  StaticConstFieldBraceInit{1};
   __declspec(dllimport) constexpr static int ConstexprField = 1;
 
-  template <int Line, typename T> friend void useMemFun();
+  template<int Line, typename T> friend void useMemFun();
 };
 
-void ImportMembers::normalDef() {} // dllimport ignored
+       void ImportMembers::normalDef() {} // dllimport ignored
 inline void ImportMembers::normalInlineDef() {}
-void ImportMembers::normalInlineDecl() {}
-void ImportMembers::virtualDef() {} // dllimport ignored
+       void ImportMembers::normalInlineDecl() {}
+       void ImportMembers::virtualDef() {} // dllimport ignored
 inline void ImportMembers::virtualInlineDef() {}
-void ImportMembers::virtualInlineDecl() {}
-void ImportMembers::staticDef() {} // dllimport ignored
+       void ImportMembers::virtualInlineDecl() {}
+       void ImportMembers::staticDef() {} // dllimport ignored
 inline void ImportMembers::staticInlineDef() {}
-void ImportMembers::staticInlineDecl() {}
+       void ImportMembers::staticInlineDecl() {}
 
 USEMF(ImportMembers, normalDef)
 USEMF(ImportMembers, normalDecl)
@@ -233,6 +231,7 @@ USEMV(ImportMembers, StaticConstField)
 USEMV(ImportMembers, StaticConstFieldEqualInit)
 USEMV(ImportMembers, StaticConstFieldBraceInit)
 USEMV(ImportMembers, ConstexprField)
+
 
 // Import individual members of a nested class.
 struct ImportMembers::Nested {
@@ -262,11 +261,11 @@ struct ImportMembers::Nested {
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers6Nested13normalInclassEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers6Nested15normalInlineDefEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN13ImportMembers6Nested16normalInlineDeclEv(
-  __declspec(dllimport) void normalDef(); // dllimport ignored
-  __declspec(dllimport) void normalDecl();
-  __declspec(dllimport) void normalInclass() {}
-  __declspec(dllimport) void normalInlineDef();
-  __declspec(dllimport) inline void normalInlineDecl();
+  __declspec(dllimport)                void normalDef(); // dllimport ignored
+  __declspec(dllimport)                void normalDecl();
+  __declspec(dllimport)                void normalInclass() {}
+  __declspec(dllimport)                void normalInlineDef();
+  __declspec(dllimport)         inline void normalInlineDecl();
 
   // M32-DAG: define  dso_local dllexport   x86_thiscallcc void @"?virtualDef@Nested@ImportMembers@@UAEXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}} %this)
   // M64-DAG: define  dso_local dllexport                  void @"?virtualDef@Nested@ImportMembers@@UEAAXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}} %this)
@@ -295,10 +294,10 @@ struct ImportMembers::Nested {
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc                   void @_ZN13ImportMembers6Nested14virtualInclassEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc                   void @_ZN13ImportMembers6Nested16virtualInlineDefEv(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc                   void @_ZN13ImportMembers6Nested17virtualInlineDeclEv(
-  __declspec(dllimport) virtual void virtualDef(); // dllimport ignored
-  __declspec(dllimport) virtual void virtualDecl();
-  __declspec(dllimport) virtual void virtualInclass() {}
-  __declspec(dllimport) virtual void virtualInlineDef();
+  __declspec(dllimport) virtual        void virtualDef(); // dllimport ignored
+  __declspec(dllimport) virtual        void virtualDecl();
+  __declspec(dllimport) virtual        void virtualInclass() {}
+  __declspec(dllimport) virtual        void virtualInlineDef();
   __declspec(dllimport) virtual inline void virtualInlineDecl();
 
   // MSC-DAG: define  dso_local dllexport                void @"?staticDef@Nested@ImportMembers@@SAXXZ"()
@@ -317,11 +316,11 @@ struct ImportMembers::Nested {
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers6Nested13staticInclassEv()
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers6Nested15staticInlineDefEv()
   // GO1-DAG: define linkonce_odr dso_local              void @_ZN13ImportMembers6Nested16staticInlineDeclEv()
-  __declspec(dllimport) static void staticDef(); // dllimport ignored
-  __declspec(dllimport) static void staticDecl();
-  __declspec(dllimport) static void staticInclass() {}
-  __declspec(dllimport) static void staticInlineDef();
-  __declspec(dllimport) static inline void staticInlineDecl();
+  __declspec(dllimport) static         void staticDef(); // dllimport ignored
+  __declspec(dllimport) static         void staticDecl();
+  __declspec(dllimport) static         void staticInclass() {}
+  __declspec(dllimport) static         void staticInlineDef();
+  __declspec(dllimport) static  inline void staticInlineDecl();
 
   // M32-DAG: declare dllimport x86_thiscallcc void @"?protectedNormalDecl@Nested@ImportMembers@@IAEXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
   // M64-DAG: declare dllimport                void @"?protectedNormalDecl@Nested@ImportMembers@@IEAAXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
@@ -330,8 +329,8 @@ struct ImportMembers::Nested {
   // MSC-DAG: declare dllimport                void @"?protectedStaticDecl@Nested@ImportMembers@@KAXXZ"()
   // GNU-DAG: declare dllimport                void @_ZN13ImportMembers6Nested19protectedStaticDeclEv()
 protected:
-  __declspec(dllimport) void protectedNormalDecl();
-  __declspec(dllimport) static void protectedStaticDecl();
+  __declspec(dllimport)                void protectedNormalDecl();
+  __declspec(dllimport) static         void protectedStaticDecl();
 
   // M32-DAG: declare dllimport x86_thiscallcc void @"?privateNormalDecl@Nested@ImportMembers@@AAEXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
   // M64-DAG: declare dllimport                void @"?privateNormalDecl@Nested@ImportMembers@@AEAAXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
@@ -340,8 +339,8 @@ protected:
   // MSC-DAG: declare dllimport                void @"?privateStaticDecl@Nested@ImportMembers@@CAXXZ"()
   // GNU-DAG: declare dllimport                void @_ZN13ImportMembers6Nested17privateStaticDeclEv()
 private:
-  __declspec(dllimport) void privateNormalDecl();
-  __declspec(dllimport) static void privateStaticDecl();
+  __declspec(dllimport)                void privateNormalDecl();
+  __declspec(dllimport) static         void privateStaticDecl();
 
   // M32-DAG: declare dso_local           x86_thiscallcc void @"?ignored@Nested@ImportMembers@@QAEXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
   // M64-DAG: declare dso_local                          void @"?ignored@Nested@ImportMembers@@QEAAXXZ"(%"struct.ImportMembers::Nested"* {{[^,]*}})
@@ -360,24 +359,24 @@ public:
   // GNU-DAG: @_ZN13ImportMembers6Nested25StaticConstFieldEqualInitE     = external dllimport constant i32
   // GNU-DAG: @_ZN13ImportMembers6Nested25StaticConstFieldBraceInitE     = external dllimport constant i32
   // GNU-DAG: @_ZN13ImportMembers6Nested14ConstexprFieldE                = external dllimport constant i32
-  __declspec(dllimport) static int StaticField;
-  __declspec(dllimport) static const int StaticConstField;
-  __declspec(dllimport) static const int StaticConstFieldEqualInit = 1;
-  __declspec(dllimport) static const int StaticConstFieldBraceInit{1};
+  __declspec(dllimport) static         int  StaticField;
+  __declspec(dllimport) static  const  int  StaticConstField;
+  __declspec(dllimport) static  const  int  StaticConstFieldEqualInit = 1;
+  __declspec(dllimport) static  const  int  StaticConstFieldBraceInit{1};
   __declspec(dllimport) constexpr static int ConstexprField = 1;
 
-  template <int Line, typename T> friend void useMemFun();
+  template<int Line, typename T> friend void useMemFun();
 };
 
-void ImportMembers::Nested::normalDef() {} // dllimport ignored
+       void ImportMembers::Nested::normalDef() {} // dllimport ignored
 inline void ImportMembers::Nested::normalInlineDef() {}
-void ImportMembers::Nested::normalInlineDecl() {}
-void ImportMembers::Nested::virtualDef() {} // dllimport ignored
+       void ImportMembers::Nested::normalInlineDecl() {}
+       void ImportMembers::Nested::virtualDef() {} // dllimport ignored
 inline void ImportMembers::Nested::virtualInlineDef() {}
-void ImportMembers::Nested::virtualInlineDecl() {}
-void ImportMembers::Nested::staticDef() {} // dllimport ignored
+       void ImportMembers::Nested::virtualInlineDecl() {}
+       void ImportMembers::Nested::staticDef() {} // dllimport ignored
 inline void ImportMembers::Nested::staticInlineDef() {}
-void ImportMembers::Nested::staticInlineDecl() {}
+       void ImportMembers::Nested::staticInlineDecl() {}
 
 USEMF(ImportMembers::Nested, normalDef)
 USEMF(ImportMembers::Nested, normalDecl)
@@ -406,6 +405,7 @@ USEMV(ImportMembers::Nested, StaticConstFieldEqualInit)
 USEMV(ImportMembers::Nested, StaticConstFieldBraceInit)
 USEMV(ImportMembers::Nested, ConstexprField)
 
+
 // Import special member functions.
 struct ImportSpecials {
   // M32-DAG: declare dllimport x86_thiscallcc %struct.ImportSpecials* @"??0ImportSpecials@@QAE@XZ"(%struct.ImportSpecials* {{[^,]*}} returned {{[^,]*}})
@@ -424,27 +424,28 @@ struct ImportSpecials {
   // M64-DAG: declare dllimport                %struct.ImportSpecials* @"??0ImportSpecials@@QEAA@AEBU0@@Z"(%struct.ImportSpecials* {{[^,]*}} returned {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G32-DAG: declare dllimport x86_thiscallcc void                    @_ZN14ImportSpecialsC1ERKS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G64-DAG: declare dllimport                void                    @_ZN14ImportSpecialsC1ERKS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
-  __declspec(dllimport) ImportSpecials(const ImportSpecials &);
+  __declspec(dllimport) ImportSpecials(const ImportSpecials&);
 
   // M32-DAG: declare dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @"??4ImportSpecials@@QAEAAU0@ABU0@@Z"(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @"??4ImportSpecials@@QEAAAEAU0@AEBU0@@Z"(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G32-DAG: declare dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @_ZN14ImportSpecialsaSERKS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G64-DAG: declare dllimport                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @_ZN14ImportSpecialsaSERKS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
-  __declspec(dllimport) ImportSpecials &operator=(const ImportSpecials &);
+  __declspec(dllimport) ImportSpecials& operator=(const ImportSpecials&);
 
   // M32-DAG: declare dllimport x86_thiscallcc %struct.ImportSpecials* @"??0ImportSpecials@@QAE@$$QAU0@@Z"(%struct.ImportSpecials* {{[^,]*}} returned {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                %struct.ImportSpecials* @"??0ImportSpecials@@QEAA@$$QEAU0@@Z"(%struct.ImportSpecials* {{[^,]*}} returned {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G32-DAG: declare dllimport x86_thiscallcc void                    @_ZN14ImportSpecialsC1EOS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G64-DAG: declare dllimport                void                    @_ZN14ImportSpecialsC1EOS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
-  __declspec(dllimport) ImportSpecials(ImportSpecials &&);
+  __declspec(dllimport) ImportSpecials(ImportSpecials&&);
 
   // M32-DAG: declare dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @"??4ImportSpecials@@QAEAAU0@$$QAU0@@Z"(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @"??4ImportSpecials@@QEAAAEAU0@$$QEAU0@@Z"(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G32-DAG: declare dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @_ZN14ImportSpecialsaSEOS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // G64-DAG: declare dllimport                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportSpecials* @_ZN14ImportSpecialsaSEOS_(%struct.ImportSpecials* {{[^,]*}}, %struct.ImportSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
-  __declspec(dllimport) ImportSpecials &operator=(ImportSpecials &&);
+  __declspec(dllimport) ImportSpecials& operator=(ImportSpecials&&);
 };
 USESPECIALS(ImportSpecials)
+
 
 // Export inline special member functions.
 struct ImportInlineSpecials {
@@ -470,7 +471,7 @@ struct ImportInlineSpecials {
   // G64-DAG: define linkonce_odr dso_local                void @_ZN20ImportInlineSpecialsC1ERKS_(%struct.ImportInlineSpecials* {{[^,]*}} %this, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc %struct.ImportInlineSpecials* @"??0ImportInlineSpecials@@QAE@ABU0@@Z"(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN20ImportInlineSpecialsC1ERKS_(
-  __declspec(dllimport) inline ImportInlineSpecials(const ImportInlineSpecials &);
+  __declspec(dllimport) inline ImportInlineSpecials(const ImportInlineSpecials&);
 
   // M32-DAG: declare dllimport   x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QAEAAU0@ABU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QEAAAEAU0@AEBU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -478,7 +479,7 @@ struct ImportInlineSpecials {
   // G64-DAG: define linkonce_odr dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @_ZN20ImportInlineSpecialsaSERKS_(%struct.ImportInlineSpecials* {{[^,]*}} %this, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QAEAAU0@ABU0@@Z"(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @_ZN20ImportInlineSpecialsaSERKS_(
-  __declspec(dllimport) ImportInlineSpecials &operator=(const ImportInlineSpecials &);
+  __declspec(dllimport) ImportInlineSpecials& operator=(const ImportInlineSpecials&);
 
   // M32-DAG: declare dllimport   x86_thiscallcc %struct.ImportInlineSpecials* @"??0ImportInlineSpecials@@QAE@$$QAU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}} returned {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  %struct.ImportInlineSpecials* @"??0ImportInlineSpecials@@QEAA@$$QEAU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}} returned {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -486,7 +487,7 @@ struct ImportInlineSpecials {
   // G64-DAG: define linkonce_odr dso_local                void @_ZN20ImportInlineSpecialsC1EOS_(%struct.ImportInlineSpecials* {{[^,]*}} %this, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc %struct.ImportInlineSpecials* @"??0ImportInlineSpecials@@QAE@$$QAU0@@Z"(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN20ImportInlineSpecialsC1EOS_(
-  __declspec(dllimport) ImportInlineSpecials(ImportInlineSpecials &&) {}
+  __declspec(dllimport) ImportInlineSpecials(ImportInlineSpecials&&) {}
 
   // M32-DAG: declare dllimport   x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QAEAAU0@$$QAU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QEAAAEAU0@$$QEAU0@@Z"(%struct.ImportInlineSpecials* {{[^,]*}}, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -494,11 +495,12 @@ struct ImportInlineSpecials {
   // G64-DAG: define linkonce_odr dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @_ZN20ImportInlineSpecialsaSEOS_(%struct.ImportInlineSpecials* {{[^,]*}} %this, %struct.ImportInlineSpecials* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @"??4ImportInlineSpecials@@QAEAAU0@$$QAU0@@Z"(
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportInlineSpecials* @_ZN20ImportInlineSpecialsaSEOS_(
-  __declspec(dllimport) ImportInlineSpecials &operator=(ImportInlineSpecials &&) { return *this; }
+  __declspec(dllimport) ImportInlineSpecials& operator=(ImportInlineSpecials&&) { return *this; }
 };
-ImportInlineSpecials::ImportInlineSpecials(const ImportInlineSpecials &) {}
-inline ImportInlineSpecials &ImportInlineSpecials::operator=(const ImportInlineSpecials &) { return *this; }
+ImportInlineSpecials::ImportInlineSpecials(const ImportInlineSpecials&) {}
+inline ImportInlineSpecials& ImportInlineSpecials::operator=(const ImportInlineSpecials&) { return *this; }
 USESPECIALS(ImportInlineSpecials)
+
 
 // Import defaulted member functions.
 struct ImportDefaulted {
@@ -524,7 +526,7 @@ struct ImportDefaulted {
   // G64-DAG: define linkonce_odr dso_local                void                     @_ZN15ImportDefaultedC1ERKS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc %struct.ImportDefaulted* @"??0ImportDefaulted@@QAE@ABU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} returned {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN15ImportDefaultedC1ERKS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-  __declspec(dllimport) ImportDefaulted(const ImportDefaulted &) = default;
+  __declspec(dllimport) ImportDefaulted(const ImportDefaulted&) = default;
 
   // M32-DAG: declare dllimport   x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QAEAAU0@ABU0@@Z"(%struct.ImportDefaulted* {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QEAAAEAU0@AEBU0@@Z"(%struct.ImportDefaulted* {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -532,7 +534,7 @@ struct ImportDefaulted {
   // G64-DAG: define linkonce_odr dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @_ZN15ImportDefaultedaSERKS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QAEAAU0@ABU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @_ZN15ImportDefaultedaSERKS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-  __declspec(dllimport) ImportDefaulted &operator=(const ImportDefaulted &) = default;
+  __declspec(dllimport) ImportDefaulted& operator=(const ImportDefaulted&) = default;
 
   // M32-DAG: declare dllimport   x86_thiscallcc %struct.ImportDefaulted* @"??0ImportDefaulted@@QAE@$$QAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} returned {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  %struct.ImportDefaulted* @"??0ImportDefaulted@@QEAA@$$QEAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} returned {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -540,7 +542,7 @@ struct ImportDefaulted {
   // G64-DAG: define linkonce_odr dso_local                void                     @_ZN15ImportDefaultedC1EOS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc %struct.ImportDefaulted* @"??0ImportDefaulted@@QAE@$$QAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} returned {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN15ImportDefaultedC1EOS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-  __declspec(dllimport) ImportDefaulted(ImportDefaulted &&) = default;
+  __declspec(dllimport) ImportDefaulted(ImportDefaulted&&) = default;
 
   // M32-DAG: declare dllimport   x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QAEAAU0@$$QAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
   // M64-DAG: declare dllimport                  nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QEAAAEAU0@$$QEAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}}, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
@@ -548,22 +550,23 @@ struct ImportDefaulted {
   // G64-DAG: define linkonce_odr dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @_ZN15ImportDefaultedaSEOS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // MO1-DAG: define available_externally dllimport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @"??4ImportDefaulted@@QAEAAU0@$$QAU0@@Z"(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
   // GO1-DAG: define linkonce_odr dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaulted* @_ZN15ImportDefaultedaSEOS_(%struct.ImportDefaulted* {{[^,]*}} %this, %struct.ImportDefaulted* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-  __declspec(dllimport) ImportDefaulted &operator=(ImportDefaulted &&) = default;
+  __declspec(dllimport) ImportDefaulted& operator=(ImportDefaulted&&) = default;
 
   ForceNonTrivial v; // ensure special members are non-trivial
 };
 USESPECIALS(ImportDefaulted)
+
 
 // Import defaulted member function definitions.
 struct ImportDefaultedDefs {
   __declspec(dllimport) inline ImportDefaultedDefs();
   __declspec(dllimport) inline ~ImportDefaultedDefs();
 
-  __declspec(dllimport) ImportDefaultedDefs(const ImportDefaultedDefs &);
-  __declspec(dllimport) ImportDefaultedDefs &operator=(const ImportDefaultedDefs &);
+  __declspec(dllimport) ImportDefaultedDefs(const ImportDefaultedDefs&);
+  __declspec(dllimport) ImportDefaultedDefs& operator=(const ImportDefaultedDefs&);
 
-  __declspec(dllimport) ImportDefaultedDefs(ImportDefaultedDefs &&);
-  __declspec(dllimport) ImportDefaultedDefs &operator=(ImportDefaultedDefs &&);
+  __declspec(dllimport) ImportDefaultedDefs(ImportDefaultedDefs&&);
+  __declspec(dllimport) ImportDefaultedDefs& operator=(ImportDefaultedDefs&&);
 };
 
 #ifdef MSABI
@@ -584,13 +587,13 @@ __declspec(dllimport) ImportDefaultedDefs::~ImportDefaultedDefs() = default;
 // M64-DAG: declare dllimport                  %struct.ImportDefaultedDefs* @"??0ImportDefaultedDefs@@QEAA@AEBU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}} returned {{[^,]*}}, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
 // G32-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN19ImportDefaultedDefsC1ERKS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G64-DAG: define linkonce_odr dso_local                 void @_ZN19ImportDefaultedDefsC1ERKS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-inline ImportDefaultedDefs::ImportDefaultedDefs(const ImportDefaultedDefs &) = default;
+inline ImportDefaultedDefs::ImportDefaultedDefs(const ImportDefaultedDefs&) = default;
 
 // M32-DAG: declare dllimport   x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @"??4ImportDefaultedDefs@@QAEAAU0@ABU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}}, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
 // M64-DAG: declare dllimport                  nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @"??4ImportDefaultedDefs@@QEAAAEAU0@AEBU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}}, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}))
 // G32-DAG: define linkonce_odr dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @_ZN19ImportDefaultedDefsaSERKS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G64-DAG: define linkonce_odr dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @_ZN19ImportDefaultedDefsaSERKS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-inline ImportDefaultedDefs &ImportDefaultedDefs::operator=(const ImportDefaultedDefs &) = default;
+inline ImportDefaultedDefs& ImportDefaultedDefs::operator=(const ImportDefaultedDefs&) = default;
 
 // M32-DAG: define dso_local dllexport x86_thiscallcc %struct.ImportDefaultedDefs* @"??0ImportDefaultedDefs@@QAE@$$QAU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}} returned {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // M64-DAG: define dso_local dllexport                %struct.ImportDefaultedDefs* @"??0ImportDefaultedDefs@@QEAA@$$QEAU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}} returned {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
@@ -598,22 +601,23 @@ inline ImportDefaultedDefs &ImportDefaultedDefs::operator=(const ImportDefaulted
 // G64-DAG: define dso_local                void @_ZN19ImportDefaultedDefsC1EOS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G32-DAG: define dso_local x86_thiscallcc void @_ZN19ImportDefaultedDefsC2EOS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G64-DAG: define dso_local                void @_ZN19ImportDefaultedDefsC2EOS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-ImportDefaultedDefs::ImportDefaultedDefs(ImportDefaultedDefs &&) = default; // dllimport ignored
+ImportDefaultedDefs::ImportDefaultedDefs(ImportDefaultedDefs&&) = default; // dllimport ignored
 
 // M32-DAG: define dso_local dllexport x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @"??4ImportDefaultedDefs@@QAEAAU0@$$QAU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // M64-DAG: define dso_local dllexport                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @"??4ImportDefaultedDefs@@QEAAAEAU0@$$QEAU0@@Z"(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G32-DAG: define dso_local x86_thiscallcc nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @_ZN19ImportDefaultedDefsaSEOS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
 // G64-DAG: define dso_local                nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %struct.ImportDefaultedDefs* @_ZN19ImportDefaultedDefsaSEOS_(%struct.ImportDefaultedDefs* {{[^,]*}} %this, %struct.ImportDefaultedDefs* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0)
-ImportDefaultedDefs &ImportDefaultedDefs::operator=(ImportDefaultedDefs &&) = default; // dllimport ignored
+ImportDefaultedDefs& ImportDefaultedDefs::operator=(ImportDefaultedDefs&&) = default; // dllimport ignored
 
 USESPECIALS(ImportDefaultedDefs)
 
+
 // Import allocation functions.
 struct ImportAlloc {
-  __declspec(dllimport) void *operator new(__SIZE_TYPE__);
-  __declspec(dllimport) void *operator new[](__SIZE_TYPE__);
-  __declspec(dllimport) void operator delete(void *);
-  __declspec(dllimport) void operator delete[](void *);
+  __declspec(dllimport) void* operator new(__SIZE_TYPE__);
+  __declspec(dllimport) void* operator new[](__SIZE_TYPE__);
+  __declspec(dllimport) void operator delete(void*);
+  __declspec(dllimport) void operator delete[](void*);
 };
 
 // M32-DAG: declare dllimport i8* @"??2ImportAlloc@@SAPAXI@Z"(i32)
@@ -632,23 +636,24 @@ void UNIQ(use)() { new ImportAlloc[1]; }
 // M64-DAG: declare dllimport void @"??3ImportAlloc@@SAXPEAX@Z"(i8*)
 // G32-DAG: declare dllimport void @_ZN11ImportAllocdlEPv(i8*)
 // G64-DAG: declare dllimport void @_ZN11ImportAllocdlEPv(i8*)
-void UNIQ(use)(ImportAlloc *ptr) { delete ptr; }
+void UNIQ(use)(ImportAlloc* ptr) { delete ptr; }
 
 // M32-DAG: declare dllimport void @"??_VImportAlloc@@SAXPAX@Z"(i8*)
 // M64-DAG: declare dllimport void @"??_VImportAlloc@@SAXPEAX@Z"(i8*)
 // G32-DAG: declare dllimport void @_ZN11ImportAllocdaEPv(i8*)
 // G64-DAG: declare dllimport void @_ZN11ImportAllocdaEPv(i8*)
-void UNIQ(use)(ImportAlloc *ptr) { delete[] ptr; }
+void UNIQ(use)(ImportAlloc* ptr) { delete[] ptr; }
+
 
 //===----------------------------------------------------------------------===//
 // Class member templates
 //===----------------------------------------------------------------------===//
 
 struct MemFunTmpl {
-  template <typename T> void normalDef() {}
-  template <typename T> __declspec(dllimport) void importedNormal() {}
-  template <typename T> static void staticDef() {}
-  template <typename T> __declspec(dllimport) static void importedStatic() {}
+  template<typename T>                              void normalDef() {}
+  template<typename T> __declspec(dllimport)        void importedNormal() {}
+  template<typename T>                       static void staticDef() {}
+  template<typename T> __declspec(dllimport) static void importedStatic() {}
 };
 
 // Import implicit instantiation of an imported member function template.
@@ -661,6 +666,7 @@ USEMF(MemFunTmpl, importedNormal<ImplicitInst_Imported>)
 // MSC-DAG: declare dllimport                void @"??$importedStatic@UImplicitInst_Imported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: define linkonce_odr dso_local              void @_ZN10MemFunTmpl14importedStaticI21ImplicitInst_ImportedEEvv()
 USE(MemFunTmpl::importedStatic<ImplicitInst_Imported>)
+
 
 // Import explicit instantiation declaration of an imported member function
 // template.
@@ -676,6 +682,7 @@ USEMF(MemFunTmpl, importedNormal<ExplicitDecl_Imported>)
 extern template void MemFunTmpl::importedStatic<ExplicitDecl_Imported>();
 USE(MemFunTmpl::importedStatic<ExplicitDecl_Imported>)
 
+
 // Import explicit instantiation definition of an imported member function
 // template.
 // M32-DAG: declare dllimport x86_thiscallcc void @"??$importedNormal@UExplicitInst_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
@@ -690,12 +697,13 @@ USEMF(MemFunTmpl, importedNormal<ExplicitInst_Imported>)
 template void MemFunTmpl::importedStatic<ExplicitInst_Imported>();
 USE(MemFunTmpl::importedStatic<ExplicitInst_Imported>)
 
+
 // Import specialization of an imported member function template.
 // M32-DAG: declare dllimport x86_thiscallcc void @"??$importedNormal@UExplicitSpec_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // M64-DAG: declare dllimport                void @"??$importedNormal@UExplicitSpec_Imported@@@MemFunTmpl@@QEAAXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // G32-DAG: declare dllimport x86_thiscallcc void @_ZN10MemFunTmpl14importedNormalI21ExplicitSpec_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}})
 // G64-DAG: declare dllimport                void @_ZN10MemFunTmpl14importedNormalI21ExplicitSpec_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}})
-template <> __declspec(dllimport) void MemFunTmpl::importedNormal<ExplicitSpec_Imported>();
+template<> __declspec(dllimport) void MemFunTmpl::importedNormal<ExplicitSpec_Imported>();
 USEMF(MemFunTmpl, importedNormal<ExplicitSpec_Imported>)
 
 // M32-DAG-FIXME: declare dllimport x86_thiscallcc void @"??$importedNormal@UExplicitSpec_Def_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
@@ -709,12 +717,13 @@ USEMF(MemFunTmpl, importedNormal<ExplicitSpec_Imported>)
 // M64-DAG: declare dllimport                  void @"??$importedNormal@UExplicitSpec_InlineDef_Imported@@@MemFunTmpl@@QEAAXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // G32-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN10MemFunTmpl14importedNormalI31ExplicitSpec_InlineDef_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
 // G64-DAG: define linkonce_odr dso_local                void @_ZN10MemFunTmpl14importedNormalI31ExplicitSpec_InlineDef_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
-template <> __declspec(dllimport) inline void MemFunTmpl::importedNormal<ExplicitSpec_InlineDef_Imported>() {}
+template<> __declspec(dllimport) inline void MemFunTmpl::importedNormal<ExplicitSpec_InlineDef_Imported>() {}
 USEMF(MemFunTmpl, importedNormal<ExplicitSpec_InlineDef_Imported>)
+
 
 // MSC-DAG: declare dllimport                void @"??$importedStatic@UExplicitSpec_Imported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: declare dllimport                void @_ZN10MemFunTmpl14importedStaticI21ExplicitSpec_ImportedEEvv()
-template <> __declspec(dllimport) void MemFunTmpl::importedStatic<ExplicitSpec_Imported>();
+template<> __declspec(dllimport) void MemFunTmpl::importedStatic<ExplicitSpec_Imported>();
 USE(MemFunTmpl::importedStatic<ExplicitSpec_Imported>)
 
 // MSC-DAG-FIXME: declare dllimport                void @"??$importedStatic@UExplicitSpec_Def_Imported@@@MemFunTmpl@@SAXXZ"()
@@ -725,8 +734,9 @@ USE(MemFunTmpl::importedStatic<ExplicitSpec_Imported>)
 
 // MSC-DAG: declare dllimport                void @"??$importedStatic@UExplicitSpec_InlineDef_Imported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: define linkonce_odr dso_local    void @_ZN10MemFunTmpl14importedStaticI31ExplicitSpec_InlineDef_ImportedEEvv()
-template <> __declspec(dllimport) inline void MemFunTmpl::importedStatic<ExplicitSpec_InlineDef_Imported>() {}
+template<> __declspec(dllimport) inline void MemFunTmpl::importedStatic<ExplicitSpec_InlineDef_Imported>() {}
 USE(MemFunTmpl::importedStatic<ExplicitSpec_InlineDef_Imported>)
+
 
 // Not importing specialization of an imported member function template without
 // explicit dllimport.
@@ -734,13 +744,14 @@ USE(MemFunTmpl::importedStatic<ExplicitSpec_InlineDef_Imported>)
 // M64-DAG: define dso_local                void @"??$importedNormal@UExplicitSpec_NotImported@@@MemFunTmpl@@QEAAXXZ"(%struct.MemFunTmpl* {{[^,]*}} %this)
 // G32-DAG: define dso_local x86_thiscallcc void @_ZN10MemFunTmpl14importedNormalI24ExplicitSpec_NotImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
 // G64-DAG: define dso_local                void @_ZN10MemFunTmpl14importedNormalI24ExplicitSpec_NotImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
-template <> void MemFunTmpl::importedNormal<ExplicitSpec_NotImported>() {}
+template<> void MemFunTmpl::importedNormal<ExplicitSpec_NotImported>() {}
 USEMF(MemFunTmpl, importedNormal<ExplicitSpec_NotImported>)
 
 // MSC-DAG: define dso_local                void @"??$importedStatic@UExplicitSpec_NotImported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: define dso_local                void @_ZN10MemFunTmpl14importedStaticI24ExplicitSpec_NotImportedEEvv()
-template <> void MemFunTmpl::importedStatic<ExplicitSpec_NotImported>() {}
+template<> void MemFunTmpl::importedStatic<ExplicitSpec_NotImported>() {}
 USE(MemFunTmpl::importedStatic<ExplicitSpec_NotImported>)
+
 
 // Import explicit instantiation declaration of a non-imported member function
 // template.
@@ -756,6 +767,7 @@ USEMF(MemFunTmpl, normalDef<ExplicitDecl_Imported>)
 extern template __declspec(dllimport) void MemFunTmpl::staticDef<ExplicitDecl_Imported>();
 USE(MemFunTmpl::staticDef<ExplicitDecl_Imported>)
 
+
 // Import explicit instantiation definition of a non-imported member function
 // template.
 // M32-DAG: declare dllimport x86_thiscallcc void @"??$normalDef@UExplicitInst_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
@@ -770,12 +782,13 @@ USEMF(MemFunTmpl, normalDef<ExplicitInst_Imported>)
 template __declspec(dllimport) void MemFunTmpl::staticDef<ExplicitInst_Imported>();
 USE(MemFunTmpl::staticDef<ExplicitInst_Imported>)
 
+
 // Import specialization of a non-imported member function template.
 // M32-DAG: declare dllimport x86_thiscallcc void @"??$normalDef@UExplicitSpec_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // M64-DAG: declare dllimport                void @"??$normalDef@UExplicitSpec_Imported@@@MemFunTmpl@@QEAAXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // G32-DAG: declare dllimport x86_thiscallcc void @_ZN10MemFunTmpl9normalDefI21ExplicitSpec_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}})
 // G64-DAG: declare dllimport                void @_ZN10MemFunTmpl9normalDefI21ExplicitSpec_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}})
-template <> __declspec(dllimport) void MemFunTmpl::normalDef<ExplicitSpec_Imported>();
+template<> __declspec(dllimport) void MemFunTmpl::normalDef<ExplicitSpec_Imported>();
 USEMF(MemFunTmpl, normalDef<ExplicitSpec_Imported>)
 
 // M32-DAG-FIXME: declare dllimport x86_thiscallcc void @"??$normalDef@UExplicitSpec_Def_Imported@@@MemFunTmpl@@QAEXXZ"(%struct.MemFunTmpl* {{[^,]*}})
@@ -789,12 +802,13 @@ USEMF(MemFunTmpl, normalDef<ExplicitSpec_Imported>)
 // M64-DAG: declare dllimport                  void @"??$normalDef@UExplicitSpec_InlineDef_Imported@@@MemFunTmpl@@QEAAXXZ"(%struct.MemFunTmpl* {{[^,]*}})
 // G32-DAG: define linkonce_odr dso_local x86_thiscallcc void @_ZN10MemFunTmpl9normalDefI31ExplicitSpec_InlineDef_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
 // G64-DAG: define linkonce_odr dso_local                void @_ZN10MemFunTmpl9normalDefI31ExplicitSpec_InlineDef_ImportedEEvv(%struct.MemFunTmpl* {{[^,]*}} %this)
-template <> __declspec(dllimport) inline void MemFunTmpl::normalDef<ExplicitSpec_InlineDef_Imported>() {}
+template<> __declspec(dllimport) inline void MemFunTmpl::normalDef<ExplicitSpec_InlineDef_Imported>() {}
 USEMF(MemFunTmpl, normalDef<ExplicitSpec_InlineDef_Imported>)
+
 
 // MSC-DAG: declare dllimport void @"??$staticDef@UExplicitSpec_Imported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: declare dllimport void @_ZN10MemFunTmpl9staticDefI21ExplicitSpec_ImportedEEvv()
-template <> __declspec(dllimport) void MemFunTmpl::staticDef<ExplicitSpec_Imported>();
+template<> __declspec(dllimport) void MemFunTmpl::staticDef<ExplicitSpec_Imported>();
 USE(MemFunTmpl::staticDef<ExplicitSpec_Imported>)
 
 // MSC-DAG-FIXME: declare dllimport void @"??$staticDef@UExplicitSpec_Def_Imported@@@MemFunTmpl@@SAXXZ"()
@@ -805,12 +819,14 @@ USE(MemFunTmpl::staticDef<ExplicitSpec_Imported>)
 
 // MSC-DAG: declare dllimport void @"??$staticDef@UExplicitSpec_InlineDef_Imported@@@MemFunTmpl@@SAXXZ"()
 // GNU-DAG: define linkonce_odr dso_local void @_ZN10MemFunTmpl9staticDefI31ExplicitSpec_InlineDef_ImportedEEvv()
-template <> __declspec(dllimport) inline void MemFunTmpl::staticDef<ExplicitSpec_InlineDef_Imported>() {}
+template<> __declspec(dllimport) inline void MemFunTmpl::staticDef<ExplicitSpec_InlineDef_Imported>() {}
 USE(MemFunTmpl::staticDef<ExplicitSpec_InlineDef_Imported>)
 
+
+
 struct MemVarTmpl {
-  template <typename T> static const int StaticVar = 1;
-  template <typename T> __declspec(dllimport) static const int ImportedStaticVar = 1;
+  template<typename T>                       static const int StaticVar = 1;
+  template<typename T> __declspec(dllimport) static const int ImportedStaticVar = 1;
 };
 
 // Import implicit instantiation of an imported member variable template.
@@ -832,15 +848,16 @@ USEMV(MemVarTmpl, ImportedStaticVar<ExplicitDecl_Imported>)
 // Import specialization of an imported member variable template.
 // MSC-DAG: @"??$ImportedStaticVar@UExplicitSpec_Imported@@@MemVarTmpl@@2HB" = external dllimport constant i32
 // GNU-DAG: @_ZN10MemVarTmpl17ImportedStaticVarI21ExplicitSpec_ImportedEE       = external dllimport constant i32
-template <> __declspec(dllimport) const int MemVarTmpl::ImportedStaticVar<ExplicitSpec_Imported>;
+template<> __declspec(dllimport) const int MemVarTmpl::ImportedStaticVar<ExplicitSpec_Imported>;
 USEMV(MemVarTmpl, ImportedStaticVar<ExplicitSpec_Imported>)
 
 // Not importing specialization of a member variable template without explicit
 // dllimport.
 // MSC-DAG: @"??$ImportedStaticVar@UExplicitSpec_NotImported@@@MemVarTmpl@@2HB" = external dso_local constant i32
 // GNU-DAG: @_ZN10MemVarTmpl17ImportedStaticVarI24ExplicitSpec_NotImportedEE       = external constant i32
-template <> const int MemVarTmpl::ImportedStaticVar<ExplicitSpec_NotImported>;
+template<> const int MemVarTmpl::ImportedStaticVar<ExplicitSpec_NotImported>;
 USEMV(MemVarTmpl, ImportedStaticVar<ExplicitSpec_NotImported>)
+
 
 // Import explicit instantiation declaration of a non-imported member variable
 // template.
@@ -856,5 +873,5 @@ USEMV(MemVarTmpl, StaticVar<ExplicitDecl_Imported>)
 // Import specialization of a non-imported member variable template.
 // MSC-DAG: @"??$StaticVar@UExplicitSpec_Imported@@@MemVarTmpl@@2HB" = external dllimport constant i32
 // GNU-DAG: @_ZN10MemVarTmpl9StaticVarI21ExplicitSpec_ImportedEE        = external dllimport constant i32
-template <> __declspec(dllimport) const int MemVarTmpl::StaticVar<ExplicitSpec_Imported>;
+template<> __declspec(dllimport) const int MemVarTmpl::StaticVar<ExplicitSpec_Imported>;
 USEMV(MemVarTmpl, StaticVar<ExplicitSpec_Imported>)

@@ -18,7 +18,9 @@ public:
   SmallString<64> HistPath;
   LineEditor *LE;
 
-  LineEditorTest() { init(); }
+  LineEditorTest() {
+    init();
+  }
 
   void init() {
     sys::fs::createTemporaryFile("temp", "history", HistPath);

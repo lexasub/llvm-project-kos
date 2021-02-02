@@ -32,7 +32,8 @@
 
 using namespace clang;
 
-TemplateArgument SubstTemplateTemplateParmPackStorage::getArgumentPack() const {
+TemplateArgument
+SubstTemplateTemplateParmPackStorage::getArgumentPack() const {
   return TemplateArgument(llvm::makeArrayRef(Arguments, size()));
 }
 
@@ -40,9 +41,9 @@ void SubstTemplateTemplateParmStorage::Profile(llvm::FoldingSetNodeID &ID) {
   Profile(ID, Parameter, Replacement);
 }
 
-void SubstTemplateTemplateParmStorage::Profile(
-    llvm::FoldingSetNodeID &ID, TemplateTemplateParmDecl *parameter,
-    TemplateName replacement) {
+void SubstTemplateTemplateParmStorage::Profile(llvm::FoldingSetNodeID &ID,
+                                           TemplateTemplateParmDecl *parameter,
+                                               TemplateName replacement) {
   ID.AddPointer(parameter);
   ID.AddPointer(replacement.getAsVoidPointer());
 }
@@ -52,9 +53,10 @@ void SubstTemplateTemplateParmPackStorage::Profile(llvm::FoldingSetNodeID &ID,
   Profile(ID, Context, Parameter, getArgumentPack());
 }
 
-void SubstTemplateTemplateParmPackStorage::Profile(
-    llvm::FoldingSetNodeID &ID, ASTContext &Context,
-    TemplateTemplateParmDecl *Parameter, const TemplateArgument &ArgPack) {
+void SubstTemplateTemplateParmPackStorage::Profile(llvm::FoldingSetNodeID &ID,
+                                                   ASTContext &Context,
+                                           TemplateTemplateParmDecl *Parameter,
+                                             const TemplateArgument &ArgPack) {
   ID.AddPointer(Parameter);
   ArgPack.Profile(ID, Context);
 }
@@ -85,8 +87,8 @@ TemplateName::NameKind TemplateName::getKind() const {
   if (Storage.is<QualifiedTemplateName *>())
     return QualifiedTemplate;
 
-  UncommonTemplateNameStorage *uncommon =
-      Storage.get<UncommonTemplateNameStorage *>();
+  UncommonTemplateNameStorage *uncommon
+    = Storage.get<UncommonTemplateNameStorage*>();
   if (uncommon->getAsOverloadedStorage())
     return OverloadedTemplate;
   if (uncommon->getAsAssumedTemplateName())
@@ -218,8 +220,9 @@ bool TemplateName::containsUnexpandedParameterPack() const {
   return getDependence() & TemplateNameDependence::UnexpandedPack;
 }
 
-void TemplateName::print(raw_ostream &OS, const PrintingPolicy &Policy,
-                         bool SuppressNNS) const {
+void
+TemplateName::print(raw_ostream &OS, const PrintingPolicy &Policy,
+                    bool SuppressNNS) const {
   if (TemplateDecl *Template = Storage.dyn_cast<TemplateDecl *>())
     OS << *Template;
   else if (QualifiedTemplateName *QTN = getAsQualifiedTemplateName()) {
@@ -237,11 +240,11 @@ void TemplateName::print(raw_ostream &OS, const PrintingPolicy &Policy,
       OS << DTN->getIdentifier()->getName();
     else
       OS << "operator " << getOperatorSpelling(DTN->getOperator());
-  } else if (SubstTemplateTemplateParmStorage *subst =
-                 getAsSubstTemplateTemplateParm()) {
+  } else if (SubstTemplateTemplateParmStorage *subst
+               = getAsSubstTemplateTemplateParm()) {
     subst->getReplacement().print(OS, Policy, SuppressNNS);
-  } else if (SubstTemplateTemplateParmPackStorage *SubstPack =
-                 getAsSubstTemplateTemplateParmPack())
+  } else if (SubstTemplateTemplateParmPackStorage *SubstPack
+                                        = getAsSubstTemplateTemplateParmPack())
     OS << *SubstPack->getParameterPack();
   else if (AssumedTemplateStorage *Assumed = getAsAssumedTemplateName()) {
     Assumed->getDeclName().print(OS, Policy);
@@ -266,10 +269,12 @@ const StreamingDiagnostic &clang::operator<<(const StreamingDiagnostic &DB,
 }
 
 void TemplateName::dump(raw_ostream &OS) const {
-  LangOptions LO; // FIXME!
+  LangOptions LO;  // FIXME!
   LO.CPlusPlus = true;
   LO.Bool = true;
   print(OS, PrintingPolicy(LO));
 }
 
-LLVM_DUMP_METHOD void TemplateName::dump() const { dump(llvm::errs()); }
+LLVM_DUMP_METHOD void TemplateName::dump() const {
+  dump(llvm::errs());
+}

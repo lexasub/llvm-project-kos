@@ -4,9 +4,9 @@
 // get the size of this type, so they don't get errors after inserting typename.
 
 namespace basic {
-template <typename T> int type_f() { return sizeof T::type; }    // expected-error {{missing 'typename' prior to dependent type name 'X::type'}}
-template <typename T> int type_g() { return sizeof(T::type); }   // expected-warning {{missing 'typename' prior to dependent type name 'X::type'}}
-template <typename T> int type_h() { return sizeof((T::type)); } // expected-error {{missing 'typename' prior to dependent type name 'X::type'}}
+template <typename T> int type_f() { return sizeof T::type; }  // expected-error {{missing 'typename' prior to dependent type name 'X::type'}}
+template <typename T> int type_g() { return sizeof(T::type); }  // expected-warning {{missing 'typename' prior to dependent type name 'X::type'}}
+template <typename T> int type_h() { return sizeof((T::type)); }  // expected-error {{missing 'typename' prior to dependent type name 'X::type'}}
 template <typename T> int value_f() { return sizeof T::not_a_type; }
 template <typename T> int value_g() { return sizeof(T::not_a_type); }
 template <typename T> int value_h() { return sizeof((T::not_a_type)); }
@@ -15,14 +15,15 @@ struct X {
   static const int not_a_type;
 };
 int bar() {
-  return type_f<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
-         type_g<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
-         type_h<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
-         value_f<X>() +
-         value_f<X>() +
-         value_f<X>();
+  return
+      type_f<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
+      type_g<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
+      type_h<X>() + // expected-note-re {{in instantiation {{.*}} requested here}}
+      value_f<X>() +
+      value_f<X>() +
+      value_f<X>();
 }
-} // namespace basic
+}
 
 namespace nested_sizeof {
 template <typename T>
@@ -46,7 +47,7 @@ struct Bar {
   static const int InnerVar = 42;
 };
 template struct Foo<Bar>; // expected-note-re {{in instantiation {{.*}} requested here}}
-} // namespace nested_sizeof
+}
 
 namespace ambiguous_missing_parens {
 // expected-error@+1 {{'Q::U' instantiated to a class template, not a function template}}
@@ -57,4 +58,4 @@ struct Q {
 };
 // expected-note-re@+1 {{in instantiation {{.*}} requested here}}
 template void f<Q>();
-} // namespace ambiguous_missing_parens
+}

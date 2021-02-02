@@ -4,9 +4,9 @@
 // UNSUPPORTED: darwin, aarch64
 
 #include <assert.h>
-#include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
 
 int main(int argc, char **argv) {
   pid_t pid = fork();
@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     int *status = x + argc * 3;
     int res;
 
-    siginfo_t *si = (siginfo_t *)(x + argc * 3);
+    siginfo_t *si = (siginfo_t*)(x + argc * 3);
     res = waitid(P_ALL, 0, si, WEXITED | WNOHANG);
     // CHECK: stack-buffer-overflow
     // CHECK: {{WRITE of size .* at 0x.* thread T0}}

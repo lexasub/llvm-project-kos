@@ -21,6 +21,7 @@ void fooo(int x) {
   if (x == 1) {
     return;
   } // CHECK-NOT: Gap,File 0, [[@LINE]]:4
+
 }
 
 // CHECK-LABEL: _Z3bazv:
@@ -55,11 +56,11 @@ void maaaz() {
 
 // CHECK-LABEL: _Z3bari:
 void bar(int x) {
-  IF(x)
-  return; // CHECK: Gap,File 0, [[@LINE]]:11 -> [[@LINE+2]]:3 = (#0 - #1)
+  IF (x)
+    return; // CHECK: Gap,File 0, [[@LINE]]:11 -> [[@LINE+2]]:3 = (#0 - #1)
 
-  IF(!x)
-  return; // CHECK: Gap,File 0, [[@LINE]]:11 -> [[@LINE+2]]:3 = ((#0 - #1) - #2)
+  IF (!x)
+    return; // CHECK: Gap,File 0, [[@LINE]]:11 -> [[@LINE+2]]:3 = ((#0 - #1) - #2)
 
   foo(x);
 }
@@ -68,7 +69,8 @@ void bar(int x) {
 // Deferred regions are not emitted within macro expansions.
 void quux(int x) {
   STMT(
-      if (x == 0) return;)
+  if (x == 0)
+    return;)
 
   // CHECK-NOT: [[@LINE-2]]:{{.*}} -> [[@LINE+2]]
 
@@ -78,11 +80,14 @@ void quux(int x) {
   // CHECK-NOT: [[@LINE-2]]:{{.*}} -> [[@LINE+3]]
 
   STMT(
-      if (x == 2) return;
+  if (x == 2)
+    return;
 
-      // CHECK-NOT: [[@LINE-2]]:{{.*}} -> [[@LINE+2]]
+  // CHECK-NOT: [[@LINE-2]]:{{.*}} -> [[@LINE+2]]
 
-      if (x == 3) return;)
+  if (x == 3)
+    return;
+  )
 }
 
 // CHECK-LABEL: _Z8weird_ifv:
@@ -100,6 +105,7 @@ void weird_if() {
       return;        // CHECK: Gap,File 0, [[@LINE]]:13 -> [[@LINE+2]]:5 = (#3 - #4)
                      // CHECK: [[@LINE+1]]:5 -> [[@LINE+3]]:4 = (#3 - #4)
     return;          // CHECK: Gap,File 0, [[@LINE]]:5 -> [[@LINE+4]]:3 = ((#0 - #1) - #3)
+
   }
 
   if (false)
@@ -119,7 +125,8 @@ void for_loop() {
       break; // CHECK: Gap,File 0, [[@LINE]]:12 -> [[@LINE+2]]:5 = ((#2 - #3) - #4)
 
     int x = i; // CHECK: [[@LINE]]:5 -> [[@LINE+3]]:4 = ((#2 - #3) - #4)
-    return;    // CHECK-NOT: [[@LINE]]:11 -> [[@LINE+2]]
+    return; // CHECK-NOT: [[@LINE]]:11 -> [[@LINE+2]]
+
   }
 }
 
@@ -139,8 +146,7 @@ void while_loop() {
       if (x == 3)
         break; // CHECK: Gap,File 0, [[@LINE]]:14 -> [[@LINE+2]]:7 = (#4 - #5)
 
-      while (++x < 5) {
-      }
+      while (++x < 5) {}
     }
 
     if (x == 0)
@@ -149,6 +155,7 @@ void while_loop() {
     while (++x < 9) {
       if (x == 0)
         break; // CHECK-NOT: [[@LINE]]:14 -> [[@LINE+2]]
+
     }
   }
 }
@@ -161,17 +168,17 @@ void gotos() {
   return; // CHECK: [[@LINE]]:3 -> [[@LINE+4]]:2 = (#0 - #1)
 
 out:
-  return; // CHECK-NOT: Gap,File 0, [[@LINE]]:8
+	return; // CHECK-NOT: Gap,File 0, [[@LINE]]:8
 }
 
 // CHECK-LABEL: _Z8switchesv:
 void switches() {
   int x;
   switch (x) {
-  case 0:
-    return;
-  default:
-    return; // CHECK-NOT: Gap,File 0, [[@LINE]]
+    case 0:
+      return;
+    default:
+      return; // CHECK-NOT: Gap,File 0, [[@LINE]]
   }
 }
 

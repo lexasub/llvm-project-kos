@@ -45,7 +45,7 @@ public:
   reference operator*() const { return It->second.getLookupResult(); }
   pointer operator->() const { return It->second.getLookupResult(); }
 
-  all_lookups_iterator &operator++() {
+  all_lookups_iterator& operator++() {
     // Filter out using directives. They don't belong as results from name
     // lookup anyways, except as an implementation detail. Users of the API
     // should not expect to get them (or worse, rely on it).
@@ -73,7 +73,7 @@ public:
 };
 
 inline DeclContext::lookups_range DeclContext::lookups() const {
-  DeclContext *Primary = const_cast<DeclContext *>(this)->getPrimaryContext();
+  DeclContext *Primary = const_cast<DeclContext*>(this)->getPrimaryContext();
   if (Primary->hasExternalVisibleStorage())
     getParentASTContext().getExternalSource()->completeVisibleDeclsMap(Primary);
   if (StoredDeclsMap *Map = Primary->buildLookup())
@@ -87,7 +87,7 @@ inline DeclContext::lookups_range DeclContext::lookups() const {
 
 inline DeclContext::lookups_range
 DeclContext::noload_lookups(bool PreserveInternalState) const {
-  DeclContext *Primary = const_cast<DeclContext *>(this)->getPrimaryContext();
+  DeclContext *Primary = const_cast<DeclContext*>(this)->getPrimaryContext();
   if (!PreserveInternalState)
     Primary->loadLazyLocalLexicalLookups();
   if (StoredDeclsMap *Map = Primary->getLookupPtr())

@@ -5,4 +5,4 @@
 
 // CONVFUNC: attributes #0 = { convergent {{.*}} }
 // NOCONVFUNC-NOT: convergent
-void func() {}
+void func() { }

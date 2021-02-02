@@ -7,10 +7,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/CodeGen/MachineSizeOpts.h"
+#include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/Analysis/BlockFrequencyInfo.h"
 #include "llvm/Analysis/BranchProbabilityInfo.h"
 #include "llvm/Analysis/LoopInfo.h"
-#include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/CodeGen/MIRParser/MIRParser.h"
 #include "llvm/CodeGen/MachineBlockFrequencyInfo.h"
 #include "llvm/CodeGen/MachineBranchProbabilityInfo.h"
@@ -30,14 +30,14 @@ std::unique_ptr<LLVMTargetMachine> createTargetMachine() {
   auto TT(Triple::normalize("x86_64--"));
   std::string Error;
   const Target *TheTarget = TargetRegistry::lookupTarget(TT, Error);
-  return std::unique_ptr<LLVMTargetMachine>(
-      static_cast<LLVMTargetMachine *>(TheTarget->createTargetMachine(
-          TT, "", "", TargetOptions(), None, None, CodeGenOpt::Default)));
+  return std::unique_ptr<LLVMTargetMachine>(static_cast<LLVMTargetMachine*>(
+      TheTarget->createTargetMachine(TT, "", "", TargetOptions(), None, None,
+                                     CodeGenOpt::Default)));
 }
 
 class MachineSizeOptsTest : public testing::Test {
-protected:
-  static const char *MIRString;
+ protected:
+  static const char* MIRString;
   LLVMContext Context;
   std::unique_ptr<LLVMTargetMachine> TM;
   std::unique_ptr<MachineModuleInfo> MMI;
@@ -122,7 +122,7 @@ TEST_F(MachineSizeOptsTest, Test) {
   EXPECT_FALSE(shouldOptimizeForSize(BB3, &PSI, MBFI_F, PGSOQueryType::Test));
 }
 
-const char *MachineSizeOptsTest::MIRString = R"MIR(
+const char* MachineSizeOptsTest::MIRString = R"MIR(
 --- |
   define i32 @g(i32 %x) !prof !14 {
     ret i32 0

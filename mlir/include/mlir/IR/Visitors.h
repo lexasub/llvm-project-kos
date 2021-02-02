@@ -51,8 +51,7 @@ public:
 
 namespace detail {
 /// Helper templates to deduce the first argument of a callback parameter.
-template <typename Ret, typename Arg>
-Arg first_argument_type(Ret (*)(Arg));
+template <typename Ret, typename Arg> Arg first_argument_type(Ret (*)(Arg));
 template <typename Ret, typename F, typename Arg>
 Arg first_argument_type(Ret (F::*)(Arg));
 template <typename Ret, typename F, typename Arg>

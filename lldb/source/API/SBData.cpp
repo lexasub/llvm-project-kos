@@ -33,8 +33,8 @@ SBData::SBData(const SBData &rhs) : m_opaque_sp(rhs.m_opaque_sp) {
 }
 
 const SBData &SBData::operator=(const SBData &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBData &, SBData, operator=,
-                     (const lldb::SBData &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBData &,
+                     SBData, operator=,(const lldb::SBData &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = rhs.m_opaque_sp;
@@ -367,7 +367,8 @@ void SBData::SetData(lldb::SBError &error, const void *buf, size_t size,
 
   if (!m_opaque_sp.get())
     m_opaque_sp = std::make_shared<DataExtractor>(buf, size, endian, addr_size);
-  else {
+  else
+  {
     m_opaque_sp->SetData(buf, size, endian);
     m_opaque_sp->SetAddressByteSize(addr_size);
   }
@@ -516,6 +517,7 @@ lldb::SBData SBData::CreateDataFromDoubleArray(lldb::ByteOrder endian,
 bool SBData::SetDataFromCString(const char *data) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromCString, (const char *), data);
 
+
   if (!data) {
     return false;
   }
@@ -530,12 +532,14 @@ bool SBData::SetDataFromCString(const char *data) {
   else
     m_opaque_sp->SetData(buffer_sp);
 
+
   return true;
 }
 
 bool SBData::SetDataFromUInt64Array(uint64_t *array, size_t array_len) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromUInt64Array, (uint64_t *, size_t),
                      array, array_len);
+
 
   if (!array || array_len == 0) {
     return false;
@@ -551,12 +555,14 @@ bool SBData::SetDataFromUInt64Array(uint64_t *array, size_t array_len) {
   else
     m_opaque_sp->SetData(buffer_sp);
 
+
   return true;
 }
 
 bool SBData::SetDataFromUInt32Array(uint32_t *array, size_t array_len) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromUInt32Array, (uint32_t *, size_t),
                      array, array_len);
+
 
   if (!array || array_len == 0) {
     return false;
@@ -579,6 +585,7 @@ bool SBData::SetDataFromSInt64Array(int64_t *array, size_t array_len) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromSInt64Array, (int64_t *, size_t),
                      array, array_len);
 
+
   if (!array || array_len == 0) {
     return false;
   }
@@ -599,6 +606,7 @@ bool SBData::SetDataFromSInt64Array(int64_t *array, size_t array_len) {
 bool SBData::SetDataFromSInt32Array(int32_t *array, size_t array_len) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromSInt32Array, (int32_t *, size_t),
                      array, array_len);
+
 
   if (!array || array_len == 0) {
     return false;
@@ -621,6 +629,7 @@ bool SBData::SetDataFromDoubleArray(double *array, size_t array_len) {
   LLDB_RECORD_METHOD(bool, SBData, SetDataFromDoubleArray, (double *, size_t),
                      array, array_len);
 
+
   if (!array || array_len == 0) {
     return false;
   }
@@ -641,11 +650,12 @@ bool SBData::SetDataFromDoubleArray(double *array, size_t array_len) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBData>(Registry &R) {
+template <>
+void RegisterMethods<SBData>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBData, ());
   LLDB_REGISTER_CONSTRUCTOR(SBData, (const lldb::SBData &));
-  LLDB_REGISTER_METHOD(const lldb::SBData &, SBData, operator=,
-                       (const lldb::SBData &));
+  LLDB_REGISTER_METHOD(const lldb::SBData &,
+                       SBData, operator=,(const lldb::SBData &));
   LLDB_REGISTER_METHOD(bool, SBData, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBData, operator bool, ());
   LLDB_REGISTER_METHOD(uint8_t, SBData, GetAddressByteSize, ());
@@ -685,10 +695,12 @@ template <> void RegisterMethods<SBData>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBData, Append, (const lldb::SBData &));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBData, SBData, CreateDataFromCString,
                               (lldb::ByteOrder, uint32_t, const char *));
-  LLDB_REGISTER_STATIC_METHOD(lldb::SBData, SBData, CreateDataFromUInt64Array,
-                              (lldb::ByteOrder, uint32_t, uint64_t *, size_t));
-  LLDB_REGISTER_STATIC_METHOD(lldb::SBData, SBData, CreateDataFromUInt32Array,
-                              (lldb::ByteOrder, uint32_t, uint32_t *, size_t));
+  LLDB_REGISTER_STATIC_METHOD(
+      lldb::SBData, SBData, CreateDataFromUInt64Array,
+      (lldb::ByteOrder, uint32_t, uint64_t *, size_t));
+  LLDB_REGISTER_STATIC_METHOD(
+      lldb::SBData, SBData, CreateDataFromUInt32Array,
+      (lldb::ByteOrder, uint32_t, uint32_t *, size_t));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBData, SBData, CreateDataFromSInt64Array,
                               (lldb::ByteOrder, uint32_t, int64_t *, size_t));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBData, SBData, CreateDataFromSInt32Array,
@@ -708,5 +720,5 @@ template <> void RegisterMethods<SBData>(Registry &R) {
                        (double *, size_t));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

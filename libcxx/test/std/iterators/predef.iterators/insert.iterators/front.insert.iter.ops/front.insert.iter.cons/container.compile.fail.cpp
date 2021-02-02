@@ -17,8 +17,9 @@
 #include <iterator>
 #include <list>
 
-int main(int, char**) {
-  std::front_insert_iterator<std::list<int> > i = std::list<int>();
+int main(int, char**)
+{
+    std::front_insert_iterator<std::list<int> > i = std::list<int>();
 
   return 0;
 }

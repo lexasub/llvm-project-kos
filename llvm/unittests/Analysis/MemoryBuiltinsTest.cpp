@@ -46,4 +46,4 @@ TEST(AllocSize, AllocationBuiltinsTest) {
   // to plumb stuff around `isNoAliasFn`).
   EXPECT_FALSE(isAllocationFn(Caller.get(), TLI));
 }
-} // namespace
+}

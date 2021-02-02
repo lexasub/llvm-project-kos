@@ -20,26 +20,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::pair<long, char> T0;
-    typedef std::tuple<long long, short> T1;
-    T0 t0(2, 'a');
-    T1 t1 = t0;
-    assert(std::get<0>(t1) == 2);
-    assert(std::get<1>(t1) == short('a'));
-  }
+int main(int, char**)
+{
+    {
+        typedef std::pair<long, char> T0;
+        typedef std::tuple<long long, short> T1;
+        T0 t0(2, 'a');
+        T1 t1 = t0;
+        assert(std::get<0>(t1) == 2);
+        assert(std::get<1>(t1) == short('a'));
+    }
 #if TEST_STD_VER > 11
-  {
-    typedef std::pair<long, char> P0;
-    typedef std::tuple<long long, short> T1;
-    constexpr P0 p0(2, 'a');
-    constexpr T1 t1 = p0;
-    static_assert(std::get<0>(t1) == std::get<0>(p0), "");
-    static_assert(std::get<1>(t1) == std::get<1>(p0), "");
-    static_assert(std::get<0>(t1) == 2, "");
-    static_assert(std::get<1>(t1) == short('a'), "");
-  }
+    {
+        typedef std::pair<long, char> P0;
+        typedef std::tuple<long long, short> T1;
+        constexpr P0 p0(2, 'a');
+        constexpr T1 t1 = p0;
+        static_assert(std::get<0>(t1) == std::get<0>(p0), "");
+        static_assert(std::get<1>(t1) == std::get<1>(p0), "");
+        static_assert(std::get<0>(t1) == 2, "");
+        static_assert(std::get<1>(t1) == short('a'), "");
+    }
 #endif
 
   return 0;

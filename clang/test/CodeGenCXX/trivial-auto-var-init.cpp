@@ -6,7 +6,7 @@
 // PATTERN-NOT: undef
 // ZERO-NOT: undef
 
-template <typename T> void used(T &) noexcept;
+template<typename T> void used(T &) noexcept;
 
 extern "C" {
 
@@ -87,7 +87,7 @@ void test_block_captures_self_after_init() {
 void test_goto_unreachable_value() {
   goto jump;
   int oops;
-jump:
+ jump:
   used(oops);
 }
 
@@ -110,7 +110,7 @@ void test_goto(int i) {
   if (i)
     goto jump;
   int oops;
-jump:
+ jump:
   used(oops);
 }
 
@@ -228,7 +228,7 @@ void test_struct_vla(int size) {
     char c;
     void *ptr;
   } vla[size];
-  void *ptr = static_cast<void *>(vla);
+  void *ptr = static_cast<void*>(vla);
   used(ptr);
 }
 
@@ -276,7 +276,7 @@ void test_huge_uninit() {
 // PATTERN: store i8 99,
 // PATTERN: store i8 100,
 void test_huge_small_init() {
-  char big[65536] = {'a', 'b', 'c', 'd'};
+  char big[65536] = { 'a', 'b', 'c', 'd' };
   used(big);
 }
 
@@ -288,7 +288,7 @@ void test_huge_small_init() {
 // PATTERN:  call void @llvm.memcpy{{.*}} @__const.test_huge_larger_init.big, {{.*}}, i64 65536,
 // PATTERN-NOT: !annotation
 void test_huge_larger_init() {
-  char big[65536] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+  char big[65536] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
   used(big);
 }
 

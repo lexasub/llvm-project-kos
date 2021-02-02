@@ -1,15 +1,13 @@
 // RUN: %clang_cc1 -triple i686-windows-pc -emit-llvm -o - -mconstructor-aliases -O1 -disable-llvm-passes %s | FileCheck %s
 
-struct Base {
-  virtual ~Base();
-};
+struct Base { virtual ~Base(); };
 struct Derived : Base {
   virtual ~Derived();
   static Derived inst;
 };
 
-Base::~Base() {}
-Derived::~Derived() {}
+Base::~Base(){}
+Derived::~Derived(){}
 Derived Derived::inst;
 
 // CHECK: @"??1Derived@@UAE@XZ" = dso_local unnamed_addr alias void (%struct.Derived*), bitcast (void (%struct.Base*)* @"??1Base@@UAE@XZ" to void (%struct.Derived*)*)

@@ -8,8 +8,8 @@
 
 struct S {
   struct _long {
-    void *_pad;
-    const char *_ptr;
+      void* _pad;
+      const char* _ptr;
   };
 
   struct _short {
@@ -35,16 +35,14 @@ struct S {
     return _data._s._size & 1;
   }
 
-  const char *get_pointer() const {
+  const char* get_pointer() const {
     return is_long() ? _data._l._ptr : _data._s._ch;
   }
 };
 
+
 inline void side_effect(const void *arg) {
-  __asm__ __volatile__(""
-                       :
-                       : "r"(arg)
-                       : "memory");
+  __asm__ __volatile__("" : : "r" (arg) : "memory");
 }
 
 int main(int argc, char **argv) {

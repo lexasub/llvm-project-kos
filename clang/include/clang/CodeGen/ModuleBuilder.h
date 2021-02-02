@@ -16,26 +16,26 @@
 #include "clang/AST/ASTConsumer.h"
 
 namespace llvm {
-class Constant;
-class LLVMContext;
-class Module;
-class StringRef;
-} // namespace llvm
+  class Constant;
+  class LLVMContext;
+  class Module;
+  class StringRef;
+}
 
 namespace clang {
-class CodeGenOptions;
-class CoverageSourceInfo;
-class Decl;
-class DiagnosticsEngine;
-class GlobalDecl;
-class HeaderSearchOptions;
-class LangOptions;
-class PreprocessorOptions;
+  class CodeGenOptions;
+  class CoverageSourceInfo;
+  class Decl;
+  class DiagnosticsEngine;
+  class GlobalDecl;
+  class HeaderSearchOptions;
+  class LangOptions;
+  class PreprocessorOptions;
 
 namespace CodeGen {
-class CodeGenModule;
-class CGDebugInfo;
-} // namespace CodeGen
+  class CodeGenModule;
+  class CGDebugInfo;
+}
 
 /// The primary public interface to the Clang code generator.
 ///
@@ -86,7 +86,7 @@ public:
 
   /// Create a new \c llvm::Module after calling HandleTranslationUnit. This
   /// enable codegen in interactive processing environments.
-  llvm::Module *StartModule(llvm::StringRef ModuleName, llvm::LLVMContext &C);
+  llvm::Module* StartModule(llvm::StringRef ModuleName, llvm::LLVMContext &C);
 };
 
 /// CreateLLVMCodeGen - Create a CodeGenerator instance.
@@ -97,7 +97,7 @@ CodeGenerator *CreateLLVMCodeGen(DiagnosticsEngine &Diags,
                                  const HeaderSearchOptions &HeaderSearchOpts,
                                  const PreprocessorOptions &PreprocessorOpts,
                                  const CodeGenOptions &CGO,
-                                 llvm::LLVMContext &C,
+                                 llvm::LLVMContext& C,
                                  CoverageSourceInfo *CoverageInfo = nullptr);
 
 } // end namespace clang

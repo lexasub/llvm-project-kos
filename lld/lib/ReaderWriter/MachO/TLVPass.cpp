@@ -35,21 +35,27 @@ public:
     return DefinedAtom::typeTLVInitializerPtr;
   }
 
-  Alignment alignment() const override { return _is64 ? 8 : 4; }
+  Alignment alignment() const override {
+    return _is64 ? 8 : 4;
+  }
 
-  uint64_t size() const override { return _is64 ? 8 : 4; }
+  uint64_t size() const override {
+    return _is64 ? 8 : 4;
+  }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permRW_;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t zeros[] = {0x00, 0x00, 0x00, 0x00,
-                                    0x00, 0x00, 0x00, 0x00};
+    static const uint8_t zeros[] =
+      { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
     return llvm::makeArrayRef(zeros, size());
   }
 
-  StringRef slotName() const { return _name; }
+  StringRef slotName() const {
+    return _name;
+  }
 
 private:
   const bool _is64;
@@ -75,20 +81,20 @@ private:
 
         if (!allowTLV)
           return llvm::make_error<GenericError>(
-              "targeted OS version does not support use of thread local "
-              "variables in " +
-              atom->name() + " for architecture " + _ctx.archName());
+            "targeted OS version does not support use of thread local "
+            "variables in " + atom->name() + " for architecture " +
+            _ctx.archName());
 
         const Atom *target = ref->target();
         assert(target != nullptr);
 
         const DefinedAtom *tlvpEntry = makeTLVPEntry(target);
-        const_cast<Reference *>(ref)->setTarget(tlvpEntry);
+        const_cast<Reference*>(ref)->setTarget(tlvpEntry);
         _archHandler.updateReferenceToTLV(ref);
       }
     }
 
-    std::vector<const TLVPEntryAtom *> entries;
+    std::vector<const TLVPEntryAtom*> entries;
     entries.reserve(_targetToTLVP.size());
     for (auto &it : _targetToTLVP)
       entries.push_back(it.second);
@@ -110,10 +116,10 @@ private:
       return pos->second;
 
     auto *tlvpEntry = new (_file.allocator())
-        TLVPEntryAtom(_file, _ctx.is64Bit(), target->name());
+      TLVPEntryAtom(_file, _ctx.is64Bit(), target->name());
     _targetToTLVP[target] = tlvpEntry;
     const ArchHandler::ReferenceInfo &nlInfo =
-        _archHandler.stubInfo().nonLazyPointerReferenceToBinder;
+      _archHandler.stubInfo().nonLazyPointerReferenceToBinder;
     tlvpEntry->addReference(Reference::KindNamespace::mach_o, nlInfo.arch,
                             nlInfo.kind, 0, target, 0);
     return tlvpEntry;
@@ -121,8 +127,8 @@ private:
 
   const MachOLinkingContext &_ctx;
   mach_o::ArchHandler &_archHandler;
-  MachOFile &_file;
-  llvm::DenseMap<const Atom *, const TLVPEntryAtom *> _targetToTLVP;
+  MachOFile           &_file;
+  llvm::DenseMap<const Atom*, const TLVPEntryAtom*> _targetToTLVP;
 };
 
 void addTLVPass(PassManager &pm, const MachOLinkingContext &ctx) {

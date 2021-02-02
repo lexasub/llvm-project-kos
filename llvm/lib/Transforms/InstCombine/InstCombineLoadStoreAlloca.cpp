@@ -31,7 +31,7 @@ using namespace PatternMatch;
 
 #define DEBUG_TYPE "instcombine"
 
-STATISTIC(NumDeadStore, "Number of dead stores eliminated");
+STATISTIC(NumDeadStore,    "Number of dead stores eliminated");
 STATISTIC(NumGlobalCopies, "Number of allocas copied from constant global");
 
 /// isOnlyCopiedFromConstantGlobal - Recursively walk the uses of a (derived)
@@ -42,8 +42,8 @@ STATISTIC(NumGlobalCopies, "Number of allocas copied from constant global");
 /// the alloca, and if the source pointer is a pointer to a constant global, we
 /// can optimize this.
 static bool
-isOnlyCopiedFromConstantMemory(AAResults *AA, Value *V,
-                               MemTransferInst *&TheCopy,
+isOnlyCopiedFromConstantMemory(AAResults *AA,
+                               Value *V, MemTransferInst *&TheCopy,
                                SmallVectorImpl<Instruction *> &ToDelete) {
   // We track lifetime intrinsics as we encounter them.  If we decide to go
   // ahead and replace the value with the global, this lets the caller quickly
@@ -59,8 +59,7 @@ isOnlyCopiedFromConstantMemory(AAResults *AA, Value *V,
 
       if (auto *LI = dyn_cast<LoadInst>(I)) {
         // Ignore non-volatile loads, they are always ok.
-        if (!LI->isSimple())
-          return false;
+        if (!LI->isSimple()) return false;
         continue;
       }
 
@@ -118,23 +117,19 @@ isOnlyCopiedFromConstantMemory(AAResults *AA, Value *V,
       // If the transfer is using the alloca as a source of the transfer, then
       // ignore it since it is a load (unless the transfer is volatile).
       if (U.getOperandNo() == 1) {
-        if (MI->isVolatile())
-          return false;
+        if (MI->isVolatile()) return false;
         continue;
       }
 
       // If we already have seen a copy, reject the second one.
-      if (TheCopy)
-        return false;
+      if (TheCopy) return false;
 
       // If the pointer has been offset from the start of the alloca, we can't
       // safely handle this.
-      if (IsOffset)
-        return false;
+      if (IsOffset) return false;
 
       // If the memintrinsic isn't using the alloca as the dest, reject it.
-      if (U.getOperandNo() != 0)
-        return false;
+      if (U.getOperandNo() != 0) return false;
 
       // If the source of the memcpy/move is not a constant global, reject it.
       if (!AA->pointsToConstantMemory(MI->getSource()))
@@ -151,7 +146,8 @@ isOnlyCopiedFromConstantMemory(AAResults *AA, Value *V,
 /// modified by a copy from a constant global.  If we can prove this, we can
 /// replace any uses of the alloca with uses of the global directly.
 static MemTransferInst *
-isOnlyCopiedFromConstantMemory(AAResults *AA, AllocaInst *AI,
+isOnlyCopiedFromConstantMemory(AAResults *AA,
+                               AllocaInst *AI,
                                SmallVectorImpl<Instruction *> &ToDelete) {
   MemTransferInst *TheCopy = nullptr;
   if (isOnlyCopiedFromConstantMemory(AA, AI, TheCopy, ToDelete))
@@ -286,9 +282,9 @@ void PointerReplacer::replace(Instruction *I) {
   if (auto *LT = dyn_cast<LoadInst>(I)) {
     auto *V = getReplacement(LT->getPointerOperand());
     assert(V && "Operand not replaced");
-    auto *NewI =
-        new LoadInst(LT->getType(), V, "", LT->isVolatile(), LT->getAlign(),
-                     LT->getOrdering(), LT->getSyncScopeID());
+    auto *NewI = new LoadInst(LT->getType(), V, "", LT->isVolatile(),
+                              LT->getAlign(), LT->getOrdering(),
+                              LT->getSyncScopeID());
     NewI->takeName(LT);
     copyMetadataForLoad(*NewI, *LT);
 
@@ -367,8 +363,8 @@ Instruction *InstCombinerImpl::visitAllocaInst(AllocaInst &AI) {
       // This is helpful if the array size is a complicated expression not used
       // elsewhere.
       if (AI.isArrayAllocation())
-        return replaceOperand(
-            AI, 0, ConstantInt::get(AI.getArraySize()->getType(), 1));
+        return replaceOperand(AI, 0,
+            ConstantInt::get(AI.getArraySize()->getType(), 1));
 
       // Get the first instruction in the entry block.
       BasicBlock &EntryBlock = AI.getParent()->getParent()->getEntryBlock();
@@ -404,12 +400,11 @@ Instruction *InstCombinerImpl::visitAllocaInst(AllocaInst &AI) {
   // foo() { int A[] = {1,2,3,4,5,6,7,8,9...}; }" if 'A' is only subsequently
   // read.
   SmallVector<Instruction *, 4> ToDelete;
-  if (MemTransferInst *Copy =
-          isOnlyCopiedFromConstantMemory(AA, &AI, ToDelete)) {
+  if (MemTransferInst *Copy = isOnlyCopiedFromConstantMemory(AA, &AI, ToDelete)) {
     Value *TheSrc = Copy->getSource();
     Align AllocaAlign = AI.getAlign();
-    Align SourceAlign =
-        getOrEnforceKnownAlignment(TheSrc, AllocaAlign, DL, &AI, &AC, &DT);
+    Align SourceAlign = getOrEnforceKnownAlignment(
+      TheSrc, AllocaAlign, DL, &AI, &AC, &DT);
     if (AllocaAlign <= SourceAlign &&
         isDereferenceableForAllocaSize(TheSrc, &AI, DL)) {
       LLVM_DEBUG(dbgs() << "Found alloca equal to global: " << AI << '\n');
@@ -604,7 +599,7 @@ static Instruction *combineLoadToOperationType(InstCombinerImpl &IC,
         return nullptr;
     }
 
-    if (auto *CI = dyn_cast<CastInst>(LI.user_back()))
+    if (auto* CI = dyn_cast<CastInst>(LI.user_back()))
       if (CI->isNoopCast(DL) && LI.getType()->isPtrOrPtrVectorTy() ==
                                     CI->getDestTy()->isPtrOrPtrVectorTy())
         if (!LI.isAtomic() || isSupportedAtomicType(CI->getDestTy())) {
@@ -637,14 +632,13 @@ static Instruction *unpackLoadToAggregate(InstCombinerImpl &IC, LoadInst &LI) {
     // If the struct only have one element, we unpack.
     auto NumElements = ST->getNumElements();
     if (NumElements == 1) {
-      LoadInst *NewLoad =
-          IC.combineLoadToNewType(LI, ST->getTypeAtIndex(0U), ".unpack");
+      LoadInst *NewLoad = IC.combineLoadToNewType(LI, ST->getTypeAtIndex(0U),
+                                                  ".unpack");
       AAMDNodes AAMD;
       LI.getAAMetadata(AAMD);
       NewLoad->setAAMetadata(AAMD);
-      return IC.replaceInstUsesWith(
-          LI,
-          IC.Builder.CreateInsertValue(UndefValue::get(T), NewLoad, 0, Name));
+      return IC.replaceInstUsesWith(LI, IC.Builder.CreateInsertValue(
+        UndefValue::get(T), NewLoad, 0, Name));
     }
 
     // We don't want to break loads with padding here as we'd loose
@@ -662,8 +656,8 @@ static Instruction *unpackLoadToAggregate(InstCombinerImpl &IC, LoadInst &LI) {
     Value *V = UndefValue::get(T);
     for (unsigned i = 0; i < NumElements; i++) {
       Value *Indices[2] = {
-          Zero,
-          ConstantInt::get(IdxType, i),
+        Zero,
+        ConstantInt::get(IdxType, i),
       };
       auto *Ptr = IC.Builder.CreateInBoundsGEP(ST, Addr, makeArrayRef(Indices),
                                                Name + ".elt");
@@ -689,9 +683,8 @@ static Instruction *unpackLoadToAggregate(InstCombinerImpl &IC, LoadInst &LI) {
       AAMDNodes AAMD;
       LI.getAAMetadata(AAMD);
       NewLoad->setAAMetadata(AAMD);
-      return IC.replaceInstUsesWith(
-          LI,
-          IC.Builder.CreateInsertValue(UndefValue::get(T), NewLoad, 0, Name));
+      return IC.replaceInstUsesWith(LI, IC.Builder.CreateInsertValue(
+        UndefValue::get(T), NewLoad, 0, Name));
     }
 
     // Bail out if the array is too large. Ideally we would like to optimize
@@ -713,8 +706,8 @@ static Instruction *unpackLoadToAggregate(InstCombinerImpl &IC, LoadInst &LI) {
     uint64_t Offset = 0;
     for (uint64_t i = 0; i < NumElements; i++) {
       Value *Indices[2] = {
-          Zero,
-          ConstantInt::get(IdxType, i),
+        Zero,
+        ConstantInt::get(IdxType, i),
       };
       auto *Ptr = IC.Builder.CreateInBoundsGEP(AT, Addr, makeArrayRef(Indices),
                                                Name + ".elt");
@@ -784,7 +777,7 @@ static bool isObjectSizeLessThanOrEq(Value *V, uint64_t MaxSize,
       uint64_t TypeSize = DL.getTypeAllocSize(AI->getAllocatedType());
       // Make sure that, even if the multiplication below would wrap as an
       // uint64_t, we still do the right thing.
-      if ((CS->getValue().zextOrSelf(128) * APInt(128, TypeSize)).ugt(MaxSize))
+      if ((CS->getValue().zextOrSelf(128)*APInt(128, TypeSize)).ugt(MaxSize))
         return false;
       continue;
     }
@@ -868,7 +861,7 @@ static bool canReplaceGEPIdxWithZero(InstCombinerImpl &IC,
   // address being computed might be before the base address determined by the
   // first non-zero index.
   auto IsAllNonNegative = [&]() {
-    for (unsigned i = Idx + 1, e = GEPI->getNumOperands(); i != e; ++i) {
+    for (unsigned i = Idx+1, e = GEPI->getNumOperands(); i != e; ++i) {
       KnownBits Known = IC.computeKnownBits(GEPI->getOperand(i), 0, MemI);
       if (Known.isNonNegative())
         continue;
@@ -883,7 +876,7 @@ static bool canReplaceGEPIdxWithZero(InstCombinerImpl &IC,
   // (rendering the IsAllNonNegative() check below insufficient). We can do
   // better, ignoring zero indices (and other indices we can prove small
   // enough not to wrap).
-  if (Idx + 1 != GEPI->getNumOperands() && !GEPI->isInBounds())
+  if (Idx+1 != GEPI->getNumOperands() && !GEPI->isInBounds())
     return false;
 
   // Note that isObjectSizeLessThanOrEq will return true only if the pointer is
@@ -902,8 +895,8 @@ static Instruction *replaceGEPIdxWithZero(InstCombinerImpl &IC, Value *Ptr,
     unsigned Idx;
     if (canReplaceGEPIdxWithZero(IC, GEPI, &MemI, Idx)) {
       Instruction *NewGEPI = GEPI->clone();
-      NewGEPI->setOperand(
-          Idx, ConstantInt::get(GEPI->getOperand(Idx)->getType(), 0));
+      NewGEPI->setOperand(Idx,
+        ConstantInt::get(GEPI->getOperand(Idx)->getType(), 0));
       NewGEPI->insertBefore(GEPI);
       MemI.setOperand(MemI.getPointerOperandIndex(), NewGEPI);
       return NewGEPI;
@@ -953,8 +946,8 @@ Instruction *InstCombinerImpl::visitLoadInst(LoadInst &LI) {
 
   // Replace GEP indices if possible.
   if (Instruction *NewGEPI = replaceGEPIdxWithZero(*this, Op, LI)) {
-    Worklist.push(NewGEPI);
-    return &LI;
+      Worklist.push(NewGEPI);
+      return &LI;
   }
 
   if (Instruction *Res = unpackLoadToAggregate(*this, LI))
@@ -977,8 +970,7 @@ Instruction *InstCombinerImpl::visitLoadInst(LoadInst &LI) {
 
   // None of the following transforms are legal for volatile/ordered atomic
   // loads.  Most of them do apply for unordered atomics.
-  if (!LI.isUnordered())
-    return nullptr;
+  if (!LI.isUnordered()) return nullptr;
 
   // load(gep null, ...) -> unreachable
   // load null/undef -> unreachable
@@ -1028,12 +1020,14 @@ Instruction *InstCombinerImpl::visitLoadInst(LoadInst &LI) {
 
       // load (select (cond, null, P)) -> load P
       if (isa<ConstantPointerNull>(SI->getOperand(1)) &&
-          !NullPointerIsDefined(SI->getFunction(), LI.getPointerAddressSpace()))
+          !NullPointerIsDefined(SI->getFunction(),
+                                LI.getPointerAddressSpace()))
         return replaceOperand(LI, 0, SI->getOperand(2));
 
       // load (select (cond, P, null)) -> load P
       if (isa<ConstantPointerNull>(SI->getOperand(2)) &&
-          !NullPointerIsDefined(SI->getFunction(), LI.getPointerAddressSpace()))
+          !NullPointerIsDefined(SI->getFunction(),
+                                LI.getPointerAddressSpace()))
         return replaceOperand(LI, 0, SI->getOperand(1));
     }
   }
@@ -1066,12 +1060,11 @@ static Value *likeBitCastFromVector(InstCombinerImpl &IC, Value *V) {
     else if (U != W)
       return nullptr;
     auto *CI = dyn_cast<ConstantInt>(E->getIndexOperand());
-    if (!CI || IV->getNumIndices() != 1 ||
-        CI->getZExtValue() != *IV->idx_begin())
+    if (!CI || IV->getNumIndices() != 1 || CI->getZExtValue() != *IV->idx_begin())
       return nullptr;
     V = IV->getAggregateOperand();
   }
-  if (!isa<UndefValue>(V) || !U)
+  if (!isa<UndefValue>(V) ||!U)
     return nullptr;
 
   auto *UT = cast<VectorType>(U->getType());
@@ -1102,10 +1095,10 @@ static Value *likeBitCastFromVector(InstCombinerImpl &IC, Value *V) {
 /// where we can we should match the type of a store to the type of value being
 /// stored.
 ///
-/// However, this routine must never change the width of a store or the number
-/// of stores as that would introduce a semantic change. This combine is
-/// expected to be a semantic no-op which just allows stores to more closely
-/// model the types of their incoming values.
+/// However, this routine must never change the width of a store or the number of
+/// stores as that would introduce a semantic change. This combine is expected to
+/// be a semantic no-op which just allows stores to more closely model the types
+/// of their incoming values.
 ///
 /// Currently, we also refuse to change the precise type used for an atomic or
 /// volatile store. This is debatable, and might be reasonable to change later.
@@ -1194,8 +1187,8 @@ static bool unpackStoreToAggregate(InstCombinerImpl &IC, StoreInst &SI) {
     auto *Zero = ConstantInt::get(IdxType, 0);
     for (unsigned i = 0; i < Count; i++) {
       Value *Indices[2] = {
-          Zero,
-          ConstantInt::get(IdxType, i),
+        Zero,
+        ConstantInt::get(IdxType, i),
       };
       auto *Ptr = IC.Builder.CreateInBoundsGEP(ST, Addr, makeArrayRef(Indices),
                                                AddrName);
@@ -1242,8 +1235,8 @@ static bool unpackStoreToAggregate(InstCombinerImpl &IC, StoreInst &SI) {
     uint64_t Offset = 0;
     for (uint64_t i = 0; i < NumElements; i++) {
       Value *Indices[2] = {
-          Zero,
-          ConstantInt::get(IdxType, i),
+        Zero,
+        ConstantInt::get(IdxType, i),
       };
       auto *Ptr = IC.Builder.CreateInBoundsGEP(AT, Addr, makeArrayRef(Indices),
                                                AddrName);
@@ -1272,15 +1265,16 @@ static bool unpackStoreToAggregate(InstCombinerImpl &IC, StoreInst &SI) {
 ///
 static bool equivalentAddressValues(Value *A, Value *B) {
   // Test if the values are trivially equivalent.
-  if (A == B)
-    return true;
+  if (A == B) return true;
 
   // Test if the values come form identical arithmetic instructions.
   // This uses isIdenticalToWhenDefined instead of isIdenticalTo because
   // its only used to compare two uses within the same basic block, which
   // means that they'll always either have the same value or one of them
   // will have an undefined value.
-  if (isa<BinaryOperator>(A) || isa<CastInst>(A) || isa<PHINode>(A) ||
+  if (isa<BinaryOperator>(A) ||
+      isa<CastInst>(A) ||
+      isa<PHINode>(A) ||
       isa<GetElementPtrInst>(A))
     if (Instruction *BI = dyn_cast<Instruction>(B))
       if (cast<Instruction>(A)->isIdenticalToWhenDefined(BI))
@@ -1365,14 +1359,13 @@ Instruction *InstCombinerImpl::visitStoreInst(StoreInst &SI) {
 
   // Replace GEP indices if possible.
   if (Instruction *NewGEPI = replaceGEPIdxWithZero(*this, Ptr, SI)) {
-    Worklist.push(NewGEPI);
-    return &SI;
+      Worklist.push(NewGEPI);
+      return &SI;
   }
 
   // Don't hack volatile/ordered stores.
   // FIXME: Some bits are legal for ordered atomic stores; needs refactoring.
-  if (!SI.isUnordered())
-    return nullptr;
+  if (!SI.isUnordered()) return nullptr;
 
   // If the RHS is an alloca with a single use, zapify the store, making the
   // alloca dead.
@@ -1410,8 +1403,8 @@ Instruction *InstCombinerImpl::visitStoreInst(StoreInst &SI) {
 
     if (StoreInst *PrevSI = dyn_cast<StoreInst>(BBI)) {
       // Prev store isn't volatile, and stores to the same location?
-      if (PrevSI->isUnordered() &&
-          equivalentAddressValues(PrevSI->getOperand(1), SI.getOperand(1))) {
+      if (PrevSI->isUnordered() && equivalentAddressValues(PrevSI->getOperand(1),
+                                                        SI.getOperand(1))) {
         ++NumDeadStore;
         // Manually add back the original store to the worklist now, so it will
         // be processed after the operands of the removed store, as this may
@@ -1447,7 +1440,7 @@ Instruction *InstCombinerImpl::visitStoreInst(StoreInst &SI) {
   if (canSimplifyNullStoreOrGEP(SI)) {
     if (!isa<UndefValue>(Val))
       return replaceOperand(SI, 0, UndefValue::get(Val->getType()));
-    return nullptr; // Do not modify these!
+    return nullptr;  // Do not modify these!
   }
 
   // store undef, Ptr -> noop
@@ -1497,7 +1490,7 @@ bool InstCombinerImpl::mergeStoreIntoSuccessor(StoreInst &SI) {
     // Skip over debugging info.
     while (isa<DbgInfoIntrinsic>(BBI) ||
            (isa<BitCastInst>(BBI) && BBI->getType()->isPointerTy())) {
-      if (BBI == OtherBB->begin())
+      if (BBI==OtherBB->begin())
         return false;
       --BBI;
     }

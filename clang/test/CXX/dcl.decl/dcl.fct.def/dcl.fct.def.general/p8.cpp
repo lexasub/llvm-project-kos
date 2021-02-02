@@ -2,8 +2,8 @@
 // expected-no-diagnostics
 
 using size_t = decltype(sizeof(0));
-template <typename T> struct check;
-template <size_t N> struct check<const char[N]> {};
+template<typename T> struct check;
+template<size_t N> struct check<const char[N]> {};
 
 constexpr bool startswith(const char *p, const char *q) {
   return !*q || (*p == *q && startswith(p + 1, q + 1));

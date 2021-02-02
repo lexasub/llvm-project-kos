@@ -26,36 +26,34 @@
 #include "test_allocator.h"
 
 template <class T>
-struct some_comp {
-  typedef T value_type;
-  some_comp& operator=(const some_comp&);
-  bool operator()(const T&, const T&) const { return false; }
+struct some_comp
+{
+    typedef T value_type;
+    some_comp& operator=(const some_comp&);
+    bool operator()(const T&, const T&) const { return false; }
 };
 
-int main(int, char**) {
-  typedef std::pair<const MoveOnly, MoveOnly> V;
-  {
-    typedef std::multimap<MoveOnly, MoveOnly> C;
-    static_assert(std::is_nothrow_move_assignable<C>::value, "");
-  }
-  {
-    typedef std::multimap<MoveOnly, MoveOnly, std::less<MoveOnly>,
-                          test_allocator<V> >
-        C;
-    static_assert(!std::is_nothrow_move_assignable<C>::value, "");
-  }
+int main(int, char**)
+{
+    typedef std::pair<const MoveOnly, MoveOnly> V;
+    {
+        typedef std::multimap<MoveOnly, MoveOnly> C;
+        static_assert(std::is_nothrow_move_assignable<C>::value, "");
+    }
+    {
+        typedef std::multimap<MoveOnly, MoveOnly, std::less<MoveOnly>, test_allocator<V>> C;
+        static_assert(!std::is_nothrow_move_assignable<C>::value, "");
+    }
 #if defined(_LIBCPP_VERSION)
-  {
-    typedef std::multimap<MoveOnly, MoveOnly, std::less<MoveOnly>,
-                          other_allocator<V> >
-        C;
-    static_assert(std::is_nothrow_move_assignable<C>::value, "");
-  }
+    {
+        typedef std::multimap<MoveOnly, MoveOnly, std::less<MoveOnly>, other_allocator<V>> C;
+        static_assert(std::is_nothrow_move_assignable<C>::value, "");
+    }
 #endif // _LIBCPP_VERSION
-  {
-    typedef std::multimap<MoveOnly, MoveOnly, some_comp<MoveOnly> > C;
-    static_assert(!std::is_nothrow_move_assignable<C>::value, "");
-  }
+    {
+        typedef std::multimap<MoveOnly, MoveOnly, some_comp<MoveOnly>> C;
+        static_assert(!std::is_nothrow_move_assignable<C>::value, "");
+    }
 
   return 0;
 }

@@ -27,8 +27,9 @@ public:
                                   MachinePointerInfo SrcPtrInfo) const override;
 
   unsigned getCommonMaxStoresPerMemFunc() const { return 128; }
+
 };
 
-} // namespace llvm
+}
 
 #endif

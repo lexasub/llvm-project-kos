@@ -17,9 +17,9 @@
 #include "clang/Tooling/Core/Replacement.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Support/MemoryBuffer.h"
+#include <algorithm>
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include <algorithm>
 
 namespace clang {
 namespace clangd {
@@ -847,7 +847,7 @@ TEST(RenameTest, WithinFileRename) {
 TEST(RenameTest, Renameable) {
   struct Case {
     const char *Code;
-    const char *ErrorMessage; // null if no error
+    const char* ErrorMessage; // null if no error
     bool IsHeaderFile;
     const SymbolIndex *Index;
     llvm::StringRef NewName = "DummyName";
@@ -1032,7 +1032,7 @@ TEST(RenameTest, Renameable) {
        nullptr},
   };
 
-  for (const auto &Case : Cases) {
+  for (const auto& Case : Cases) {
     SCOPED_TRACE(Case.Code);
     Annotations T(Case.Code);
     TestTU TU = TestTU::withCode(T.code());
@@ -1622,43 +1622,43 @@ TEST(CrossFileRenameTests, adjustRenameRanges) {
     llvm::StringRef IndexedCode;
     llvm::StringRef DraftCode;
   } Tests[] = {
-      {
-          // both line and column are changed, not a near miss.
-          R"cpp(
+    {
+      // both line and column are changed, not a near miss.
+      R"cpp(
         int [[x]] = 0;
       )cpp",
-          R"cpp(
+      R"cpp(
         // insert a line.
         double x = 0;
       )cpp",
-      },
-      {
-          // subset.
-          R"cpp(
+    },
+    {
+      // subset.
+      R"cpp(
         int [[x]] = 0;
       )cpp",
-          R"cpp(
+      R"cpp(
         int [[x]] = 0;
         {int x = 0; }
       )cpp",
-      },
-      {
-          // shift columns.
-          R"cpp(int [[x]] = 0; void foo(int x);)cpp",
-          R"cpp(double [[x]] = 0; void foo(double x);)cpp",
-      },
-      {
-          // shift lines.
-          R"cpp(
+    },
+    {
+      // shift columns.
+      R"cpp(int [[x]] = 0; void foo(int x);)cpp",
+      R"cpp(double [[x]] = 0; void foo(double x);)cpp",
+    },
+    {
+      // shift lines.
+      R"cpp(
         int [[x]] = 0;
         void foo(int x);
       )cpp",
-          R"cpp(
+      R"cpp(
         // insert a line.
         int [[x]] = 0;
         void foo(int x);
       )cpp",
-      },
+    },
   };
   LangOptions LangOpts;
   LangOpts.CPlusPlus = true;
@@ -1668,7 +1668,7 @@ TEST(CrossFileRenameTests, adjustRenameRanges) {
     auto ActualRanges = adjustRenameRanges(
         Draft.code(), "x", Annotations(T.IndexedCode).ranges(), LangOpts);
     if (!ActualRanges)
-      EXPECT_THAT(Draft.ranges(), testing::IsEmpty());
+       EXPECT_THAT(Draft.ranges(), testing::IsEmpty());
     else
       EXPECT_THAT(Draft.ranges(),
                   testing::UnorderedElementsAreArray(*ActualRanges));
@@ -1681,62 +1681,69 @@ TEST(RangePatchingHeuristic, GetMappedRanges) {
   struct {
     llvm::StringRef IndexedCode;
     llvm::StringRef LexedCode;
-  } Tests[] = {{
-                   // no lexed ranges.
-                   "[[]]",
-                   "",
-               },
-               {
-                   // both line and column are changed, not a near miss.
-                   R"([[]])",
-                   R"(
+  } Tests[] = {
+    {
+      // no lexed ranges.
+      "[[]]",
+      "",
+    },
+    {
+      // both line and column are changed, not a near miss.
+      R"([[]])",
+      R"(
         [[]]
       )",
-               },
-               {// subset.
-                "[[]]", "^[[]]  [[]]"},
-               {// shift columns.
-                "[[]]   [[]]", "  ^[[]]   ^[[]]  [[]]"},
-               {
-                   R"(
+    },
+    {
+      // subset.
+      "[[]]",
+      "^[[]]  [[]]"
+    },
+    {
+      // shift columns.
+      "[[]]   [[]]",
+      "  ^[[]]   ^[[]]  [[]]"
+    },
+    {
+      R"(
         [[]]
 
         [[]] [[]]
       )",
-                   R"(
+      R"(
         // insert a line
         ^[[]]
 
         ^[[]] ^[[]]
       )",
-               },
-               {
-                   R"(
+    },
+    {
+      R"(
         [[]]
 
         [[]] [[]]
       )",
-                   R"(
+      R"(
         // insert a line
         ^[[]]
           ^[[]]  ^[[]] // column is shifted.
       )",
-               },
-               {
-                   R"(
+    },
+    {
+      R"(
         [[]]
 
         [[]] [[]]
       )",
-                   R"(
+      R"(
         // insert a line
         [[]]
 
           [[]]  [[]] // not mapped (both line and column are changed).
       )",
-               },
-               {
-                   R"(
+    },
+    {
+      R"(
         [[]]
                 [[]]
 
@@ -1745,7 +1752,7 @@ TEST(RangePatchingHeuristic, GetMappedRanges) {
 
         }
       )",
-                   R"(
+      R"(
         // insert a new line
         ^[[]]
                 ^[[]]
@@ -1754,29 +1761,31 @@ TEST(RangePatchingHeuristic, GetMappedRanges) {
                   ^[[]]
             [[]] // additional range
       )",
-               },
-               {
-                   // non-distinct result (two best results), not a near miss
-                   R"(
+    },
+    {
+      // non-distinct result (two best results), not a near miss
+      R"(
         [[]]
             [[]]
             [[]]
       )",
-                   R"(
+      R"(
         [[]]
         [[]]
             [[]]
             [[]]
       )",
-               }};
+    }
+  };
   for (const auto &T : Tests) {
     SCOPED_TRACE(T.IndexedCode);
     auto Lexed = Annotations(T.LexedCode);
     auto LexedRanges = Lexed.ranges();
     std::vector<Range> ExpectedMatches;
     for (auto P : Lexed.points()) {
-      auto Match = llvm::find_if(LexedRanges,
-                                 [&P](const Range &R) { return R.start == P; });
+      auto Match = llvm::find_if(LexedRanges, [&P](const Range& R) {
+        return R.start == P;
+      });
       ASSERT_NE(Match, LexedRanges.end());
       ExpectedMatches.push_back(*Match);
     }
@@ -1795,14 +1804,14 @@ TEST(CrossFileRenameTests, adjustmentCost) {
     llvm::StringRef RangeCode;
     size_t ExpectedCost;
   } Tests[] = {
-      {
-          R"(
+    {
+      R"(
         $idx[[]]$lex[[]] // diff: 0
       )",
-          0,
-      },
-      {
-          R"(
+      0,
+    },
+    {
+      R"(
         $idx[[]]
         $lex[[]] // line diff: +1
                        $idx[[]]
@@ -1814,9 +1823,10 @@ TEST(CrossFileRenameTests, adjustmentCost) {
 
           $lex[[]] // line diff: +2
       )",
-          1 + 1},
-      {
-          R"(
+      1 + 1
+    },
+    {
+       R"(
         $idx[[]]
         $lex[[]] // line diff: +1
                        $idx[[]]
@@ -1827,9 +1837,10 @@ TEST(CrossFileRenameTests, adjustmentCost) {
 
         $lex[[]] // line diff: +3
       )",
-          1 + 1 + 1},
-      {
-          R"(
+      1 + 1 + 1
+    },
+    {
+       R"(
         $idx[[]]
 
 
@@ -1840,9 +1851,10 @@ TEST(CrossFileRenameTests, adjustmentCost) {
         $idx[[]]
         $lex[[]] // line diff: +1
       )",
-          3 + 1 + 1},
-      {
-          R"(
+      3 + 1 + 1
+    },
+    {
+      R"(
         $idx[[]]
         $lex[[]] // line diff: +1
                        $lex[[]] // line diff: -2
@@ -1853,33 +1865,37 @@ TEST(CrossFileRenameTests, adjustmentCost) {
 
         $lex[[]] // line diff: +3
       )",
-          1 + 3 + 5},
-      {
-          R"(
+      1 + 3 + 5
+    },
+    {
+      R"(
                        $idx[[]] $lex[[]] // column diff: +1
         $idx[[]]$lex[[]] // diff: 0
       )",
-          1},
-      {
-          R"(
+      1
+    },
+    {
+      R"(
         $idx[[]]
         $lex[[]] // diff: +1
                        $idx[[]] $lex[[]] // column diff: +1
         $idx[[]]$lex[[]] // diff: 0
       )",
-          1 + 1 + 1},
-      {
-          R"(
+      1 + 1 + 1
+    },
+    {
+      R"(
         $idx[[]] $lex[[]] // column diff: +1
       )",
-          1},
-      {
-          R"(
+      1
+    },
+    {
+      R"(
         // column diffs: +1, +2, +3
         $idx[[]] $lex[[]] $idx[[]]  $lex[[]] $idx[[]]   $lex[[]]
       )",
-          1 + 1 + 1,
-      },
+      1 + 1 + 1,
+    },
   };
   for (const auto &T : Tests) {
     SCOPED_TRACE(T.RangeCode);

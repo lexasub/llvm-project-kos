@@ -36,10 +36,10 @@
 using namespace llvm;
 
 static const char *const metaNames[] = {
-    // See http://en.wikipedia.org/wiki/Metasyntactic_variable
-    "foo",    "bar",  "baz",  "quux",   "barney", "snork",
-    "zot",    "blam", "hoge", "wibble", "wobble", "widget",
-    "wombat", "ham",  "eggs", "pluto",  "spam"};
+  // See http://en.wikipedia.org/wiki/Metasyntactic_variable
+  "foo", "bar", "baz", "quux", "barney", "snork", "zot", "blam", "hoge",
+  "wibble", "wobble", "widget", "wombat", "ham", "eggs", "pluto", "spam"
+};
 
 namespace {
 // This PRNG is from the ISO C spec. It is intentionally simple and
@@ -176,7 +176,9 @@ INITIALIZE_PASS_END(MetaRenamer, "metarenamer",
 //
 // MetaRenamer - Rename everything with metasyntactic names.
 //
-ModulePass *llvm::createMetaRenamerPass() { return new MetaRenamer(); }
+ModulePass *llvm::createMetaRenamerPass() {
+  return new MetaRenamer();
+}
 
 PreservedAnalyses MetaRenamerPass::run(Module &M, ModuleAnalysisManager &AM) {
   FunctionAnalysisManager &FAM =

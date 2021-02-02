@@ -22,9 +22,9 @@ std::unique_ptr<LLVMTargetMachine> createTargetMachine() {
   std::string Error;
   const Target *TheTarget = TargetRegistry::lookupTarget(TT, Error);
 
-  return std::unique_ptr<LLVMTargetMachine>(
-      static_cast<LLVMTargetMachine *>(TheTarget->createTargetMachine(
-          TT, CPU, FS, TargetOptions(), None, None, CodeGenOpt::Default)));
+  return std::unique_ptr<LLVMTargetMachine>(static_cast<LLVMTargetMachine*>(
+      TheTarget->createTargetMachine(TT, CPU, FS, TargetOptions(), None, None,
+                                     CodeGenOpt::Default)));
 }
 
 std::unique_ptr<AArch64InstrInfo> createInstrInfo(TargetMachine *TM) {
@@ -44,15 +44,16 @@ void runChecks(
     std::function<void(AArch64InstrInfo &, MachineFunction &)> Checks) {
   LLVMContext Context;
 
-  auto MIRString = "--- |\n"
-                   "  declare void @sizes()\n" +
-                   InputIRSnippet.str() +
-                   "...\n"
-                   "---\n"
-                   "name: sizes\n"
-                   "body: |\n"
-                   "  bb.0:\n" +
-                   InputMIRSnippet.str();
+  auto MIRString =
+    "--- |\n"
+    "  declare void @sizes()\n"
+    + InputIRSnippet.str() +
+    "...\n"
+    "---\n"
+    "name: sizes\n"
+    "body: |\n"
+    "  bb.0:\n"
+    + InputMIRSnippet.str();
 
   std::unique_ptr<MemoryBuffer> MBuffer = MemoryBuffer::getMemBuffer(MIRString);
   std::unique_ptr<MIRParser> MParser =
@@ -101,14 +102,12 @@ TEST(InstSizes, Authenticated) {
 
   runChecks(TM.get(), II.get(), "",
             "    \n"
-            "    frame-destroy AUTIASP implicit-def $lr, implicit killed $lr, "
-            "implicit $sp\n",
+            "    frame-destroy AUTIASP implicit-def $lr, implicit killed $lr, implicit $sp\n",
             isAuthInst);
 
   runChecks(TM.get(), II.get(), "",
             "    \n"
-            "    frame-destroy AUTIBSP implicit-def $lr, implicit killed $lr, "
-            "implicit $sp\n",
+            "    frame-destroy AUTIBSP implicit-def $lr, implicit killed $lr, implicit $sp\n",
             isAuthInst);
 }
 
@@ -117,9 +116,8 @@ TEST(InstSizes, STACKMAP) {
   ASSERT_TRUE(TM);
   std::unique_ptr<AArch64InstrInfo> II = createInstrInfo(TM.get());
 
-  runChecks(TM.get(), II.get(), "",
-            "    STACKMAP 0, 16\n"
-            "    STACKMAP 1, 32\n",
+  runChecks(TM.get(), II.get(), "", "    STACKMAP 0, 16\n"
+                                    "    STACKMAP 1, 32\n",
             [](AArch64InstrInfo &II, MachineFunction &MF) {
               auto I = MF.begin()->begin();
               EXPECT_EQ(16u, II.getInstSizeInBytes(*I));

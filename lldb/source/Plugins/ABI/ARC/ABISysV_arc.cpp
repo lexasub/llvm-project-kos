@@ -35,21 +35,21 @@
 #include "lldb/Utility/RegisterValue.h"
 #include "lldb/Utility/Status.h"
 
-#define DEFINE_REG_NAME(reg_num) ConstString(#reg_num).GetCString()
+#define DEFINE_REG_NAME(reg_num)      ConstString(#reg_num).GetCString()
 #define DEFINE_REG_NAME_STR(reg_name) ConstString(reg_name).GetCString()
 
 // The ABI is not a source of such information as size, offset, encoding, etc.
 // of a register. Just provides correct dwarf and eh_frame numbers.
 
-#define DEFINE_GENERIC_REGISTER_STUB(dwarf_num, str_name, generic_num)         \
-  {                                                                            \
-    DEFINE_REG_NAME(dwarf_num), DEFINE_REG_NAME_STR(str_name), 0, 0,           \
-        eEncodingInvalid, eFormatDefault,                                      \
-        {dwarf_num, dwarf_num, generic_num, LLDB_INVALID_REGNUM, dwarf_num},   \
-        nullptr, nullptr, nullptr, 0                                           \
+#define DEFINE_GENERIC_REGISTER_STUB(dwarf_num, str_name, generic_num)        \
+  {                                                                           \
+    DEFINE_REG_NAME(dwarf_num), DEFINE_REG_NAME_STR(str_name),                \
+    0, 0, eEncodingInvalid, eFormatDefault,                                   \
+    { dwarf_num, dwarf_num, generic_num, LLDB_INVALID_REGNUM, dwarf_num },    \
+    nullptr, nullptr, nullptr, 0                                              \
   }
 
-#define DEFINE_REGISTER_STUB(dwarf_num, str_name)                              \
+#define DEFINE_REGISTER_STUB(dwarf_num, str_name) \
   DEFINE_GENERIC_REGISTER_STUB(dwarf_num, str_name, LLDB_INVALID_REGNUM)
 
 using namespace lldb;
@@ -60,141 +60,79 @@ LLDB_PLUGIN_DEFINE_ADV(ABISysV_arc, ABIARC)
 namespace {
 namespace dwarf {
 enum regnums {
-  r0,
-  r1,
-  r2,
-  r3,
-  r4,
-  r5,
-  r6,
-  r7,
-  r8,
-  r9,
-  r10,
-  r11,
-  r12,
-  r13,
-  r14,
-  r15,
-  r16,
-  r17,
-  r18,
-  r19,
-  r20,
-  r21,
-  r22,
-  r23,
-  r24,
-  r25,
-  r26,
-  r27,
-  fp = r27,
-  r28,
-  sp = r28,
-  r29,
-  r30,
-  r31,
-  blink = r31,
-  r32,
-  r33,
-  r34,
-  r35,
-  r36,
-  r37,
-  r38,
-  r39,
-  r40,
-  r41,
-  r42,
-  r43,
-  r44,
-  r45,
-  r46,
-  r47,
-  r48,
-  r49,
-  r50,
-  r51,
-  r52,
-  r53,
-  r54,
-  r55,
-  r56,
-  r57,
-  r58,
-  r59,
-  r60,
-  /*reserved,*/ /*limm indicator,*/ r63 = 63,
-  pc = 70,
-  status32 = 74
+  r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16,
+  r17, r18, r19, r20, r21, r22, r23, r24, r25, r26,
+  r27, fp = r27, r28, sp = r28, r29, r30, r31, blink = r31,
+  r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r46,
+  r47, r48, r49, r50, r51, r52, r53, r54, r55, r56, r57, r58, r59, r60,
+  /*reserved,*/ /*limm indicator,*/ r63 = 63, pc = 70, status32 = 74
 };
 
-static const std::array<RegisterInfo, 64> g_register_infos = {
-    {DEFINE_GENERIC_REGISTER_STUB(r0, nullptr, LLDB_REGNUM_GENERIC_ARG1),
-     DEFINE_GENERIC_REGISTER_STUB(r1, nullptr, LLDB_REGNUM_GENERIC_ARG2),
-     DEFINE_GENERIC_REGISTER_STUB(r2, nullptr, LLDB_REGNUM_GENERIC_ARG3),
-     DEFINE_GENERIC_REGISTER_STUB(r3, nullptr, LLDB_REGNUM_GENERIC_ARG4),
-     DEFINE_GENERIC_REGISTER_STUB(r4, nullptr, LLDB_REGNUM_GENERIC_ARG5),
-     DEFINE_GENERIC_REGISTER_STUB(r5, nullptr, LLDB_REGNUM_GENERIC_ARG6),
-     DEFINE_GENERIC_REGISTER_STUB(r6, nullptr, LLDB_REGNUM_GENERIC_ARG7),
-     DEFINE_GENERIC_REGISTER_STUB(r7, nullptr, LLDB_REGNUM_GENERIC_ARG8),
-     DEFINE_REGISTER_STUB(r8, nullptr),
-     DEFINE_REGISTER_STUB(r9, nullptr),
-     DEFINE_REGISTER_STUB(r10, nullptr),
-     DEFINE_REGISTER_STUB(r11, nullptr),
-     DEFINE_REGISTER_STUB(r12, nullptr),
-     DEFINE_REGISTER_STUB(r13, nullptr),
-     DEFINE_REGISTER_STUB(r14, nullptr),
-     DEFINE_REGISTER_STUB(r15, nullptr),
-     DEFINE_REGISTER_STUB(r16, nullptr),
-     DEFINE_REGISTER_STUB(r17, nullptr),
-     DEFINE_REGISTER_STUB(r18, nullptr),
-     DEFINE_REGISTER_STUB(r19, nullptr),
-     DEFINE_REGISTER_STUB(r20, nullptr),
-     DEFINE_REGISTER_STUB(r21, nullptr),
-     DEFINE_REGISTER_STUB(r22, nullptr),
-     DEFINE_REGISTER_STUB(r23, nullptr),
-     DEFINE_REGISTER_STUB(r24, nullptr),
-     DEFINE_REGISTER_STUB(r25, nullptr),
-     DEFINE_REGISTER_STUB(r26, "gp"),
-     DEFINE_GENERIC_REGISTER_STUB(r27, "fp", LLDB_REGNUM_GENERIC_FP),
-     DEFINE_GENERIC_REGISTER_STUB(r28, "sp", LLDB_REGNUM_GENERIC_SP),
-     DEFINE_REGISTER_STUB(r29, "ilink"),
-     DEFINE_REGISTER_STUB(r30, nullptr),
-     DEFINE_GENERIC_REGISTER_STUB(r31, "blink", LLDB_REGNUM_GENERIC_RA),
-     DEFINE_REGISTER_STUB(r32, nullptr),
-     DEFINE_REGISTER_STUB(r33, nullptr),
-     DEFINE_REGISTER_STUB(r34, nullptr),
-     DEFINE_REGISTER_STUB(r35, nullptr),
-     DEFINE_REGISTER_STUB(r36, nullptr),
-     DEFINE_REGISTER_STUB(r37, nullptr),
-     DEFINE_REGISTER_STUB(r38, nullptr),
-     DEFINE_REGISTER_STUB(r39, nullptr),
-     DEFINE_REGISTER_STUB(r40, nullptr),
-     DEFINE_REGISTER_STUB(r41, nullptr),
-     DEFINE_REGISTER_STUB(r42, nullptr),
-     DEFINE_REGISTER_STUB(r43, nullptr),
-     DEFINE_REGISTER_STUB(r44, nullptr),
-     DEFINE_REGISTER_STUB(r45, nullptr),
-     DEFINE_REGISTER_STUB(r46, nullptr),
-     DEFINE_REGISTER_STUB(r47, nullptr),
-     DEFINE_REGISTER_STUB(r48, nullptr),
-     DEFINE_REGISTER_STUB(r49, nullptr),
-     DEFINE_REGISTER_STUB(r50, nullptr),
-     DEFINE_REGISTER_STUB(r51, nullptr),
-     DEFINE_REGISTER_STUB(r52, nullptr),
-     DEFINE_REGISTER_STUB(r53, nullptr),
-     DEFINE_REGISTER_STUB(r54, nullptr),
-     DEFINE_REGISTER_STUB(r55, nullptr),
-     DEFINE_REGISTER_STUB(r56, nullptr),
-     DEFINE_REGISTER_STUB(r57, nullptr),
-     DEFINE_REGISTER_STUB(r58, "accl"),
-     DEFINE_REGISTER_STUB(r59, "acch"),
-     DEFINE_REGISTER_STUB(r60, "lp_count"),
-     DEFINE_REGISTER_STUB(r63, "pcl"),
-     DEFINE_GENERIC_REGISTER_STUB(pc, nullptr, LLDB_REGNUM_GENERIC_PC),
-     DEFINE_GENERIC_REGISTER_STUB(status32, nullptr,
-                                  LLDB_REGNUM_GENERIC_FLAGS)}};
+static const std::array<RegisterInfo, 64> g_register_infos = { {
+    DEFINE_GENERIC_REGISTER_STUB(r0, nullptr, LLDB_REGNUM_GENERIC_ARG1),
+    DEFINE_GENERIC_REGISTER_STUB(r1, nullptr, LLDB_REGNUM_GENERIC_ARG2),
+    DEFINE_GENERIC_REGISTER_STUB(r2, nullptr, LLDB_REGNUM_GENERIC_ARG3),
+    DEFINE_GENERIC_REGISTER_STUB(r3, nullptr, LLDB_REGNUM_GENERIC_ARG4),
+    DEFINE_GENERIC_REGISTER_STUB(r4, nullptr, LLDB_REGNUM_GENERIC_ARG5),
+    DEFINE_GENERIC_REGISTER_STUB(r5, nullptr, LLDB_REGNUM_GENERIC_ARG6),
+    DEFINE_GENERIC_REGISTER_STUB(r6, nullptr, LLDB_REGNUM_GENERIC_ARG7),
+    DEFINE_GENERIC_REGISTER_STUB(r7, nullptr, LLDB_REGNUM_GENERIC_ARG8),
+    DEFINE_REGISTER_STUB(r8, nullptr),
+    DEFINE_REGISTER_STUB(r9, nullptr),
+    DEFINE_REGISTER_STUB(r10, nullptr),
+    DEFINE_REGISTER_STUB(r11, nullptr),
+    DEFINE_REGISTER_STUB(r12, nullptr),
+    DEFINE_REGISTER_STUB(r13, nullptr),
+    DEFINE_REGISTER_STUB(r14, nullptr),
+    DEFINE_REGISTER_STUB(r15, nullptr),
+    DEFINE_REGISTER_STUB(r16, nullptr),
+    DEFINE_REGISTER_STUB(r17, nullptr),
+    DEFINE_REGISTER_STUB(r18, nullptr),
+    DEFINE_REGISTER_STUB(r19, nullptr),
+    DEFINE_REGISTER_STUB(r20, nullptr),
+    DEFINE_REGISTER_STUB(r21, nullptr),
+    DEFINE_REGISTER_STUB(r22, nullptr),
+    DEFINE_REGISTER_STUB(r23, nullptr),
+    DEFINE_REGISTER_STUB(r24, nullptr),
+    DEFINE_REGISTER_STUB(r25, nullptr),
+    DEFINE_REGISTER_STUB(r26, "gp"),
+    DEFINE_GENERIC_REGISTER_STUB(r27, "fp", LLDB_REGNUM_GENERIC_FP),
+    DEFINE_GENERIC_REGISTER_STUB(r28, "sp", LLDB_REGNUM_GENERIC_SP),
+    DEFINE_REGISTER_STUB(r29, "ilink"),
+    DEFINE_REGISTER_STUB(r30, nullptr),
+    DEFINE_GENERIC_REGISTER_STUB(r31, "blink", LLDB_REGNUM_GENERIC_RA),
+    DEFINE_REGISTER_STUB(r32, nullptr),
+    DEFINE_REGISTER_STUB(r33, nullptr),
+    DEFINE_REGISTER_STUB(r34, nullptr),
+    DEFINE_REGISTER_STUB(r35, nullptr),
+    DEFINE_REGISTER_STUB(r36, nullptr),
+    DEFINE_REGISTER_STUB(r37, nullptr),
+    DEFINE_REGISTER_STUB(r38, nullptr),
+    DEFINE_REGISTER_STUB(r39, nullptr),
+    DEFINE_REGISTER_STUB(r40, nullptr),
+    DEFINE_REGISTER_STUB(r41, nullptr),
+    DEFINE_REGISTER_STUB(r42, nullptr),
+    DEFINE_REGISTER_STUB(r43, nullptr),
+    DEFINE_REGISTER_STUB(r44, nullptr),
+    DEFINE_REGISTER_STUB(r45, nullptr),
+    DEFINE_REGISTER_STUB(r46, nullptr),
+    DEFINE_REGISTER_STUB(r47, nullptr),
+    DEFINE_REGISTER_STUB(r48, nullptr),
+    DEFINE_REGISTER_STUB(r49, nullptr),
+    DEFINE_REGISTER_STUB(r50, nullptr),
+    DEFINE_REGISTER_STUB(r51, nullptr),
+    DEFINE_REGISTER_STUB(r52, nullptr),
+    DEFINE_REGISTER_STUB(r53, nullptr),
+    DEFINE_REGISTER_STUB(r54, nullptr),
+    DEFINE_REGISTER_STUB(r55, nullptr),
+    DEFINE_REGISTER_STUB(r56, nullptr),
+    DEFINE_REGISTER_STUB(r57, nullptr),
+    DEFINE_REGISTER_STUB(r58, "accl"),
+    DEFINE_REGISTER_STUB(r59, "acch"),
+    DEFINE_REGISTER_STUB(r60, "lp_count"),
+    DEFINE_REGISTER_STUB(r63, "pcl"),
+    DEFINE_GENERIC_REGISTER_STUB(pc, nullptr, LLDB_REGNUM_GENERIC_PC),
+    DEFINE_GENERIC_REGISTER_STUB(status32, nullptr, LLDB_REGNUM_GENERIC_FLAGS)} };
 } // namespace dwarf
 } // namespace
 
@@ -224,10 +162,9 @@ bool ABISysV_arc::IsRegisterFileReduced(RegisterContext &reg_ctx) const {
 //------------------------------------------------------------------
 
 ABISP ABISysV_arc::CreateInstance(ProcessSP process_sp, const ArchSpec &arch) {
-  return llvm::Triple::arc == arch.GetTriple().getArch()
-             ? ABISP(new ABISysV_arc(std::move(process_sp),
-                                     MakeMCRegisterInfo(arch)))
-             : ABISP();
+  return llvm::Triple::arc == arch.GetTriple().getArch() ?
+      ABISP(new ABISysV_arc(std::move(process_sp), MakeMCRegisterInfo(arch))) :
+      ABISP();
 }
 
 namespace {
@@ -257,8 +194,8 @@ bool ABISysV_arc::PrepareTrivialCall(Thread &thread, addr_t sp,
   return false;
 }
 
-bool ABISysV_arc::PrepareTrivialCall(
-    Thread &thread, addr_t sp, addr_t pc, addr_t ra, llvm::Type &prototype,
+bool ABISysV_arc::PrepareTrivialCall(Thread &thread, addr_t sp, addr_t pc,
+    addr_t ra, llvm::Type &prototype,
     llvm::ArrayRef<ABI::CallArgument> args) const {
   auto reg_ctx = thread.GetRegisterContext();
   if (!reg_ctx)
@@ -293,9 +230,8 @@ bool ABISysV_arc::PrepareTrivialCall(
     // Create space on the stack for this data 4-byte aligned.
     sp -= AugmentArgSize(arg.size);
 
-    if (process->WriteMemory(sp, arg.data_up.get(), arg.size, error) <
-            arg.size ||
-        error.Fail())
+    if (process->WriteMemory(sp, arg.data_up.get(), arg.size, error) < arg.size
+        || error.Fail())
       return false;
 
     // Update the argument with the target pointer.
@@ -339,8 +275,8 @@ bool ABISysV_arc::PrepareTrivialCall(
       RegisterValue reg_val_obj(llvm::makeArrayRef(reg_value, reg_size),
                                 eByteOrderLittle);
       if (!reg_ctx->WriteRegister(
-              reg_ctx->GetRegisterInfo(eRegisterKindGeneric, reg_index),
-              reg_val_obj))
+            reg_ctx->GetRegisterInfo(eRegisterKindGeneric, reg_index),
+            reg_val_obj))
         return false;
 
       // NOTE: It's unsafe to iterate through LLDB_REGNUM_GENERICs.
@@ -500,10 +436,8 @@ uint64_t ReadRawValue(const RegisterContextSP &reg_ctx, uint8_t size_in_bytes) {
   if (sizeof(uint64_t) == size_in_bytes)
     raw_value |= (reg_ctx->ReadRegisterAsUnsigned(
                       reg_ctx->GetRegisterInfo(eRegisterKindGeneric,
-                                               LLDB_REGNUM_GENERIC_ARG2),
-                      0) &
-                  UINT64_MAX)
-                 << 32U;
+                                               LLDB_REGNUM_GENERIC_ARG2), 0) &
+                  UINT64_MAX) << 32U;
 
   return raw_value;
 }
@@ -676,6 +610,8 @@ ConstString ABISysV_arc::GetPluginNameStatic() {
 // PluginInterface protocol
 //------------------------------------------------------------------
 
-ConstString ABISysV_arc::GetPluginName() { return GetPluginNameStatic(); }
+ConstString ABISysV_arc::GetPluginName() {
+  return GetPluginNameStatic();
+}
 
 uint32_t ABISysV_arc::GetPluginVersion() { return 1; }

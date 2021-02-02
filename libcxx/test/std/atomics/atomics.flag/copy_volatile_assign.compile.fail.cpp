@@ -15,10 +15,11 @@
 #include <atomic>
 #include <cassert>
 
-int main(int, char**) {
-  std::atomic_flag f0;
-  volatile std::atomic_flag f;
-  f = f0;
+int main(int, char**)
+{
+    std::atomic_flag f0;
+    volatile std::atomic_flag f;
+    f = f0;
 
   return 0;
 }

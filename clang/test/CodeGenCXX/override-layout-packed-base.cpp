@@ -10,7 +10,7 @@
 // CHECK:   Size:40
 // CHECK:   FieldOffsets: [0, 32]
 
-template <int I>
+template<int I>
 class B {
   int _b1;
   char _b2;

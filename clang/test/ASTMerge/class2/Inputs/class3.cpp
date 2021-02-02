@@ -20,7 +20,6 @@ class C2 {
 private:
   int x;
   friend class C3;
-
 public:
   static_assert(sizeof(x) == sizeof(int), "Error");
   typedef class C2::C2 InjType;

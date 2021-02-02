@@ -1,17 +1,12 @@
 typedef int T;
-struct X {
-  int a, b;
-};
+struct X { int a, b; };
 void f(int x) {
   for (T y = x; T z = x; ++x) {
   }
-  if (T *z2 = &x) {
-  }
-  while (T *z3 = &x) {
-  }
+  if (T *z2 = &x) { }
+  while (T *z3 = &x) { }
   switch (T z4 = x) {
-  case 17:
-    break;
+  case 17: break;
   }
 }
 
@@ -31,8 +26,8 @@ class C : public A, private B {
 class D : virtual public C, virtual private A {};
 
 namespace std {
-class type_info {};
-} // namespace std
+  class type_info { };
+}
 
 void test_exprs(C *c) {
   int typeid_marker;
@@ -44,31 +39,31 @@ void test_exprs(C *c) {
 }
 
 namespace N {
-int f(int);
-float f(float);
+  int f(int);
+  float f(float);
 
-template <typename T> T g(T);
-template <typename T> T g(T *);
-} // namespace N
+  template<typename T> T g(T);
+  template<typename T> T g(T*);
+}
 
-template <typename T>
+template<typename T>
 void test_dependent_exprs(T t) {
   N::f(t);
   typedef T type;
   N::g<type>(t);
-  type::template f<type *>(t);
-  t->type::template f<type *>();
+  type::template f<type*>(t);
+  t->type::template f<type*>();
 }
 
 struct Y {
   int f(int);
   float f(float);
 
-  template <typename T> T g(T);
-  template <typename T> T g(T *);
+  template<typename T> T g(T);
+  template<typename T> T g(T*);
 };
 
-template <typename T>
+template<typename T>
 void test_more_dependent_exprs(T t, Y y) {
   y.Y::f(t);
   typedef T type;
@@ -79,17 +74,17 @@ struct Pair {
   Pair(int, int);
 };
 
-void *operator new(__SIZE_TYPE__, void *) throw();
+void *operator new(__SIZE_TYPE__, void*) throw();
 
 void test_more_exprs(void *mem, int i, int j) {
   new (mem) Pair(i, j);
   typedef int Integer;
   (void)Integer(i);
-  (Integer) i;
+  (Integer)i;
   Integer();
 }
 
-template <typename T>
+template<typename T>
 void test_even_more_dependent_exprs(T t, Y y) {
   typedef T type;
   (void)type(t, y);
@@ -105,12 +100,12 @@ struct Derived : public Base {
   int member;
 };
 
-Derived::Derived(int x)
-    : member(x), Base(x) {
+Derived::Derived(int x) 
+  : member(x), Base(x) {
 }
 
 void considered_harmful(int x) {
-start_over:
+ start_over:
   void *ptr = &&start_over;
   if (x > 17)
     goto *ptr;
@@ -221,7 +216,7 @@ void casts(int *ip) {
 // CHECK: load-stmts.cpp:103:10: CXXConstructor=Derived:103:10 (Definition)
 // CHECK: load-stmts.cpp:103:1: TypeRef=struct Derived:98:8 Extent=[103:1 - 103:
 // FIXME: Missing TypeRef for constructor name.
-// CHECK: load-stmts.cpp:103:22: ParmDecl=x:103:22 (Definition)
+// CHECK: load-stmts.cpp:103:22: ParmDecl=x:103:22 (Definition) 
 // CHECK: load-stmts.cpp:104:5: MemberRef=member:100:7 Extent=[104:5 - 104:11]
 // CHECK: load-stmts.cpp:104:12: DeclRefExpr=x:103:22 Extent=[104:12 - 104:13]
 // CHECK: load-stmts.cpp:104:16: TypeRef=struct Base:94:8 Extent=[104:16 - 104:2
@@ -233,3 +228,4 @@ void casts(int *ip) {
 // CHECK: load-stmts.cpp:113:10: LabelRef=start_over:108:2 Extent=[113:10 - 113:20]
 // CHECK: load-stmts.cpp:117:35: UnexposedExpr=ip:116:17 Extent=[117:35 - 117:37]
 // CHECK: load-stmts.cpp:117:35: DeclRefExpr=ip:116:17 Extent=[117:35 - 117:37]
+

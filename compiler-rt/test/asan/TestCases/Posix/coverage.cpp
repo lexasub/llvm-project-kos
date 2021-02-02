@@ -28,7 +28,8 @@
 #ifdef SHARED
 void bar() { printf("bar\n"); }
 #else
-__attribute__((noinline)) void foo() { printf("foo\n"); }
+__attribute__((noinline))
+void foo() { printf("foo\n"); }
 extern void bar();
 
 int G[4];
@@ -43,9 +44,9 @@ int main(int argc, char **argv) {
   }
   if (argc == 5) {
     static volatile char *zero = 0;
-    *zero = 0; // SEGV if argc == 5.
+    *zero = 0;  // SEGV if argc == 5.
   }
-  return G[argc]; // Buffer overflow if argc >= 4.
+  return G[argc];  // Buffer overflow if argc >= 4.
 }
 #endif
 

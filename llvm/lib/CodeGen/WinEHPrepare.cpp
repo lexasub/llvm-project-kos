@@ -42,7 +42,8 @@ using namespace llvm;
 
 static cl::opt<bool> DisableDemotion(
     "disable-demotion", cl::Hidden,
-    cl::desc("Clone multicolor basic blocks but do not demote cross scopes"),
+    cl::desc(
+        "Clone multicolor basic blocks but do not demote cross scopes"),
     cl::init(false));
 
 static cl::opt<bool> DisableCleanups(
@@ -102,8 +103,8 @@ private:
 } // end anonymous namespace
 
 char WinEHPrepare::ID = 0;
-INITIALIZE_PASS(WinEHPrepare, DEBUG_TYPE, "Prepare Windows exceptions", false,
-                false)
+INITIALIZE_PASS(WinEHPrepare, DEBUG_TYPE, "Prepare Windows exceptions",
+                false, false)
 
 FunctionPass *llvm::createWinEHPass(bool DemoteCatchSwitchPHIOnly) {
   return new WinEHPrepare(DemoteCatchSwitchPHIOnly);
@@ -255,9 +256,10 @@ static void calculateCXXStateNumbers(WinEHFuncInfo &FuncInfo,
     int TryLow = addUnwindMapEntry(FuncInfo, ParentState, nullptr);
     FuncInfo.EHPadStateMap[CatchSwitch] = TryLow;
     for (const BasicBlock *PredBlock : predecessors(BB))
-      if ((PredBlock =
-               getEHPadFromPredecessor(PredBlock, CatchSwitch->getParentPad())))
-        calculateCXXStateNumbers(FuncInfo, PredBlock->getFirstNonPHI(), TryLow);
+      if ((PredBlock = getEHPadFromPredecessor(PredBlock,
+                                               CatchSwitch->getParentPad())))
+        calculateCXXStateNumbers(FuncInfo, PredBlock->getFirstNonPHI(),
+                                 TryLow);
     int CatchLow = addUnwindMapEntry(FuncInfo, ParentState, nullptr);
 
     // catchpads are separate funclets in C++ EH due to the way rethrow works.
@@ -385,8 +387,8 @@ static void calculateSEHStateNumbers(WinEHFuncInfo &FuncInfo,
     LLVM_DEBUG(dbgs() << "Assigning state #" << TryState << " to BB "
                       << CatchPadBB->getName() << '\n');
     for (const BasicBlock *PredBlock : predecessors(BB))
-      if ((PredBlock =
-               getEHPadFromPredecessor(PredBlock, CatchSwitch->getParentPad())))
+      if ((PredBlock = getEHPadFromPredecessor(PredBlock,
+                                               CatchSwitch->getParentPad())))
         calculateSEHStateNumbers(FuncInfo, PredBlock->getFirstNonPHI(),
                                  TryState);
 
@@ -765,8 +767,8 @@ void WinEHPrepare::cloneCommonBlocks(Function &F) {
 
       DEBUG_WITH_TYPE("winehprepare-coloring",
                       dbgs() << "  Cloning block \'" << BB->getName()
-                             << "\' for funclet \'" << FuncletPadBB->getName()
-                             << "\'.\n");
+                              << "\' for funclet \'" << FuncletPadBB->getName()
+                              << "\'.\n");
 
       // Create a new basic block and copy instructions into it!
       BasicBlock *CBB =
@@ -799,8 +801,8 @@ void WinEHPrepare::cloneCommonBlocks(Function &F) {
 
       DEBUG_WITH_TYPE("winehprepare-coloring",
                       dbgs() << "  Assigned color \'" << FuncletPadBB->getName()
-                             << "\' to block \'" << NewBlock->getName()
-                             << "\'.\n");
+                              << "\' to block \'" << NewBlock->getName()
+                              << "\'.\n");
 
       llvm::erase_value(BlocksInFunclet, OldBlock);
       ColorVector &OldColors = BlockColors[OldBlock];
@@ -808,8 +810,8 @@ void WinEHPrepare::cloneCommonBlocks(Function &F) {
 
       DEBUG_WITH_TYPE("winehprepare-coloring",
                       dbgs() << "  Removed color \'" << FuncletPadBB->getName()
-                             << "\' from block \'" << OldBlock->getName()
-                             << "\'.\n");
+                              << "\' from block \'" << OldBlock->getName()
+                              << "\'.\n");
     }
 
     // Loop over all of the instructions in this funclet, fixing up operand

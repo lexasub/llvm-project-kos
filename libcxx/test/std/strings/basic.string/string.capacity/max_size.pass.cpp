@@ -25,52 +25,51 @@
 #include "min_allocator.h"
 
 template <class S>
-void test1(const S& s) {
-  S s2(s);
-  const size_t sz = s2.max_size() - 1;
-  try {
-    s2.resize(sz, 'x');
-  } catch (const std::bad_alloc&) {
-    return;
-  }
-  assert(s2.size() == sz);
+void
+test1(const S& s)
+{
+    S s2(s);
+    const size_t sz = s2.max_size() - 1;
+    try { s2.resize(sz, 'x'); }
+    catch ( const std::bad_alloc & ) { return ; }
+    assert ( s2.size() ==  sz );
 }
 
 template <class S>
-void test2(const S& s) {
-  S s2(s);
-  const size_t sz = s2.max_size();
-  try {
-    s2.resize(sz, 'x');
-  } catch (const std::bad_alloc&) {
-    return;
-  }
-  assert(s.size() == sz);
+void
+test2(const S& s)
+{
+    S s2(s);
+    const size_t sz = s2.max_size();
+    try { s2.resize(sz, 'x'); }
+    catch ( const std::bad_alloc & ) { return ; }
+    assert ( s.size() ==  sz );
 }
 
 template <class S>
-void test(const S& s) {
-  assert(s.max_size() >= s.size());
-  test1(s);
-  test2(s);
+void
+test(const S& s)
+{
+    assert(s.max_size() >= s.size());
+    test1(s);
+    test2(s);
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S());
     test(S("123"));
     test(S("12345678901234567890123456789012345678901234567890"));
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S());
     test(S("123"));
     test(S("12345678901234567890123456789012345678901234567890"));
-  }
+    }
 #endif
 
   return 0;

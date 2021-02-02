@@ -210,8 +210,8 @@ InstrumentedFoo::InstrumentedFoo(const InstrumentedFoo &foo) {
 }
 
 InstrumentedFoo &InstrumentedFoo::operator=(const InstrumentedFoo &foo) {
-  LLDB_RECORD_METHOD(InstrumentedFoo &, InstrumentedFoo, operator=,
-                     (const InstrumentedFoo &), foo);
+  LLDB_RECORD_METHOD(InstrumentedFoo &,
+                     InstrumentedFoo, operator=,(const InstrumentedFoo &), foo);
   return *this;
 }
 
@@ -350,8 +350,8 @@ TestingRegistry::TestingRegistry() {
 
   LLDB_REGISTER_CONSTRUCTOR(InstrumentedFoo, (int i));
   LLDB_REGISTER_CONSTRUCTOR(InstrumentedFoo, (const InstrumentedFoo &));
-  LLDB_REGISTER_METHOD(InstrumentedFoo &, InstrumentedFoo, operator=,
-                       (const InstrumentedFoo &));
+  LLDB_REGISTER_METHOD(InstrumentedFoo &,
+                       InstrumentedFoo, operator=,(const InstrumentedFoo &));
   LLDB_REGISTER_METHOD(void, InstrumentedFoo, A, (int));
   LLDB_REGISTER_METHOD_CONST(void, InstrumentedFoo, B, (int &));
   LLDB_REGISTER_METHOD(int, InstrumentedFoo, C, (float *));

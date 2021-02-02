@@ -87,7 +87,7 @@ void UndefBranchChecker::checkBranchCondition(const Stmt *Condition,
       // Note: any predecessor will do.  They should have identical state,
       // since all the BlockEdge did was act as an error sink since the value
       // had to already be undefined.
-      assert(!N->pred_empty());
+      assert (!N->pred_empty());
       const Expr *Ex = cast<Expr>(Condition);
       ExplodedNode *PrevN = *N->pred_begin();
       ProgramPoint P = PrevN->getLocation();

@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #ifndef LLVM_UNITTESTS_EXECUTIONENGINE_ORC_ORCTESTCOMMON_H
 #define LLVM_UNITTESTS_EXECUTIONENGINE_ORC_ORCTESTCOMMON_H
 
@@ -134,6 +135,7 @@ private:
 // Base class for Orc tests that will execute code.
 class OrcExecutionTest {
 public:
+
   OrcExecutionTest() {
 
     // Initialize the native target if it hasn't been done already.
@@ -144,11 +146,11 @@ public:
 
     if (TM) {
       // If we found a TargetMachine, check that it's one that Orc supports.
-      const Triple &TT = TM->getTargetTriple();
+      const Triple& TT = TM->getTargetTriple();
 
       // Bail out for windows platforms. We do not support these yet.
       if ((TT.getArch() != Triple::x86_64 && TT.getArch() != Triple::x86) ||
-          TT.isOSWindows())
+           TT.isOSWindows())
         return;
 
       // Target can JIT?
@@ -175,14 +177,15 @@ protected:
 
 class ModuleBuilder {
 public:
-  ModuleBuilder(LLVMContext &Context, StringRef Triple, StringRef Name);
+  ModuleBuilder(LLVMContext &Context, StringRef Triple,
+                StringRef Name);
 
   Function *createFunctionDecl(FunctionType *FTy, StringRef Name) {
     return Function::Create(FTy, GlobalValue::ExternalLinkage, Name, M.get());
   }
 
-  Module *getModule() { return M.get(); }
-  const Module *getModule() const { return M.get(); }
+  Module* getModule() { return M.get(); }
+  const Module* getModule() const { return M.get(); }
   std::unique_ptr<Module> takeModule() { return std::move(M); }
 
 private:
@@ -198,12 +201,15 @@ inline StructType *getDummyStructTy(LLVMContext &Context) {
   return StructType::get(ArrayType::get(Type::getInt32Ty(Context), 256));
 }
 
-template <typename HandleT, typename ModuleT> class MockBaseLayer {
+template <typename HandleT, typename ModuleT>
+class MockBaseLayer {
 public:
+
   using ModuleHandleT = HandleT;
 
   using AddModuleSignature =
-      Expected<ModuleHandleT>(ModuleT M, std::shared_ptr<JITSymbolResolver> R);
+    Expected<ModuleHandleT>(ModuleT M,
+                            std::shared_ptr<JITSymbolResolver> R);
 
   using RemoveModuleSignature = Error(ModuleHandleT H);
   using FindSymbolSignature = JITSymbol(const std::string &Name,
@@ -254,24 +260,28 @@ public:
 
 class ReturnNullJITSymbol {
 public:
-  template <typename... Args> JITSymbol operator()(Args...) const {
+  template <typename... Args>
+  JITSymbol operator()(Args...) const {
     return nullptr;
   }
 };
 
-template <typename ReturnT> class DoNothingAndReturn {
+template <typename ReturnT>
+class DoNothingAndReturn {
 public:
   DoNothingAndReturn(ReturnT Ret) : Ret(std::move(Ret)) {}
 
-  template <typename... Args> void operator()(Args...) const { return Ret; }
-
+  template <typename... Args>
+  void operator()(Args...) const { return Ret; }
 private:
   ReturnT Ret;
 };
 
-template <> class DoNothingAndReturn<void> {
+template <>
+class DoNothingAndReturn<void> {
 public:
-  template <typename... Args> void operator()(Args...) const {}
+  template <typename... Args>
+  void operator()(Args...) const { }
 };
 
 } // namespace llvm

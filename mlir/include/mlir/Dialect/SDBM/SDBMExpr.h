@@ -113,18 +113,13 @@ public:
   void dump() const;
 
   /// LLVM-style casts.
-  template <typename U>
-  bool isa() const {
-    return U::isClassFor(*this);
-  }
-  template <typename U>
-  U dyn_cast() const {
+  template <typename U> bool isa() const { return U::isClassFor(*this); }
+  template <typename U> U dyn_cast() const {
     if (!isa<U>())
       return {};
     return U(const_cast<SDBMExpr *>(this)->impl);
   }
-  template <typename U>
-  U cast() const {
+  template <typename U> U cast() const {
     assert(isa<U>() && "cast to incorrect subtype");
     return U(const_cast<SDBMExpr *>(this)->impl);
   }
@@ -359,8 +354,7 @@ public:
 
 /// A visitor class for SDBM expressions.  Calls the kind-specific function
 /// depending on the kind of expression it visits.
-template <typename Derived, typename Result = void>
-class SDBMVisitor {
+template <typename Derived, typename Result = void> class SDBMVisitor {
 public:
   /// Visit the given SDBM expression, dispatching to kind-specific functions.
   Result visit(SDBMExpr expr) {
@@ -445,8 +439,7 @@ protected:
     llvm_unreachable("unhandled subtype of varying SDBM expression");
   }
 
-  template <bool isPreorder>
-  void walk(SDBMExpr expr) {
+  template <bool isPreorder> void walk(SDBMExpr expr) {
     if (isPreorder)
       visit(expr);
     if (auto sumExpr = expr.dyn_cast<SDBMSumExpr>()) {
@@ -504,8 +497,7 @@ inline SDBMExpr stripe(SDBMExpr expr, int64_t factor) {
 
 namespace llvm {
 // SDBMExpr hash just like pointers.
-template <>
-struct DenseMapInfo<mlir::SDBMExpr> {
+template <> struct DenseMapInfo<mlir::SDBMExpr> {
   static mlir::SDBMExpr getEmptyKey() {
     auto *pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::SDBMExpr(static_cast<mlir::SDBMExpr::ImplType *>(pointer));
@@ -523,8 +515,7 @@ struct DenseMapInfo<mlir::SDBMExpr> {
 };
 
 // SDBMDirectExpr hash just like pointers.
-template <>
-struct DenseMapInfo<mlir::SDBMDirectExpr> {
+template <> struct DenseMapInfo<mlir::SDBMDirectExpr> {
   static mlir::SDBMDirectExpr getEmptyKey() {
     auto *pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::SDBMDirectExpr(
@@ -544,8 +535,7 @@ struct DenseMapInfo<mlir::SDBMDirectExpr> {
 };
 
 // SDBMTermExpr hash just like pointers.
-template <>
-struct DenseMapInfo<mlir::SDBMTermExpr> {
+template <> struct DenseMapInfo<mlir::SDBMTermExpr> {
   static mlir::SDBMTermExpr getEmptyKey() {
     auto *pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::SDBMTermExpr(static_cast<mlir::SDBMExpr::ImplType *>(pointer));
@@ -563,8 +553,7 @@ struct DenseMapInfo<mlir::SDBMTermExpr> {
 };
 
 // SDBMConstantExpr hash just like pointers.
-template <>
-struct DenseMapInfo<mlir::SDBMConstantExpr> {
+template <> struct DenseMapInfo<mlir::SDBMConstantExpr> {
   static mlir::SDBMConstantExpr getEmptyKey() {
     auto *pointer = llvm::DenseMapInfo<void *>::getEmptyKey();
     return mlir::SDBMConstantExpr(

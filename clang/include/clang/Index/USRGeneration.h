@@ -23,7 +23,9 @@ class QualType;
 
 namespace index {
 
-static inline StringRef getUSRSpacePrefix() { return "c:"; }
+static inline StringRef getUSRSpacePrefix() {
+  return "c:";
+}
 
 /// Generate a USR for a Decl, including the USR prefix.
 /// \returns true if the results should be ignored, false otherwise.
@@ -49,8 +51,7 @@ void generateUSRForObjCMethod(StringRef Sel, bool IsInstanceMethod,
                               raw_ostream &OS);
 
 /// Generate a USR fragment for an Objective-C property.
-void generateUSRForObjCProperty(StringRef Prop, bool isClassProp,
-                                raw_ostream &OS);
+void generateUSRForObjCProperty(StringRef Prop, bool isClassProp, raw_ostream &OS);
 
 /// Generate a USR fragment for an Objective-C protocol.
 void generateUSRForObjCProtocol(StringRef Prot, raw_ostream &OS,
@@ -74,8 +75,7 @@ bool generateUSRForMacro(StringRef MacroName, SourceLocation Loc,
 /// Generates a USR for a type.
 ///
 /// \return true on error, false on success.
-bool generateUSRForType(QualType T, ASTContext &Ctx,
-                        SmallVectorImpl<char> &Buf);
+bool generateUSRForType(QualType T, ASTContext &Ctx, SmallVectorImpl<char> &Buf);
 
 /// Generate a USR for a module, including the USR prefix.
 /// \returns true on error, false on success.
@@ -93,7 +93,9 @@ bool generateUSRFragmentForModule(const Module *Mod, raw_ostream &OS);
 /// \returns true on error, false on success.
 bool generateUSRFragmentForModuleName(StringRef ModName, raw_ostream &OS);
 
+
 } // namespace index
 } // namespace clang
 
 #endif // LLVM_CLANG_INDEX_USRGENERATION_H
+

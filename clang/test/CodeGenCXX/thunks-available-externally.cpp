@@ -30,13 +30,13 @@ struct C : A, B {
   virtual void i();
 };
 
-void C::h() {}
+void C::h() { }
 
-C::C() {}
+C::C() { }
 
-void C::i() {}
+void C::i() { }
 
-} // namespace Test1
+}
 
 namespace Test2 {
 
@@ -54,11 +54,11 @@ struct C : A, B {
   virtual void f();
 };
 
-static void f(B *b) {
+static void f(B* b) {
   b->f();
 }
 
-} // namespace Test2
+}
 
 // Test that we don't assert.
 namespace Test3 {
@@ -69,11 +69,11 @@ struct A {
   int a;
 };
 
-struct B : A {};
-struct C : virtual B {};
+struct B : A { };
+struct C : virtual B { };
 
 void f() {
   C c;
 }
 
-} // namespace Test3
+}

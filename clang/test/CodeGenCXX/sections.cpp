@@ -10,7 +10,7 @@ int a = 1;
 #pragma data_seg(push, label, ".data2")
 extern const int b;
 const int b = 1;
-const char *s = "my string!";
+const char* s = "my string!";
 #pragma data_seg(push, ".my_seg")
 int c = 1;
 #pragma data_seg(pop, label)
@@ -18,9 +18,9 @@ int d = 1;
 int e;
 #pragma bss_seg(".c")
 int f;
-void g(void) {}
+void g(void){}
 #pragma code_seg(".my_code")
-void h(void) {}
+void h(void){}
 #pragma bss_seg()
 int i;
 #pragma bss_seg(".bss1")
@@ -31,27 +31,28 @@ int TEST1;
 #pragma bss_seg(pop)
 int TEST2;
 
+
 // Check "save-restore" of pragma stacks.
 struct Outer {
   void f() {
-#pragma bss_seg(push, ".bss3")
-#pragma code_seg(push, ".my_code1")
-#pragma const_seg(push, ".my_const1")
-#pragma data_seg(push, ".data3")
+    #pragma bss_seg(push, ".bss3")
+    #pragma code_seg(push, ".my_code1")
+    #pragma const_seg(push, ".my_const1")
+    #pragma data_seg(push, ".data3")
     struct Inner {
       void g() {
-#pragma bss_seg(push, ".bss4")
-#pragma code_seg(push, ".my_code2")
-#pragma const_seg(push, ".my_const2")
-#pragma data_seg(push, ".data4")
+        #pragma bss_seg(push, ".bss4")
+        #pragma code_seg(push, ".my_code2")
+        #pragma const_seg(push, ".my_const2")
+        #pragma data_seg(push, ".data4")
       }
     };
   }
 };
 
-void h2(void) {}     // should be in ".my_code"
-int TEST3;           // should be in ".bss1"
-int d2 = 1;          // should be in ".data"
+void h2(void) {} // should be in ".my_code"
+int TEST3; // should be in ".bss1"
+int d2 = 1; // should be in ".data"
 extern const int b2; // should be in ".my_const"
 const int b2 = 1;
 

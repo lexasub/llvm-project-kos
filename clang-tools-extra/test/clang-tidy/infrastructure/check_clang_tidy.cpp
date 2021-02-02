@@ -4,25 +4,19 @@
 // RUN: %check_clang_tidy -check-suffixes=USING-C,USING-D %s misc-unused-using-decls %t -- -- -DUSING_C_D
 // RUN: %check_clang_tidy %s misc-unused-using-decls %t
 
-namespace a {
-class A {};
-class B {};
-class C {};
-class D {};
-class E {};
-} // namespace a
+namespace a {class A {}; class B {}; class C {}; class D {}; class E {};}
 namespace b {
 #if defined(USING_A)
 using a::A;
-#elif defined(USING_B)
+#elif  defined(USING_B)
 using a::B;
-#elif defined(USING_C_D)
+#elif  defined(USING_C_D)
 using a::C;
 using a::D;
 #else
 using a::E;
 #endif
-} // namespace b
+}
 namespace c {}
 // CHECK-MESSAGES-USING-A: warning: using decl 'A' {{.*}}
 // CHECK-MESSAGES-USING-B: warning: using decl 'B' {{.*}}

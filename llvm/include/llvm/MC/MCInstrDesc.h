@@ -37,10 +37,11 @@ enum OperandConstraint {
 };
 
 // Define a macro to produce each constraint value.
-#define MCOI_TIED_TO(op)                                                       \
+#define MCOI_TIED_TO(op) \
   ((1 << MCOI::TIED_TO) | ((op) << (4 + MCOI::TIED_TO * 4)))
 
-#define MCOI_EARLY_CLOBBER (1 << MCOI::EARLY_CLOBBER)
+#define MCOI_EARLY_CLOBBER \
+  (1 << MCOI::EARLY_CLOBBER)
 
 /// These are flags set on operands, but should be considered
 /// private, all access should go through the MCOperandInfo accessors.
@@ -76,7 +77,7 @@ enum OperandType {
   OPERAND_FIRST_TARGET = 13,
 };
 
-} // namespace MCOI
+}
 
 /// This holds information about one operand of a machine instruction,
 /// indicating the register class for register operands, etc.
@@ -185,7 +186,7 @@ enum Flag {
   VariadicOpsAreDefs,
   Authenticated,
 };
-} // namespace MCID
+}
 
 /// Describe properties that are true of each instruction in the target
 /// description file.  This captures information about side effects, register
@@ -299,9 +300,7 @@ public:
 
   /// Return true if this is an indirect branch, such as a
   /// branch through a register.
-  bool isIndirectBranch() const {
-    return Flags & (1ULL << MCID::IndirectBranch);
-  }
+  bool isIndirectBranch() const { return Flags & (1ULL << MCID::IndirectBranch); }
 
   /// Return true if this is a branch which may fall
   /// through to the next instruction or may transfer control flow to some other
@@ -398,9 +397,8 @@ public:
   /// Note that for the optimizers to be able to take advantage of
   /// this property, TargetInstrInfo::getInsertSubregLikeInputs has to be
   /// override accordingly.
-  bool isInsertSubregLike() const {
-    return Flags & (1ULL << MCID::InsertSubreg);
-  }
+  bool isInsertSubregLike() const { return Flags & (1ULL << MCID::InsertSubreg); }
+
 
   /// Return true if this instruction is convergent.
   ///
@@ -418,7 +416,9 @@ public:
   ///
   /// An authenticated instruction may fail in an ABI-defined manner when
   /// operating on an invalid signed pointer.
-  bool isAuthenticated() const { return Flags & (1ULL << MCID::Authenticated); }
+  bool isAuthenticated() const {
+    return Flags & (1ULL << MCID::Authenticated);
+  }
 
   //===--------------------------------------------------------------------===//
   // Side Effect Analysis
@@ -506,9 +506,7 @@ public:
   /// instruction selection by calling a target hook. For example, this can be
   /// used to fill in ARM 's' optional operand depending on whether the
   /// conditional flag register is used.
-  bool hasPostISelHook() const {
-    return Flags & (1ULL << MCID::HasPostISelHook);
-  }
+  bool hasPostISelHook() const { return Flags & (1ULL << MCID::HasPostISelHook); }
 
   /// Returns true if this instruction is a candidate for remat. This
   /// flag is only used in TargetInstrInfo method isTriviallyRematerializable.

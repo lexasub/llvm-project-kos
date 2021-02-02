@@ -20,7 +20,8 @@
 #include "filesystem_test_helper.h"
 
 // This is mainly tested via the member append functions.
-int main(int, char**) {
+int main(int, char**)
+{
   using namespace fs;
   path p1("abc");
   path p2("def");

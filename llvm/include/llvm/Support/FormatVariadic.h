@@ -142,7 +142,7 @@ template <typename Tuple> class formatv_object : public formatv_object_base {
   struct create_adapters {
     template <typename... Ts>
     std::array<detail::format_adapter *, std::tuple_size<Tuple>::value>
-    operator()(Ts &...Items) {
+    operator()(Ts &... Items) {
       return {{&Items...}};
     }
   };
@@ -247,7 +247,7 @@ public:
 // the details of what that is are undefined.
 //
 template <typename... Ts>
-inline auto formatv(const char *Fmt, Ts &&...Vals) -> formatv_object<decltype(
+inline auto formatv(const char *Fmt, Ts &&... Vals) -> formatv_object<decltype(
     std::make_tuple(detail::build_format_adapter(std::forward<Ts>(Vals))...))> {
   using ParamTuple = decltype(
       std::make_tuple(detail::build_format_adapter(std::forward<Ts>(Vals))...));

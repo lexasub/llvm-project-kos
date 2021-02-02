@@ -16,10 +16,11 @@ void thread(int tid) {
 }
 
 void bench() {
-  x = (int *)malloc(bench_nthread * kStride * sizeof(x[0]));
+  x = (int*)malloc(bench_nthread * kStride * sizeof(x[0]));
   for (int i = 0; i < bench_nthread; i++)
     __atomic_store_n(&x[i * kStride], 0, __ATOMIC_RELEASE);
   start_thread_group(bench_nthread, thread);
 }
 
 // CHECK: DONE
+

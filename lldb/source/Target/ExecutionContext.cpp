@@ -422,8 +422,8 @@ ExecutionContextRef::ExecutionContextRef(const ExecutionContextRef &rhs)
       m_thread_wp(rhs.m_thread_wp), m_tid(rhs.m_tid),
       m_stack_id(rhs.m_stack_id) {}
 
-ExecutionContextRef &
-ExecutionContextRef::operator=(const ExecutionContextRef &rhs) {
+ExecutionContextRef &ExecutionContextRef::
+operator=(const ExecutionContextRef &rhs) {
   if (this != &rhs) {
     m_target_wp = rhs.m_target_wp;
     m_process_wp = rhs.m_process_wp;
@@ -434,8 +434,8 @@ ExecutionContextRef::operator=(const ExecutionContextRef &rhs) {
   return *this;
 }
 
-ExecutionContextRef &
-ExecutionContextRef::operator=(const ExecutionContext &exe_ctx) {
+ExecutionContextRef &ExecutionContextRef::
+operator=(const ExecutionContext &exe_ctx) {
   m_target_wp = exe_ctx.GetTargetSP();
   m_process_wp = exe_ctx.GetProcessSP();
   lldb::ThreadSP thread_sp(exe_ctx.GetThreadSP());

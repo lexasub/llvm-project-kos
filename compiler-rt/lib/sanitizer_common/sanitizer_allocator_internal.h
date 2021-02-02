@@ -50,6 +50,6 @@ void *InternalCalloc(uptr count, uptr size,
 void InternalFree(void *p, InternalAllocatorCache *cache = nullptr);
 InternalAllocator *internal_allocator();
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_ALLOCATOR_INTERNAL_H
+#endif // SANITIZER_ALLOCATOR_INTERNAL_H

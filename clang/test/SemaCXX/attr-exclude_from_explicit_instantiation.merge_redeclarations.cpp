@@ -32,7 +32,7 @@ EXCLUDE_FROM_EXPLICIT_INSTANTIATION void Foo<T>::func3() {
   using Fail = typename T::invalid; // expected-error{{no type named 'invalid' in 'Empty'}}
 }
 
-struct Empty {};
+struct Empty { };
 extern template struct Foo<Empty>;
 
 int main() {

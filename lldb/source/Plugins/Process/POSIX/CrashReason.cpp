@@ -139,7 +139,7 @@ CrashReason GetCrashReasonForSIGBUS(const siginfo_t &info) {
 
   return CrashReason::eInvalidCrashReason;
 }
-} // namespace
+}
 
 std::string GetCrashReasonString(CrashReason reason, const siginfo_t &info) {
   std::string str;

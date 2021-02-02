@@ -156,7 +156,8 @@ public:
                                     const APInt &DemandedElts,
                                     TargetLoweringOpt &TLO) const override;
 
-  void computeKnownBitsForTargetNode(const SDValue Op, KnownBits &Known,
+  void computeKnownBitsForTargetNode(const SDValue Op,
+                                     KnownBits &Known,
                                      const APInt &DemandedElts,
                                      const SelectionDAG &DAG,
                                      unsigned Depth) const override;
@@ -356,6 +357,6 @@ using namespace RISCV;
 #include "RISCVGenSearchableTables.inc"
 
 } // namespace RISCVZvlssegTable
-} // namespace llvm
+}
 
 #endif

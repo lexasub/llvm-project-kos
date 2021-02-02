@@ -11,8 +11,8 @@
 #ifndef MSAN_ORIGIN_H
 #define MSAN_ORIGIN_H
 
-#include "msan_chained_origin_depot.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
+#include "msan_chained_origin_depot.h"
 
 namespace __msan {
 
@@ -86,8 +86,7 @@ class Origin {
     CHECK(isChainedOrigin());
     u32 prev_id;
     u32 stack_id = ChainedOriginDepotGet(getChainedId(), &prev_id);
-    if (stack)
-      *stack = StackDepotGet(stack_id);
+    if (stack) *stack = StackDepotGet(stack_id);
     return Origin(prev_id);
   }
 
@@ -121,13 +120,11 @@ class Origin {
     }
 
     StackDepotHandle h = StackDepotPut_WithHandle(*stack);
-    if (!h.valid())
-      return prev;
+    if (!h.valid()) return prev;
 
     if (flags()->origin_history_per_stack_limit > 0) {
       int use_count = h.use_count();
-      if (use_count > flags()->origin_history_per_stack_limit)
-        return prev;
+      if (use_count > flags()->origin_history_per_stack_limit) return prev;
     }
 
     u32 chained_id;
@@ -140,7 +137,9 @@ class Origin {
     return Origin((1 << kHeapShift) | (depth << kDepthShift) | chained_id);
   }
 
-  static Origin FromRawId(u32 id) { return Origin(id); }
+  static Origin FromRawId(u32 id) {
+    return Origin(id);
+  }
 
  private:
   static const int kDepthBits = 3;

@@ -2,13 +2,7 @@
 // expected-no-diagnostics
 
 namespace test1 {
-// Make sure this doesn't crash.
-struct A {
-  ~A();
-};
-void a() {
-  goto *(A(), &&L);
-L:
-  return;
+  // Make sure this doesn't crash.
+  struct A { ~A(); };
+  void a() { goto *(A(), &&L); L: return; }
 }
-} // namespace test1

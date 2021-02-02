@@ -8,11 +8,11 @@
 #ifndef DD_RTL_H
 #define DD_RTL_H
 
-#include "sanitizer_common/sanitizer_addrhashmap.h"
-#include "sanitizer_common/sanitizer_allocator_internal.h"
+#include "sanitizer_common/sanitizer_internal_defs.h"
 #include "sanitizer_common/sanitizer_deadlock_detector_interface.h"
 #include "sanitizer_common/sanitizer_flags.h"
-#include "sanitizer_common/sanitizer_internal_defs.h"
+#include "sanitizer_common/sanitizer_allocator_internal.h"
+#include "sanitizer_common/sanitizer_addrhashmap.h"
 #include "sanitizer_common/sanitizer_mutex.h"
 
 namespace __dsan {
@@ -46,7 +46,7 @@ struct Context {
   MutexHashMap mutex_map;
 };
 
-inline Flags *flags() {
+inline Flags* flags() {
   static Flags flags;
   return &flags;
 }

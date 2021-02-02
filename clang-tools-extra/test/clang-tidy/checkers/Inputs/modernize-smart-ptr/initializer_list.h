@@ -1,8 +1,7 @@
 namespace std {
 typedef decltype(sizeof(int)) size_t;
 
-template <class _E>
-class initializer_list {
+template <class _E> class initializer_list {
   const _E *__begin_;
   size_t __size_;
 
@@ -26,7 +25,7 @@ public:
 
 template <class _E>
 class vector {
-public:
+ public:
   vector(initializer_list<_E> init);
   ~vector();
 };

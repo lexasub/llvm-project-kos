@@ -159,16 +159,16 @@ public:
 
   Address(lldb::addr_t abs_addr);
 
-  /// Assignment operator.
-  ///
-  /// Copies the address value from another Address object \a rhs into \a this
-  /// object.
-  ///
-  /// \param[in] rhs
-  ///     A const Address object reference to copy.
-  ///
-  /// \return
-  ///     A const Address object reference to \a this.
+/// Assignment operator.
+///
+/// Copies the address value from another Address object \a rhs into \a this
+/// object.
+///
+/// \param[in] rhs
+///     A const Address object reference to copy.
+///
+/// \return
+///     A const Address object reference to \a this.
   const Address &operator=(const Address &rhs);
 
   /// Clear the object's state.
@@ -294,9 +294,9 @@ public:
   ///     The valid load virtual address with extra callable bits
   ///     removed, or LLDB_INVALID_ADDRESS if the address is currently
   ///     not loaded.
-  lldb::addr_t
-  GetOpcodeLoadAddress(Target *target,
-                       AddressClass addr_class = AddressClass::eInvalid) const;
+  lldb::addr_t GetOpcodeLoadAddress(
+      Target *target,
+      AddressClass addr_class = AddressClass::eInvalid) const;
 
   /// Get the section relative offset value.
   ///
@@ -362,9 +362,8 @@ public:
   ///     Returns \b false if the function/symbol could not be resolved
   ///     or if the address range was requested and could not be resolved;
   ///     returns \b true otherwise.
-  bool
-  ResolveFunctionScope(lldb_private::SymbolContext &sym_ctx,
-                       lldb_private::AddressRange *addr_range_ptr = nullptr);
+  bool ResolveFunctionScope(lldb_private::SymbolContext &sym_ctx,
+                            lldb_private::AddressRange *addr_range_ptr = nullptr);
 
   /// Set the address to represent \a load_addr.
   ///
@@ -394,9 +393,10 @@ public:
   bool SetLoadAddress(lldb::addr_t load_addr, Target *target,
                       bool allow_section_end = false);
 
-  bool SetOpcodeLoadAddress(lldb::addr_t load_addr, Target *target,
-                            AddressClass addr_class = AddressClass::eInvalid,
-                            bool allow_section_end = false);
+  bool SetOpcodeLoadAddress(
+      lldb::addr_t load_addr, Target *target,
+      AddressClass addr_class = AddressClass::eInvalid,
+      bool allow_section_end = false);
 
   bool SetCallableLoadAddress(lldb::addr_t load_addr, Target *target);
 

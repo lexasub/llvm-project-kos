@@ -5,75 +5,30 @@
 
 extern "C" int printf(const char *fmt, ...);
 
-struct B0 {
-  B0() { printf("B0 = %p\n", this); }
-};
-struct B1 {
-  B1() { printf("B1 = %p\n", this); }
-};
-struct B2 {
-  B2() { printf("B2 = %p\n", this); }
-};
-struct B3 {
-  B3() { printf("B3 = %p\n", this); }
-};
-struct B4 {
-  B4() { printf("B4 = %p\n", this); }
-};
-struct B5 {
-  B5() { printf("B5 = %p\n", this); }
-};
-struct __declspec(align(2)) B6 {
-  B6() { printf("B6 = %p\n", this); }
-};
-struct __declspec(align(16)) B7 {
-  B7() { printf("B7 = %p\n", this); }
-};
-struct B8 {
-  char c[5];
-  B8() { printf("B8 = %p\n", this); }
-};
-struct B9 {
-  char c[6];
-  B9() { printf("B9 = %p\n", this); }
-};
-struct B10 {
-  char c[7];
-  B10() { printf("B10 = %p\n", this); }
-};
-struct B11 {
-  char c[8];
-  B11() { printf("B11 = %p\n", this); }
-};
-struct B0X {
-  B0X() { printf("B0 = %p\n", this); }
-};
-struct B1X {
-  B1X() { printf("B1 = %p\n", this); }
-};
-struct __declspec(align(16)) B2X {
-  B2X() { printf("B2 = %p\n", this); }
-};
-struct __declspec(align(2)) B3X {
-  B3X() { printf("B3 = %p\n", this); }
-};
-struct B4X {
-  B4X() { printf("B4 = %p\n", this); }
-};
-struct B5X {
-  B5X() { printf("B5 = %p\n", this); }
-};
-struct B6X {
-  B6X() { printf("B6 = %p\n", this); }
-};
-struct B8X {
-  short a;
-  B8X() : a(0x000000B8) { printf("B8 = %p\n", this); }
-};
+struct B0 { B0() { printf("B0 = %p\n", this); } };
+struct B1 { B1() { printf("B1 = %p\n", this); } };
+struct B2 { B2() { printf("B2 = %p\n", this); } };
+struct B3 { B3() { printf("B3 = %p\n", this); } };
+struct B4 { B4() { printf("B4 = %p\n", this); } };
+struct B5 { B5() { printf("B5 = %p\n", this); } };
+struct __declspec(align(2)) B6 { B6() { printf("B6 = %p\n", this); } };
+struct __declspec(align(16)) B7 { B7() { printf("B7 = %p\n", this); } };
+struct B8 { char c[5]; B8() { printf("B8 = %p\n", this); } };
+struct B9 { char c[6]; B9() { printf("B9 = %p\n", this); } };
+struct B10 { char c[7]; B10() { printf("B10 = %p\n", this); } };
+struct B11 { char c[8]; B11() { printf("B11 = %p\n", this); } };
+struct B0X { B0X() { printf("B0 = %p\n", this); } };
+struct B1X { B1X() { printf("B1 = %p\n", this); } };
+struct __declspec(align(16)) B2X { B2X() { printf("B2 = %p\n", this); } };
+struct __declspec(align(2)) B3X { B3X() { printf("B3 = %p\n", this); } };
+struct B4X { B4X() { printf("B4 = %p\n", this); } };
+struct B5X { B5X() { printf("B5 = %p\n", this); } };
+struct B6X { B6X() { printf("B6 = %p\n", this); } };
+struct B8X { short a; B8X() : a(0x000000B8) { printf("B8 = %p\n", this); } };
 
 struct AA : B8, B1, virtual B0 {
-  int a;
-  AA() : a(0x000000AA) { printf("AA = %p\n", this); }
+	int a;
+	AA() : a(0x000000AA) { printf("AA = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -104,8 +59,8 @@ struct AA : B8, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AB : B8, B1, virtual B0 {
-  short a;
-  AB() : a(0x000000AB) { printf("AB = %p\n", this); }
+	short a;
+	AB() : a(0x000000AB) { printf("AB = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -130,8 +85,8 @@ struct AB : B8, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AC : B8, B1, virtual B0 {
-  char a;
-  AC() : a(0x000000AC) { printf("AC = %p\n", this); }
+	char a;
+	AC() : a(0x000000AC) { printf("AC = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -156,7 +111,7 @@ struct AC : B8, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AD : B8, B1, virtual B0 {
-  AD() { printf("AD = %p\n", this); }
+	AD() { printf("AD = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -179,8 +134,8 @@ struct AD : B8, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct AA1 : B9, B1, virtual B0 {
-  int a;
-  AA1() : a(0x00000AA1) { printf("AA1 = %p\n", this); }
+	int a;
+	AA1() : a(0x00000AA1) { printf("AA1 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -207,8 +162,8 @@ struct AA1 : B9, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AB1 : B9, B1, virtual B0 {
-  short a;
-  AB1() : a(0x00000AB1) { printf("AB1 = %p\n", this); }
+	short a;
+	AB1() : a(0x00000AB1) { printf("AB1 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -233,8 +188,8 @@ struct AB1 : B9, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AC1 : B9, B1, virtual B0 {
-  char a;
-  AC1() : a(0x000000C1) { printf("AC1 = %p\n", this); }
+	char a;
+	AC1() : a(0x000000C1) { printf("AC1 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -259,7 +214,7 @@ struct AC1 : B9, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AD1 : B9, B1, virtual B0 {
-  AD1() { printf("AD1 = %p\n", this); }
+	AD1() { printf("AD1 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -282,8 +237,8 @@ struct AD1 : B9, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct AA2 : B10, B1, virtual B0 {
-  int a;
-  AA2() : a(0x00000AA2) { printf("AA2 = %p\n", this); }
+	int a;
+	AA2() : a(0x00000AA2) { printf("AA2 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -310,8 +265,8 @@ struct AA2 : B10, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AB2 : B10, B1, virtual B0 {
-  short a;
-  AB2() : a(0x00000AB2) { printf("AB2 = %p\n", this); }
+	short a;
+	AB2() : a(0x00000AB2) { printf("AB2 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -336,8 +291,8 @@ struct AB2 : B10, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AC2 : B10, B1, virtual B0 {
-  char a;
-  AC2() : a(0x000000C2) { printf("AC2 = %p\n", this); }
+	char a;
+	AC2() : a(0x000000C2) { printf("AC2 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -362,7 +317,7 @@ struct AC2 : B10, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AD2 : B10, B1, virtual B0 {
-  AD2() { printf("AD2 = %p\n", this); }
+	AD2() { printf("AD2 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -385,8 +340,8 @@ struct AD2 : B10, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct AA3 : B11, B1, virtual B0 {
-  int a;
-  AA3() : a(0x00000AA3) { printf("AA3 = %p\n", this); }
+	int a;
+	AA3() : a(0x00000AA3) { printf("AA3 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -413,8 +368,8 @@ struct AA3 : B11, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AB3 : B11, B1, virtual B0 {
-  short a;
-  AB3() : a(0x00000AB3) { printf("AB3 = %p\n", this); }
+	short a;
+	AB3() : a(0x00000AB3) { printf("AB3 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -439,8 +394,8 @@ struct AB3 : B11, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AC3 : B11, B1, virtual B0 {
-  char a;
-  AC3() : a(0x000000C3) { printf("AC3 = %p\n", this); }
+	char a;
+	AC3() : a(0x000000C3) { printf("AC3 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -465,7 +420,7 @@ struct AC3 : B11, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct AD3 : B11, B1, virtual B0 {
-  AD3() { printf("AD3 = %p\n", this); }
+	AD3() { printf("AD3 = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -488,7 +443,7 @@ struct AD3 : B11, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct B : B1, B2, virtual B0 {
-  B() { printf("B = %p\n", this); }
+	B() { printf("B = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -511,8 +466,8 @@ struct B : B1, B2, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct C : B1, B2, B3, virtual B0 {
-  char a;
-  C() : a(0x0000000C) { printf("C = %p\n", this); }
+	char a;
+	C() : a(0x0000000C) { printf("C = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -539,8 +494,8 @@ struct C : B1, B2, B3, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct D : B1, B2, B3, B4, B5, virtual B0 {
-  int a;
-  D() : a(0x0000000D) { printf("D = %p\n", this); }
+	int a;
+	D() : a(0x0000000D) { printf("D = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -573,8 +528,8 @@ struct D : B1, B2, B3, B4, B5, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct E : B1, B6, B3, B4, B5, virtual B0 {
-  int a;
-  E() : a(0x0000000E) { printf("E = %p\n", this); }
+	int a;
+	E() : a(0x0000000E) { printf("E = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -605,11 +560,8 @@ struct E : B1, B6, B3, B4, B5, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct F : B1, B6, B4, B8, B5, virtual B0 {
-  int a;
-  F() : a(0x0000000F) {
-    printf("&a = %p\n", &a);
-    printf("F = %p\n", this);
-  }
+	int a;
+	F() : a(0x0000000F) { printf("&a = %p\n", &a); printf("F = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -640,9 +592,9 @@ struct F : B1, B6, B4, B8, B5, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct G : B8, B1, virtual B0 {
-  int a;
-  __declspec(align(16)) int a1;
-  G() : a(0x00000010), a1(0xf0000010) { printf("G = %p\n", this); }
+	int a;
+	__declspec(align(16)) int a1;
+	G() : a(0x00000010), a1(0xf0000010) { printf("G = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -669,8 +621,8 @@ struct G : B8, B1, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct AX : B1X, B2X, B3X, B4X, virtual B0X {
-  int a;
-  AX() : a(0x0000000A) { printf(" A = %p\n", this); }
+	int a;
+	AX() : a(0x0000000A) { printf(" A = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -707,8 +659,8 @@ struct AX : B1X, B2X, B3X, B4X, virtual B0X {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct BX : B2X, B1X, B3X, B4X, virtual B0X {
-  int a;
-  BX() : a(0x0000000B) { printf(" B = %p\n", this); }
+	int a;
+	BX() : a(0x0000000B) { printf(" B = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -735,8 +687,8 @@ struct BX : B2X, B1X, B3X, B4X, virtual B0X {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct CX : B1X, B3X, B2X, virtual B0X {
-  int a;
-  CX() : a(0x0000000C) { printf(" C = %p\n", this); }
+	int a;
+	CX() : a(0x0000000C) { printf(" C = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -761,8 +713,8 @@ struct CX : B1X, B3X, B2X, virtual B0X {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct DX : B8X, B1X, virtual B0X {
-  int a;
-  DX() : a(0x0000000D) { printf(" D = %p\n", this); }
+	int a;
+	DX() : a(0x0000000D) { printf(" D = %p\n", this); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -788,10 +740,9 @@ struct DX : B8X, B1X, virtual B0X {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
+
 struct C0 {};
-struct C1 : public C0 {
-  int C1F0;
-};
+struct C1 : public C0 { int C1F0; };
 struct C2 : public C1, public C0 {};
 
 // CHECK: *** Dumping AST Record Layout
@@ -815,16 +766,12 @@ struct C2 : public C1, public C0 {};
 // CHECK-X64-NEXT:      | [sizeof=8, align=4
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=4]
 
-struct JA {
-  char a;
-};
+struct JA { char a; };
 struct JB {
   char a;
   virtual void f() {}
 };
-struct JC {
-  char a;
-};
+struct JC { char a; };
 struct JD : JA, JB, virtual JC {};
 
 // CHECK: *** Dumping AST Record Layout
@@ -858,32 +805,33 @@ struct JD : JA, JB, virtual JC {};
 // CHECK-X64-NEXT:      | [sizeof=40, align=8
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=8]
 
-int a[sizeof(AA) +
-      sizeof(AB) +
-      sizeof(AC) +
-      sizeof(AD) +
-      sizeof(AA1) +
-      sizeof(AB1) +
-      sizeof(AC1) +
-      sizeof(AD1) +
-      sizeof(AA2) +
-      sizeof(AB2) +
-      sizeof(AC2) +
-      sizeof(AD2) +
-      sizeof(AA3) +
-      sizeof(AB3) +
-      sizeof(AC3) +
-      sizeof(AD3) +
-      sizeof(B) +
-      sizeof(C) +
-      sizeof(D) +
-      sizeof(E) +
-      sizeof(F) +
-      sizeof(G) +
-      sizeof(AX) +
-      sizeof(BX) +
-      sizeof(CX) +
-      sizeof(DX) +
-      sizeof(C2) +
-      sizeof(JD) +
-      0];
+int a[
+sizeof(AA)+
+sizeof(AB)+
+sizeof(AC)+
+sizeof(AD)+
+sizeof(AA1)+
+sizeof(AB1)+
+sizeof(AC1)+
+sizeof(AD1)+
+sizeof(AA2)+
+sizeof(AB2)+
+sizeof(AC2)+
+sizeof(AD2)+
+sizeof(AA3)+
+sizeof(AB3)+
+sizeof(AC3)+
+sizeof(AD3)+
+sizeof(B)+
+sizeof(C)+
+sizeof(D)+
+sizeof(E)+
+sizeof(F)+
+sizeof(G)+
+sizeof(AX)+
+sizeof(BX)+
+sizeof(CX)+
+sizeof(DX)+
+sizeof(C2)+
+sizeof(JD)+
+0];

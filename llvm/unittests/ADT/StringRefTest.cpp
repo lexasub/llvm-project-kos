@@ -29,23 +29,29 @@ std::ostream &operator<<(std::ostream &OS,
   return OS;
 }
 
-} // namespace llvm
+}
 
 // Check that we can't accidentally assign a temporary std::string to a
 // StringRef. (Unfortunately we can't make use of the same thing with
 // constructors.)
-static_assert(!std::is_assignable<StringRef &, std::string>::value,
-              "Assigning from prvalue std::string");
-static_assert(!std::is_assignable<StringRef &, std::string &&>::value,
-              "Assigning from xvalue std::string");
-static_assert(std::is_assignable<StringRef &, std::string &>::value,
-              "Assigning from lvalue std::string");
-static_assert(std::is_assignable<StringRef &, const char *>::value,
-              "Assigning from prvalue C string");
-static_assert(std::is_assignable<StringRef &, const char *&&>::value,
-              "Assigning from xvalue C string");
-static_assert(std::is_assignable<StringRef &, const char *&>::value,
-              "Assigning from lvalue C string");
+static_assert(
+    !std::is_assignable<StringRef&, std::string>::value,
+    "Assigning from prvalue std::string");
+static_assert(
+    !std::is_assignable<StringRef&, std::string &&>::value,
+    "Assigning from xvalue std::string");
+static_assert(
+    std::is_assignable<StringRef&, std::string &>::value,
+    "Assigning from lvalue std::string");
+static_assert(
+    std::is_assignable<StringRef&, const char *>::value,
+    "Assigning from prvalue C string");
+static_assert(
+    std::is_assignable<StringRef&, const char * &&>::value,
+    "Assigning from xvalue C string");
+static_assert(
+    std::is_assignable<StringRef&, const char * &>::value,
+    "Assigning from lvalue C string");
 
 namespace {
 TEST(StringRefTest, Construction) {
@@ -84,41 +90,41 @@ TEST(StringRefTest, StringOps) {
   const char *p = "hello";
   EXPECT_EQ(p, StringRef(p, 0).data());
   EXPECT_TRUE(StringRef().empty());
-  EXPECT_EQ((size_t)5, StringRef("hello").size());
+  EXPECT_EQ((size_t) 5, StringRef("hello").size());
   EXPECT_EQ(-1, StringRef("aab").compare("aad"));
-  EXPECT_EQ(0, StringRef("aab").compare("aab"));
-  EXPECT_EQ(1, StringRef("aab").compare("aaa"));
+  EXPECT_EQ( 0, StringRef("aab").compare("aab"));
+  EXPECT_EQ( 1, StringRef("aab").compare("aaa"));
   EXPECT_EQ(-1, StringRef("aab").compare("aabb"));
-  EXPECT_EQ(1, StringRef("aab").compare("aa"));
-  EXPECT_EQ(1, StringRef("\xFF").compare("\1"));
+  EXPECT_EQ( 1, StringRef("aab").compare("aa"));
+  EXPECT_EQ( 1, StringRef("\xFF").compare("\1"));
 
   EXPECT_EQ(-1, StringRef("AaB").compare_lower("aAd"));
-  EXPECT_EQ(0, StringRef("AaB").compare_lower("aab"));
-  EXPECT_EQ(1, StringRef("AaB").compare_lower("AAA"));
+  EXPECT_EQ( 0, StringRef("AaB").compare_lower("aab"));
+  EXPECT_EQ( 1, StringRef("AaB").compare_lower("AAA"));
   EXPECT_EQ(-1, StringRef("AaB").compare_lower("aaBb"));
   EXPECT_EQ(-1, StringRef("AaB").compare_lower("bb"));
-  EXPECT_EQ(1, StringRef("aaBb").compare_lower("AaB"));
-  EXPECT_EQ(1, StringRef("bb").compare_lower("AaB"));
-  EXPECT_EQ(1, StringRef("AaB").compare_lower("aA"));
-  EXPECT_EQ(1, StringRef("\xFF").compare_lower("\1"));
+  EXPECT_EQ( 1, StringRef("aaBb").compare_lower("AaB"));
+  EXPECT_EQ( 1, StringRef("bb").compare_lower("AaB"));
+  EXPECT_EQ( 1, StringRef("AaB").compare_lower("aA"));
+  EXPECT_EQ( 1, StringRef("\xFF").compare_lower("\1"));
 
   EXPECT_EQ(-1, StringRef("aab").compare_numeric("aad"));
-  EXPECT_EQ(0, StringRef("aab").compare_numeric("aab"));
-  EXPECT_EQ(1, StringRef("aab").compare_numeric("aaa"));
+  EXPECT_EQ( 0, StringRef("aab").compare_numeric("aab"));
+  EXPECT_EQ( 1, StringRef("aab").compare_numeric("aaa"));
   EXPECT_EQ(-1, StringRef("aab").compare_numeric("aabb"));
-  EXPECT_EQ(1, StringRef("aab").compare_numeric("aa"));
+  EXPECT_EQ( 1, StringRef("aab").compare_numeric("aa"));
   EXPECT_EQ(-1, StringRef("1").compare_numeric("10"));
-  EXPECT_EQ(0, StringRef("10").compare_numeric("10"));
-  EXPECT_EQ(0, StringRef("10a").compare_numeric("10a"));
-  EXPECT_EQ(1, StringRef("2").compare_numeric("1"));
-  EXPECT_EQ(0, StringRef("llvm_v1i64_ty").compare_numeric("llvm_v1i64_ty"));
-  EXPECT_EQ(1, StringRef("\xFF").compare_numeric("\1"));
-  EXPECT_EQ(1, StringRef("V16").compare_numeric("V1_q0"));
+  EXPECT_EQ( 0, StringRef("10").compare_numeric("10"));
+  EXPECT_EQ( 0, StringRef("10a").compare_numeric("10a"));
+  EXPECT_EQ( 1, StringRef("2").compare_numeric("1"));
+  EXPECT_EQ( 0, StringRef("llvm_v1i64_ty").compare_numeric("llvm_v1i64_ty"));
+  EXPECT_EQ( 1, StringRef("\xFF").compare_numeric("\1"));
+  EXPECT_EQ( 1, StringRef("V16").compare_numeric("V1_q0"));
   EXPECT_EQ(-1, StringRef("V1_q0").compare_numeric("V16"));
   EXPECT_EQ(-1, StringRef("V8_q0").compare_numeric("V16"));
-  EXPECT_EQ(1, StringRef("V16").compare_numeric("V8_q0"));
+  EXPECT_EQ( 1, StringRef("V16").compare_numeric("V8_q0"));
   EXPECT_EQ(-1, StringRef("V1_q0").compare_numeric("V8_q0"));
-  EXPECT_EQ(1, StringRef("V8_q0").compare_numeric("V1_q0"));
+  EXPECT_EQ( 1, StringRef("V8_q0").compare_numeric("V1_q0"));
 }
 
 TEST(StringRefTest, Operators) {
@@ -157,163 +163,141 @@ TEST(StringRefTest, Slice) {
 
 TEST(StringRefTest, Split) {
   StringRef Str("hello");
-  EXPECT_EQ(std::make_pair(StringRef("hello"), StringRef("")), Str.split('X'));
-  EXPECT_EQ(std::make_pair(StringRef("h"), StringRef("llo")), Str.split('e'));
-  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")), Str.split('h'));
-  EXPECT_EQ(std::make_pair(StringRef("he"), StringRef("lo")), Str.split('l'));
-  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")), Str.split('o'));
-
-  EXPECT_EQ(std::make_pair(StringRef("hello"), StringRef("")), Str.rsplit('X'));
-  EXPECT_EQ(std::make_pair(StringRef("h"), StringRef("llo")), Str.rsplit('e'));
-  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")), Str.rsplit('h'));
-  EXPECT_EQ(std::make_pair(StringRef("hel"), StringRef("o")), Str.rsplit('l'));
-  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")), Str.rsplit('o'));
-
-  EXPECT_EQ(std::make_pair(StringRef("he"), StringRef("o")), Str.rsplit("ll"));
-  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")), Str.rsplit("h"));
-  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")), Str.rsplit("o"));
   EXPECT_EQ(std::make_pair(StringRef("hello"), StringRef("")),
-            Str.rsplit("::"));
-  EXPECT_EQ(std::make_pair(StringRef("hel"), StringRef("o")), Str.rsplit("l"));
+            Str.split('X'));
+  EXPECT_EQ(std::make_pair(StringRef("h"), StringRef("llo")),
+            Str.split('e'));
+  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")),
+            Str.split('h'));
+  EXPECT_EQ(std::make_pair(StringRef("he"), StringRef("lo")),
+            Str.split('l'));
+  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")),
+            Str.split('o'));
+
+  EXPECT_EQ(std::make_pair(StringRef("hello"), StringRef("")),
+            Str.rsplit('X'));
+  EXPECT_EQ(std::make_pair(StringRef("h"), StringRef("llo")),
+            Str.rsplit('e'));
+  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")),
+            Str.rsplit('h'));
+  EXPECT_EQ(std::make_pair(StringRef("hel"), StringRef("o")),
+            Str.rsplit('l'));
+  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")),
+            Str.rsplit('o'));
+
+  EXPECT_EQ(std::make_pair(StringRef("he"), StringRef("o")),
+		    Str.rsplit("ll"));
+  EXPECT_EQ(std::make_pair(StringRef(""), StringRef("ello")),
+		    Str.rsplit("h"));
+  EXPECT_EQ(std::make_pair(StringRef("hell"), StringRef("")),
+	      Str.rsplit("o"));
+  EXPECT_EQ(std::make_pair(StringRef("hello"), StringRef("")),
+		    Str.rsplit("::"));
+  EXPECT_EQ(std::make_pair(StringRef("hel"), StringRef("o")),
+		    Str.rsplit("l"));
 }
 
 TEST(StringRefTest, Split2) {
   SmallVector<StringRef, 5> parts;
   SmallVector<StringRef, 5> expected;
 
-  expected.push_back("ab");
-  expected.push_back("c");
+  expected.push_back("ab"); expected.push_back("c");
   StringRef(",ab,,c,").split(parts, ",", -1, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("");
-  expected.push_back("ab");
-  expected.push_back("");
-  expected.push_back("c");
-  expected.push_back("");
+  expected.clear(); parts.clear();
+  expected.push_back(""); expected.push_back("ab"); expected.push_back("");
+  expected.push_back("c"); expected.push_back("");
   StringRef(",ab,,c,").split(parts, ",", -1, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("");
   StringRef("").split(parts, ",", -1, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   StringRef("").split(parts, ",", -1, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   StringRef(",").split(parts, ",", -1, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("");
-  expected.push_back("");
+  expected.clear(); parts.clear();
+  expected.push_back(""); expected.push_back("");
   StringRef(",").split(parts, ",", -1, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("b");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back("b");
   StringRef("a,b").split(parts, ",", -1, true);
   EXPECT_TRUE(parts == expected);
 
   // Test MaxSplit
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("a,,b,c");
   StringRef("a,,b,c").split(parts, ",", 0, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("a,,b,c");
   StringRef("a,,b,c").split(parts, ",", 0, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back(",b,c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back(",b,c");
   StringRef("a,,b,c").split(parts, ",", 1, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back(",b,c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back(",b,c");
   StringRef("a,,b,c").split(parts, ",", 1, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("");
-  expected.push_back("b,c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back(""); expected.push_back("b,c");
   StringRef("a,,b,c").split(parts, ",", 2, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("b,c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back("b,c");
   StringRef("a,,b,c").split(parts, ",", 2, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("");
-  expected.push_back("b");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back(""); expected.push_back("b");
   expected.push_back("c");
   StringRef("a,,b,c").split(parts, ",", 3, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("b");
-  expected.push_back("c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back("b"); expected.push_back("c");
   StringRef("a,,b,c").split(parts, ",", 3, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
-  expected.push_back("a");
-  expected.push_back("b");
-  expected.push_back("c");
+  expected.clear(); parts.clear();
+  expected.push_back("a"); expected.push_back("b"); expected.push_back("c");
   StringRef("a,,b,c").split(parts, ',', 3, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("");
   StringRef().split(parts, ",", 0, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back(StringRef());
   StringRef("").split(parts, ",", 0, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   StringRef("").split(parts, ",", 0, false);
   EXPECT_TRUE(parts == expected);
   StringRef().split(parts, ",", 0, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("a");
   expected.push_back("");
   expected.push_back("b");
@@ -321,27 +305,23 @@ TEST(StringRefTest, Split2) {
   StringRef("a,,b,c,d").split(parts, ",", 3, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("");
   StringRef().split(parts, ',', 0, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back(StringRef());
   StringRef("").split(parts, ',', 0, true);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   StringRef("").split(parts, ',', 0, false);
   EXPECT_TRUE(parts == expected);
   StringRef().split(parts, ',', 0, false);
   EXPECT_TRUE(parts == expected);
 
-  expected.clear();
-  parts.clear();
+  expected.clear(); parts.clear();
   expected.push_back("a");
   expected.push_back("");
   expected.push_back("b");
@@ -559,7 +539,7 @@ TEST(StringRefTest, EditDistance) {
   StringRef Soylent("soylent green is people");
   EXPECT_EQ(19U, Soylent.edit_distance("people soiled our green"));
   EXPECT_EQ(26U, Soylent.edit_distance("people soiled our green",
-                                       /* allow replacements = */ false));
+                                      /* allow replacements = */ false));
   EXPECT_EQ(9U, Soylent.edit_distance("people soiled our green",
                                       /* allow replacements = */ true,
                                       /* max edit distance = */ 8));
@@ -596,42 +576,46 @@ TEST(StringRefTest, Hashing) {
 struct UnsignedPair {
   const char *Str;
   uint64_t Expected;
-} Unsigned[] = {{"0", 0},
-                {"255", 255},
-                {"256", 256},
-                {"65535", 65535},
-                {"65536", 65536},
-                {"4294967295", 4294967295ULL},
-                {"4294967296", 4294967296ULL},
-                {"18446744073709551615", 18446744073709551615ULL},
-                {"042", 34},
-                {"0x42", 66},
-                {"0b101010", 42}};
+} Unsigned[] =
+  { {"0", 0}
+  , {"255", 255}
+  , {"256", 256}
+  , {"65535", 65535}
+  , {"65536", 65536}
+  , {"4294967295", 4294967295ULL}
+  , {"4294967296", 4294967296ULL}
+  , {"18446744073709551615", 18446744073709551615ULL}
+  , {"042", 34}
+  , {"0x42", 66}
+  , {"0b101010", 42}
+  };
 
 struct SignedPair {
   const char *Str;
   int64_t Expected;
-} Signed[] = {{"0", 0},
-              {"-0", 0},
-              {"127", 127},
-              {"128", 128},
-              {"-128", -128},
-              {"-129", -129},
-              {"32767", 32767},
-              {"32768", 32768},
-              {"-32768", -32768},
-              {"-32769", -32769},
-              {"2147483647", 2147483647LL},
-              {"2147483648", 2147483648LL},
-              {"-2147483648", -2147483648LL},
-              {"-2147483649", -2147483649LL},
-              {"-9223372036854775808", -(9223372036854775807LL) - 1},
-              {"042", 34},
-              {"0x42", 66},
-              {"0b101010", 42},
-              {"-042", -34},
-              {"-0x42", -66},
-              {"-0b101010", -42}};
+} Signed[] =
+  { {"0", 0}
+  , {"-0", 0}
+  , {"127", 127}
+  , {"128", 128}
+  , {"-128", -128}
+  , {"-129", -129}
+  , {"32767", 32767}
+  , {"32768", 32768}
+  , {"-32768", -32768}
+  , {"-32769", -32769}
+  , {"2147483647", 2147483647LL}
+  , {"2147483648", 2147483648LL}
+  , {"-2147483648", -2147483648LL}
+  , {"-2147483649", -2147483649LL}
+  , {"-9223372036854775808", -(9223372036854775807LL) - 1}
+  , {"042", 34}
+  , {"0x42", 66}
+  , {"0b101010", 42}
+  , {"-042", -34}
+  , {"-0x42", -66}
+  , {"-0b101010", -42}
+  };
 
 TEST(StringRefTest, getAsInteger) {
   uint8_t U8;
@@ -707,27 +691,21 @@ TEST(StringRefTest, getAsInteger) {
   }
 }
 
-static const char *BadStrings[] = {
-    "" // empty string
-    ,
-    "18446744073709551617" // value just over max
-    ,
-    "123456789012345678901" // value way too large
-    ,
-    "4t23v" // illegal decimal characters
-    ,
-    "0x123W56" // illegal hex characters
-    ,
-    "0b2" // illegal bin characters
-    ,
-    "08" // illegal oct characters
-    ,
-    "0o8" // illegal oct characters
-    ,
-    "-123" // negative unsigned value
-    ,
-    "0x",
-    "0b"};
+
+static const char* BadStrings[] = {
+    ""                      // empty string
+  , "18446744073709551617"  // value just over max
+  , "123456789012345678901" // value way too large
+  , "4t23v"                 // illegal decimal characters
+  , "0x123W56"              // illegal hex characters
+  , "0b2"                   // illegal bin characters
+  , "08"                    // illegal oct characters
+  , "0o8"                   // illegal oct characters
+  , "-123"                  // negative unsigned value
+  , "0x"
+  , "0b"
+};
+
 
 TEST(StringRefTest, getAsUnsignedIntegerBadStrings) {
   unsigned long long U64;
@@ -919,17 +897,16 @@ struct GetDoubleStrings {
   bool AllowInexact;
   bool ShouldFail;
   double D;
-} DoubleStrings[] = {
-    {"0", false, false, 0.0},
-    {"0.0", false, false, 0.0},
-    {"-0.0", false, false, -0.0},
-    {"123.45", false, true, 123.45},
-    {"123.45", true, false, 123.45},
-    {"1.8e308", true, false, std::numeric_limits<double>::infinity()},
-    {"1.8e308", false, true, std::numeric_limits<double>::infinity()},
-    {"0x0.0000000000001P-1023", false, true, 0.0},
-    {"0x0.0000000000001P-1023", true, false, 0.0},
-};
+} DoubleStrings[] = {{"0", false, false, 0.0},
+                     {"0.0", false, false, 0.0},
+                     {"-0.0", false, false, -0.0},
+                     {"123.45", false, true, 123.45},
+                     {"123.45", true, false, 123.45},
+                     {"1.8e308", true, false, std::numeric_limits<double>::infinity()},
+                     {"1.8e308", false, true, std::numeric_limits<double>::infinity()},
+                     {"0x0.0000000000001P-1023", false, true, 0.0},
+                     {"0x0.0000000000001P-1023", true, false, 0.0},
+                    };
 
 TEST(StringRefTest, getAsDouble) {
   for (const auto &Entry : DoubleStrings) {
@@ -942,7 +919,7 @@ TEST(StringRefTest, getAsDouble) {
   }
 }
 
-static const char *join_input[] = {"a", "b", "c"};
+static const char *join_input[] = { "a", "b", "c" };
 static const char join_result1[] = "a";
 static const char join_result2[] = "a:b:c";
 static const char join_result3[] = "a::b::c";
@@ -971,6 +948,7 @@ TEST(StringRefTest, joinStrings) {
   v2_join3 = join(v2, "::") == join_result3;
   EXPECT_TRUE(v2_join3);
 }
+
 
 TEST(StringRefTest, AllocatorCopy) {
   BumpPtrAllocator Alloc;

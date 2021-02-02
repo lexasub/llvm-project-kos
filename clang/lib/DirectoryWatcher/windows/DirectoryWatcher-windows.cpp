@@ -33,10 +33,10 @@ using namespace clang;
 
 class DirectoryWatcherWindows : public clang::DirectoryWatcher {
 public:
-  ~DirectoryWatcherWindows() override {}
-  void InitialScan() {}
-  void EventReceivingLoop() {}
-  void StopWork() {}
+  ~DirectoryWatcherWindows() override { }
+  void InitialScan() { }
+  void EventReceivingLoop() { }
+  void StopWork() { }
 };
 } // namespace
 

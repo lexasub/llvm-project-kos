@@ -35,8 +35,7 @@ void RawWrite(const char *buffer) {
 
 void ReportFile::ReopenIfNecessary() {
   mu->CheckLocked();
-  if (fd == kStdoutFd || fd == kStderrFd)
-    return;
+  if (fd == kStdoutFd || fd == kStderrFd) return;
 
   uptr pid = internal_getpid();
   // If in tracer, use the parent's file.
@@ -115,7 +114,7 @@ bool ReadFileToBuffer(const char *file_name, char **buff, uptr *buff_size,
   // The files we usually open are not seekable, so try different buffer sizes.
   for (uptr size = kMinFileLen;; size = Min(size * 2, max_len)) {
     UnmapOrDie(*buff, *buff_size);
-    *buff = (char *)MmapOrDie(size, __func__);
+    *buff = (char*)MmapOrDie(size, __func__);
     *buff_size = size;
     fd_t fd = OpenFile(file_name, RdOnly, errno_p);
     if (fd == kInvalidFd) {
@@ -201,14 +200,13 @@ char *FindPathToBinary(const char *name) {
       if (FileExists(buffer.data()))
         return internal_strdup(buffer.data());
     }
-    if (*end == '\0')
-      break;
+    if (*end == '\0') break;
     beg = end + 1;
   }
   return nullptr;
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 using namespace __sanitizer;
 
@@ -218,13 +216,13 @@ void __sanitizer_set_report_path(const char *path) {
 }
 
 void __sanitizer_set_report_fd(void *fd) {
-  report_file.fd = (fd_t) reinterpret_cast<uptr>(fd);
+  report_file.fd = (fd_t)reinterpret_cast<uptr>(fd);
   report_file.fd_pid = internal_getpid();
 }
 
 const char *__sanitizer_get_report_path() {
   return report_file.GetReportPath();
 }
-}  // extern "C"
+} // extern "C"
 
 #endif  // !SANITIZER_FUCHSIA

@@ -41,10 +41,10 @@ void inconsidentFunctionWithUnreferencedParameterInDefinition(int b) {}
 //////////////////////////////////////////////////////
 
 struct Struct {
-  // CHECK-MESSAGES: :[[@LINE+4]]:8: warning: function 'Struct::inconsistentFunction' has a definition
-  // CHECK-MESSAGES: :[[@LINE+6]]:14: note: the definition seen here
-  // CHECK-MESSAGES: :[[@LINE+2]]:8: note: differing parameters are named here: ('a'), in definition: ('b')
-  // CHECK-FIXES: void inconsistentFunction(int b);
+// CHECK-MESSAGES: :[[@LINE+4]]:8: warning: function 'Struct::inconsistentFunction' has a definition
+// CHECK-MESSAGES: :[[@LINE+6]]:14: note: the definition seen here
+// CHECK-MESSAGES: :[[@LINE+2]]:8: note: differing parameters are named here: ('a'), in definition: ('b')
+// CHECK-FIXES: void inconsistentFunction(int b);
   void inconsistentFunction(int a);
 };
 
@@ -53,25 +53,22 @@ void Struct::inconsistentFunction(int b) { b = 0; }
 //////////////////////////////////////////////////////
 
 struct SpecialFunctions {
-  // CHECK-MESSAGES: :[[@LINE+4]]:3: warning: function 'SpecialFunctions::SpecialFunctions' has a definition
-  // CHECK-MESSAGES: :[[@LINE+12]]:19: note: the definition seen here
-  // CHECK-MESSAGES: :[[@LINE+2]]:3: note: differing parameters are named here: ('a'), in definition: ('b')
-  // CHECK-FIXES: SpecialFunctions(int b);
+// CHECK-MESSAGES: :[[@LINE+4]]:3: warning: function 'SpecialFunctions::SpecialFunctions' has a definition
+// CHECK-MESSAGES: :[[@LINE+12]]:19: note: the definition seen here
+// CHECK-MESSAGES: :[[@LINE+2]]:3: note: differing parameters are named here: ('a'), in definition: ('b')
+// CHECK-FIXES: SpecialFunctions(int b);
   SpecialFunctions(int a);
 
-  // CHECK-MESSAGES: :[[@LINE+4]]:21: warning: function 'SpecialFunctions::operator=' has a definition
-  // CHECK-MESSAGES: :[[@LINE+8]]:37: note: the definition seen here
-  // CHECK-MESSAGES: :[[@LINE+2]]:21: note: differing parameters are named here: ('a'), in definition: ('b')
-  // CHECK-FIXES: SpecialFunctions& operator=(const SpecialFunctions& b);
-  SpecialFunctions &operator=(const SpecialFunctions &a);
+// CHECK-MESSAGES: :[[@LINE+4]]:21: warning: function 'SpecialFunctions::operator=' has a definition
+// CHECK-MESSAGES: :[[@LINE+8]]:37: note: the definition seen here
+// CHECK-MESSAGES: :[[@LINE+2]]:21: note: differing parameters are named here: ('a'), in definition: ('b')
+// CHECK-FIXES: SpecialFunctions& operator=(const SpecialFunctions& b);
+  SpecialFunctions& operator=(const SpecialFunctions& a);
 };
 
 SpecialFunctions::SpecialFunctions(int b) { b; }
 
-SpecialFunctions &SpecialFunctions::operator=(const SpecialFunctions &b) {
-  b;
-  return *this;
-}
+SpecialFunctions& SpecialFunctions::operator=(const SpecialFunctions& b) { b; return *this; }
 
 //////////////////////////////////////////////////////
 
@@ -79,24 +76,24 @@ SpecialFunctions &SpecialFunctions::operator=(const SpecialFunctions &b) {
 // CHECK-MESSAGES: :[[@LINE+7]]:6: note: the definition seen here
 // CHECK-MESSAGES: :[[@LINE+3]]:6: note: differing parameters are named here: ('a'), in definition: ('b')
 // CHECK-FIXES: void templateFunctionWithSeparateDeclarationAndDefinition(T b);
-template <typename T>
+template<typename T>
 void templateFunctionWithSeparateDeclarationAndDefinition(T a);
 
-template <typename T>
+template<typename T>
 void templateFunctionWithSeparateDeclarationAndDefinition(T b) { b; }
 
 //////////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void templateFunctionWithSpecializations(T a) { a; }
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:6: warning: function template specialization 'templateFunctionWithSpecializations<int>' has a primary template declaration with different parameter names [readability-inconsistent-declaration-parameter-name]
 // CHECK-MESSAGES: :[[@LINE-4]]:6: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:6: note: differing parameters are named here: ('b'), in primary template declaration: ('a')
 void templateFunctionWithSpecializations(int b) { b; }
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:6: warning: function template specialization 'templateFunctionWithSpecializations<float>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-10]]:6: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:6: note: differing parameters are named here: ('c'), in primary template declaration: ('a')
@@ -104,10 +101,10 @@ void templateFunctionWithSpecializations(float c) { c; }
 
 //////////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void templateFunctionWithoutDefinitionButWithSpecialization(T a);
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:6: warning: function template specialization 'templateFunctionWithoutDefinitionButWithSpecialization<int>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-4]]:6: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:6: note: differing parameters are named here: ('b'), in primary template declaration: ('a')
@@ -115,16 +112,16 @@ void templateFunctionWithoutDefinitionButWithSpecialization(int b) { b; }
 
 //////////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void templateFunctionWithSeparateSpecializationDeclarationAndDefinition(T a);
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:6: warning: function template specialization 'templateFunctionWithSeparateSpecializationDeclarationAndDefinition<int>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-4]]:6: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:6: note: differing parameters are named here: ('b'), in primary template declaration: ('a')
 void templateFunctionWithSeparateSpecializationDeclarationAndDefinition(int b);
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:6: warning: function template specialization 'templateFunctionWithSeparateSpecializationDeclarationAndDefinition<int>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-10]]:6: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:6: note: differing parameters are named here: ('c'), in primary template declaration: ('a')
@@ -132,48 +129,50 @@ void templateFunctionWithSeparateSpecializationDeclarationAndDefinition(int c) {
 
 //////////////////////////////////////////////////////
 
-template <typename T>
-class ClassTemplate {
+template<typename T>
+class ClassTemplate
+{
 public:
-  // CHECK-MESSAGES: :[[@LINE+4]]:10: warning: function 'ClassTemplate::functionInClassTemplateWithSeparateDeclarationAndDefinition' has a definition
-  // CHECK-MESSAGES: :[[@LINE+7]]:24: note: the definition seen here
-  // CHECK-MESSAGES: :[[@LINE+2]]:10: note: differing parameters are named here: ('a'), in definition: ('b')
-  // CHECK-FIXES: void functionInClassTemplateWithSeparateDeclarationAndDefinition(int b);
-  void functionInClassTemplateWithSeparateDeclarationAndDefinition(int a);
+// CHECK-MESSAGES: :[[@LINE+4]]:10: warning: function 'ClassTemplate::functionInClassTemplateWithSeparateDeclarationAndDefinition' has a definition
+// CHECK-MESSAGES: :[[@LINE+7]]:24: note: the definition seen here
+// CHECK-MESSAGES: :[[@LINE+2]]:10: note: differing parameters are named here: ('a'), in definition: ('b')
+// CHECK-FIXES: void functionInClassTemplateWithSeparateDeclarationAndDefinition(int b);
+    void functionInClassTemplateWithSeparateDeclarationAndDefinition(int a);
 };
 
-template <typename T>
+template<typename T>
 void ClassTemplate<T>::functionInClassTemplateWithSeparateDeclarationAndDefinition(int b) { b; }
 
 //////////////////////////////////////////////////////
 
-class Class {
+class Class
+{
 public:
-  template <typename T>
-  // CHECK-MESSAGES: :[[@LINE+4]]:8: warning: function 'Class::memberFunctionTemplateWithSeparateDeclarationAndDefinition' has a definition
-  // CHECK-MESSAGES: :[[@LINE+12]]:13: note: the definition seen here
-  // CHECK-MESSAGES: :[[@LINE+2]]:8: note: differing parameters are named here: ('a'), in definition: ('b')
-  // CHECK-FIXES: void memberFunctionTemplateWithSeparateDeclarationAndDefinition(T b);
+    template<typename T>
+// CHECK-MESSAGES: :[[@LINE+4]]:8: warning: function 'Class::memberFunctionTemplateWithSeparateDeclarationAndDefinition' has a definition
+// CHECK-MESSAGES: :[[@LINE+12]]:13: note: the definition seen here
+// CHECK-MESSAGES: :[[@LINE+2]]:8: note: differing parameters are named here: ('a'), in definition: ('b')
+// CHECK-FIXES: void memberFunctionTemplateWithSeparateDeclarationAndDefinition(T b);
   void memberFunctionTemplateWithSeparateDeclarationAndDefinition(T a);
 
-  template <typename T>
+  template<typename T>
   void memberFunctionTemplateWithSpecializations(T a) { a; }
 };
 
 //////////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void Class::memberFunctionTemplateWithSeparateDeclarationAndDefinition(T b) { b; }
 
 //////////////////////////////////////////////////////
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:13: warning: function template specialization 'Class::memberFunctionTemplateWithSpecializations<int>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-12]]:8: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:13: note: differing parameters are named here: ('b'), in primary template declaration: ('a')
 void Class::memberFunctionTemplateWithSpecializations(int b) { b; }
 
-template <>
+template<>
 // CHECK-MESSAGES: :[[@LINE+3]]:13: warning: function template specialization 'Class::memberFunctionTemplateWithSpecializations<float>' has a primary template
 // CHECK-MESSAGES: :[[@LINE-18]]:8: note: the primary template declaration seen here
 // CHECK-MESSAGES: :[[@LINE+1]]:13: note: differing parameters are named here: ('c'), in primary template declaration: ('a')
@@ -189,5 +188,6 @@ struct S {
   MACRO();
 };
 
-void S::f(int y) {
+void S::f(int y)
+{
 }

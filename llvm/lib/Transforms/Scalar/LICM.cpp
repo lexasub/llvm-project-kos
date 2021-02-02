@@ -121,8 +121,8 @@ static cl::opt<uint32_t> MaxNumUsesTraversed(
 // instead of the cross product using AA to identify aliasing of the memory
 // location we are interested in.
 static cl::opt<int>
-    LICMN2Theshold("licm-n2-threshold", cl::Hidden, cl::init(0),
-                   cl::desc("How many instruction to cross product using AA"));
+LICMN2Theshold("licm-n2-threshold", cl::Hidden, cl::init(0),
+               cl::desc("How many instruction to cross product using AA"));
 
 // Experimental option to allow imprecision in LICM in pathological cases, in
 // exchange for faster compile. This is to be removed if MemorySSA starts to
@@ -1123,7 +1123,7 @@ bool isOnlyMemoryAccess(const Instruction *I, const Loop *L,
     }
   return true;
 }
-} // namespace
+}
 
 bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                               Loop *CurLoop, AliasSetTracker *CurAST,
@@ -1704,7 +1704,7 @@ static bool sink(Instruction &I, LoopInfo *LI, DominatorTree *DT,
   // the instruction.
   // First check if I is worth sinking for all uses. Sink only when it is worth
   // across all uses.
-  SmallSetVector<User *, 8> Users(I.user_begin(), I.user_end());
+  SmallSetVector<User*, 8> Users(I.user_begin(), I.user_end());
   SmallVector<PHINode *, 8> ExitPNs;
   for (auto *UI : Users) {
     auto *User = cast<Instruction>(UI);
@@ -1744,8 +1744,8 @@ static void hoist(Instruction &I, const DominatorTree *DT, const Loop *CurLoop,
   LLVM_DEBUG(dbgs() << "LICM hoisting to " << Dest->getNameOrAsOperand() << ": "
                     << I << "\n");
   ORE->emit([&]() {
-    return OptimizationRemark(DEBUG_TYPE, "Hoisted", &I)
-           << "hoisting " << ore::NV("Inst", &I);
+    return OptimizationRemark(DEBUG_TYPE, "Hoisted", &I) << "hoisting "
+                                                         << ore::NV("Inst", &I);
   });
 
   // Metadata can be dependent on conditions we are hoisting above.
@@ -1911,6 +1911,7 @@ public:
   }
 };
 
+
 /// Return true iff we can prove that a caller of this function can not inspect
 /// the contents of the provided object in a well defined program.
 bool isKnownNonEscaping(Value *Object, const TargetLibraryInfo *TLI) {
@@ -1930,7 +1931,7 @@ bool isKnownNonEscaping(Value *Object, const TargetLibraryInfo *TLI) {
   //      weaker condition and handle only AllocLikeFunctions (which are
   //      known to be noalias).  TODO
   return isAllocLikeFn(Object, TLI) &&
-         !PointerMayBeCaptured(Object, true, true);
+    !PointerMayBeCaptured(Object, true, true);
 }
 
 } // namespace
@@ -2053,7 +2054,7 @@ bool llvm::promoteLoopAccessesToScalars(
         // Note that proving a load safe to speculate requires proving
         // sufficient alignment at the target location.  Proving it guaranteed
         // to execute does as well.  Thus we can increase our guaranteed
-        // alignment as well.
+        // alignment as well. 
         if (!DereferenceableInPH || (InstAlignment > Alignment))
           if (isSafeToExecuteUnconditionally(*Load, DT, CurLoop, SafetyInfo,
                                              ORE, Preheader->getTerminator())) {
@@ -2131,7 +2132,8 @@ bool llvm::promoteLoopAccessesToScalars(
   // lower it.  We're only guaranteed to be able to lower naturally aligned
   // atomics.
   auto *SomePtrElemType = SomePtr->getType()->getPointerElementType();
-  if (SawUnorderedAtomic && Alignment < MDL.getTypeStoreSize(SomePtrElemType))
+  if (SawUnorderedAtomic &&
+      Alignment < MDL.getTypeStoreSize(SomePtrElemType))
     return false;
 
   // If we couldn't prove we can hoist the load, bail.

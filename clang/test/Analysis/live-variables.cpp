@@ -10,7 +10,7 @@ int getBool();
 int *getPtr();
 int test() {
   int r = 0;
-  for (int x = 0; x < 10; x++) {
+  for (int x = 0; x< 10; x++) {
     int *p = getPtr();
     // Liveness info is not computed correctly due to the following expression.
     // This happens due to CFG being special cased for short circuit operators.

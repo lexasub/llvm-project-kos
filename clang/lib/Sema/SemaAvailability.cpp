@@ -98,8 +98,8 @@ ShouldDiagnoseAvailabilityOfDecl(Sema &S, const NamedDecl *D,
   // For +new, infer availability from -init.
   if (const auto *MD = dyn_cast<ObjCMethodDecl>(D)) {
     if (S.NSAPIObj && ClassReceiver) {
-      ObjCMethodDecl *Init =
-          ClassReceiver->lookupInstanceMethod(S.NSAPIObj->getInitSelector());
+      ObjCMethodDecl *Init = ClassReceiver->lookupInstanceMethod(
+          S.NSAPIObj->getInitSelector());
       if (Init && Result == AR_Available && MD->isClassMethod() &&
           MD->getSelector() == S.NSAPIObj->getNewSelector() &&
           MD->definedInNSObject(S.getASTContext())) {
@@ -111,6 +111,7 @@ ShouldDiagnoseAvailabilityOfDecl(Sema &S, const NamedDecl *D,
 
   return {Result, D};
 }
+
 
 /// whether we should emit a diagnostic for \c K and \c DeclVersion in
 /// the context of \c Ctx. For example, we should emit an unavailable diagnostic
@@ -306,11 +307,14 @@ createAttributeInsertion(const NamedDecl *D, const SourceManager &SM,
 /// may not be the same as ReferringDecl, i.e. if an EnumDecl is annotated and
 /// we refer to a member EnumConstantDecl, ReferringDecl is the EnumConstantDecl
 /// and OffendingDecl is the EnumDecl.
-static void DoEmitAvailabilityWarning(
-    Sema &S, AvailabilityResult K, Decl *Ctx, const NamedDecl *ReferringDecl,
-    const NamedDecl *OffendingDecl, StringRef Message,
-    ArrayRef<SourceLocation> Locs, const ObjCInterfaceDecl *UnknownObjCClass,
-    const ObjCPropertyDecl *ObjCProperty, bool ObjCPropertyAccess) {
+static void DoEmitAvailabilityWarning(Sema &S, AvailabilityResult K,
+                                      Decl *Ctx, const NamedDecl *ReferringDecl,
+                                      const NamedDecl *OffendingDecl,
+                                      StringRef Message,
+                                      ArrayRef<SourceLocation> Locs,
+                                      const ObjCInterfaceDecl *UnknownObjCClass,
+                                      const ObjCPropertyDecl *ObjCProperty,
+                                      bool ObjCPropertyAccess) {
   // Diagnostics for deprecated or unavailable.
   unsigned diag, diag_message, diag_fwdclass_message;
   unsigned diag_available_here = diag::note_availability_specified_here;
@@ -442,8 +446,7 @@ static void DoEmitAvailabilityWarning(
         };
 
         switch (AL->getImplicitReason()) {
-        case UnavailableAttr::IR_None:
-          break;
+        case UnavailableAttr::IR_None: break;
 
         case UnavailableAttr::IR_ARCForbiddenType:
           flagARCError();
@@ -490,7 +493,8 @@ static void DoEmitAvailabilityWarning(
 
     CharSourceRange UseRange;
     if (!Replacement.empty())
-      UseRange = CharSourceRange::getCharRange(Loc, S.getLocForEndOfToken(Loc));
+      UseRange =
+          CharSourceRange::getCharRange(Loc, S.getLocForEndOfToken(Loc));
     if (UseRange.isValid()) {
       if (const auto *MethodDecl = dyn_cast<ObjCMethodDecl>(ReferringDecl)) {
         Selector Sel = MethodDecl->getSelector();
@@ -532,7 +536,7 @@ static void DoEmitAvailabilityWarning(
   }
 
   S.Diag(NoteLocation, diag_available_here)
-      << OffendingDecl << available_here_select_kind;
+    << OffendingDecl << available_here_select_kind;
 }
 
 void Sema::handleDelayedAvailabilityCheck(DelayedDiagnostic &DD, Decl *Ctx) {
@@ -547,22 +551,26 @@ void Sema::handleDelayedAvailabilityCheck(DelayedDiagnostic &DD, Decl *Ctx) {
       DD.getObjCProperty(), false);
 }
 
-static void EmitAvailabilityWarning(
-    Sema &S, AvailabilityResult AR, const NamedDecl *ReferringDecl,
-    const NamedDecl *OffendingDecl, StringRef Message,
-    ArrayRef<SourceLocation> Locs, const ObjCInterfaceDecl *UnknownObjCClass,
-    const ObjCPropertyDecl *ObjCProperty, bool ObjCPropertyAccess) {
+static void EmitAvailabilityWarning(Sema &S, AvailabilityResult AR,
+                                    const NamedDecl *ReferringDecl,
+                                    const NamedDecl *OffendingDecl,
+                                    StringRef Message,
+                                    ArrayRef<SourceLocation> Locs,
+                                    const ObjCInterfaceDecl *UnknownObjCClass,
+                                    const ObjCPropertyDecl *ObjCProperty,
+                                    bool ObjCPropertyAccess) {
   // Delay if we're currently parsing a declaration.
   if (S.DelayedDiagnostics.shouldDelayDiagnostics()) {
-    S.DelayedDiagnostics.add(DelayedDiagnostic::makeAvailability(
-        AR, Locs, ReferringDecl, OffendingDecl, UnknownObjCClass, ObjCProperty,
-        Message, ObjCPropertyAccess));
+    S.DelayedDiagnostics.add(
+        DelayedDiagnostic::makeAvailability(
+            AR, Locs, ReferringDecl, OffendingDecl, UnknownObjCClass,
+            ObjCProperty, Message, ObjCPropertyAccess));
     return;
   }
 
   Decl *Ctx = cast<Decl>(S.getCurLexicalContext());
-  DoEmitAvailabilityWarning(S, AR, Ctx, ReferringDecl, OffendingDecl, Message,
-                            Locs, UnknownObjCClass, ObjCProperty,
+  DoEmitAvailabilityWarning(S, AR, Ctx, ReferringDecl, OffendingDecl,
+                            Message, Locs, UnknownObjCClass, ObjCProperty,
                             ObjCPropertyAccess);
 }
 
@@ -686,8 +694,7 @@ public:
 
   bool VisitObjCPropertyRefExpr(ObjCPropertyRefExpr *PRE) {
     if (PRE->isClassReceiver())
-      DiagnoseDeclAvailability(PRE->getClassReceiver(),
-                               PRE->getReceiverLocation());
+      DiagnoseDeclAvailability(PRE->getClassReceiver(), PRE->getReceiverLocation());
     return true;
   }
 
@@ -738,7 +745,7 @@ void DiagnoseUnguardedAvailability::DiagnoseDeclAvailability(
       return;
 
     const AvailabilityAttr *AA =
-        getAttrForPlatform(SemaRef.getASTContext(), OffendingDecl);
+      getAttrForPlatform(SemaRef.getASTContext(), OffendingDecl);
     VersionTuple Introduced = AA->getIntroduced();
 
     if (AvailabilityStack.back() >= Introduced)
@@ -822,9 +829,8 @@ void DiagnoseUnguardedAvailability::DiagnoseDeclAvailability(
     const char *ExtraIndentation = "    ";
     std::string FixItString;
     llvm::raw_string_ostream FixItOS(FixItString);
-    FixItOS << "if ("
-            << (SemaRef.getLangOpts().ObjC ? "@available"
-                                           : "__builtin_available")
+    FixItOS << "if (" << (SemaRef.getLangOpts().ObjC ? "@available"
+                                                     : "__builtin_available")
             << "("
             << AvailabilityAttr::getPlatformNameSourceSpelling(
                    SemaRef.getASTContext().getTargetInfo().getPlatformName())
@@ -921,7 +927,7 @@ void Sema::DiagnoseAvailabilityOfDecl(NamedDecl *D,
                                       ObjCInterfaceDecl *ClassReceiver) {
   std::string Message;
   AvailabilityResult Result;
-  const NamedDecl *OffendingDecl;
+  const NamedDecl* OffendingDecl;
   // See if this declaration is unavailable, deprecated, or partial.
   std::tie(Result, OffendingDecl) =
       ShouldDiagnoseAvailabilityOfDecl(*this, D, &Message, ClassReceiver);

@@ -20,9 +20,9 @@ class S2 {
 public:
   S2() : a(0) {}
   S2(S2 &s2) : a(s2.a) {}
-  S2 &operator=(const S2 &);
-  const S2 &operator=(const S2 &) const;
-  static float S2s;        // expected-note {{static data member is predetermined as shared}}
+  S2 &operator =(const S2&);
+  const S2 &operator =(const S2&) const;
+  static float S2s; // expected-note {{static data member is predetermined as shared}}
   static const float S2sc; // expected-note {{'S2sc' declared here}}
 };
 const float S2::S2sc = 0;
@@ -41,7 +41,7 @@ const S3 ca[5];     // expected-note {{'ca' defined here}}
 extern const int f; // expected-note {{'f' declared here}}
 class S4 {
   int a;
-  S4(); // expected-note 3 {{implicitly declared private here}}
+  S4();             // expected-note 3 {{implicitly declared private here}}
   S4(const S4 &s4);
 
 public:
@@ -99,10 +99,7 @@ int foomain(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp for simd lastprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                            : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                             : argv),              \
-                                                                                                                                                              allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp for simd lastprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
@@ -110,14 +107,11 @@ int foomain(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp for simd lastprivate(conditional                        \
-                                 : argc, s) lastprivate(conditional \
-                                                        : // omp45-error 2 {{use of undeclared identifier 'conditional'}} omp50-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}} omp45-error 2 {{calling a private constructor of class 'S6'}} omp50-error {{expected list item of scalar type in 'lastprivate' clause with 'conditional' modifier}}
+#pragma omp for simd lastprivate(conditional: argc,s) lastprivate(conditional: // omp45-error 2 {{use of undeclared identifier 'conditional'}} omp50-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}} omp45-error 2 {{calling a private constructor of class 'S6'}} omp50-error {{expected list item of scalar type in 'lastprivate' clause with 'conditional' modifier}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp for simd lastprivate(foo \
-                                 : argc) // omp50-error {{expected 'conditional' in OpenMP clause 'lastprivate'}} omp45-error {{expected ',' or ')' in 'lastprivate' clause}} omp45-error {{expected ')'}} omp45-error {{expected variable name}} omp45-note {{to match this '('}}
+#pragma omp for simd lastprivate(foo:argc) // omp50-error {{expected 'conditional' in OpenMP clause 'lastprivate'}} omp45-error {{expected ',' or ')' in 'lastprivate' clause}} omp45-error {{expected ')'}} omp45-error {{expected variable name}} omp45-note {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
@@ -143,7 +137,7 @@ int foomain(int argc, char **argv) {
 #pragma omp parallel
   {
     int v = 0;
-    int i;                          // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
+    int i;                     // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
 #pragma omp for simd lastprivate(i) // expected-error {{lastprivate variable must be shared}}
     for (int k = 0; k < argc; ++k) {
       i = k;
@@ -165,7 +159,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -273,12 +267,11 @@ int main(int argc, char **argv) {
   for (i = 0; i < argc; ++i) // omp45-error {{loop iteration variable in the associated loop of 'omp for simd' directive may not be lastprivate, predetermined as linear}}
     foo();
 #pragma omp parallel private(xa) // expected-note {{defined as private}}
-#pragma omp for simd lastprivate(xa) // expected-error {{lastprivate variable must be shared}}
+#pragma omp for simd lastprivate(xa)  // expected-error {{lastprivate variable must be shared}}
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel reduction(+ \
-                               : xa) // expected-note {{defined as reduction}}
-#pragma omp for simd lastprivate(xa) // expected-error {{lastprivate variable must be shared}}
+#pragma omp parallel reduction(+ : xa) // expected-note {{defined as reduction}}
+#pragma omp for simd lastprivate(xa)        // expected-error {{lastprivate variable must be shared}}
   for (i = 0; i < argc; ++i)
     foo();
 #pragma omp parallel

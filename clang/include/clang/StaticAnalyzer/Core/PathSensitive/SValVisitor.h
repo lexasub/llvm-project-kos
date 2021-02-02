@@ -14,9 +14,9 @@
 #ifndef LLVM_CLANG_STATICANALYZER_CORE_PATHSENSITIVE_SVALVISITOR_H
 #define LLVM_CLANG_STATICANALYZER_CORE_PATHSENSITIVE_SVALVISITOR_H
 
-#include "clang/StaticAnalyzer/Core/PathSensitive/MemRegion.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SymbolManager.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/MemRegion.h"
 
 namespace clang {
 
@@ -26,30 +26,27 @@ namespace ento {
 /// subclasses.
 template <typename ImplClass, typename RetTy = void> class SValVisitor {
 public:
-#define DISPATCH(NAME, CLASS)                                                  \
-  return static_cast<ImplClass *>(this)->Visit##NAME(V.castAs<CLASS>())
+
+#define DISPATCH(NAME, CLASS) \
+  return static_cast<ImplClass *>(this)->Visit ## NAME(V.castAs<CLASS>())
 
   RetTy Visit(SVal V) {
     // Dispatch to VisitFooVal for each FooVal.
     // Take namespaces (loc:: and nonloc::) into account.
     switch (V.getBaseKind()) {
-#define BASIC_SVAL(Id, Parent)                                                 \
-  case SVal::Id##Kind:                                                         \
-    DISPATCH(Id, Id);
+#define BASIC_SVAL(Id, Parent) case SVal::Id ## Kind: DISPATCH(Id, Id);
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.def"
     case SVal::LocKind:
       switch (V.getSubKind()) {
-#define LOC_SVAL(Id, Parent)                                                   \
-  case loc::Id##Kind:                                                          \
-    DISPATCH(Loc##Id, loc ::Id);
+#define LOC_SVAL(Id, Parent) \
+      case loc::Id ## Kind: DISPATCH(Loc ## Id, loc :: Id);
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.def"
       }
       llvm_unreachable("Unknown Loc sub-kind!");
     case SVal::NonLocKind:
       switch (V.getSubKind()) {
-#define NONLOC_SVAL(Id, Parent)                                                \
-  case nonloc::Id##Kind:                                                       \
-    DISPATCH(NonLoc##Id, nonloc ::Id);
+#define NONLOC_SVAL(Id, Parent) \
+      case nonloc::Id ## Kind: DISPATCH(NonLoc ## Id, nonloc :: Id);
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.def"
       }
       llvm_unreachable("Unknown NonLoc sub-kind!");
@@ -57,13 +54,14 @@ public:
     llvm_unreachable("Unknown SVal kind!");
   }
 
-#define BASIC_SVAL(Id, Parent)                                                 \
-  RetTy Visit##Id(Id V) { DISPATCH(Parent, Id); }
-#define ABSTRACT_SVAL(Id, Parent) BASIC_SVAL(Id, Parent)
-#define LOC_SVAL(Id, Parent)                                                   \
-  RetTy VisitLoc##Id(loc::Id V) { DISPATCH(Parent, Parent); }
-#define NONLOC_SVAL(Id, Parent)                                                \
-  RetTy VisitNonLoc##Id(nonloc::Id V) { DISPATCH(Parent, Parent); }
+#define BASIC_SVAL(Id, Parent) \
+  RetTy Visit ## Id(Id V) { DISPATCH(Parent, Id); }
+#define ABSTRACT_SVAL(Id, Parent) \
+  BASIC_SVAL(Id, Parent)
+#define LOC_SVAL(Id, Parent) \
+  RetTy VisitLoc ## Id(loc::Id V) { DISPATCH(Parent, Parent); }
+#define NONLOC_SVAL(Id, Parent) \
+  RetTy VisitNonLoc ## Id(nonloc::Id V) { DISPATCH(Parent, Parent); }
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.def"
 
   // Base case, ignore it. :)
@@ -76,15 +74,15 @@ public:
 /// subclasses.
 template <typename ImplClass, typename RetTy = void> class SymExprVisitor {
 public:
-#define DISPATCH(CLASS)                                                        \
-  return static_cast<ImplClass *>(this)->Visit##CLASS(cast<CLASS>(S))
+
+#define DISPATCH(CLASS) \
+    return static_cast<ImplClass *>(this)->Visit ## CLASS(cast<CLASS>(S))
 
   RetTy Visit(SymbolRef S) {
     // Dispatch to VisitSymbolFoo for each SymbolFoo.
     switch (S->getKind()) {
-#define SYMBOL(Id, Parent)                                                     \
-  case SymExpr::Id##Kind:                                                      \
-    DISPATCH(Id);
+#define SYMBOL(Id, Parent) \
+    case SymExpr::Id ## Kind: DISPATCH(Id);
 #include "clang/StaticAnalyzer/Core/PathSensitive/Symbols.def"
     }
     llvm_unreachable("Unknown SymExpr kind!");
@@ -92,8 +90,7 @@ public:
 
   // If the implementation chooses not to implement a certain visit method, fall
   // back on visiting the superclass.
-#define SYMBOL(Id, Parent)                                                     \
-  RetTy Visit##Id(const Id *S) { DISPATCH(Parent); }
+#define SYMBOL(Id, Parent) RetTy Visit ## Id(const Id *S) { DISPATCH(Parent); }
 #define ABSTRACT_SYMBOL(Id, Parent) SYMBOL(Id, Parent)
 #include "clang/StaticAnalyzer/Core/PathSensitive/Symbols.def"
 
@@ -107,15 +104,14 @@ public:
 /// subclasses.
 template <typename ImplClass, typename RetTy = void> class MemRegionVisitor {
 public:
-#define DISPATCH(CLASS)                                                        \
-  return static_cast<ImplClass *>(this)->Visit##CLASS(cast<CLASS>(R))
+
+#define DISPATCH(CLASS) \
+  return static_cast<ImplClass *>(this)->Visit ## CLASS(cast<CLASS>(R))
 
   RetTy Visit(const MemRegion *R) {
     // Dispatch to VisitFooRegion for each FooRegion.
     switch (R->getKind()) {
-#define REGION(Id, Parent)                                                     \
-  case MemRegion::Id##Kind:                                                    \
-    DISPATCH(Id);
+#define REGION(Id, Parent) case MemRegion::Id ## Kind: DISPATCH(Id);
 #include "clang/StaticAnalyzer/Core/PathSensitive/Regions.def"
     }
     llvm_unreachable("Unknown MemRegion kind!");
@@ -123,9 +119,10 @@ public:
 
   // If the implementation chooses not to implement a certain visit method, fall
   // back on visiting the superclass.
-#define REGION(Id, Parent)                                                     \
-  RetTy Visit##Id(const Id *R) { DISPATCH(Parent); }
-#define ABSTRACT_REGION(Id, Parent) REGION(Id, Parent)
+#define REGION(Id, Parent) \
+  RetTy Visit ## Id(const Id *R) { DISPATCH(Parent); }
+#define ABSTRACT_REGION(Id, Parent) \
+  REGION(Id, Parent)
 #include "clang/StaticAnalyzer/Core/PathSensitive/Regions.def"
 
   // Base case, ignore it. :)

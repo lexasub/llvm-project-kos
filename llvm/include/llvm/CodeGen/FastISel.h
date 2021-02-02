@@ -477,7 +477,9 @@ protected:
 
   /// Emit the floating-point constant +0.0 in a register using target-
   /// specific logic.
-  virtual unsigned fastMaterializeFloatZero(const ConstantFP *CF) { return 0; }
+  virtual unsigned fastMaterializeFloatZero(const ConstantFP *CF) {
+    return 0;
+  }
 
   /// Check if \c Add is an add that can be safely folded into \c GEP.
   ///
@@ -497,7 +499,8 @@ protected:
   CmpInst::Predicate optimizeCmpPredicate(const CmpInst *CI) const;
 
   bool lowerCallTo(const CallInst *CI, MCSymbol *Symbol, unsigned NumArgs);
-  bool lowerCallTo(const CallInst *CI, const char *SymName, unsigned NumArgs);
+  bool lowerCallTo(const CallInst *CI, const char *SymName,
+                   unsigned NumArgs);
   bool lowerCallTo(CallLoweringInfo &CLI);
 
   bool lowerCall(const CallInst *I);

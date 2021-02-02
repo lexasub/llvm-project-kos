@@ -111,7 +111,7 @@ struct A {
     // NULL: ptrtoint %struct.A* %[[THIS6]] to i64, !nosanitize
     // CHECK: call void @__ubsan_handle_type_mismatch
     // CHECK-NOT: call void @__ubsan_handle_type_mismatch
-    (__extension__(this))->foo = 0;
+    (__extension__ (this))->foo = 0;
     // CHECK: ret void
   }
 
@@ -146,7 +146,7 @@ struct A {
 };
 
 struct B {
-  operator A *() const { return nullptr; }
+  operator A*() const { return nullptr; }
 
   // CHECK-LABEL: define linkonce_odr i32 @_ZN1B11load_memberEPS_
   static int load_member(B *bp) {

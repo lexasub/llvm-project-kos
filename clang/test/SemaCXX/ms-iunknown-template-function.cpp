@@ -36,3 +36,4 @@ public:
 }
 
 __interface ISfFileIOPropertyPage : public IUnknown{};
+

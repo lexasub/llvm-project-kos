@@ -20,7 +20,7 @@
 using namespace clang;
 
 // Give ASTDeserializationListener's VTable a home.
-ASTDeserializationListener::~ASTDeserializationListener() {}
+ASTDeserializationListener::~ASTDeserializationListener() { }
 
 serialization::TypeIdx
 serialization::TypeIdxFromBuiltin(const BuiltinType *BT) {
@@ -207,14 +207,14 @@ serialization::TypeIdxFromBuiltin(const BuiltinType *BT) {
   case BuiltinType::ObjCSel:
     ID = PREDEF_TYPE_OBJC_SEL;
     break;
-#define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix)                   \
-  case BuiltinType::Id:                                                        \
-    ID = PREDEF_TYPE_##Id##_ID;                                                \
+#define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) \
+  case BuiltinType::Id: \
+    ID = PREDEF_TYPE_##Id##_ID; \
     break;
 #include "clang/Basic/OpenCLImageTypes.def"
-#define EXT_OPAQUE_TYPE(ExtType, Id, Ext)                                      \
-  case BuiltinType::Id:                                                        \
-    ID = PREDEF_TYPE_##Id##_ID;                                                \
+#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) \
+  case BuiltinType::Id: \
+    ID = PREDEF_TYPE_##Id##_ID; \
     break;
 #include "clang/Basic/OpenCLExtensionTypes.def"
   case BuiltinType::OCLSampler:
@@ -232,14 +232,14 @@ serialization::TypeIdxFromBuiltin(const BuiltinType *BT) {
   case BuiltinType::OCLReserveID:
     ID = PREDEF_TYPE_RESERVE_ID_ID;
     break;
-#define SVE_TYPE(Name, Id, SingletonId)                                        \
-  case BuiltinType::Id:                                                        \
-    ID = PREDEF_TYPE_##Id##_ID;                                                \
+#define SVE_TYPE(Name, Id, SingletonId) \
+  case BuiltinType::Id: \
+    ID = PREDEF_TYPE_##Id##_ID; \
     break;
 #include "clang/Basic/AArch64SVEACLETypes.def"
-#define PPC_VECTOR_TYPE(Name, Id, Size)                                        \
-  case BuiltinType::Id:                                                        \
-    ID = PREDEF_TYPE_##Id##_ID;                                                \
+#define PPC_VECTOR_TYPE(Name, Id, Size) \
+  case BuiltinType::Id: \
+    ID = PREDEF_TYPE_##Id##_ID; \
     break;
 #include "clang/Basic/PPCTypes.def"
   case BuiltinType::BuiltinFn:
@@ -318,8 +318,8 @@ serialization::getDefinitiveDeclContext(const DeclContext *DC) {
     return DC;
 
   case Decl::ObjCProtocol:
-    if (const ObjCProtocolDecl *Def =
-            cast<ObjCProtocolDecl>(DC)->getDefinition())
+    if (const ObjCProtocolDecl *Def
+          = cast<ObjCProtocolDecl>(DC)->getDefinition())
       return Def;
     return nullptr;
 

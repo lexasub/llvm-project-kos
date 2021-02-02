@@ -66,11 +66,12 @@ $ nasm -fbin /tmp/DOSProgram.asm -o /tmp/DOSProgram.bin
 $ xxd -i /tmp/DOSProgram.bin
 */
 static unsigned char dosProgram[] = {
-    0x0e, 0x1f, 0xba, 0x0e, 0x00, 0xb4, 0x09, 0xcd, 0x21, 0xb8, 0x01, 0x4c,
-    0xcd, 0x21, 0x54, 0x68, 0x69, 0x73, 0x20, 0x70, 0x72, 0x6f, 0x67, 0x72,
-    0x61, 0x6d, 0x20, 0x63, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x20, 0x62, 0x65,
-    0x20, 0x72, 0x75, 0x6e, 0x20, 0x69, 0x6e, 0x20, 0x44, 0x4f, 0x53, 0x20,
-    0x6d, 0x6f, 0x64, 0x65, 0x2e, 0x24, 0x00, 0x00};
+  0x0e, 0x1f, 0xba, 0x0e, 0x00, 0xb4, 0x09, 0xcd, 0x21, 0xb8, 0x01, 0x4c,
+  0xcd, 0x21, 0x54, 0x68, 0x69, 0x73, 0x20, 0x70, 0x72, 0x6f, 0x67, 0x72,
+  0x61, 0x6d, 0x20, 0x63, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x20, 0x62, 0x65,
+  0x20, 0x72, 0x75, 0x6e, 0x20, 0x69, 0x6e, 0x20, 0x44, 0x4f, 0x53, 0x20,
+  0x6d, 0x6f, 0x64, 0x65, 0x2e, 0x24, 0x00, 0x00
+};
 static_assert(sizeof(dosProgram) % 8 == 0,
               "DOSProgram size must be multiple of 8");
 
@@ -104,7 +105,7 @@ public:
   void writeTo(uint8_t *b) const override {
     auto *d = reinterpret_cast<debug_directory *>(b);
 
-    for (const std::pair<COFF::DebugType, Chunk *> &record : records) {
+    for (const std::pair<COFF::DebugType, Chunk *>& record : records) {
       Chunk *c = record.second;
       OutputSection *os = c->getOutputSection();
       uint64_t offs = os->getFileOff() + (c->getRVA() - os->getRVA());
@@ -311,7 +312,9 @@ static Timer diskCommitTimer("Commit Output File", Timer::root());
 
 void lld::coff::writeResult() { Writer().run(); }
 
-void OutputSection::addChunk(Chunk *c) { chunks.push_back(c); }
+void OutputSection::addChunk(Chunk *c) {
+  chunks.push_back(c);
+}
 
 void OutputSection::insertChunkAtStart(Chunk *c) {
   chunks.insert(chunks.begin(), c);
@@ -621,7 +624,7 @@ void Writer::run() {
 
   if (fileSize > UINT32_MAX)
     fatal("image size (" + Twine(fileSize) + ") " +
-          "exceeds maximum allowable size (" + Twine(UINT32_MAX) + ")");
+        "exceeds maximum allowable size (" + Twine(UINT32_MAX) + ")");
 
   openFile(config->outputFile);
   if (config->is64()) {
@@ -874,8 +877,8 @@ void Writer::createSections() {
     if (name.startswith(".tls"))
       tlsAlignment = std::max(tlsAlignment, c->getAlignment());
 
-    PartialSection *pSec =
-        createPartialSection(name, c->getOutputCharacteristics());
+    PartialSection *pSec = createPartialSection(name,
+                                                c->getOutputCharacteristics());
     pSec->chunks.push_back(c);
   }
 
@@ -1918,9 +1921,7 @@ void Writer::sortExceptionTable() {
   uint8_t *begin = bufAddr(firstPdata);
   uint8_t *end = bufAddr(lastPdata) + lastPdata->getSize();
   if (config->machine == AMD64) {
-    struct Entry {
-      ulittle32_t begin, end, unwind;
-    };
+    struct Entry { ulittle32_t begin, end, unwind; };
     if ((end - begin) % sizeof(Entry) != 0) {
       fatal("unexpected .pdata size: " + Twine(end - begin) +
             " is not a multiple of " + Twine(sizeof(Entry)));
@@ -1931,9 +1932,7 @@ void Writer::sortExceptionTable() {
     return;
   }
   if (config->machine == ARMNT || config->machine == ARM64) {
-    struct Entry {
-      ulittle32_t begin, unwind;
-    };
+    struct Entry { ulittle32_t begin, unwind; };
     if ((end - begin) % sizeof(Entry) != 0) {
       fatal("unexpected .pdata size: " + Twine(end - begin) +
             " is not a multiple of " + Twine(sizeof(Entry)));

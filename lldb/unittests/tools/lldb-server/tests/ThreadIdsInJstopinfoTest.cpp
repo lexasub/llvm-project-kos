@@ -23,7 +23,7 @@ using namespace lldb;
 using namespace testing;
 
 #ifdef __NetBSD__
-#define SKIP_ON_NETBSD(x) DISABLED_##x
+#define SKIP_ON_NETBSD(x) DISABLED_ ## x
 #else
 #define SKIP_ON_NETBSD(x) x
 #endif

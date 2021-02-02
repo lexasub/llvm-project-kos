@@ -22,8 +22,8 @@
 
 // REQUIRES: cxxabi
 
-#include "utils.h"
 #include <stdio.h>
+#include "utils.h"
 
 struct A {
   virtual void v();

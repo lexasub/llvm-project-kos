@@ -29,7 +29,6 @@ class Type;
 class TargetIntrinsicInfo {
   TargetIntrinsicInfo(const TargetIntrinsicInfo &) = delete;
   void operator=(const TargetIntrinsicInfo &) = delete;
-
 public:
   TargetIntrinsicInfo();
   virtual ~TargetIntrinsicInfo();
@@ -45,7 +44,7 @@ public:
 
   /// Look up target intrinsic by name. Return intrinsic ID or 0 for unknown
   /// names.
-  virtual unsigned lookupName(const char *Name, unsigned Len) const = 0;
+  virtual unsigned lookupName(const char *Name, unsigned Len) const =0;
 
   unsigned lookupName(StringRef Name) const {
     return lookupName(Name.data(), Name.size());
@@ -64,6 +63,6 @@ public:
                                    unsigned numTys = 0) const = 0;
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

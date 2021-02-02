@@ -48,7 +48,7 @@ TEST(CRCTest, CRC32) {
 TEST(CRCTest, LargeCRC32) {
   // Check that crc32 can handle inputs with sizes larger than 32 bits.
   size_t TestSize = (size_t)UINT32_MAX + 42;
-  uint8_t *TestData = (uint8_t *)calloc(TestSize, 1);
+  uint8_t *TestData = (uint8_t*)calloc(TestSize, 1);
   if (!TestData)
     return;
 

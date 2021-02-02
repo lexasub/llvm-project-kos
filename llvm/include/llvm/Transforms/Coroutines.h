@@ -32,6 +32,6 @@ Pass *createCoroElideLegacyPass();
 /// Lower all remaining coroutine intrinsics.
 Pass *createCoroCleanupLegacyPass();
 
-} // namespace llvm
+}
 
 #endif

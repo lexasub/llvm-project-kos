@@ -375,8 +375,8 @@ enum ConstantsCodes {
   CST_CODE_INLINEASM = 23,       // INLINEASM:     [sideeffect|alignstack|
                                  //                 asmdialect,asmstr,conststr]
   CST_CODE_CE_GEP_WITH_INRANGE_INDEX = 24, //      [opty, flags, n x operands]
-  CST_CODE_CE_UNOP = 25,                   // CE_UNOP:      [opcode, opval]
-  CST_CODE_POISON = 26,                    // POISON
+  CST_CODE_CE_UNOP = 25,         // CE_UNOP:      [opcode, opval]
+  CST_CODE_POISON = 26,          // POISON
 };
 
 /// CastOpcodes - These are values used in the bitcode files to encode which
@@ -403,7 +403,9 @@ enum CastOpcodes {
 /// unop a CST_CODE_CE_UNOP or a XXX refers to.  The values of these enums
 /// have no fixed relation to the LLVM IR enum values.  Changing these will
 /// break compatibility with old files.
-enum UnaryOpcodes { UNOP_FNEG = 0 };
+enum UnaryOpcodes {
+  UNOP_FNEG = 0
+};
 
 /// BinaryOpcodes - These are values used in the bitcode files to encode which
 /// binop a CST_CODE_CE_BINOP or a XXX refers to.  The values of these enums
@@ -455,14 +457,14 @@ enum OverflowingBinaryOperatorOptionalFlags {
 /// This is a fixed layout derived from the bitcode emitted by LLVM 5.0
 /// intended to decouple the in-memory representation from the serialization.
 enum FastMathMap {
-  UnsafeAlgebra = (1 << 0), // Legacy
-  NoNaNs = (1 << 1),
-  NoInfs = (1 << 2),
-  NoSignedZeros = (1 << 3),
+  UnsafeAlgebra   = (1 << 0), // Legacy
+  NoNaNs          = (1 << 1),
+  NoInfs          = (1 << 2),
+  NoSignedZeros   = (1 << 3),
   AllowReciprocal = (1 << 4),
-  AllowContract = (1 << 5),
-  ApproxFunc = (1 << 6),
-  AllowReassoc = (1 << 7)
+  AllowContract   = (1 << 5),
+  ApproxFunc      = (1 << 6),
+  AllowReassoc    = (1 << 7)
 };
 
 /// PossiblyExactOperatorOptionalFlags - Flags for serializing
@@ -673,7 +675,7 @@ enum SymtabCodes {
   SYMTAB_BLOB = 1,
 };
 
-} // namespace bitc
-} // namespace llvm
+} // End bitc namespace
+} // End llvm namespace
 
 #endif

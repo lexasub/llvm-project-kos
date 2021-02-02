@@ -15,7 +15,7 @@ namespace llvm {
 namespace opt {
 class OptTable;
 }
-} // namespace llvm
+}
 
 namespace clang {
 namespace driver {
@@ -41,18 +41,18 @@ enum ClangFlags {
 };
 
 enum ID {
-  OPT_INVALID = 0, // This is not an option ID.
+    OPT_INVALID = 0, // This is not an option ID.
 #define OPTION(PREFIX, NAME, ID, KIND, GROUP, ALIAS, ALIASARGS, FLAGS, PARAM,  \
                HELPTEXT, METAVAR, VALUES)                                      \
   OPT_##ID,
 #include "clang/Driver/Options.inc"
-  LastOption
+    LastOption
 #undef OPTION
-};
-} // namespace options
+  };
+}
 
 const llvm::opt::OptTable &getDriverOptTable();
-} // namespace driver
-} // namespace clang
+}
+}
 
 #endif

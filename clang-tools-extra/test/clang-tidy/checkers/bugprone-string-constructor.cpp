@@ -5,10 +5,10 @@ template <typename T>
 class allocator {};
 template <typename T>
 class char_traits {};
-template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
+template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C> >
 struct basic_string {
   basic_string();
-  basic_string(const C *, unsigned int size);
+  basic_string(const C*, unsigned int size);
   basic_string(const C *, const A &allocator = A());
   basic_string(unsigned int size, C c);
 };
@@ -23,9 +23,9 @@ struct basic_string_view {
 };
 typedef basic_string_view<char> string_view;
 typedef basic_string_view<wchar_t> wstring_view;
-} // namespace std
+}
 
-const char *kText = "";
+const char* kText = "";
 const char kText2[] = "";
 extern const char kText3[];
 
@@ -53,7 +53,7 @@ void Test() {
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: length is bigger than string literal size
   std::string q4(kText2, 200);
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: length is bigger than string literal size
-  std::string q5(kText3, 0x1000000);
+  std::string q5(kText3,  0x1000000);
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: suspicious large length parameter
   std::string q6(nullptr);
   // CHECK-MESSAGES: [[@LINE-1]]:15: warning: constructing string from nullptr is undefined behaviour
@@ -105,10 +105,10 @@ void Valid() {
 }
 
 namespace instantiation_dependent_exprs {
-template <typename T>
+template<typename T>
 struct S {
   bool x;
   std::string f() { return x ? "a" : "b"; }
   std::string_view g() { return x ? "a" : "b"; }
 };
-} // namespace instantiation_dependent_exprs
+}

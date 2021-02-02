@@ -62,18 +62,16 @@ TEST_CASE(test_error_reporting) {
                              ec) == false);
     TEST_CHECK(ErrorIs(ec, std::errc::file_exists));
     ExceptionChecker Checker(file, file, std::errc::file_exists, "copy_file");
-    TEST_CHECK_THROW_RESULT(
-        filesystem_error, Checker,
-        copy_file(file, file, copy_options::overwrite_existing));
+    TEST_CHECK_THROW_RESULT(filesystem_error, Checker, copy_file(file, file, copy_options::overwrite_existing));
+
   }
   { // exists(to) && !(skip_existing | overwrite_existing | update_existing)
     std::error_code ec;
     TEST_CHECK(fs::copy_file(file, file2, ec) == false);
     TEST_CHECK(ErrorIs(ec, std::errc::file_exists));
     ExceptionChecker Checker(file, file, std::errc::file_exists, "copy_file");
-    TEST_CHECK_THROW_RESULT(
-        filesystem_error, Checker,
-        copy_file(file, file, copy_options::overwrite_existing));
+    TEST_CHECK_THROW_RESULT(filesystem_error, Checker, copy_file(file, file, copy_options::overwrite_existing));
+
   }
 }
 
@@ -96,6 +94,7 @@ TEST_CASE(non_regular_file_test) {
     TEST_CHECK(ErrorIs(ec, std::errc::not_supported));
     TEST_CHECK(is_fifo(fifo));
   }
+
 }
 
 TEST_CASE(test_attributes_get_copied) {
@@ -182,5 +181,6 @@ TEST_CASE(copy_file) {
     TEST_CHECK(file_size(file2) == 55);
   }
 }
+
 
 TEST_SUITE_END()

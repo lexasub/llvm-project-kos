@@ -67,7 +67,7 @@ bool DetectHardwareFeature(const char *feature) {
 
 enum AVXPresence { eAVXUnknown = -1, eAVXNotPresent = 0, eAVXPresent = 1 };
 
-bool LogAVXAndReturn(AVXPresence has_avx, int err, const char *os_ver) {
+bool LogAVXAndReturn(AVXPresence has_avx, int err, const char * os_ver) {
   DNBLogThreadedIf(LOG_THREAD,
                    "CPUHasAVX(): g_has_avx = %i (err = %i, os_ver = %s)",
                    has_avx, err, os_ver);
@@ -325,7 +325,7 @@ kern_return_t DNBArchImplX86_64::GetFPUState(bool force) {
       for (int i = 0; i < sizeof(m_state.context.fpu.no_avx.__fpu_rsrv4); ++i)
         m_state.context.fpu.no_avx.__fpu_rsrv4[i] = INT8_MIN;
       m_state.context.fpu.no_avx.__fpu_reserved1 = -1;
-
+      
       if (CPUHasAVX() || FORCE_AVX_REGS) {
         for (int i = 0; i < 16; ++i) {
           m_state.context.fpu.avx.__fpu_ymmh0.__xmm_reg[i] = '0' + i;
@@ -345,8 +345,7 @@ kern_return_t DNBArchImplX86_64::GetFPUState(bool force) {
           m_state.context.fpu.avx.__fpu_ymmh14.__xmm_reg[i] = 'E' + i;
           m_state.context.fpu.avx.__fpu_ymmh15.__xmm_reg[i] = 'F' + i;
         }
-        for (int i = 0; i < sizeof(m_state.context.fpu.avx.__avx_reserved1);
-             ++i)
+        for (int i = 0; i < sizeof(m_state.context.fpu.avx.__avx_reserved1); ++i)
           m_state.context.fpu.avx.__avx_reserved1[i] = INT8_MIN;
       }
       if (CPUHasAVX512f() || FORCE_AVX_REGS) {
@@ -410,10 +409,10 @@ kern_return_t DNBArchImplX86_64::GetFPUState(bool force) {
       if (CPUHasAVX512f() || FORCE_AVX_REGS) {
         count = e_regSetWordSizeAVX512f;
         flavor = __x86_64_AVX512F_STATE;
-        m_state.SetError(
-            e_regSetFPU, Read,
-            ::thread_get_state(m_thread->MachPortNumber(), flavor,
-                               (thread_state_t)&m_state.context.fpu, &count));
+        m_state.SetError(e_regSetFPU, Read,
+                         ::thread_get_state(m_thread->MachPortNumber(), flavor,
+                                            (thread_state_t)&m_state.context.fpu,
+                                          &count));
         DNBLogThreadedIf(LOG_THREAD,
                          "::thread_get_state (0x%4.4x, %u, &fpu, %u => 0x%8.8x",
                          m_thread->MachPortNumber(), flavor, (uint32_t)count,
@@ -423,8 +422,7 @@ kern_return_t DNBArchImplX86_64::GetFPUState(bool force) {
           return m_state.GetError(e_regSetFPU, Read);
         else
           DNBLogThreadedIf(LOG_THREAD,
-                           "::thread_get_state attempted fetch of avx512 fpu "
-                           "regctx failed, will try fetching avx");
+              "::thread_get_state attempted fetch of avx512 fpu regctx failed, will try fetching avx");
       }
       if (CPUHasAVX() || FORCE_AVX_REGS) {
         count = e_regSetWordSizeAVX;
@@ -456,11 +454,10 @@ kern_return_t DNBArchImplX86_64::GetEXCState(bool force) {
 
 kern_return_t DNBArchImplX86_64::SetGPRState() {
   kern_return_t kret = ::thread_abort_safely(m_thread->MachPortNumber());
-  DNBLogThreadedIf(LOG_THREAD,
-                   "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
-                   "(SetGPRState() for stop_count = %u)",
-                   m_thread->MachPortNumber(), kret,
-                   m_thread->Process()->StopCount());
+  DNBLogThreadedIf(
+      LOG_THREAD, "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
+                  "(SetGPRState() for stop_count = %u)",
+      m_thread->MachPortNumber(), kret, m_thread->Process()->StopCount());
 
   m_state.SetError(e_regSetGPR, Write,
                    ::thread_set_state(m_thread->MachPortNumber(),
@@ -501,27 +498,26 @@ kern_return_t DNBArchImplX86_64::SetFPUState() {
     if (CPUHasAVX512f() || FORCE_AVX_REGS) {
       count = e_regSetWordSizeAVX512f;
       flavor = __x86_64_AVX512F_STATE;
-      m_state.SetError(e_regSetFPU, Write,
-                       ::thread_set_state(m_thread->MachPortNumber(), flavor,
-                                          (thread_state_t)&m_state.context.fpu,
-                                          count));
+      m_state.SetError(
+            e_regSetFPU, Write,
+            ::thread_set_state(m_thread->MachPortNumber(), flavor,
+                               (thread_state_t)&m_state.context.fpu, count));
       if (m_state.GetError(e_regSetFPU, Write) == KERN_SUCCESS)
         return m_state.GetError(e_regSetFPU, Write);
       else
         DNBLogThreadedIf(LOG_THREAD,
-                         "::thread_get_state attempted save of avx512 fpu "
-                         "regctx failed, will try saving avx regctx");
-    }
-
+            "::thread_get_state attempted save of avx512 fpu regctx failed, will try saving avx regctx");
+    } 
+    
     if (CPUHasAVX() || FORCE_AVX_REGS) {
       flavor = __x86_64_AVX_STATE;
       count = e_regSetWordSizeAVX;
     }
-    m_state.SetError(e_regSetFPU, Write,
-                     ::thread_set_state(m_thread->MachPortNumber(), flavor,
-                                        (thread_state_t)&m_state.context.fpu,
-                                        count));
-    return m_state.GetError(e_regSetFPU, Write);
+    m_state.SetError(
+          e_regSetFPU, Write,
+          ::thread_set_state(m_thread->MachPortNumber(), flavor,
+                             (thread_state_t)&m_state.context.fpu, count));
+   return m_state.GetError(e_regSetFPU, Write);
   }
 }
 
@@ -556,10 +552,9 @@ kern_return_t DNBArchImplX86_64::SetDBGState(bool also_set_on_task) {
         m_thread->Process()->Task().TaskPort(), __x86_64_DEBUG_STATE,
         (thread_state_t)&m_state.context.dbg, e_regSetWordSizeDBG);
     if (kret != KERN_SUCCESS)
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchImplX86_64::SetDBGState failed "
-                       "to set debug control register state: "
-                       "0x%8.8x.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::SetDBGState failed "
+                                        "to set debug control register state: "
+                                        "0x%8.8x.",
                        kret);
   }
   return m_state.GetError(e_regSetDBG, Write);
@@ -740,8 +735,8 @@ void DNBArchImplX86_64::SetWatchpoint(DBG &debug_state, uint32_t hw_index,
   //      dr2 -> bits{27-24}
   //      dr3 -> bits{31-28}
   debug_state.__dr7 |=
-      (1 << (2 * hw_index) | size_and_rw_bits(size, read, write)
-                                 << (16 + 4 * hw_index));
+      (1 << (2 * hw_index) |
+       size_and_rw_bits(size, read, write) << (16 + 4 * hw_index));
   switch (hw_index) {
   case 0:
     debug_state.__dr0 = addr;
@@ -1015,10 +1010,9 @@ uint32_t DNBArchImplX86_64::EnableHardwareWatchpoint(nub_addr_t addr,
                                                      nub_size_t size, bool read,
                                                      bool write,
                                                      bool also_set_on_task) {
-  DNBLogThreadedIf(LOG_WATCHPOINTS,
-                   "DNBArchImplX86_64::"
-                   "EnableHardwareWatchpoint(addr = 0x%llx, "
-                   "size = %llu, read = %u, write = %u)",
+  DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::"
+                                    "EnableHardwareWatchpoint(addr = 0x%llx, "
+                                    "size = %llu, read = %u, write = %u)",
                    (uint64_t)addr, (uint64_t)size, read, write);
 
   const uint32_t num_hw_watchpoints = NumSupportedHardwareWatchpoints();
@@ -1052,10 +1046,9 @@ uint32_t DNBArchImplX86_64::EnableHardwareWatchpoint(nub_addr_t addr,
       SetWatchpoint(debug_state, i, addr, size, read, write);
       // Now set the watch point in the inferior.
       kret = SetDBGState(also_set_on_task);
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchImplX86_64::"
-                       "EnableHardwareWatchpoint() "
-                       "SetDBGState() => 0x%8.8x.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::"
+                                        "EnableHardwareWatchpoint() "
+                                        "SetDBGState() => 0x%8.8x.",
                        kret);
 
       if (kret == KERN_SUCCESS)
@@ -1064,10 +1057,9 @@ uint32_t DNBArchImplX86_64::EnableHardwareWatchpoint(nub_addr_t addr,
            // coordinator knows that we have failed.
         m_state.context.dbg = GetDBGCheckpoint();
     } else {
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchImplX86_64::"
-                       "EnableHardwareWatchpoint(): All "
-                       "hardware resources (%u) are in use.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::"
+                                        "EnableHardwareWatchpoint(): All "
+                                        "hardware resources (%u) are in use.",
                        num_hw_watchpoints);
     }
   }
@@ -1117,10 +1109,9 @@ uint32_t DNBArchImplX86_64::GetHardwareWatchpointHit(nub_addr_t &addr) {
     for (i = 0; i < num; ++i) {
       if (IsWatchpointHit(debug_state, i)) {
         addr = GetWatchAddress(debug_state, i);
-        DNBLogThreadedIf(LOG_WATCHPOINTS,
-                         "DNBArchImplX86_64::"
-                         "GetHardwareWatchpointHit() found => "
-                         "%u (addr = 0x%llx).",
+        DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::"
+                                          "GetHardwareWatchpointHit() found => "
+                                          "%u (addr = 0x%llx).",
                          i, (uint64_t)addr);
         return i;
       }
@@ -1758,9 +1749,8 @@ const DNBRegisterInfo DNBArchImplX86_64::g_fpu_registers_no_avx[] = {
      FPU_OFFSET(fcw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fsw, "fstat", NULL, Uint, Hex, FPU_SIZE_UINT(fsw),
      FPU_OFFSET(fsw), -1U, -1U, -1U, -1U, NULL, NULL},
-    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex,
-     2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */, FPU_OFFSET(ftw), -1U, -1U,
-     -1U, -1U, NULL, NULL},
+    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex, 2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */,
+     FPU_OFFSET(ftw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fop, "fop", NULL, Uint, Hex, FPU_SIZE_UINT(fop),
      FPU_OFFSET(fop), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_ip, "fioff", NULL, Uint, Hex, FPU_SIZE_UINT(ip),
@@ -1874,9 +1864,8 @@ const DNBRegisterInfo DNBArchImplX86_64::g_fpu_registers_avx[] = {
      AVX_OFFSET(fcw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fsw, "fstat", NULL, Uint, Hex, FPU_SIZE_UINT(fsw),
      AVX_OFFSET(fsw), -1U, -1U, -1U, -1U, NULL, NULL},
-    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex,
-     2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */, AVX_OFFSET(ftw), -1U, -1U,
-     -1U, -1U, NULL, NULL},
+    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex, 2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */,
+     AVX_OFFSET(ftw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fop, "fop", NULL, Uint, Hex, FPU_SIZE_UINT(fop),
      AVX_OFFSET(fop), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_ip, "fioff", NULL, Uint, Hex, FPU_SIZE_UINT(ip),
@@ -2039,7 +2028,7 @@ static const char *g_contained_zmm15[] = {"zmm15", NULL};
 
 #define ZMM_REG_DEF(reg)                                                       \
   {                                                                            \
-    e_regSetFPU, fpu_zmm##reg, STR(zmm##reg), NULL, Vector, VectorOfUInt8,     \
+    e_regSetFPU, fpu_zmm##reg,  STR(zmm##reg), NULL, Vector, VectorOfUInt8,    \
         FPU_SIZE_ZMM(zmm##reg), AVX512F_OFFSET_ZMM(reg),                       \
         ehframe_dwarf_zmm##reg, ehframe_dwarf_zmm##reg, -1U,                   \
         debugserver_zmm##reg, NULL, NULL                                       \
@@ -2055,7 +2044,7 @@ static const char *g_contained_zmm15[] = {"zmm15", NULL};
 
 #define XMM_REG_ALIAS(reg)                                                     \
   {                                                                            \
-    e_regSetFPU, fpu_xmm##reg, STR(xmm##reg), NULL, Vector, VectorOfUInt8,     \
+    e_regSetFPU, fpu_xmm##reg,  STR(xmm##reg), NULL, Vector, VectorOfUInt8,    \
         FPU_SIZE_XMM(xmm##reg), 0, ehframe_dwarf_xmm##reg,                     \
         ehframe_dwarf_xmm##reg, -1U, debugserver_xmm##reg,                     \
         g_contained_zmm##reg, NULL                                             \
@@ -2073,9 +2062,8 @@ const DNBRegisterInfo DNBArchImplX86_64::g_fpu_registers_avx512f[] = {
      AVX_OFFSET(fcw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fsw, "fstat", NULL, Uint, Hex, FPU_SIZE_UINT(fsw),
      AVX_OFFSET(fsw), -1U, -1U, -1U, -1U, NULL, NULL},
-    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex,
-     2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */, AVX_OFFSET(ftw), -1U, -1U,
-     -1U, -1U, NULL, NULL},
+    {e_regSetFPU, fpu_ftw, "ftag", NULL, Uint, Hex, 2 /* sizeof __fpu_ftw + sizeof __fpu_rsrv1 */,
+     AVX_OFFSET(ftw), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_fop, "fop", NULL, Uint, Hex, FPU_SIZE_UINT(fop),
      AVX_OFFSET(fop), -1U, -1U, -1U, -1U, NULL, NULL},
     {e_regSetFPU, fpu_ip, "fioff", NULL, Uint, Hex, FPU_SIZE_UINT(ip),
@@ -2117,83 +2105,84 @@ const DNBRegisterInfo DNBArchImplX86_64::g_fpu_registers_avx512f[] = {
      FPU_SIZE_MMST(stmm7), AVX_OFFSET(stmm7), ehframe_dwarf_stmm7,
      ehframe_dwarf_stmm7, -1U, debugserver_stmm7, NULL, NULL},
 
-    AVX512_K_REG_DEF(0),
-    AVX512_K_REG_DEF(1),
-    AVX512_K_REG_DEF(2),
-    AVX512_K_REG_DEF(3),
-    AVX512_K_REG_DEF(4),
-    AVX512_K_REG_DEF(5),
-    AVX512_K_REG_DEF(6),
-    AVX512_K_REG_DEF(7),
+     AVX512_K_REG_DEF(0),
+     AVX512_K_REG_DEF(1),
+     AVX512_K_REG_DEF(2),
+     AVX512_K_REG_DEF(3),
+     AVX512_K_REG_DEF(4),
+     AVX512_K_REG_DEF(5),
+     AVX512_K_REG_DEF(6),
+     AVX512_K_REG_DEF(7),
 
-    ZMM_REG_DEF(0),
-    ZMM_REG_DEF(1),
-    ZMM_REG_DEF(2),
-    ZMM_REG_DEF(3),
-    ZMM_REG_DEF(4),
-    ZMM_REG_DEF(5),
-    ZMM_REG_DEF(6),
-    ZMM_REG_DEF(7),
-    ZMM_REG_DEF(8),
-    ZMM_REG_DEF(9),
-    ZMM_REG_DEF(10),
-    ZMM_REG_DEF(11),
-    ZMM_REG_DEF(12),
-    ZMM_REG_DEF(13),
-    ZMM_REG_DEF(14),
-    ZMM_REG_DEF(15),
-    ZMM_REG_DEF(16),
-    ZMM_REG_DEF(17),
-    ZMM_REG_DEF(18),
-    ZMM_REG_DEF(19),
-    ZMM_REG_DEF(20),
-    ZMM_REG_DEF(21),
-    ZMM_REG_DEF(22),
-    ZMM_REG_DEF(23),
-    ZMM_REG_DEF(24),
-    ZMM_REG_DEF(25),
-    ZMM_REG_DEF(26),
-    ZMM_REG_DEF(27),
-    ZMM_REG_DEF(28),
-    ZMM_REG_DEF(29),
-    ZMM_REG_DEF(30),
-    ZMM_REG_DEF(31),
+     ZMM_REG_DEF(0),
+     ZMM_REG_DEF(1),
+     ZMM_REG_DEF(2),
+     ZMM_REG_DEF(3),
+     ZMM_REG_DEF(4),
+     ZMM_REG_DEF(5),
+     ZMM_REG_DEF(6),
+     ZMM_REG_DEF(7),
+     ZMM_REG_DEF(8),
+     ZMM_REG_DEF(9),
+     ZMM_REG_DEF(10),
+     ZMM_REG_DEF(11),
+     ZMM_REG_DEF(12),
+     ZMM_REG_DEF(13),
+     ZMM_REG_DEF(14),
+     ZMM_REG_DEF(15),
+     ZMM_REG_DEF(16),
+     ZMM_REG_DEF(17),
+     ZMM_REG_DEF(18),
+     ZMM_REG_DEF(19),
+     ZMM_REG_DEF(20),
+     ZMM_REG_DEF(21),
+     ZMM_REG_DEF(22),
+     ZMM_REG_DEF(23),
+     ZMM_REG_DEF(24),
+     ZMM_REG_DEF(25),
+     ZMM_REG_DEF(26),
+     ZMM_REG_DEF(27),
+     ZMM_REG_DEF(28),
+     ZMM_REG_DEF(29),
+     ZMM_REG_DEF(30),
+     ZMM_REG_DEF(31),
 
-    YMM_REG_ALIAS(0),
-    YMM_REG_ALIAS(1),
-    YMM_REG_ALIAS(2),
-    YMM_REG_ALIAS(3),
-    YMM_REG_ALIAS(4),
-    YMM_REG_ALIAS(5),
-    YMM_REG_ALIAS(6),
-    YMM_REG_ALIAS(7),
-    YMM_REG_ALIAS(8),
-    YMM_REG_ALIAS(9),
-    YMM_REG_ALIAS(10),
-    YMM_REG_ALIAS(11),
-    YMM_REG_ALIAS(12),
-    YMM_REG_ALIAS(13),
-    YMM_REG_ALIAS(14),
-    YMM_REG_ALIAS(15),
+     YMM_REG_ALIAS(0),
+     YMM_REG_ALIAS(1),
+     YMM_REG_ALIAS(2),
+     YMM_REG_ALIAS(3),
+     YMM_REG_ALIAS(4),
+     YMM_REG_ALIAS(5),
+     YMM_REG_ALIAS(6),
+     YMM_REG_ALIAS(7),
+     YMM_REG_ALIAS(8),
+     YMM_REG_ALIAS(9),
+     YMM_REG_ALIAS(10),
+     YMM_REG_ALIAS(11),
+     YMM_REG_ALIAS(12),
+     YMM_REG_ALIAS(13),
+     YMM_REG_ALIAS(14),
+     YMM_REG_ALIAS(15),
 
-    XMM_REG_ALIAS(0),
-    XMM_REG_ALIAS(1),
-    XMM_REG_ALIAS(2),
-    XMM_REG_ALIAS(3),
-    XMM_REG_ALIAS(4),
-    XMM_REG_ALIAS(5),
-    XMM_REG_ALIAS(6),
-    XMM_REG_ALIAS(7),
-    XMM_REG_ALIAS(8),
-    XMM_REG_ALIAS(9),
-    XMM_REG_ALIAS(10),
-    XMM_REG_ALIAS(11),
-    XMM_REG_ALIAS(12),
-    XMM_REG_ALIAS(13),
-    XMM_REG_ALIAS(14),
-    XMM_REG_ALIAS(15),
+     XMM_REG_ALIAS(0),
+     XMM_REG_ALIAS(1),
+     XMM_REG_ALIAS(2),
+     XMM_REG_ALIAS(3),
+     XMM_REG_ALIAS(4),
+     XMM_REG_ALIAS(5),
+     XMM_REG_ALIAS(6),
+     XMM_REG_ALIAS(7),
+     XMM_REG_ALIAS(8),
+     XMM_REG_ALIAS(9),
+     XMM_REG_ALIAS(10),
+     XMM_REG_ALIAS(11),
+     XMM_REG_ALIAS(12),
+     XMM_REG_ALIAS(13),
+     XMM_REG_ALIAS(14),
+     XMM_REG_ALIAS(15),
 
 };
+
 
 // Exception registers
 
@@ -2346,7 +2335,7 @@ bool DNBArchImplX86_64::GetRegisterValue(uint32_t set, uint32_t reg,
             *((uint16_t *)(&m_state.context.fpu.no_avx.__fpu_fsw));
         return true;
       case fpu_ftw:
-        memcpy(&value->value.uint16, &m_state.context.fpu.no_avx.__fpu_ftw, 2);
+        memcpy (&value->value.uint16, &m_state.context.fpu.no_avx.__fpu_ftw, 2);
         return true;
       case fpu_fop:
         value->value.uint16 = m_state.context.fpu.no_avx.__fpu_fop;
@@ -2474,8 +2463,7 @@ bool DNBArchImplX86_64::GetRegisterValue(uint32_t set, uint32_t reg,
       case fpu_zmm30:
       case fpu_zmm31:
         memcpy(&value->value.uint8,
-               &m_state.context.fpu.avx512f.__fpu_zmm16 + (reg - fpu_zmm16),
-               64);
+               &m_state.context.fpu.avx512f.__fpu_zmm16 + (reg - fpu_zmm16), 64);
         return true;
       }
       break;
@@ -2558,7 +2546,7 @@ bool DNBArchImplX86_64::SetRegisterValue(uint32_t set, uint32_t reg,
         success = true;
         break;
       case fpu_ftw:
-        memcpy(&m_state.context.fpu.no_avx.__fpu_ftw, &value->value.uint8, 2);
+        memcpy (&m_state.context.fpu.no_avx.__fpu_ftw, &value->value.uint8, 2);
         success = true;
         break;
       case fpu_fop:
@@ -2765,24 +2753,21 @@ nub_size_t DNBArchImplX86_64::GetRegisterContext(void *buf,
     kern_return_t kret;
 
     if ((kret = GetGPRState(force)) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::GetRegisterContext (buf "
-                       "= %p, len = %llu) error: GPR regs failed "
-                       "to read: %u ",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::GetRegisterContext (buf "
+                                   "= %p, len = %llu) error: GPR regs failed "
+                                   "to read: %u ",
                        buf, (uint64_t)buf_len, kret);
       size = 0;
     } else if ((kret = GetFPUState(force)) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::GetRegisterContext (buf = %p, len = "
-                       "%llu) error: %s regs failed to read: %u",
-                       buf, (uint64_t)buf_len, CPUHasAVX() ? "AVX" : "FPU",
-                       kret);
+      DNBLogThreadedIf(
+          LOG_THREAD, "DNBArchImplX86_64::GetRegisterContext (buf = %p, len = "
+                      "%llu) error: %s regs failed to read: %u",
+          buf, (uint64_t)buf_len, CPUHasAVX() ? "AVX" : "FPU", kret);
       size = 0;
     } else if ((kret = GetEXCState(force)) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::GetRegisterContext (buf "
-                       "= %p, len = %llu) error: EXC regs failed "
-                       "to read: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::GetRegisterContext (buf "
+                                   "= %p, len = %llu) error: EXC regs failed "
+                                   "to read: %u",
                        buf, (uint64_t)buf_len, kret);
       size = 0;
     } else {
@@ -2810,7 +2795,7 @@ nub_size_t DNBArchImplX86_64::GetRegisterContext(void *buf,
         p += 10;
       }
 
-      if (CPUHasAVX512f() || FORCE_AVX_REGS) {
+      if(CPUHasAVX512f() || FORCE_AVX_REGS) {
         for (size_t i = 0; i < 8; ++i) {
           memcpy(p, &m_state.context.fpu.avx512f.__fpu_k0 + i, 8);
           p += 8;
@@ -2825,7 +2810,7 @@ nub_size_t DNBArchImplX86_64::GetRegisterContext(void *buf,
           memcpy(p, &m_state.context.fpu.avx.__fpu_ymmh0 + i, 16);
           p += 16;
         }
-        if (CPUHasAVX512f() || FORCE_AVX_REGS) {
+        if(CPUHasAVX512f() || FORCE_AVX_REGS) {
           for (size_t i = 0; i < 16; ++i) {
             memcpy(p, &m_state.context.fpu.avx512f.__fpu_zmmh0 + i, 32);
             p += 32;
@@ -2894,7 +2879,7 @@ nub_size_t DNBArchImplX86_64::SetRegisterContext(const void *buf,
       p += 10;
     }
 
-    if (CPUHasAVX512f() || FORCE_AVX_REGS) {
+    if(CPUHasAVX512f() || FORCE_AVX_REGS) {
       for (size_t i = 0; i < 8; ++i) {
         memcpy(&m_state.context.fpu.avx512f.__fpu_k0 + i, p, 8);
         p += 8;
@@ -2909,16 +2894,16 @@ nub_size_t DNBArchImplX86_64::SetRegisterContext(const void *buf,
         memcpy(&m_state.context.fpu.avx.__fpu_ymmh0 + i, p, 16);
         p += 16;
       }
-      if (CPUHasAVX512f() || FORCE_AVX_REGS) {
-        for (size_t i = 0; i < 16; ++i) {
-          memcpy(&m_state.context.fpu.avx512f.__fpu_zmmh0 + i, p, 32);
-          p += 32;
+      if(CPUHasAVX512f() || FORCE_AVX_REGS) {
+          for (size_t i = 0; i < 16; ++i) {
+            memcpy(&m_state.context.fpu.avx512f.__fpu_zmmh0 + i, p, 32);
+            p += 32;
+          }
+          for (size_t i = 0; i < 16; ++i) {
+            memcpy(&m_state.context.fpu.avx512f.__fpu_zmm16 + i, p, 64);
+            p += 64;
+          }
         }
-        for (size_t i = 0; i < 16; ++i) {
-          memcpy(&m_state.context.fpu.avx512f.__fpu_zmm16 + i, p, 64);
-          p += 64;
-        }
-      }
     } else {
       // Copy the XMM registers in a single block
       memcpy(&m_state.context.fpu.no_avx.__fpu_xmm0, p, 16 * 16);
@@ -2936,22 +2921,19 @@ nub_size_t DNBArchImplX86_64::SetRegisterContext(const void *buf,
 
     kern_return_t kret;
     if ((kret = SetGPRState()) != KERN_SUCCESS)
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::SetRegisterContext (buf "
-                       "= %p, len = %llu) error: GPR regs failed "
-                       "to write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::SetRegisterContext (buf "
+                                   "= %p, len = %llu) error: GPR regs failed "
+                                   "to write: %u",
                        buf, (uint64_t)buf_len, kret);
     if ((kret = SetFPUState()) != KERN_SUCCESS)
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::SetRegisterContext (buf = %p, len = "
-                       "%llu) error: %s regs failed to write: %u",
-                       buf, (uint64_t)buf_len, CPUHasAVX() ? "AVX" : "FPU",
-                       kret);
+      DNBLogThreadedIf(
+          LOG_THREAD, "DNBArchImplX86_64::SetRegisterContext (buf = %p, len = "
+                      "%llu) error: %s regs failed to write: %u",
+          buf, (uint64_t)buf_len, CPUHasAVX() ? "AVX" : "FPU", kret);
     if ((kret = SetEXCState()) != KERN_SUCCESS)
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::SetRegisterContext (buf "
-                       "= %p, len = %llu) error: EXP regs failed "
-                       "to write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::SetRegisterContext (buf "
+                                   "= %p, len = %llu) error: EXP regs failed "
+                                   "to write: %u",
                        buf, (uint64_t)buf_len, kret);
   }
   DNBLogThreadedIf(
@@ -2963,24 +2945,21 @@ nub_size_t DNBArchImplX86_64::SetRegisterContext(const void *buf,
 
 uint32_t DNBArchImplX86_64::SaveRegisterState() {
   kern_return_t kret = ::thread_abort_safely(m_thread->MachPortNumber());
-  DNBLogThreadedIf(LOG_THREAD,
-                   "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
-                   "(SetGPRState() for stop_count = %u)",
-                   m_thread->MachPortNumber(), kret,
-                   m_thread->Process()->StopCount());
+  DNBLogThreadedIf(
+      LOG_THREAD, "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
+                  "(SetGPRState() for stop_count = %u)",
+      m_thread->MachPortNumber(), kret, m_thread->Process()->StopCount());
 
   // Always re-read the registers because above we call thread_abort_safely();
   bool force = true;
 
   if ((kret = GetGPRState(force)) != KERN_SUCCESS) {
-    DNBLogThreadedIf(LOG_THREAD,
-                     "DNBArchImplX86_64::SaveRegisterState () "
-                     "error: GPR regs failed to read: %u ",
+    DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::SaveRegisterState () "
+                                 "error: GPR regs failed to read: %u ",
                      kret);
   } else if ((kret = GetFPUState(force)) != KERN_SUCCESS) {
-    DNBLogThreadedIf(LOG_THREAD,
-                     "DNBArchImplX86_64::SaveRegisterState () "
-                     "error: %s regs failed to read: %u",
+    DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::SaveRegisterState () "
+                                 "error: %s regs failed to read: %u",
                      CPUHasAVX() ? "AVX" : "FPU", kret);
   } else {
     const uint32_t save_id = GetNextRegisterStateSaveID();
@@ -2999,17 +2978,15 @@ bool DNBArchImplX86_64::RestoreRegisterState(uint32_t save_id) {
     kern_return_t kret;
     bool success = true;
     if ((kret = SetGPRState()) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::RestoreRegisterState "
-                       "(save_id = %u) error: GPR regs failed to "
-                       "write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::RestoreRegisterState "
+                                   "(save_id = %u) error: GPR regs failed to "
+                                   "write: %u",
                        save_id, kret);
       success = false;
     } else if ((kret = SetFPUState()) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchImplX86_64::RestoreRegisterState "
-                       "(save_id = %u) error: %s regs failed to "
-                       "write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchImplX86_64::RestoreRegisterState "
+                                   "(save_id = %u) error: %s regs failed to "
+                                   "write: %u",
                        save_id, CPUHasAVX() ? "AVX" : "FPU", kret);
       success = false;
     }

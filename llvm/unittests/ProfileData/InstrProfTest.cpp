@@ -275,8 +275,8 @@ TEST_P(MaybeSparseInstrProfTest, get_icall_data_read_write) {
 TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   NamedInstrProfRecord Record("caller", 0x1234, {1, 2});
   Record.reserveSites(IPVK_IndirectCallTarget, 1);
-  InstrProfValueData VD0[] = {{1000, 1}, {2000, 2}, {3000, 3},
-                              {5000, 5}, {4000, 4}, {6000, 6}};
+  InstrProfValueData VD0[] = {{1000, 1}, {2000, 2}, {3000, 3}, {5000, 5},
+                              {4000, 4}, {6000, 6}};
   Record.addValueData(IPVK_IndirectCallTarget, 0, VD0, 6, nullptr);
   Writer.addRecord(std::move(Record), Err);
   auto Profile = Writer.writeBuffer();
@@ -326,12 +326,12 @@ TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
                                  N, T);
   ASSERT_FALSE(Res);
 
-  // Remove the MD_prof metadata
+  // Remove the MD_prof metadata 
   Inst->setMetadata(LLVMContext::MD_prof, 0);
   // Annotate 5 records this time.
   annotateValueSite(*M, *Inst, R.get(), IPVK_IndirectCallTarget, 0, 5);
-  Res = getValueProfDataFromInst(*Inst, IPVK_IndirectCallTarget, 5, ValueData,
-                                 N, T);
+  Res = getValueProfDataFromInst(*Inst, IPVK_IndirectCallTarget, 5,
+                                      ValueData, N, T);
   ASSERT_TRUE(Res);
   ASSERT_EQ(5U, N);
   ASSERT_EQ(21U, T);
@@ -346,15 +346,15 @@ TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   ASSERT_EQ(2000U, ValueData[4].Value);
   ASSERT_EQ(2U, ValueData[4].Count);
 
-  // Remove the MD_prof metadata
+  // Remove the MD_prof metadata 
   Inst->setMetadata(LLVMContext::MD_prof, 0);
   // Annotate with 4 records.
-  InstrProfValueData VD0Sorted[] = {{1000, 6}, {2000, 5}, {3000, 4},
-                                    {4000, 3}, {5000, 2}, {6000, 1}};
+  InstrProfValueData VD0Sorted[] = {{1000, 6}, {2000, 5}, {3000, 4}, {4000, 3},
+                              {5000, 2}, {6000, 1}};
   annotateValueSite(*M, *Inst, makeArrayRef(VD0Sorted).slice(2), 10,
                     IPVK_IndirectCallTarget, 5);
-  Res = getValueProfDataFromInst(*Inst, IPVK_IndirectCallTarget, 5, ValueData,
-                                 N, T);
+  Res = getValueProfDataFromInst(*Inst, IPVK_IndirectCallTarget, 5,
+                                      ValueData, N, T);
   ASSERT_TRUE(Res);
   ASSERT_EQ(4U, N);
   ASSERT_EQ(10U, T);
@@ -481,8 +481,9 @@ TEST_P(MaybeSparseInstrProfTest, get_icall_data_merge1) {
   InstrProfValueData VD3[] = {{uint64_t(callee1), 1}};
   Record11.addValueData(IPVK_IndirectCallTarget, 3, VD3, 1, nullptr);
 
-  InstrProfValueData VD4[] = {
-      {uint64_t(callee1), 1}, {uint64_t(callee2), 2}, {uint64_t(callee3), 3}};
+  InstrProfValueData VD4[] = {{uint64_t(callee1), 1},
+                              {uint64_t(callee2), 2},
+                              {uint64_t(callee3), 3}};
   Record11.addValueData(IPVK_IndirectCallTarget, 4, VD4, 3, nullptr);
 
   // A different record for the same caller.
@@ -499,8 +500,9 @@ TEST_P(MaybeSparseInstrProfTest, get_icall_data_merge1) {
 
   Record12.addValueData(IPVK_IndirectCallTarget, 3, nullptr, 0, nullptr);
 
-  InstrProfValueData VD42[] = {
-      {uint64_t(callee1), 1}, {uint64_t(callee2), 2}, {uint64_t(callee3), 3}};
+  InstrProfValueData VD42[] = {{uint64_t(callee1), 1},
+                               {uint64_t(callee2), 2},
+                               {uint64_t(callee3), 3}};
   Record12.addValueData(IPVK_IndirectCallTarget, 4, VD42, 3, nullptr);
 
   Writer.addRecord(std::move(Record11), Err);
@@ -914,7 +916,8 @@ TEST_P(MaybeSparseInstrProfTest, instr_prof_symtab_module_test) {
     ASSERT_TRUE(F != nullptr);
     std::string PGOName = getPGOFuncName(*F);
     uint64_t Key = IndexedInstrProf::ComputeHash(PGOName);
-    ASSERT_EQ(StringRef(PGOName), ProfSymtab.getFuncName(Key));
+    ASSERT_EQ(StringRef(PGOName),
+              ProfSymtab.getFuncName(Key));
     ASSERT_EQ(StringRef(Funcs[I]), ProfSymtab.getOrigFuncName(Key));
   }
 }
@@ -969,8 +972,7 @@ TEST_P(MaybeSparseInstrProfTest, instr_prof_symtab_compression_test) {
 
       // Now do the checks:
       // First sampling some data points:
-      StringRef R =
-          Symtab.getFuncName(IndexedInstrProf::ComputeHash(FuncNames1[0]));
+      StringRef R = Symtab.getFuncName(IndexedInstrProf::ComputeHash(FuncNames1[0]));
       ASSERT_EQ(StringRef("func_0"), R);
       R = Symtab.getFuncName(IndexedInstrProf::ComputeHash(FuncNames1[1]));
       ASSERT_EQ(StringRef("f oooooooooooooo_0"), R);
@@ -1040,7 +1042,7 @@ TEST_F(SparseInstrProfTest, preserve_no_records) {
 }
 
 INSTANTIATE_TEST_CASE_P(MaybeSparse, MaybeSparseInstrProfTest,
-                        ::testing::Bool(), );
+                        ::testing::Bool(),);
 
 #if defined(_LP64) && defined(EXPENSIVE_CHECKS)
 TEST(ProfileReaderTest, ReadsLargeFiles) {

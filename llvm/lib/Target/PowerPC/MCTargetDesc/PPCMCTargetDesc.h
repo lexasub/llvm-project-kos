@@ -125,7 +125,9 @@ static inline bool isRunOfOnes64(uint64_t Val, unsigned &MB, unsigned &ME) {
 #include "PPCGenSubtargetInfo.inc"
 
 #define PPC_REGS0_7(X)                                                         \
-  { X##0, X##1, X##2, X##3, X##4, X##5, X##6, X##7 }
+  {                                                                            \
+    X##0, X##1, X##2, X##3, X##4, X##5, X##6, X##7                             \
+  }
 
 #define PPC_REGS0_31(X)                                                        \
   {                                                                            \
@@ -155,26 +157,33 @@ static inline bool isRunOfOnes64(uint64_t Val, unsigned &MB, unsigned &ME) {
 
 using llvm::MCPhysReg;
 
-#define DEFINE_PPC_REGCLASSES                                                  \
-  static const MCPhysReg RRegs[32] = PPC_REGS0_31(PPC::R);                     \
-  static const MCPhysReg XRegs[32] = PPC_REGS0_31(PPC::X);                     \
-  static const MCPhysReg FRegs[32] = PPC_REGS0_31(PPC::F);                     \
-  static const MCPhysReg VSRpRegs[32] = PPC_REGS0_31(PPC::VSRp);               \
-  static const MCPhysReg SPERegs[32] = PPC_REGS0_31(PPC::S);                   \
-  static const MCPhysReg VFRegs[32] = PPC_REGS0_31(PPC::VF);                   \
-  static const MCPhysReg VRegs[32] = PPC_REGS0_31(PPC::V);                     \
-  static const MCPhysReg RRegsNoR0[32] = PPC_REGS_NO0_31(PPC::ZERO, PPC::R);   \
-  static const MCPhysReg XRegsNoX0[32] = PPC_REGS_NO0_31(PPC::ZERO8, PPC::X);  \
-  static const MCPhysReg VSRegs[64] = PPC_REGS_LO_HI(PPC::VSL, PPC::V);        \
-  static const MCPhysReg VSFRegs[64] = PPC_REGS_LO_HI(PPC::F, PPC::VF);        \
-  static const MCPhysReg VSSRegs[64] = PPC_REGS_LO_HI(PPC::F, PPC::VF);        \
-  static const MCPhysReg CRBITRegs[32] = {                                     \
-      PPC::CR0LT, PPC::CR0GT, PPC::CR0EQ, PPC::CR0UN, PPC::CR1LT, PPC::CR1GT,  \
-      PPC::CR1EQ, PPC::CR1UN, PPC::CR2LT, PPC::CR2GT, PPC::CR2EQ, PPC::CR2UN,  \
-      PPC::CR3LT, PPC::CR3GT, PPC::CR3EQ, PPC::CR3UN, PPC::CR4LT, PPC::CR4GT,  \
-      PPC::CR4EQ, PPC::CR4UN, PPC::CR5LT, PPC::CR5GT, PPC::CR5EQ, PPC::CR5UN,  \
-      PPC::CR6LT, PPC::CR6GT, PPC::CR6EQ, PPC::CR6UN, PPC::CR7LT, PPC::CR7GT,  \
-      PPC::CR7EQ, PPC::CR7UN};                                                 \
-  static const MCPhysReg CRRegs[8] = PPC_REGS0_7(PPC::CR);                     \
+#define DEFINE_PPC_REGCLASSES \
+  static const MCPhysReg RRegs[32] = PPC_REGS0_31(PPC::R); \
+  static const MCPhysReg XRegs[32] = PPC_REGS0_31(PPC::X); \
+  static const MCPhysReg FRegs[32] = PPC_REGS0_31(PPC::F); \
+  static const MCPhysReg VSRpRegs[32] = PPC_REGS0_31(PPC::VSRp); \
+  static const MCPhysReg SPERegs[32] = PPC_REGS0_31(PPC::S); \
+  static const MCPhysReg VFRegs[32] = PPC_REGS0_31(PPC::VF); \
+  static const MCPhysReg VRegs[32] = PPC_REGS0_31(PPC::V); \
+  static const MCPhysReg RRegsNoR0[32] = \
+    PPC_REGS_NO0_31(PPC::ZERO, PPC::R); \
+  static const MCPhysReg XRegsNoX0[32] = \
+    PPC_REGS_NO0_31(PPC::ZERO8, PPC::X); \
+  static const MCPhysReg VSRegs[64] = \
+    PPC_REGS_LO_HI(PPC::VSL, PPC::V); \
+  static const MCPhysReg VSFRegs[64] = \
+    PPC_REGS_LO_HI(PPC::F, PPC::VF); \
+  static const MCPhysReg VSSRegs[64] = \
+    PPC_REGS_LO_HI(PPC::F, PPC::VF); \
+  static const MCPhysReg CRBITRegs[32] = { \
+    PPC::CR0LT, PPC::CR0GT, PPC::CR0EQ, PPC::CR0UN, \
+    PPC::CR1LT, PPC::CR1GT, PPC::CR1EQ, PPC::CR1UN, \
+    PPC::CR2LT, PPC::CR2GT, PPC::CR2EQ, PPC::CR2UN, \
+    PPC::CR3LT, PPC::CR3GT, PPC::CR3EQ, PPC::CR3UN, \
+    PPC::CR4LT, PPC::CR4GT, PPC::CR4EQ, PPC::CR4UN, \
+    PPC::CR5LT, PPC::CR5GT, PPC::CR5EQ, PPC::CR5UN, \
+    PPC::CR6LT, PPC::CR6GT, PPC::CR6EQ, PPC::CR6UN, \
+    PPC::CR7LT, PPC::CR7GT, PPC::CR7EQ, PPC::CR7UN}; \
+  static const MCPhysReg CRRegs[8] = PPC_REGS0_7(PPC::CR); \
   static const MCPhysReg ACCRegs[8] = PPC_REGS0_7(PPC::ACC)
 #endif // LLVM_LIB_TARGET_POWERPC_MCTARGETDESC_PPCMCTARGETDESC_H

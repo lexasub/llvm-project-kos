@@ -10,5 +10,5 @@ void PPC() {
   vector int i0, i1;
 
   vec_add(i0, i1);
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'vec_add' can be replaced by operator+ on std::experimental::simd objects [portability-simd-intrinsics]
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'vec_add' can be replaced by operator+ on std::experimental::simd objects [portability-simd-intrinsics]
 }

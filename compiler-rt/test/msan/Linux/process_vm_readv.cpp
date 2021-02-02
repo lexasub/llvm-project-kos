@@ -3,27 +3,28 @@
 
 #include <assert.h>
 #include <dlfcn.h>
-#include <errno.h>
 #include <sanitizer/msan_interface.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include <errno.h>
 
 typedef ssize_t (*process_vm_readwritev_fn)(pid_t, const iovec *, unsigned long,
                                             const iovec *, unsigned long,
                                             unsigned long);
 
 // Exit with success, emulating the expected output.
-int exit_dummy() {
+int exit_dummy()
+{
 #ifdef POSITIVE
-  printf("process_vm_readv not found or not implemented!\n");
-  printf(
-      "WARNING: MemorySanitizer: use-of-uninitialized-value (not really)\n");
-  return 1;
+    printf("process_vm_readv not found or not implemented!\n");
+    printf(
+        "WARNING: MemorySanitizer: use-of-uninitialized-value (not really)\n");
+    return 1;
 #else
-  return 0;
+    return 0;
 #endif
 }
 
@@ -48,7 +49,7 @@ int main(void) {
 
   __msan_poison(&b, sizeof(b));
   ssize_t res = process_vm_readv(getpid(), iov_b, 2, iov_a, 2, 0);
-  if (errno == ENOSYS) // Function not implemented
+  if (errno == ENOSYS) // Function not implemented 
     return exit_dummy();
 
   assert(res == 30);

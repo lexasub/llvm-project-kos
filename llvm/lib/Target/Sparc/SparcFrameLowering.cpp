@@ -27,9 +27,10 @@
 using namespace llvm;
 
 static cl::opt<bool>
-    DisableLeafProc("disable-sparc-leaf-proc", cl::init(false),
-                    cl::desc("Disable Sparc leaf procedure optimization."),
-                    cl::Hidden);
+DisableLeafProc("disable-sparc-leaf-proc",
+                cl::init(false),
+                cl::desc("Disable Sparc leaf procedure optimization."),
+                cl::Hidden);
 
 SparcFrameLowering::SparcFrameLowering(const SparcSubtarget &ST)
     : TargetFrameLowering(TargetFrameLowering::StackGrowsDown,
@@ -39,7 +40,8 @@ SparcFrameLowering::SparcFrameLowering(const SparcSubtarget &ST)
 void SparcFrameLowering::emitSPAdjustment(MachineFunction &MF,
                                           MachineBasicBlock &MBB,
                                           MachineBasicBlock::iterator MBBI,
-                                          int NumBytes, unsigned ADDrr,
+                                          int NumBytes,
+                                          unsigned ADDrr,
                                           unsigned ADDri) const {
 
   DebugLoc dl;
@@ -48,8 +50,7 @@ void SparcFrameLowering::emitSPAdjustment(MachineFunction &MF,
 
   if (NumBytes >= -4096 && NumBytes < 4096) {
     BuildMI(MBB, MBBI, dl, TII.get(ADDri), SP::O6)
-        .addReg(SP::O6)
-        .addImm(NumBytes);
+      .addReg(SP::O6).addImm(NumBytes);
     return;
   }
 
@@ -60,25 +61,25 @@ void SparcFrameLowering::emitSPAdjustment(MachineFunction &MF,
     // sethi %hi(NumBytes), %g1
     // or %g1, %lo(NumBytes), %g1
     // add %sp, %g1, %sp
-    BuildMI(MBB, MBBI, dl, TII.get(SP::SETHIi), SP::G1).addImm(HI22(NumBytes));
+    BuildMI(MBB, MBBI, dl, TII.get(SP::SETHIi), SP::G1)
+      .addImm(HI22(NumBytes));
     BuildMI(MBB, MBBI, dl, TII.get(SP::ORri), SP::G1)
-        .addReg(SP::G1)
-        .addImm(LO10(NumBytes));
+      .addReg(SP::G1).addImm(LO10(NumBytes));
     BuildMI(MBB, MBBI, dl, TII.get(ADDrr), SP::O6)
-        .addReg(SP::O6)
-        .addReg(SP::G1);
-    return;
+      .addReg(SP::O6).addReg(SP::G1);
+    return ;
   }
 
   // Emit negative numbers with sethi + xor.
   // sethi %hix(NumBytes), %g1
   // xor %g1, %lox(NumBytes), %g1
   // add %sp, %g1, %sp
-  BuildMI(MBB, MBBI, dl, TII.get(SP::SETHIi), SP::G1).addImm(HIX22(NumBytes));
+  BuildMI(MBB, MBBI, dl, TII.get(SP::SETHIi), SP::G1)
+    .addImm(HIX22(NumBytes));
   BuildMI(MBB, MBBI, dl, TII.get(SP::XORri), SP::G1)
-      .addReg(SP::G1)
-      .addImm(LOX10(NumBytes));
-  BuildMI(MBB, MBBI, dl, TII.get(ADDrr), SP::O6).addReg(SP::O6).addReg(SP::G1);
+    .addReg(SP::G1).addImm(LOX10(NumBytes));
+  BuildMI(MBB, MBBI, dl, TII.get(ADDrr), SP::O6)
+    .addReg(SP::O6).addReg(SP::G1);
 }
 
 void SparcFrameLowering::emitPrologue(MachineFunction &MF,
@@ -104,13 +105,12 @@ void SparcFrameLowering::emitPrologue(MachineFunction &MF,
   // poor, but fixing that bogosity is going to be a large project.
   // For now, just see if it's lied, and report an error here.
   if (!NeedsStackRealignment && MFI.getMaxAlign() > getStackAlign())
-    report_fatal_error("Function \"" + Twine(MF.getName()) +
-                       "\" required "
+    report_fatal_error("Function \"" + Twine(MF.getName()) + "\" required "
                        "stack re-alignment, but LLVM couldn't handle it "
                        "(probably because it has a dynamic alloca).");
 
   // Get the number of bytes to allocate from the FrameInfo
-  int NumBytes = (int)MFI.getStackSize();
+  int NumBytes = (int) MFI.getStackSize();
 
   unsigned SAVEri = SP::SAVEri;
   unsigned SAVErr = SP::SAVErr;
@@ -128,10 +128,11 @@ void SparcFrameLowering::emitPrologue(MachineFunction &MF,
   //
   // We therefore need to add that offset to the total stack size
   // after all the stack objects are placed by
-  // PrologEpilogInserter calculateFrameObjectOffsets. However, since the stack
-  // needs to be aligned *after* the extra size is added, we need to disable
+  // PrologEpilogInserter calculateFrameObjectOffsets. However, since the stack needs to be
+  // aligned *after* the extra size is added, we need to disable
   // calculateFrameObjectOffsets's built-in stack alignment, by having
   // targetHandlesStackFrameRounding return true.
+
 
   // Add the extra call frame stack size, if needed. (This is the same
   // code as in PrologEpilogInserter, but also gets disabled by
@@ -181,8 +182,7 @@ void SparcFrameLowering::emitPrologue(MachineFunction &MF,
       regUnbiased = SP::G1;
       // add %o6, BIAS, %g1
       BuildMI(MBB, MBBI, dl, TII.get(SP::ADDri), regUnbiased)
-          .addReg(SP::O6)
-          .addImm(Bias);
+        .addReg(SP::O6).addImm(Bias);
     } else
       regUnbiased = SP::O6;
 
@@ -195,15 +195,14 @@ void SparcFrameLowering::emitPrologue(MachineFunction &MF,
     if (Bias) {
       // add %g1, -BIAS, %o6
       BuildMI(MBB, MBBI, dl, TII.get(SP::ADDri), SP::O6)
-          .addReg(regUnbiased)
-          .addImm(-Bias);
+        .addReg(regUnbiased).addImm(-Bias);
     }
   }
 }
 
-MachineBasicBlock::iterator SparcFrameLowering::eliminateCallFramePseudoInstr(
-    MachineFunction &MF, MachineBasicBlock &MBB,
-    MachineBasicBlock::iterator I) const {
+MachineBasicBlock::iterator SparcFrameLowering::
+eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
+                              MachineBasicBlock::iterator I) const {
   if (!hasReservedCallFrame(MF)) {
     MachineInstr &MI = *I;
     int Size = MI.getOperand(0).getImm();
@@ -216,8 +215,9 @@ MachineBasicBlock::iterator SparcFrameLowering::eliminateCallFramePseudoInstr(
   return MBB.erase(I);
 }
 
+
 void SparcFrameLowering::emitEpilogue(MachineFunction &MF,
-                                      MachineBasicBlock &MBB) const {
+                                  MachineBasicBlock &MBB) const {
   SparcMachineFunctionInfo *FuncInfo = MF.getInfo<SparcMachineFunctionInfo>();
   MachineBasicBlock::iterator MBBI = MBB.getLastNonDebugInstr();
   const SparcInstrInfo &TII =
@@ -226,14 +226,13 @@ void SparcFrameLowering::emitEpilogue(MachineFunction &MF,
   assert(MBBI->getOpcode() == SP::RETL &&
          "Can only put epilog before 'retl' instruction!");
   if (!FuncInfo->isLeafProc()) {
-    BuildMI(MBB, MBBI, dl, TII.get(SP::RESTORErr), SP::G0)
-        .addReg(SP::G0)
-        .addReg(SP::G0);
+    BuildMI(MBB, MBBI, dl, TII.get(SP::RESTORErr), SP::G0).addReg(SP::G0)
+      .addReg(SP::G0);
     return;
   }
   MachineFrameInfo &MFI = MF.getFrameInfo();
 
-  int NumBytes = (int)MFI.getStackSize();
+  int NumBytes = (int) MFI.getStackSize();
   if (NumBytes == 0)
     return;
 
@@ -253,8 +252,9 @@ bool SparcFrameLowering::hasFP(const MachineFunction &MF) const {
 
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   return MF.getTarget().Options.DisableFramePointerElim(MF) ||
-         RegInfo->needsStackRealignment(MF) || MFI.hasVarSizedObjects() ||
-         MFI.isFrameAddressTaken();
+      RegInfo->needsStackRealignment(MF) ||
+      MFI.hasVarSizedObjects() ||
+      MFI.isFrameAddressTaken();
 }
 
 StackOffset
@@ -263,8 +263,7 @@ SparcFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
   const SparcSubtarget &Subtarget = MF.getSubtarget<SparcSubtarget>();
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   const SparcRegisterInfo *RegInfo = Subtarget.getRegisterInfo();
-  const SparcMachineFunctionInfo *FuncInfo =
-      MF.getInfo<SparcMachineFunctionInfo>();
+  const SparcMachineFunctionInfo *FuncInfo = MF.getInfo<SparcMachineFunctionInfo>();
   bool isFixed = MFI.isFixedObjectIndex(FI);
 
   // Addressable stack objects are accessed using neg. offsets from
@@ -291,21 +290,20 @@ SparcFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
     UseFP = true;
   }
 
-  int64_t FrameOffset =
-      MF.getFrameInfo().getObjectOffset(FI) + Subtarget.getStackPointerBias();
+  int64_t FrameOffset = MF.getFrameInfo().getObjectOffset(FI) +
+      Subtarget.getStackPointerBias();
 
   if (UseFP) {
     FrameReg = RegInfo->getFrameRegister(MF);
     return StackOffset::getFixed(FrameOffset);
   } else {
     FrameReg = SP::O6; // %sp
-    return StackOffset::getFixed(FrameOffset +
-                                 MF.getFrameInfo().getStackSize());
+    return StackOffset::getFixed(FrameOffset + MF.getFrameInfo().getStackSize());
   }
 }
 
-static bool LLVM_ATTRIBUTE_UNUSED
-verifyLeafProcRegUse(MachineRegisterInfo *MRI) {
+static bool LLVM_ATTRIBUTE_UNUSED verifyLeafProcRegUse(MachineRegisterInfo *MRI)
+{
 
   for (unsigned reg = SP::I0; reg <= SP::I7; ++reg)
     if (MRI->isPhysRegUsed(reg))
@@ -318,15 +316,16 @@ verifyLeafProcRegUse(MachineRegisterInfo *MRI) {
   return true;
 }
 
-bool SparcFrameLowering::isLeafProc(MachineFunction &MF) const {
+bool SparcFrameLowering::isLeafProc(MachineFunction &MF) const
+{
 
   MachineRegisterInfo &MRI = MF.getRegInfo();
-  MachineFrameInfo &MFI = MF.getFrameInfo();
+  MachineFrameInfo    &MFI = MF.getFrameInfo();
 
-  return !(MFI.hasCalls()               // has calls
-           || MRI.isPhysRegUsed(SP::L0) // Too many registers needed
-           || MRI.isPhysRegUsed(SP::O6) // %sp is used
-           || hasFP(MF));               // need %fp
+  return !(MFI.hasCalls()                  // has calls
+           || MRI.isPhysRegUsed(SP::L0)    // Too many registers needed
+           || MRI.isPhysRegUsed(SP::O6)    // %sp is used
+           || hasFP(MF));                  // need %fp
 }
 
 void SparcFrameLowering::remapRegsForLeafProc(MachineFunction &MF) const {
@@ -350,8 +349,8 @@ void SparcFrameLowering::remapRegsForLeafProc(MachineFunction &MF) const {
   }
 
   // Rewrite MBB's Live-ins.
-  for (MachineFunction::iterator MBB = MF.begin(), E = MF.end(); MBB != E;
-       ++MBB) {
+  for (MachineFunction::iterator MBB = MF.begin(), E = MF.end();
+       MBB != E; ++MBB) {
     for (unsigned reg = SP::I0_I1; reg <= SP::I6_I7; ++reg) {
       if (!MBB->isLiveIn(reg))
         continue;
@@ -382,4 +381,5 @@ void SparcFrameLowering::determineCalleeSaves(MachineFunction &MF,
 
     remapRegsForLeafProc(MF);
   }
+
 }

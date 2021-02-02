@@ -13,9 +13,9 @@
 #include <memory>
 
 namespace llvm {
-class LLVMContext;
-class Module;
-} // namespace llvm
+  class LLVMContext;
+  class Module;
+}
 
 namespace clang {
 class BackendConsumer;
@@ -82,46 +82,40 @@ public:
 
 class EmitAssemblyAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitAssemblyAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
 class EmitBCAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitBCAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
 class EmitLLVMAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitLLVMAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
 class EmitLLVMOnlyAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitLLVMOnlyAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
 class EmitCodeGenOnlyAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitCodeGenOnlyAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
 class EmitObjAction : public CodeGenAction {
   virtual void anchor();
-
 public:
   EmitObjAction(llvm::LLVMContext *_VMContext = nullptr);
 };
 
-} // namespace clang
+}
 
 #endif

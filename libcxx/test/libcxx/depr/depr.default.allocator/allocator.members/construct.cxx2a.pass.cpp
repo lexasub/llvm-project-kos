@@ -26,39 +26,42 @@
 
 int A_constructed = 0;
 
-struct A {
-  int data;
-  A() { ++A_constructed; }
+struct A
+{
+    int data;
+    A() {++A_constructed;}
 
-  A(const A&) { ++A_constructed; }
+    A(const A&) {++A_constructed;}
 
-  explicit A(int) { ++A_constructed; }
-  A(int, int*) { ++A_constructed; }
+    explicit A(int) {++A_constructed;}
+    A(int, int*) {++A_constructed;}
 
-  ~A() { --A_constructed; }
+    ~A() {--A_constructed;}
 };
 
 int move_only_constructed = 0;
 
 #if TEST_STD_VER >= 11
-class move_only {
-  move_only(const move_only&) = delete;
-  move_only& operator=(const move_only&) = delete;
+class move_only
+{
+    move_only(const move_only&) = delete;
+    move_only& operator=(const move_only&)= delete;
 
 public:
-  move_only(move_only&&) { ++move_only_constructed; }
-  move_only& operator=(move_only&&) { return *this; }
+    move_only(move_only&&) {++move_only_constructed;}
+    move_only& operator=(move_only&&) {return *this;}
 
-  move_only() { ++move_only_constructed; }
-  ~move_only() { --move_only_constructed; }
+    move_only() {++move_only_constructed;}
+    ~move_only() {--move_only_constructed;}
 
 public:
-  int data; // unused other than to make sizeof(move_only) == sizeof(int).
-            // but public to suppress "-Wunused-private-field"
+    int data; // unused other than to make sizeof(move_only) == sizeof(int).
+              // but public to suppress "-Wunused-private-field"
 };
 #endif // TEST_STD_VER >= 11
 
-int main(int, char**) {
+int main(int, char**)
+{
   globalMemCounter.reset();
   {
     std::allocator<A> a;
@@ -110,7 +113,7 @@ int main(int, char**) {
     assert(A_constructed == 0);
   }
 #if TEST_STD_VER >= 11
-  {
+    {
     std::allocator<move_only> a;
     assert(globalMemCounter.checkOutstandingNewEq(0));
     assert(move_only_constructed == 0);
@@ -142,7 +145,7 @@ int main(int, char**) {
     DoNotOptimize(ap);
     assert(globalMemCounter.checkOutstandingNewEq(0));
     assert(move_only_constructed == 0);
-  }
+    }
 #endif
 
   return 0;

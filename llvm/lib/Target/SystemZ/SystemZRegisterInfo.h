@@ -48,7 +48,7 @@ public:
   /// register, hence ADDR64.
   const TargetRegisterClass *
   getPointerRegClass(const MachineFunction &MF,
-                     unsigned Kind = 0) const override {
+                     unsigned Kind=0) const override {
     return &SystemZ::ADDR64BitRegClass;
   }
 
@@ -74,14 +74,17 @@ public:
   const uint32_t *getCallPreservedMask(const MachineFunction &MF,
                                        CallingConv::ID CC) const override;
   BitVector getReservedRegs(const MachineFunction &MF) const override;
-  void eliminateFrameIndex(MachineBasicBlock::iterator MI, int SPAdj,
-                           unsigned FIOperandNum,
+  void eliminateFrameIndex(MachineBasicBlock::iterator MI,
+                           int SPAdj, unsigned FIOperandNum,
                            RegScavenger *RS) const override;
 
   /// SrcRC and DstRC will be morphed into NewRC if this returns true.
-  bool shouldCoalesce(MachineInstr *MI, const TargetRegisterClass *SrcRC,
-                      unsigned SubReg, const TargetRegisterClass *DstRC,
-                      unsigned DstSubReg, const TargetRegisterClass *NewRC,
+ bool shouldCoalesce(MachineInstr *MI,
+                      const TargetRegisterClass *SrcRC,
+                      unsigned SubReg,
+                      const TargetRegisterClass *DstRC,
+                      unsigned DstSubReg,
+                      const TargetRegisterClass *NewRC,
                       LiveIntervals &LIS) const override;
 
   Register getFrameRegister(const MachineFunction &MF) const override;

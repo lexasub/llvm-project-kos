@@ -17,12 +17,12 @@
 #include "MipsFrameLowering.h"
 #include "MipsISelLowering.h"
 #include "MipsInstrInfo.h"
-#include "llvm/CodeGen/GlobalISel/CallLowering.h"
-#include "llvm/CodeGen/GlobalISel/InstructionSelector.h"
-#include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
-#include "llvm/CodeGen/GlobalISel/RegisterBankInfo.h"
 #include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
+#include "llvm/CodeGen/GlobalISel/CallLowering.h"
+#include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
+#include "llvm/CodeGen/GlobalISel/RegisterBankInfo.h"
+#include "llvm/CodeGen/GlobalISel/InstructionSelector.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/MC/MCInstrItineraries.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -41,22 +41,8 @@ class MipsSubtarget : public MipsGenSubtargetInfo {
 
   enum MipsArchEnum {
     MipsDefault,
-    Mips1,
-    Mips2,
-    Mips32,
-    Mips32r2,
-    Mips32r3,
-    Mips32r5,
-    Mips32r6,
-    Mips32Max,
-    Mips3,
-    Mips4,
-    Mips5,
-    Mips64,
-    Mips64r2,
-    Mips64r3,
-    Mips64r5,
-    Mips64r6
+    Mips1, Mips2, Mips32, Mips32r2, Mips32r3, Mips32r5, Mips32r6, Mips32Max,
+    Mips3, Mips4, Mips5, Mips64, Mips64r2, Mips64r3, Mips64r5, Mips64r6
   };
 
   enum class CPU { P5600 };
@@ -223,7 +209,7 @@ class MipsSubtarget : public MipsGenSubtargetInfo {
 
   // We can override the determination of whether we are in mips16 mode
   // as from the command line
-  enum { NoOverride, Mips16Override, NoMips16Override } OverrideMode;
+  enum {NoOverride, Mips16Override, NoMips16Override} OverrideMode;
 
   const MipsTargetMachine &TM;
 
@@ -312,12 +298,16 @@ public:
   bool isTargetELF() const { return TargetTriple.isOSBinFormatELF(); }
   bool hasVFPU() const { return HasVFPU; }
   bool inMips16Mode() const { return InMips16Mode; }
-  bool inMips16ModeDefault() const { return InMips16Mode; }
+  bool inMips16ModeDefault() const {
+    return InMips16Mode;
+  }
   // Hard float for mips16 means essentially to compile as soft float
   // but to use a runtime library for soft float that is written with
   // native mips32 floating point instructions (those runtime routines
   // run in mips32 hard float mode).
-  bool inMips16HardFloat() const { return inMips16Mode() && InMips16HardFloat; }
+  bool inMips16HardFloat() const {
+    return inMips16Mode() && InMips16HardFloat;
+  }
   bool inMicroMipsMode() const { return InMicroMipsMode && !InMips16Mode; }
   bool inMicroMips32r6Mode() const {
     return inMicroMipsMode() && hasMips32r6();
@@ -354,9 +344,8 @@ public:
   bool hasExtractInsert() const { return !inMips16Mode() && hasMips32r2(); }
   bool hasMTHC1() const { return hasMips32r2(); }
 
-  bool allowMixed16_32() const {
-    return inMips16ModeDefault() | AllowMixed16_32;
-  }
+  bool allowMixed16_32() const { return inMips16ModeDefault() |
+                                        AllowMixed16_32; }
 
   bool os16() const { return Os16; }
 
@@ -417,6 +406,6 @@ public:
   const RegisterBankInfo *getRegBankInfo() const override;
   InstructionSelector *getInstructionSelector() const override;
 };
-} // namespace llvm
+} // End llvm namespace
 
 #endif

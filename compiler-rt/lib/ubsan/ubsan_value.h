@@ -49,7 +49,7 @@ class SourceLocation {
 public:
   SourceLocation() : Filename(), Line(), Column() {}
   SourceLocation(const char *Filename, unsigned Line, unsigned Column)
-      : Filename(Filename), Line(Line), Column(Column) {}
+    : Filename(Filename), Line(Line), Column(Column) {}
 
   /// \brief Determine whether the source location is known.
   bool isInvalid() const { return !Filename; }
@@ -58,14 +58,16 @@ public:
   /// Exactly one call to acquire() returns a copy that isn't disabled.
   SourceLocation acquire() {
     u32 OldColumn = __sanitizer::atomic_exchange(
-        (__sanitizer::atomic_uint32_t *)&Column, ~u32(0),
-        __sanitizer::memory_order_relaxed);
+                        (__sanitizer::atomic_uint32_t *)&Column, ~u32(0),
+                        __sanitizer::memory_order_relaxed);
     return SourceLocation(Filename, Line, OldColumn);
   }
 
   /// \brief Determine if this Location has been disabled.
   /// Disabled SourceLocations are invalid to use.
-  bool isDisabled() { return Column == ~u32(0); }
+  bool isDisabled() {
+    return Column == ~u32(0);
+  }
 
   /// \brief Get the presumed filename for the source location.
   const char *getFilename() const { return Filename; }
@@ -74,6 +76,7 @@ public:
   /// \brief Get the column within the presumed line.
   unsigned getColumn() const { return Column; }
 };
+
 
 /// \brief A description of a type.
 class TypeDescriptor {
@@ -106,11 +109,17 @@ public:
 
   const char *getTypeName() const { return TypeName; }
 
-  Kind getKind() const { return static_cast<Kind>(TypeKind); }
+  Kind getKind() const {
+    return static_cast<Kind>(TypeKind);
+  }
 
   bool isIntegerTy() const { return getKind() == TK_Integer; }
-  bool isSignedIntegerTy() const { return isIntegerTy() && (TypeInfo & 1); }
-  bool isUnsignedIntegerTy() const { return isIntegerTy() && !(TypeInfo & 1); }
+  bool isSignedIntegerTy() const {
+    return isIntegerTy() && (TypeInfo & 1);
+  }
+  bool isUnsignedIntegerTy() const {
+    return isIntegerTy() && !(TypeInfo & 1);
+  }
   unsigned getIntegerBitWidth() const {
     CHECK(isIntegerTy());
     return 1 << (TypeInfo >> 1);

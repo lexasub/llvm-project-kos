@@ -97,7 +97,7 @@ public:
                llvm::opt::ArgStringList &CmdArgs, types::ID InputType) const;
 };
 
-} // namespace driver
-} // namespace clang
+}  // namespace driver
+}  // namespace clang
 
 #endif

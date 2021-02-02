@@ -38,8 +38,8 @@ private:
 
 public:
   constexpr ArgDescriptor(unsigned Val = 0, unsigned Mask = ~0u,
-                          bool IsStack = false, bool IsSet = false)
-      : Reg(Val), Mask(Mask), IsStack(IsStack), IsSet(IsSet) {}
+                bool IsStack = false, bool IsSet = false)
+    : Reg(Val), Mask(Mask), IsStack(IsStack), IsSet(IsSet) {}
 
   static constexpr ArgDescriptor createRegister(Register Reg,
                                                 unsigned Mask = ~0u) {
@@ -56,11 +56,17 @@ public:
     return ArgDescriptor(Arg.Reg, Mask, Arg.IsStack, Arg.IsSet);
   }
 
-  bool isSet() const { return IsSet; }
+  bool isSet() const {
+    return IsSet;
+  }
 
-  explicit operator bool() const { return isSet(); }
+  explicit operator bool() const {
+    return isSet();
+  }
 
-  bool isRegister() const { return !IsStack; }
+  bool isRegister() const {
+    return !IsStack;
+  }
 
   MCRegister getRegister() const {
     assert(!IsStack);
@@ -72,9 +78,13 @@ public:
     return StackOffset;
   }
 
-  unsigned getMask() const { return Mask; }
+  unsigned getMask() const {
+    return Mask;
+  }
 
-  bool isMasked() const { return Mask != ~0u; }
+  bool isMasked() const {
+    return Mask != ~0u;
+  }
 
   void print(raw_ostream &OS, const TargetRegisterInfo *TRI = nullptr) const;
 };
@@ -88,23 +98,23 @@ struct AMDGPUFunctionArgInfo {
   enum PreloadedValue {
     // SGPRS:
     PRIVATE_SEGMENT_BUFFER = 0,
-    DISPATCH_PTR = 1,
-    QUEUE_PTR = 2,
-    KERNARG_SEGMENT_PTR = 3,
-    DISPATCH_ID = 4,
-    FLAT_SCRATCH_INIT = 5,
-    WORKGROUP_ID_X = 10,
-    WORKGROUP_ID_Y = 11,
-    WORKGROUP_ID_Z = 12,
+    DISPATCH_PTR        =  1,
+    QUEUE_PTR           =  2,
+    KERNARG_SEGMENT_PTR =  3,
+    DISPATCH_ID         =  4,
+    FLAT_SCRATCH_INIT   =  5,
+    WORKGROUP_ID_X      = 10,
+    WORKGROUP_ID_Y      = 11,
+    WORKGROUP_ID_Z      = 12,
     PRIVATE_SEGMENT_WAVE_BYTE_OFFSET = 14,
     IMPLICIT_BUFFER_PTR = 15,
     IMPLICIT_ARG_PTR = 16,
 
     // VGPRS:
-    WORKITEM_ID_X = 17,
-    WORKITEM_ID_Y = 18,
-    WORKITEM_ID_Z = 19,
-    FIRST_VGPR_VALUE = WORKITEM_ID_X
+    WORKITEM_ID_X       = 17,
+    WORKITEM_ID_Y       = 18,
+    WORKITEM_ID_Z       = 19,
+    FIRST_VGPR_VALUE    = WORKITEM_ID_X
   };
 
   // Kernel input registers setup for the HSA ABI in allocation order.
@@ -154,7 +164,7 @@ public:
   static const AMDGPUFunctionArgInfo ExternFunctionInfo;
   static const AMDGPUFunctionArgInfo FixedABIFunctionInfo;
 
-  AMDGPUArgumentUsageInfo() : ImmutablePass(ID) {}
+  AMDGPUArgumentUsageInfo() : ImmutablePass(ID) { }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();

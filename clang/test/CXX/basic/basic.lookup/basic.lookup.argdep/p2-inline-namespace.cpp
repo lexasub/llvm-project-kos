@@ -8,49 +8,49 @@
 // are also included in the set.
 
 namespace test1 {
-namespace L {
-namespace M {
-inline namespace N {
-inline namespace O {
-struct S {};
-void f1(S);
-} // namespace O
-void f2(S);
-} // namespace N
-void f3(S);
-} // namespace M
-void f4(M::S); // expected-note {{declared here}}
-} // namespace L
+  namespace L {
+    namespace M {
+      inline namespace N {
+        inline namespace O {
+          struct S {};
+          void f1(S);
+        }
+        void f2(S);
+      }
+      void f3(S);
+    }
+    void f4(M::S); // expected-note {{declared here}}
+  }
 
-void test() {
-  L::M::S s;
-  f1(s); // ok
-  f2(s); // ok
-  f3(s); // ok
-  f4(s); // expected-error {{use of undeclared}}
+  void test() {
+    L::M::S s;
+    f1(s); // ok
+    f2(s); // ok
+    f3(s); // ok
+    f4(s); // expected-error {{use of undeclared}}
+  }
 }
-} // namespace test1
 
 namespace test2 {
-namespace L {
-struct S {};
-inline namespace M {
-inline namespace N {
-inline namespace O {
-void f1(S);
-}
-void f2(S);
-} // namespace N
-void f3(S);
-} // namespace M
-void f4(S);
-} // namespace L
+  namespace L {
+    struct S {};
+    inline namespace M {
+      inline namespace N {
+        inline namespace O {
+          void f1(S);
+        }
+        void f2(S);
+      }
+      void f3(S);
+    }
+    void f4(S);
+  }
 
-void test() {
-  L::S s;
-  f1(s); // ok
-  f2(s); // ok
-  f3(s); // ok
-  f4(s); // ok
+  void test() {
+    L::S s;
+    f1(s); // ok
+    f2(s); // ok
+    f3(s); // ok
+    f4(s); // ok
+  }
 }
-} // namespace test2

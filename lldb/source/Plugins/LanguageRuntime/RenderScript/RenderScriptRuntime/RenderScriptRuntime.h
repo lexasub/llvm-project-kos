@@ -15,12 +15,12 @@
 #include <string>
 #include <vector>
 
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "lldb/Core/Module.h"
 #include "lldb/Expression/LLVMUserExpression.h"
 #include "lldb/Target/LanguageRuntime.h"
 #include "lldb/lldb-private.h"
-#include "llvm/ADT/SmallVector.h"
-#include "llvm/ADT/StringRef.h"
 
 #include "Plugins/LanguageRuntime/CPlusPlus/CPPLanguageRuntime.h"
 
@@ -280,7 +280,8 @@ public:
   }
 
 protected:
-  const RSScriptGroupDescriptorSP FindScriptGroup(ConstString name) const {
+  const RSScriptGroupDescriptorSP
+  FindScriptGroup(ConstString name) const {
     for (auto sg : m_script_groups) {
       if (ConstString::Compare(sg->m_name, name) == 0)
         return sg;
@@ -348,8 +349,8 @@ public:
   bool CouldHaveDynamicValue(ValueObject &in_value) override;
 
   lldb::BreakpointResolverSP
-  CreateExceptionResolver(const lldb::BreakpointSP &bp, bool catch_bp,
-                          bool throw_bp) override;
+  CreateExceptionResolver(const lldb::BreakpointSP &bp,
+                          bool catch_bp, bool throw_bp) override;
 
   bool LoadModule(const lldb::ModuleSP &module_sp);
 
@@ -440,7 +441,8 @@ protected:
   bool EvalRSExpression(const char *expression, StackFrame *frame_ptr,
                         uint64_t *result);
 
-  lldb::BreakpointSP CreateScriptGroupBreakpoint(ConstString name, bool multi);
+  lldb::BreakpointSP CreateScriptGroupBreakpoint(ConstString name,
+                                                 bool multi);
 
   lldb::BreakpointSP CreateKernelBreakpoint(ConstString name);
 

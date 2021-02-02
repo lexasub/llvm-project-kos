@@ -85,7 +85,7 @@ public:
 
   /// Remove I from the worklist if it exists.
   void remove(Instruction *I) {
-    DenseMap<Instruction *, unsigned>::iterator It = WorklistMap.find(I);
+    DenseMap<Instruction*, unsigned>::iterator It = WorklistMap.find(I);
     if (It != WorklistMap.end()) {
       // Don't bother moving everything down, just null out the slot.
       Worklist[It->second] = nullptr;
@@ -109,6 +109,7 @@ public:
     for (User *U : I.users())
       push(cast<Instruction>(U));
   }
+
 
   /// Check that the worklist is empty and nuke the backing store for the map.
   void zap() {

@@ -52,8 +52,10 @@ clang_VirtualFileOverlay_create(unsigned options);
  * The virtual path must be canonicalized (not contain "."/"..").
  * \returns 0 for success, non-zero to indicate an error.
  */
-CINDEX_LINKAGE enum CXErrorCode clang_VirtualFileOverlay_addFileMapping(
-    CXVirtualFileOverlay, const char *virtualPath, const char *realPath);
+CINDEX_LINKAGE enum CXErrorCode
+clang_VirtualFileOverlay_addFileMapping(CXVirtualFileOverlay,
+                                        const char *virtualPath,
+                                        const char *realPath);
 
 /**
  * Set the case sensitivity for the \c CXVirtualFileOverlay object.
@@ -133,8 +135,8 @@ clang_ModuleMapDescriptor_setUmbrellaHeader(CXModuleMapDescriptor,
  */
 CINDEX_LINKAGE enum CXErrorCode
 clang_ModuleMapDescriptor_writeToBuffer(CXModuleMapDescriptor, unsigned options,
-                                        char **out_buffer_ptr,
-                                        unsigned *out_buffer_size);
+                                       char **out_buffer_ptr,
+                                       unsigned *out_buffer_size);
 
 /**
  * Dispose a \c CXModuleMapDescriptor object.
@@ -148,3 +150,4 @@ CINDEX_LINKAGE void clang_ModuleMapDescriptor_dispose(CXModuleMapDescriptor);
 LLVM_CLANG_C_EXTERN_C_END
 
 #endif /* CLANG_C_BUILD_SYSTEM_H */
+

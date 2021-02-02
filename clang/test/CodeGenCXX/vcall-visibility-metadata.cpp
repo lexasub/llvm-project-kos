@@ -5,6 +5,7 @@
 // Check that in ThinLTO we also get vcall_visibility summary entries in the bitcode
 // RUN: %clang_cc1 -flto=thin -flto-unit -triple x86_64-unknown-linux -emit-llvm-bc -fwhole-program-vtables -o - %s | llvm-dis -o - | FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-NOVFE --check-prefix=CHECK-SUMMARY
 
+
 // Anonymous namespace.
 namespace {
 // CHECK: @_ZTVN12_GLOBAL__N_11AE = {{.*}} !vcall_visibility [[VIS_TU:![0-9]+]]
@@ -13,10 +14,11 @@ struct A {
   A() {}
   virtual int f() { return 1; }
 };
-} // namespace
+}
 void *construct_A() {
   return new A();
 }
+
 
 // Hidden visibility.
 // CHECK: @_ZTV1B = {{.*}} !vcall_visibility [[VIS_DSO:![0-9]+]]
@@ -28,6 +30,7 @@ struct __attribute__((visibility("hidden"))) B {
 B *construct_B() {
   return new B();
 }
+
 
 // Default visibility.
 // CHECK-NOT: @_ZTV1C = {{.*}} !vcall_visibility
@@ -41,6 +44,7 @@ C *construct_C() {
   return new C();
 }
 
+
 // Hidden visibility, public LTO visibility.
 // CHECK-NOT: @_ZTV1D = {{.*}} !vcall_visibility
 // CHECK-MS-NOT: @anon.{{.*}} = private unnamed_addr constant {{.*}}struct.D{{.*}} !vcall_visibility
@@ -51,6 +55,7 @@ struct __attribute__((visibility("hidden"))) [[clang::lto_visibility_public]] D 
 D *construct_D() {
   return new D();
 }
+
 
 // Hidden visibility, but inherits from class with default visibility.
 // CHECK-NOT: @_ZTV1E = {{.*}} !vcall_visibility
@@ -64,6 +69,7 @@ E *construct_E() {
   return new E();
 }
 
+
 // Anonymous namespace, but inherits from class with default visibility.
 // CHECK-NOT: @_ZTVN12_GLOBAL__N_11FE = {{.*}} !vcall_visibility
 // On MS default is hidden
@@ -73,10 +79,11 @@ struct __attribute__((visibility("hidden"))) F : C {
   F() {}
   virtual int f() { return 1; }
 };
-} // namespace
+}
 void *construct_F() {
   return new F();
 }
+
 
 // Anonymous namespace, but inherits from class with hidden visibility.
 // CHECK: @_ZTVN12_GLOBAL__N_11GE = {{.*}} !vcall_visibility [[VIS_DSO:![0-9]+]]
@@ -86,7 +93,7 @@ struct __attribute__((visibility("hidden"))) G : B {
   G() {}
   virtual int f() { return 1; }
 };
-} // namespace
+}
 void *construct_G() {
   return new G();
 }

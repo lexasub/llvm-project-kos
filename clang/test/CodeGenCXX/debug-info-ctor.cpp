@@ -11,3 +11,4 @@ X::X(int v) {
   // TEMPORARY CHECK: X
   value = v;
 }
+

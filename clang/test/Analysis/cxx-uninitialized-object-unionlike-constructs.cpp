@@ -16,6 +16,7 @@
 // CHECK-UNINIT-INVALID-REGEX-SAME: with error message "parentheses not
 // CHECK-UNINIT-INVALID-REGEX-SAME: balanced"
 
+
 // expected-no-diagnostics
 
 // Both type and name contains "kind".

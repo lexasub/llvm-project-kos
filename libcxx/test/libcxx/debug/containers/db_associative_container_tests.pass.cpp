@@ -35,25 +35,27 @@ struct AssociativeContainerChecks : BasicContainerChecks<Container, CT> {
   using category = typename traits::iterator_category;
 
   using Base::makeContainer;
-
 public:
-  static void run() { Base::run(); }
+  static void run() {
+    Base::run();
+  }
 
 private:
   // FIXME Add tests here
 };
 
-int main(int, char**) {
+int main(int, char**)
+{
   using SetAlloc = test_allocator<int>;
-  using MapAlloc = test_allocator<std::pair<const int, int> >;
+  using MapAlloc = test_allocator<std::pair<const int, int>>;
   // FIXME: Add debug mode to these containers
   if ((false)) {
-    AssociativeContainerChecks<std::set<int, std::less<int>, SetAlloc>,
-                               CT_Set>::run();
-    AssociativeContainerChecks<std::multiset<int, std::less<int>, SetAlloc>,
-                               CT_MultiSet>::run();
-    AssociativeContainerChecks<std::map<int, int, std::less<int>, MapAlloc>,
-                               CT_Map>::run();
+    AssociativeContainerChecks<
+        std::set<int, std::less<int>, SetAlloc>, CT_Set>::run();
+    AssociativeContainerChecks<
+        std::multiset<int, std::less<int>, SetAlloc>, CT_MultiSet>::run();
+    AssociativeContainerChecks<
+        std::map<int, int, std::less<int>, MapAlloc>, CT_Map>::run();
     AssociativeContainerChecks<
         std::multimap<int, int, std::less<int>, MapAlloc>, CT_MultiMap>::run();
   }

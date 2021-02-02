@@ -124,8 +124,8 @@ main()
     test<float32_t>(float32_t(42), std::equal_to<float32_t>(),
                     [](int32_t j) { return float32_t(5 * j / 23 ^ (j / 7)); });
 #if !_PSTL_ICC_16_17_TEST_REDUCTION_RELEASE_BROKEN
-    test<float32_t>(
-        float32_t(42), [](float32_t, float32_t) { return false; }, [](int32_t j) { return float32_t(j); }, false);
+    test<float32_t>(float32_t(42), [](float32_t, float32_t) { return false; }, [](int32_t j) { return float32_t(j); },
+                    false);
 #endif
 
     test_algo_basic_double<int32_t>(run_for_rnd_fw<test_non_const<int32_t>>());

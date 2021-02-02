@@ -14,9 +14,7 @@ void ProcessEvent() {
 
 // Example from PR11665:
 void f() {
-  union U {
-    int field;
-  } u = U();
+  union U { int field; } u = U();
   (void)U().field;
 }
 
@@ -27,12 +25,13 @@ struct string {
 };
 
 template <class ELFT> void finalizeDefaultAtomValues() {
-  auto startEnd = [&](const char *sym) -> void {
+  auto startEnd = [&](const char * sym)->void {
     string start("__");
     start += sym;
-  };
+  }
+  ;
   startEnd("preinit_array");
 }
 
 void f() { finalizeDefaultAtomValues<int>(); }
-} // namespace PR17476
+}

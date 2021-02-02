@@ -29,44 +29,44 @@
 struct MyObject;
 typedef MyObject *MyObjectRef;
 extern "C" {
-void InitializeLibrary();
-MyObject *ObjectCreate();
-long ObjectRead(MyObject *);
-void ObjectWrite(MyObject *, long);
-void ObjectWriteAnother(MyObject *, long);
+  void InitializeLibrary();
+  MyObject *ObjectCreate();
+  long ObjectRead(MyObject *);
+  void ObjectWrite(MyObject *, long);
+  void ObjectWriteAnother(MyObject *, long);
 }
 
 int main(int argc, char *argv[]) {
   InitializeLibrary();
-
+  
   {
     MyObjectRef ref = ObjectCreate();
-    std::thread t1([ref] { ObjectRead(ref); });
-    std::thread t2([ref] { ObjectRead(ref); });
+    std::thread t1([ref]{ ObjectRead(ref); });
+    std::thread t2([ref]{ ObjectRead(ref); });
     t1.join();
     t2.join();
   }
-
+  
   // CHECK-NOT: WARNING: ThreadSanitizer
-
+  
   fprintf(stderr, "RR test done\n");
   // CHECK: RR test done
 
   {
     MyObjectRef ref = ObjectCreate();
-    std::thread t1([ref] { ObjectRead(ref); });
-    std::thread t2([ref] { ObjectWrite(ref, 66); });
+    std::thread t1([ref]{ ObjectRead(ref); });
+    std::thread t2([ref]{ ObjectWrite(ref, 66); });
     t1.join();
     t2.join();
   }
-
+  
   // TEST1: WARNING: ThreadSanitizer: data race
   // TEST1: {{Write|Read}} of size 8 at
   // TEST1: Previous {{write|read}} of size 8 at
   // TEST1: Location is heap block of size 16 at
-
+  
   // TEST2-NOT: WARNING: ThreadSanitizer
-
+  
   // TEST3: WARNING: ThreadSanitizer: race on MyLibrary::MyObject
   // TEST3: {{Modifying|read-only}} access of MyLibrary::MyObject at
   // TEST3: {{ObjectWrite|ObjectRead}}
@@ -81,16 +81,16 @@ int main(int argc, char *argv[]) {
 
   {
     MyObjectRef ref = ObjectCreate();
-    std::thread t1([ref] { ObjectWrite(ref, 76); });
-    std::thread t2([ref] { ObjectWriteAnother(ref, 77); });
+    std::thread t1([ref]{ ObjectWrite(ref, 76); });
+    std::thread t2([ref]{ ObjectWriteAnother(ref, 77); });
     t1.join();
     t2.join();
   }
-
+  
   // TEST1-NOT: WARNING: ThreadSanitizer: data race
-
+  
   // TEST2-NOT: WARNING: ThreadSanitizer
-
+  
   // TEST3: WARNING: ThreadSanitizer: race on MyLibrary::MyObject
   // TEST3: Modifying access of MyLibrary::MyObject at
   // TEST3: {{ObjectWrite|ObjectWriteAnother}}

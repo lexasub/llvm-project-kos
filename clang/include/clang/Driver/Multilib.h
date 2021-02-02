@@ -65,8 +65,8 @@ public:
   /// Get the include directory suffix. Always starts with a '/', unless
   /// empty
   const std::string &includeSuffix() const {
-    assert(IncludeSuffix.empty() || (StringRef(IncludeSuffix).front() == '/' &&
-                                     IncludeSuffix.size() > 1));
+    assert(IncludeSuffix.empty() ||
+           (StringRef(IncludeSuffix).front() == '/' && IncludeSuffix.size() > 1));
     return IncludeSuffix;
   }
 
@@ -83,8 +83,7 @@ public:
   int priority() const { return Priority; }
 
   /// Add a flag to the flags list
-  /// \p Flag must be a flag accepted by the driver with its leading '-'
-  /// removed,
+  /// \p Flag must be a flag accepted by the driver with its leading '-' removed,
   ///     and replaced with either:
   ///       '-' which contraindicates using this multilib with that flag
   ///     or:
@@ -104,9 +103,8 @@ public:
   bool isValid() const;
 
   /// Check whether the default is selected
-  bool isDefault() const {
-    return GCCSuffix.empty() && OSSuffix.empty() && IncludeSuffix.empty();
-  }
+  bool isDefault() const
+  { return GCCSuffix.empty() && OSSuffix.empty() && IncludeSuffix.empty(); }
 
   bool operator==(const Multilib &Other) const;
 };

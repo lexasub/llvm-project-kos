@@ -263,8 +263,7 @@ bool AArch64CondBrTuning::tryToTuneBranch(MachineInstr &MI,
     }
     break;
   }
-  (void)NewCmp;
-  (void)NewBr;
+  (void)NewCmp; (void)NewBr;
   assert(NewCmp && NewBr && "Expected new instructions.");
 
   LLVM_DEBUG(dbgs() << "  with instruction:\n    ");

@@ -7,29 +7,29 @@
 #ifdef EARLY_IMPORT
 @import using_decl.a;
 namespace UsingDecl {
-using ::merged;
+  using ::merged;
 }
 int k = UsingDecl::merged;
 #endif
 
 namespace Y {
-int conflicting_hidden_using_decl;
-int conflicting_hidden_using_decl_fn_2();
-int conflicting_hidden_using_decl_var_2;
-struct conflicting_hidden_using_decl_struct_2;
+  int conflicting_hidden_using_decl;
+  int conflicting_hidden_using_decl_fn_2();
+  int conflicting_hidden_using_decl_var_2;
+  struct conflicting_hidden_using_decl_struct_2;
 
-struct conflicting_hidden_using_decl_mixed_4 {};
-int conflicting_hidden_using_decl_mixed_5;
-int conflicting_hidden_using_decl_mixed_6();
-} // namespace Y
+  struct conflicting_hidden_using_decl_mixed_4 {};
+  int conflicting_hidden_using_decl_mixed_5;
+  int conflicting_hidden_using_decl_mixed_6();
+}
 
 using Y::conflicting_hidden_using_decl;
 int conflicting_hidden_using_decl_fn();
 int conflicting_hidden_using_decl_var;
 struct conflicting_hidden_using_decl_struct {};
 using Y::conflicting_hidden_using_decl_fn_2;
-using Y::conflicting_hidden_using_decl_struct_2;
 using Y::conflicting_hidden_using_decl_var_2;
+using Y::conflicting_hidden_using_decl_struct_2;
 
 struct conflicting_hidden_using_decl_mixed_1 {};
 int conflicting_hidden_using_decl_mixed_2;
@@ -38,7 +38,7 @@ using Y::conflicting_hidden_using_decl_mixed_4;
 using Y::conflicting_hidden_using_decl_mixed_5;
 using Y::conflicting_hidden_using_decl_mixed_6;
 
-template <typename T> int use(T);
+template<typename T> int use(T);
 void test_conflicting() {
   use(conflicting_hidden_using_decl);
   use(conflicting_hidden_using_decl_fn());

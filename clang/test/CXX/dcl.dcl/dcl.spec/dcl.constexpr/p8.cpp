@@ -9,8 +9,8 @@ struct S {
   int h();
   static constexpr int Sf();
   /*static*/ constexpr void *operator new(size_t) noexcept;
-  template <typename T> constexpr T tm(); // expected-warning {{C++14}}
-  template <typename T> static constexpr T ts();
+  template<typename T> constexpr T tm(); // expected-warning {{C++14}}
+  template<typename T> static constexpr T ts();
 };
 
 void f(const S &s) {
@@ -31,25 +31,25 @@ constexpr int S::h() { return 0; } // expected-warning {{C++14}}
 int S::h() { return 0; }
 constexpr int S::Sf() { return 2; }
 constexpr void *S::operator new(size_t) noexcept { return 0; }
-template <typename T> constexpr T S::tm() { return T(); } // expected-warning {{C++14}}
-template <typename T> constexpr T S::ts() { return T(); }
+template<typename T> constexpr T S::tm() { return T(); } // expected-warning {{C++14}}
+template<typename T> constexpr T S::ts() { return T(); }
 
 namespace std_example {
 
-class debug_flag {
-public:
-  explicit debug_flag(bool);
-  constexpr bool is_on() const; // ok (dr1684)
-private:
-  bool flag;
-};
+  class debug_flag {
+  public:
+    explicit debug_flag(bool);
+    constexpr bool is_on() const; // ok (dr1684)
+  private:
+    bool flag;
+  };
 
-constexpr int bar(int x, int y) // expected-note {{here}}
-{ return x + y + x * y; }
-int bar(int x, int y) // expected-error {{non-constexpr declaration of 'bar' follows constexpr declaration}}
-{ return x * 2 + 3 * y; }
+  constexpr int bar(int x, int y) // expected-note {{here}}
+    { return x + y + x*y; }
+  int bar(int x, int y) // expected-error {{non-constexpr declaration of 'bar' follows constexpr declaration}}
+    { return x * 2 + 3 * y; }
 
-} // namespace std_example
+}
 
 // The constexpr specifier is allowed for static member functions of non-literal types.
 class NonLiteralClass {

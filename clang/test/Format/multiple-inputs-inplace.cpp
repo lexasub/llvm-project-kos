@@ -5,4 +5,4 @@
 // RUN: FileCheck -strict-whitespace -input-file=%t-2.cpp %s
 
 // CHECK: {{^int\ \*i;}}
-int *i;
+ int   *  i  ;

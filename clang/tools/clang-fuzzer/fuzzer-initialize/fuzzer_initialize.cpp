@@ -23,20 +23,23 @@
 using namespace clang_fuzzer;
 using namespace llvm;
 
+
 namespace clang_fuzzer {
 
 static std::vector<const char *> CLArgs;
 
-const std::vector<const char *> &GetCLArgs() { return CLArgs; }
+const std::vector<const char *>& GetCLArgs() {
+  return CLArgs;
+}
 
-} // namespace clang_fuzzer
+}
 
 extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv) {
   InitializeAllTargets();
   InitializeAllTargetMCs();
   InitializeAllAsmPrinters();
   InitializeAllAsmParsers();
-
+  
   PassRegistry &Registry = *PassRegistry::getPassRegistry();
   initializeCore(Registry);
   initializeScalarOpts(Registry);

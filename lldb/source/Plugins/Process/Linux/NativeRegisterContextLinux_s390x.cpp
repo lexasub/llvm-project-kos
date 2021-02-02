@@ -64,10 +64,11 @@ static const uint32_t g_linux_regnums_s390x[] = {
     lldb_orig_r2_s390x, lldb_last_break_s390x, lldb_system_call_s390x,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
-static_assert(
-    (sizeof(g_linux_regnums_s390x) / sizeof(g_linux_regnums_s390x[0])) - 1 ==
-        k_num_linux_registers_s390x,
-    "g_linux_regnums_s390x has wrong number of register infos");
+static_assert((sizeof(g_linux_regnums_s390x) /
+               sizeof(g_linux_regnums_s390x[0])) -
+                      1 ==
+                  k_num_linux_registers_s390x,
+              "g_linux_regnums_s390x has wrong number of register infos");
 
 // Number of register sets provided by this context.
 enum { k_num_register_sets = 3 };
@@ -81,20 +82,20 @@ static const RegisterSet g_reg_sets_s390x[k_num_register_sets] = {
     {"Linux Operating System Data", "linux", k_num_linux_registers_s390x,
      g_linux_regnums_s390x},
 };
-} // namespace
+}
 
 #define REG_CONTEXT_SIZE (sizeof(s390_regs) + sizeof(s390_fp_regs) + 4)
 
 // Required ptrace defines.
 
-#define NT_S390_LAST_BREAK 0x306 /* s390 breaking event address */
+#define NT_S390_LAST_BREAK 0x306  /* s390 breaking event address */
 #define NT_S390_SYSTEM_CALL 0x307 /* s390 system call restart data */
 
 std::unique_ptr<NativeRegisterContextLinux>
 NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
     const ArchSpec &target_arch, NativeThreadProtocol &native_thread) {
   return std::make_unique<NativeRegisterContextLinux_s390x>(target_arch,
-                                                            native_thread);
+                                                             native_thread);
 }
 
 // NativeRegisterContextLinux_s390x members.

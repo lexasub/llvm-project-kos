@@ -16,7 +16,7 @@ class A {
 struct B {
   int i;
   void f() {
-    (void)[=] { // expected-note {{add an explicit capture of 'this'}}
+    (void) [=] { // expected-note {{add an explicit capture of 'this'}}
       return i; // expected-warning {{implicit capture of 'this' with a capture default of '=' is deprecated}}
     };
   }

@@ -51,7 +51,7 @@ void DarwinLogCallback(void *baton, uint32_t flags, const char *format,
   vsnprintf(buffer, sizeof(buffer), format, args);
   os_log_with_type(g_logger, log_type, "%{public}s", buffer);
 }
-} // namespace
+}
 
 DNBCallbackLog OsLogger::GetLogFunction() { return DarwinLogCallback; }
 
@@ -60,3 +60,4 @@ DNBCallbackLog OsLogger::GetLogFunction() { return DarwinLogCallback; }
 DNBCallbackLog OsLogger::GetLogFunction() { return nullptr; }
 
 #endif
+

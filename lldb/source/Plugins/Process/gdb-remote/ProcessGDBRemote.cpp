@@ -202,9 +202,11 @@ void ProcessGDBRemote::Terminate() {
   PluginManager::UnregisterPlugin(ProcessGDBRemote::CreateInstance);
 }
 
-lldb::ProcessSP ProcessGDBRemote::CreateInstance(
-    lldb::TargetSP target_sp, ListenerSP listener_sp,
-    const FileSpec *crash_file_path, bool can_connect) {
+lldb::ProcessSP
+ProcessGDBRemote::CreateInstance(lldb::TargetSP target_sp,
+                                 ListenerSP listener_sp,
+                                 const FileSpec *crash_file_path,
+                                 bool can_connect) {
   lldb::ProcessSP process_sp;
   if (crash_file_path == nullptr)
     process_sp = std::make_shared<ProcessGDBRemote>(target_sp, listener_sp);
@@ -2080,15 +2082,16 @@ ProcessGDBRemote::SetThreadStopInfo(StructuredData::Dictionary *thread_dict) {
       StructuredData::Dictionary *registers_dict = object->GetAsDictionary();
 
       if (registers_dict) {
-        registers_dict->ForEach([&expedited_register_map](
-                                    ConstString key,
-                                    StructuredData::Object *object) -> bool {
-          const uint32_t reg =
-              StringConvert::ToUInt32(key.GetCString(), UINT32_MAX, 10);
-          if (reg != UINT32_MAX)
-            expedited_register_map[reg] = std::string(object->GetStringValue());
-          return true; // Keep iterating through all array items
-        });
+        registers_dict->ForEach(
+            [&expedited_register_map](ConstString key,
+                                      StructuredData::Object *object) -> bool {
+              const uint32_t reg =
+                  StringConvert::ToUInt32(key.GetCString(), UINT32_MAX, 10);
+              if (reg != UINT32_MAX)
+                expedited_register_map[reg] =
+                    std::string(object->GetStringValue());
+              return true; // Keep iterating through all array items
+            });
       }
     } else if (key == g_key_memory) {
       StructuredData::Array *array = object->GetAsArray();
@@ -2357,8 +2360,8 @@ void ProcessGDBRemote::RefreshStateAfterStop() {
   // set.
   // Check to see if SetThreadStopInfo() filled in m_thread_ids?
   if (m_thread_ids.empty()) {
-    // No, we need to fetch the thread list manually
-    UpdateThreadIDList();
+      // No, we need to fetch the thread list manually
+      UpdateThreadIDList();
   }
 
   // We might set some stop info's so make sure the thread list is up to
@@ -3432,16 +3435,14 @@ Status ProcessGDBRemote::LaunchAndConnectToDebugserver(
     // On macOS 11, we need to support x86_64 applications translated to
     // arm64. We check whether a binary is translated and spawn the correct
     // debugserver accordingly.
-    int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID,
-                 static_cast<int>(process_info.GetProcessID())};
+    int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID,
+                  static_cast<int>(process_info.GetProcessID()) };
     struct kinfo_proc processInfo;
     size_t bufsize = sizeof(processInfo);
-    if (sysctl(mib, (unsigned)(sizeof(mib) / sizeof(int)), &processInfo,
-               &bufsize, NULL, 0) == 0 &&
-        bufsize > 0) {
+    if (sysctl(mib, (unsigned)(sizeof(mib)/sizeof(int)), &processInfo,
+               &bufsize, NULL, 0) == 0 && bufsize > 0) {
       if (processInfo.kp_proc.p_flag & P_TRANSLATED) {
-        FileSpec rosetta_debugserver(
-            "/Library/Apple/usr/libexec/oah/debugserver");
+        FileSpec rosetta_debugserver("/Library/Apple/usr/libexec/oah/debugserver");
         debugserver_launch_info.SetExecutableFile(rosetta_debugserver, false);
       }
     }
@@ -4294,9 +4295,8 @@ bool ParseRegisters(XMLNode feature_node, GdbServerTargetInfo &target_info,
 
   uint32_t reg_offset = LLDB_INVALID_INDEX32;
   feature_node.ForEachChildElementWithName(
-      "reg",
-      [&target_info, &dyn_reg_info, &reg_num_remote, &reg_num_local,
-       &reg_offset, &abi_sp](const XMLNode &reg_node) -> bool {
+      "reg", [&target_info, &dyn_reg_info, &reg_num_remote, &reg_num_local,
+              &reg_offset, &abi_sp](const XMLNode &reg_node) -> bool {
         std::string gdb_group;
         std::string gdb_type;
         ConstString reg_name;
@@ -4541,23 +4541,22 @@ bool ProcessGDBRemote::GetGDBServerRegisterInfoXMLAndProcess(
       XMLNode feature_node = xml_document.GetRootElement("feature");
       if (feature_node) {
         feature_nodes.push_back(feature_node);
-        feature_node.ForEachChildElement(
-            [&target_info](const XMLNode &node) -> bool {
-              llvm::StringRef name = node.GetName();
-              if (name == "xi:include" || name == "include") {
-                llvm::StringRef href = node.GetAttributeValue("href");
-                if (!href.empty())
-                  target_info.includes.push_back(href.str());
-              }
-              return true;
-            });
+        feature_node.ForEachChildElement([&target_info](
+                                        const XMLNode &node) -> bool {
+          llvm::StringRef name = node.GetName();
+          if (name == "xi:include" || name == "include") {
+            llvm::StringRef href = node.GetAttributeValue("href");
+            if (!href.empty())
+              target_info.includes.push_back(href.str());
+            }
+            return true;
+          });
       }
     }
 
     // If the target.xml includes an architecture entry like
     //   <architecture>i386:x86-64</architecture> (seen from VMWare ESXi)
-    //   <architecture>arm</architecture> (seen from Segger JLink on unspecified
-    //   arm board)
+    //   <architecture>arm</architecture> (seen from Segger JLink on unspecified arm board)
     // use that if we don't have anything better.
     if (!arch_to_use.IsValid() && !target_info.arch.empty()) {
       if (target_info.arch == "i386:x86-64") {
@@ -4663,11 +4662,13 @@ llvm::Expected<LoadedModuleInfoList> ProcessGDBRemote::GetLoadedModuleList() {
 
     root_element.ForEachChildElementWithName(
         "library", [log, &list](const XMLNode &library) -> bool {
+
           LoadedModuleInfoList::LoadedModuleInfo module;
 
           library.ForEachAttribute(
               [&module](const llvm::StringRef &name,
                         const llvm::StringRef &value) -> bool {
+
                 if (name == "name")
                   module.set_name(value.str());
                 else if (name == "lm") {

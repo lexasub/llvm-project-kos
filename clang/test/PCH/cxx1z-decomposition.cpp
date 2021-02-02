@@ -11,14 +11,12 @@
 #ifndef HEADER
 #define HEADER
 
-template <typename T> auto decomp(const T &t) {
+template<typename T> auto decomp(const T &t) {
   auto &[a, b] = t;
   return a + b;
 }
 
-struct Q {
-  int a, b;
-};
+struct Q { int a, b; };
 constexpr int foo(Q &&q) {
   auto &[a, b] = q;
   return a * 10 + b;

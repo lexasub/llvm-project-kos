@@ -13,13 +13,11 @@
 
 int main() {
   int a = 0;
-#pragma omp parallel for lastprivate(conditional \
-                                     : a)
+#pragma omp parallel for lastprivate(conditional: a)
   for (int i = 0; i < 10; ++i) {
     if (i < 5) {
       a = 0;
-#pragma omp parallel reduction(+ \
-                               : a) num_threads(10)
+#pragma omp parallel reduction(+:a) num_threads(10)
       a += i;
 #pragma omp atomic
       a += i;

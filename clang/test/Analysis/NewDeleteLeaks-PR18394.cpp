@@ -3,9 +3,9 @@
 
 class A {
 public:
-  void f(){};
+  void f() {};
   ~A() {
-    for (int i = 0; i < 3; i++)
+    for (int i=0; i<3; i++)
       f();
   }
 };

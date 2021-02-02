@@ -10,9 +10,10 @@
 
 // Test that readdir64 is intercepted as well as readdir.
 
+#include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
-#include <sys/types.h>
+
 
 int main(void) {
   DIR *dir = opendir(".");

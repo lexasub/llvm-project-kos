@@ -22,22 +22,22 @@
 
 // Test target codegen - host bc file has to be created first. (no significant differences with host version of target region)
 // RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm-bc %s -o %t-ppc-host.bc
-// RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix CHECK --check-prefix CHECK-64 --check-prefix TCHECK --check-prefix TCHECK-64
+// RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix CHECK --check-prefix CHECK-64 --check-prefix TCHECK --check-prefix TCHECK-64 
 // RUN: %clang_cc1 -DCHECK -fopenmp -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-pch -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o %t %s
 // RUN: %clang_cc1 -DCHECK -fopenmp -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -include-pch %t -verify %s -emit-llvm -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix CHECK --check-prefix CHECK-64 --check-prefix TCHECK --check-prefix TCHECK-64
-// RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm-bc %s -o %t-x86-host.bc
+// RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm-bc %s -o %t-x86-host.bc 
 // RUN: %clang_cc1 -DCHECK -verify -fopenmp -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix CHECK --check-prefix CHECK-32 --check-prefix TCHECK --check-prefix TCHECK-32
 // RUN: %clang_cc1 -DCHECK -fopenmp -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -o %t %s
 // RUN: %clang_cc1 -DCHECK -fopenmp -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -std=c++11 -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -include-pch %t -verify %s -emit-llvm -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix CHECK --check-prefix CHECK-32 --check-prefix TCHECK --check-prefix TCHECK-32
 
 // RUN: %clang_cc1 -DLAMBDA -verify -fopenmp -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm-bc %s -o %t-ppc-host.bc
-// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix LAMBDA --check-prefix LAMBDA-64 --check-prefix TLAMBDA --check-prefix TLAMBDA-64
+// RUN: %clang_cc1 -DLAMBDA -verify -fopenmp -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix LAMBDA --check-prefix LAMBDA-64 --check-prefix TLAMBDA --check-prefix TLAMBDA-64 
 
 // RUN: %clang_cc1 -DCHECK -verify -fopenmp-simd -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm-bc %s -o %t-ppc-host.bc
 // RUN: %clang_cc1 -DCHECK -verify -fopenmp-simd -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix SIMD-ONLY0
 // RUN: %clang_cc1 -DCHECK -fopenmp-simd -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-pch -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -o %t %s
 // RUN: %clang_cc1 -DCHECK -fopenmp-simd -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -fopenmp-is-device -fopenmp-host-ir-file-path %t-ppc-host.bc -include-pch %t -verify %s -emit-llvm -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix SIMD-ONLY0
-// RUN: %clang_cc1 -DCHECK -verify -fopenmp-simd -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm-bc %s -o %t-x86-host.bc
+// RUN: %clang_cc1 -DCHECK -verify -fopenmp-simd -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm-bc %s -o %t-x86-host.bc 
 // RUN: %clang_cc1 -DCHECK -verify -fopenmp-simd -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix SIMD-ONLY0
 // RUN: %clang_cc1 -DCHECK -fopenmp-simd -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -o %t %s
 // RUN: %clang_cc1 -DCHECK -fopenmp-simd -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -std=c++11 -fopenmp-is-device -fopenmp-host-ir-file-path %t-x86-host.bc -include-pch %t -verify %s -emit-llvm -o - | FileCheck -allow-deprecated-dag-overlap  %s --check-prefix SIMD-ONLY0
@@ -107,84 +107,84 @@ int main() {
   // HLAMBDA-LABEL: @main
   // HLAMBDA: call void [[OUTER_LAMBDA:@.+]](
   [&]() {
-  // HLAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-  // HLAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 0,
-  // HLAMBDA: call void @[[LOFFL1:.+]](
-  // HLAMBDA:  ret
+    // HLAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+    // HLAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 0,
+    // HLAMBDA: call void @[[LOFFL1:.+]](
+    // HLAMBDA:  ret
 #pragma omp target teams distribute parallel for private(g, g1, sivar)
-    for (int i = 0; i < 2; ++i) {
-      // HLAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]]()
-      // TLAMBDA: define{{.*}} void @[[LOFFL1:.+]]()
-      // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}} @[[LOUTL1:.+]] to {{.+}})
-      // LAMBDA: ret void
+  for (int i = 0; i < 2; ++i) {
+    // HLAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]]()
+    // TLAMBDA: define{{.*}} void @[[LOFFL1:.+]]()
+    // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 0, {{.+}} @[[LOUTL1:.+]] to {{.+}})
+    // LAMBDA: ret void
 
-      // LAMBDA: define internal void @[[LOUTL1]]({{.+}})
-      // Skip global, bound tid and loop vars
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: [[G_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[G1_PRIV:%.+]] = alloca i{{[0-9]+}}
-      // LAMBDA: [[TMP:%.+]] = alloca i{{[0-9]+}}*,
-      // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: store{{.+}} [[G1_PRIV]], {{.+}} [[TMP]],
+    // LAMBDA: define internal void @[[LOUTL1]]({{.+}})
+    // Skip global, bound tid and loop vars
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: [[G_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[G1_PRIV:%.+]] = alloca i{{[0-9]+}}
+    // LAMBDA: [[TMP:%.+]] = alloca i{{[0-9]+}}*,
+    // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: store{{.+}} [[G1_PRIV]], {{.+}} [[TMP]],
 
-      g = 1;
-      g1 = 1;
-      sivar = 2;
-      // LAMBDA: call void @__kmpc_for_static_init_4(
-      // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
-      // LAMBDA: call void @__kmpc_for_static_fini(
-      // LAMBDA: ret void
+    g = 1;
+    g1 = 1;
+    sivar = 2;
+    // LAMBDA: call void @__kmpc_for_static_init_4(
+    // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
+    // LAMBDA: call void @__kmpc_for_static_fini(
+    // LAMBDA: ret void
 
-      // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
-      // Skip global, bound tid and loop vars
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: [[G_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[G1_PRIV:%.+]] = alloca i{{[0-9]+}}
-      // LAMBDA: [[TMP:%.+]] = alloca i{{[0-9]+}}*,
-      // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: store{{.+}} [[G1_PRIV]], {{.+}} [[TMP]],
-      // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G_PRIV]],
-      // LAMBDA-DAG: store{{.+}} 2, {{.+}} [[SIVAR_PRIV]],
-      // LAMBDA-DAG: [[G1_REF:%.+]] = load{{.+}}, {{.+}} [[TMP]],
-      // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G1_REF]],
-      // LAMBDA: call void [[INNER_LAMBDA:@.+]](
-      // LAMBDA: call void @__kmpc_for_static_fini(
-      // LAMBDA: ret void
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        g = 2;
-        g1 = 2;
-        sivar = 4;
-        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+    // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
+    // Skip global, bound tid and loop vars
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: [[G_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[G1_PRIV:%.+]] = alloca i{{[0-9]+}}
+    // LAMBDA: [[TMP:%.+]] = alloca i{{[0-9]+}}*,
+    // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: store{{.+}} [[G1_PRIV]], {{.+}} [[TMP]],
+    // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G_PRIV]],
+    // LAMBDA-DAG: store{{.+}} 2, {{.+}} [[SIVAR_PRIV]],
+    // LAMBDA-DAG: [[G1_REF:%.+]] = load{{.+}}, {{.+}} [[TMP]],
+    // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G1_REF]],
+    // LAMBDA: call void [[INNER_LAMBDA:@.+]](
+    // LAMBDA: call void @__kmpc_for_static_fini(
+    // LAMBDA: ret void
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      g = 2;
+      g1 = 2;
+      sivar = 4;
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
 
-        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
-        // LAMBDA: [[G1_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-        // LAMBDA: [[G1_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G1_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G1_REF]]
-        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
-        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
-      }();
-    }
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
+      // LAMBDA: [[G1_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+      // LAMBDA: [[G1_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G1_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G1_REF]]
+      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
+      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
+    }();
+  }
   }();
   return 0;
 #else
@@ -364,5 +364,6 @@ int main() {
 // CHECK-DAG: {{.+}} = {{.+}} [[TMP]]
 // CHECK: call void @__kmpc_for_static_fini(
 // CHECK: ret void
+
 
 #endif

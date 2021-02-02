@@ -67,7 +67,8 @@ public:
 
   ClangExpressionVariable(const lldb::ValueObjectSP &valobj_sp);
 
-  ClangExpressionVariable(ExecutionContextScope *exe_scope, ConstString name,
+  ClangExpressionVariable(ExecutionContextScope *exe_scope,
+                          ConstString name,
                           const TypeFromUser &user_type,
                           lldb::ByteOrder byte_order, uint32_t addr_byte_size);
 
@@ -116,18 +117,18 @@ public:
   class ParserVars {
   public:
     ParserVars()
-        : m_named_decl(nullptr), m_llvm_value(nullptr), m_lldb_value(),
-          m_lldb_var(), m_lldb_sym(nullptr) {}
+        : m_named_decl(nullptr), m_llvm_value(nullptr),
+          m_lldb_value(), m_lldb_var(), m_lldb_sym(nullptr) {}
 
     const clang::NamedDecl
         *m_named_decl;         ///< The Decl corresponding to this variable
     llvm::Value *m_llvm_value; ///< The IR value corresponding to this variable;
-                               /// usually a GlobalValue
+                               ///usually a GlobalValue
     lldb_private::Value
         m_lldb_value;            ///< The value found in LLDB for this variable
     lldb::VariableSP m_lldb_var; ///< The original variable for this variable
     const lldb_private::Symbol *m_lldb_sym; ///< The original symbol for this
-                                            /// variable, if it was a symbol
+                                            ///variable, if it was a symbol
   };
 
 private:

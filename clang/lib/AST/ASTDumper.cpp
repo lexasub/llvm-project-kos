@@ -212,7 +212,8 @@ LLVM_DUMP_METHOD void DeclContext::dumpLookups() const {
   dumpLookups(llvm::errs());
 }
 
-LLVM_DUMP_METHOD void DeclContext::dumpLookups(raw_ostream &OS, bool DumpDecls,
+LLVM_DUMP_METHOD void DeclContext::dumpLookups(raw_ostream &OS,
+                                               bool DumpDecls,
                                                bool Deserialize) const {
   const DeclContext *DC = this;
   while (!DC->isTranslationUnit())

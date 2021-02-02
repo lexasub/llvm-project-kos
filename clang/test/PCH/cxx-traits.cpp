@@ -12,7 +12,7 @@ bool _Is_pod_comparator = n::__is_pod<int>::__value;
 bool _Is_empty_check = n::__is_empty<int>::__value;
 
 bool default_construct_int = n::is_trivially_constructible<int>::value;
-bool copy_construct_int = n::is_trivially_constructible<int, const int &>::value;
+bool copy_construct_int = n::is_trivially_constructible<int, const int&>::value;
 
 // The built-ins should still work too:
 bool _is_abstract_result = __is_abstract(int);

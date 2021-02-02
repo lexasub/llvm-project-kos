@@ -19,20 +19,21 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using month = std::chrono::month;
-  using month_day_last = std::chrono::month_day_last;
+int main(int, char**)
+{
+    using month     = std::chrono::month;
+    using month_day_last = std::chrono::month_day_last;
 
-  ASSERT_NOEXCEPT(std::declval<const month_day_last>().month());
-  ASSERT_SAME_TYPE(month,
-                   decltype(std::declval<const month_day_last>().month()));
+    ASSERT_NOEXCEPT(                 std::declval<const month_day_last>().month());
+    ASSERT_SAME_TYPE(month, decltype(std::declval<const month_day_last>().month()));
 
-  static_assert(month_day_last{month{}}.month() == month{}, "");
+    static_assert( month_day_last{month{}}.month() == month{}, "");
 
-  for (unsigned i = 1; i <= 50; ++i) {
-    month_day_last mdl(month{i});
-    assert(static_cast<unsigned>(mdl.month()) == i);
-  }
+    for (unsigned i = 1; i <= 50; ++i)
+    {
+        month_day_last mdl(month{i});
+        assert( static_cast<unsigned>(mdl.month()) == i);
+    }
 
   return 0;
 }

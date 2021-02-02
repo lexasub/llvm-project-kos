@@ -17,8 +17,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  assert(std::char_traits<wchar_t>::eof() == WEOF);
+int main(int, char**)
+{
+    assert(std::char_traits<wchar_t>::eof() == WEOF);
 
   return 0;
 }

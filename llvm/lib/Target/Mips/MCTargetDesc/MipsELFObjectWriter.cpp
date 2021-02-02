@@ -179,7 +179,8 @@ static FindBestPredicateResult isMatchingReloc(const MipsRelocationEntry &X,
                                                const ELFRelocationEntry &R,
                                                unsigned MatchingType) {
   if (X.R.Type == MatchingType && X.R.OriginalSymbol == R.OriginalSymbol) {
-    if (!X.Matched && X.R.OriginalAddend == R.OriginalAddend)
+    if (!X.Matched &&
+        X.R.OriginalAddend == R.OriginalAddend)
       return FindBest_PerfectMatch;
     else if (X.R.OriginalAddend >= R.OriginalAddend)
       return FindBest_Match;
@@ -465,12 +466,12 @@ void MipsELFObjectWriter::sortRelocs(const MCAssembler &Asm,
     // Find the best matching relocation for the current high part.
     // See isMatchingReloc for a description of a matching relocation and
     // compareMatchingRelocs for a description of what 'best' means.
-    auto InsertionPoint = find_best(
-        Sorted.begin(), Sorted.end(),
-        [&R, &MatchingType](const MipsRelocationEntry &X) {
-          return isMatchingReloc(X, R, MatchingType);
-        },
-        compareMatchingRelocs);
+    auto InsertionPoint =
+        find_best(Sorted.begin(), Sorted.end(),
+                  [&R, &MatchingType](const MipsRelocationEntry &X) {
+                    return isMatchingReloc(X, R, MatchingType);
+                  },
+                  compareMatchingRelocs);
 
     // If we matched then insert the high part in front of the match and mark
     // both relocations as being involved in a match. We only mark the high
@@ -665,5 +666,5 @@ llvm::createMipsELFObjectWriter(const Triple &TT, bool IsN32) {
   bool IsN64 = TT.isArch64Bit() && !IsN32;
   bool HasRelocationAddend = TT.isArch64Bit();
   return std::make_unique<MipsELFObjectWriter>(OSABI, HasRelocationAddend,
-                                               IsN64);
+                                                IsN64);
 }

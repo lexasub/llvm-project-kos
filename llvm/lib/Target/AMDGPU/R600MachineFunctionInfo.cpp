@@ -12,4 +12,4 @@
 using namespace llvm;
 
 R600MachineFunctionInfo::R600MachineFunctionInfo(const MachineFunction &MF)
-    : AMDGPUMachineFunction(MF) {}
+  : AMDGPUMachineFunction(MF) { }

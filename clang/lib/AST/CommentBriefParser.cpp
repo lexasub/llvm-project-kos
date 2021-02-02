@@ -14,8 +14,8 @@ namespace comments {
 
 namespace {
 inline bool isWhitespace(char C) {
-  return C == ' ' || C == '\n' || C == '\r' || C == '\t' || C == '\f' ||
-         C == '\v';
+  return C == ' ' || C == '\n' || C == '\r' ||
+         C == '\t' || C == '\f' || C == '\v';
 }
 
 /// Convert all whitespace into spaces, remove leading and trailing spaces,
@@ -23,7 +23,8 @@ inline bool isWhitespace(char C) {
 void cleanupBrief(std::string &S) {
   bool PrevWasSpace = true;
   std::string::iterator O = S.begin();
-  for (std::string::iterator I = S.begin(), E = S.end(); I != E; ++I) {
+  for (std::string::iterator I = S.begin(), E = S.end();
+       I != E; ++I) {
     const char C = *I;
     if (isWhitespace(C)) {
       if (!PrevWasSpace) {
@@ -43,8 +44,8 @@ void cleanupBrief(std::string &S) {
 }
 
 bool isWhitespace(StringRef Text) {
-  for (StringRef::const_iterator I = Text.begin(), E = Text.end(); I != E;
-       ++I) {
+  for (StringRef::const_iterator I = Text.begin(), E = Text.end();
+       I != E; ++I) {
     if (!isWhitespace(*I))
       return false;
   }
@@ -52,8 +53,8 @@ bool isWhitespace(StringRef Text) {
 }
 } // unnamed namespace
 
-BriefParser::BriefParser(Lexer &L, const CommandTraits &Traits)
-    : L(L), Traits(Traits) {
+BriefParser::BriefParser(Lexer &L, const CommandTraits &Traits) :
+    L(L), Traits(Traits) {
   // Get lookahead token.
   ConsumeToken();
 }
@@ -148,3 +149,5 @@ std::string BriefParser::Parse() {
 
 } // end namespace comments
 } // end namespace clang
+
+

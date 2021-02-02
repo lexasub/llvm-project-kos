@@ -66,8 +66,8 @@ private:
   }
 
   bool isStackPointerFirstOperand(const MCInst &MI) {
-    return (MI.getNumOperands() > 0 && MI.getOperand(0).isReg() &&
-            MI.getOperand(0).getReg() == Mips::SP);
+    return (MI.getNumOperands() > 0 && MI.getOperand(0).isReg()
+            && MI.getOperand(0).getReg() == Mips::SP);
   }
 
   bool isCall(const MCInst &MI, bool *IsIndirectCall) {
@@ -156,12 +156,13 @@ public:
     // Sandbox loads, stores and SP changes.
     unsigned AddrIdx = 0;
     bool IsStore = false;
-    bool IsMemAccess =
-        isBasePlusOffsetMemoryAccess(Inst.getOpcode(), &AddrIdx, &IsStore);
+    bool IsMemAccess = isBasePlusOffsetMemoryAccess(Inst.getOpcode(), &AddrIdx,
+                                                    &IsStore);
     bool IsSPFirstOperand = isStackPointerFirstOperand(Inst);
     if (IsMemAccess || IsSPFirstOperand) {
-      bool MaskBefore = (IsMemAccess && baseRegNeedsLoadStoreMask(
-                                            Inst.getOperand(AddrIdx).getReg()));
+      bool MaskBefore = (IsMemAccess
+                         && baseRegNeedsLoadStoreMask(Inst.getOperand(AddrIdx)
+                                                          .getReg()));
       bool MaskAfter = IsSPFirstOperand && !IsStore;
       if (MaskBefore || MaskAfter) {
         if (PendingCall)

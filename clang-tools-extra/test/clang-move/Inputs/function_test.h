@@ -2,13 +2,13 @@ void f();
 
 inline int g() { return 0; }
 
-template <typename T>
+template<typename T>
 void h(T t) {}
 
-template <>
+template<>
 void h(int t) {}
 
 class A {
-public:
+ public:
   void f();
 };

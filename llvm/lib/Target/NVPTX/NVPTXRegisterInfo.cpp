@@ -90,7 +90,7 @@ std::string getNVPTXRegClassStr(TargetRegisterClass const *RC) {
     return "!Special!";
   return "INTERNAL";
 }
-} // namespace llvm
+}
 
 NVPTXRegisterInfo::NVPTXRegisterInfo() : NVPTXGenRegisterInfo(0) {}
 
@@ -100,7 +100,7 @@ NVPTXRegisterInfo::NVPTXRegisterInfo() : NVPTXGenRegisterInfo(0) {}
 /// NVPTX Callee Saved Registers
 const MCPhysReg *
 NVPTXRegisterInfo::getCalleeSavedRegs(const MachineFunction *) const {
-  static const MCPhysReg CalleeSavedRegs[] = {0};
+  static const MCPhysReg CalleeSavedRegs[] = { 0 };
   return CalleeSavedRegs;
 }
 

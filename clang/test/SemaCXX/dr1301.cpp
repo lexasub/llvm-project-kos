@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -std=c++11 -verify %s
 struct A { // expected-note 2{{candidate}}
-  A(int);  // expected-note {{candidate}}
+  A(int); // expected-note {{candidate}}
   int n;
 };
 int a = A().n; // expected-error {{no matching constructor}}
@@ -18,7 +18,7 @@ int c = C().b.n; // expected-error {{call to implicitly-deleted default}}
 
 struct D {
   D() = default; // expected-note {{here}} expected-warning {{implicitly deleted}}
-  B b;           // expected-note 2{{'b' has a deleted default constructor}}
+  B b; // expected-note 2{{'b' has a deleted default constructor}}
 };
 int d = D().b.n; // expected-error {{call to implicitly-deleted default}}
 
@@ -41,7 +41,6 @@ int g = G().f.n; // expected-error {{call to implicitly-deleted default}}
 
 struct H {
   int n;
-
 private:
   H(); // expected-note {{here}}
 };
@@ -57,12 +56,12 @@ struct J {
   virtual int f();
   int n;
 };
-int j1 = J().n;   // ok
+int j1 = J().n; // ok
 int j2 = J().f(); // ok
 
 union K {
   J j; // expected-note 2{{non-trivial default constructor}}
   int m;
 };
-int k1 = K().j.n;   // expected-error {{call to implicitly-deleted default}}
+int k1 = K().j.n; // expected-error {{call to implicitly-deleted default}}
 int k2 = K().j.f(); // expected-error {{call to implicitly-deleted default}}

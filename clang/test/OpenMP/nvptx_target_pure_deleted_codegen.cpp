@@ -14,7 +14,7 @@
 // CHECK-DAG: @_ZTV4Base = linkonce_odr hidden unnamed_addr constant { [3 x i8*] } zeroinitializer
 // CHECK-NOT: class_type_info
 class Base {
-public:
+  public:
   virtual void foo() = 0;
 };
 
@@ -27,8 +27,8 @@ public:
 void target() {
 #pragma omp target
   {
-    Derived D;
-    D.foo();
+  Derived D;
+  D.foo();
   }
 }
 

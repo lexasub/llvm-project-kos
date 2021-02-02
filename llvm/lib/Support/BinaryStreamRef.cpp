@@ -113,6 +113,7 @@ WritableBinaryStreamRef::WritableBinaryStreamRef(MutableArrayRef<uint8_t> Data,
     : BinaryStreamRefBase(std::make_shared<MutableArrayRefImpl>(Data, Endian),
                           0, Data.size()) {}
 
+
 Error WritableBinaryStreamRef::writeBytes(uint32_t Offset,
                                           ArrayRef<uint8_t> Data) const {
   if (auto EC = checkOffsetForWrite(Offset, Data.size()))

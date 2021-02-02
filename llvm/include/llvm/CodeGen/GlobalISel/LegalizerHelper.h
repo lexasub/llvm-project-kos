@@ -162,14 +162,14 @@ public:
   Register widenWithUnmerge(LLT WideTy, Register OrigReg);
 
 private:
-  LegalizeResult widenScalarMergeValues(MachineInstr &MI, unsigned TypeIdx,
-                                        LLT WideTy);
-  LegalizeResult widenScalarUnmergeValues(MachineInstr &MI, unsigned TypeIdx,
-                                          LLT WideTy);
-  LegalizeResult widenScalarExtract(MachineInstr &MI, unsigned TypeIdx,
-                                    LLT WideTy);
-  LegalizeResult widenScalarInsert(MachineInstr &MI, unsigned TypeIdx,
-                                   LLT WideTy);
+  LegalizeResult
+  widenScalarMergeValues(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
+  LegalizeResult
+  widenScalarUnmergeValues(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
+  LegalizeResult
+  widenScalarExtract(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
+  LegalizeResult
+  widenScalarInsert(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
   LegalizeResult widenScalarAddSubOverflow(MachineInstr &MI, unsigned TypeIdx,
                                            LLT WideTy);
   LegalizeResult widenScalarAddSubShlSat(MachineInstr &MI, unsigned TypeIdx,
@@ -182,7 +182,8 @@ private:
                     SmallVectorImpl<Register> &VRegs);
 
   /// Version which handles irregular splits.
-  bool extractParts(Register Reg, LLT RegTy, LLT MainTy, LLT &LeftoverTy,
+  bool extractParts(Register Reg, LLT RegTy, LLT MainTy,
+                    LLT &LeftoverTy,
                     SmallVectorImpl<Register> &VRegs,
                     SmallVectorImpl<Register> &LeftoverVRegs);
 
@@ -195,16 +196,16 @@ private:
   ///
   /// If \p ResultTy does not evenly break into \p PartTy sized pieces, the
   /// remainder must be specified with \p LeftoverRegs of type \p LeftoverTy.
-  void insertParts(Register DstReg, LLT ResultTy, LLT PartTy,
-                   ArrayRef<Register> PartRegs, LLT LeftoverTy = LLT(),
-                   ArrayRef<Register> LeftoverRegs = {});
+  void insertParts(Register DstReg, LLT ResultTy,
+                   LLT PartTy, ArrayRef<Register> PartRegs,
+                   LLT LeftoverTy = LLT(), ArrayRef<Register> LeftoverRegs = {});
 
   /// Unmerge \p SrcReg into smaller sized values, and append them to \p
   /// Parts. The elements of \p Parts will be the greatest common divisor type
   /// of \p DstTy, \p NarrowTy and the type of \p SrcReg. This will compute and
   /// return the GCD type.
-  LLT extractGCDType(SmallVectorImpl<Register> &Parts, LLT DstTy, LLT NarrowTy,
-                     Register SrcReg);
+  LLT extractGCDType(SmallVectorImpl<Register> &Parts, LLT DstTy,
+                     LLT NarrowTy, Register SrcReg);
 
   /// Unmerge \p SrcReg into \p GCDTy typed registers. This will append all of
   /// the unpacked registers to \p Parts. This version is if the common unmerge
@@ -268,20 +269,19 @@ public:
   /// different element type. All type indexes must have the same number of
   /// elements.
   LegalizeResult fewerElementsVectorMultiEltType(MachineInstr &MI,
-                                                 unsigned TypeIdx,
-                                                 LLT NarrowTy);
+                                                 unsigned TypeIdx, LLT NarrowTy);
 
   LegalizeResult fewerElementsVectorCasts(MachineInstr &MI, unsigned TypeIdx,
                                           LLT NarrowTy);
 
-  LegalizeResult fewerElementsVectorCmp(MachineInstr &MI, unsigned TypeIdx,
-                                        LLT NarrowTy);
+  LegalizeResult
+  fewerElementsVectorCmp(MachineInstr &MI, unsigned TypeIdx, LLT NarrowTy);
 
-  LegalizeResult fewerElementsVectorSelect(MachineInstr &MI, unsigned TypeIdx,
-                                           LLT NarrowTy);
+  LegalizeResult
+  fewerElementsVectorSelect(MachineInstr &MI, unsigned TypeIdx, LLT NarrowTy);
 
-  LegalizeResult fewerElementsVectorPhi(MachineInstr &MI, unsigned TypeIdx,
-                                        LLT NarrowTy);
+  LegalizeResult fewerElementsVectorPhi(MachineInstr &MI,
+                                        unsigned TypeIdx, LLT NarrowTy);
 
   LegalizeResult moreElementsVectorPhi(MachineInstr &MI, unsigned TypeIdx,
                                        LLT MoreTy);
@@ -295,8 +295,8 @@ public:
                                                            unsigned TypeIdx,
                                                            LLT NarrowTy);
 
-  LegalizeResult reduceLoadStoreWidth(MachineInstr &MI, unsigned TypeIdx,
-                                      LLT NarrowTy);
+  LegalizeResult
+  reduceLoadStoreWidth(MachineInstr &MI, unsigned TypeIdx, LLT NarrowTy);
 
   /// Legalize an instruction by reducing the operation width, either by
   /// narrowing the type of the operation or by reducing the number of elements
@@ -308,16 +308,15 @@ public:
   LegalizeResult reduceOperationWidth(MachineInstr &MI, unsigned TypeIdx,
                                       LLT NarrowTy);
 
-  LegalizeResult fewerElementsVectorSextInReg(MachineInstr &MI,
-                                              unsigned TypeIdx, LLT NarrowTy);
+  LegalizeResult fewerElementsVectorSextInReg(MachineInstr &MI, unsigned TypeIdx,
+                                              LLT NarrowTy);
 
   LegalizeResult narrowScalarShiftByConstant(MachineInstr &MI, const APInt &Amt,
                                              LLT HalfTy, LLT ShiftAmtTy);
 
   LegalizeResult narrowScalarShift(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
   LegalizeResult narrowScalarMul(MachineInstr &MI, LLT Ty);
-  LegalizeResult narrowScalarExtract(MachineInstr &MI, unsigned TypeIdx,
-                                     LLT Ty);
+  LegalizeResult narrowScalarExtract(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
   LegalizeResult narrowScalarInsert(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
 
   LegalizeResult narrowScalarBasic(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
@@ -372,6 +371,7 @@ public:
   LegalizeResult lowerReadWriteRegister(MachineInstr &MI);
   LegalizeResult lowerSMULH_UMULH(MachineInstr &MI);
   LegalizeResult lowerSelect(MachineInstr &MI);
+
 };
 
 /// Helper function that creates a libcall to the given \p Name using the given

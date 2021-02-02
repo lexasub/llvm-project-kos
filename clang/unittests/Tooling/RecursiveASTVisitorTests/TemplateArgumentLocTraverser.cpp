@@ -1,6 +1,4 @@
-//===-
-//unittest/Tooling/RecursiveASTVisitorTests/TemplateArgumentLocTraverser.cpp
-//-===//
+//===- unittest/Tooling/RecursiveASTVisitorTests/TemplateArgumentLocTraverser.cpp -===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -15,7 +13,7 @@ using namespace clang;
 namespace {
 
 class TemplateArgumentLocTraverser
-    : public ExpectedLocationVisitor<TemplateArgumentLocTraverser> {
+  : public ExpectedLocationVisitor<TemplateArgumentLocTraverser> {
 public:
   bool TraverseTemplateArgumentLoc(const TemplateArgumentLoc &ArgLoc) {
     std::string ArgStr;
@@ -24,18 +22,18 @@ public:
 
     Arg.print(Context->getPrintingPolicy(), Stream);
     Match(Stream.str(), ArgLoc.getLocation());
-    return ExpectedLocationVisitor<
-        TemplateArgumentLocTraverser>::TraverseTemplateArgumentLoc(ArgLoc);
+    return ExpectedLocationVisitor<TemplateArgumentLocTraverser>::
+      TraverseTemplateArgumentLoc(ArgLoc);
   }
 };
 
 TEST(RecursiveASTVisitor, VisitsClassTemplateTemplateParmDefaultArgument) {
   TemplateArgumentLocTraverser Visitor;
   Visitor.ExpectMatch("X", 2, 40);
-  EXPECT_TRUE(
-      Visitor.runOver("template<typename T> class X;\n"
-                      "template<template <typename> class T = X> class Y;\n"
-                      "template<template <typename> class T> class Y {};\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template<typename T> class X;\n"
+    "template<template <typename> class T = X> class Y;\n"
+    "template<template <typename> class T> class Y {};\n"));
 }
 
 } // end anonymous namespace

@@ -9,11 +9,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "TableGenBackends.h"
+#include "llvm/TableGen/Error.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/TableGen/Error.h"
 #include "llvm/TableGen/Record.h"
 #include "llvm/TableGen/TableGenBackend.h"
 #include <cctype>
@@ -25,7 +25,7 @@ using namespace llvm;
 namespace {
 struct DocumentedOption {
   Record *Option;
-  std::vector<Record *> Aliases;
+  std::vector<Record*> Aliases;
 };
 struct DocumentedGroup;
 struct Documentation {
@@ -42,11 +42,11 @@ Documentation extractDocumentation(RecordKeeper &Records) {
 
   // Build the tree of groups. The root in the tree is the fake option group
   // (Record*)nullptr, which contains all top-level groups and options.
-  std::map<Record *, std::vector<Record *>> OptionsInGroup;
-  std::map<Record *, std::vector<Record *>> GroupsInGroup;
-  std::map<Record *, std::vector<Record *>> Aliases;
+  std::map<Record*, std::vector<Record*> > OptionsInGroup;
+  std::map<Record*, std::vector<Record*> > GroupsInGroup;
+  std::map<Record*, std::vector<Record*> > Aliases;
 
-  std::map<std::string, Record *> OptionsByName;
+  std::map<std::string, Record*> OptionsByName;
   for (Record *R : Records.getAllDerivedDefinitions("Option"))
     OptionsByName[std::string(R->getValueAsString("Name"))] = R;
 
@@ -54,7 +54,7 @@ Documentation extractDocumentation(RecordKeeper &Records) {
     return R->getValue("DocFlatten") && R->getValueAsBit("DocFlatten");
   };
 
-  auto SkipFlattened = [&](Record *R) -> Record * {
+  auto SkipFlattened = [&](Record *R) -> Record* {
     while (R && Flatten(R)) {
       auto *G = dyn_cast<DefInit>(R->getValueInit("Group"));
       if (!G)
@@ -87,8 +87,7 @@ Documentation extractDocumentation(RecordKeeper &Records) {
         Aliases[OptionsByName[Name.substr(3)]].push_back(R);
         continue;
       }
-      if (Name.substr(1, 3) == "no-" &&
-          OptionsByName[Name[0] + Name.substr(4)]) {
+      if (Name.substr(1, 3) == "no-" && OptionsByName[Name[0] + Name.substr(4)]) {
         Aliases[OptionsByName[Name[0] + Name.substr(4)]].push_back(R);
         continue;
       }
@@ -139,13 +138,13 @@ Documentation extractDocumentation(RecordKeeper &Records) {
 }
 
 // Get the first and successive separators to use for an OptionKind.
-std::pair<StringRef, StringRef> getSeparatorsForKind(const Record *OptionKind) {
+std::pair<StringRef,StringRef> getSeparatorsForKind(const Record *OptionKind) {
   return StringSwitch<std::pair<StringRef, StringRef>>(OptionKind->getName())
-      .Cases("KIND_JOINED", "KIND_JOINED_OR_SEPARATE",
-             "KIND_JOINED_AND_SEPARATE", "KIND_REMAINING_ARGS_JOINED",
-             {"", " "})
-      .Case("KIND_COMMAJOINED", {"", ","})
-      .Default({" ", " "});
+    .Cases("KIND_JOINED", "KIND_JOINED_OR_SEPARATE",
+           "KIND_JOINED_AND_SEPARATE",
+           "KIND_REMAINING_ARGS_JOINED", {"", " "})
+    .Case("KIND_COMMAJOINED", {"", ","})
+    .Default({" ", " "});
 }
 
 const unsigned UnlimitedArgs = unsigned(-1);
@@ -154,12 +153,12 @@ const unsigned UnlimitedArgs = unsigned(-1);
 // arguments are accepted.
 unsigned getNumArgsForKind(Record *OptionKind, const Record *Option) {
   return StringSwitch<unsigned>(OptionKind->getName())
-      .Cases("KIND_JOINED", "KIND_JOINED_OR_SEPARATE", "KIND_SEPARATE", 1)
-      .Cases("KIND_REMAINING_ARGS", "KIND_REMAINING_ARGS_JOINED",
-             "KIND_COMMAJOINED", UnlimitedArgs)
-      .Case("KIND_JOINED_AND_SEPARATE", 2)
-      .Case("KIND_MULTIARG", Option->getValueAsInt("NumArgs"))
-      .Default(0);
+    .Cases("KIND_JOINED", "KIND_JOINED_OR_SEPARATE", "KIND_SEPARATE", 1)
+    .Cases("KIND_REMAINING_ARGS", "KIND_REMAINING_ARGS_JOINED",
+           "KIND_COMMAJOINED", UnlimitedArgs)
+    .Case("KIND_JOINED_AND_SEPARATE", 2)
+    .Case("KIND_MULTIARG", Option->getValueAsInt("NumArgs"))
+    .Default(0);
 }
 
 bool hasFlag(const Record *OptionOrGroup, StringRef OptionFlag) {
@@ -266,15 +265,15 @@ void emitOptionName(StringRef Prefix, const Record *Option, raw_ostream &OS) {
     }
   }
 
-  emitOptionWithArgs(Prefix, Option,
-                     std::vector<StringRef>(Args.begin(), Args.end()), OS);
+  emitOptionWithArgs(Prefix, Option, std::vector<StringRef>(Args.begin(), Args.end()), OS);
 
   auto AliasArgs = Option->getValueAsListOfStrings("AliasArgs");
   if (!AliasArgs.empty()) {
     Record *Alias = Option->getValueAsDef("Alias");
     OS << " (equivalent to ";
-    emitOptionWithArgs(Alias->getValueAsListOfStrings("Prefixes").front(),
-                       Alias, AliasArgs, OS);
+    emitOptionWithArgs(
+        Alias->getValueAsListOfStrings("Prefixes").front(), Alias,
+        AliasArgs, OS);
     OS << ")";
   }
 }
@@ -377,7 +376,7 @@ void emitDocumentation(int Depth, const Documentation &Doc,
     emitGroup(Depth, G, DocInfo, OS);
 }
 
-} // namespace
+}  // namespace
 
 void clang::EmitClangOptDocs(RecordKeeper &Records, raw_ostream &OS) {
   const Record *DocInfo = Records.getDef("GlobalDocumentation");

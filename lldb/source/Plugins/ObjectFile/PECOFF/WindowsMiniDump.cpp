@@ -55,4 +55,4 @@ bool SaveMiniDump(const lldb::ProcessSP &process_sp,
   return false;
 }
 
-} // namespace lldb_private
+} // namesapce lldb_private

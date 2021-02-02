@@ -41,6 +41,6 @@ public:
   uint64_t current_pos() const override { return 0; }
 };
 
-} // namespace llvm
+} // end llvm namespace
 
 #endif

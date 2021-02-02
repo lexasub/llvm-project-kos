@@ -99,7 +99,7 @@ rnb_err_t RNBSocket::Listen(const char *listen_host, uint16_t port,
 
     lldb_private::SocketAddress bind_address = address;
 
-    if (any_addr || !bind_address.IsLocalhost())
+    if(any_addr || !bind_address.IsLocalhost())
       bind_address.SetToAnyAddress(bind_address.GetFamily(), port);
     else
       bind_address.SetPort(port);

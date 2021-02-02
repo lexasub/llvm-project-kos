@@ -23,7 +23,7 @@ void arg0logger(int32_t, XRayEntryType) { arg0loggercalled = true; }
 bool arg1loggercalled = false;
 void arg1logger(int32_t, XRayEntryType, uint64_t) { arg1loggercalled = true; }
 
-[[clang::xray_always_instrument, clang::xray_log_args(1)]] void
+[[ clang::xray_always_instrument, clang::xray_log_args(1) ]] void
 arg1fn(uint64_t arg1) {
   printf("hello, arg1!\n");
 }

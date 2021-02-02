@@ -2,7 +2,6 @@
 
 class C {
   int num;
-
 public:
   explicit C(int n) : num(n) {}
 };
@@ -54,12 +53,12 @@ void bad_new_array(int n, int m) {
 }
 
 namespace std {
-typedef decltype(sizeof(void *)) size_t;
+typedef decltype(sizeof(void*)) size_t;
 }
 
-void *operator new(std::size_t, void *);
+void* operator new(std::size_t, void*);
 
 void placement_new_ptr(void *buf, C *old) {
-  C **p = new (buf) C *(old) + 1;
+  C **p = new (buf) C*(old) + 1;
   // CHECK-MESSAGES-NOT: :[[@LINE-1]]:11: warning: arithmetic operation is applied to the result of operator new() instead of its size-like argument
 }

@@ -35,8 +35,8 @@ class MicrosoftNumberingContext : public MangleNumberingContext {
 
 public:
   MicrosoftNumberingContext()
-      : MangleNumberingContext(), LambdaManglingNumber(0), StaticLocalNumber(0),
-        StaticThreadlocalNumber(0) {}
+      : MangleNumberingContext(), LambdaManglingNumber(0),
+        StaticLocalNumber(0), StaticThreadlocalNumber(0) {}
 
   unsigned getManglingNumber(const CXXMethodDecl *CallOperator) override {
     return ++LambdaManglingNumber;
@@ -74,7 +74,7 @@ class MicrosoftCXXABI : public CXXABI {
       UnnamedTagDeclToTypedefNameDecl;
 
 public:
-  MicrosoftCXXABI(ASTContext &Ctx) : Context(Ctx) {}
+  MicrosoftCXXABI(ASTContext &Ctx) : Context(Ctx) { }
 
   MemberPointerInfo
   getMemberPointerInfo(const MemberPointerType *MPT) const override;
@@ -95,8 +95,9 @@ public:
     return RecordToCopyCtor[RD];
   }
 
-  void addCopyConstructorForExceptionObject(CXXRecordDecl *RD,
-                                            CXXConstructorDecl *CD) override {
+  void
+  addCopyConstructorForExceptionObject(CXXRecordDecl *RD,
+                                       CXXConstructorDecl *CD) override {
     assert(CD != nullptr);
     assert(RecordToCopyCtor[RD] == nullptr || RecordToCopyCtor[RD] == CD);
     RecordToCopyCtor[RD] = CD;
@@ -135,7 +136,7 @@ public:
     return std::make_unique<MicrosoftNumberingContext>();
   }
 };
-} // namespace
+}
 
 // getNumBases() seems to only give us the number of direct bases, and not the
 // total.  This function tells us if we inherit from anybody that uses MI, or if
@@ -222,7 +223,7 @@ getMSMemberPointerSlots(const MemberPointerType *MPT) {
   else
     Ints = 1;
   if (inheritanceModelHasNVOffsetField(MPT->isMemberFunctionPointer(),
-                                       Inheritance))
+                                          Inheritance))
     Ints++;
   if (inheritanceModelHasVBPtrOffsetField(Inheritance))
     Ints++;
@@ -231,8 +232,8 @@ getMSMemberPointerSlots(const MemberPointerType *MPT) {
   return std::make_pair(Ptrs, Ints);
 }
 
-CXXABI::MemberPointerInfo
-MicrosoftCXXABI::getMemberPointerInfo(const MemberPointerType *MPT) const {
+CXXABI::MemberPointerInfo MicrosoftCXXABI::getMemberPointerInfo(
+    const MemberPointerType *MPT) const {
   // The nominal struct is laid out with pointers followed by ints and aligned
   // to a pointer width if any are present and an int width otherwise.
   const TargetInfo &Target = Context.getTargetInfo();
@@ -265,3 +266,4 @@ MicrosoftCXXABI::getMemberPointerInfo(const MemberPointerType *MPT) const {
 CXXABI *clang::CreateMicrosoftCXXABI(ASTContext &Ctx) {
   return new MicrosoftCXXABI(Ctx);
 }
+

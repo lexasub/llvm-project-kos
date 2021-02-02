@@ -49,7 +49,7 @@ static void checkModuleImportContext(Sema &S, Module *M,
         << DC;
   } else if (!M->IsExternC && ExternCLoc.isValid()) {
     S.Diag(ImportLoc, diag::ext_module_import_in_extern_c)
-        << M->getFullModuleName();
+      << M->getFullModuleName();
     S.Diag(ExternCLoc, diag::note_extern_c_begins_here);
   }
 }
@@ -108,7 +108,7 @@ Sema::ActOnModuleDecl(SourceLocation StartLoc, SourceLocation ModuleLoc,
     // We were asked to compile a module interface unit but this is a module
     // implementation unit. That indicates the 'export' is missing.
     Diag(ModuleLoc, diag::err_module_interface_implementation_mismatch)
-        << FixItHint::CreateInsertion(ModuleLoc, "export ");
+      << FixItHint::CreateInsertion(ModuleLoc, "export ");
     MDK = ModuleDeclKind::Interface;
     break;
 
@@ -127,7 +127,8 @@ Sema::ActOnModuleDecl(SourceLocation StartLoc, SourceLocation ModuleLoc,
   // here, in order to support macro import.
 
   // Only one module-declaration is permitted per source file.
-  if (!ModuleScopes.empty() && ModuleScopes.back().Module->isModulePurview()) {
+  if (!ModuleScopes.empty() &&
+      ModuleScopes.back().Module->isModulePurview()) {
     Diag(ModuleLoc, diag::err_module_redeclaration);
     Diag(VisibleModules.getImportLoc(ModuleScopes.back().Module),
          diag::note_prev_module_declaration);
@@ -173,7 +174,7 @@ Sema::ActOnModuleDecl(SourceLocation StartLoc, SourceLocation ModuleLoc,
         << getLangOpts().CurrentModule;
     return nullptr;
   }
-  const_cast<LangOptions &>(getLangOpts()).CurrentModule = ModuleName;
+  const_cast<LangOptions&>(getLangOpts()).CurrentModule = ModuleName;
 
   auto &Map = PP.getHeaderSearchInfo().getModuleMap();
   Module *Mod;
@@ -339,8 +340,8 @@ static const ExportDecl *getEnclosingExportDecl(const Decl *D) {
 
 DeclResult Sema::ActOnModuleImport(SourceLocation StartLoc,
                                    SourceLocation ExportLoc,
-                                   SourceLocation ImportLoc, Module *Mod,
-                                   ModuleIdPath Path) {
+                                   SourceLocation ImportLoc,
+                                   Module *Mod, ModuleIdPath Path) {
   VisibleModules.setVisible(Mod, ImportLoc);
 
   checkModuleImportContext(*this, Mod, ImportLoc, CurContext);
@@ -380,8 +381,8 @@ DeclResult Sema::ActOnModuleImport(SourceLocation StartLoc,
     }
   }
 
-  ImportDecl *Import =
-      ImportDecl::Create(Context, CurContext, StartLoc, Mod, IdentifierLocs);
+  ImportDecl *Import = ImportDecl::Create(Context, CurContext, StartLoc,
+                                          Mod, IdentifierLocs);
   CurContext->addDecl(Import);
 
   // Sequence initialization of the imported module before that of the current
@@ -421,8 +422,9 @@ void Sema::BuildModuleInclude(SourceLocation DirectiveLoc, Module *Mod) {
   // implicit import declaration to capture it in the AST.
   if (ShouldAddImport) {
     TranslationUnitDecl *TU = getASTContext().getTranslationUnitDecl();
-    ImportDecl *ImportD = ImportDecl::CreateImplicit(
-        getASTContext(), TU, DirectiveLoc, Mod, DirectiveLoc);
+    ImportDecl *ImportD = ImportDecl::CreateImplicit(getASTContext(), TU,
+                                                     DirectiveLoc, Mod,
+                                                     DirectiveLoc);
     if (!ModuleScopes.empty())
       Context.addModuleInitializer(ModuleScopes.back().Module, ImportD);
     TU->addDecl(ImportD);
@@ -506,8 +508,8 @@ void Sema::createImplicitModuleImportForErrorRecovery(SourceLocation Loc,
 
   // Create the implicit import declaration.
   TranslationUnitDecl *TU = getASTContext().getTranslationUnitDecl();
-  ImportDecl *ImportD =
-      ImportDecl::CreateImplicit(getASTContext(), TU, Loc, Mod, Loc);
+  ImportDecl *ImportD = ImportDecl::CreateImplicit(getASTContext(), TU,
+                                                   Loc, Mod, Loc);
   TU->addDecl(ImportD);
   Consumer.HandleImplicitImportDecl(ImportD);
 

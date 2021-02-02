@@ -5,58 +5,25 @@
 
 extern "C" int printf(const char *fmt, ...);
 
-struct __declspec(align(8)) B0 {
-  B0() { printf("B0 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct __declspec(align(8)) B1 {
-  B1() { printf("B1 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct __declspec(align(8)) B2 {
-  B2() { printf("B2 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct __declspec(align(8)) B3 {
-  B3() { printf("B3 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct __declspec(align(8)) B4 {
-  B4() { printf("B4 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
+struct __declspec(align(8)) B0 { B0() {printf("B0 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct __declspec(align(8)) B1 { B1() {printf("B1 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct __declspec(align(8)) B2 { B2() {printf("B2 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct __declspec(align(8)) B3 { B3() {printf("B3 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct __declspec(align(8)) B4 { B4() {printf("B4 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
 
-struct C0 {
-  int a;
-  C0() : a(0xf00000C0) { printf("C0 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct C1 {
-  int a;
-  C1() : a(0xf00000C1) { printf("C1 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct C2 {
-  int a;
-  C2() : a(0xf00000C2) { printf("C2 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct C3 {
-  int a;
-  C3() : a(0xf00000C3) { printf("C3 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct C4 {
-  int a;
-  C4() : a(0xf00000C4) { printf("C4 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
+struct C0 { int a; C0() : a(0xf00000C0) {printf("C0 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct C1 { int a; C1() : a(0xf00000C1) {printf("C1 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct C2 { int a; C2() : a(0xf00000C2) {printf("C2 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct C3 { int a; C3() : a(0xf00000C3) {printf("C3 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct C4 { int a; C4() : a(0xf00000C4) {printf("C4 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
 
-struct __declspec(align(16)) D0 {
-  D0() { printf("D0 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-  virtual void f() {}
-};
-struct D1 {
-  D1() { printf("D1 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
-struct D2 {
-  int a[8];
-  D2() { printf("D2 : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-};
+struct __declspec(align(16)) D0 { D0() {printf("D0 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} virtual void f() {} };
+struct D1 { D1() {printf("D1 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
+struct D2 { int a[8]; D2() {printf("D2 : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);} };
 
 struct A : virtual B0 {
-  int a;
-  A() : a(0xf000000A) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	A() : a(0xf000000A) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -77,9 +44,9 @@ struct A : virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct B : virtual B0 {
-  B0 b0;
-  int a;
-  B() : a(0xf000000B) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	B0 b0;
+	int a;
+	B() : a(0xf000000B) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -100,8 +67,8 @@ struct B : virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct C : virtual B0, virtual B1, virtual B2, virtual B3, virtual B4 {
-  int a;
-  C() : a(0xf000000C) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	C() : a(0xf000000C) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -136,13 +103,13 @@ struct C : virtual B0, virtual B1, virtual B2, virtual B3, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct D {
-  B0 b0;
-  C0 c0;
-  C1 c1;
-  C2 c2;
-  B1 b1;
-  int a;
-  D() : a(0xf000000D) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	B0 b0;
+	C0 c0;
+	C1 c1;
+	C2 c2;
+	B1 b1;
+	int a;
+	D() : a(0xf000000D) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -179,8 +146,8 @@ struct D {
 // CHECK-X64-NEXT:      |  nvsize=40, nvalign=8]
 
 struct E : virtual B0, virtual C0, virtual C1, virtual C2, virtual B1 {
-  int a;
-  E() : a(0xf000000E) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	E() : a(0xf000000E) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -213,8 +180,8 @@ struct E : virtual B0, virtual C0, virtual C1, virtual C2, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct F : virtual C0, virtual B0, virtual B1, virtual C1 {
-  int a;
-  F() : a(0xf000000F) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	F() : a(0xf000000F) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -243,9 +210,9 @@ struct F : virtual C0, virtual B0, virtual B1, virtual C1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct G : virtual C0, virtual B0, virtual B1, D0, virtual C1 {
-  int a;
-  G() : a(0xf0000010) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-  virtual void f() {}
+	int a;
+	G() : a(0xf0000010) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
+	virtual void f() {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -280,9 +247,9 @@ struct G : virtual C0, virtual B0, virtual B1, D0, virtual C1 {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct H : virtual C0, virtual B0, virtual B1, virtual D0, virtual C1 {
-  int a;
-  H() : a(0xf0000011) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
-  virtual void f() {}
+	int a;
+	H() : a(0xf0000011) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
+	virtual void f() {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -317,8 +284,8 @@ struct H : virtual C0, virtual B0, virtual B1, virtual D0, virtual C1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=16]
 
 struct I : virtual B0, virtual B1, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  I() : a(0xf0000012) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	I() : a(0xf0000012) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -345,8 +312,8 @@ struct I : virtual B0, virtual B1, virtual B2, virtual B3, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct __declspec(align(32)) J : virtual B0, virtual B1, virtual B2, virtual B3, virtual B4 {
-  int a;
-  J() : a(0xf0000012) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	J() : a(0xf0000012) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -373,8 +340,8 @@ struct __declspec(align(32)) J : virtual B0, virtual B1, virtual B2, virtual B3,
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=32]
 
 struct K : virtual D1, virtual B1, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  K() : a(0xf0000013) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	K() : a(0xf0000013) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -403,8 +370,8 @@ struct K : virtual D1, virtual B1, virtual B2, virtual B3, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct L : virtual B1, virtual D1, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  L() : a(0xf0000014) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	L() : a(0xf0000014) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -431,8 +398,8 @@ struct L : virtual B1, virtual D1, virtual B2, virtual B3, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct M : virtual B1, virtual B2, virtual D1, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  M() : a(0xf0000015) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	M() : a(0xf0000015) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -459,8 +426,8 @@ struct M : virtual B1, virtual B2, virtual D1, virtual B3, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct N : virtual C0, virtual B1, virtual D1, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  N() : a(0xf0000016) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	N() : a(0xf0000016) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -491,8 +458,8 @@ struct N : virtual C0, virtual B1, virtual D1, virtual B2, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct O : virtual C0, virtual B1, virtual B2, virtual D1, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  O() : a(0xf0000017) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	O() : a(0xf0000017) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -523,8 +490,8 @@ struct O : virtual C0, virtual B1, virtual B2, virtual D1, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct P : virtual B1, virtual C0, virtual D1, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  P() : a(0xf0000018) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	P() : a(0xf0000018) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -555,8 +522,8 @@ struct P : virtual B1, virtual C0, virtual D1, virtual B2, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct Q : virtual B1, virtual C0, virtual B2, virtual D1, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  Q() : a(0xf0000019) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	Q() : a(0xf0000019) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -587,8 +554,8 @@ struct Q : virtual B1, virtual C0, virtual B2, virtual D1, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct R : virtual B0, virtual B1, virtual B2, virtual C0, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  R() : a(0xf0000020) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	R() : a(0xf0000020) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -619,8 +586,8 @@ struct R : virtual B0, virtual B1, virtual B2, virtual C0, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct S : virtual B0, virtual B1, virtual C0, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(32)) int a;
-  S() : a(0xf0000021) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(32)) int a;
+	S() : a(0xf0000021) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -651,8 +618,8 @@ struct S : virtual B0, virtual B1, virtual C0, virtual B2, virtual B3, virtual B
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=32]
 
 struct T : virtual B0, virtual B1, virtual C0, virtual D2, virtual B2, virtual B3, virtual B4 {
-  __declspec(align(16)) int a;
-  T() : a(0xf0000022) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	__declspec(align(16)) int a;
+	T() : a(0xf0000022) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -689,8 +656,8 @@ struct T : virtual B0, virtual B1, virtual C0, virtual D2, virtual B2, virtual B
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct __declspec(align(32)) U : virtual B0, virtual B1 {
-  int a;
-  U() : a(0xf0000023) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	U() : a(0xf0000023) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -711,8 +678,8 @@ struct __declspec(align(32)) U : virtual B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=32]
 
 struct __declspec(align(32)) V : virtual D1 {
-  int a;
-  V() : a(0xf0000024) { printf("X : %3d\n", ((int)(__SIZE_TYPE__)this) & 0xfff); }
+	int a;
+	V() : a(0xf0000024) {printf("X : %3d\n", ((int)(__SIZE_TYPE__)this)&0xfff);}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -731,12 +698,8 @@ struct __declspec(align(32)) V : virtual D1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=32]
 
 struct T0 {};
-struct T1 : T0 {
-  char a;
-};
-struct T3 : virtual T1, virtual T0 {
-  long long a;
-};
+struct T1 : T0 { char a; };
+struct T3 : virtual T1, virtual T0 { long long a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -764,12 +727,8 @@ struct T3 : virtual T1, virtual T0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct Q0A {};
-struct Q0B {
-  char Q0BField;
-};
-struct Q0C : virtual Q0A, virtual Q0B {
-  char Q0CField;
-};
+struct Q0B { char Q0BField; };
+struct Q0C : virtual Q0A, virtual Q0B { char Q0CField; };
 struct Q0D : Q0C, Q0A {};
 
 // CHECK: *** Dumping AST Record Layout
@@ -801,27 +760,28 @@ struct Q0D : Q0C, Q0A {};
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-int a[sizeof(A) +
-      sizeof(B) +
-      sizeof(C) +
-      sizeof(D) +
-      sizeof(E) +
-      sizeof(F) +
-      sizeof(G) +
-      sizeof(H) +
-      sizeof(I) +
-      sizeof(J) +
-      sizeof(K) +
-      sizeof(L) +
-      sizeof(M) +
-      sizeof(N) +
-      sizeof(O) +
-      sizeof(P) +
-      sizeof(Q) +
-      sizeof(R) +
-      sizeof(S) +
-      sizeof(T) +
-      sizeof(U) +
-      sizeof(V) +
-      sizeof(T3) +
-      sizeof(Q0D)];
+int a[
+sizeof(A)+
+sizeof(B)+
+sizeof(C)+
+sizeof(D)+
+sizeof(E)+
+sizeof(F)+
+sizeof(G)+
+sizeof(H)+
+sizeof(I)+
+sizeof(J)+
+sizeof(K)+
+sizeof(L)+
+sizeof(M)+
+sizeof(N)+
+sizeof(O)+
+sizeof(P)+
+sizeof(Q)+
+sizeof(R)+
+sizeof(S)+
+sizeof(T)+
+sizeof(U)+
+sizeof(V)+
+sizeof(T3)+
+sizeof(Q0D)];

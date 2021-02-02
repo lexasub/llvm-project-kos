@@ -15,8 +15,8 @@
 // call-by-value semantics."
 // XFAIL: s390x
 
-#include <assert.h>
 #include <sanitizer/msan_interface.h>
+#include <assert.h>
 
 // This test assumes that ParamTLS size is 800 bytes.
 
@@ -36,7 +36,8 @@
 #define PARTIAL_OVERFLOW(x) assert(__msan_test_shadow((char *)(&(x) + 1) - 1, 1) == -1)
 #endif
 
-template <int N>
+
+template<int N>
 struct S {
   char x[N];
 };

@@ -34,10 +34,12 @@ static codegen::RegisterCodeGenFlags CGF;
 
 // extra command-line flags needed for LTOCodeGenerator
 static cl::opt<char>
-    OptLevel("O",
-             cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
-                      "(default = '-O2')"),
-             cl::Prefix, cl::ZeroOrMore, cl::init('2'));
+OptLevel("O",
+         cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
+                  "(default = '-O2')"),
+         cl::Prefix,
+         cl::ZeroOrMore,
+         cl::init('2'));
 
 static cl::opt<bool> EnableFreestanding(
     "lto-freestanding", cl::init(false),
@@ -135,7 +137,7 @@ struct LibLTOCodeGenerator : LTOCodeGenerator {
   std::unique_ptr<LLVMContext> OwnedContext;
 };
 
-} // namespace
+}
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(LibLTOCodeGenerator, lto_code_gen_t)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(ThinLTOCodeGenerator, thinlto_code_gen_t)
@@ -153,18 +155,20 @@ static void lto_add_attrs(lto_code_gen_t cg) {
   CG->setDisableVerify(DisableVerify);
 }
 
-extern const char *lto_get_version() {
+extern const char* lto_get_version() {
   return LTOCodeGenerator::getVersionString();
 }
 
-const char *lto_get_error_message() { return sLastErrorString.c_str(); }
+const char* lto_get_error_message() {
+  return sLastErrorString.c_str();
+}
 
-bool lto_module_is_object_file(const char *path) {
+bool lto_module_is_object_file(const char* path) {
   return LTOModule::isBitcodeFile(StringRef(path));
 }
 
-bool lto_module_is_object_file_for_target(const char *path,
-                                          const char *target_triplet_prefix) {
+bool lto_module_is_object_file_for_target(const char* path,
+                                          const char* target_triplet_prefix) {
   ErrorOr<std::unique_ptr<MemoryBuffer>> Buffer = MemoryBuffer::getFile(path);
   if (!Buffer)
     return false;
@@ -182,12 +186,14 @@ bool lto_module_has_objc_category(const void *mem, size_t length) {
   return Result && *Result;
 }
 
-bool lto_module_is_object_file_in_memory(const void *mem, size_t length) {
+bool lto_module_is_object_file_in_memory(const void* mem, size_t length) {
   return LTOModule::isBitcodeFile(mem, length);
 }
 
-bool lto_module_is_object_file_in_memory_for_target(
-    const void *mem, size_t length, const char *target_triplet_prefix) {
+bool
+lto_module_is_object_file_in_memory_for_target(const void* mem,
+                                            size_t length,
+                                            const char* target_triplet_prefix) {
   std::unique_ptr<MemoryBuffer> buffer(LTOModule::makeBuffer(mem, length));
   if (!buffer)
     return false;
@@ -195,7 +201,7 @@ bool lto_module_is_object_file_in_memory_for_target(
                                        StringRef(target_triplet_prefix));
 }
 
-lto_module_t lto_module_create(const char *path) {
+lto_module_t lto_module_create(const char* path) {
   lto_initialize();
   llvm::TargetOptions Options =
       codegen::InitTargetOptionsFromCodeGenFlags(Triple());
@@ -231,7 +237,7 @@ lto_module_t lto_module_create_from_fd_at_offset(int fd, const char *path,
   return wrap(M->release());
 }
 
-lto_module_t lto_module_create_from_memory(const void *mem, size_t length) {
+lto_module_t lto_module_create_from_memory(const void* mem, size_t length) {
   lto_initialize();
   llvm::TargetOptions Options =
       codegen::InitTargetOptionsFromCodeGenFlags(Triple());
@@ -242,7 +248,7 @@ lto_module_t lto_module_create_from_memory(const void *mem, size_t length) {
   return wrap(M->release());
 }
 
-lto_module_t lto_module_create_from_memory_with_path(const void *mem,
+lto_module_t lto_module_create_from_memory_with_path(const void* mem,
                                                      size_t length,
                                                      const char *path) {
   lto_initialize();
@@ -287,7 +293,7 @@ lto_module_t lto_module_create_in_codegen_context(const void *mem,
 
 void lto_module_dispose(lto_module_t mod) { delete unwrap(mod); }
 
-const char *lto_module_get_target_triple(lto_module_t mod) {
+const char* lto_module_get_target_triple(lto_module_t mod) {
   return unwrap(mod)->getTargetTriple().c_str();
 }
 
@@ -299,7 +305,7 @@ unsigned int lto_module_get_num_symbols(lto_module_t mod) {
   return unwrap(mod)->getSymbolCount();
 }
 
-const char *lto_module_get_symbol_name(lto_module_t mod, unsigned int index) {
+const char* lto_module_get_symbol_name(lto_module_t mod, unsigned int index) {
   return unwrap(mod)->getSymbolName(index).data();
 }
 
@@ -308,7 +314,7 @@ lto_symbol_attributes lto_module_get_symbol_attribute(lto_module_t mod,
   return unwrap(mod)->getSymbolAttributes(index);
 }
 
-const char *lto_module_get_linkeropts(lto_module_t mod) {
+const char* lto_module_get_linkeropts(lto_module_t mod) {
   return unwrap(mod)->getLinkerOpts().data();
 }
 
@@ -601,20 +607,20 @@ void thinlto_codegen_set_final_cache_size_relative_to_available_space(
   return unwrap(cg)->setMaxCacheSizeRelativeToAvailableSpace(Percentage);
 }
 
-void thinlto_codegen_set_cache_size_bytes(thinlto_code_gen_t cg,
-                                          unsigned MaxSizeBytes) {
+void thinlto_codegen_set_cache_size_bytes(
+    thinlto_code_gen_t cg, unsigned MaxSizeBytes) {
   return unwrap(cg)->setCacheMaxSizeBytes(MaxSizeBytes);
 }
 
-void thinlto_codegen_set_cache_size_megabytes(thinlto_code_gen_t cg,
-                                              unsigned MaxSizeMegabytes) {
+void thinlto_codegen_set_cache_size_megabytes(
+    thinlto_code_gen_t cg, unsigned MaxSizeMegabytes) {
   uint64_t MaxSizeBytes = MaxSizeMegabytes;
   MaxSizeBytes *= 1024 * 1024;
   return unwrap(cg)->setCacheMaxSizeBytes(MaxSizeBytes);
 }
 
-void thinlto_codegen_set_cache_size_files(thinlto_code_gen_t cg,
-                                          unsigned MaxSizeFiles) {
+void thinlto_codegen_set_cache_size_files(
+    thinlto_code_gen_t cg, unsigned MaxSizeFiles) {
   return unwrap(cg)->setCacheMaxSizeFiles(MaxSizeFiles);
 }
 
@@ -650,20 +656,21 @@ lto_bool_t thinlto_codegen_set_pic_model(thinlto_code_gen_t cg,
 
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(lto::InputFile, lto_input_t)
 
-lto_input_t lto_input_create(const void *buffer, size_t buffer_size,
-                             const char *path) {
-  return wrap(
-      LTOModule::createInputFile(buffer, buffer_size, path, sLastErrorString));
+lto_input_t lto_input_create(const void *buffer, size_t buffer_size, const char *path) {
+  return wrap(LTOModule::createInputFile(buffer, buffer_size, path, sLastErrorString));
 }
 
-void lto_input_dispose(lto_input_t input) { delete unwrap(input); }
+void lto_input_dispose(lto_input_t input) {
+  delete unwrap(input);
+}
 
 extern unsigned lto_input_get_num_dependent_libraries(lto_input_t input) {
   return LTOModule::getDependentLibraryCount(unwrap(input));
 }
 
 extern const char *lto_input_get_dependent_library(lto_input_t input,
-                                                   size_t index, size_t *size) {
+                                                   size_t index,
+                                                   size_t *size) {
   return LTOModule::getDependentLibrary(unwrap(input), index, size);
 }
 

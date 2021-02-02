@@ -11,8 +11,8 @@
 
 #include "lldb/Core/Address.h"
 #include "lldb/Core/Disassembler.h"
-#include "lldb/Target/ExecutionContext.h"
 #include "lldb/Utility/ArchSpec.h"
+#include "lldb/Target/ExecutionContext.h"
 
 #include "Plugins/Disassembler/LLVMC/DisassemblerLLVMC.h"
 #include "llvm/Support/TargetSelect.h"
@@ -57,37 +57,35 @@ TEST_F(TestArmv7Disassembly, TestCortexFPDisass) {
   //
   // 0x00, 0xee, 0x10, 0x2a, // 0xee002a10 :  vmov   s0, r2
   //
-  // echo 0x00 0xee 0x10  0x2a | llvm-mc -arch thumb -disassemble
-  // -mattr=+fp-armv8
-  //       vmov s0, r2
+  // echo 0x00 0xee 0x10  0x2a | llvm-mc -arch thumb -disassemble -mattr=+fp-armv8
+	//       vmov s0, r2
 
   DisassemblerSP disass_sp;
   Address start_addr(0x100);
-  disass_sp =
-      Disassembler::DisassembleBytes(arch, nullptr, nullptr, start_addr, &data,
-                                     sizeof(data), num_of_instructions, false);
+  disass_sp = Disassembler::DisassembleBytes(arch, nullptr, nullptr, start_addr,
+                                 &data, sizeof (data), num_of_instructions, false);
 
   // If we failed to get a disassembler, we can assume it is because
   // the llvm we linked against was not built with the ARM target,
   // and we should skip these tests without marking anything as failing.
 
   if (disass_sp) {
-    const InstructionList inst_list(disass_sp->GetInstructionList());
-    EXPECT_EQ(num_of_instructions, inst_list.GetSize());
+    const InstructionList inst_list (disass_sp->GetInstructionList());
+    EXPECT_EQ (num_of_instructions, inst_list.GetSize());
 
     InstructionSP inst_sp;
     const char *mnemonic;
-    ExecutionContext exe_ctx(nullptr, nullptr, nullptr);
-    inst_sp = inst_list.GetInstructionAtIndex(0);
+    ExecutionContext exe_ctx (nullptr, nullptr, nullptr);
+    inst_sp = inst_list.GetInstructionAtIndex (0);
     mnemonic = inst_sp->GetMnemonic(&exe_ctx);
-    ASSERT_STREQ("vmov", mnemonic);
+    ASSERT_STREQ ("vmov", mnemonic);
 
-    inst_sp = inst_list.GetInstructionAtIndex(1);
+    inst_sp = inst_list.GetInstructionAtIndex (1);
     mnemonic = inst_sp->GetMnemonic(&exe_ctx);
-    ASSERT_STREQ("vcvt.f64.s32", mnemonic);
+    ASSERT_STREQ ("vcvt.f64.s32", mnemonic);
 
-    inst_sp = inst_list.GetInstructionAtIndex(2);
+    inst_sp = inst_list.GetInstructionAtIndex (2);
     mnemonic = inst_sp->GetMnemonic(&exe_ctx);
-    ASSERT_STREQ("vmov.f32", mnemonic);
+    ASSERT_STREQ ("vmov.f32", mnemonic);
   }
 }

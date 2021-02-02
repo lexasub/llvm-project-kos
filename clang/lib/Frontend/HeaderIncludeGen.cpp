@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Basic/SourceManager.h"
 #include "clang/Frontend/DependencyOutputOptions.h"
-#include "clang/Frontend/FrontendDiagnostic.h"
 #include "clang/Frontend/Utils.h"
+#include "clang/Basic/SourceManager.h"
+#include "clang/Frontend/FrontendDiagnostic.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/raw_ostream.h"
@@ -46,7 +46,7 @@ public:
                    SrcMgr::CharacteristicKind FileType,
                    FileID PrevFID) override;
 };
-} // namespace
+}
 
 static void PrintHeaderInfo(raw_ostream *OutputFile, StringRef Filename,
                             bool ShowDepth, unsigned CurrentIncludeDepth,
@@ -159,8 +159,8 @@ void HeaderIncludesCallback::FileChanged(SourceLocation Loc,
   // Show the header if we are (a) past the predefines, or (b) showing all
   // headers and in the predefines at a depth past the initial file and command
   // line buffers.
-  bool ShowHeader =
-      (HasProcessedPredefines || (ShowAllHeaders && CurrentIncludeDepth > 2));
+  bool ShowHeader = (HasProcessedPredefines ||
+                     (ShowAllHeaders && CurrentIncludeDepth > 2));
   unsigned IncludeDepth = CurrentIncludeDepth;
   if (!HasProcessedPredefines)
     --IncludeDepth; // Ignore indent from <built-in>.

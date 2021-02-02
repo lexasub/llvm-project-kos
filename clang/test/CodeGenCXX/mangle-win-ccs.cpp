@@ -39,9 +39,7 @@ void funcRefType(void(__attribute__((fastcall)) & fr)(int, int)) {
   fr(1, 2);
 }
 
-struct Foo {
-  void bar(int, int);
-};
+struct Foo { void bar(int, int); };
 
 // PR40107: In this case, the member function pointer uses the thiscall
 // convention, but GCC doesn't mangle it, so we don't either.
@@ -66,7 +64,7 @@ template <> void __attribute__((fastcall)) fnTemplate<int>() {}
 
 // CHECK: define weak_odr dso_local x86_fastcallcc void (i32, i32)* @"\01@_Z12fnTempReturnIsEPU8fastcallFviiEv@0"()
 // CHECK: define          dso_local x86_fastcallcc void (i32, i32)* @"\01@_Z12fnTempReturnIiEPU8fastcallFviiEv@0"()
-typedef void(__attribute__((fastcall)) * fp_cc_t)(int, int);
+typedef void (__attribute__((fastcall)) *fp_cc_t)(int, int);
 template <typename T> fp_cc_t __attribute__((fastcall)) fnTempReturn() { return nullptr; }
 template fp_cc_t __attribute__((fastcall)) fnTempReturn<short>();
 template <> fp_cc_t __attribute__((fastcall)) fnTempReturn<int>() { return nullptr; }

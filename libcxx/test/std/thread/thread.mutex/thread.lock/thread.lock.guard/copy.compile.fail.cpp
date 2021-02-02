@@ -14,10 +14,11 @@
 
 #include <mutex>
 
-int main(int, char**) {
-  std::mutex m;
-  std::lock_guard<std::mutex> lg0(m);
-  std::lock_guard<std::mutex> lg(lg0);
+int main(int, char**)
+{
+    std::mutex m;
+    std::lock_guard<std::mutex> lg0(m);
+    std::lock_guard<std::mutex> lg(lg0);
 
   return 0;
 }

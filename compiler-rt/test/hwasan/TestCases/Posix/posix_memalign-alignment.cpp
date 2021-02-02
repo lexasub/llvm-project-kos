@@ -10,7 +10,7 @@
 #include "../utils.h"
 
 int main() {
-  void *p = reinterpret_cast<void *>(42);
+  void *p = reinterpret_cast<void*>(42);
   int res = posix_memalign(&p, 17, 100);
   // CHECK: ERROR: HWAddressSanitizer: invalid alignment requested in posix_memalign: 17
   // CHECK: {{#0 0x.* in .*posix_memalign}}

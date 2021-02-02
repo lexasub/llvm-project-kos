@@ -48,330 +48,338 @@ using namespace llvm;
 using namespace llvm::object;
 
 namespace opts {
-cl::list<std::string> InputFilenames(cl::Positional,
-                                     cl::desc("<input object files>"),
-                                     cl::ZeroOrMore);
-
-// --all, -a
-cl::opt<bool>
-    All("all",
-        cl::desc("Equivalent to setting: --file-headers, --program-headers, "
-                 "--section-headers, --symbols, --relocations, "
-                 "--dynamic-table, --notes, --version-info, --unwind, "
-                 "--section-groups and --elf-hash-histogram."));
-cl::alias AllShort("a", cl::desc("Alias for --all"), cl::aliasopt(All));
-
-// --dependent-libraries
-cl::opt<bool>
-    DependentLibraries("dependent-libraries",
-                       cl::desc("Display the dependent libraries section"));
-
-// --headers, -e
-cl::opt<bool> Headers(
-    "headers",
-    cl::desc("Equivalent to setting: --file-headers, --program-headers, "
-             "--section-headers"));
-cl::alias HeadersShort("e", cl::desc("Alias for --headers"),
-                       cl::aliasopt(Headers));
-
-// --wide, -W
-cl::opt<bool> WideOutput("wide",
-                         cl::desc("Ignored for compatibility with GNU readelf"),
-                         cl::Hidden);
-cl::alias WideOutputShort("W", cl::desc("Alias for --wide"),
-                          cl::aliasopt(WideOutput));
-
-// --file-headers, --file-header, -h
-cl::opt<bool> FileHeaders("file-headers", cl::desc("Display file headers "));
-cl::alias FileHeadersShort("h", cl::desc("Alias for --file-headers"),
-                           cl::aliasopt(FileHeaders), cl::NotHidden);
-cl::alias FileHeadersSingular("file-header",
-                              cl::desc("Alias for --file-headers"),
-                              cl::aliasopt(FileHeaders));
-
-// --section-headers, --sections, -S
-// Also -s in llvm-readobj mode.
-cl::opt<bool> SectionHeaders("section-headers",
-                             cl::desc("Display all section headers."));
-cl::alias SectionsShortUpper("S", cl::desc("Alias for --section-headers"),
-                             cl::aliasopt(SectionHeaders), cl::NotHidden);
-cl::alias SectionHeadersAlias("sections",
-                              cl::desc("Alias for --section-headers"),
-                              cl::aliasopt(SectionHeaders), cl::NotHidden);
-
-// --section-relocations
-// Also --sr in llvm-readobj mode.
-cl::opt<bool>
-    SectionRelocations("section-relocations",
-                       cl::desc("Display relocations for each section shown."));
-
-// --section-symbols
-// Also --st in llvm-readobj mode.
-cl::opt<bool>
-    SectionSymbols("section-symbols",
-                   cl::desc("Display symbols for each section shown."));
-
-// --section-data
-// Also --sd in llvm-readobj mode.
-cl::opt<bool>
-    SectionData("section-data",
-                cl::desc("Display section data for each section shown."));
-
-// --section-mapping
-cl::opt<cl::boolOrDefault>
-    SectionMapping("section-mapping",
-                   cl::desc("Display the section to segment mapping."));
-
-// --relocations, --relocs, -r
-cl::opt<bool>
-    Relocations("relocations",
-                cl::desc("Display the relocation entries in the file"));
-cl::alias RelocationsShort("r", cl::desc("Alias for --relocations"),
-                           cl::aliasopt(Relocations), cl::NotHidden);
-cl::alias RelocationsGNU("relocs", cl::desc("Alias for --relocations"),
-                         cl::aliasopt(Relocations));
-
-// --notes, -n
-cl::opt<bool> Notes("notes", cl::desc("Display the ELF notes in the file"));
-cl::alias NotesShort("n", cl::desc("Alias for --notes"), cl::aliasopt(Notes));
-
-// --dyn-relocations
-cl::opt<bool>
-    DynRelocs("dyn-relocations",
-              cl::desc("Display the dynamic relocation entries in the file"));
-
-// --section-details
-// Also -t in llvm-readelf mode.
-cl::opt<bool> SectionDetails("section-details",
-                             cl::desc("Display the section details"));
-
-// --symbols
-// Also -s in llvm-readelf mode, or -t in llvm-readobj mode.
-cl::opt<bool>
-    Symbols("symbols",
-            cl::desc("Display the symbol table. Also display the dynamic "
-                     "symbol table when using GNU output style for ELF"));
-cl::alias SymbolsGNU("syms", cl::desc("Alias for --symbols"),
-                     cl::aliasopt(Symbols));
-
-// --dyn-symbols, --dyn-syms
-// Also --dt in llvm-readobj mode.
-cl::opt<bool> DynamicSymbols("dyn-symbols",
-                             cl::desc("Display the dynamic symbol table"));
-cl::alias DynSymsGNU("dyn-syms", cl::desc("Alias for --dyn-symbols"),
-                     cl::aliasopt(DynamicSymbols));
-
-// --hash-symbols
-cl::opt<bool> HashSymbols(
-    "hash-symbols",
-    cl::desc("Display the dynamic symbols derived from the hash section"));
-
-// --unwind, -u
-cl::opt<bool> UnwindInfo("unwind", cl::desc("Display unwind information"));
-cl::alias UnwindInfoShort("u", cl::desc("Alias for --unwind"),
-                          cl::aliasopt(UnwindInfo));
-
-// --dynamic-table, --dynamic, -d
-cl::opt<bool> DynamicTable("dynamic-table",
-                           cl::desc("Display the ELF .dynamic section table"));
-cl::alias DynamicTableShort("d", cl::desc("Alias for --dynamic-table"),
-                            cl::aliasopt(DynamicTable), cl::NotHidden);
-cl::alias DynamicTableAlias("dynamic", cl::desc("Alias for --dynamic-table"),
-                            cl::aliasopt(DynamicTable));
-
-// --needed-libs
-cl::opt<bool> NeededLibraries("needed-libs",
-                              cl::desc("Display the needed libraries"));
-
-// --program-headers, --segments, -l
-cl::opt<bool> ProgramHeaders("program-headers",
-                             cl::desc("Display ELF program headers"));
-cl::alias ProgramHeadersShort("l", cl::desc("Alias for --program-headers"),
-                              cl::aliasopt(ProgramHeaders), cl::NotHidden);
-cl::alias SegmentsAlias("segments", cl::desc("Alias for --program-headers"),
-                        cl::aliasopt(ProgramHeaders));
-
-// --string-dump, -p
-cl::list<std::string> StringDump(
-    "string-dump", cl::value_desc("number|name"),
-    cl::desc("Display the specified section(s) as a list of strings"),
+  cl::list<std::string> InputFilenames(cl::Positional,
+    cl::desc("<input object files>"),
     cl::ZeroOrMore);
-cl::alias StringDumpShort("p", cl::desc("Alias for --string-dump"),
-                          cl::aliasopt(StringDump), cl::Prefix);
 
-// --hex-dump, -x
-cl::list<std::string>
-    HexDump("hex-dump", cl::value_desc("number|name"),
-            cl::desc("Display the specified section(s) as hexadecimal bytes"),
-            cl::ZeroOrMore);
-cl::alias HexDumpShort("x", cl::desc("Alias for --hex-dump"),
-                       cl::aliasopt(HexDump), cl::Prefix);
+  // --all, -a
+  cl::opt<bool>
+      All("all",
+          cl::desc("Equivalent to setting: --file-headers, --program-headers, "
+                   "--section-headers, --symbols, --relocations, "
+                   "--dynamic-table, --notes, --version-info, --unwind, "
+                   "--section-groups and --elf-hash-histogram."));
+  cl::alias AllShort("a", cl::desc("Alias for --all"), cl::aliasopt(All));
 
-// --demangle, -C
-cl::opt<bool> Demangle("demangle", cl::desc("Demangle symbol names in output"));
-cl::alias DemangleShort("C", cl::desc("Alias for --demangle"),
-                        cl::aliasopt(Demangle), cl::NotHidden);
+  // --dependent-libraries
+  cl::opt<bool>
+      DependentLibraries("dependent-libraries",
+                         cl::desc("Display the dependent libraries section"));
 
-// --hash-table
-cl::opt<bool> HashTable("hash-table", cl::desc("Display ELF hash table"));
+  // --headers, -e
+  cl::opt<bool>
+      Headers("headers",
+          cl::desc("Equivalent to setting: --file-headers, --program-headers, "
+                   "--section-headers"));
+  cl::alias HeadersShort("e", cl::desc("Alias for --headers"),
+     cl::aliasopt(Headers));
 
-// --gnu-hash-table
-cl::opt<bool> GnuHashTable("gnu-hash-table",
-                           cl::desc("Display ELF .gnu.hash section"));
+  // --wide, -W
+  cl::opt<bool>
+      WideOutput("wide", cl::desc("Ignored for compatibility with GNU readelf"),
+                 cl::Hidden);
+  cl::alias WideOutputShort("W",
+    cl::desc("Alias for --wide"),
+    cl::aliasopt(WideOutput));
 
-// --expand-relocs
-cl::opt<bool>
-    ExpandRelocs("expand-relocs",
-                 cl::desc("Expand each shown relocation to multiple lines"));
+  // --file-headers, --file-header, -h
+  cl::opt<bool> FileHeaders("file-headers",
+    cl::desc("Display file headers "));
+  cl::alias FileHeadersShort("h", cl::desc("Alias for --file-headers"),
+                             cl::aliasopt(FileHeaders), cl::NotHidden);
+  cl::alias FileHeadersSingular("file-header",
+                                cl::desc("Alias for --file-headers"),
+                                cl::aliasopt(FileHeaders));
 
-// --raw-relr
-cl::opt<bool> RawRelr(
-    "raw-relr",
-    cl::desc(
-        "Do not decode relocations in SHT_RELR section, display raw contents"));
+  // --section-headers, --sections, -S
+  // Also -s in llvm-readobj mode.
+  cl::opt<bool> SectionHeaders("section-headers",
+                               cl::desc("Display all section headers."));
+  cl::alias SectionsShortUpper("S", cl::desc("Alias for --section-headers"),
+                               cl::aliasopt(SectionHeaders), cl::NotHidden);
+  cl::alias SectionHeadersAlias("sections",
+                                cl::desc("Alias for --section-headers"),
+                                cl::aliasopt(SectionHeaders), cl::NotHidden);
 
-// --codeview
-cl::opt<bool> CodeView("codeview",
-                       cl::desc("Display CodeView debug information"));
+  // --section-relocations
+  // Also --sr in llvm-readobj mode.
+  cl::opt<bool> SectionRelocations("section-relocations",
+    cl::desc("Display relocations for each section shown."));
 
-// --codeview-merged-types
-cl::opt<bool>
-    CodeViewMergedTypes("codeview-merged-types",
-                        cl::desc("Display the merged CodeView type stream"));
+  // --section-symbols
+  // Also --st in llvm-readobj mode.
+  cl::opt<bool> SectionSymbols("section-symbols",
+    cl::desc("Display symbols for each section shown."));
 
-// --codeview-ghash
-cl::opt<bool> CodeViewEnableGHash(
-    "codeview-ghash",
-    cl::desc("Enable global hashing for CodeView type stream de-duplication"));
+  // --section-data
+  // Also --sd in llvm-readobj mode.
+  cl::opt<bool> SectionData("section-data",
+    cl::desc("Display section data for each section shown."));
 
-// --codeview-subsection-bytes
-cl::opt<bool> CodeViewSubsectionBytes(
-    "codeview-subsection-bytes",
-    cl::desc("Dump raw contents of codeview debug sections and records"));
+  // --section-mapping
+  cl::opt<cl::boolOrDefault>
+      SectionMapping("section-mapping",
+                     cl::desc("Display the section to segment mapping."));
 
-// --arch-specific
-cl::opt<bool> ArchSpecificInfo(
-    "arch-specific",
-    cl::desc("Displays architecture-specific information, if there is any."));
-cl::alias ArchSpecifcInfoShort("A", cl::desc("Alias for --arch-specific"),
-                               cl::aliasopt(ArchSpecificInfo), cl::NotHidden);
+  // --relocations, --relocs, -r
+  cl::opt<bool> Relocations("relocations",
+    cl::desc("Display the relocation entries in the file"));
+  cl::alias RelocationsShort("r", cl::desc("Alias for --relocations"),
+                             cl::aliasopt(Relocations), cl::NotHidden);
+  cl::alias RelocationsGNU("relocs", cl::desc("Alias for --relocations"),
+                           cl::aliasopt(Relocations));
 
-// --coff-imports
-cl::opt<bool> COFFImports("coff-imports",
-                          cl::desc("Display the PE/COFF import table"));
+  // --notes, -n
+  cl::opt<bool> Notes("notes", cl::desc("Display the ELF notes in the file"));
+  cl::alias NotesShort("n", cl::desc("Alias for --notes"), cl::aliasopt(Notes));
 
-// --coff-exports
-cl::opt<bool> COFFExports("coff-exports",
-                          cl::desc("Display the PE/COFF export table"));
+  // --dyn-relocations
+  cl::opt<bool> DynRelocs("dyn-relocations",
+    cl::desc("Display the dynamic relocation entries in the file"));
 
-// --coff-directives
-cl::opt<bool> COFFDirectives("coff-directives",
-                             cl::desc("Display the PE/COFF .drectve section"));
+  // --section-details
+  // Also -t in llvm-readelf mode.
+  cl::opt<bool> SectionDetails("section-details",
+                               cl::desc("Display the section details"));
 
-// --coff-basereloc
-cl::opt<bool> COFFBaseRelocs("coff-basereloc",
-                             cl::desc("Display the PE/COFF .reloc section"));
+  // --symbols
+  // Also -s in llvm-readelf mode, or -t in llvm-readobj mode.
+  cl::opt<bool>
+      Symbols("symbols",
+              cl::desc("Display the symbol table. Also display the dynamic "
+                       "symbol table when using GNU output style for ELF"));
+  cl::alias SymbolsGNU("syms", cl::desc("Alias for --symbols"),
+                       cl::aliasopt(Symbols));
 
-// --coff-debug-directory
-cl::opt<bool>
-    COFFDebugDirectory("coff-debug-directory",
-                       cl::desc("Display the PE/COFF debug directory"));
+  // --dyn-symbols, --dyn-syms
+  // Also --dt in llvm-readobj mode.
+  cl::opt<bool> DynamicSymbols("dyn-symbols",
+    cl::desc("Display the dynamic symbol table"));
+  cl::alias DynSymsGNU("dyn-syms", cl::desc("Alias for --dyn-symbols"),
+                       cl::aliasopt(DynamicSymbols));
 
-// --coff-tls-directory
-cl::opt<bool> COFFTLSDirectory("coff-tls-directory",
-                               cl::desc("Display the PE/COFF TLS directory"));
+  // --hash-symbols
+  cl::opt<bool> HashSymbols(
+      "hash-symbols",
+      cl::desc("Display the dynamic symbols derived from the hash section"));
 
-// --coff-resources
-cl::opt<bool> COFFResources("coff-resources",
-                            cl::desc("Display the PE/COFF .rsrc section"));
+  // --unwind, -u
+  cl::opt<bool> UnwindInfo("unwind",
+    cl::desc("Display unwind information"));
+  cl::alias UnwindInfoShort("u",
+    cl::desc("Alias for --unwind"),
+    cl::aliasopt(UnwindInfo));
 
-// --coff-load-config
-cl::opt<bool> COFFLoadConfig("coff-load-config",
-                             cl::desc("Display the PE/COFF load config"));
+  // --dynamic-table, --dynamic, -d
+  cl::opt<bool> DynamicTable("dynamic-table",
+    cl::desc("Display the ELF .dynamic section table"));
+  cl::alias DynamicTableShort("d", cl::desc("Alias for --dynamic-table"),
+                              cl::aliasopt(DynamicTable), cl::NotHidden);
+  cl::alias DynamicTableAlias("dynamic", cl::desc("Alias for --dynamic-table"),
+                              cl::aliasopt(DynamicTable));
 
-// --elf-linker-options
-cl::opt<bool>
-    ELFLinkerOptions("elf-linker-options",
-                     cl::desc("Display the ELF .linker-options section"));
+  // --needed-libs
+  cl::opt<bool> NeededLibraries("needed-libs",
+    cl::desc("Display the needed libraries"));
 
-// --macho-data-in-code
-cl::opt<bool> MachODataInCode("macho-data-in-code",
-                              cl::desc("Display MachO Data in Code command"));
+  // --program-headers, --segments, -l
+  cl::opt<bool> ProgramHeaders("program-headers",
+    cl::desc("Display ELF program headers"));
+  cl::alias ProgramHeadersShort("l", cl::desc("Alias for --program-headers"),
+                                cl::aliasopt(ProgramHeaders), cl::NotHidden);
+  cl::alias SegmentsAlias("segments", cl::desc("Alias for --program-headers"),
+                          cl::aliasopt(ProgramHeaders));
 
-// --macho-indirect-symbols
-cl::opt<bool> MachOIndirectSymbols("macho-indirect-symbols",
-                                   cl::desc("Display MachO indirect symbols"));
+  // --string-dump, -p
+  cl::list<std::string> StringDump(
+      "string-dump", cl::value_desc("number|name"),
+      cl::desc("Display the specified section(s) as a list of strings"),
+      cl::ZeroOrMore);
+  cl::alias StringDumpShort("p", cl::desc("Alias for --string-dump"),
+                            cl::aliasopt(StringDump), cl::Prefix);
 
-// --macho-linker-options
-cl::opt<bool> MachOLinkerOptions("macho-linker-options",
-                                 cl::desc("Display MachO linker options"));
+  // --hex-dump, -x
+  cl::list<std::string>
+      HexDump("hex-dump", cl::value_desc("number|name"),
+              cl::desc("Display the specified section(s) as hexadecimal bytes"),
+              cl::ZeroOrMore);
+  cl::alias HexDumpShort("x", cl::desc("Alias for --hex-dump"),
+                         cl::aliasopt(HexDump), cl::Prefix);
 
-// --macho-segment
-cl::opt<bool> MachOSegment("macho-segment",
-                           cl::desc("Display MachO Segment command"));
+  // --demangle, -C
+  cl::opt<bool> Demangle("demangle",
+                         cl::desc("Demangle symbol names in output"));
+  cl::alias DemangleShort("C", cl::desc("Alias for --demangle"),
+                          cl::aliasopt(Demangle), cl::NotHidden);
 
-// --macho-version-min
-cl::opt<bool> MachOVersionMin("macho-version-min",
-                              cl::desc("Display MachO version min command"));
+  // --hash-table
+  cl::opt<bool> HashTable("hash-table",
+    cl::desc("Display ELF hash table"));
 
-// --macho-dysymtab
-cl::opt<bool> MachODysymtab("macho-dysymtab",
-                            cl::desc("Display MachO Dysymtab command"));
+  // --gnu-hash-table
+  cl::opt<bool> GnuHashTable("gnu-hash-table",
+    cl::desc("Display ELF .gnu.hash section"));
 
-// --stackmap
-cl::opt<bool> PrintStackMap("stackmap",
-                            cl::desc("Display contents of stackmap section"));
+  // --expand-relocs
+  cl::opt<bool> ExpandRelocs("expand-relocs",
+    cl::desc("Expand each shown relocation to multiple lines"));
 
-// --stack-sizes
-cl::opt<bool>
-    PrintStackSizes("stack-sizes",
-                    cl::desc("Display contents of all stack sizes sections"));
+  // --raw-relr
+  cl::opt<bool> RawRelr("raw-relr",
+    cl::desc("Do not decode relocations in SHT_RELR section, display raw contents"));
 
-// --version-info, -V
-cl::opt<bool>
-    VersionInfo("version-info",
-                cl::desc("Display ELF version sections (if present)"));
-cl::alias VersionInfoShort("V", cl::desc("Alias for -version-info"),
-                           cl::aliasopt(VersionInfo));
+  // --codeview
+  cl::opt<bool> CodeView("codeview",
+                         cl::desc("Display CodeView debug information"));
 
-// --elf-section-groups, --section-groups, -g
-cl::opt<bool> SectionGroups("elf-section-groups",
-                            cl::desc("Display ELF section group contents"));
-cl::alias SectionGroupsAlias("section-groups",
-                             cl::desc("Alias for -elf-sections-groups"),
-                             cl::aliasopt(SectionGroups));
-cl::alias SectionGroupsShort("g", cl::desc("Alias for -elf-sections-groups"),
-                             cl::aliasopt(SectionGroups));
+  // --codeview-merged-types
+  cl::opt<bool>
+      CodeViewMergedTypes("codeview-merged-types",
+                          cl::desc("Display the merged CodeView type stream"));
 
-// --elf-hash-histogram, --histogram, -I
-cl::opt<bool>
-    HashHistogram("elf-hash-histogram",
-                  cl::desc("Display bucket list histogram for hash sections"));
-cl::alias HashHistogramShort("I", cl::desc("Alias for -elf-hash-histogram"),
-                             cl::aliasopt(HashHistogram));
-cl::alias HistogramAlias("histogram",
-                         cl::desc("Alias for --elf-hash-histogram"),
-                         cl::aliasopt(HashHistogram));
+  // --codeview-ghash
+  cl::opt<bool> CodeViewEnableGHash(
+      "codeview-ghash",
+      cl::desc(
+          "Enable global hashing for CodeView type stream de-duplication"));
 
-// --cg-profile
-cl::opt<bool> CGProfile("cg-profile",
-                        cl::desc("Display callgraph profile section"));
-cl::alias ELFCGProfile("elf-cg-profile", cl::desc("Alias for --cg-profile"),
-                       cl::aliasopt(CGProfile));
+  // --codeview-subsection-bytes
+  cl::opt<bool> CodeViewSubsectionBytes(
+      "codeview-subsection-bytes",
+      cl::desc("Dump raw contents of codeview debug sections and records"));
 
-// -addrsig
-cl::opt<bool> Addrsig("addrsig",
-                      cl::desc("Display address-significance table"));
+  // --arch-specific
+  cl::opt<bool> ArchSpecificInfo("arch-specific",
+                              cl::desc("Displays architecture-specific information, if there is any."));
+  cl::alias ArchSpecifcInfoShort("A", cl::desc("Alias for --arch-specific"),
+                                 cl::aliasopt(ArchSpecificInfo), cl::NotHidden);
 
-// -elf-output-style
-cl::opt<OutputStyleTy> Output("elf-output-style",
-                              cl::desc("Specify ELF dump style"),
-                              cl::values(clEnumVal(LLVM, "LLVM default style"),
-                                         clEnumVal(GNU, "GNU readelf style")),
-                              cl::init(LLVM));
+  // --coff-imports
+  cl::opt<bool>
+  COFFImports("coff-imports", cl::desc("Display the PE/COFF import table"));
 
-cl::extrahelp
-    HelpResponse("\nPass @FILE as argument to read options from FILE.\n");
+  // --coff-exports
+  cl::opt<bool>
+  COFFExports("coff-exports", cl::desc("Display the PE/COFF export table"));
+
+  // --coff-directives
+  cl::opt<bool>
+  COFFDirectives("coff-directives",
+                 cl::desc("Display the PE/COFF .drectve section"));
+
+  // --coff-basereloc
+  cl::opt<bool>
+  COFFBaseRelocs("coff-basereloc",
+                 cl::desc("Display the PE/COFF .reloc section"));
+
+  // --coff-debug-directory
+  cl::opt<bool>
+  COFFDebugDirectory("coff-debug-directory",
+                     cl::desc("Display the PE/COFF debug directory"));
+
+  // --coff-tls-directory
+  cl::opt<bool> COFFTLSDirectory("coff-tls-directory",
+                                 cl::desc("Display the PE/COFF TLS directory"));
+
+  // --coff-resources
+  cl::opt<bool> COFFResources("coff-resources",
+                              cl::desc("Display the PE/COFF .rsrc section"));
+
+  // --coff-load-config
+  cl::opt<bool>
+  COFFLoadConfig("coff-load-config",
+                 cl::desc("Display the PE/COFF load config"));
+
+  // --elf-linker-options
+  cl::opt<bool>
+  ELFLinkerOptions("elf-linker-options",
+                   cl::desc("Display the ELF .linker-options section"));
+
+  // --macho-data-in-code
+  cl::opt<bool>
+  MachODataInCode("macho-data-in-code",
+                  cl::desc("Display MachO Data in Code command"));
+
+  // --macho-indirect-symbols
+  cl::opt<bool>
+  MachOIndirectSymbols("macho-indirect-symbols",
+                  cl::desc("Display MachO indirect symbols"));
+
+  // --macho-linker-options
+  cl::opt<bool>
+  MachOLinkerOptions("macho-linker-options",
+                  cl::desc("Display MachO linker options"));
+
+  // --macho-segment
+  cl::opt<bool>
+  MachOSegment("macho-segment",
+                  cl::desc("Display MachO Segment command"));
+
+  // --macho-version-min
+  cl::opt<bool>
+  MachOVersionMin("macho-version-min",
+                  cl::desc("Display MachO version min command"));
+
+  // --macho-dysymtab
+  cl::opt<bool>
+  MachODysymtab("macho-dysymtab",
+                  cl::desc("Display MachO Dysymtab command"));
+
+  // --stackmap
+  cl::opt<bool>
+  PrintStackMap("stackmap",
+                cl::desc("Display contents of stackmap section"));
+
+  // --stack-sizes
+  cl::opt<bool>
+      PrintStackSizes("stack-sizes",
+                      cl::desc("Display contents of all stack sizes sections"));
+
+  // --version-info, -V
+  cl::opt<bool>
+      VersionInfo("version-info",
+                  cl::desc("Display ELF version sections (if present)"));
+  cl::alias VersionInfoShort("V", cl::desc("Alias for -version-info"),
+                             cl::aliasopt(VersionInfo));
+
+  // --elf-section-groups, --section-groups, -g
+  cl::opt<bool> SectionGroups("elf-section-groups",
+                              cl::desc("Display ELF section group contents"));
+  cl::alias SectionGroupsAlias("section-groups",
+                               cl::desc("Alias for -elf-sections-groups"),
+                               cl::aliasopt(SectionGroups));
+  cl::alias SectionGroupsShort("g", cl::desc("Alias for -elf-sections-groups"),
+                               cl::aliasopt(SectionGroups));
+
+  // --elf-hash-histogram, --histogram, -I
+  cl::opt<bool> HashHistogram(
+      "elf-hash-histogram",
+      cl::desc("Display bucket list histogram for hash sections"));
+  cl::alias HashHistogramShort("I", cl::desc("Alias for -elf-hash-histogram"),
+                               cl::aliasopt(HashHistogram));
+  cl::alias HistogramAlias("histogram",
+                           cl::desc("Alias for --elf-hash-histogram"),
+                           cl::aliasopt(HashHistogram));
+
+  // --cg-profile
+  cl::opt<bool> CGProfile("cg-profile",
+                          cl::desc("Display callgraph profile section"));
+  cl::alias ELFCGProfile("elf-cg-profile", cl::desc("Alias for --cg-profile"),
+                         cl::aliasopt(CGProfile));
+
+  // -addrsig
+  cl::opt<bool> Addrsig("addrsig",
+                        cl::desc("Display address-significance table"));
+
+  // -elf-output-style
+  cl::opt<OutputStyleTy>
+      Output("elf-output-style", cl::desc("Specify ELF dump style"),
+             cl::values(clEnumVal(LLVM, "LLVM default style"),
+                        clEnumVal(GNU, "GNU readelf style")),
+             cl::init(LLVM));
+
+  cl::extrahelp
+      HelpResponse("\nPass @FILE as argument to read options from FILE.\n");
 } // namespace opts
 
 static StringRef ToolName;
@@ -634,6 +642,7 @@ static void dumpWindowsResourceFile(WindowsResource *WinRes,
   if (auto Err = Dumper.printData())
     reportError(std::move(Err), WinRes->getFileName());
 }
+
 
 /// Opens \a File and dumps it.
 static void dumpInput(StringRef File, ScopedPrinter &Writer) {

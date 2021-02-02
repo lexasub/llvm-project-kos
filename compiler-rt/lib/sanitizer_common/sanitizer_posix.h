@@ -37,8 +37,8 @@ uptr internal_read(fd_t fd, void *buf, uptr count);
 uptr internal_write(fd_t fd, const void *buf, uptr count);
 
 // Memory
-uptr internal_mmap(void *addr, uptr length, int prot, int flags, int fd,
-                   u64 offset);
+uptr internal_mmap(void *addr, uptr length, int prot, int flags,
+                   int fd, u64 offset);
 uptr internal_munmap(void *addr, uptr length);
 int internal_mprotect(void *addr, uptr length, int prot);
 int internal_madvise(uptr addr, uptr length, int advice);
@@ -78,15 +78,15 @@ int real_pthread_create(void *th, void *attr, void *(*callback)(void *),
 SANITIZER_WEAK_ATTRIBUTE
 int real_pthread_join(void *th, void **ret);
 
-#define DEFINE_REAL_PTHREAD_FUNCTIONS                                      \
-  namespace __sanitizer {                                                  \
-  int real_pthread_create(void *th, void *attr, void *(*callback)(void *), \
-                          void *param) {                                   \
-    return REAL(pthread_create)(th, attr, callback, param);                \
-  }                                                                        \
-  int real_pthread_join(void *th, void **ret) {                            \
-    return REAL(pthread_join(th, ret));                                    \
-  }                                                                        \
+#define DEFINE_REAL_PTHREAD_FUNCTIONS                                          \
+  namespace __sanitizer {                                                      \
+  int real_pthread_create(void *th, void *attr, void *(*callback)(void *),     \
+                          void *param) {                                       \
+    return REAL(pthread_create)(th, attr, callback, param);                    \
+  }                                                                            \
+  int real_pthread_join(void *th, void **ret) {                                \
+    return REAL(pthread_join(th, ret));                                        \
+  }                                                                            \
   }  // namespace __sanitizer
 
 int my_pthread_attr_getstack(void *attr, void **addr, uptr *size);
@@ -118,6 +118,7 @@ int GetNamedMappingFd(const char *name, uptr size, int *flags);
 // 2. Add name to an existing anonymous mapping. The caller must keep *name
 // alive at least as long as the mapping exists.
 void DecorateMapping(uptr addr, uptr size, const char *name);
+
 
 }  // namespace __sanitizer
 

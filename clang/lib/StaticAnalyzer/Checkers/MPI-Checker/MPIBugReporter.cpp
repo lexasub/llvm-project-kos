@@ -22,7 +22,8 @@ namespace mpi {
 
 void MPIBugReporter::reportDoubleNonblocking(
     const CallEvent &MPICallEvent, const ento::mpi::Request &Req,
-    const MemRegion *const RequestRegion, const ExplodedNode *const ExplNode,
+    const MemRegion *const RequestRegion,
+    const ExplodedNode *const ExplNode,
     BugReporter &BReporter) const {
 
   std::string ErrorText;
@@ -45,10 +46,10 @@ void MPIBugReporter::reportDoubleNonblocking(
   BReporter.emitReport(std::move(Report));
 }
 
-void MPIBugReporter::reportMissingWait(const ento::mpi::Request &Req,
-                                       const MemRegion *const RequestRegion,
-                                       const ExplodedNode *const ExplNode,
-                                       BugReporter &BReporter) const {
+void MPIBugReporter::reportMissingWait(
+    const ento::mpi::Request &Req, const MemRegion *const RequestRegion,
+    const ExplodedNode *const ExplNode,
+    BugReporter &BReporter) const {
   std::string ErrorText{"Request " + RequestRegion->getDescriptiveName() +
                         " has no matching wait. "};
 
@@ -67,7 +68,8 @@ void MPIBugReporter::reportMissingWait(const ento::mpi::Request &Req,
 
 void MPIBugReporter::reportUnmatchedWait(
     const CallEvent &CE, const clang::ento::MemRegion *const RequestRegion,
-    const ExplodedNode *const ExplNode, BugReporter &BReporter) const {
+    const ExplodedNode *const ExplNode,
+    BugReporter &BReporter) const {
   std::string ErrorText{"Request " + RequestRegion->getDescriptiveName() +
                         " has no matching nonblocking call. "};
 
@@ -110,6 +112,6 @@ MPIBugReporter::RequestNodeVisitor::VisitNode(const ExplodedNode *N,
   return nullptr;
 }
 
-} // namespace mpi
-} // namespace ento
-} // namespace clang
+} // end of namespace: mpi
+} // end of namespace: ento
+} // end of namespace: clang

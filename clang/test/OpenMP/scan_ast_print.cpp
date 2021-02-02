@@ -15,8 +15,7 @@ void foo() {}
 template <class T>
 T tmain(T argc) {
   static T a;
-#pragma omp for reduction(inscan, + \
-                          : a)
+#pragma omp for reduction(inscan, +: a)
   for (int i = 0; i < 10; ++i) {
 #pragma omp scan inclusive(a)
   }
@@ -39,15 +38,14 @@ int main(int argc, char **argv) {
   static int a;
 // CHECK: static int a;
 #pragma omp parallel
-#pragma omp for simd reduction(inscan, ^ \
-                               : a, argc)
+#pragma omp for simd reduction(inscan, ^: a, argc)
   for (int i = 0; i < 10; ++i) {
 #pragma omp scan exclusive(a, argc)
   }
-  // CHECK-NEXT: #pragma omp parallel
-  // CHECK-NEXT: #pragma omp for simd reduction(inscan, ^: a,argc)
-  // CHECK-NEXT: for (int i = 0; i < 10; ++i) {
-  // CHECK-NEXT: #pragma omp scan exclusive(a,argc){{$}}
+// CHECK-NEXT: #pragma omp parallel
+// CHECK-NEXT: #pragma omp for simd reduction(inscan, ^: a,argc)
+// CHECK-NEXT: for (int i = 0; i < 10; ++i) {
+// CHECK-NEXT: #pragma omp scan exclusive(a,argc){{$}}
   return tmain(argc) + tmain(argv[0][0]) + a;
 }
 

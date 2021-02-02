@@ -1,5 +1,5 @@
 //===- LegacyDivergenceAnalysis.cpp --------- Legacy Divergence Analysis
-// Implementation -==//
+//Implementation -==//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -121,8 +121,8 @@ private:
   PostDominatorTree &PDT;
   std::vector<Value *> Worklist; // Stack for DFS.
   DenseSet<const Value *> &DV;   // Stores all divergent values.
-  DenseSet<const Use *> &DU;     // Stores divergent uses of possibly uniform
-                                 // values.
+  DenseSet<const Use *> &DU;   // Stores divergent uses of possibly uniform
+                               // values.
 };
 
 void DivergencePropagator::populateWithSourcesOfDivergence() {

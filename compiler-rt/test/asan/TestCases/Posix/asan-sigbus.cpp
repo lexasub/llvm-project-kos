@@ -12,9 +12,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <string>
 
 #ifndef MAP_FILE
 #define MAP_FILE 0

@@ -7,7 +7,8 @@ struct Foo {
   Foo(unsigned arg);
 };
 
-Foo::Foo(unsigned arg) : file_id(arg = 42) {}
+Foo::Foo(unsigned arg) : file_id(arg = 42)
+{ }
 
 // CHECK: define {{.*}} @_ZN3FooC2Ej(%struct.Foo* {{[^,]*}} %this, i32 %arg) unnamed_addr
 // CHECK: [[ARG:%.*]] = alloca i32

@@ -24,12 +24,7 @@ typedef std::shared_ptr<DebugMacros> DebugMacrosSP;
 class DebugMacroEntry {
 public:
   enum EntryType : uint8_t {
-    INVALID,
-    DEFINE,
-    UNDEF,
-    START_FILE,
-    END_FILE,
-    INDIRECT
+      INVALID, DEFINE, UNDEF, START_FILE, END_FILE, INDIRECT
   };
 
   static DebugMacroEntry CreateDefineEntry(uint32_t line, const char *str);

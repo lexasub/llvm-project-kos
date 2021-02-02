@@ -33,19 +33,21 @@ struct TestFn {
     typedef std::atomic<T> A;
     A t;
     std::atomic_init(&t, T(1));
-    assert(std::atomic_exchange_explicit(&t, T(2), std::memory_order_seq_cst) ==
-           T(1));
+    assert(std::atomic_exchange_explicit(&t, T(2), std::memory_order_seq_cst)
+           == T(1));
     assert(t == T(2));
     volatile A vt;
     std::atomic_init(&vt, T(3));
-    assert(std::atomic_exchange_explicit(&vt, T(4),
-                                         std::memory_order_seq_cst) == T(3));
+    assert(std::atomic_exchange_explicit(&vt, T(4), std::memory_order_seq_cst)
+           == T(3));
     assert(vt == T(4));
   }
 };
 
-int main(int, char**) {
-  TestEachAtomicType<TestFn>()();
+
+int main(int, char**)
+{
+    TestEachAtomicType<TestFn>()();
 
   return 0;
 }

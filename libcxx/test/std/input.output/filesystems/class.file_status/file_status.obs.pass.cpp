@@ -21,6 +21,7 @@
 
 #include "test_macros.h"
 
+
 int main(int, char**) {
   using namespace fs;
 
@@ -28,16 +29,18 @@ int main(int, char**) {
 
   // type test
   {
-    static_assert(noexcept(st.type()), "operation must be noexcept");
+    static_assert(noexcept(st.type()),
+                  "operation must be noexcept");
     static_assert(std::is_same<decltype(st.type()), file_type>::value,
-                  "operation must return file_type");
+                 "operation must return file_type");
     assert(st.type() == file_type::regular);
   }
   // permissions test
   {
-    static_assert(noexcept(st.permissions()), "operation must be noexcept");
+    static_assert(noexcept(st.permissions()),
+                  "operation must be noexcept");
     static_assert(std::is_same<decltype(st.permissions()), perms>::value,
-                  "operation must return perms");
+                 "operation must return perms");
     assert(st.permissions() == perms::owner_read);
   }
 

@@ -30,7 +30,7 @@ void f() {
 void g() {
   // CHECK: call noalias nonnull i8* @_Znwm(i64 1)
   // CHECK: call void @_ZN1AC1Ev(
-  static A &a = *new A;
+  static A& a = *new A;
 }
 
 int a();
@@ -49,122 +49,114 @@ void h3() {
 
 // PR6980: this shouldn't crash
 namespace test0 {
-struct A {
-  A();
-};
-__attribute__((noreturn)) int throw_exception();
+  struct A { A(); };
+  __attribute__((noreturn)) int throw_exception();
 
-void test() {
-  throw_exception();
-  static A r;
+  void test() {
+    throw_exception();
+    static A r;
+  }
 }
-} // namespace test0
 
 namespace test1 {
-// CHECK-LABEL: define internal i32 @_ZN5test1L6getvarEi(
-static inline int getvar(int index) {
-  static const int var[] = {1, 0, 2, 4};
-  return var[index];
-}
+  // CHECK-LABEL: define internal i32 @_ZN5test1L6getvarEi(
+  static inline int getvar(int index) {
+    static const int var[] = { 1, 0, 2, 4 };
+    return var[index];
+  }
 
-void test() { (void)getvar(2); }
-} // namespace test1
+  void test() { (void) getvar(2); }
+}
 
 // Make sure we emit the initializer correctly for the following:
-char base_req[] = {"foo"};
-unsigned char base_req_uchar[] = {"bar"};
+char base_req[] = { "foo" };
+unsigned char base_req_uchar[] = { "bar" };
 
 namespace union_static_local {
-// CHECK-LABEL: define internal void @_ZZN18union_static_local4testEvEN1c4mainEv
-// CHECK: call void @_ZN18union_static_local1fEPNS_1xE(%"union.union_static_local::x"* bitcast ({ [2 x i8*] }* @_ZZN18union_static_local4testEvE3foo to %"union.union_static_local::x"*))
-union x {
-  long double y;
-  const char *x[2];
-};
-void f(union x *);
-void test() {
-  static union x foo = {.x = {"a", "b"}};
-  struct c {
-    static void main() {
-      f(&foo);
-    }
-  };
-  c::main();
+  // CHECK-LABEL: define internal void @_ZZN18union_static_local4testEvEN1c4mainEv
+  // CHECK: call void @_ZN18union_static_local1fEPNS_1xE(%"union.union_static_local::x"* bitcast ({ [2 x i8*] }* @_ZZN18union_static_local4testEvE3foo to %"union.union_static_local::x"*))
+  union x { long double y; const char *x[2]; };
+  void f(union x*);
+  void test() {
+    static union x foo = { .x = { "a", "b" } };
+    struct c {
+      static void main() {
+        f(&foo);
+      }
+    };
+    c::main();
+  }
 }
-} // namespace union_static_local
 
 // rdar://problem/11091093
 //   Static variables should be consistent across constructor
 //   or destructor variants.
 namespace test2 {
-struct A {
-  A();
-  ~A();
-};
+  struct A {
+    A();
+    ~A();
+  };
 
-struct B : virtual A {
-  B();
-  ~B();
-};
+  struct B : virtual A {
+    B();
+    ~B();
+  };
 
-// If we ever implement this as a delegate ctor call, just change
-// this to take variadic arguments or something.
-extern int foo();
-B::B() {
-  static int x = foo();
+  // If we ever implement this as a delegate ctor call, just change
+  // this to take variadic arguments or something.
+  extern int foo();
+  B::B() {
+    static int x = foo();
+  }
+  // CHECK-LABEL: define{{.*}} void @_ZN5test21BC2Ev
+  // CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BC1EvE1x to i8*) acquire,
+  // CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BC1EvE1x)
+  // CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
+  // CHECK:   store i32 [[T0]], i32* @_ZZN5test21BC1EvE1x,
+  // CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BC1EvE1x)
+
+  // CHECK-LABEL: define{{.*}} void @_ZN5test21BC1Ev
+  // CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BC1EvE1x to i8*) acquire,
+  // CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BC1EvE1x)
+  // CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
+  // CHECK:   store i32 [[T0]], i32* @_ZZN5test21BC1EvE1x,
+  // CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BC1EvE1x)
+
+  // This is just for completeness, because we actually emit this
+  // using a delegate dtor call.
+  B::~B() {
+    static int y = foo();
+  }
+  // CHECK-LABEL: define{{.*}} void @_ZN5test21BD2Ev(
+  // CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BD1EvE1y to i8*) acquire,
+  // CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BD1EvE1y)
+  // CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
+  // CHECK:   store i32 [[T0]], i32* @_ZZN5test21BD1EvE1y,
+  // CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BD1EvE1y)
+
+  // CHECK-LABEL: define{{.*}} void @_ZN5test21BD1Ev(
+  // CHECK:   call void @_ZN5test21BD2Ev(
 }
-// CHECK-LABEL: define{{.*}} void @_ZN5test21BC2Ev
-// CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BC1EvE1x to i8*) acquire,
-// CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BC1EvE1x)
-// CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
-// CHECK:   store i32 [[T0]], i32* @_ZZN5test21BC1EvE1x,
-// CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BC1EvE1x)
-
-// CHECK-LABEL: define{{.*}} void @_ZN5test21BC1Ev
-// CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BC1EvE1x to i8*) acquire,
-// CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BC1EvE1x)
-// CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
-// CHECK:   store i32 [[T0]], i32* @_ZZN5test21BC1EvE1x,
-// CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BC1EvE1x)
-
-// This is just for completeness, because we actually emit this
-// using a delegate dtor call.
-B::~B() {
-  static int y = foo();
-}
-// CHECK-LABEL: define{{.*}} void @_ZN5test21BD2Ev(
-// CHECK:   load atomic i8, i8* bitcast (i64* @_ZGVZN5test21BD1EvE1y to i8*) acquire,
-// CHECK:   call i32 @__cxa_guard_acquire(i64* @_ZGVZN5test21BD1EvE1y)
-// CHECK:   [[T0:%.*]] = call i32 @_ZN5test23fooEv()
-// CHECK:   store i32 [[T0]], i32* @_ZZN5test21BD1EvE1y,
-// CHECK:   call void @__cxa_guard_release(i64* @_ZGVZN5test21BD1EvE1y)
-
-// CHECK-LABEL: define{{.*}} void @_ZN5test21BD1Ev(
-// CHECK:   call void @_ZN5test21BD2Ev(
-} // namespace test2
 
 // This shouldn't error out.
 namespace test3 {
-struct A {
-  A();
-  ~A();
-};
-
-struct B : virtual A {
-  B();
-  ~B();
-};
-
-B::B() {
-  union U {
-    char x;
-    int i;
+  struct A {
+    A();
+    ~A();
   };
-  static U u = {'a'};
+
+  struct B : virtual A {
+    B();
+    ~B();
+  };
+
+  B::B() {
+    union U { char x; int i; };
+    static U u = { 'a' };
+  }
+  // CHECK-LABEL: define{{.*}} void @_ZN5test31BC2Ev(
+  // CHECK-LABEL: define{{.*}} void @_ZN5test31BC1Ev(
 }
-// CHECK-LABEL: define{{.*}} void @_ZN5test31BC2Ev(
-// CHECK-LABEL: define{{.*}} void @_ZN5test31BC1Ev(
-} // namespace test3
 
 // We forgot to set the comdat when replacing the global with a different type.
 namespace test4 {
@@ -180,4 +172,4 @@ void useit() {
 }
 // CHECK: define linkonce_odr nonnull align 8 dereferenceable(8) %"struct.test4::HasVTable"* @_ZN5test414useStaticLocalEv()
 // CHECK: ret %"struct.test4::HasVTable"*{{.*}} @_ZZN5test414useStaticLocalEvE3obj
-} // namespace test4
+}

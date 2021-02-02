@@ -50,10 +50,12 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   LLT p0 = LLT::pointer(0, 64);
   auto MIBAdd = B.buildAdd(s64, Copies[0], Copies[1]);
   // Test case for no bind.
-  bool match = mi_match(MIBAdd.getReg(0), *MRI, m_GAdd(m_Reg(), m_Reg()));
+  bool match =
+      mi_match(MIBAdd.getReg(0), *MRI, m_GAdd(m_Reg(), m_Reg()));
   EXPECT_TRUE(match);
   Register Src0, Src1, Src2;
-  match = mi_match(MIBAdd.getReg(0), *MRI, m_GAdd(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(MIBAdd.getReg(0), *MRI,
+                   m_GAdd(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
   EXPECT_EQ(Src1, Copies[1]);
@@ -62,7 +64,8 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   auto MIBMul = B.buildMul(s64, MIBAdd, Copies[2]);
 
   // Try to match MUL.
-  match = mi_match(MIBMul.getReg(0), *MRI, m_GMul(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(MIBMul.getReg(0), *MRI,
+                   m_GMul(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, MIBAdd.getReg(0));
   EXPECT_EQ(Src1, Copies[2]);
@@ -80,20 +83,23 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   // Try to match MUL(Cst, Reg) on src of MUL(Reg, Cst) to validate
   // commutativity.
   int64_t Cst;
-  match = mi_match(MIBMul2.getReg(0), *MRI, m_GMul(m_ICst(Cst), m_Reg(Src0)));
+  match = mi_match(MIBMul2.getReg(0), *MRI,
+                   m_GMul(m_ICst(Cst), m_Reg(Src0)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Cst, 42);
   EXPECT_EQ(Src0, Copies[0]);
 
   // Make sure commutative doesn't work with something like SUB.
   auto MIBSub = B.buildSub(s64, Copies[0], B.buildConstant(s64, 42));
-  match = mi_match(MIBSub.getReg(0), *MRI, m_GSub(m_ICst(Cst), m_Reg(Src0)));
+  match = mi_match(MIBSub.getReg(0), *MRI,
+                   m_GSub(m_ICst(Cst), m_Reg(Src0)));
   EXPECT_FALSE(match);
 
   auto MIBFMul = B.buildInstr(TargetOpcode::G_FMUL, {s64},
                               {Copies[0], B.buildConstant(s64, 42)});
   // Match and test commutativity for FMUL.
-  match = mi_match(MIBFMul.getReg(0), *MRI, m_GFMul(m_ICst(Cst), m_Reg(Src0)));
+  match = mi_match(MIBFMul.getReg(0), *MRI,
+                   m_GFMul(m_ICst(Cst), m_Reg(Src0)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Cst, 42);
   EXPECT_EQ(Src0, Copies[0]);
@@ -101,14 +107,16 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   // FSUB
   auto MIBFSub = B.buildInstr(TargetOpcode::G_FSUB, {s64},
                               {Copies[0], B.buildConstant(s64, 42)});
-  match = mi_match(MIBFSub.getReg(0), *MRI, m_GFSub(m_Reg(Src0), m_Reg()));
+  match = mi_match(MIBFSub.getReg(0), *MRI,
+                   m_GFSub(m_Reg(Src0), m_Reg()));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
 
   // Build AND %0, %1
   auto MIBAnd = B.buildAnd(s64, Copies[0], Copies[1]);
   // Try to match AND.
-  match = mi_match(MIBAnd.getReg(0), *MRI, m_GAnd(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(MIBAnd.getReg(0), *MRI,
+                   m_GAnd(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
   EXPECT_EQ(Src1, Copies[1]);
@@ -116,7 +124,8 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   // Build OR %0, %1
   auto MIBOr = B.buildOr(s64, Copies[0], Copies[1]);
   // Try to match OR.
-  match = mi_match(MIBOr.getReg(0), *MRI, m_GOr(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(MIBOr.getReg(0), *MRI,
+                   m_GOr(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
   EXPECT_EQ(Src1, Copies[1]);
@@ -124,14 +133,16 @@ TEST_F(AArch64GISelMITest, MatchBinaryOp) {
   // Match lshr, and make sure a different shift amount type works.
   auto TruncCopy1 = B.buildTrunc(s32, Copies[1]);
   auto LShr = B.buildLShr(s64, Copies[0], TruncCopy1);
-  match = mi_match(LShr.getReg(0), *MRI, m_GLShr(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(LShr.getReg(0), *MRI,
+                   m_GLShr(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
   EXPECT_EQ(Src1, TruncCopy1.getReg(0));
 
   // Match shl, and make sure a different shift amount type works.
   auto Shl = B.buildShl(s64, Copies[0], TruncCopy1);
-  match = mi_match(Shl.getReg(0), *MRI, m_GShl(m_Reg(Src0), m_Reg(Src1)));
+  match = mi_match(Shl.getReg(0), *MRI,
+                   m_GShl(m_Reg(Src0), m_Reg(Src1)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
   EXPECT_EQ(Src1, TruncCopy1.getReg(0));
@@ -205,7 +216,8 @@ TEST_F(AArch64GISelMITest, MatchFPUnaryOp) {
 
   // Match G_FABS.
   auto MIBFabs = B.buildInstr(TargetOpcode::G_FABS, {s32}, {Copy0s32});
-  bool match = mi_match(MIBFabs.getReg(0), *MRI, m_GFabs(m_Reg()));
+  bool match =
+      mi_match(MIBFabs.getReg(0), *MRI, m_GFabs(m_Reg()));
   EXPECT_TRUE(match);
 
   Register Src;
@@ -268,10 +280,12 @@ TEST_F(AArch64GISelMITest, MatchExtendsTrunc) {
   auto MIBZExt = B.buildZExt(s64, MIBTrunc);
   auto MIBSExt = B.buildSExt(s64, MIBTrunc);
   Register Src0;
-  bool match = mi_match(MIBTrunc.getReg(0), *MRI, m_GTrunc(m_Reg(Src0)));
+  bool match =
+      mi_match(MIBTrunc.getReg(0), *MRI, m_GTrunc(m_Reg(Src0)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
-  match = mi_match(MIBAExt.getReg(0), *MRI, m_GAnyExt(m_Reg(Src0)));
+  match =
+      mi_match(MIBAExt.getReg(0), *MRI, m_GAnyExt(m_Reg(Src0)));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, MIBTrunc.getReg(0));
 
@@ -284,15 +298,18 @@ TEST_F(AArch64GISelMITest, MatchExtendsTrunc) {
   EXPECT_EQ(Src0, MIBTrunc.getReg(0));
 
   // Match ext(trunc src)
-  match = mi_match(MIBAExt.getReg(0), *MRI, m_GAnyExt(m_GTrunc(m_Reg(Src0))));
+  match = mi_match(MIBAExt.getReg(0), *MRI,
+                   m_GAnyExt(m_GTrunc(m_Reg(Src0))));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
 
-  match = mi_match(MIBSExt.getReg(0), *MRI, m_GSExt(m_GTrunc(m_Reg(Src0))));
+  match = mi_match(MIBSExt.getReg(0), *MRI,
+                   m_GSExt(m_GTrunc(m_Reg(Src0))));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
 
-  match = mi_match(MIBZExt.getReg(0), *MRI, m_GZExt(m_GTrunc(m_Reg(Src0))));
+  match = mi_match(MIBZExt.getReg(0), *MRI,
+                   m_GZExt(m_GTrunc(m_Reg(Src0))));
   EXPECT_TRUE(match);
   EXPECT_EQ(Src0, Copies[0]);
 }
@@ -306,17 +323,20 @@ TEST_F(AArch64GISelMITest, MatchSpecificType) {
   LLT s64 = LLT::scalar(64);
   LLT s32 = LLT::scalar(32);
   auto MIBAdd = B.buildAdd(s64, Copies[0], Copies[1]);
-  EXPECT_FALSE(
-      mi_match(MIBAdd.getReg(0), *MRI, m_GAdd(m_SpecificType(s32), m_Reg())));
-  EXPECT_TRUE(
-      mi_match(MIBAdd.getReg(0), *MRI, m_GAdd(m_SpecificType(s64), m_Reg())));
+  EXPECT_FALSE(mi_match(MIBAdd.getReg(0), *MRI,
+                        m_GAdd(m_SpecificType(s32), m_Reg())));
+  EXPECT_TRUE(mi_match(MIBAdd.getReg(0), *MRI,
+                       m_GAdd(m_SpecificType(s64), m_Reg())));
 
   // Try to match the destination type of a bitcast.
   LLT v2s32 = LLT::vector(2, 32);
   auto MIBCast = B.buildCast(v2s32, Copies[0]);
-  EXPECT_TRUE(mi_match(MIBCast.getReg(0), *MRI, m_GBitcast(m_Reg())));
-  EXPECT_TRUE(mi_match(MIBCast.getReg(0), *MRI, m_SpecificType(v2s32)));
-  EXPECT_TRUE(mi_match(MIBCast.getReg(1), *MRI, m_SpecificType(s64)));
+  EXPECT_TRUE(
+      mi_match(MIBCast.getReg(0), *MRI, m_GBitcast(m_Reg())));
+  EXPECT_TRUE(
+      mi_match(MIBCast.getReg(0), *MRI, m_SpecificType(v2s32)));
+  EXPECT_TRUE(
+      mi_match(MIBCast.getReg(1), *MRI, m_SpecificType(s64)));
 
   // Build a PTRToInt and INTTOPTR and match and test them.
   LLT PtrTy = LLT::pointer(0, 64);

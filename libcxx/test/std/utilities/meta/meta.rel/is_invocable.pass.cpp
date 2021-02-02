@@ -42,7 +42,7 @@ struct NotCallableWithInt {
 };
 
 struct Sink {
-  template <class... Args>
+  template <class ...Args>
   void operator()(Args&&...) const {}
 };
 
@@ -82,7 +82,9 @@ int main(int, char**) {
     static_assert(!std::is_invocable<int, char, float, double>::value, "");
     static_assert(!std::is_invocable<Sink, AbominableFunc>::value, "");
     static_assert(!std::is_invocable<Sink, void>::value, "");
-    static_assert(!std::is_invocable<Sink, const volatile void>::value, "");
+    static_assert(!std::is_invocable<Sink, const volatile void>::value,
+                  "");
+
 
     static_assert(!std::is_invocable_r<int, void>::value, "");
     static_assert(!std::is_invocable_r<int, const void>::value, "");
@@ -239,5 +241,5 @@ int main(int, char**) {
   static_assert(std::is_invocable_r_v<void, Fn>, "");
   static_assert(!std::is_invocable_r_v<int, Fn>, "");
 }
-return 0;
+  return 0;
 }

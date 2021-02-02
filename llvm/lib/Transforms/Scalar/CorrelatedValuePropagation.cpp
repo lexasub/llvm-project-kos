@@ -51,75 +51,74 @@ using namespace llvm;
 
 #define DEBUG_TYPE "correlated-value-propagation"
 
-STATISTIC(NumPhis, "Number of phis propagated");
+STATISTIC(NumPhis,      "Number of phis propagated");
 STATISTIC(NumPhiCommon, "Number of phis deleted via common incoming value");
-STATISTIC(NumSelects, "Number of selects propagated");
+STATISTIC(NumSelects,   "Number of selects propagated");
 STATISTIC(NumMemAccess, "Number of memory access targets propagated");
-STATISTIC(NumCmps, "Number of comparisons propagated");
-STATISTIC(NumReturns, "Number of return values propagated");
+STATISTIC(NumCmps,      "Number of comparisons propagated");
+STATISTIC(NumReturns,   "Number of return values propagated");
 STATISTIC(NumDeadCases, "Number of switch cases removed");
 STATISTIC(NumSDivSRemsNarrowed,
           "Number of sdivs/srems whose width was decreased");
-STATISTIC(NumSDivs, "Number of sdiv converted to udiv");
+STATISTIC(NumSDivs,     "Number of sdiv converted to udiv");
 STATISTIC(NumUDivURemsNarrowed,
           "Number of udivs/urems whose width was decreased");
-STATISTIC(NumAShrs, "Number of ashr converted to lshr");
-STATISTIC(NumSRems, "Number of srem converted to urem");
-STATISTIC(NumSExt, "Number of sext converted to zext");
-STATISTIC(NumAnd, "Number of ands removed");
-STATISTIC(NumNW, "Number of no-wrap deductions");
-STATISTIC(NumNSW, "Number of no-signed-wrap deductions");
-STATISTIC(NumNUW, "Number of no-unsigned-wrap deductions");
-STATISTIC(NumAddNW, "Number of no-wrap deductions for add");
-STATISTIC(NumAddNSW, "Number of no-signed-wrap deductions for add");
-STATISTIC(NumAddNUW, "Number of no-unsigned-wrap deductions for add");
-STATISTIC(NumSubNW, "Number of no-wrap deductions for sub");
-STATISTIC(NumSubNSW, "Number of no-signed-wrap deductions for sub");
-STATISTIC(NumSubNUW, "Number of no-unsigned-wrap deductions for sub");
-STATISTIC(NumMulNW, "Number of no-wrap deductions for mul");
-STATISTIC(NumMulNSW, "Number of no-signed-wrap deductions for mul");
-STATISTIC(NumMulNUW, "Number of no-unsigned-wrap deductions for mul");
-STATISTIC(NumShlNW, "Number of no-wrap deductions for shl");
-STATISTIC(NumShlNSW, "Number of no-signed-wrap deductions for shl");
-STATISTIC(NumShlNUW, "Number of no-unsigned-wrap deductions for shl");
+STATISTIC(NumAShrs,     "Number of ashr converted to lshr");
+STATISTIC(NumSRems,     "Number of srem converted to urem");
+STATISTIC(NumSExt,      "Number of sext converted to zext");
+STATISTIC(NumAnd,       "Number of ands removed");
+STATISTIC(NumNW,        "Number of no-wrap deductions");
+STATISTIC(NumNSW,       "Number of no-signed-wrap deductions");
+STATISTIC(NumNUW,       "Number of no-unsigned-wrap deductions");
+STATISTIC(NumAddNW,     "Number of no-wrap deductions for add");
+STATISTIC(NumAddNSW,    "Number of no-signed-wrap deductions for add");
+STATISTIC(NumAddNUW,    "Number of no-unsigned-wrap deductions for add");
+STATISTIC(NumSubNW,     "Number of no-wrap deductions for sub");
+STATISTIC(NumSubNSW,    "Number of no-signed-wrap deductions for sub");
+STATISTIC(NumSubNUW,    "Number of no-unsigned-wrap deductions for sub");
+STATISTIC(NumMulNW,     "Number of no-wrap deductions for mul");
+STATISTIC(NumMulNSW,    "Number of no-signed-wrap deductions for mul");
+STATISTIC(NumMulNUW,    "Number of no-unsigned-wrap deductions for mul");
+STATISTIC(NumShlNW,     "Number of no-wrap deductions for shl");
+STATISTIC(NumShlNSW,    "Number of no-signed-wrap deductions for shl");
+STATISTIC(NumShlNUW,    "Number of no-unsigned-wrap deductions for shl");
 STATISTIC(NumOverflows, "Number of overflow checks removed");
 STATISTIC(NumSaturating,
-          "Number of saturating arithmetics converted to normal arithmetics");
+    "Number of saturating arithmetics converted to normal arithmetics");
 
-static cl::opt<bool> DontAddNoWrapFlags("cvp-dont-add-nowrap-flags",
-                                        cl::init(false));
+static cl::opt<bool> DontAddNoWrapFlags("cvp-dont-add-nowrap-flags", cl::init(false));
 
 namespace {
 
-class CorrelatedValuePropagation : public FunctionPass {
-public:
-  static char ID;
+  class CorrelatedValuePropagation : public FunctionPass {
+  public:
+    static char ID;
 
-  CorrelatedValuePropagation() : FunctionPass(ID) {
-    initializeCorrelatedValuePropagationPass(*PassRegistry::getPassRegistry());
-  }
+    CorrelatedValuePropagation(): FunctionPass(ID) {
+     initializeCorrelatedValuePropagationPass(*PassRegistry::getPassRegistry());
+    }
 
-  bool runOnFunction(Function &F) override;
+    bool runOnFunction(Function &F) override;
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addRequired<DominatorTreeWrapperPass>();
-    AU.addRequired<LazyValueInfoWrapperPass>();
-    AU.addPreserved<GlobalsAAWrapperPass>();
-    AU.addPreserved<DominatorTreeWrapperPass>();
-    AU.addPreserved<LazyValueInfoWrapperPass>();
-  }
-};
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.addRequired<DominatorTreeWrapperPass>();
+      AU.addRequired<LazyValueInfoWrapperPass>();
+      AU.addPreserved<GlobalsAAWrapperPass>();
+      AU.addPreserved<DominatorTreeWrapperPass>();
+      AU.addPreserved<LazyValueInfoWrapperPass>();
+    }
+  };
 
 } // end anonymous namespace
 
 char CorrelatedValuePropagation::ID = 0;
 
 INITIALIZE_PASS_BEGIN(CorrelatedValuePropagation, "correlated-propagation",
-                      "Value Propagation", false, false)
+                "Value Propagation", false, false)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(LazyValueInfoWrapperPass)
 INITIALIZE_PASS_END(CorrelatedValuePropagation, "correlated-propagation",
-                    "Value Propagation", false, false)
+                "Value Propagation", false, false)
 
 // Public interface to the Value Propagation pass
 Pass *llvm::createCorrelatedValuePropagationPass() {
@@ -127,18 +126,14 @@ Pass *llvm::createCorrelatedValuePropagationPass() {
 }
 
 static bool processSelect(SelectInst *S, LazyValueInfo *LVI) {
-  if (S->getType()->isVectorTy())
-    return false;
-  if (isa<Constant>(S->getCondition()))
-    return false;
+  if (S->getType()->isVectorTy()) return false;
+  if (isa<Constant>(S->getCondition())) return false;
 
   Constant *C = LVI->getConstant(S->getCondition(), S);
-  if (!C)
-    return false;
+  if (!C) return false;
 
   ConstantInt *CI = dyn_cast<ConstantInt>(C);
-  if (!CI)
-    return false;
+  if (!CI) return false;
 
   Value *ReplaceWith = CI->isOne() ? S->getTrueValue() : S->getFalseValue();
   S->replaceAllUsesWith(ReplaceWith);
@@ -219,8 +214,7 @@ static bool processPHI(PHINode *P, LazyValueInfo *LVI, DominatorTree *DT,
   BasicBlock *BB = P->getParent();
   for (unsigned i = 0, e = P->getNumIncomingValues(); i < e; ++i) {
     Value *Incoming = P->getIncomingValue(i);
-    if (isa<Constant>(Incoming))
-      continue;
+    if (isa<Constant>(Incoming)) continue;
 
     Value *V = LVI->getConstantOnEdge(Incoming, P->getIncomingBlock(i), BB, P);
 
@@ -230,8 +224,7 @@ static bool processPHI(PHINode *P, LazyValueInfo *LVI, DominatorTree *DT,
     // select later.
     if (!V) {
       SelectInst *SI = dyn_cast<SelectInst>(Incoming);
-      if (!SI)
-        continue;
+      if (!SI) continue;
 
       Value *Condition = SI->getCondition();
       if (!Condition->getType()->isVectorTy()) {
@@ -253,12 +246,11 @@ static bool processPHI(PHINode *P, LazyValueInfo *LVI, DominatorTree *DT,
       // remove the select later.
       if (!V) {
         Constant *C = dyn_cast<Constant>(SI->getFalseValue());
-        if (!C)
-          continue;
+        if (!C) continue;
 
         if (LVI->getPredicateOnEdge(ICmpInst::ICMP_EQ, SI, C,
-                                    P->getIncomingBlock(i), BB,
-                                    P) != LazyValueInfo::False)
+              P->getIncomingBlock(i), BB, P) !=
+            LazyValueInfo::False)
           continue;
         V = SI->getTrueValue();
       }
@@ -292,12 +284,10 @@ static bool processMemAccess(Instruction *I, LazyValueInfo *LVI) {
   else
     Pointer = cast<StoreInst>(I)->getPointerOperand();
 
-  if (isa<Constant>(Pointer))
-    return false;
+  if (isa<Constant>(Pointer)) return false;
 
   Constant *C = LVI->getConstant(Pointer, I);
-  if (!C)
-    return false;
+  if (!C) return false;
 
   ++NumMemAccess;
   I->replaceUsesOfWith(Pointer, C);
@@ -342,7 +332,7 @@ static bool processSwitch(SwitchInst *I, LazyValueInfo *LVI,
 
   // Analyse each switch case in turn.
   bool Changed = false;
-  DenseMap<BasicBlock *, int> SuccessorsCount;
+  DenseMap<BasicBlock*, int> SuccessorsCount;
   for (auto *Succ : successors(BB))
     SuccessorsCount[Succ]++;
 
@@ -363,8 +353,8 @@ static bool processSwitch(SwitchInst *I, LazyValueInfo *LVI,
         CI = SI.removeCase(CI);
         CE = SI->case_end();
 
-        // The condition can be modified by removePredecessor's PHI
-        // simplification logic.
+        // The condition can be modified by removePredecessor's PHI simplification
+        // logic.
         Cond = SI->getCondition();
 
         ++NumDeadCases;
@@ -466,9 +456,9 @@ static void processOverflowIntrinsic(WithOverflowInst *WO, LazyValueInfo *LVI) {
   setDeducedOverflowingFlags(NewOp, Opcode, NSW, NUW);
 
   StructType *ST = cast<StructType>(WO->getType());
-  Constant *Struct =
-      ConstantStruct::get(ST, {UndefValue::get(ST->getElementType(0)),
-                               ConstantInt::getFalse(ST->getElementType(1))});
+  Constant *Struct = ConstantStruct::get(ST,
+      { UndefValue::get(ST->getElementType(0)),
+        ConstantInt::getFalse(ST->getElementType(1)) });
   Value *NewI = B.CreateInsertValue(Struct, NewOp, 0);
   WO->replaceAllUsesWith(NewI);
   WO->eraseFromParent();
@@ -525,16 +515,13 @@ static bool processCallSite(CallBase &CB, LazyValueInfo *LVI) {
   // we may have a conditional fact with which LVI can fold.
   if (auto DeoptBundle = CB.getOperandBundle(LLVMContext::OB_deopt)) {
     for (const Use &ConstU : DeoptBundle->Inputs) {
-      Use &U = const_cast<Use &>(ConstU);
+      Use &U = const_cast<Use&>(ConstU);
       Value *V = U.get();
-      if (V->getType()->isVectorTy())
-        continue;
-      if (isa<Constant>(V))
-        continue;
+      if (V->getType()->isVectorTy()) continue;
+      if (isa<Constant>(V)) continue;
 
       Constant *C = LVI->getConstant(V, &CB);
-      if (!C)
-        continue;
+      if (!C) continue;
       U.set(C);
       Changed = true;
     }
@@ -918,6 +905,7 @@ static bool processAnd(BinaryOperator *BinOp, LazyValueInfo *LVI) {
   return true;
 }
 
+
 static Constant *getConstantAt(Value *V, Instruction *At, LazyValueInfo *LVI) {
   if (Constant *C = LVI->getConstant(V, At))
     return C;
@@ -925,22 +913,20 @@ static Constant *getConstantAt(Value *V, Instruction *At, LazyValueInfo *LVI) {
   // TODO: The following really should be sunk inside LVI's core algorithm, or
   // at least the outer shims around such.
   auto *C = dyn_cast<CmpInst>(V);
-  if (!C)
-    return nullptr;
+  if (!C) return nullptr;
 
   Value *Op0 = C->getOperand(0);
   Constant *Op1 = dyn_cast<Constant>(C->getOperand(1));
-  if (!Op1)
-    return nullptr;
+  if (!Op1) return nullptr;
 
   LazyValueInfo::Tristate Result =
-      LVI->getPredicateAt(C->getPredicate(), Op0, Op1, At);
+    LVI->getPredicateAt(C->getPredicate(), Op0, Op1, At);
   if (Result == LazyValueInfo::Unknown)
     return nullptr;
 
-  return (Result == LazyValueInfo::True)
-             ? ConstantInt::getTrue(C->getContext())
-             : ConstantInt::getFalse(C->getContext());
+  return (Result == LazyValueInfo::True) ?
+    ConstantInt::getTrue(C->getContext()) :
+    ConstantInt::getFalse(C->getContext());
 }
 
 static bool runImpl(Function &F, LazyValueInfo *LVI, DominatorTree *DT,
@@ -1011,10 +997,8 @@ static bool runImpl(Function &F, LazyValueInfo *LVI, DominatorTree *DT,
       // simplify the writing of unit tests, but also helps to enable IPO by
       // constant folding the return values of callees.
       auto *RetVal = RI->getReturnValue();
-      if (!RetVal)
-        break; // handle "ret void"
-      if (isa<Constant>(RetVal))
-        break; // nothing to do
+      if (!RetVal) break; // handle "ret void"
+      if (isa<Constant>(RetVal)) break; // nothing to do
       if (auto *C = getConstantAt(RetVal, RI, LVI)) {
         ++NumReturns;
         RI->replaceUsesOfWith(RetVal, C);

@@ -41,11 +41,17 @@ public:
       : BaseAndIsVirtual(Base.getBase(), BaseIsVirtual),
         BaseOffset(Base.getBaseOffset()) {}
 
-  const CXXRecordDecl *getBase() const { return BaseAndIsVirtual.getPointer(); }
+  const CXXRecordDecl *getBase() const {
+    return BaseAndIsVirtual.getPointer();
+  }
 
-  CharUnits getBaseOffset() const { return BaseOffset; }
+  CharUnits getBaseOffset() const {
+    return BaseOffset;
+  }
 
-  bool isVirtual() const { return BaseAndIsVirtual.getInt(); }
+  bool isVirtual() const {
+    return BaseAndIsVirtual.getInt();
+  }
 
   BaseSubobject getBaseSubobject() const {
     return BaseSubobject(getBase(), getBaseOffset());
@@ -58,7 +64,7 @@ struct VTTComponent {
 
   VTTComponent() = default;
   VTTComponent(uint64_t VTableIndex, BaseSubobject VTableBase)
-      : VTableIndex(VTableIndex), VTableBase(VTableBase) {}
+     : VTableIndex(VTableIndex), VTableBase(VTableBase) {}
 };
 
 /// Class for building VTT layout information.
@@ -115,7 +121,8 @@ class VTTBuilder {
 
   /// Lay out the secondary virtual pointers for the given base
   /// subobject.
-  void LayoutSecondaryVirtualPointers(BaseSubobject Base, uint64_t VTableIndex);
+  void LayoutSecondaryVirtualPointers(BaseSubobject Base,
+                                      uint64_t VTableIndex);
 
   /// Lay out the VTTs for the virtual base classes of the given
   /// record declaration.
@@ -136,7 +143,9 @@ public:
   }
 
   // Returns a reference to the VTT vtables.
-  const VTTVTablesVectorTy &getVTTVTables() const { return VTTVTables; }
+  const VTTVTablesVectorTy &getVTTVTables() const {
+    return VTTVTables;
+  }
 
   /// Returns a reference to the sub-VTT indices.
   const llvm::DenseMap<BaseSubobject, uint64_t> &getSubVTTIndicies() const {

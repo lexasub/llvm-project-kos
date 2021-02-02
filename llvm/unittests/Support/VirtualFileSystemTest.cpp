@@ -502,7 +502,7 @@ TEST(VirtualFileSystemTest, MultipleWorkingDirs) {
   ASSERT_NE(CIt, vfs::directory_iterator());
   EXPECT_EQ((ADir.path() + "/./aa").str(),
             CIt->path()); // Partly resolved name!
-  CIt.increment(EC);      // Because likely to read through this path.
+  CIt.increment(EC); // Because likely to read through this path.
   ASSERT_FALSE(EC);
   ASSERT_EQ(CIt, vfs::directory_iterator());
 }
@@ -1835,27 +1835,28 @@ TEST_F(VFSFromYAMLTest, NonFallthroughDirectoryIteration) {
   Lower->addDirectory("//root/");
   Lower->addRegularFile("//root/a");
   Lower->addRegularFile("//root/b");
-  IntrusiveRefCntPtr<vfs::FileSystem> FS =
-      getFromYAMLString("{ 'use-external-names': false,\n"
-                        "  'fallthrough': false,\n"
-                        "  'roots': [\n"
-                        "{\n"
-                        "  'type': 'directory',\n"
-                        "  'name': '//root/',\n"
-                        "  'contents': [ {\n"
-                        "                  'type': 'file',\n"
-                        "                  'name': 'c',\n"
-                        "                  'external-contents': '//root/a'\n"
-                        "                }\n"
-                        "              ]\n"
-                        "}\n"
-                        "]\n"
-                        "}",
-                        Lower);
+  IntrusiveRefCntPtr<vfs::FileSystem> FS = getFromYAMLString(
+      "{ 'use-external-names': false,\n"
+      "  'fallthrough': false,\n"
+      "  'roots': [\n"
+      "{\n"
+      "  'type': 'directory',\n"
+      "  'name': '//root/',\n"
+      "  'contents': [ {\n"
+      "                  'type': 'file',\n"
+      "                  'name': 'c',\n"
+      "                  'external-contents': '//root/a'\n"
+      "                }\n"
+      "              ]\n"
+      "}\n"
+      "]\n"
+      "}",
+      Lower);
   ASSERT_TRUE(FS.get() != nullptr);
 
   std::error_code EC;
-  checkContents(FS->dir_begin("//root/", EC), {"//root/c"});
+  checkContents(FS->dir_begin("//root/", EC),
+                {"//root/c"});
 }
 
 TEST_F(VFSFromYAMLTest, DirectoryIterationWithDuplicates) {
@@ -1863,26 +1864,27 @@ TEST_F(VFSFromYAMLTest, DirectoryIterationWithDuplicates) {
   Lower->addDirectory("//root/");
   Lower->addRegularFile("//root/a");
   Lower->addRegularFile("//root/b");
-  IntrusiveRefCntPtr<vfs::FileSystem> FS =
-      getFromYAMLString("{ 'use-external-names': false,\n"
-                        "  'roots': [\n"
-                        "{\n"
-                        "  'type': 'directory',\n"
-                        "  'name': '//root/',\n"
-                        "  'contents': [ {\n"
-                        "                  'type': 'file',\n"
-                        "                  'name': 'a',\n"
-                        "                  'external-contents': '//root/a'\n"
-                        "                }\n"
-                        "              ]\n"
-                        "}\n"
-                        "]\n"
-                        "}",
-                        Lower);
+  IntrusiveRefCntPtr<vfs::FileSystem> FS = getFromYAMLString(
+      "{ 'use-external-names': false,\n"
+      "  'roots': [\n"
+      "{\n"
+      "  'type': 'directory',\n"
+      "  'name': '//root/',\n"
+      "  'contents': [ {\n"
+      "                  'type': 'file',\n"
+      "                  'name': 'a',\n"
+      "                  'external-contents': '//root/a'\n"
+      "                }\n"
+      "              ]\n"
+      "}\n"
+      "]\n"
+      "}",
+	  Lower);
   ASSERT_TRUE(FS.get() != nullptr);
 
   std::error_code EC;
-  checkContents(FS->dir_begin("//root/", EC), {"//root/a", "//root/b"});
+  checkContents(FS->dir_begin("//root/", EC),
+                {"//root/a", "//root/b"});
 }
 
 TEST_F(VFSFromYAMLTest, DirectoryIterationErrorInVFSLayer) {
@@ -1919,27 +1921,27 @@ TEST_F(VFSFromYAMLTest, GetRealPath) {
   Lower->addDirectory("//dir/");
   Lower->addRegularFile("/foo");
   Lower->addSymlink("/link");
-  IntrusiveRefCntPtr<vfs::FileSystem> FS =
-      getFromYAMLString("{ 'use-external-names': false,\n"
-                        "  'roots': [\n"
-                        "{\n"
-                        "  'type': 'directory',\n"
-                        "  'name': '//root/',\n"
-                        "  'contents': [ {\n"
-                        "                  'type': 'file',\n"
-                        "                  'name': 'bar',\n"
-                        "                  'external-contents': '/link'\n"
-                        "                }\n"
-                        "              ]\n"
-                        "},\n"
-                        "{\n"
-                        "  'type': 'directory',\n"
-                        "  'name': '//dir/',\n"
-                        "  'contents': []\n"
-                        "}\n"
-                        "]\n"
-                        "}",
-                        Lower);
+  IntrusiveRefCntPtr<vfs::FileSystem> FS = getFromYAMLString(
+      "{ 'use-external-names': false,\n"
+      "  'roots': [\n"
+      "{\n"
+      "  'type': 'directory',\n"
+      "  'name': '//root/',\n"
+      "  'contents': [ {\n"
+      "                  'type': 'file',\n"
+      "                  'name': 'bar',\n"
+      "                  'external-contents': '/link'\n"
+      "                }\n"
+      "              ]\n"
+      "},\n"
+      "{\n"
+      "  'type': 'directory',\n"
+      "  'name': '//dir/',\n"
+      "  'contents': []\n"
+      "}\n"
+      "]\n"
+      "}",
+      Lower);
   ASSERT_TRUE(FS.get() != nullptr);
 
   // Regular file present in underlying file system.

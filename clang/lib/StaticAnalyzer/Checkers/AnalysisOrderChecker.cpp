@@ -52,10 +52,8 @@ class AnalysisOrderChecker
   }
 
   bool isCallbackEnabled(ProgramStateRef State, StringRef CallbackName) const {
-    AnalyzerOptions &Opts = State->getStateManager()
-                                .getOwningEngine()
-                                .getAnalysisManager()
-                                .getAnalyzerOptions();
+    AnalyzerOptions &Opts = State->getStateManager().getOwningEngine()
+                                 .getAnalysisManager().getAnalyzerOptions();
     return isCallbackEnabled(Opts, CallbackName);
   }
 

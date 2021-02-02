@@ -7,27 +7,25 @@
 #ifdef DEFINE_GUID
 struct _GUID {
 #ifdef WRONG_GUID
-  unsigned int SomethingWentWrong;
+    unsigned int SomethingWentWrong;
 #else
-  unsigned long Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char Data4[8];
+    unsigned long  Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char  Data4[8];
 #endif
 };
 #endif
 typedef struct _GUID GUID;
 
 #ifdef BRACKET_ATTRIB
-[uuid(12345678 - 1234 - 1234 - 1234 - 1234567890aB)] struct S1 {
-} s1;
-[uuid(87654321 - 4321 - 4321 - 4321 - ba0987654321)] struct S2 {};
-[uuid({12345678 - 1234 - 1234 - 1234 - 1234567890ac})] struct Curly;
-[uuid({12345678 - 1234 - 1234 - 1234 - 1234567890ac})] struct Curly;
+[uuid(12345678-1234-1234-1234-1234567890aB)] struct S1 { } s1;
+[uuid(87654321-4321-4321-4321-ba0987654321)] struct S2 { };
+[uuid({12345678-1234-1234-1234-1234567890ac})] struct Curly;
+[uuid({12345678-1234-1234-1234-1234567890ac})] struct Curly;
 #else
-struct __declspec(uuid("12345678-1234-1234-1234-1234567890aB")) S1 {
-} s1;
-struct __declspec(uuid("87654321-4321-4321-4321-ba0987654321")) S2 {};
+struct __declspec(uuid("12345678-1234-1234-1234-1234567890aB")) S1 { } s1;
+struct __declspec(uuid("87654321-4321-4321-4321-ba0987654321")) S2 { };
 struct __declspec(uuid("{12345678-1234-1234-1234-1234567890ac}")) Curly;
 struct __declspec(uuid("{12345678-1234-1234-1234-1234567890ac}")) Curly;
 #endif
@@ -54,17 +52,17 @@ GUID const_init = __uuidof(Curly);
 // CHECK: @_GUID_12345678_1234_1234_1234_1234567890ab = linkonce_odr constant { i32, i16, i16, [8 x i8] } { i32 305419896, i16 4660, i16 4660, [8 x i8] c"\124\124Vx\90\AB" }, comdat
 // CHECK: @gr ={{.*}} constant %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_12345678_1234_1234_1234_1234567890ab to %struct._GUID*), align 4
 // CHECK-64: @gr ={{.*}} constant %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_12345678_1234_1234_1234_1234567890ab to %struct._GUID*), align 8
-const GUID &gr = __uuidof(S1);
+const GUID& gr = __uuidof(S1);
 
 // CHECK: @gp ={{.*}} global %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_12345678_1234_1234_1234_1234567890ab to %struct._GUID*), align 4
-const GUID *gp = &__uuidof(S1);
+const GUID* gp = &__uuidof(S1);
 
 // CHECK: @cp ={{.*}} global %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_12345678_1234_1234_1234_1234567890ac to %struct._GUID*), align 4
-const GUID *cp = &__uuidof(Curly);
+const GUID* cp = &__uuidof(Curly);
 
 // Special case: _uuidof(0)
 // CHECK: @zeroiid ={{.*}} constant %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_00000000_0000_0000_0000_000000000000 to %struct._GUID*), align 4
-const GUID &zeroiid = __uuidof(0);
+const GUID& zeroiid = __uuidof(0);
 
 // __uuidof(S2) hasn't been used globally yet, so it's emitted when it's used
 // in a function and is emitted at the end of the globals section.
@@ -125,17 +123,17 @@ void gun() {
   // CHECK: %zeroiid = alloca %struct._GUID*, align 4
 
   // CHECK: store %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_87654321_4321_4321_4321_ba0987654321 to %struct._GUID*), %struct._GUID** %r, align 4
-  const GUID &r = __uuidof(S2);
+  const GUID& r = __uuidof(S2);
   // CHECK: store %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_87654321_4321_4321_4321_ba0987654321 to %struct._GUID*), %struct._GUID** %p, align 4
-  const GUID *p = &__uuidof(S2);
+  const GUID* p = &__uuidof(S2);
 
   // Special case _uuidof(0), local scope version.
   // CHECK: store %struct._GUID* bitcast ({ i32, i16, i16, [8 x i8] }* @_GUID_00000000_0000_0000_0000_000000000000 to %struct._GUID*), %struct._GUID** %zeroiid, align 4
-  const GUID &zeroiid = __uuidof(0);
+  const GUID& zeroiid = __uuidof(0);
 }
 
 namespace DeclRefExprNamingGUID {
-template <const _GUID &g> const _GUID &f() { return g; }
-struct __declspec(uuid("12345678-1234-1234-1234-123412341234")) S {};
-auto &r = f<__uuidof(S)>();
-} // namespace DeclRefExprNamingGUID
+  template<const _GUID &g> const _GUID &f() { return g; }
+  struct __declspec(uuid("12345678-1234-1234-1234-123412341234")) S {};
+  auto &r = f<__uuidof(S)>();
+}

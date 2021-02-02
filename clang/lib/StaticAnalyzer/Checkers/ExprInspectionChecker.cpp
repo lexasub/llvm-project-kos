@@ -22,8 +22,8 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class ExprInspectionChecker
-    : public Checker<eval::Call, check::DeadSymbols, check::EndAnalysis> {
+class ExprInspectionChecker : public Checker<eval::Call, check::DeadSymbols,
+                                             check::EndAnalysis> {
   mutable std::unique_ptr<BugType> BT;
 
   // These stats are per-analysis, not per-branch, hence they shouldn't
@@ -55,7 +55,8 @@ class ExprInspectionChecker
   // Optional parameter `ExprVal` for expression value to be marked interesting.
   ExplodedNode *reportBug(llvm::StringRef Msg, CheckerContext &C,
                           Optional<SVal> ExprVal = None) const;
-  ExplodedNode *reportBug(llvm::StringRef Msg, BugReporter &BR, ExplodedNode *N,
+  ExplodedNode *reportBug(llvm::StringRef Msg, BugReporter &BR,
+                          ExplodedNode *N,
                           Optional<SVal> ExprVal = None) const;
 
 public:
@@ -64,7 +65,7 @@ public:
   void checkEndAnalysis(ExplodedGraph &G, BugReporter &BR,
                         ExprEngine &Eng) const;
 };
-} // namespace
+}
 
 REGISTER_SET_WITH_PROGRAMSTATE(MarkedSymbols, SymbolRef)
 REGISTER_MAP_WITH_PROGRAMSTATE(DenotedSymbols, SymbolRef, const StringLiteral *)
@@ -130,7 +131,7 @@ static const char *getArgumentValueString(const CallExpr *CE,
 
   ProgramStateRef StTrue, StFalse;
   std::tie(StTrue, StFalse) =
-      State->assume(AssertionVal.castAs<DefinedOrUnknownSVal>());
+    State->assume(AssertionVal.castAs<DefinedOrUnknownSVal>());
 
   if (StTrue) {
     if (StFalse)
@@ -154,7 +155,8 @@ ExplodedNode *ExprInspectionChecker::reportBug(llvm::StringRef Msg,
 }
 
 ExplodedNode *ExprInspectionChecker::reportBug(llvm::StringRef Msg,
-                                               BugReporter &BR, ExplodedNode *N,
+                                               BugReporter &BR,
+                                               ExplodedNode *N,
                                                Optional<SVal> ExprVal) const {
   if (!N)
     return nullptr;
@@ -304,7 +306,7 @@ void ExprInspectionChecker::checkDeadSymbols(SymbolReaper &SymReaper,
 
 void ExprInspectionChecker::checkEndAnalysis(ExplodedGraph &G, BugReporter &BR,
                                              ExprEngine &Eng) const {
-  for (auto Item : ReachedStats) {
+  for (auto Item: ReachedStats) {
     unsigned NumTimesReached = Item.second.NumTimesReached;
     ExplodedNode *N = Item.second.ExampleNode;
 
@@ -371,7 +373,9 @@ public:
     return None;
   }
 
-  Optional<std::string> VisitSymExpr(const SymExpr *S) { return lookup(S); }
+  Optional<std::string> VisitSymExpr(const SymExpr *S) {
+    return lookup(S);
+  }
 
   Optional<std::string> VisitSymIntExpr(const SymIntExpr *S) {
     if (Optional<std::string> Str = lookup(S))
@@ -390,8 +394,7 @@ public:
     if (Optional<std::string> Str1 = Visit(S->getLHS()))
       if (Optional<std::string> Str2 = Visit(S->getRHS()))
         return (*Str1 + " " + BinaryOperator::getOpcodeStr(S->getOpcode()) +
-                " " + *Str2)
-            .str();
+                " " + *Str2).str();
     return None;
   }
 

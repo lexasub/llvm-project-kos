@@ -47,7 +47,9 @@ bool SimpleLoopSafetyInfo::blockMayThrow(const BasicBlock *BB) const {
   return anyBlockMayThrow();
 }
 
-bool SimpleLoopSafetyInfo::anyBlockMayThrow() const { return MayThrow; }
+bool SimpleLoopSafetyInfo::anyBlockMayThrow() const {
+  return MayThrow;
+}
 
 void SimpleLoopSafetyInfo::computeLoopSafetyInfo(const Loop *CurLoop) {
   assert(CurLoop != nullptr && "CurLoop can't be null");
@@ -72,7 +74,9 @@ bool ICFLoopSafetyInfo::blockMayThrow(const BasicBlock *BB) const {
   return ICF.hasICF(BB);
 }
 
-bool ICFLoopSafetyInfo::anyBlockMayThrow() const { return MayThrow; }
+bool ICFLoopSafetyInfo::anyBlockMayThrow() const {
+  return MayThrow;
+}
 
 void ICFLoopSafetyInfo::computeLoopSafetyInfo(const Loop *CurLoop) {
   assert(CurLoop != nullptr && "CurLoop can't be null");
@@ -139,9 +143,10 @@ static bool CanProveNotTakenFirstIteration(const BasicBlock *ExitBlock,
     return false;
   auto DL = ExitBlock->getModule()->getDataLayout();
   auto *IVStart = LHS->getIncomingValueForBlock(CurLoop->getLoopPreheader());
-  auto *SimpleValOrNull =
-      SimplifyCmpInst(Cond->getPredicate(), IVStart, RHS,
-                      {DL, /*TLI*/ nullptr, DT, /*AC*/ nullptr, BI});
+  auto *SimpleValOrNull = SimplifyCmpInst(Cond->getPredicate(),
+                                          IVStart, RHS,
+                                          {DL, /*TLI*/ nullptr,
+                                              DT, /*AC*/ nullptr, BI});
   auto *SimpleCst = dyn_cast_or_null<Constant>(SimpleValOrNull);
   if (!SimpleCst)
     return false;
@@ -216,8 +221,8 @@ bool LoopSafetyInfo::allLoopPathsLeadToBlock(const Loop *CurLoop,
       continue;
 
     for (auto *Succ : successors(Pred))
-      if (CheckedSuccessors.insert(Succ).second && Succ != BB &&
-          !Predecessors.count(Succ))
+      if (CheckedSuccessors.insert(Succ).second &&
+          Succ != BB && !Predecessors.count(Succ))
         // By discharging conditions that are not executed on the 1st iteration,
         // we guarantee that *at least* on the first iteration all paths from
         // header that *may* execute will lead us to the block of interest. So
@@ -254,7 +259,8 @@ bool SimpleLoopSafetyInfo::isGuaranteedToExecute(const Instruction &Inst,
     // Inst unless we can prove that Inst comes before the potential implicit
     // exit.  At the moment, we use a (cheap) hack for the common case where
     // the instruction of interest is the first one in the block.
-    return !HeaderMayThrow || Inst.getParent()->getFirstNonPHIOrDbg() == &Inst;
+    return !HeaderMayThrow ||
+           Inst.getParent()->getFirstNonPHIOrDbg() == &Inst;
 
   // If there is a path from header to exit or latch that doesn't lead to our
   // instruction's block, return false.
@@ -322,7 +328,7 @@ struct MustBeExecutedContextPrinter : public ModulePass {
   }
   bool runOnModule(Module &M) override;
 };
-} // namespace
+}
 
 char MustExecutePrinter::ID = 0;
 INITIALIZE_PASS_BEGIN(MustExecutePrinter, "print-mustexecute",
@@ -366,7 +372,7 @@ bool MustBeExecutedContextPrinter::runOnModule(Module &M) {
     return LIs.back().get();
   };
   GetterTy<DominatorTree> DTGetter = [&](const Function &F) {
-    DTs.push_back(std::make_unique<DominatorTree>(const_cast<Function &>(F)));
+    DTs.push_back(std::make_unique<DominatorTree>(const_cast<Function&>(F)));
     return DTs.back().get();
   };
   GetterTy<PostDominatorTree> PDTGetter = [&](const Function &F) {
@@ -398,19 +404,19 @@ static bool isMustExecuteIn(const Instruction &I, Loop *L, DominatorTree *DT) {
   SimpleLoopSafetyInfo LSI;
   LSI.computeLoopSafetyInfo(L);
   return LSI.isGuaranteedToExecute(I, DT, L) ||
-         isGuaranteedToExecuteForEveryIteration(&I, L);
+    isGuaranteedToExecuteForEveryIteration(&I, L);
 }
 
 namespace {
 /// An assembly annotator class to print must execute information in
 /// comments.
 class MustExecuteAnnotatedWriter : public AssemblyAnnotationWriter {
-  DenseMap<const Value *, SmallVector<Loop *, 4>> MustExec;
+  DenseMap<const Value*, SmallVector<Loop*, 4> > MustExec;
 
 public:
-  MustExecuteAnnotatedWriter(const Function &F, DominatorTree &DT,
-                             LoopInfo &LI) {
-    for (auto &I : instructions(F)) {
+  MustExecuteAnnotatedWriter(const Function &F,
+                             DominatorTree &DT, LoopInfo &LI) {
+    for (auto &I: instructions(F)) {
       Loop *L = LI.getLoopFor(I.getParent());
       while (L) {
         if (isMustExecuteIn(I, L, &DT)) {
@@ -420,18 +426,20 @@ public:
       };
     }
   }
-  MustExecuteAnnotatedWriter(const Module &M, DominatorTree &DT, LoopInfo &LI) {
+  MustExecuteAnnotatedWriter(const Module &M,
+                             DominatorTree &DT, LoopInfo &LI) {
     for (auto &F : M)
-      for (auto &I : instructions(F)) {
-        Loop *L = LI.getLoopFor(I.getParent());
-        while (L) {
-          if (isMustExecuteIn(I, L, &DT)) {
-            MustExec[&I].push_back(L);
-          }
-          L = L->getParentLoop();
-        };
-      }
+    for (auto &I: instructions(F)) {
+      Loop *L = LI.getLoopFor(I.getParent());
+      while (L) {
+        if (isMustExecuteIn(I, L, &DT)) {
+          MustExec[&I].push_back(L);
+        }
+        L = L->getParentLoop();
+      };
+    }
   }
+
 
   void printInfoComment(const Value &V, formatted_raw_ostream &OS) override {
     if (!MustExec.count(&V))
@@ -484,7 +492,7 @@ bool llvm::mayContainIrreducibleControl(const Function &F, const LoopInfo *LI) {
 /// initializing the optional through \p Fn(\p args).
 template <typename K, typename V, typename FnTy, typename... ArgsTy>
 static V getOrCreateCachedOptional(K Key, DenseMap<K, Optional<V>> &Map,
-                                   FnTy &&Fn, ArgsTy &&...args) {
+                                   FnTy &&Fn, ArgsTy&&... args) {
   Optional<V> &OptVal = Map[Key];
   if (!OptVal.hasValue())
     OptVal = Fn(std::forward<ArgsTy>(args)...);
@@ -572,8 +580,7 @@ MustBeExecutedContextExplorer::findForwardJoinPoint(const BasicBlock *InitBB) {
   if (!JoinBB)
     return nullptr;
 
-  LLVM_DEBUG(dbgs() << "\t\tJoin block candidate: " << JoinBB->getName()
-                    << "\n");
+  LLVM_DEBUG(dbgs() << "\t\tJoin block candidate: " << JoinBB->getName() << "\n");
 
   // In forward direction we check if control will for sure reach JoinBB from
   // InitBB, thus it can not be "stopped" along the way. Ways to "stop" control

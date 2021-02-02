@@ -20,7 +20,7 @@ void test(int i, float f) {
 int import;
 
 void f() {
-  int import;
+ int import;
 }
 
 // RUN: rm -rf %t
@@ -33,3 +33,4 @@ void f() {
 // CHECK-PRINT: int *f0(int *);
 // CHECK-PRINT: float *f0(float *);
 // CHECK-PRINT: void test(int i, float f)
+

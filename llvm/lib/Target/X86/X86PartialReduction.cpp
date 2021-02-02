@@ -13,15 +13,15 @@
 //===----------------------------------------------------------------------===//
 
 #include "X86.h"
-#include "X86TargetMachine.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/IntrinsicsX86.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Operator.h"
 #include "llvm/Pass.h"
+#include "X86TargetMachine.h"
 
 using namespace llvm;
 
@@ -36,7 +36,7 @@ class X86PartialReduction : public FunctionPass {
 public:
   static char ID; // Pass identification, replacement for typeid.
 
-  X86PartialReduction() : FunctionPass(ID) {}
+  X86PartialReduction() : FunctionPass(ID) { }
 
   bool runOnFunction(Function &Fn) override;
 
@@ -44,13 +44,15 @@ public:
     AU.setPreservesCFG();
   }
 
-  StringRef getPassName() const override { return "X86 Partial Reduction"; }
+  StringRef getPassName() const override {
+    return "X86 Partial Reduction";
+  }
 
 private:
   bool tryMAddReplacement(Instruction *Op);
   bool trySADReplacement(Instruction *Op);
 };
-} // namespace
+}
 
 FunctionPass *llvm::createX86PartialReductionPass() {
   return new X86PartialReduction();
@@ -58,8 +60,8 @@ FunctionPass *llvm::createX86PartialReductionPass() {
 
 char X86PartialReduction::ID = 0;
 
-INITIALIZE_PASS(X86PartialReduction, DEBUG_TYPE, "X86 Partial Reduction", false,
-                false)
+INITIALIZE_PASS(X86PartialReduction, DEBUG_TYPE,
+                "X86 Partial Reduction", false, false)
 
 bool X86PartialReduction::tryMAddReplacement(Instruction *Op) {
   if (!ST->hasSSE2())
@@ -267,8 +269,7 @@ bool X86PartialReduction::trySADReplacement(Instruction *Op) {
     for (unsigned i = 0; i != 1U << (s - 1); ++i) {
       SmallVector<int, 64> ConcatMask(NumConcatElts);
       std::iota(ConcatMask.begin(), ConcatMask.end(), 0);
-      Ops[i] =
-          Builder.CreateShuffleVector(Ops[i * 2], Ops[i * 2 + 1], ConcatMask);
+      Ops[i] = Builder.CreateShuffleVector(Ops[i*2], Ops[i*2+1], ConcatMask);
     }
   }
 
@@ -381,8 +382,8 @@ static void collectLeaves(Value *Root, SmallVectorImpl<Instruction *> &Leaves) {
 
   while (!Worklist.empty()) {
     Value *V = Worklist.pop_back_val();
-    if (!Visited.insert(V).second)
-      continue;
+     if (!Visited.insert(V).second)
+       continue;
 
     if (auto *PN = dyn_cast<PHINode>(V)) {
       // PHI node should have single use unless it is the root node, then it

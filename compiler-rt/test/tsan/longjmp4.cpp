@@ -1,9 +1,9 @@
 // RUN: %clang_tsan -O1 %s -o %t && %deflake %run %t 2>&1 | FileCheck %s
 
 #include <pthread.h>
-#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <setjmp.h>
 #include <string.h>
 
 void bar(jmp_buf env) {
@@ -49,3 +49,4 @@ int main() {
 // CHECK:   #1 badguy
 // CHECK:   #2 mymain
 // CHECK:   #3 main
+

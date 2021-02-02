@@ -7,13 +7,13 @@
 // that GCC fails this test; EDG passes the test in strict mode, but
 // not in relaxed mode.
 namespace N {
-struct A {};
-struct B : public A {};
+  struct A { };
+  struct B : public A { };
 
-int &f0(A &);
-} // namespace N
+  int& f0(A&);
+}
 
-template <typename T, typename Result>
+template<typename T, typename Result>
 struct X0 {
   void test_f0(T t) {
     Result r = f0(t);
@@ -21,12 +21,12 @@ struct X0 {
 };
 
 void test_f0() {
-  X0<N::A, int &> xA;
+  X0<N::A, int&> xA;
   xA.test_f0(N::A());
-  X0<N::B, int &> xB;
+  X0<N::B, int&> xB;
   xB.test_f0(N::B());
 }
 
 namespace N {
-char &f0(B &);
+  char& f0(B&);
 }

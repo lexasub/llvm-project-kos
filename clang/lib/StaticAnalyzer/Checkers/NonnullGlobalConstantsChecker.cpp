@@ -67,8 +67,8 @@ void NonnullGlobalConstantsChecker::initIdentifierInfo(ASTContext &Ctx) const {
 
 /// Add an assumption that const string-like globals are non-null.
 void NonnullGlobalConstantsChecker::checkLocation(SVal location, bool isLoad,
-                                                  const Stmt *S,
-                                                  CheckerContext &C) const {
+                                                 const Stmt *S,
+                                                 CheckerContext &C) const {
   initIdentifierInfo(C.getASTContext());
   if (!isLoad || !location.isValid())
     return;
@@ -135,9 +135,9 @@ bool NonnullGlobalConstantsChecker::isNonnullType(QualType Ty) const {
 
   if (auto *T = dyn_cast<ObjCObjectPointerType>(Ty)) {
     return T->getInterfaceDecl() &&
-           T->getInterfaceDecl()->getIdentifier() == NSStringII;
+      T->getInterfaceDecl()->getIdentifier() == NSStringII;
   } else if (auto *T = dyn_cast<TypedefType>(Ty)) {
-    IdentifierInfo *II = T->getDecl()->getIdentifier();
+    IdentifierInfo* II = T->getDecl()->getIdentifier();
     return II == CFStringRefII || II == CFBooleanRefII || II == CFNullRefII;
   }
   return false;
@@ -147,7 +147,6 @@ void ento::registerNonnullGlobalConstantsChecker(CheckerManager &Mgr) {
   Mgr.registerChecker<NonnullGlobalConstantsChecker>();
 }
 
-bool ento::shouldRegisterNonnullGlobalConstantsChecker(
-    const CheckerManager &mgr) {
+bool ento::shouldRegisterNonnullGlobalConstantsChecker(const CheckerManager &mgr) {
   return true;
 }

@@ -27,10 +27,9 @@ int foo(int *a);
 
 int main(int argc, char **argv) {
   int b[10], c[10], d[10];
-#pragma omp target teams map(tofrom \
-                             : a)
-#pragma omp distribute parallel for firstprivate(b) lastprivate(c) if (a)
-  for (int i = 0; i < argc; ++i)
+#pragma omp target teams map(tofrom:a)
+#pragma omp distribute parallel for firstprivate(b) lastprivate(c) if(a)
+  for (int i= 0; i < argc; ++i)
     a = foo(&i) + foo(&a) + foo(&b[i]) + foo(&c[i]) + foo(&d[i]);
   return 0;
 }

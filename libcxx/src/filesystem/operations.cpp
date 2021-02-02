@@ -20,34 +20,34 @@
 #include "posix_compat.h"
 
 #if defined(_LIBCPP_WIN32API)
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
+# define WIN32_LEAN_AND_MEAN
+# define NOMINMAX
+# include <windows.h>
 #else
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
+# include <unistd.h>
+# include <sys/stat.h>
+# include <sys/statvfs.h>
 #endif
 #include <time.h>
 #include <fcntl.h> /* values for fchmodat */
 
 #if __has_include(<sys/sendfile.h>)
-#include <sys/sendfile.h>
-#define _LIBCPP_FILESYSTEM_USE_SENDFILE
+# include <sys/sendfile.h>
+# define _LIBCPP_FILESYSTEM_USE_SENDFILE
 #elif defined(__APPLE__) || __has_include(<copyfile.h>)
-#include <copyfile.h>
-#define _LIBCPP_FILESYSTEM_USE_COPYFILE
+# include <copyfile.h>
+# define _LIBCPP_FILESYSTEM_USE_COPYFILE
 #else
-#include "fstream"
-#define _LIBCPP_FILESYSTEM_USE_FSTREAM
+# include "fstream"
+# define _LIBCPP_FILESYSTEM_USE_FSTREAM
 #endif
 
 #if !defined(CLOCK_REALTIME) && !defined(_LIBCPP_WIN32API)
-#include <sys/time.h> // for gettimeofday and timeval
+# include <sys/time.h> // for gettimeofday and timeval
 #endif
 
 #if defined(__ELF__) && defined(_LIBCPP_LINK_RT_LIB)
-#pragma comment(lib, "rt")
+# pragma comment(lib, "rt")
 #endif
 
 _LIBCPP_BEGIN_NAMESPACE_FILESYSTEM
@@ -219,13 +219,21 @@ public:
     return *this;
   }
 
-  bool atEnd() const noexcept { return State == PS_AtEnd; }
+  bool atEnd() const noexcept {
+    return State == PS_AtEnd;
+  }
 
-  bool inRootDir() const noexcept { return State == PS_InRootDir; }
+  bool inRootDir() const noexcept {
+    return State == PS_InRootDir;
+  }
 
-  bool inRootName() const noexcept { return State == PS_InRootName; }
+  bool inRootName() const noexcept {
+    return State == PS_InRootName;
+  }
 
-  bool inRootPath() const noexcept { return inRootName() || inRootDir(); }
+  bool inRootPath() const noexcept {
+    return inRootName() || inRootDir();
+  }
 
 private:
   void makeState(ParserState NewState, PosPtr Start, PosPtr End) noexcept {
@@ -372,7 +380,7 @@ errc __win_err_to_errc(int err) {
       {ERROR_WRITE_PROTECT, errc::permission_denied},
   };
 
-  for (const auto& pair : win_error_mapping)
+  for (const auto &pair : win_error_mapping)
     if (pair.win == static_cast<DWORD>(err))
       return pair.errc;
   return errc::invalid_argument;
@@ -592,19 +600,16 @@ filesystem_error::~filesystem_error() {}
 void filesystem_error::__create_what(int __num_paths) {
   const char* derived_what = system_error::what();
   __storage_->__what_ = [&]() -> string {
-    const path::value_type* p1 =
-        path1().native().empty() ? PS("\"\"") : path1().c_str();
-    const path::value_type* p2 =
-        path2().native().empty() ? PS("\"\"") : path2().c_str();
+    const path::value_type* p1 = path1().native().empty() ? PS("\"\"") : path1().c_str();
+    const path::value_type* p2 = path2().native().empty() ? PS("\"\"") : path2().c_str();
     switch (__num_paths) {
     default:
       return detail::format_string("filesystem error: %s", derived_what);
     case 1:
-      return detail::format_string("filesystem error: %s [" PS_FMT "]",
-                                   derived_what, p1);
+      return detail::format_string("filesystem error: %s [" PS_FMT "]", derived_what,
+                                   p1);
     case 2:
-      return detail::format_string("filesystem error: %s [" PS_FMT "] [" PS_FMT
-                                   "]",
+      return detail::format_string("filesystem error: %s [" PS_FMT "] [" PS_FMT "]",
                                    derived_what, p1, p2);
     }
   }();
@@ -632,17 +637,17 @@ path __canonical(path const& orig_p, error_code* ec) {
 
   path p = __do_absolute(orig_p, &cwd, ec);
 #if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112
-  std::unique_ptr<char, decltype(&::free)> hold(::realpath(p.c_str(), nullptr),
-                                                &::free);
+  std::unique_ptr<char, decltype(&::free)>
+    hold(::realpath(p.c_str(), nullptr), &::free);
   if (hold.get() == nullptr)
     return err.report(capture_errno());
   return {hold.get()};
 #else
-#if defined(__MVS__) && !defined(PATH_MAX)
-  char buff[_XOPEN_PATH_MAX + 1];
-#else
-  char buff[PATH_MAX + 1];
-#endif
+  #if defined(__MVS__) && !defined(PATH_MAX)
+    char buff[ _XOPEN_PATH_MAX + 1 ];
+  #else
+    char buff[PATH_MAX + 1];
+  #endif
   char* ret;
   if ((ret = ::realpath(p.c_str(), buff)) == nullptr)
     return err.report(capture_errno());
@@ -740,81 +745,78 @@ namespace detail {
 namespace {
 
 #if defined(_LIBCPP_FILESYSTEM_USE_SENDFILE)
-bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd,
-                    error_code& ec) {
-  size_t count = read_fd.get_stat().st_size;
-  do {
-    ssize_t res;
-    if ((res = ::sendfile(write_fd.fd, read_fd.fd, nullptr, count)) == -1) {
+  bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd, error_code& ec) {
+    size_t count = read_fd.get_stat().st_size;
+    do {
+      ssize_t res;
+      if ((res = ::sendfile(write_fd.fd, read_fd.fd, nullptr, count)) == -1) {
+        ec = capture_errno();
+        return false;
+      }
+      count -= res;
+    } while (count > 0);
+
+    ec.clear();
+
+    return true;
+  }
+#elif defined(_LIBCPP_FILESYSTEM_USE_COPYFILE)
+  bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd, error_code& ec) {
+    struct CopyFileState {
+      copyfile_state_t state;
+      CopyFileState() { state = copyfile_state_alloc(); }
+      ~CopyFileState() { copyfile_state_free(state); }
+
+    private:
+      CopyFileState(CopyFileState const&) = delete;
+      CopyFileState& operator=(CopyFileState const&) = delete;
+    };
+
+    CopyFileState cfs;
+    if (fcopyfile(read_fd.fd, write_fd.fd, cfs.state, COPYFILE_DATA) < 0) {
       ec = capture_errno();
       return false;
     }
-    count -= res;
-  } while (count > 0);
 
-  ec.clear();
-
-  return true;
-}
-#elif defined(_LIBCPP_FILESYSTEM_USE_COPYFILE)
-bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd,
-                    error_code& ec) {
-  struct CopyFileState {
-    copyfile_state_t state;
-    CopyFileState() { state = copyfile_state_alloc(); }
-    ~CopyFileState() { copyfile_state_free(state); }
-
-  private:
-    CopyFileState(CopyFileState const&) = delete;
-    CopyFileState& operator=(CopyFileState const&) = delete;
-  };
-
-  CopyFileState cfs;
-  if (fcopyfile(read_fd.fd, write_fd.fd, cfs.state, COPYFILE_DATA) < 0) {
-    ec = capture_errno();
-    return false;
+    ec.clear();
+    return true;
   }
-
-  ec.clear();
-  return true;
-}
 #elif defined(_LIBCPP_FILESYSTEM_USE_FSTREAM)
-bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd,
-                    error_code& ec) {
-  ifstream in;
-  in.__open(read_fd.fd, ios::binary);
-  if (!in.is_open()) {
-    // This assumes that __open didn't reset the error code.
-    ec = capture_errno();
-    return false;
-  }
-  read_fd.fd = -1;
-  ofstream out;
-  out.__open(write_fd.fd, ios::binary);
-  if (!out.is_open()) {
-    ec = capture_errno();
-    return false;
-  }
-  write_fd.fd = -1;
+  bool copy_file_impl(FileDescriptor& read_fd, FileDescriptor& write_fd, error_code& ec) {
+    ifstream in;
+    in.__open(read_fd.fd, ios::binary);
+    if (!in.is_open()) {
+      // This assumes that __open didn't reset the error code.
+      ec = capture_errno();
+      return false;
+    }
+    read_fd.fd = -1;
+    ofstream out;
+    out.__open(write_fd.fd, ios::binary);
+    if (!out.is_open()) {
+      ec = capture_errno();
+      return false;
+    }
+    write_fd.fd = -1;
 
-  if (in.good() && out.good()) {
-    using InIt = istreambuf_iterator<char>;
-    using OutIt = ostreambuf_iterator<char>;
-    InIt bin(in);
-    InIt ein;
-    OutIt bout(out);
-    copy(bin, ein, bout);
-  }
-  if (out.fail() || in.fail()) {
-    ec = make_error_code(errc::io_error);
-    return false;
-  }
+    if (in.good() && out.good()) {
+      using InIt = istreambuf_iterator<char>;
+      using OutIt = ostreambuf_iterator<char>;
+      InIt bin(in);
+      InIt ein;
+      OutIt bout(out);
+      copy(bin, ein, bout);
+    }
+    if (out.fail() || in.fail()) {
+      ec = make_error_code(errc::io_error);
+      return false;
+    }
 
-  ec.clear();
-  return true;
-}
+    ec.clear();
+    return true;
+  }
 #else
-#error "Unknown implementation for copy_file_impl"
+# error "Unknown implementation for copy_file_impl"
 #endif // copy_file_impl implementation
 
 } // end anonymous namespace
@@ -1213,9 +1215,7 @@ path __read_symlink(const path& p, error_code* ec) {
   ErrorHandler<path> err("read_symlink", ec, &p);
 
 #ifdef PATH_MAX
-  struct NullDeleter {
-    void operator()(void*) const {}
-  };
+  struct NullDeleter { void operator()(void*) const {} };
   const size_t size = PATH_MAX + 1;
   char stack_buff[size];
   auto buff = std::unique_ptr<char[], NullDeleter>(stack_buff);
@@ -1346,8 +1346,8 @@ path __temp_directory_path(error_code* ec) {
     return err.report(m_ec, "cannot access path \"" PS_FMT "\"", p);
 
   if (!exists(st) || !is_directory(st))
-    return err.report(errc::not_a_directory,
-                      "path \"" PS_FMT "\" is not a directory", p);
+    return err.report(errc::not_a_directory, "path \"" PS_FMT "\" is not a directory",
+                      p);
 
   return p;
 }
@@ -1443,10 +1443,10 @@ string_view_t path::__root_path_raw() const {
   return {};
 }
 
-static bool ConsumeRootName(PathParser* PP) {
+static bool ConsumeRootName(PathParser *PP) {
   static_assert(PathParser::PS_BeforeBegin == 1 &&
-                    PathParser::PS_InRootName == 2,
-                "Values for enums are incorrect");
+      PathParser::PS_InRootName == 2,
+      "Values for enums are incorrect");
   while (PP->State <= PathParser::PS_InRootName)
     ++(*PP);
   return PP->State == PathParser::PS_AtEnd;
@@ -1454,9 +1454,8 @@ static bool ConsumeRootName(PathParser* PP) {
 
 static bool ConsumeRootDir(PathParser* PP) {
   static_assert(PathParser::PS_BeforeBegin == 1 &&
-                    PathParser::PS_InRootName == 2 &&
-                    PathParser::PS_InRootDir == 3,
-                "Values for enums are incorrect");
+                PathParser::PS_InRootName == 2 &&
+                PathParser::PS_InRootDir == 3, "Values for enums are incorrect");
   while (PP->State <= PathParser::PS_InRootDir)
     ++(*PP);
   return PP->State == PathParser::PS_AtEnd;
@@ -1683,11 +1682,11 @@ path path::lexically_relative(const path& base) const {
 
 ////////////////////////////////////////////////////////////////////////////
 // path.comparisons
-static int CompareRootName(PathParser* LHS, PathParser* RHS) {
+static int CompareRootName(PathParser *LHS, PathParser *RHS) {
   if (!LHS->inRootName() && !RHS->inRootName())
     return 0;
 
-  auto GetRootName = [](PathParser* Parser) -> string_view_t {
+  auto GetRootName = [](PathParser *Parser) -> string_view_t {
     return Parser->inRootName() ? **Parser : PS("");
   };
   int res = GetRootName(LHS).compare(GetRootName(RHS));
@@ -1696,7 +1695,7 @@ static int CompareRootName(PathParser* LHS, PathParser* RHS) {
   return res;
 }
 
-static int CompareRootDir(PathParser* LHS, PathParser* RHS) {
+static int CompareRootDir(PathParser *LHS, PathParser *RHS) {
   if (!LHS->inRootDir() && RHS->inRootDir())
     return -1;
   else if (LHS->inRootDir() && !RHS->inRootDir())
@@ -1708,9 +1707,9 @@ static int CompareRootDir(PathParser* LHS, PathParser* RHS) {
   }
 }
 
-static int CompareRelative(PathParser* LHSPtr, PathParser* RHSPtr) {
-  auto& LHS = *LHSPtr;
-  auto& RHS = *RHSPtr;
+static int CompareRelative(PathParser *LHSPtr, PathParser *RHSPtr) {
+  auto &LHS = *LHSPtr;
+  auto &RHS = *RHSPtr;
 
   int res;
   while (LHS && RHS) {
@@ -1722,7 +1721,7 @@ static int CompareRelative(PathParser* LHSPtr, PathParser* RHSPtr) {
   return 0;
 }
 
-static int CompareEndState(PathParser* LHS, PathParser* RHS) {
+static int CompareEndState(PathParser *LHS, PathParser *RHS) {
   if (LHS->atEnd() && !RHS->atEnd())
     return -1;
   else if (!LHS->atEnd() && RHS->atEnd())
@@ -1800,7 +1799,7 @@ path::iterator& path::iterator::__decrement() {
 #if defined(_LIBCPP_WIN32API)
 ////////////////////////////////////////////////////////////////////////////
 // Windows path conversions
-size_t __wide_to_char(const wstring& str, char* out, size_t outlen) {
+size_t __wide_to_char(const wstring &str, char *out, size_t outlen) {
   if (str.empty())
     return 0;
   ErrorHandler<size_t> err("__wide_to_char", nullptr);
@@ -1813,7 +1812,7 @@ size_t __wide_to_char(const wstring& str, char* out, size_t outlen) {
   return ret;
 }
 
-size_t __char_to_wide(const string& str, wchar_t* out, size_t outlen) {
+size_t __char_to_wide(const string &str, wchar_t *out, size_t outlen) {
   if (str.empty())
     return 0;
   ErrorHandler<size_t> err("__char_to_wide", nullptr);
@@ -1825,6 +1824,7 @@ size_t __char_to_wide(const string& str, wchar_t* out, size_t outlen) {
   return ret;
 }
 #endif
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //                           directory entry definitions

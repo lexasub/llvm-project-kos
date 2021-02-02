@@ -67,8 +67,7 @@ FunctionPass *createX86OptimizeLEAs();
 /// Return a pass that transforms setcc + movzx pairs into xor + setcc.
 FunctionPass *createX86FixupSetCC();
 
-/// Return a pass that avoids creating store forward block issues in the
-/// hardware.
+/// Return a pass that avoids creating store forward block issues in the hardware.
 FunctionPass *createX86AvoidStoreForwardingBlocks();
 
 /// Return a pass that lowers EFLAGS copy pseudo instructions.
@@ -180,8 +179,8 @@ enum : unsigned {
   PTR32_UPTR = 271,
   PTR64 = 272
 };
-} // namespace X86AS
+} // End X86AS namespace
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

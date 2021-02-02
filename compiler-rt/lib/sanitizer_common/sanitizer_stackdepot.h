@@ -63,10 +63,10 @@ class StackDepotReverseMap {
   InternalMmapVector<IdDescPair> map_;
 
   // Disallow evil constructors.
-  StackDepotReverseMap(const StackDepotReverseMap &);
-  void operator=(const StackDepotReverseMap &);
+  StackDepotReverseMap(const StackDepotReverseMap&);
+  void operator=(const StackDepotReverseMap&);
 };
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_STACKDEPOT_H
+#endif // SANITIZER_STACKDEPOT_H

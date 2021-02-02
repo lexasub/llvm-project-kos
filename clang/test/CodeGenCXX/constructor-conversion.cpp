@@ -6,15 +6,11 @@
 extern "C" int printf(...);
 
 class X { // ...
-public:
-  X(int) : iX(2), fX(2.3), name("HELLO\n") {}
+public: 
+  X(int) : iX(2), fX(2.3) , name("HELLO\n") {  }
 
-  X(const char *arg, int ix = 0) {
-    iX = ix;
-    fX = 6.0;
-    name = arg + ix;
-  }
-  X() : iX(100), fX(1.2) {}
+  X(const char* arg, int ix=0) { iX = ix; fX = 6.0; name = arg+ix; }
+  X(): iX(100), fX(1.2) {}
   int iX;
   float fX;
   const char *name;
@@ -28,7 +24,7 @@ void g(X arg) {
 }
 
 void f(X arg) {
-  X a = 1; // a = X(1)
+  X a = 1;        // a = X(1)
 
   a.pr();
 
@@ -36,15 +32,17 @@ void f(X arg) {
 
   b.pr();
 
-  a = 2; // a = X(2)
+
+  a = 2;          // a = X(2)
 
   a.pr();
 }
 
+
 int main() {
   X x;
   f(x);
-  g(3); // g(X(3))
+  g(3);           // g(X(3))
 }
 
 // CHECK: call void @_ZN1XC1Ei

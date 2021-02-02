@@ -23,9 +23,9 @@
 #include "XCOFFDump.h"
 #include "llvm/ADT/IndexedMap.h"
 #include "llvm/ADT/Optional.h"
+#include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SetOperations.h"
-#include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/Triple.h"
@@ -364,15 +364,15 @@ enum DebugVarsFormat {
   DVASCII,
 };
 
-static cl::opt<DebugVarsFormat>
-    DbgVariables("debug-vars", cl::init(DVDisabled),
-                 cl::desc("Print the locations (in registers or memory) of "
-                          "source-level variables alongside disassembly"),
-                 cl::ValueOptional,
-                 cl::values(clEnumValN(DVUnicode, "", "unicode"),
-                            clEnumValN(DVUnicode, "unicode", "unicode"),
-                            clEnumValN(DVASCII, "ascii", "unicode")),
-                 cl::cat(ObjdumpCat));
+static cl::opt<DebugVarsFormat> DbgVariables(
+    "debug-vars", cl::init(DVDisabled),
+    cl::desc("Print the locations (in registers or memory) of "
+             "source-level variables alongside disassembly"),
+    cl::ValueOptional,
+    cl::values(clEnumValN(DVUnicode, "", "unicode"),
+               clEnumValN(DVUnicode, "unicode", "unicode"),
+               clEnumValN(DVASCII, "ascii", "unicode")),
+    cl::cat(ObjdumpCat));
 
 static cl::opt<int>
     DbgIndent("debug-vars-indent", cl::init(40),
@@ -521,8 +521,8 @@ static const Target *getTarget(const ObjectFile *Obj) {
 
   // Get the target specific parser.
   std::string Error;
-  const Target *TheTarget =
-      TargetRegistry::lookupTarget(ArchName, TheTriple, Error);
+  const Target *TheTarget = TargetRegistry::lookupTarget(ArchName, TheTriple,
+                                                         Error);
   if (!TheTarget)
     reportError(Obj->getFileName(), "can't find target: " + Error);
 
@@ -627,7 +627,7 @@ class LiveVariablePrinter {
     unsigned VarIdx = NullVarIdx;
     bool LiveIn = false;
     bool LiveOut = false;
-    bool MustDrawLabel = false;
+    bool MustDrawLabel  = false;
 
     bool isActive() const { return VarIdx != NullVarIdx; }
 
@@ -866,7 +866,7 @@ public:
         for (unsigned ColIdx2 = 0; ColIdx2 < ColIdx; ++ColIdx2) {
           if (ActiveCols[ColIdx2].isActive()) {
             if (ActiveCols[ColIdx2].MustDrawLabel &&
-                !ActiveCols[ColIdx2].LiveIn)
+                           !ActiveCols[ColIdx2].LiveIn)
               OS << getLineChar(LineChar::LabelVert) << " ";
             else
               OS << getLineChar(LineChar::RangeMid) << " ";
@@ -951,7 +951,7 @@ protected:
   bool WarnedNoDebugInfo;
 
 private:
-  bool cacheSource(const DILineInfo &LineInfoFile);
+  bool cacheSource(const DILineInfo& LineInfoFile);
 
   void printLines(formatted_raw_ostream &OS, const DILineInfo &LineInfo,
                   StringRef Delimiter, LiveVariablePrinter &LVP);
@@ -1171,7 +1171,7 @@ public:
   void printLead(ArrayRef<uint8_t> Bytes, uint64_t Address,
                  formatted_raw_ostream &OS) {
     uint32_t opcode =
-        (Bytes[3] << 24) | (Bytes[2] << 16) | (Bytes[1] << 8) | Bytes[0];
+      (Bytes[3] << 24) | (Bytes[2] << 16) | (Bytes[1] << 8) | Bytes[0];
     if (!NoLeadingAddr)
       OS << format("%8" PRIx64 ":", Address);
     if (!NoShowRawInsn) {
@@ -1233,7 +1233,8 @@ public:
         OS << Duplex.first;
         OS << "; ";
         Inst = Duplex.second;
-      } else
+      }
+      else
         Inst = HeadTail.first;
       OS << Inst;
       HeadTail = HeadTail.second.split('\n');
@@ -1273,10 +1274,10 @@ public:
                      support::endian::read32<support::little>(Bytes.data()));
         OS.indent(42);
       } else {
-        OS << format("\t.byte 0x%02" PRIx8, Bytes[0]);
-        for (unsigned int i = 1; i < Bytes.size(); i++)
-          OS << format(", 0x%02" PRIx8, Bytes[i]);
-        OS.indent(55 - (6 * Bytes.size()));
+          OS << format("\t.byte 0x%02" PRIx8, Bytes[0]);
+          for (unsigned int i = 1; i < Bytes.size(); i++)
+            OS << format(", 0x%02" PRIx8, Bytes[i]);
+          OS.indent(55 - (6 * Bytes.size()));
       }
     }
 
@@ -1323,7 +1324,7 @@ public:
 BPFPrettyPrinter BPFPrettyPrinterInst;
 
 PrettyPrinter &selectPrettyPrinter(Triple const &Triple) {
-  switch (Triple.getArch()) {
+  switch(Triple.getArch()) {
   default:
     return PrettyPrinterInst;
   case Triple::hexagon:
@@ -1335,7 +1336,7 @@ PrettyPrinter &selectPrettyPrinter(Triple const &Triple) {
     return BPFPrettyPrinterInst;
   }
 }
-} // namespace
+}
 
 static uint8_t getElfSymbolType(const ObjectFile *Obj, const SymbolRef &Sym) {
   assert(Obj->isELF());
@@ -1358,8 +1359,7 @@ static uint8_t getElfSymbolType(const ObjectFile *Obj, const SymbolRef &Sym) {
   llvm_unreachable("Unsupported binary format");
 }
 
-template <class ELFT>
-static void
+template <class ELFT> static void
 addDynamicElfSymbols(const ELFObjectFile<ELFT> *Obj,
                      std::map<SectionRef, SectionSymbolsTy> &AllSymbols) {
   for (auto Symbol : Obj->getDynamicSymbolIterators()) {
@@ -1498,6 +1498,7 @@ static bool shouldAdjustVA(const SectionRef &Section) {
   return false;
 }
 
+
 typedef std::pair<uint64_t, char> MappingSymbolPair;
 static char getMappingSymbolKind(ArrayRef<MappingSymbolPair> MappingSymbols,
                                  uint64_t Address) {
@@ -1523,13 +1524,15 @@ static uint64_t dumpARMELFData(uint64_t SectionAddr, uint64_t Index,
   if (Index + 4 <= End) {
     dumpBytes(Bytes.slice(Index, 4), OS);
     OS << "\t.word\t"
-       << format_hex(support::endian::read32(Bytes.data() + Index, Endian), 10);
+           << format_hex(support::endian::read32(Bytes.data() + Index, Endian),
+                         10);
     return 4;
   }
   if (Index + 2 <= End) {
     dumpBytes(Bytes.slice(Index, 2), OS);
     OS << "\t\t.short\t"
-       << format_hex(support::endian::read16(Bytes.data() + Index, Endian), 6);
+           << format_hex(support::endian::read16(Bytes.data() + Index, Endian),
+                         6);
     return 2;
   }
   dumpBytes(Bytes.slice(Index, 1), OS);
@@ -1653,8 +1656,8 @@ static void disassembleObject(const Target *TheTarget, const ObjectFile *Obj,
                               const MCInstrAnalysis *MIA, MCInstPrinter *IP,
                               const MCSubtargetInfo *PrimarySTI,
                               const MCSubtargetInfo *SecondarySTI,
-                              PrettyPrinter &PIP, SourcePrinter &SP,
-                              bool InlineRelocs) {
+                              PrettyPrinter &PIP,
+                              SourcePrinter &SP, bool InlineRelocs) {
   const MCSubtargetInfo *STI = PrimarySTI;
   MCDisassembler *DisAsm = PrimaryDisAsm;
   bool PrimaryIsThumb = false;
@@ -1689,9 +1692,9 @@ static void disassembleObject(const Target *TheTarget, const ObjectFile *Obj,
     // the symbol may error trying to load a section that does not exist.
     if (MachO) {
       DataRefImpl SymDRI = Symbol.getRawDataRefImpl();
-      uint8_t NType =
-          (MachO->is64Bit() ? MachO->getSymbol64TableEntry(SymDRI).n_type
-                            : MachO->getSymbolTableEntry(SymDRI).n_type);
+      uint8_t NType = (MachO->is64Bit() ?
+                       MachO->getSymbol64TableEntry(SymDRI).n_type:
+                       MachO->getSymbolTableEntry(SymDRI).n_type);
       if (NType & MachO::N_STAB)
         continue;
     }
@@ -1802,17 +1805,17 @@ static void disassembleObject(const Target *TheTarget, const ObjectFile *Obj,
     if (Obj->isELF() && Obj->getArch() == Triple::amdgcn) {
       // AMDGPU disassembler uses symbolizer for printing labels
       std::unique_ptr<MCRelocationInfo> RelInfo(
-          TheTarget->createMCRelocationInfo(TripleName, Ctx));
+        TheTarget->createMCRelocationInfo(TripleName, Ctx));
       if (RelInfo) {
-        std::unique_ptr<MCSymbolizer> Symbolizer(TheTarget->createMCSymbolizer(
+        std::unique_ptr<MCSymbolizer> Symbolizer(
+          TheTarget->createMCSymbolizer(
             TripleName, nullptr, nullptr, &Symbols, &Ctx, std::move(RelInfo)));
         DisAsm->setSymbolizer(std::move(Symbolizer));
       }
     }
 
     StringRef SegmentName = getSegmentName(MachO, Section);
-    StringRef SectionName =
-        unwrapOrError(Section.getName(), Obj->getFileName());
+    StringRef SectionName = unwrapOrError(Section.getName(), Obj->getFileName());
     // If the section has no symbol at the start, just insert a dummy one.
     if (Symbols.empty() || Symbols[0].Addr != 0) {
       Symbols.insert(Symbols.begin(),
@@ -2238,12 +2241,13 @@ static void disassembleObject(const ObjectFile *Obj, bool InlineRelocs) {
                   "Unrecognized disassembler option: " + Opt);
 
   disassembleObject(TheTarget, Obj, Ctx, DisAsm.get(), SecondaryDisAsm.get(),
-                    MIA.get(), IP.get(), STI.get(), SecondarySTI.get(), PIP, SP,
-                    InlineRelocs);
+                    MIA.get(), IP.get(), STI.get(), SecondarySTI.get(), PIP,
+                    SP, InlineRelocs);
 }
 
 void objdump::printRelocations(const ObjectFile *Obj) {
-  StringRef Fmt = Obj->getBytesInAddress() > 4 ? "%016" PRIx64 : "%08" PRIx64;
+  StringRef Fmt = Obj->getBytesInAddress() > 4 ? "%016" PRIx64 :
+                                                 "%08" PRIx64;
   // Regular objdump doesn't print relocations in non-relocatable object
   // files.
   if (!Obj->isRelocatableObject())
@@ -2414,8 +2418,7 @@ void objdump::printSectionContents(const ObjectFile *Obj) {
       continue;
     }
 
-    StringRef Contents =
-        unwrapOrError(Section.getContents(), Obj->getFileName());
+    StringRef Contents = unwrapOrError(Section.getContents(), Obj->getFileName());
 
     // Dump out the content as hex and printable ascii characters.
     for (std::size_t Addr = 0, End = Contents.size(); Addr < End; Addr += 16) {
@@ -2694,8 +2697,8 @@ static void printFaultMaps(const ObjectFile *Obj) {
     return;
   }
 
-  StringRef FaultMapContents = unwrapOrError(
-      FaultMapSection.getValue().getContents(), Obj->getFileName());
+  StringRef FaultMapContents =
+      unwrapOrError(FaultMapSection.getValue().getContents(), Obj->getFileName());
   FaultMapParser FMP(FaultMapContents.bytes_begin(),
                      FaultMapContents.bytes_end());
 
@@ -2792,8 +2795,8 @@ static bool shouldWarnForInvalidStartStopAddress(ObjectFile *Obj) {
   return false;
 }
 
-static void checkForInvalidStartStopAddress(ObjectFile *Obj, uint64_t Start,
-                                            uint64_t Stop) {
+static void checkForInvalidStartStopAddress(ObjectFile *Obj,
+                                            uint64_t Start, uint64_t Stop) {
   if (!shouldWarnForInvalidStartStopAddress(Obj))
     return;
 

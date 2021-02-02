@@ -20,6 +20,7 @@ namespace ento {
 
 namespace summMgr {
 
+
 /* Key kinds:
 
  - C functions
@@ -33,16 +34,24 @@ namespace summMgr {
   - Class, function name + parameter types + const
  */
 
-class SummaryKey {};
+class SummaryKey {
 
-} // namespace summMgr
+};
 
-class SummaryManagerImpl {};
+} // end namespace clang::summMgr
 
-template <typename T> class SummaryManager : SummaryManagerImpl {};
+class SummaryManagerImpl {
 
-} // namespace ento
+};
 
-} // namespace clang
+
+template <typename T>
+class SummaryManager : SummaryManagerImpl {
+
+};
+
+} // end GR namespace
+
+} // end clang namespace
 
 #endif

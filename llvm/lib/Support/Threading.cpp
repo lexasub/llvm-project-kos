@@ -36,7 +36,8 @@ bool llvm::llvm_is_multithreaded() {
 #endif
 }
 
-#if LLVM_ENABLE_THREADS == 0 || (!defined(_WIN32) && !defined(HAVE_PTHREAD_H))
+#if LLVM_ENABLE_THREADS == 0 ||                                                \
+    (!defined(_WIN32) && !defined(HAVE_PTHREAD_H))
 // Support for non-Win32, non-pthread implementation.
 void llvm::llvm_execute_on_thread(void (*Fn)(void *), void *UserData,
                                   llvm::Optional<unsigned> StackSizeInBytes) {

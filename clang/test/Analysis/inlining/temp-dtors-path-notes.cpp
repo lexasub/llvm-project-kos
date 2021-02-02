@@ -5,7 +5,7 @@ class C {
   int x;
 
 public:
-  C(int x) : x(x) {}  // expected-note{{The value 0 is assigned to field 'x'}}
+  C(int x): x(x) {} // expected-note{{The value 0 is assigned to field 'x'}}
   ~C() { x = 1 / x; } // expected-warning{{Division by zero}}
                       // expected-note@-1{{Division by zero}}
 };
@@ -23,7 +23,7 @@ class C {
   int x;
 
 public:
-  C(int x) : x(x) {} // expected-note{{The value 0 is assigned to field 'x'}}
+  C(int x): x(x) {} // expected-note{{The value 0 is assigned to field 'x'}}
   void nop() const {}
   ~C() { x = 1 / x; } // expected-warning{{Division by zero}}
                       // expected-note@-1{{Division by zero}}
@@ -51,8 +51,8 @@ public:
 
 void test() {
   glob = 1;
-  C();             // expected-note   {{Calling '~C'}}
-                   // expected-note@-1{{Returning from '~C'}}
+  C(); // expected-note   {{Calling '~C'}}
+       // expected-note@-1{{Returning from '~C'}}
   glob = 1 / glob; // expected-warning{{Division by zero}}
                    // expected-note@-1{{Division by zero}}
 }

@@ -40,7 +40,8 @@ using namespace llvm;
 
 static cl::opt<std::string> ClOrderFileWriteMapping(
     "orderfile-write-mapping", cl::init(""),
-    cl::desc("Dump functions and their MD5 hash to deobfuscate profile data"),
+    cl::desc(
+        "Dump functions and their MD5 hash to deobfuscate profile data"),
     cl::Hidden);
 
 namespace {
@@ -78,16 +79,14 @@ public:
 
     // Create the global variables.
     std::string SymbolName = INSTR_PROF_ORDERFILE_BUFFER_NAME_STR;
-    OrderFileBuffer =
-        new GlobalVariable(M, BufferTy, false, GlobalValue::LinkOnceODRLinkage,
+    OrderFileBuffer = new GlobalVariable(M, BufferTy, false, GlobalValue::LinkOnceODRLinkage,
                            Constant::getNullValue(BufferTy), SymbolName);
     Triple TT = Triple(M.getTargetTriple());
     OrderFileBuffer->setSection(
         getInstrProfSectionName(IPSK_orderfile, TT.getObjectFormat()));
 
     std::string IndexName = INSTR_PROF_ORDERFILE_BUFFER_IDX_NAME_STR;
-    BufferIdx =
-        new GlobalVariable(M, IdxTy, false, GlobalValue::LinkOnceODRLinkage,
+    BufferIdx = new GlobalVariable(M, IdxTy, false, GlobalValue::LinkOnceODRLinkage,
                            Constant::getNullValue(IdxTy), IndexName);
 
     std::string BitMapName = "bitmap_0";
@@ -104,14 +103,13 @@ public:
       llvm::raw_fd_ostream OS(ClOrderFileWriteMapping, EC,
                               llvm::sys::fs::OF_Append);
       if (EC) {
-        report_fatal_error(
-            Twine("Failed to open ") + ClOrderFileWriteMapping +
-            " to save mapping file for order file instrumentation\n");
+        report_fatal_error(Twine("Failed to open ") + ClOrderFileWriteMapping +
+                           " to save mapping file for order file instrumentation\n");
       } else {
         std::stringstream stream;
         stream << std::hex << MD5Hash(F.getName());
-        std::string singleLine =
-            "MD5 " + stream.str() + " " + std::string(F.getName()) + '\n';
+        std::string singleLine = "MD5 " + stream.str() + " " +
+                                 std::string(F.getName()) + '\n';
         OS << singleLine;
       }
     }
@@ -153,9 +151,8 @@ public:
     Value *BufferGEPIdx[] = {ConstantInt::get(Int32Ty, 0), WrappedIdx};
     Value *BufferAddr =
         updateB.CreateGEP(BufferTy, OrderFileBuffer, BufferGEPIdx, "");
-    updateB.CreateStore(
-        ConstantInt::get(Type::getInt64Ty(Ctx), MD5Hash(F.getName())),
-        BufferAddr);
+    updateB.CreateStore(ConstantInt::get(Type::getInt64Ty(Ctx), MD5Hash(F.getName())),
+                        BufferAddr);
     updateB.CreateBr(OrigEntry);
   }
 
@@ -180,7 +177,8 @@ public:
   static char ID;
 
   InstrOrderFileLegacyPass() : ModulePass(ID) {
-    initializeInstrOrderFileLegacyPassPass(*PassRegistry::getPassRegistry());
+    initializeInstrOrderFileLegacyPassPass(
+        *PassRegistry::getPassRegistry());
   }
 
   bool runOnModule(Module &M) override;
@@ -195,8 +193,8 @@ bool InstrOrderFileLegacyPass::runOnModule(Module &M) {
   return InstrOrderFile().run(M);
 }
 
-PreservedAnalyses InstrOrderFilePass::run(Module &M,
-                                          ModuleAnalysisManager &AM) {
+PreservedAnalyses
+InstrOrderFilePass::run(Module &M, ModuleAnalysisManager &AM) {
   if (InstrOrderFile().run(M))
     return PreservedAnalyses::none();
   return PreservedAnalyses::all();

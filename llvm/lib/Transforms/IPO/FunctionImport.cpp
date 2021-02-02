@@ -429,7 +429,7 @@ static void computeImportForFunction(
       if (PreviouslyVisited && NewThreshold <= ProcessedThreshold) {
         LLVM_DEBUG(
             dbgs() << "ignored! Target was already rejected with Threshold "
-                   << ProcessedThreshold << "\n");
+            << ProcessedThreshold << "\n");
         if (PrintImportFailures) {
           assert(FailureInfo &&
                  "Expected FailureInfo for previously rejected candidate");
@@ -471,7 +471,7 @@ static void computeImportForFunction(
       ResolvedCalleeSummary = cast<FunctionSummary>(CalleeSummary);
 
       assert((ResolvedCalleeSummary->fflags().AlwaysInline ||
-              (ResolvedCalleeSummary->instCount() <= NewThreshold)) &&
+	     (ResolvedCalleeSummary->instCount() <= NewThreshold)) &&
              "selectCallee() didn't honor the threshold");
 
       auto ExportModulePath = ResolvedCalleeSummary->modulePath();
@@ -980,9 +980,10 @@ bool llvm::convertToDeclaration(GlobalValue &GV) {
   } else {
     GlobalValue *NewGV;
     if (GV.getValueType()->isFunctionTy())
-      NewGV = Function::Create(cast<FunctionType>(GV.getValueType()),
-                               GlobalValue::ExternalLinkage,
-                               GV.getAddressSpace(), "", GV.getParent());
+      NewGV =
+          Function::Create(cast<FunctionType>(GV.getValueType()),
+                           GlobalValue::ExternalLinkage, GV.getAddressSpace(),
+                           "", GV.getParent());
     else
       NewGV =
           new GlobalVariable(*GV.getParent(), GV.getValueType(),
@@ -1041,8 +1042,8 @@ void llvm::thinLTOResolvePrevailingInModule(
     } else {
       // If all copies of the original symbol had global unnamed addr and
       // linkonce_odr linkage, it should be an auto hide symbol. In that case
-      // the thin link would have marked it as CanAutoHide. Add hidden
-      // visibility to the symbol to preserve the property.
+      // the thin link would have marked it as CanAutoHide. Add hidden visibility
+      // to the symbol to preserve the property.
       if (NewLinkage == GlobalValue::WeakODRLinkage &&
           GS->second->canAutoHide()) {
         assert(GV.hasLinkOnceODRLinkage() && GV.hasGlobalUnnamedAddr());
@@ -1381,6 +1382,8 @@ INITIALIZE_PASS(FunctionImportLegacyPass, "function-import",
 
 namespace llvm {
 
-Pass *createFunctionImportPass() { return new FunctionImportLegacyPass(); }
+Pass *createFunctionImportPass() {
+  return new FunctionImportLegacyPass();
+}
 
 } // end namespace llvm

@@ -67,7 +67,8 @@ void ImplicitConversionInLoopCheck::check(
     const MatchFinder::MatchResult &Result) {
   const auto *VD = Result.Nodes.getNodeAs<VarDecl>("faulty-var");
   const auto *Init = Result.Nodes.getNodeAs<Expr>("init");
-  const auto *OperatorCall = Result.Nodes.getNodeAs<Expr>("operator-call");
+  const auto *OperatorCall =
+      Result.Nodes.getNodeAs<Expr>("operator-call");
 
   if (const auto *Cleanup = dyn_cast<ExprWithCleanups>(Init))
     Init = Cleanup->getSubExpr();
@@ -84,9 +85,9 @@ void ImplicitConversionInLoopCheck::check(
     ReportAndFix(Result.Context, VD, OperatorCall);
 }
 
-void ImplicitConversionInLoopCheck::ReportAndFix(const ASTContext *Context,
-                                                 const VarDecl *VD,
-                                                 const Expr *OperatorCall) {
+void ImplicitConversionInLoopCheck::ReportAndFix(
+    const ASTContext *Context, const VarDecl *VD,
+    const Expr *OperatorCall) {
   // We only match on const ref, so we should print a const ref version of the
   // type.
   QualType ConstType = OperatorCall->getType().withConst();

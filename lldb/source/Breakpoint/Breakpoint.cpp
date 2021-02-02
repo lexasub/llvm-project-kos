@@ -19,11 +19,11 @@
 #include "lldb/Core/ModuleList.h"
 #include "lldb/Core/SearchFilter.h"
 #include "lldb/Core/Section.h"
+#include "lldb/Target/SectionLoadList.h"
 #include "lldb/Symbol/CompileUnit.h"
 #include "lldb/Symbol/Function.h"
 #include "lldb/Symbol/Symbol.h"
 #include "lldb/Symbol/SymbolContext.h"
-#include "lldb/Target/SectionLoadList.h"
 #include "lldb/Target/Target.h"
 #include "lldb/Target/ThreadSpec.h"
 #include "lldb/Utility/Log.h"
@@ -67,7 +67,7 @@ Breakpoint::Breakpoint(Target &new_target, const Breakpoint &source_bp)
 Breakpoint::~Breakpoint() = default;
 
 BreakpointSP Breakpoint::CopyFromBreakpoint(TargetSP new_target,
-                                            const Breakpoint &bp_to_copy_from) {
+    const Breakpoint& bp_to_copy_from) {
   if (!new_target)
     return BreakpointSP();
 
@@ -168,7 +168,7 @@ lldb::BreakpointSP Breakpoint::CreateFromStructuredData(
         std::make_shared<SearchFilterForUnconstrainedSearches>(target_sp);
   else {
     filter_sp = SearchFilter::CreateFromStructuredData(target_sp, *filter_dict,
-                                                       create_error);
+        create_error);
     if (create_error.Fail()) {
       error.SetErrorStringWithFormat(
           "Error creating breakpoint filter from data: %s.",
@@ -179,7 +179,7 @@ lldb::BreakpointSP Breakpoint::CreateFromStructuredData(
 
   std::unique_ptr<BreakpointOptions> options_up;
   StructuredData::Dictionary *options_dict;
-  Target &target = *target_sp;
+  Target& target = *target_sp;
   success = breakpoint_dict->GetValueForKeyAsDictionary(
       BreakpointOptions::GetSerializationKey(), options_dict);
   if (success) {
@@ -197,8 +197,8 @@ lldb::BreakpointSP Breakpoint::CreateFromStructuredData(
   success = breakpoint_dict->GetValueForKeyAsBoolean(
       Breakpoint::GetKey(OptionNames::Hardware), hardware);
 
-  result_sp =
-      target.CreateBreakpoint(filter_sp, resolver_sp, false, hardware, true);
+  result_sp = target.CreateBreakpoint(filter_sp, resolver_sp, false,
+                                      hardware, true);
 
   if (result_sp && options_up) {
     result_sp->m_options_up = std::move(options_up);
@@ -346,7 +346,7 @@ void Breakpoint::SetOneShot(bool one_shot) {
   m_options_up->SetOneShot(one_shot);
 }
 
-bool Breakpoint::IsAutoContinue() const {
+bool Breakpoint::IsAutoContinue() const { 
   return m_options_up->IsAutoContinue();
 }
 
@@ -541,12 +541,12 @@ void Breakpoint::ModulesChanged(ModuleList &module_list, bool load,
           locations_with_no_section.Add(break_loc_sp);
           continue;
         }
-
+          
         if (!break_loc_sp->IsEnabled())
           continue;
-
+        
         SectionSP section_sp(section_addr.GetSection());
-
+        
         // If we don't have a Section, that means this location is a raw
         // address that we haven't resolved to a section yet.  So we'll have to
         // look in all the new modules to resolve this location. Otherwise, if
@@ -563,9 +563,9 @@ void Breakpoint::ModulesChanged(ModuleList &module_list, bool load,
           }
         }
       }
-
+      
       size_t num_to_delete = locations_with_no_section.GetSize();
-
+      
       for (size_t i = 0; i < num_to_delete; i++)
         m_locations.RemoveLocation(locations_with_no_section.GetByIndex(i));
 
@@ -969,7 +969,8 @@ void Breakpoint::GetResolverDescription(Stream *s) {
     m_resolver_sp->GetDescription(s);
 }
 
-bool Breakpoint::GetMatchingFileLine(ConstString filename, uint32_t line_number,
+bool Breakpoint::GetMatchingFileLine(ConstString filename,
+                                     uint32_t line_number,
                                      BreakpointLocationCollection &loc_coll) {
   // TODO: To be correct, this method needs to fill the breakpoint location
   // collection

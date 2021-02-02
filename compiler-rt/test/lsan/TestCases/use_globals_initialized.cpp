@@ -5,9 +5,9 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_globals=1" %run %t 2>&1
 // RUN: %env_lsan_opts="" %run %t 2>&1
 
-#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "sanitizer_common/print_address.h"
 
 void *data_var = (void *)1;
 

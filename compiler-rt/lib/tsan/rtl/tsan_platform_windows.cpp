@@ -14,19 +14,23 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_WINDOWS
 
-#include <stdlib.h>
-
 #include "tsan_platform.h"
+
+#include <stdlib.h>
 
 namespace __tsan {
 
-void FlushShadowMemory() {}
+void FlushShadowMemory() {
+}
 
-void WriteMemoryProfile(char *buf, uptr buf_size, uptr nthread, uptr nlive) {}
+void WriteMemoryProfile(char *buf, uptr buf_size, uptr nthread, uptr nlive) {
+}
 
-void InitializePlatformEarly() {}
+void InitializePlatformEarly() {
+}
 
-void InitializePlatform() {}
+void InitializePlatform() {
+}
 
 }  // namespace __tsan
 

@@ -180,8 +180,8 @@ public:
     lldb_private::DataExtractor value_extractor;
     lldb_private::Status extract_error;
 
-    m_execution_unit.GetMemoryData(value_extractor, process_address, value_size,
-                                   extract_error);
+    m_execution_unit.GetMemoryData(value_extractor, process_address,
+                                   value_size, extract_error);
 
     if (!extract_error.Success())
       return false;

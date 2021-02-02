@@ -1,7 +1,7 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t 2>&1 | FileCheck %s
 #include "test.h"
-#include <errno.h>
 #include <stdint.h>
+#include <errno.h>
 #include <sys/mman.h>
 
 // Test for issue:
@@ -16,15 +16,15 @@
 // UNSUPPORTED: darwin,netbsd
 
 void *Thread(void *ptr) {
-  *(int *)ptr = 42;
+  *(int*)ptr = 42;
   barrier_wait(&barrier);
   return 0;
 }
 
 int main() {
   barrier_init(&barrier, 2);
-  void *ptr = mmap(0, 128 << 10, PROT_READ | PROT_WRITE,
-                   MAP_32BIT | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  void *ptr = mmap(0, 128 << 10, PROT_READ|PROT_WRITE,
+      MAP_32BIT|MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
   fprintf(stderr, "ptr=%p\n", ptr);
   if (ptr == MAP_FAILED) {
     fprintf(stderr, "mmap failed: %d\n", errno);
@@ -37,7 +37,7 @@ int main() {
   pthread_t t;
   pthread_create(&t, 0, Thread, ptr);
   barrier_wait(&barrier);
-  *(int *)ptr = 42;
+  *(int*)ptr = 42;
   pthread_join(t, 0);
   munmap(ptr, 128 << 10);
   fprintf(stderr, "DONE\n");

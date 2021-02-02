@@ -13,6 +13,6 @@ int main() {
   std::cout << "Type i: ";
   std::cin >> i;
   return 0;
-  // CHECK: Type i:
-  // CHECK-NOT: AddressSanitizer: stack-buffer-overflow on address [[ADDR:0x[0-9a-f]+]]
+// CHECK: Type i:
+// CHECK-NOT: AddressSanitizer: stack-buffer-overflow on address [[ADDR:0x[0-9a-f]+]]
 }

@@ -19,23 +19,24 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::discrete_distribution<> D;
-    typedef D::param_type param_type;
-    double p0[] = {30, 10};
-    param_type p1(p0, p0 + 2);
-    param_type p2(p0, p0 + 2);
-    assert(p1 == p2);
-  }
-  {
-    typedef std::discrete_distribution<> D;
-    typedef D::param_type param_type;
-    double p0[] = {30, 10};
-    param_type p1(p0, p0 + 2);
-    param_type p2;
-    assert(p1 != p2);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::discrete_distribution<> D;
+        typedef D::param_type param_type;
+        double p0[] = {30, 10};
+        param_type p1(p0, p0+2);
+        param_type p2(p0, p0+2);
+        assert(p1 == p2);
+    }
+    {
+        typedef std::discrete_distribution<> D;
+        typedef D::param_type param_type;
+        double p0[] = {30, 10};
+        param_type p1(p0, p0+2);
+        param_type p2;
+        assert(p1 != p2);
+    }
 
   return 0;
 }

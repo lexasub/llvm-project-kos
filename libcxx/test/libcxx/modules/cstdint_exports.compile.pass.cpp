@@ -24,10 +24,8 @@
 #include <cstdint>
 
 int main(int, char**) {
-  int8_t x;
-  (void)x;
-  std::int8_t y;
-  (void)y;
+  int8_t x; (void)x;
+  std::int8_t y; (void)y;
 
   return 0;
 }

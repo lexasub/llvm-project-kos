@@ -25,7 +25,7 @@ class BlockFrequency {
   uint64_t Frequency;
 
 public:
-  BlockFrequency(uint64_t Freq = 0) : Frequency(Freq) {}
+  BlockFrequency(uint64_t Freq = 0) : Frequency(Freq) { }
 
   /// Returns the maximum possible frequency, the saturation value.
   static uint64_t getMaxFrequency() { return -1ULL; }
@@ -55,13 +55,17 @@ public:
   /// Shift block frequency to the right by count digits saturating to 1.
   BlockFrequency &operator>>=(const unsigned count);
 
-  bool operator<(BlockFrequency RHS) const { return Frequency < RHS.Frequency; }
+  bool operator<(BlockFrequency RHS) const {
+    return Frequency < RHS.Frequency;
+  }
 
   bool operator<=(BlockFrequency RHS) const {
     return Frequency <= RHS.Frequency;
   }
 
-  bool operator>(BlockFrequency RHS) const { return Frequency > RHS.Frequency; }
+  bool operator>(BlockFrequency RHS) const {
+    return Frequency > RHS.Frequency;
+  }
 
   bool operator>=(BlockFrequency RHS) const {
     return Frequency >= RHS.Frequency;
@@ -72,6 +76,6 @@ public:
   }
 };
 
-} // namespace llvm
+}
 
 #endif

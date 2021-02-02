@@ -39,6 +39,6 @@ LLT getLLTForMVT(MVT Ty);
 /// Get the appropriate floating point arithmetic semantic based on the bit size
 /// of the given scalar LLT.
 const llvm::fltSemantics &getFltSemanticForLLT(LLT Ty);
-} // namespace llvm
+}
 
 #endif // LLVM_CODEGEN_LOWLEVELTYPE_H

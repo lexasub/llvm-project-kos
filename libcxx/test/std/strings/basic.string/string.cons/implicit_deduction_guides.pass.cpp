@@ -23,7 +23,7 @@
 #include "test_iterators.h"
 #include "constexpr_char_traits.h"
 
-template <class T, class Alloc = std::allocator<T> >
+template <class T, class Alloc = std::allocator<T>>
 using BStr = std::basic_string<T, std::char_traits<T>, Alloc>;
 
 // Overloads
@@ -46,18 +46,19 @@ using BStr = std::basic_string<T, std::char_traits<T>, Alloc>;
 // (13) basic_string(initializer_list<CharT>, A const& = A())
 // (14) basic_string(BSV, A const& = A())
 // (15) basic_string(const T&, size_type, size_type, A const& = A())
-int main(int, char**) {
+int main(int, char**)
+{
   using TestSizeT = test_allocator<char>::size_type;
-  {
-      // Testing (1)
-      // Nothing to do. Cannot deduce without any arguments.
-  } {
-      // Testing (2)
-      // This overload isn't compatible with implicit deduction guides as
-      // specified in the standard.
-      // const test_allocator<char> alloc{};
-      // std::basic_string s(alloc);
-  } { // Testing (3) w/o allocator
+  { // Testing (1)
+    // Nothing to do. Cannot deduce without any arguments.
+  }
+  { // Testing (2)
+    // This overload isn't compatible with implicit deduction guides as
+    // specified in the standard.
+    // const test_allocator<char> alloc{};
+    // std::basic_string s(alloc);
+  }
+  { // Testing (3) w/o allocator
     std::basic_string s(6ull, 'a');
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "aaaaaa");
@@ -68,11 +69,11 @@ int main(int, char**) {
   }
   { // Testing (3) w/ allocator
     std::basic_string s(6ull, 'a', test_allocator<char>{});
-    ASSERT_SAME_TYPE(decltype(s), BStr<char, test_allocator<char> >);
+    ASSERT_SAME_TYPE(decltype(s), BStr<char,test_allocator<char>>);
     assert(s == "aaaaaa");
 
     std::basic_string w(2ull, L'b', test_allocator<wchar_t>{});
-    ASSERT_SAME_TYPE(decltype(w), BStr<wchar_t, test_allocator<wchar_t> >);
+    ASSERT_SAME_TYPE(decltype(w), BStr<wchar_t, test_allocator<wchar_t>>);
     assert(w == L"bb");
   }
   { // Testing (4) w/o allocator
@@ -81,8 +82,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "bc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
     std::basic_string w(win, (TestSizeT)3);
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -94,8 +96,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "bc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
     std::basic_string w(win, (TestSizeT)3, test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -107,8 +110,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "bc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
     std::basic_string w(win, (TestSizeT)2, (TestSizeT)3);
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -120,11 +124,11 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "bc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
-    std::basic_string w(win, (TestSizeT)2, (TestSizeT)3,
-                        test_allocator<wchar_t>{});
+    std::basic_string w(win, (TestSizeT)2, (TestSizeT)3, test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
     assert(w == L"cde");
   }
@@ -142,8 +146,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "ab");
 
-    using WStr = std::basic_string<wchar_t, std::char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  std::char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     std::basic_string w(L"abcdef", (TestSizeT)3, test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
     assert(w == L"abc");
@@ -162,8 +167,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using WStr = std::basic_string<wchar_t, std::char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  std::char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     std::basic_string w(L"abcdef", test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
     assert(w == L"abcdef");
@@ -176,8 +182,7 @@ int main(int, char**) {
     assert(s == "abc");
   }
   { // (8) w/ allocator
-    using ExpectW = std::basic_string<wchar_t, std::char_traits<wchar_t>,
-                                      test_allocator<wchar_t> >;
+    using ExpectW = std::basic_string<wchar_t, std::char_traits<wchar_t>, test_allocator<wchar_t>>;
     using It = input_iterator<const wchar_t*>;
     const wchar_t* input = L"abcdef";
     std::basic_string s(It(input), It(input + 3), test_allocator<wchar_t>{});
@@ -190,8 +195,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
     std::basic_string w(win);
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -203,8 +209,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     const WStr win(L"abcdef");
     std::basic_string w(win, test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -216,8 +223,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     WStr win(L"abcdef");
     std::basic_string w(std::move(win));
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -229,8 +237,9 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using WStr = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                   test_allocator<wchar_t> >;
+    using WStr = std::basic_string<wchar_t,
+                                  constexpr_char_traits<wchar_t>,
+                                  test_allocator<wchar_t>>;
     WStr win(L"abcdef");
     std::basic_string w(std::move(win), test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), WStr);
@@ -247,11 +256,11 @@ int main(int, char**) {
   }
   { // Testing (13) w/ allocator
     std::basic_string s({'a', 'b', 'c'}, test_allocator<char>{});
-    ASSERT_SAME_TYPE(decltype(s), BStr<char, test_allocator<char> >);
+    ASSERT_SAME_TYPE(decltype(s), BStr<char, test_allocator<char>>);
     assert(s == "abc");
 
     std::basic_string w({L'a', L'b', L'c'}, test_allocator<wchar_t>{});
-    ASSERT_SAME_TYPE(decltype(w), BStr<wchar_t, test_allocator<wchar_t> >);
+    ASSERT_SAME_TYPE(decltype(w), BStr<wchar_t, test_allocator<wchar_t>>);
     assert(w == L"abc");
   }
   { // Testing (14) w/o allocator
@@ -260,25 +269,22 @@ int main(int, char**) {
     ASSERT_SAME_TYPE(decltype(s), std::string);
     assert(s == "abc");
 
-    using Expect = std::basic_string<wchar_t, constexpr_char_traits<wchar_t> >;
-    std::basic_string_view<wchar_t, constexpr_char_traits<wchar_t> > BSV(
-        L"abcdef");
+    using Expect = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>>;
+    std::basic_string_view<wchar_t, constexpr_char_traits<wchar_t>> BSV(L"abcdef");
     std::basic_string w(BSV);
     ASSERT_SAME_TYPE(decltype(w), Expect);
     assert(w == L"abcdef");
   }
   { // Testing (14) w/ allocator
-    using ExpectS =
-        std::basic_string<char, std::char_traits<char>, test_allocator<char> >;
+    using ExpectS = std::basic_string<char, std::char_traits<char>, test_allocator<char>>;
     std::string_view sv("abc");
     std::basic_string s(sv, test_allocator<char>{});
     ASSERT_SAME_TYPE(decltype(s), ExpectS);
     assert(s == "abc");
 
     using ExpectW = std::basic_string<wchar_t, constexpr_char_traits<wchar_t>,
-                                      test_allocator<wchar_t> >;
-    std::basic_string_view<wchar_t, constexpr_char_traits<wchar_t> > BSV(
-        L"abcdef");
+                                      test_allocator<wchar_t>>;
+    std::basic_string_view<wchar_t, constexpr_char_traits<wchar_t>> BSV(L"abcdef");
     std::basic_string w(BSV, test_allocator<wchar_t>{});
     ASSERT_SAME_TYPE(decltype(w), ExpectW);
     assert(w == L"abcdef");
@@ -295,15 +301,13 @@ int main(int, char**) {
     assert(w == L"cd");
   }
   { // Testing (15) w/ allocator
-    using ExpectS =
-        std::basic_string<char, std::char_traits<char>, test_allocator<char> >;
+    using ExpectS = std::basic_string<char, std::char_traits<char>, test_allocator<char>>;
     ExpectS s0("abc");
     std::basic_string s(s0, 1, 1, test_allocator<char>{4});
     ASSERT_SAME_TYPE(decltype(s), ExpectS);
     assert(s == "b");
 
-    using ExpectW = std::basic_string<wchar_t, std::char_traits<wchar_t>,
-                                      test_allocator<wchar_t> >;
+    using ExpectW = std::basic_string<wchar_t, std::char_traits<wchar_t>, test_allocator<wchar_t>>;
     ExpectW w0(L"abcdef");
     std::basic_string w(w0, 2, 2, test_allocator<wchar_t>{6});
     ASSERT_SAME_TYPE(decltype(w), ExpectW);

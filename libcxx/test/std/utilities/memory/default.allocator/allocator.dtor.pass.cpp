@@ -13,25 +13,27 @@
 
 #include <memory>
 
+
 template <typename T>
 constexpr bool test() {
-  std::allocator<T> alloc;
-  (void)alloc;
+    std::allocator<T> alloc;
+    (void)alloc;
 
-  // destructor called here
-  return true;
+    // destructor called here
+    return true;
 }
 
-int main(int, char**) {
-  test<int>();
+int main(int, char**)
+{
+    test<int>();
 #ifdef _LIBCPP_VERSION // extension
-  test<int const>();
+    test<int const>();
 #endif // _LIBCPP_VERSION
 
-  static_assert(test<int>());
+    static_assert(test<int>());
 #ifdef _LIBCPP_VERSION // extension
-  static_assert(test<int const>());
+    static_assert(test<int const>());
 #endif // _LIBCPP_VERSION
 
-  return 0;
+    return 0;
 }

@@ -690,9 +690,7 @@ void ento::registerPthreadLockBase(CheckerManager &mgr) {
   mgr.registerChecker<PthreadLockChecker>();
 }
 
-bool ento::shouldRegisterPthreadLockBase(const CheckerManager &mgr) {
-  return true;
-}
+bool ento::shouldRegisterPthreadLockBase(const CheckerManager &mgr) { return true; }
 
 #define REGISTER_CHECKER(name)                                                 \
   void ento::register##name(CheckerManager &mgr) {                             \

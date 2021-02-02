@@ -757,12 +757,11 @@ TEST(SemanticHighlighting, GeneratesHighlightsWhenFileChange) {
 std::vector<HighlightingToken> tokens(llvm::StringRef MarkedText) {
   Annotations A(MarkedText);
   std::vector<HighlightingToken> Results;
-  for (const Range &R : A.ranges())
+  for (const Range& R : A.ranges())
     Results.push_back({HighlightingKind::Variable, R});
-  for (unsigned I = 0; I < static_cast<unsigned>(HighlightingKind::LastKind);
-       ++I) {
+  for (unsigned I = 0; I < static_cast<unsigned>(HighlightingKind::LastKind); ++I) {
     HighlightingKind Kind = static_cast<HighlightingKind>(I);
-    for (const Range &R : A.ranges(llvm::to_string(Kind)))
+    for (const Range& R : A.ranges(llvm::to_string(Kind)))
       Results.push_back({Kind, R});
   }
   llvm::sort(Results);

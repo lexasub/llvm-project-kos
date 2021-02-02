@@ -259,6 +259,6 @@ enum {
   k_num_gpr_registers_arm64 = k_last_gpr_arm64 - k_first_gpr_arm64 + 1,
   k_num_fpr_registers_arm64 = k_last_fpr_arm64 - k_first_fpr_arm64 + 1
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_LLDB_ARM64_REGISTER_ENUMS_H

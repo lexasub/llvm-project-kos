@@ -308,7 +308,8 @@ static bool DumpEncodedBufferToStream(
         utf8_data_end_ptr = utf8_data_ptr;
       // needed because the ConvertFunction will change the value of the
       // data_ptr.
-      utf8_data_ptr = (llvm::UTF8 *)utf8_data_buffer_sp->GetBytes();
+      utf8_data_ptr =
+          (llvm::UTF8 *)utf8_data_buffer_sp->GetBytes();
     } else {
       // just copy the pointers - the cast is necessary to make the compiler
       // happy but this should only happen if we are reading UTF8 data

@@ -6,8 +6,8 @@ double data[1000000] = {0};
 double data_empty_init[1000000] = {};
 
 struct S {
-  S(int);
-  S();
+ S(int);
+ S();
 };
 
 S data2[1000000] = {0};

@@ -4,10 +4,11 @@
 
 // Test condition origin propagation through "select" IR instruction.
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 
-__attribute__((noinline)) int *max_by_ptr(int *a, int *b) {
+__attribute__((noinline))
+int *max_by_ptr(int *a, int *b) {
   return *a < *b ? b : a;
 }
 

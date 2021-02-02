@@ -20,14 +20,14 @@
 //===----------------------------------------------------------------------===//
 
 namespace llvm {
-class BitVector;
+  class BitVector;
 }
 
 namespace clang {
-class AnalysisDeclContext;
-class CFGBlock;
-class Preprocessor;
-} // namespace clang
+  class AnalysisDeclContext;
+  class CFGBlock;
+  class Preprocessor;
+}
 
 //===----------------------------------------------------------------------===//
 // API.
@@ -37,15 +37,21 @@ namespace clang {
 namespace reachable_code {
 
 /// Classifications of unreachable code.
-enum UnreachableKind { UK_Return, UK_Break, UK_Loop_Increment, UK_Other };
+enum UnreachableKind {
+  UK_Return,
+  UK_Break,
+  UK_Loop_Increment,
+  UK_Other
+};
 
 class Callback {
   virtual void anchor();
-
 public:
   virtual ~Callback() {}
-  virtual void HandleUnreachable(UnreachableKind UK, SourceLocation L,
-                                 SourceRange ConditionVal, SourceRange R1,
+  virtual void HandleUnreachable(UnreachableKind UK,
+                                 SourceLocation L,
+                                 SourceRange ConditionVal,
+                                 SourceRange R1,
                                  SourceRange R2) = 0;
 };
 
@@ -57,7 +63,6 @@ unsigned ScanReachableFromBlock(const CFGBlock *Start,
 void FindUnreachableCode(AnalysisDeclContext &AC, Preprocessor &PP,
                          Callback &CB);
 
-} // namespace reachable_code
-} // namespace clang
+}} // end namespace clang::reachable_code
 
 #endif

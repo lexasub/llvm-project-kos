@@ -566,8 +566,8 @@ ModuleSP DynamicLoaderPOSIXDYLD::LoadInterpreterModule() {
   FileSpec file(info.GetName().GetCString());
   ModuleSpec module_spec(file, target.GetArchitecture());
 
-  if (ModuleSP module_sp =
-          target.GetOrCreateModule(module_spec, true /* notify */)) {
+  if (ModuleSP module_sp = target.GetOrCreateModule(module_spec, 
+                                                    true /* notify */)) {
     UpdateLoadedSections(module_sp, LLDB_INVALID_ADDRESS, m_interpreter_base,
                          false);
     m_interpreter_module = module_sp;

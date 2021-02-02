@@ -4,8 +4,10 @@
 // As if the macro was not defined.
 // #define CUSTOM_NO_DISCARD __attribute_((warn_unused_result))
 
-class Foo {
+class Foo
+{
 public:
-  bool f1() const;
-  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f1' should be marked CUSTOM_NO_DISCARD [modernize-use-nodiscard]
+    bool f1() const;
+    // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: function 'f1' should be marked CUSTOM_NO_DISCARD [modernize-use-nodiscard]
 };
+

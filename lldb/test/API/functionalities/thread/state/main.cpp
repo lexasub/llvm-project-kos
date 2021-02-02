@@ -8,23 +8,29 @@
 
 volatile int g_test = 0;
 
-int addSomething(int a) { return a + g_test; }
-
-int doNothing() {
-  int temp = 0; // Set first breakpoint here
-
-  while (!g_test && temp < 5) {
-    ++temp;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-  }
-
-  return temp; // Set second breakpoint here
+int addSomething(int a)
+{
+    return a + g_test;
 }
 
-int main() {
-  int result = doNothing();
+int doNothing()
+{
+    int temp = 0;   // Set first breakpoint here
 
-  int i = addSomething(result);
+    while (!g_test && temp < 5)
+    {
+        ++temp;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
 
-  return 0;
+    return temp;    // Set second breakpoint here
+}
+
+int main ()
+{
+    int result = doNothing();
+
+    int i = addSomething(result);
+
+    return 0;
 }

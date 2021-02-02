@@ -14,6 +14,7 @@
 #include "PrettyFunctionDumper.h"
 #include "PrettyTypedefDumper.h"
 #include "PrettyVariableDumper.h"
+#include "PrettyVariableDumper.h"
 #include "llvm-pdbutil.h"
 
 #include "llvm/DebugInfo/PDB/PDBSymbolData.h"
@@ -98,8 +99,8 @@ void PrettyClassLayoutGraphicalDumper::printPaddingRow(uint32_t Amount) {
     return;
 
   Printer.NewLine();
-  WithColor(Printer, PDB_ColorItem::Padding).get()
-      << "<padding> (" << Amount << " bytes)";
+  WithColor(Printer, PDB_ColorItem::Padding).get() << "<padding> (" << Amount
+                                                   << " bytes)";
   DumpedAnything = true;
 }
 

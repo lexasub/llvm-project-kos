@@ -17,14 +17,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  typedef std::fpos<std::mbstate_t> P;
-  P p(5);
-  std::streamoff o(6);
-  P q = p + o;
-  assert(q == P(11));
-  p += o;
-  assert(p == q);
+int main(int, char**)
+{
+    typedef std::fpos<std::mbstate_t> P;
+    P p(5);
+    std::streamoff o(6);
+    P q = p + o;
+    assert(q == P(11));
+    p += o;
+    assert(p == q);
 
   return 0;
 }

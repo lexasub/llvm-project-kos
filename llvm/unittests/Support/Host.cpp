@@ -7,9 +7,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Support/Host.h"
+#include "llvm/Config/llvm-config.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Triple.h"
-#include "llvm/Config/llvm-config.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/Program.h"
@@ -307,15 +307,13 @@ CPU variant     : 0x1
 CPU part        : 0xd0d
 CPU revision    : 0
 )";
-  EXPECT_EQ(sys::detail::getHostCPUNameForARM(Snapdragon865ProcCPUInfo),
-            "cortex-a77");
+  EXPECT_EQ(sys::detail::getHostCPUNameForARM(Snapdragon865ProcCPUInfo), "cortex-a77");
 }
 
 #if defined(__APPLE__) || defined(_AIX)
-static bool runAndGetCommandOutput(const char *ExePath,
-                                   ArrayRef<llvm::StringRef> argv,
-                                   std::unique_ptr<char[]> &Buffer,
-                                   off_t &Size) {
+static bool runAndGetCommandOutput(
+    const char *ExePath, ArrayRef<llvm::StringRef> argv,
+    std::unique_ptr<char[]> &Buffer, off_t &Size) {
   bool Success = false;
   [ExePath, argv, &Buffer, &Size, &Success] {
     using namespace llvm::sys;
@@ -350,7 +348,7 @@ static bool runAndGetCommandOutput(const char *ExePath,
 TEST_F(HostTest, DummyRunAndGetCommandOutputUse) {
   // Suppress defined-but-not-used warnings when the tests using the helper are
   // disabled.
-  (void)runAndGetCommandOutput;
+  (void) runAndGetCommandOutput;
 }
 #endif
 
@@ -383,8 +381,7 @@ TEST_F(HostTest, getMacOSHostVersion) {
   } else {
     // Don't compare the 'Micro' version, as it's always '0' for the 'Darwin'
     // triples.
-    ASSERT_EQ(std::tie(SystemMajor, SystemMinor),
-              std::tie(HostMajor, HostMinor));
+    ASSERT_EQ(std::tie(SystemMajor, SystemMinor), std::tie(HostMajor, HostMinor));
   }
 }
 #endif

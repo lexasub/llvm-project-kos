@@ -19,11 +19,9 @@
 #include <typeinfo>
 
 #if !defined(_LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION)
-#error                                                                         \
-    "_LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION should be defined on Apple platforms"
+#   error "_LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION should be defined on Apple platforms"
 #endif
 
 #if _LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION != 1
-#error                                                                         \
-    "_LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION should be 1 (assume RTTI is merged) on Apple platforms"
+#   error "_LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION should be 1 (assume RTTI is merged) on Apple platforms"
 #endif

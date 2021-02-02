@@ -19,8 +19,8 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ExecutionEngine/JITLink/JITLinkMemoryManager.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
+#include "llvm/ExecutionEngine/JITLink/JITLinkMemoryManager.h"
 #include "llvm/ExecutionEngine/Orc/IndirectionUtils.h"
 #include "llvm/ExecutionEngine/Orc/OrcRemoteTargetRPCAPI.h"
 #include "llvm/ExecutionEngine/RuntimeDyld.h"
@@ -576,8 +576,7 @@ public:
       return Error::success();
     }
 
-    JITEvaluatedSymbol findStub(StringRef Name,
-                                bool ExportedStubsOnly) override {
+    JITEvaluatedSymbol findStub(StringRef Name, bool ExportedStubsOnly) override {
       auto I = StubIndexes.find(Name);
       if (I == StubIndexes.end())
         return nullptr;

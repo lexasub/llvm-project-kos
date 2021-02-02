@@ -31,11 +31,18 @@ class WorkListUnit {
   unsigned blockIdx; // This is the index of the next statement.
 
 public:
-  WorkListUnit(ExplodedNode *N, BlockCounter C, const CFGBlock *B, unsigned idx)
-      : node(N), counter(C), block(B), blockIdx(idx) {}
+  WorkListUnit(ExplodedNode *N, BlockCounter C,
+               const CFGBlock *B, unsigned idx)
+  : node(N),
+    counter(C),
+    block(B),
+    blockIdx(idx) {}
 
   explicit WorkListUnit(ExplodedNode *N, BlockCounter C)
-      : node(N), counter(C), block(nullptr), blockIdx(0) {}
+  : node(N),
+    counter(C),
+    block(nullptr),
+    blockIdx(0) {}
 
   /// Returns the node associated with the worklist unit.
   ExplodedNode *getNode() const { return node; }
@@ -52,12 +59,11 @@ public:
 
 class WorkList {
   BlockCounter CurrentCounter;
-
 public:
   virtual ~WorkList();
   virtual bool hasWork() const = 0;
 
-  virtual void enqueue(const WorkListUnit &U) = 0;
+  virtual void enqueue(const WorkListUnit& U) = 0;
 
   void enqueue(ExplodedNode *N, const CFGBlock *B, unsigned idx) {
     enqueue(WorkListUnit(N, CurrentCounter, B, idx));
@@ -81,8 +87,8 @@ public:
   static std::unique_ptr<WorkList> makeUnexploredFirstPriorityLocationQueue();
 };
 
-} // namespace ento
+} // end ento namespace
 
-} // namespace clang
+} // end clang namespace
 
 #endif

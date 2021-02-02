@@ -17,32 +17,35 @@
 #include "test_macros.h"
 
 template <class T, class X>
-void test() {
-  std::complex<T> c;
-  assert(c.real() == 0);
-  assert(c.imag() == 0);
-  std::complex<T> c2(1.5, 2.5);
-  c = c2;
-  assert(c.real() == 1.5);
-  assert(c.imag() == 2.5);
-  std::complex<X> c3(3.5, -4.5);
-  c = c3;
-  assert(c.real() == 3.5);
-  assert(c.imag() == -4.5);
+void
+test()
+{
+    std::complex<T> c;
+    assert(c.real() == 0);
+    assert(c.imag() == 0);
+    std::complex<T> c2(1.5, 2.5);
+    c = c2;
+    assert(c.real() == 1.5);
+    assert(c.imag() == 2.5);
+    std::complex<X> c3(3.5, -4.5);
+    c = c3;
+    assert(c.real() == 3.5);
+    assert(c.imag() == -4.5);
 }
 
-int main(int, char**) {
-  test<float, float>();
-  test<float, double>();
-  test<float, long double>();
+int main(int, char**)
+{
+    test<float, float>();
+    test<float, double>();
+    test<float, long double>();
 
-  test<double, float>();
-  test<double, double>();
-  test<double, long double>();
+    test<double, float>();
+    test<double, double>();
+    test<double, long double>();
 
-  test<long double, float>();
-  test<long double, double>();
-  test<long double, long double>();
+    test<long double, float>();
+    test<long double, double>();
+    test<long double, long double>();
 
   return 0;
 }

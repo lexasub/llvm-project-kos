@@ -3,8 +3,7 @@
 
 typedef unsigned char BOOL;
 
-@interface NSNumber
-@end
+@interface NSNumber @end
 
 @interface NSNumber (NSNumberCreation)
 + (NSNumber *)numberWithChar:(char)value;
@@ -26,11 +25,11 @@ typedef unsigned char BOOL;
 @end
 
 @interface NSArray (NSArrayCreation)
-+ (id)arrayWithObjects:(const id[])objects count:(unsigned long)cnt;
++ (id)arrayWithObjects:(const id [])objects count:(unsigned long)cnt;
 @end
 
 @interface NSDictionary
-+ (id)dictionaryWithObjects:(const id[])objects forKeys:(const id[])keys count:(unsigned long)cnt;
++ (id)dictionaryWithObjects:(const id [])objects forKeys:(const id [])keys count:(unsigned long)cnt;
 @end
 
 #endif // OBJC_LITERAL_SUPPORT_H

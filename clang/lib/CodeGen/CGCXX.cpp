@@ -28,6 +28,7 @@
 using namespace clang;
 using namespace CodeGen;
 
+
 /// Try to emit a base destructor as an alias to its primary
 /// base-class destructor.
 bool CodeGenModule::TryEmitBaseDestructorAsAlias(const CXXDestructorDecl *D) {
@@ -76,19 +77,16 @@ bool CodeGenModule::TryEmitBaseDestructorAsAlias(const CXXDestructorDecl *D) {
   for (const auto &I : Class->bases()) {
 
     // We're in the base destructor, so skip virtual bases.
-    if (I.isVirtual())
-      continue;
+    if (I.isVirtual()) continue;
 
     // Skip base classes with trivial destructors.
     const auto *Base =
         cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
-    if (Base->hasTrivialDestructor())
-      continue;
+    if (Base->hasTrivialDestructor()) continue;
 
     // If we've already found a base class with a non-trivial
     // destructor, give up.
-    if (UniqueBase)
-      return true;
+    if (UniqueBase) return true;
     UniqueBase = Base;
   }
 
@@ -246,7 +244,8 @@ llvm::FunctionCallee CodeGenModule::getAddrAndTypeOfCXXStructor(
   return {FnType, Ptr};
 }
 
-static CGCallee BuildAppleKextVirtualCall(CodeGenFunction &CGF, GlobalDecl GD,
+static CGCallee BuildAppleKextVirtualCall(CodeGenFunction &CGF,
+                                          GlobalDecl GD,
                                           llvm::Type *Ty,
                                           const CXXRecordDecl *RD) {
   assert(!CGF.CGM.getTarget().getCXXABI().isMicrosoft() &&
@@ -257,14 +256,13 @@ static CGCallee BuildAppleKextVirtualCall(CodeGenFunction &CGF, GlobalDecl GD,
   VTable = CGF.Builder.CreateBitCast(VTable, Ty);
   assert(VTable && "BuildVirtualCall = kext vtbl pointer is null");
   uint64_t VTableIndex = CGM.getItaniumVTableContext().getMethodVTableIndex(GD);
-  const VTableLayout &VTLayout =
-      CGM.getItaniumVTableContext().getVTableLayout(RD);
+  const VTableLayout &VTLayout = CGM.getItaniumVTableContext().getVTableLayout(RD);
   VTableLayout::AddressPointLocation AddressPoint =
       VTLayout.getAddressPoint(BaseSubobject(RD, CharUnits::Zero()));
   VTableIndex += VTLayout.getVTableOffset(AddressPoint.VTableIndex) +
                  AddressPoint.AddressPointIndex;
   llvm::Value *VFuncPtr =
-      CGF.Builder.CreateConstInBoundsGEP1_64(VTable, VTableIndex, "vfnkxt");
+    CGF.Builder.CreateConstInBoundsGEP1_64(VTable, VTableIndex, "vfnkxt");
   llvm::Value *VFunc = CGF.Builder.CreateAlignedLoad(
       VFuncPtr, llvm::Align(CGF.PointerAlignInBytes));
   CGCallee Callee(GD, VFunc);
@@ -274,9 +272,10 @@ static CGCallee BuildAppleKextVirtualCall(CodeGenFunction &CGF, GlobalDecl GD,
 /// BuildAppleKextVirtualCall - This routine is to support gcc's kext ABI making
 /// indirect call to virtual functions. It makes the call through indexing
 /// into the vtable.
-CGCallee CodeGenFunction::BuildAppleKextVirtualCall(const CXXMethodDecl *MD,
-                                                    NestedNameSpecifier *Qual,
-                                                    llvm::Type *Ty) {
+CGCallee
+CodeGenFunction::BuildAppleKextVirtualCall(const CXXMethodDecl *MD,
+                                           NestedNameSpecifier *Qual,
+                                           llvm::Type *Ty) {
   assert((Qual->getKind() == NestedNameSpecifier::TypeSpec) &&
          "BuildAppleKextVirtualCall - bad Qual kind");
 
@@ -294,8 +293,11 @@ CGCallee CodeGenFunction::BuildAppleKextVirtualCall(const CXXMethodDecl *MD,
 
 /// BuildVirtualCall - This routine makes indirect vtable call for
 /// call to virtual destructors. It returns 0 if it could not do it.
-CGCallee CodeGenFunction::BuildAppleKextVirtualDestructorCall(
-    const CXXDestructorDecl *DD, CXXDtorType Type, const CXXRecordDecl *RD) {
+CGCallee
+CodeGenFunction::BuildAppleKextVirtualDestructorCall(
+                                            const CXXDestructorDecl *DD,
+                                            CXXDtorType Type,
+                                            const CXXRecordDecl *RD) {
   assert(DD->isVirtual() && Type != Dtor_Base);
   // Compute the function type we're calling.
   const CGFunctionInfo &FInfo = CGM.getTypes().arrangeCXXStructorDeclaration(

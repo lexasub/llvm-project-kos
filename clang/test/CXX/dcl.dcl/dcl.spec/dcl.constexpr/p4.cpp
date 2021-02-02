@@ -3,11 +3,11 @@
 // RUN: %clang_cc1 -verify -std=c++20 -fcxx-exceptions -DCXX14 -DCXX2A %s
 
 namespace N {
-typedef char C;
+  typedef char C;
 }
 
 namespace M {
-typedef double D;
+  typedef double D;
 }
 
 struct NonLiteral { // expected-note 2{{no constexpr constructors}}
@@ -25,7 +25,7 @@ struct Literal {
 struct S {
   constexpr S(int, N::C) {}
   constexpr S(int, NonLiteral, N::C) {} // expected-error {{constexpr constructor's 2nd parameter type 'NonLiteral' is not a literal type}}
-  constexpr S(int, NonLiteral = 42) {}  // expected-error {{constexpr constructor's 2nd parameter type 'NonLiteral' is not a literal type}}
+  constexpr S(int, NonLiteral = 42) {} // expected-error {{constexpr constructor's 2nd parameter type 'NonLiteral' is not a literal type}}
 
   // In addition, either its function-body shall be = delete or = default
   constexpr S() = default;
@@ -36,30 +36,29 @@ struct S {
 
 // - the class shall not have any virtual base classes;
 struct T : virtual S { // expected-note {{here}}
-  constexpr T() {}     // expected-error {{constexpr constructor not allowed in struct with virtual base class}}
+  constexpr T() {} // expected-error {{constexpr constructor not allowed in struct with virtual base class}}
 };
 namespace IndirectVBase {
-struct A {};
-struct B : virtual A {}; // expected-note {{here}}
-class C : public B {
-public:
-  constexpr C() {} // expected-error {{constexpr constructor not allowed in class with virtual base class}}
-};
-} // namespace IndirectVBase
+  struct A {};
+  struct B : virtual A {}; // expected-note {{here}}
+  class C : public B {
+  public:
+    constexpr C() {} // expected-error {{constexpr constructor not allowed in class with virtual base class}}
+  };
+}
 
 // - its function-body shall not be a function-try-block;
 struct U {
   constexpr U()
-      try
+    try
 #ifndef CXX2A
   // expected-error@-2 {{function try block in constexpr constructor is a C++20 extension}}
 #endif
-      : u() {
+    : u() {
 #ifndef CXX14
-    // expected-error@-2 {{use of this statement in a constexpr constructor is a C++14 extension}}
+  // expected-error@-2 {{use of this statement in a constexpr constructor is a C++14 extension}}
 #endif
-  }
-  catch (...) {
+  } catch (...) {
     throw;
   }
   int u;
@@ -90,45 +89,44 @@ struct V {
     using namespace N;
   }
 
-  constexpr V(int (&)[1]) {
+  constexpr V(int(&)[1]) {
     for (int n = 0; n < 10; ++n)
       /**/;
 #ifndef CXX14
-      // expected-error@-3 {{statement not allowed in constexpr constructor}}
+    // expected-error@-3 {{statement not allowed in constexpr constructor}}
 #endif
   }
-  constexpr V(int (&)[2]) {
+  constexpr V(int(&)[2]) {
     constexpr int a = 0;
 #ifndef CXX14
     // expected-error@-2 {{variable declaration in a constexpr constructor is a C++14 extension}}
 #endif
   }
-  constexpr V(int (&)[3]) {
+  constexpr V(int(&)[3]) {
     constexpr int ForwardDecl(int);
 #ifndef CXX14
     // expected-error@-2 {{use of this statement in a constexpr constructor is a C++14 extension}}
 #endif
   }
-  constexpr V(int (&)[4]) {
-    typedef struct {
-    } S1;
+  constexpr V(int(&)[4]) {
+    typedef struct { } S1;
 #ifndef CXX14
     // expected-error@-2 {{type definition in a constexpr constructor is a C++14 extension}}
 #endif
   }
-  constexpr V(int (&)[5]) {
-    using S2 = struct {};
+  constexpr V(int(&)[5]) {
+    using S2 = struct { };
 #ifndef CXX14
     // expected-error@-2 {{type definition in a constexpr constructor is a C++14 extension}}
 #endif
   }
-  constexpr V(int (&)[6]) {
-    struct S3 {};
+  constexpr V(int(&)[6]) {
+    struct S3 { };
 #ifndef CXX14
     // expected-error@-2 {{type definition in a constexpr constructor is a C++14 extension}}
 #endif
   }
-  constexpr V(int (&)[7]) {
+  constexpr V(int(&)[7]) {
     return;
 #ifndef CXX14
     // expected-error@-2 {{use of this statement in a constexpr constructor is a C++14 extension}}
@@ -146,7 +144,7 @@ struct W {
 #endif
 };
 struct AnonMembers {
-  int a;  // expected-note 0-1{{member not initialized by constructor}}
+  int a; // expected-note 0-1{{member not initialized by constructor}}
   union { // expected-note 0-2{{member not initialized by constructor}}
     char b;
     struct {
@@ -161,7 +159,7 @@ struct AnonMembers {
   struct { // expected-note 0-1{{member not initialized by constructor}}
     long long g;
     struct {
-      int h;    // expected-note 0-1{{member not initialized by constructor}}
+      int h; // expected-note 0-1{{member not initialized by constructor}}
       double i; // expected-note 0-1{{member not initialized by constructor}}
     };
     union { // expected-note 0-2{{member not initialized by constructor}}
@@ -170,25 +168,25 @@ struct AnonMembers {
     };
   };
 
-  constexpr AnonMembers(int (&)[1]) : a(), b(), g(), h(), i(), j() {} // ok
+  constexpr AnonMembers(int(&)[1]) : a(), b(), g(), h(), i(), j() {} // ok
   // missing d, i, j/k union
-  constexpr AnonMembers(int (&)[2]) : a(), c(), g(), h() {}
+  constexpr AnonMembers(int(&)[2]) : a(), c(), g(), h() {}
 #ifndef CXX2A
   // expected-error@-2 {{constexpr constructor that does not initialize all members}}
 #endif
-  constexpr AnonMembers(int (&)[3]) : a(), e(), g(), h(), i(), k() {} // ok
+  constexpr AnonMembers(int(&)[3]) : a(), e(), g(), h(), i(), k() {} // ok
   // missing h, j/k union
-  constexpr AnonMembers(int (&)[4]) : a(), c(), d(), g(), i() {}
+  constexpr AnonMembers(int(&)[4]) : a(), c(), d(), g(), i() {}
 #ifndef CXX2A
   // expected-error@-2 {{constexpr constructor that does not initialize all members}}
 #endif
   // missing b/c/d/e/f union
-  constexpr AnonMembers(int (&)[5]) : a(), g(), h(), i(), k() {}
+  constexpr AnonMembers(int(&)[5]) : a(), g(), h(), i(), k() {}
 #ifndef CXX2A
   // expected-error@-2 {{constexpr constructor that does not initialize all members}}
 #endif
   // missing a, b/c/d/e/f union, g/h/i/j/k struct
-  constexpr AnonMembers(int (&)[6]) {}
+  constexpr AnonMembers(int(&)[6]) {}
 #ifndef CXX2A
   // expected-error@-2 {{constexpr constructor that does not initialize all members}}
 #endif
@@ -199,20 +197,20 @@ union Empty {
 } constexpr empty1;
 
 struct EmptyVariant {
-  union {};                   // expected-warning {{does not declare anything}}
-  struct {};                  // expected-warning {{does not declare anything}}
+  union {}; // expected-warning {{does not declare anything}}
+  struct {}; // expected-warning {{does not declare anything}}
   constexpr EmptyVariant() {} // ok
 } constexpr empty2;
 
-template <typename T> using Int = int;
-template <typename T>
+template<typename T> using Int = int;
+template<typename T>
 struct TemplateInit {
   T a;
-  int b;    // desired-note {{not initialized}}
+  int b; // desired-note {{not initialized}}
   Int<T> c; // desired-note {{not initialized}}
   struct {
     T d;
-    int e;    // desired-note {{not initialized}}
+    int e; // desired-note {{not initialized}}
     Int<T> f; // desired-note {{not initialized}}
   };
   struct {
@@ -227,16 +225,16 @@ struct TemplateInit {
   // FIXME: This is ill-formed (no diagnostic required). We should diagnose it.
   constexpr TemplateInit() {} // desired-error {{must initialize all members}}
 };
-template <typename T> struct TemplateInit2 {
+template<typename T> struct TemplateInit2 {
   Literal l;
   constexpr TemplateInit2() {} // ok
 };
 
-template <typename T> struct weak_ptr {
+template<typename T> struct weak_ptr {
   constexpr weak_ptr() : p(0) {}
   T *p;
 };
-template <typename T> struct enable_shared_from_this {
+template<typename T> struct enable_shared_from_this {
   weak_ptr<T> weak_this;
   constexpr enable_shared_from_this() {} // ok
 };
@@ -248,11 +246,11 @@ struct ConstexprBaseMemberCtors : Literal {
   Literal l;
 
   constexpr ConstexprBaseMemberCtors() : Literal(), l() {} // ok
-  constexpr ConstexprBaseMemberCtors(char) :               // expected-error {{constexpr constructor never produces a constant expression}}
-                                             Literal(0),   // expected-note {{non-constexpr constructor}}
-                                             l() {}
+  constexpr ConstexprBaseMemberCtors(char) : // expected-error {{constexpr constructor never produces a constant expression}}
+    Literal(0), // expected-note {{non-constexpr constructor}}
+    l() {}
   constexpr ConstexprBaseMemberCtors(double) : Literal(), // expected-error {{constexpr constructor never produces a constant expression}}
-                                               l(0)       // expected-note {{non-constexpr constructor}}
+    l(0) // expected-note {{non-constexpr constructor}}
   {}
 };
 
@@ -271,17 +269,11 @@ struct X {
   constexpr X(int c) : a(c) {} // ok, b initialized by 2 * c + 1
 };
 
-union XU1 {
-  int a;
-  constexpr XU1() = default;
-};
+union XU1 { int a; constexpr XU1() = default; };
 #ifndef CXX2A
 // expected-error@-2{{not constexpr}}
 #endif
-union XU2 {
-  int a = 1;
-  constexpr XU2() = default;
-};
+union XU2 { int a = 1; constexpr XU2() = default; };
 
 struct XU3 {
   union {
@@ -317,57 +309,57 @@ struct Z {
   int n;
 };
 
-namespace StdExample {
-struct Length {
-  explicit constexpr Length(int i = 0) : val(i) {}
 
-private:
-  int val;
-};
-} // namespace StdExample
+namespace StdExample {
+  struct Length {
+    explicit constexpr Length(int i = 0) : val(i) { }
+  private:
+      int val;
+  };
+}
 
 namespace CtorLookup {
-// Ensure that we look up which constructor will actually be used.
-struct A {
-  constexpr A(const A &) {}
-  A(A &) {}
-  constexpr A(int = 0);
-};
+  // Ensure that we look up which constructor will actually be used.
+  struct A {
+    constexpr A(const A&) {}
+    A(A&) {}
+    constexpr A(int = 0);
+  };
 
-struct B : A {
-  B() = default;
-  constexpr B(const B &);
-  constexpr B(B &);
-};
-constexpr B::B(const B &) = default;
-constexpr B::B(B &) = default; // expected-error {{not constexpr}}
+  struct B : A {
+    B() = default;
+    constexpr B(const B&);
+    constexpr B(B&);
+  };
+  constexpr B::B(const B&) = default;
+  constexpr B::B(B&) = default; // expected-error {{not constexpr}}
 
-struct C {
-  A a;
-  C() = default;
-  constexpr C(const C &);
-  constexpr C(C &);
-};
-constexpr C::C(const C &) = default;
-constexpr C::C(C &) = default; // expected-error {{not constexpr}}
-} // namespace CtorLookup
+  struct C {
+    A a;
+    C() = default;
+    constexpr C(const C&);
+    constexpr C(C&);
+  };
+  constexpr C::C(const C&) = default;
+  constexpr C::C(C&) = default; // expected-error {{not constexpr}}
+}
 
 namespace PR14503 {
-template <typename> struct V {
-  union {
-    int n;
-    struct {
-      int x,
-          y; // expected-note {{subobject declared here}}
+  template<typename> struct V {
+    union {
+      int n;
+      struct {
+        int x,
+            y; // expected-note {{subobject declared here}}
+      };
     };
+    constexpr V() : x(0) {}
   };
-  constexpr V() : x(0) {}
-};
 
-// The constructor is still 'constexpr' here, but the result is not intended
-// to be a constant expression. The standard is not clear on how this should
-// work.
-constexpr V<int> v; // expected-error {{constant expression}} expected-note {{subobject of type 'int' is not initialized}}
+  // The constructor is still 'constexpr' here, but the result is not intended
+  // to be a constant expression. The standard is not clear on how this should
+  // work.
+  constexpr V<int> v; // expected-error {{constant expression}} expected-note {{subobject of type 'int' is not initialized}}
 
-constexpr int k = V<int>().x; // FIXME: ok?
-} // namespace PR14503
+  constexpr int k = V<int>().x; // FIXME: ok?
+}

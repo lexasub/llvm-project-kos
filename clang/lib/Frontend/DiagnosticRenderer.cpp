@@ -56,16 +56,16 @@ public:
 
 } // namespace
 
-static void mergeFixits(ArrayRef<FixItHint> FixItHints, const SourceManager &SM,
-                        const LangOptions &LangOpts,
+static void mergeFixits(ArrayRef<FixItHint> FixItHints,
+                        const SourceManager &SM, const LangOptions &LangOpts,
                         SmallVectorImpl<FixItHint> &MergedFixits) {
   edit::Commit commit(SM, LangOpts);
   for (const auto &Hint : FixItHints)
     if (Hint.CodeToInsert.empty()) {
       if (Hint.InsertFromRange.isValid())
         commit.insertFromRange(Hint.RemoveRange.getBegin(),
-                               Hint.InsertFromRange, /*afterToken=*/false,
-                               Hint.BeforePreviousInsertions);
+                           Hint.InsertFromRange, /*afterToken=*/false,
+                           Hint.BeforePreviousInsertions);
       else
         commit.remove(Hint.RemoveRange);
     } else {
@@ -74,7 +74,7 @@ static void mergeFixits(ArrayRef<FixItHint> FixItHints, const SourceManager &SM,
         commit.replace(Hint.RemoveRange, Hint.CodeToInsert);
       else
         commit.insert(Hint.RemoveRange.getBegin(), Hint.CodeToInsert,
-                      /*afterToken=*/false, Hint.BeforePreviousInsertions);
+                    /*afterToken=*/false, Hint.BeforePreviousInsertions);
     }
 
   edit::EditedSource Editor(SM, LangOpts);
@@ -142,7 +142,8 @@ void DiagnosticRenderer::emitDiagnostic(FullSourceLoc Loc,
 
 void DiagnosticRenderer::emitStoredDiagnostic(StoredDiagnostic &Diag) {
   emitDiagnostic(Diag.getLocation(), Diag.getLevel(), Diag.getMessage(),
-                 Diag.getRanges(), Diag.getFixIts(), &Diag);
+                 Diag.getRanges(), Diag.getFixIts(),
+                 &Diag);
 }
 
 void DiagnosticRenderer::emitBasicNote(StringRef Message) {
@@ -248,17 +249,20 @@ void DiagnosticRenderer::emitImportStackRecursively(FullSourceLoc Loc,
 void DiagnosticRenderer::emitModuleBuildStack(const SourceManager &SM) {
   ModuleBuildStack Stack = SM.getModuleBuildStack();
   for (const auto &I : Stack) {
-    emitBuildingModuleLocation(
-        I.second, I.second.getPresumedLoc(DiagOpts->ShowPresumedLoc), I.first);
+    emitBuildingModuleLocation(I.second, I.second.getPresumedLoc(
+                                              DiagOpts->ShowPresumedLoc),
+                               I.first);
   }
 }
 
 /// A recursive function to trace all possible backtrace locations
 /// to match the \p CaretLocFileID.
-static SourceLocation retrieveMacroLocation(
-    SourceLocation Loc, FileID MacroFileID, FileID CaretFileID,
-    const SmallVectorImpl<FileID> &CommonArgExpansions, bool IsBegin,
-    const SourceManager *SM, bool &IsTokenRange) {
+static SourceLocation
+retrieveMacroLocation(SourceLocation Loc, FileID MacroFileID,
+                      FileID CaretFileID,
+                      const SmallVectorImpl<FileID> &CommonArgExpansions,
+                      bool IsBegin, const SourceManager *SM,
+                      bool &IsTokenRange) {
   assert(SM->getFileID(Loc) == MacroFileID);
   if (MacroFileID == CaretFileID)
     return Loc;
@@ -307,8 +311,8 @@ static SourceLocation retrieveMacroLocation(
                                CommonArgExpansions, IsBegin, SM, IsTokenRange);
 }
 
-/// Walk up the chain of macro expansions and collect the FileIDs identifying
-/// the expansions.
+/// Walk up the chain of macro expansions and collect the FileIDs identifying the
+/// expansions.
 static void getMacroArgExpansionFileIDs(SourceLocation Loc,
                                         SmallVectorImpl<FileID> &IDs,
                                         bool IsBegin, const SourceManager *SM) {
@@ -399,15 +403,14 @@ mapDiagnosticRanges(FullSourceLoc CaretLoc, ArrayRef<CharSourceRange> Ranges,
     End = retrieveMacroLocation(End, BeginFileID, CaretLocFileID,
                                 CommonArgExpansions, /*IsBegin=*/false, SM,
                                 IsTokenRange);
-    if (Begin.isInvalid() || End.isInvalid())
-      continue;
+    if (Begin.isInvalid() || End.isInvalid()) continue;
 
     // Return the spelling location of the beginning and end of the range.
     Begin = SM->getSpellingLoc(Begin);
     End = SM->getSpellingLoc(End);
 
-    SpellingRanges.push_back(
-        CharSourceRange(SourceRange(Begin, End), IsTokenRange));
+    SpellingRanges.push_back(CharSourceRange(SourceRange(Begin, End),
+                                             IsTokenRange));
   }
 }
 
@@ -454,8 +457,7 @@ static bool checkLocForMacroArgExpansion(SourceLocation Loc,
                                          SourceLocation ArgumentLoc) {
   SourceLocation MacroLoc;
   if (SM.isMacroArgExpansion(Loc, &MacroLoc)) {
-    if (ArgumentLoc == MacroLoc)
-      return true;
+    if (ArgumentLoc == MacroLoc) return true;
   }
 
   return false;
@@ -558,7 +560,8 @@ void DiagnosticRenderer::emitMacroExpansions(FullSourceLoc Loc,
   unsigned MacroDepth = LocationStack.size();
   unsigned MacroLimit = DiagOpts->MacroBacktraceLimit;
   if (MacroDepth <= MacroLimit || MacroLimit == 0) {
-    for (auto I = LocationStack.rbegin(), E = LocationStack.rend(); I != E; ++I)
+    for (auto I = LocationStack.rbegin(), E = LocationStack.rend();
+         I != E; ++I)
       emitSingleMacroExpansion(FullSourceLoc(*I, SM), Level, Ranges);
     return;
   }

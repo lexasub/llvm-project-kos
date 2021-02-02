@@ -104,7 +104,8 @@ void tools::SHAVE::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
   Args.AddAllArgValues(CmdArgs, options::OPT_Wa_COMMA, options::OPT_Xassembler);
   for (const Arg *A : Args.filtered(options::OPT_I, options::OPT_isystem)) {
     A->claim();
-    CmdArgs.push_back(Args.MakeArgString(std::string("-i:") + A->getValue(0)));
+    CmdArgs.push_back(
+        Args.MakeArgString(std::string("-i:") + A->getValue(0)));
   }
   CmdArgs.push_back(II.getFilename());
   CmdArgs.push_back(

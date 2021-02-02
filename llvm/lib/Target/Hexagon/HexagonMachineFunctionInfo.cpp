@@ -12,3 +12,4 @@ using namespace llvm;
 
 // pin vtable to this file
 void HexagonMachineFunctionInfo::anchor() {}
+

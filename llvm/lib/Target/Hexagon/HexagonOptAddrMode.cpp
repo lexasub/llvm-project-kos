@@ -43,15 +43,14 @@
 using namespace llvm;
 using namespace rdf;
 
-static cl::opt<int>
-    CodeGrowthLimit("hexagon-amode-growth-limit", cl::Hidden, cl::init(0),
-                    cl::desc("Code growth limit for address mode "
-                             "optimization"));
+static cl::opt<int> CodeGrowthLimit("hexagon-amode-growth-limit",
+  cl::Hidden, cl::init(0), cl::desc("Code growth limit for address mode "
+  "optimization"));
 
 namespace llvm {
 
-FunctionPass *createHexagonOptAddrMode();
-void initializeHexagonOptAddrModePass(PassRegistry &);
+  FunctionPass *createHexagonOptAddrMode();
+  void initializeHexagonOptAddrModePass(PassRegistry&);
 
 } // end namespace llvm
 
@@ -180,9 +179,9 @@ bool HexagonOptAddrMode::canRemoveAddasl(NodeAddr<StmtNode *> AddAslSN,
     NodeAddr<InstrNode *> IA = UA.Addr->getOwner(*DFG);
     if (UA.Addr->getFlags() & NodeAttrs::PhiRef)
       return false;
-    NodeAddr<RefNode *> AA = LV->getNearestAliasedRef(OffsetRR, IA);
+    NodeAddr<RefNode*> AA = LV->getNearestAliasedRef(OffsetRR, IA);
     if ((DFG->IsDef(AA) && AA.Id != OffsetRegRD) ||
-        AA.Addr->getReachingDef() != OffsetRegRD)
+         AA.Addr->getReachingDef() != OffsetRegRD)
       return false;
 
     MachineInstr &UseMI = *NodeAddr<StmtNode *>(IA).Addr->getCode();
@@ -190,7 +189,7 @@ bool HexagonOptAddrMode::canRemoveAddasl(NodeAddr<StmtNode *> AddAslSN,
     // Reaching Def to an offset register can't be a phi.
     if ((OffsetRegDN.Addr->getFlags() & NodeAttrs::PhiRef) &&
         MI.getParent() != UseMI.getParent())
-      return false;
+    return false;
 
     const MCInstrDesc &UseMID = UseMI.getDesc();
     if ((!UseMID.mayLoad() && !UseMID.mayStore()) ||
@@ -220,7 +219,7 @@ bool HexagonOptAddrMode::allValidCandidates(NodeAddr<StmtNode *> SA,
     if (!P.second) {
       LLVM_DEBUG({
         dbgs() << "*** Unable to collect all reaching defs for use ***\n"
-               << PrintNode<UseNode *>(UN, *DFG) << '\n'
+               << PrintNode<UseNode*>(UN, *DFG) << '\n'
                << "The program's complexity may exceed the limits.\n";
       });
       return false;
@@ -304,7 +303,7 @@ bool HexagonOptAddrMode::isSafeToExtLR(NodeAddr<StmtNode *> SN,
     // one reaching at the SN.
     if (UA.Addr->getFlags() & NodeAttrs::PhiRef)
       return false;
-    NodeAddr<RefNode *> AA = LV->getNearestAliasedRef(LRExtRR, IA);
+    NodeAddr<RefNode*> AA = LV->getNearestAliasedRef(LRExtRR, IA);
     if ((DFG->IsDef(AA) && AA.Id != LRExtRegRD) ||
         AA.Addr->getReachingDef() != LRExtRegRD) {
       LLVM_DEBUG(
@@ -317,7 +316,7 @@ bool HexagonOptAddrMode::isSafeToExtLR(NodeAddr<StmtNode *> SN,
     // Reaching Def to LRExtReg can't be a phi.
     if ((LRExtRegDN.Addr->getFlags() & NodeAttrs::PhiRef) &&
         MI->getParent() != UseMI->getParent())
-      return false;
+    return false;
   }
   return true;
 }
@@ -357,17 +356,18 @@ bool HexagonOptAddrMode::processAddUses(NodeAddr<StmtNode *> AddSN,
     MachineInstr *MI = SN.Addr->getCode();
     const MCInstrDesc &MID = MI->getDesc();
     if ((!MID.mayLoad() && !MID.mayStore()) ||
-        HII->getAddrMode(*MI) != HexagonII::BaseImmOffset || HII->isHVXVec(*MI))
+        HII->getAddrMode(*MI) != HexagonII::BaseImmOffset ||
+        HII->isHVXVec(*MI))
       return false;
 
-    MachineOperand BaseOp =
-        MID.mayLoad() ? MI->getOperand(1) : MI->getOperand(0);
+    MachineOperand BaseOp = MID.mayLoad() ? MI->getOperand(1)
+                                          : MI->getOperand(0);
 
     if (!BaseOp.isReg() || BaseOp.getReg() != AddDefR)
       return false;
 
-    MachineOperand OffsetOp =
-        MID.mayLoad() ? MI->getOperand(2) : MI->getOperand(1);
+    MachineOperand OffsetOp = MID.mayLoad() ? MI->getOperand(2)
+                                            : MI->getOperand(1);
     if (!OffsetOp.isImm())
       return false;
 
@@ -376,8 +376,8 @@ bool HexagonOptAddrMode::processAddUses(NodeAddr<StmtNode *> AddSN,
       return false;
 
     // Since we'll be extending the live range of Rt in the following example,
-    // make sure that is safe. another definition of Rt doesn't exist between
-    // 'add' and load/store instruction.
+    // make sure that is safe. another definition of Rt doesn't exist between 'add'
+    // and load/store instruction.
     //
     // Ex: Rx= add(Rt,#10)
     //     memw(Rx+#0) = Rs
@@ -409,16 +409,16 @@ bool HexagonOptAddrMode::processAddUses(NodeAddr<StmtNode *> AddSN,
 }
 
 bool HexagonOptAddrMode::updateAddUses(MachineInstr *AddMI,
-                                       MachineInstr *UseMI) {
+                                        MachineInstr *UseMI) {
   const MachineOperand ImmOp = AddMI->getOperand(2);
   const MachineOperand AddRegOp = AddMI->getOperand(1);
   Register newReg = AddRegOp.getReg();
   const MCInstrDesc &MID = UseMI->getDesc();
 
-  MachineOperand &BaseOp =
-      MID.mayLoad() ? UseMI->getOperand(1) : UseMI->getOperand(0);
-  MachineOperand &OffsetOp =
-      MID.mayLoad() ? UseMI->getOperand(2) : UseMI->getOperand(1);
+  MachineOperand &BaseOp = MID.mayLoad() ? UseMI->getOperand(1)
+                                         : UseMI->getOperand(0);
+  MachineOperand &OffsetOp = MID.mayLoad() ? UseMI->getOperand(2)
+                                           : UseMI->getOperand(1);
   BaseOp.setReg(newReg);
   BaseOp.setIsUndef(AddRegOp.isUndef());
   BaseOp.setImplicit(AddRegOp.isImplicit());
@@ -643,16 +643,14 @@ bool HexagonOptAddrMode::changeAddAsl(NodeAddr<UseNode *> AddAslUN,
       MIB.add(AddAslMI->getOperand(2));
       MIB.add(AddAslMI->getOperand(3));
       const GlobalValue *GV = ImmOp.getGlobal();
-      MIB.addGlobalAddress(GV,
-                           UseMI->getOperand(2).getImm() + ImmOp.getOffset(),
+      MIB.addGlobalAddress(GV, UseMI->getOperand(2).getImm()+ImmOp.getOffset(),
                            ImmOp.getTargetFlags());
       OpStart = 3;
     } else if (UseMID.mayStore()) {
       MIB.add(AddAslMI->getOperand(2));
       MIB.add(AddAslMI->getOperand(3));
       const GlobalValue *GV = ImmOp.getGlobal();
-      MIB.addGlobalAddress(GV,
-                           UseMI->getOperand(1).getImm() + ImmOp.getOffset(),
+      MIB.addGlobalAddress(GV, UseMI->getOperand(1).getImm()+ImmOp.getOffset(),
                            ImmOp.getTargetFlags());
       MIB.add(UseMI->getOperand(2));
       OpStart = 3;
@@ -698,9 +696,9 @@ bool HexagonOptAddrMode::processBlock(NodeAddr<BlockNode *> BA) {
     MachineInstr *MI = SA.Addr->getCode();
     if ((MI->getOpcode() != Hexagon::A2_tfrsi ||
          !MI->getOperand(1).isGlobal()) &&
-        (MI->getOpcode() != Hexagon::A2_addi || !MI->getOperand(2).isImm() ||
-         HII->isConstExtended(*MI)))
-      continue;
+        (MI->getOpcode() != Hexagon::A2_addi ||
+         !MI->getOperand(2).isImm() || HII->isConstExtended(*MI)))
+    continue;
 
     LLVM_DEBUG(dbgs() << "[Analyzing " << HII->getName(MI->getOpcode())
                       << "]: " << *MI << "\n\t[InstrNode]: "
@@ -769,7 +767,7 @@ bool HexagonOptAddrMode::processBlock(NodeAddr<BlockNode *> BA) {
       bool Xformed = false;
       if (UseMOnum >= 0 && InstrEvalResult[UseMI])
         Xformed = xformUseMI(MI, UseMI, UseN, UseMOnum);
-      Changed |= Xformed;
+      Changed |=  Xformed;
       KeepTfr |= !Xformed;
     }
     if (!KeepTfr)

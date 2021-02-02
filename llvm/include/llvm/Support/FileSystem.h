@@ -136,7 +136,7 @@ inline perms operator~(perms x) {
 /// represents the information provided by Windows FileFirstFile/FindNextFile.
 class basic_file_status {
 protected:
-#if defined(LLVM_ON_UNIX)
+  #if defined(LLVM_ON_UNIX)
   time_t fs_st_atime = 0;
   time_t fs_st_mtime = 0;
   uint32_t fs_st_atime_nsec = 0;
@@ -144,14 +144,14 @@ protected:
   uid_t fs_st_uid = 0;
   gid_t fs_st_gid = 0;
   off_t fs_st_size = 0;
-#elif defined(_WIN32)
+  #elif defined (_WIN32)
   uint32_t LastAccessedTimeHigh = 0;
   uint32_t LastAccessedTimeLow = 0;
   uint32_t LastWriteTimeHigh = 0;
   uint32_t LastWriteTimeLow = 0;
   uint32_t FileSizeHigh = 0;
   uint32_t FileSizeLow = 0;
-#endif
+  #endif
   file_type Type = file_type::status_error;
   perms Perms = perms_not_known;
 
@@ -160,12 +160,13 @@ public:
 
   explicit basic_file_status(file_type Type) : Type(Type) {}
 
-#if defined(LLVM_ON_UNIX)
+  #if defined(LLVM_ON_UNIX)
   basic_file_status(file_type Type, perms Perms, time_t ATime,
                     uint32_t ATimeNSec, time_t MTime, uint32_t MTimeNSec,
                     uid_t UID, gid_t GID, off_t Size)
-      : fs_st_atime(ATime), fs_st_mtime(MTime), fs_st_atime_nsec(ATimeNSec),
-        fs_st_mtime_nsec(MTimeNSec), fs_st_uid(UID), fs_st_gid(GID),
+      : fs_st_atime(ATime), fs_st_mtime(MTime),
+        fs_st_atime_nsec(ATimeNSec), fs_st_mtime_nsec(MTimeNSec),
+        fs_st_uid(UID), fs_st_gid(GID),
         fs_st_size(Size), Type(Type), Perms(Perms) {}
 #elif defined(_WIN32)
   basic_file_status(file_type Type, perms Perms, uint32_t LastAccessTimeHigh,
@@ -177,7 +178,7 @@ public:
         LastWriteTimeHigh(LastWriteTimeHigh),
         LastWriteTimeLow(LastWriteTimeLow), FileSizeHigh(FileSizeHigh),
         FileSizeLow(FileSizeLow), Type(Type), Perms(Perms) {}
-#endif
+  #endif
 
   // getters
   file_type type() const { return Type; }
@@ -198,11 +199,11 @@ public:
   /// same machine.
   TimePoint<> getLastModificationTime() const;
 
-#if defined(LLVM_ON_UNIX)
+  #if defined(LLVM_ON_UNIX)
   uint32_t getUser() const { return fs_st_uid; }
   uint32_t getGroup() const { return fs_st_gid; }
   uint64_t getSize() const { return fs_st_size; }
-#elif defined(_WIN32)
+  #elif defined (_WIN32)
   uint32_t getUser() const {
     return 9999; // Not applicable to Windows, so...
   }
@@ -214,7 +215,7 @@ public:
   uint64_t getSize() const {
     return (uint64_t(FileSizeHigh) << 32) + FileSizeLow;
   }
-#endif
+  #endif
 
   // setters
   void type(file_type v) { Type = v; }
@@ -225,30 +226,31 @@ public:
 class file_status : public basic_file_status {
   friend bool equivalent(file_status A, file_status B);
 
-#if defined(LLVM_ON_UNIX)
+  #if defined(LLVM_ON_UNIX)
   dev_t fs_st_dev = 0;
   nlink_t fs_st_nlinks = 0;
   ino_t fs_st_ino = 0;
-#elif defined(_WIN32)
+  #elif defined (_WIN32)
   uint32_t NumLinks = 0;
   uint32_t VolumeSerialNumber = 0;
   uint32_t FileIndexHigh = 0;
   uint32_t FileIndexLow = 0;
-#endif
+  #endif
 
 public:
   file_status() = default;
 
   explicit file_status(file_type Type) : basic_file_status(Type) {}
 
-#if defined(LLVM_ON_UNIX)
+  #if defined(LLVM_ON_UNIX)
   file_status(file_type Type, perms Perms, dev_t Dev, nlink_t Links, ino_t Ino,
-              time_t ATime, uint32_t ATimeNSec, time_t MTime,
-              uint32_t MTimeNSec, uid_t UID, gid_t GID, off_t Size)
-      : basic_file_status(Type, Perms, ATime, ATimeNSec, MTime, MTimeNSec, UID,
-                          GID, Size),
+              time_t ATime, uint32_t ATimeNSec,
+              time_t MTime, uint32_t MTimeNSec,
+              uid_t UID, gid_t GID, off_t Size)
+      : basic_file_status(Type, Perms, ATime, ATimeNSec, MTime, MTimeNSec,
+                          UID, GID, Size),
         fs_st_dev(Dev), fs_st_nlinks(Links), fs_st_ino(Ino) {}
-#elif defined(_WIN32)
+  #elif defined(_WIN32)
   file_status(file_type Type, perms Perms, uint32_t LinkCount,
               uint32_t LastAccessTimeHigh, uint32_t LastAccessTimeLow,
               uint32_t LastWriteTimeHigh, uint32_t LastWriteTimeLow,
@@ -260,7 +262,7 @@ public:
                           FileSizeLow),
         NumLinks(LinkCount), VolumeSerialNumber(VolumeSerialNumber),
         FileIndexHigh(FileIndexHigh), FileIndexLow(FileIndexLow) {}
-#endif
+  #endif
 
   UniqueID getUniqueID() const;
   uint32_t getLinkCount() const;
@@ -756,8 +758,7 @@ enum OpenFlags : unsigned {
   /// child process.
   OF_ChildInherit = 8,
 
-  /// Force files Atime to be updated on access. Only makes a difference on
-  /// windows.
+  /// Force files Atime to be updated on access. Only makes a difference on windows.
   OF_UpdateAtime = 16,
 };
 
@@ -1205,9 +1206,9 @@ ErrorOr<space_info> disk_space(const Twine &Path);
 class mapped_file_region {
 public:
   enum mapmode {
-    readonly,  ///< May only access map via const_data as read only.
+    readonly, ///< May only access map via const_data as read only.
     readwrite, ///< May access map via data and modify it. Written to path.
-    priv       ///< May modify via data, but changes are lost on destruction.
+    priv ///< May modify via data, but changes are lost on destruction.
   };
 
 private:
@@ -1223,12 +1224,12 @@ private:
 
 public:
   mapped_file_region() = delete;
-  mapped_file_region(mapped_file_region &) = delete;
-  mapped_file_region &operator=(mapped_file_region &) = delete;
+  mapped_file_region(mapped_file_region&) = delete;
+  mapped_file_region &operator =(mapped_file_region&) = delete;
 
   /// \param fd An open file descriptor to map. Does not take ownership of fd.
-  mapped_file_region(sys::fs::file_t fd, mapmode mode, size_t length,
-                     uint64_t offset, std::error_code &ec);
+  mapped_file_region(sys::fs::file_t fd, mapmode mode, size_t length, uint64_t offset,
+                     std::error_code &ec);
 
   ~mapped_file_region();
 
@@ -1291,29 +1292,31 @@ public:
     return S ? S->type() : file_type::type_unknown;
   }
 
-  bool operator==(const directory_entry &RHS) const { return Path == RHS.Path; }
-  bool operator!=(const directory_entry &RHS) const { return !(*this == RHS); }
-  bool operator<(const directory_entry &RHS) const;
-  bool operator<=(const directory_entry &RHS) const;
-  bool operator>(const directory_entry &RHS) const;
-  bool operator>=(const directory_entry &RHS) const;
+  bool operator==(const directory_entry& RHS) const { return Path == RHS.Path; }
+  bool operator!=(const directory_entry& RHS) const { return !(*this == RHS); }
+  bool operator< (const directory_entry& RHS) const;
+  bool operator<=(const directory_entry& RHS) const;
+  bool operator> (const directory_entry& RHS) const;
+  bool operator>=(const directory_entry& RHS) const;
 };
 
 namespace detail {
 
-struct DirIterState;
+  struct DirIterState;
 
-std::error_code directory_iterator_construct(DirIterState &, StringRef, bool);
-std::error_code directory_iterator_increment(DirIterState &);
-std::error_code directory_iterator_destruct(DirIterState &);
+  std::error_code directory_iterator_construct(DirIterState &, StringRef, bool);
+  std::error_code directory_iterator_increment(DirIterState &);
+  std::error_code directory_iterator_destruct(DirIterState &);
 
-/// Keeps state for the directory_iterator.
-struct DirIterState {
-  ~DirIterState() { directory_iterator_destruct(*this); }
+  /// Keeps state for the directory_iterator.
+  struct DirIterState {
+    ~DirIterState() {
+      directory_iterator_destruct(*this);
+    }
 
-  intptr_t IterationHandle = 0;
-  directory_entry CurrentEntry;
-};
+    intptr_t IterationHandle = 0;
+    directory_entry CurrentEntry;
+  };
 
 } // end namespace detail
 
@@ -1338,8 +1341,8 @@ public:
                               bool follow_symlinks = true)
       : FollowSymlinks(follow_symlinks) {
     State = std::make_shared<detail::DirIterState>();
-    ec =
-        detail::directory_iterator_construct(*State, de.path(), FollowSymlinks);
+    ec = detail::directory_iterator_construct(
+        *State, de.path(), FollowSymlinks);
   }
 
   /// Construct end iterator.
@@ -1371,12 +1374,12 @@ public:
 
 namespace detail {
 
-/// Keeps state for the recursive_directory_iterator.
-struct RecDirIterState {
-  std::stack<directory_iterator, std::vector<directory_iterator>> Stack;
-  uint16_t Level = 0;
-  bool HasNoPushRequest = false;
-};
+  /// Keeps state for the recursive_directory_iterator.
+  struct RecDirIterState {
+    std::stack<directory_iterator, std::vector<directory_iterator>> Stack;
+    uint16_t Level = 0;
+    bool HasNoPushRequest = false;
+  };
 
 } // end namespace detail
 
@@ -1422,8 +1425,8 @@ public:
       }
     }
 
-    while (!State->Stack.empty() &&
-           State->Stack.top().increment(ec) == end_itr) {
+    while (!State->Stack.empty()
+           && State->Stack.top().increment(ec) == end_itr) {
       State->Stack.pop();
       --State->Level;
     }
@@ -1458,8 +1461,8 @@ public:
         report_fatal_error("Error incrementing directory iterator.");
       State->Stack.pop();
       --State->Level;
-    } while (!State->Stack.empty() &&
-             State->Stack.top().increment(ec) == end_itr);
+    } while (!State->Stack.empty()
+             && State->Stack.top().increment(ec) == end_itr);
 
     // Check if we are done. If so, create an end iterator.
     if (State->Stack.empty())

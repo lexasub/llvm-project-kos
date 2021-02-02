@@ -20,7 +20,8 @@
 
 #include "test_macros.h"
 
-struct A {
+struct A
+{
   static std::function<void()> global;
   static bool cancel;
 
@@ -35,7 +36,8 @@ struct A {
 std::function<void()> A::global;
 bool A::cancel = false;
 
-int main(int, char**) {
+int main(int, char**)
+{
   A::global = A();
   RTTI_ASSERT(A::global.target<A>());
 

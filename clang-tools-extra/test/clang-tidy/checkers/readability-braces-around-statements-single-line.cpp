@@ -7,8 +7,7 @@ bool cond(const char *) {
 }
 
 void test() {
-  if (cond("if1") /*comment*/)
-    do_something("same-line");
+  if (cond("if1") /*comment*/) do_something("same-line");
 
   if (cond("if2"))
     do_something("single-line");

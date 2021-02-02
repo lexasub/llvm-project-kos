@@ -16,7 +16,7 @@
 #include "llvm/Support/CrashRecoveryContext.h"
 
 #ifdef _MSC_VER
-#include <intrin.h> // for _AddressOfReturnAddress
+#include <intrin.h>  // for _AddressOfReturnAddress
 #endif
 
 static LLVM_THREAD_LOCAL void *BottomOfStack = nullptr;
@@ -67,11 +67,9 @@ bool clang::isStackNearlyExhausted() {
 void clang::runWithSufficientStackSpaceSlow(llvm::function_ref<void()> Diag,
                                             llvm::function_ref<void()> Fn) {
   llvm::CrashRecoveryContext CRC;
-  CRC.RunSafelyOnThread(
-      [&] {
-        noteBottomOfStack();
-        Diag();
-        Fn();
-      },
-      DesiredStackSize);
+  CRC.RunSafelyOnThread([&] {
+    noteBottomOfStack();
+    Diag();
+    Fn();
+  }, DesiredStackSize);
 }

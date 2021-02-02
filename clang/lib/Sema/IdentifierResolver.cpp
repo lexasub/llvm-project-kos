@@ -73,8 +73,8 @@ public:
 /// The decl must already be part of the decl chain.
 void IdentifierResolver::IdDeclInfo::RemoveDecl(NamedDecl *D) {
   for (DeclsTy::iterator I = Decls.end(); I != Decls.begin(); --I) {
-    if (D == *(I - 1)) {
-      Decls.erase(I - 1);
+    if (D == *(I-1)) {
+      Decls.erase(I-1);
       return;
     }
   }
@@ -89,7 +89,9 @@ void IdentifierResolver::IdDeclInfo::RemoveDecl(NamedDecl *D) {
 IdentifierResolver::IdentifierResolver(Preprocessor &PP)
     : LangOpt(PP.getLangOpts()), PP(PP), IdDeclInfos(new IdDeclInfoMap) {}
 
-IdentifierResolver::~IdentifierResolver() { delete IdDeclInfos; }
+IdentifierResolver::~IdentifierResolver() {
+  delete IdDeclInfos;
+}
 
 /// isDeclInScope - If 'Ctx' is a function/method, isDeclInScope returns true
 /// if 'D' is in Scope 'S', otherwise 'S' is ignored and isDeclInScope returns
@@ -156,7 +158,7 @@ void IdentifierResolver::AddDecl(NamedDecl *D) {
   if (isDeclPtr(Ptr)) {
     Name.setFETokenInfo(nullptr);
     IDI = &(*IdDeclInfos)[Name];
-    NamedDecl *PrevD = static_cast<NamedDecl *>(Ptr);
+    NamedDecl *PrevD = static_cast<NamedDecl*>(Ptr);
     IDI->AddDecl(PrevD);
   } else
     IDI = toIdDeclInfo(Ptr);
@@ -181,7 +183,7 @@ void IdentifierResolver::InsertDeclAfter(iterator Pos, NamedDecl *D) {
     // as appropriate.
     if (Pos == iterator()) {
       // Add the new declaration before the existing declaration.
-      NamedDecl *PrevD = static_cast<NamedDecl *>(Ptr);
+      NamedDecl *PrevD = static_cast<NamedDecl*>(Ptr);
       RemoveDecl(PrevD);
       AddDecl(D);
       AddDecl(PrevD);
@@ -224,29 +226,33 @@ void IdentifierResolver::RemoveDecl(NamedDecl *D) {
 }
 
 /// begin - Returns an iterator for decls with name 'Name'.
-IdentifierResolver::iterator IdentifierResolver::begin(DeclarationName Name) {
+IdentifierResolver::iterator
+IdentifierResolver::begin(DeclarationName Name) {
   if (IdentifierInfo *II = Name.getAsIdentifierInfo())
     readingIdentifier(*II);
 
   void *Ptr = Name.getFETokenInfo();
-  if (!Ptr)
-    return end();
+  if (!Ptr) return end();
 
   if (isDeclPtr(Ptr))
-    return iterator(static_cast<NamedDecl *>(Ptr));
+    return iterator(static_cast<NamedDecl*>(Ptr));
 
   IdDeclInfo *IDI = toIdDeclInfo(Ptr);
 
   IdDeclInfo::DeclsTy::iterator I = IDI->decls_end();
   if (I != IDI->decls_begin())
-    return iterator(I - 1);
+    return iterator(I-1);
   // No decls found.
   return end();
 }
 
 namespace {
 
-enum DeclMatchKind { DMK_Different, DMK_Replace, DMK_Ignore };
+enum DeclMatchKind {
+  DMK_Different,
+  DMK_Replace,
+  DMK_Ignore
+};
 
 } // namespace
 
@@ -293,8 +299,7 @@ static DeclMatchKind compareDeclarations(NamedDecl *Existing, NamedDecl *New) {
   return DMK_Different;
 }
 
-bool IdentifierResolver::tryAddTopLevelDecl(NamedDecl *D,
-                                            DeclarationName Name) {
+bool IdentifierResolver::tryAddTopLevelDecl(NamedDecl *D, DeclarationName Name){
   if (IdentifierInfo *II = Name.getAsIdentifierInfo())
     readingIdentifier(*II);
 
@@ -308,7 +313,7 @@ bool IdentifierResolver::tryAddTopLevelDecl(NamedDecl *D,
   IdDeclInfo *IDI;
 
   if (isDeclPtr(Ptr)) {
-    NamedDecl *PrevD = static_cast<NamedDecl *>(Ptr);
+    NamedDecl *PrevD = static_cast<NamedDecl*>(Ptr);
 
     switch (compareDeclarations(PrevD, D)) {
     case DMK_Different:
@@ -342,7 +347,7 @@ bool IdentifierResolver::tryAddTopLevelDecl(NamedDecl *D,
   // See whether this declaration is identical to any existing declarations.
   // If not, find the right place to insert it.
   for (IdDeclInfo::DeclsTy::iterator I = IDI->decls_begin(),
-                                     IEnd = IDI->decls_end();
+                                  IEnd = IDI->decls_end();
        I != IEnd; ++I) {
 
     switch (compareDeclarations(*I, D)) {
@@ -393,16 +398,16 @@ IdentifierResolver::IdDeclInfo &
 IdentifierResolver::IdDeclInfoMap::operator[](DeclarationName Name) {
   void *Ptr = Name.getFETokenInfo();
 
-  if (Ptr)
-    return *toIdDeclInfo(Ptr);
+  if (Ptr) return *toIdDeclInfo(Ptr);
 
   if (CurIndex == POOL_SIZE) {
     CurPool = new IdDeclInfoPool(CurPool);
     CurIndex = 0;
   }
   IdDeclInfo *IDI = &CurPool->Pool[CurIndex];
-  Name.setFETokenInfo(
-      reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(IDI) | 0x1));
+  Name.setFETokenInfo(reinterpret_cast<void*>(
+                              reinterpret_cast<uintptr_t>(IDI) | 0x1)
+                                                                     );
   ++CurIndex;
   return *IDI;
 }
@@ -415,7 +420,7 @@ void IdentifierResolver::iterator::incrementSlowCase() {
 
   BaseIter I = getIterator();
   if (I != Info->decls_begin())
-    *this = iterator(I - 1);
+    *this = iterator(I-1);
   else // No more decls.
     *this = iterator();
 }

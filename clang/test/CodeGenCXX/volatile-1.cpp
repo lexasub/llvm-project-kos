@@ -9,13 +9,14 @@ volatile char c;
 volatile _Complex int ci;
 volatile struct S {
 #ifdef __cplusplus
-  void operator=(volatile struct S &o) volatile;
+  void operator =(volatile struct S&o) volatile;
 #endif
   int i;
 } a, b;
 
 //void operator =(volatile struct S&o1, volatile struct S&o2) volatile;
 int printf(const char *, ...);
+
 
 // CHECK: define {{.*}}void @{{.*}}test
 void test() {
@@ -40,17 +41,17 @@ void test() {
 
   (void)a;
 
-  (void)(ci = ci);
+  (void)(ci=ci);
   // CHECK-NEXT: [[R:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 0)
   // CHECK-NEXT: [[I:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 1)
   // CHECK-NEXT: store volatile [[INT]] [[R]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 0)
   // CHECK-NEXT: store volatile [[INT]] [[I]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 1)
 
-  (void)(i = j);
+  (void)(i=j);
   // CHECK-NEXT: [[T:%.*]] = load volatile [[INT]], [[INT]]* @j
   // CHECK-NEXT: store volatile [[INT]] [[T]], [[INT]]* @i
 
-  ci += ci;
+  ci+=ci;
   // CHECK-NEXT: [[R1:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 0)
   // CHECK-NEXT: [[I1:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 1)
   // CHECK-NEXT: [[R2:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 0)
@@ -104,7 +105,7 @@ void test() {
 
   asm("nop"); // CHECK-NEXT: call void asm
 
-  ci + ci;
+  ci+ci;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
@@ -120,11 +121,11 @@ void test() {
 
   asm("nop"); // CHECK-NEXT: call void asm
 
-  (void)(i = i);
+  (void)(i=i);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
-  (float)(i = i);
+  (float)(i=i);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
@@ -133,22 +134,22 @@ void test() {
   (void)i; // This is now a load in C++11
   // CHECK11-NEXT: load volatile
 
-  i = i;
+  i=i;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
   // Extra load volatile in C++.
-  i = i = i;
+  i=i=i;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
-  (void)__builtin_choose_expr(0, i = i, j = j);
+  (void)__builtin_choose_expr(0, i=i, j=j);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
-  k ? (i = i) : (j = j);
+  k ? (i=i) : (j=j);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: icmp
   // CHECK-NEXT: br i1
@@ -160,33 +161,33 @@ void test() {
   // CHECK-NEXT: br label
   // CHECK:      phi
 
-  (void)(i, (i = i)); // first i is also a load in C++11
+  (void)(i,(i=i)); // first i is also a load in C++11
   // CHECK11-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
-  i = i, k; // k is also a load in C++11
+  i=i,k; // k is also a load in C++11
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @i
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @i
   // CHECK11-NEXT: load volatile [[INT]], [[INT]]* @k
 
-  (i = j, k = j);
+  (i=j,k=j);
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @j
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @i
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @j
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @k
 
-  (i = j, k); // k is also a load in C++11
+  (i=j,k); // k is also a load in C++11
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @j
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @i
   // CHECK11-NEXT: load volatile [[INT]], [[INT]]* @k
 
-  (i, j); // i and j both are loads in C++11
+  (i,j); // i and j both are loads in C++11
   // CHECK11-NEXT: load volatile [[INT]], [[INT]]* @i
   // CHECK11-NEXT: load volatile [[INT]], [[INT]]* @j
 
   // Extra load in C++.
-  i = c = k;
+  i=c=k;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: trunc
   // CHECK-NEXT: store volatile
@@ -194,7 +195,7 @@ void test() {
   // CHECK-NEXT: sext
   // CHECK-NEXT: store volatile
 
-  i += k;
+  i+=k;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: add nsw [[INT]]
@@ -217,7 +218,7 @@ void test() {
   // CHECK-NEXT: icmp ne
   // CHECK-NEXT: or i1
 
-  ci = ci;
+  ci=ci;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
@@ -226,7 +227,7 @@ void test() {
   asm("nop"); // CHECK-NEXT: call void asm
 
   // Extra load in C++.
-  ci = ci = ci;
+  ci=ci=ci;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
@@ -242,12 +243,12 @@ void test() {
   // CHECK-NEXT: [[T:%.*]] = load volatile [[INT]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 1)
   // CHECK-NEXT: store volatile [[INT]] [[T]], [[INT]]* getelementptr inbounds ([[CINT]], [[CINT]]* @ci, i32 0, i32 1)
 
-  __real(i = j);
+  __real (i = j);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
   __imag i;
-
+  
   // ============================================================
   // FIXME: Test cases we get wrong.
 
@@ -261,20 +262,20 @@ void test() {
 
   // Not a use.  gcc forgets to do the assignment.
   // CHECK-NEXT: call {{.*}}void
-  ((a = a), a);
+  ((a=a),a);
 
-  // Not a use.  gcc gets this wrong, it doesn't emit the copy!
+  // Not a use.  gcc gets this wrong, it doesn't emit the copy!  
   // CHECK-NEXT: call {{.*}}void
-  (void)(a = a);
+  (void)(a=a);
 
   // Not a use.  gcc got this wrong in 4.2 and omitted the side effects
   // entirely, but it is fixed in 4.4.0.
-  __imag(i = j);
+  __imag (i = j);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
 
   // C++ does an extra load here.  Note that we have to do full loads.
-  (float)(ci = ci);
+  (float)(ci=ci);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
@@ -285,7 +286,7 @@ void test() {
 
   // Not a use, bug?  gcc treats this as not a use, that's probably a
   // bug due to tree folding ignoring volatile.
-  (int)(ci = ci);
+  (int)(ci=ci);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
@@ -294,7 +295,7 @@ void test() {
   // CHECK-NEXT: load volatile
 
   // A use.
-  (float)(i = i);
+  (float)(i=i);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
@@ -302,13 +303,13 @@ void test() {
 
   // A use.  gcc treats this as not a use, that's probably a bug due to tree
   // folding ignoring volatile.
-  (int)(i = i);
+  (int)(i=i);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
 
   // A use.
-  -(i = j);
+  -(i=j);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
@@ -316,14 +317,14 @@ void test() {
 
   // A use.  gcc treats this a not a use, that's probably a bug due to tree
   // folding ignoring volatile.
-  +(i = k);
+  +(i=k);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
 
   // A use. gcc treats this a not a use, that's probably a bug due to tree
   // folding ignoring volatile.
-  __real(ci = ci);
+  __real (ci=ci);
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
@@ -335,7 +336,7 @@ void test() {
   // CHECK-NEXT: add
 
   // A use.
-  (i = j) + i;
+  (i=j) + i;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
@@ -344,18 +345,18 @@ void test() {
 
   // A use.  gcc treats this as not a use, that's probably a bug due to tree
   // folding ignoring volatile.
-  (i = j) + 0;
+  (i=j) + 0;
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: store volatile
   // CHECK-NEXT: load volatile
   // CHECK-NEXT: add
 
-  (i, j) = k; // i is also a load in C++11
+  (i,j)=k; // i is also a load in C++11
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @k
   // CHECK11-NEXT: load volatile [[INT]], [[INT]]* @i
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @j
 
-  (j = k, i) = i;
+  (j=k,i)=i;
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @i
   // CHECK-NEXT: load volatile [[INT]], [[INT]]* @k
   // CHECK-NEXT: store volatile {{.*}}, [[INT]]* @j

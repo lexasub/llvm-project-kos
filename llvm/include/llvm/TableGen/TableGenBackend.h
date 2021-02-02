@@ -24,6 +24,6 @@ void emitSourceFileHeader(StringRef Desc, raw_ostream &OS);
 
 extern bool TimeRegions;
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

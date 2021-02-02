@@ -19,7 +19,7 @@ struct NotMovable {
   NotMovable(NotMovable &&) = delete;
   int a, b, c;
 };
-} // namespace
+}
 
 struct A {
   A(const Movable &M) : M(M) {}
@@ -99,7 +99,7 @@ H::H(const HMovable &M) : M(M) {}
 // CHECK-FIXES: H(HMovable M) : M(std::move(M)) {}
 
 // Try messing up with macros.
-#define MOVABLE_PARAM(Name) const Movable &Name
+#define MOVABLE_PARAM(Name) const Movable & Name
 // CHECK-FIXES: #define MOVABLE_PARAM(Name) const Movable & Name
 struct I {
   I(MOVABLE_PARAM(M)) : M(M) {}
@@ -110,8 +110,7 @@ struct I {
 #undef MOVABLE_PARAM
 
 // Test that templates aren't modified.
-template <typename T>
-struct J {
+template <typename T> struct J {
   J(const T &M) : M(M) {}
   // CHECK-FIXES: J(const T &M) : M(M) {}
   T M;
@@ -119,22 +118,23 @@ struct J {
 J<Movable> j1(Movable());
 J<NotMovable> j2(NotMovable());
 
-template <class T>
-struct MovableTemplateT {
+template<class T>
+struct MovableTemplateT
+{
   MovableTemplateT() {}
-  MovableTemplateT(const MovableTemplateT &o) {}
-  MovableTemplateT(MovableTemplateT &&o) {}
+  MovableTemplateT(const MovableTemplateT& o) { }
+  MovableTemplateT(MovableTemplateT&& o) { }
 };
 
 template <class T>
 struct J2 {
-  J2(const MovableTemplateT<T> &A);
+  J2(const MovableTemplateT<T>& A);
   // CHECK-FIXES: J2(const MovableTemplateT<T>& A);
   MovableTemplateT<T> M;
 };
 
 template <class T>
-J2<T>::J2(const MovableTemplateT<T> &A) : M(A) {}
+J2<T>::J2(const MovableTemplateT<T>& A) : M(A) {}
 // CHECK-FIXES: J2<T>::J2(const MovableTemplateT<T>& A) : M(A) {}
 J2<int> j3(MovableTemplateT<int>{});
 
@@ -153,8 +153,7 @@ struct K {
   K_Movable M;
 };
 
-template <typename T>
-struct L {
+template <typename T> struct L {
   L(const Movable &M) : M(M) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: pass by value and use std::move
   // CHECK-FIXES: L(Movable M) : M(std::move(M)) {}
@@ -163,8 +162,7 @@ struct L {
 L<int> l(Movable());
 
 // Test with a non-instantiated template class.
-template <typename T>
-struct N {
+template <typename T> struct N {
   N(const Movable &M) : M(M) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: pass by value and use std::move
   // CHECK-FIXES: N(Movable M) : M(std::move(M)) {}
@@ -221,8 +219,7 @@ struct S {
   Movable M;
 };
 
-template <typename T, int N>
-struct array { T A[N]; };
+template <typename T, int N> struct array { T A[N]; };
 
 // Test that types that are trivially copyable will not use std::move. This will
 // cause problems with performance-move-const-arg, as it will revert it.

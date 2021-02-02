@@ -17,14 +17,17 @@
 #include "test_macros.h"
 
 template <class CharT>
-void test() {
-  std::match_results<const CharT*> m;
-  assert(m.max_size() > 0);
+void
+test()
+{
+    std::match_results<const CharT*> m;
+    assert(m.max_size() > 0);
 }
 
-int main(int, char**) {
-  test<char>();
-  test<wchar_t>();
+int main(int, char**)
+{
+    test<char>();
+    test<wchar_t>();
 
   return 0;
 }

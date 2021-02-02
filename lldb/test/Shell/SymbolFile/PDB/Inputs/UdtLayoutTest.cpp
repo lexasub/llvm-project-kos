@@ -29,7 +29,10 @@ private:
 #pragma pack(push, 16)
 class C : private virtual B<0>, public virtual B<1>, private B<2>, public B<3> {
 public:
-  C(char x, char y, char z) : A(x - y + z), B<0>(x, y, z), B<1>(x * 2, y * 2, z * 2), B<2>(x * 3, y * 3, z * 3), B<3>(x * 4, y * 4, z * 4), _x(x * 5), _y(y * 5), _z(z * 5) {}
+  C(char x, char y, char z)
+      : A(x - y + z), B<0>(x, y, z), B<1>(x * 2, y * 2, z * 2),
+        B<2>(x * 3, y * 3, z * 3), B<3>(x * 4, y * 4, z * 4), _x(x * 5),
+        _y(y * 5), _z(z * 5) {}
 
   static int abc;
 

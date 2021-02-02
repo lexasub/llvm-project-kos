@@ -99,7 +99,6 @@ public:
 
 class AMDGPUTargetAsmStreamer final : public AMDGPUTargetStreamer {
   formatted_raw_ostream &OS;
-
 public:
   AMDGPUTargetAsmStreamer(MCStreamer &S, formatted_raw_ostream &OS);
 
@@ -187,5 +186,5 @@ public:
       bool ReserveXNACK) override;
 };
 
-} // namespace llvm
+}
 #endif

@@ -3,8 +3,8 @@
 // Regression test for PR17138.
 
 #include <assert.h>
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 
 int main() {
   char buf[1024];

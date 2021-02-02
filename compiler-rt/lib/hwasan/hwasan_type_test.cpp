@@ -11,11 +11,10 @@
 // Compile-time tests of the internal type definitions.
 //===----------------------------------------------------------------------===//
 
-#include <setjmp.h>
-
-#include "hwasan.h"
 #include "interception/interception.h"
 #include "sanitizer_common/sanitizer_platform_limits_posix.h"
+#include "hwasan.h"
+#include <setjmp.h>
 
 #define CHECK_TYPE_SIZE_FITS(TYPE) \
   COMPILER_CHECK(sizeof(__hw_##TYPE) <= sizeof(TYPE))

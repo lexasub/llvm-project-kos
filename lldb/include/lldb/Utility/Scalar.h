@@ -32,7 +32,8 @@ class Stream;
 // and values before performing these operations. Type promotion currently
 // follows the ANSI C type promotion rules.
 class Scalar {
-  template <typename T> static llvm::APSInt MakeAPSInt(T v) {
+  template<typename T>
+  static llvm::APSInt MakeAPSInt(T v) {
     static_assert(std::is_integral<T>::value, "");
     static_assert(sizeof(T) <= sizeof(uint64_t), "Conversion loses precision!");
     return llvm::APSInt(

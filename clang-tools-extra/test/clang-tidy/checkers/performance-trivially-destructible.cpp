@@ -61,7 +61,7 @@ MaybeTriviallyDestructible1<T *>::~MaybeTriviallyDestructible1() noexcept = defa
 
 // Emit for explicit specializations.
 template <>
-struct MaybeTriviallyDestructible1<double> : TriviallyDestructible1 {
+struct MaybeTriviallyDestructible1<double>: TriviallyDestructible1 {
   ~MaybeTriviallyDestructible1() noexcept;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: class 'MaybeTriviallyDestructible1<double>' can be made trivially destructible by defaulting the destructor on its first declaration [performance-trivially-destructible]
   // CHECK-FIXES: ~MaybeTriviallyDestructible1() noexcept = default;
@@ -77,7 +77,7 @@ struct NotTriviallyDestructible2 {
 
 NotTriviallyDestructible2::~NotTriviallyDestructible2() = default;
 
-struct NotTriviallyDestructible3 : NotTriviallyDestructible2 {
+struct NotTriviallyDestructible3: NotTriviallyDestructible2 {
   ~NotTriviallyDestructible3();
 };
 

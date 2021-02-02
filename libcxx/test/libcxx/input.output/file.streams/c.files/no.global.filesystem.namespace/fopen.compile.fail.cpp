@@ -11,8 +11,8 @@
 #include <cstdio>
 
 int main(int, char**) {
-  // fopen is not available on systems without a global filesystem namespace.
-  std::fopen("", "");
+    // fopen is not available on systems without a global filesystem namespace.
+    std::fopen("", "");
 
   return 0;
 }

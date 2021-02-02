@@ -7,8 +7,8 @@
 
 #include <assert.h>
 #include <pthread.h>
-#include <sanitizer/msan_interface.h>
 #include <string.h>
+#include <sanitizer/msan_interface.h>
 
 #include <stdio.h>
 
@@ -17,16 +17,16 @@
 static pthread_mutex_t lock;
 
 void *ThreadFn(void *) {
-  pthread_mutex_lock(&lock);
-  pthread_mutex_unlock(&lock);
+  pthread_mutex_lock (&lock);
+  pthread_mutex_unlock (&lock);
   return nullptr;
 }
 
 int main(void) {
   pthread_t t;
 
-  pthread_mutex_init(&lock, NULL);
-  pthread_mutex_lock(&lock);
+  pthread_mutex_init (&lock, NULL);
+  pthread_mutex_lock (&lock);
 
   int res = pthread_create(&t, 0, ThreadFn, 0);
   assert(!res);
@@ -44,7 +44,7 @@ int main(void) {
   assert(!res);
   assert(strcmp(buf, kMyThreadName) == 0);
 
-  pthread_mutex_unlock(&lock);
+  pthread_mutex_unlock (&lock);
 
   res = pthread_join(t, 0);
   assert(!res);

@@ -16,14 +16,15 @@
 #include <type_traits>
 #include <utility> // std::swap
 
+
 // This is a struct we can use to test the stable_XXX algorithms.
 // Perform the operation on the key, then check the order of the payload.
 struct ByteWithPayload {
   std::uint8_t key;
   std::size_t payload;
 
-  ByteWithPayload(std::uint8_t k) : key(k), payload(0) {}
-  ByteWithPayload(std::uint8_t k, std::size_t p) : key(k), payload(p) {}
+  ByteWithPayload(std::uint8_t k) : key(k), payload(0) { }
+  ByteWithPayload(std::uint8_t k, std::size_t p) : key(k), payload(p) { }
 
   friend bool operator==(ByteWithPayload const& x, ByteWithPayload const& y) {
     return x.key == y.key && x.payload == y.payload;
@@ -34,15 +35,13 @@ struct ByteWithPayload {
   }
 
   struct key_less {
-    bool operator()(ByteWithPayload const& x, ByteWithPayload const& y) const {
-      return x.key < y.key;
-    }
+    bool operator()(ByteWithPayload const& x, ByteWithPayload const& y) const
+    { return x.key < y.key; }
   };
 
   struct payload_less {
-    bool operator()(ByteWithPayload const& x, ByteWithPayload const& y) const {
-      return x.payload < y.payload;
-    }
+    bool operator()(ByteWithPayload const& x, ByteWithPayload const& y) const
+    { return x.payload < y.payload; }
   };
 
   struct total_less {
@@ -52,8 +51,8 @@ struct ByteWithPayload {
   };
 
   friend void swap(ByteWithPayload& lhs, ByteWithPayload& rhs) {
-    std::swap(lhs.key, rhs.key);
-    std::swap(lhs.payload, rhs.payload);
+      std::swap(lhs.key, rhs.key);
+      std::swap(lhs.payload, rhs.payload);
   }
 };
 
@@ -61,16 +60,14 @@ struct ByteWithPayload {
 //
 // Builds a set of buckets for each of the key values, and sums all the payloads.
 // Not 100% perfect, but _way_ faster.
-template <typename Iter1, typename Iter2,
-          typename = typename std::enable_if<
-              std::is_same<typename std::iterator_traits<Iter1>::value_type,
-                           ByteWithPayload>::value &&
-              std::is_same<typename std::iterator_traits<Iter2>::value_type,
-                           ByteWithPayload>::value>::type>
+template <typename Iter1, typename Iter2, typename = typename std::enable_if<
+  std::is_same<typename std::iterator_traits<Iter1>::value_type, ByteWithPayload>::value &&
+  std::is_same<typename std::iterator_traits<Iter2>::value_type, ByteWithPayload>::value
+>::type>
 bool fast_is_permutation(Iter1 first1, Iter1 last1, Iter2 first2) {
-  std::size_t xBuckets[256] = {0};
+  std::size_t xBuckets[256]  = {0};
   std::size_t xPayloads[256] = {0};
-  std::size_t yBuckets[256] = {0};
+  std::size_t yBuckets[256]  = {0};
   std::size_t yPayloads[256] = {0};
 
   for (; first1 != last1; ++first1, ++first2) {
@@ -91,12 +88,10 @@ bool fast_is_permutation(Iter1 first1, Iter1 last1, Iter2 first2) {
   return true;
 }
 
-template <typename Iter1, typename Iter2, typename = void,
-          typename = typename std::enable_if<
-              std::is_same<typename std::iterator_traits<Iter1>::value_type,
-                           std::uint8_t>::value &&
-              std::is_same<typename std::iterator_traits<Iter2>::value_type,
-                           std::uint8_t>::value>::type>
+template <typename Iter1, typename Iter2, typename = void, typename = typename std::enable_if<
+  std::is_same<typename std::iterator_traits<Iter1>::value_type, std::uint8_t>::value &&
+  std::is_same<typename std::iterator_traits<Iter2>::value_type, std::uint8_t>::value
+>::type>
 bool fast_is_permutation(Iter1 first1, Iter1 last1, Iter2 first2) {
   std::size_t xBuckets[256] = {0};
   std::size_t yBuckets[256] = {0};
@@ -122,16 +117,18 @@ bool fast_is_permutation(Iter1 first1, Iter1 last1, Iter2 first2) {
 extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t*, std::size_t);
 
 int main(int, char**) {
-  const char* test_cases[] = {"",
-                              "s",
-                              "bac",
-                              "bacasf",
-                              "lkajseravea",
-                              "adsfkajdsfjkas;lnc441324513,34535r34525234",
-                              "b*c",
-                              "ba?sf",
-                              "lka*ea",
-                              "adsf*kas;lnc441[0-9]1r34525234"};
+  const char* test_cases[] = {
+    "",
+    "s",
+    "bac",
+    "bacasf",
+    "lkajseravea",
+    "adsfkajdsfjkas;lnc441324513,34535r34525234",
+    "b*c",
+    "ba?sf",
+    "lka*ea",
+    "adsf*kas;lnc441[0-9]1r34525234"
+  };
 
   for (const char* tc : test_cases) {
     const std::size_t size = std::strlen(tc);

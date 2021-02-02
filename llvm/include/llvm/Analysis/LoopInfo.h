@@ -924,7 +924,7 @@ public:
     LoopAllocator.Reset();
   }
 
-  template <typename... ArgsTy> LoopT *AllocateLoop(ArgsTy &&...Args) {
+  template <typename... ArgsTy> LoopT *AllocateLoop(ArgsTy &&... Args) {
     LoopT *Storage = LoopAllocator.Allocate<LoopT>();
     return new (Storage) LoopT(std::forward<ArgsTy>(Args)...);
   }
@@ -1312,6 +1312,6 @@ makePostTransformationMetadata(llvm::LLVMContext &Context, MDNode *OrigLoopID,
                                llvm::ArrayRef<llvm::StringRef> RemovePrefixes,
                                llvm::ArrayRef<llvm::MDNode *> AddAttrs);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

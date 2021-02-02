@@ -18,10 +18,7 @@
 // CK1-DAG: [[DEF_LOC:@.+]] = private unnamed_addr constant %struct.ident_t { i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* [[STR]], i32 0, i32 0) }
 
 // CK1-LABEL: foo
-void foo() {
-  extern void mayThrow();
-  mayThrow();
-}
+void foo() { extern void mayThrow(); mayThrow(); }
 
 void parallel_master() {
 #pragma omp parallel master
@@ -452,8 +449,7 @@ void parallel_master_copyin() {
 
 void parallel_master_reduction() {
   int g;
-#pragma omp parallel master reduction(+ \
-                                      : g)
+#pragma omp parallel master reduction(+:g)
   g = 1;
 }
 
@@ -517,8 +513,7 @@ void parallel_master_reduction() {
 // CK7-DAG: [[DEF_LOC_1:@.+]] = private unnamed_addr constant %struct.ident_t { i32 0, i32 2, i32 0, i32 0, i8* getelementptr inbounds ([23 x i8], [23 x i8]* [[STR]], i32 0, i32 0) }
 
 void parallel_master_if() {
-#pragma omp parallel master if (parallel \
-                                : false)
+#pragma omp parallel master if (parallel: false)
   parallel_master_if();
 }
 
@@ -620,8 +615,7 @@ extern const omp_allocator_handle_t omp_thread_mem_alloc;
 void parallel_master_allocate() {
   int a;
   omp_allocator_handle_t myalloc = nullptr;
-#pragma omp parallel master firstprivate(a) allocate(myalloc \
-                                                     : a)
+#pragma omp parallel master firstprivate(a) allocate(myalloc:a)
   a++;
 }
 

@@ -72,9 +72,9 @@ MCAsmInfoDarwin::MCAsmInfoDarwin() {
   HasWeakDefDirective = true;
   HasWeakDefCanBeHiddenDirective = true;
   WeakRefDirective = "\t.weak_reference ";
-  ZeroDirective = "\t.space\t";     // ".space N" emits N zeros.
-  HasMachoZeroFillDirective = true; // Uses .zerofill
-  HasMachoTBSSDirective = true;     // Uses .tbss
+  ZeroDirective = "\t.space\t";  // ".space N" emits N zeros.
+  HasMachoZeroFillDirective = true;  // Uses .zerofill
+  HasMachoTBSSDirective = true; // Uses .tbss
 
   // FIXME: Change this once MC is the system assembler.
   HasAggressiveSymbolFolding = false;

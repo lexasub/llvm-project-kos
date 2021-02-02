@@ -25,7 +25,7 @@ public:
 
   ~CommandStructuredData() override {}
 };
-} // namespace
+}
 
 StructuredDataPlugin::StructuredDataPlugin(const ProcessWP &process_wp)
     : PluginInterface(), m_process_wp(process_wp) {}

@@ -36,6 +36,6 @@ private:
   SystemLifetimeManager(const SystemLifetimeManager &other) = delete;
   SystemLifetimeManager &operator=(const SystemLifetimeManager &other) = delete;
 };
-} // namespace lldb_private
+}
 
 #endif

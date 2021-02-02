@@ -11,6 +11,7 @@
 #include "lldb/Core/dwarf.h"
 #include "llvm/Support/Compiler.h"
 
+
 #ifdef DECLARE_REGISTER_INFOS_MIPS64_STRUCT
 
 // Computes the offset of the given GPR in the user data area.
@@ -38,26 +39,30 @@
 #ifdef LINUX_MIPS64
 #define DEFINE_GPR(reg, alt, kind1, kind2, kind3)                              \
   {                                                                            \
-#reg, alt, sizeof(((GPR_linux_mips *)0)->reg), GPR_OFFSET(reg),            \
-        eEncodingUint, eFormatHex,                                             \
-        {kind1, kind2, kind3, ptrace_##reg##_mips, gpr_##reg##_mips64 }, NULL, \
-         NULL, NULL, 0                                                         \
+    #reg, alt, sizeof(((GPR_linux_mips *) 0)->reg),                            \
+                      GPR_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, ptrace_##reg##_mips,    \
+                                  gpr_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 #else
 #define DEFINE_GPR(reg, alt, kind1, kind2, kind3, kind4)                       \
   {                                                                            \
-#reg, alt, sizeof(((GPR_freebsd_mips *)0)->reg), GPR_OFFSET(reg),          \
-        eEncodingUint, eFormatHex,                                             \
-        {kind1, kind2, kind3, kind4, gpr_##reg##_mips64 }, NULL, NULL, NULL, 0 \
+    #reg, alt, sizeof(((GPR_freebsd_mips *) 0)->reg),                          \
+                      GPR_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, kind4,                  \
+                                  gpr_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 #endif
 
 #define DEFINE_GPR_INFO(reg, alt, kind1, kind2, kind3)                         \
   {                                                                            \
-#reg, alt, sizeof(((GPR_linux_mips *)0)->reg) / 2, GPR_OFFSET(reg),        \
-        eEncodingUint, eFormatHex,                                             \
-        {kind1, kind2, kind3, ptrace_##reg##_mips, gpr_##reg##_mips64 }, NULL, \
-         NULL, NULL, 0                                                         \
+    #reg, alt, sizeof(((GPR_linux_mips *) 0)->reg) / 2,                        \
+                      GPR_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, ptrace_##reg##_mips,    \
+                                  gpr_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 
 const uint8_t dwarf_opcode_mips64[] = {
@@ -67,32 +72,39 @@ const uint8_t dwarf_opcode_mips64[] = {
 
 #define DEFINE_FPR(reg, alt, kind1, kind2, kind3)                              \
   {                                                                            \
-#reg, alt, sizeof(((FPR_linux_mips *)0)->reg), FPR_OFFSET(reg),            \
-        eEncodingIEEE754, eFormatFloat,                                        \
-        {kind1, kind2, kind3, ptrace_##reg##_mips, fpr_##reg##_mips64 }, NULL, \
-         NULL, dwarf_opcode_mips64, sizeof(dwarf_opcode_mips64)                \
+    #reg, alt, sizeof(((FPR_linux_mips *) 0)->reg),                            \
+                      FPR_OFFSET(reg), eEncodingIEEE754, eFormatFloat,         \
+                                 {kind1, kind2, kind3, ptrace_##reg##_mips,    \
+                                  fpr_##reg##_mips64 },                        \
+                                  NULL, NULL, dwarf_opcode_mips64,             \
+                                  sizeof(dwarf_opcode_mips64)                  \
   }
 
 #define DEFINE_FPR_INFO(reg, alt, kind1, kind2, kind3)                         \
   {                                                                            \
-#reg, alt, sizeof(((FPR_linux_mips *)0)->reg), FPR_OFFSET(reg),            \
-        eEncodingUint, eFormatHex,                                             \
-        {kind1, kind2, kind3, ptrace_##reg##_mips, fpr_##reg##_mips64 }, NULL, \
-         NULL, NULL, 0                                                         \
+    #reg, alt, sizeof(((FPR_linux_mips *) 0)->reg),                            \
+                      FPR_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, ptrace_##reg##_mips,    \
+                                  fpr_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 
 #define DEFINE_MSA(reg, alt, kind1, kind2, kind3, kind4)                       \
   {                                                                            \
-#reg, alt, sizeof(((MSA_linux_mips *)0)->reg), MSA_OFFSET(reg),            \
-        eEncodingVector, eFormatVectorOfUInt8,                                 \
-        {kind1, kind2, kind3, kind4, msa_##reg##_mips64 }, NULL, NULL, NULL, 0 \
+    #reg, alt, sizeof(((MSA_linux_mips *) 0)->reg),                            \
+                      MSA_OFFSET(reg), eEncodingVector, eFormatVectorOfUInt8,  \
+                                 {kind1, kind2, kind3, kind4,                  \
+                                  msa_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 
 #define DEFINE_MSA_INFO(reg, alt, kind1, kind2, kind3, kind4)                  \
   {                                                                            \
-#reg, alt, sizeof(((MSA_linux_mips *)0)->reg), MSA_OFFSET(reg),            \
-        eEncodingUint, eFormatHex,                                             \
-        {kind1, kind2, kind3, kind4, msa_##reg##_mips64 }, NULL, NULL, NULL, 0 \
+    #reg, alt, sizeof(((MSA_linux_mips *) 0)->reg),                            \
+                      MSA_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, kind4,                  \
+                                  msa_##reg##_mips64 },                        \
+                                  NULL, NULL, NULL, 0                          \
   }
 
 static RegisterInfo g_register_infos_mips64[] = {

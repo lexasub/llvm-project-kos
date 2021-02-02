@@ -22,11 +22,12 @@
 #include "sanitizer_common/sanitizer_common.h"
 
 /// A cache of recently-checked hashes. Mini hash table with "random" evictions.
-__ubsan::HashValue __ubsan::__ubsan_vptr_type_cache[__ubsan::VptrTypeCacheSize];
+__ubsan::HashValue
+__ubsan::__ubsan_vptr_type_cache[__ubsan::VptrTypeCacheSize];
 
 __ubsan::DynamicTypeInfo __ubsan::getDynamicTypeInfoFromObject(void *Object) {
   void *VtablePtr = *reinterpret_cast<void **>(Object);
   return getDynamicTypeInfoFromVtable(VtablePtr);
 }
 
-#endif // CAN_SANITIZE_UB
+#endif  // CAN_SANITIZE_UB

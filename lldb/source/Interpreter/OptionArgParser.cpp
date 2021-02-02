@@ -68,8 +68,8 @@ int64_t OptionArgParser::ToOptionEnum(llvm::StringRef s,
   strm.PutCString("invalid enumeration value, valid values are: ");
   bool is_first = true;
   for (const auto &enum_value : enum_values) {
-    strm.Printf("%s\"%s\"", is_first ? is_first = false, "" : ", ",
-                enum_value.string_value);
+    strm.Printf("%s\"%s\"",
+        is_first ? is_first = false,"" : ", ", enum_value.string_value);
   }
   error.SetErrorString(strm.GetString());
   return fail_value;

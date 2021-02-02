@@ -1,9 +1,9 @@
 // Note: the run lines follow their respective tests, since line/column
 // matter in this test.
 
-template <class T>
+template<class T>
 struct S {
-  template <class U>
+  template<class U>
   S(T, U, U) {}
 };
 
@@ -12,24 +12,24 @@ int main() {
   S<int>(42, 42, 42);
   S<int> s(42, 42, 42);
 
-  S<int>(42, 42, 42, );
-  S<int> z(42, 42, 42, );
+  S<int>(42, 42, 42,);
+  S<int> z(42, 42, 42,);
 
   int(42);
 }
 
 struct Foo {
-  Foo() = default;
-  Foo(const Foo &) = delete;
+    Foo() = default;
+    Foo(const Foo&) = delete;
 };
 
 struct Bar {
-  Foo f;
+    Foo f;
 };
 
 void function() {
-  Bar b1;
-  Bar b2(b1);
+    Bar b1;
+    Bar b2(b1);
 }
 
 // RUN: c-index-test -code-completion-at=%s:11:10 %s | FileCheck -check-prefix=CHECK-CC1 %s

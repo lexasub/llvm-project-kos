@@ -28,14 +28,12 @@ int main(int, char**) {
 
   //  Count too large
   {
-    [[maybe_unused]] auto s1 = sp.last<
-        5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Count out of range in span::last()"}}
+    [[maybe_unused]] auto s1 = sp.last<5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Count out of range in span::last()"}}
   }
 
   //  Count numeric_limits
   {
-    [[maybe_unused]] auto s1 = sp.last<std::size_t(
-        -1)>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Count out of range in span::last()"}}
+    [[maybe_unused]] auto s1 = sp.last<std::size_t(-1)>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Count out of range in span::last()"}}
   }
 
   return 0;

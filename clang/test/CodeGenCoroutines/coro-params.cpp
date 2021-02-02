@@ -17,7 +17,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-} // namespace std::experimental
+}
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -40,26 +40,26 @@ template <typename... Args> struct std::experimental::coroutine_traits<void, Arg
 // TODO: Not supported yet
 struct CopyOnly {
   int val;
-  CopyOnly(const CopyOnly &) noexcept;
-  CopyOnly(CopyOnly &&) = delete;
+  CopyOnly(const CopyOnly&) noexcept;
+  CopyOnly(CopyOnly&&) = delete;
   ~CopyOnly();
 };
 
 struct MoveOnly {
   int val;
-  MoveOnly(const MoveOnly &) = delete;
-  MoveOnly(MoveOnly &&) noexcept;
+  MoveOnly(const MoveOnly&) = delete;
+  MoveOnly(MoveOnly&&) noexcept;
   ~MoveOnly();
 };
 
 struct MoveAndCopy {
   int val;
-  MoveAndCopy(const MoveAndCopy &) noexcept;
-  MoveAndCopy(MoveAndCopy &&) noexcept;
+  MoveAndCopy(const MoveAndCopy&)noexcept;
+  MoveAndCopy(MoveAndCopy&&) noexcept;
   ~MoveAndCopy();
 };
 
-void consume(int, int, int) noexcept;
+void consume(int,int,int) noexcept;
 
 // TODO: Add support for CopyOnly params
 // CHECK: define{{.*}} void @_Z1fi8MoveOnly11MoveAndCopy(i32 %val, %struct.MoveOnly* %[[MoParam:.+]], %struct.MoveAndCopy* %[[McParam:.+]]) #0 personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*
@@ -114,16 +114,14 @@ void dependent_params(T x, U, U y) {
 struct A {
   int WontFitIntoRegisterForSure[128];
   A();
-  A(A &&)
-  noexcept;
+  A(A&&) noexcept;
   ~A();
 };
 
 struct B {
   int WontFitIntoRegisterForSure[128];
   B();
-  B(B &&)
-  noexcept;
+  B(B&&) noexcept;
   ~B();
 };
 
@@ -137,7 +135,7 @@ void call_dependent_params() {
 
 struct promise_matching_constructor {};
 
-template <>
+template<>
 struct std::experimental::coroutine_traits<void, promise_matching_constructor, int, float, double> {
   struct promise_type {
     promise_type(promise_matching_constructor, int, float, double) {}
@@ -165,7 +163,7 @@ struct method {};
 
 template <typename... Args> struct std::experimental::coroutine_traits<method, Args...> {
   struct promise_type {
-    promise_type(some_class &, float);
+    promise_type(some_class&, float);
     method get_return_object();
     suspend_always initial_suspend();
     suspend_always final_suspend() noexcept;

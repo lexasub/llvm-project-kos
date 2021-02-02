@@ -95,7 +95,7 @@ public:
 
   Random &GetRand() { return Rand; }
 
-private:
+ private:
   struct Mutator {
     size_t (MutationDispatcher::*Fn)(uint8_t *Data, size_t Size, size_t Max);
     const char *Name;
@@ -151,6 +151,6 @@ private:
   Vector<Mutator> CurrentMutatorSequence;
 };
 
-} // namespace fuzzer
+}  // namespace fuzzer
 
-#endif // LLVM_FUZZER_MUTATE_H
+#endif  // LLVM_FUZZER_MUTATE_H

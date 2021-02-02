@@ -92,22 +92,20 @@ struct NegativeInitializedInBody {
 };
 
 struct A {};
-template <class>
-class AA;
-template <class T>
-class NegativeTemplateConstructor {
+template <class> class AA;
+template <class T> class NegativeTemplateConstructor {
   NegativeTemplateConstructor(const AA<T> &, A) {}
   bool Bool{false};
   // CHECK-FIXES: bool Bool{false};
 };
 
-#define UNINITIALIZED_FIELD_IN_MACRO_BODY(FIELD)                                \
-  struct UninitializedField##FIELD {                                            \
-    UninitializedField##FIELD() {}                                              \
-    int FIELD;                                                                  \
-  };                                                                            \
-  // Ensure FIELD is not initialized since fixes inside of macros are disabled. \
-  // CHECK-FIXES: int FIELD;
+#define UNINITIALIZED_FIELD_IN_MACRO_BODY(FIELD) \
+  struct UninitializedField##FIELD {             \
+    UninitializedField##FIELD() {}               \
+    int FIELD;                                   \
+  };                                             \
+// Ensure FIELD is not initialized since fixes inside of macros are disabled.
+// CHECK-FIXES: int FIELD;
 
 UNINITIALIZED_FIELD_IN_MACRO_BODY(F);
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: constructor does not initialize these fields: F
@@ -372,7 +370,8 @@ struct NegativeDeletedConstructor : NegativeAggregateType {
 // results in the check seeing a null RecordDecl when examining the base class
 // initializer list.
 template <typename T>
-class PositiveSelfInitialization : NegativeAggregateType {
+class PositiveSelfInitialization : NegativeAggregateType
+{
   PositiveSelfInitialization() : PositiveSelfInitialization() {}
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: constructor does not initialize these bases: NegativeAggregateType
   // CHECK-FIXES: PositiveSelfInitialization() : NegativeAggregateType(), PositiveSelfInitialization() {}
@@ -388,7 +387,8 @@ class PositiveIndirectMember {
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: constructor does not initialize these fields: A
 };
 
-void Bug30487() {
+void Bug30487()
+{
   NegativeInClassInitializedDefaulted s;
 }
 
@@ -425,13 +425,13 @@ struct PositiveTemplateVirtualDestructor {
 
 template struct PositiveTemplateVirtualDestructor<int>;
 
-#define UNINITIALIZED_FIELD_IN_MACRO_BODY_VIRTUAL(FIELD)                        \
-  struct UninitializedFieldVirtual##FIELD {                                     \
-    int FIELD;                                                                  \
-    virtual ~UninitializedFieldVirtual##FIELD() {}                              \
-  };                                                                            \
-  // Ensure FIELD is not initialized since fixes inside of macros are disabled. \
-  // CHECK-FIXES: int FIELD;
+#define UNINITIALIZED_FIELD_IN_MACRO_BODY_VIRTUAL(FIELD) \
+  struct UninitializedFieldVirtual##FIELD {              \
+    int FIELD;                                           \
+    virtual ~UninitializedFieldVirtual##FIELD() {}       \
+  };                                                     \
+// Ensure FIELD is not initialized since fixes inside of macros are disabled.
+// CHECK-FIXES: int FIELD;
 
 UNINITIALIZED_FIELD_IN_MACRO_BODY_VIRTUAL(F);
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: constructor does not initialize these fields: F
@@ -465,11 +465,9 @@ struct NegativeIncompleteArrayMember {
   char e[];
 };
 
-template <typename T>
-class NoCrash {
+template <typename T> class NoCrash {
   class B : public NoCrash {
-    template <typename U>
-    B(U u) {}
+    template <typename U> B(U u) {}
   };
 };
 

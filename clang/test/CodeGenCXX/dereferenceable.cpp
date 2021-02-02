@@ -1,10 +1,6 @@
 // RUN: %clang_cc1 %s -emit-llvm -o - -triple x86_64-linux-gnu | FileCheck %s
 
-struct A {
-  void *p;
-  void *q;
-  void *r;
-};
+struct A { void *p; void *q; void *r; };
 
 struct B : A {};
 static_assert(sizeof(B) == 24);

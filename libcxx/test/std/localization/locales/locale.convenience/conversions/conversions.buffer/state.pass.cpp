@@ -19,13 +19,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  typedef std::wbuffer_convert<std::codecvt_utf8<wchar_t> > B;
-  {
-    B b;
-    std::mbstate_t s = b.state();
-    ((void)s);
-  }
+int main(int, char**)
+{
+    typedef std::wbuffer_convert<std::codecvt_utf8<wchar_t> > B;
+    {
+        B b;
+        std::mbstate_t s = b.state();
+        ((void)s);
+    }
 
   return 0;
 }

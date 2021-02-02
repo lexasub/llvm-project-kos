@@ -24,13 +24,13 @@
 // FILE_BLACKLIST-NOT: __asan_poison_intra_object_redzone
 // NO_PADDING-NOT: __asan_poison_intra_object_redzone
 
+
 class Positive1 {
-public:
+ public:
   Positive1() {}
   ~Positive1() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1;
   int private2;
   short private_array[6];
@@ -46,12 +46,11 @@ struct VirtualBase {
 };
 
 class ClassWithVirtualBase : public virtual VirtualBase {
-public:
+ public:
   ClassWithVirtualBase() {}
   ~ClassWithVirtualBase() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char x[7];
   char y[9];
 };
@@ -59,38 +58,38 @@ private:
 ClassWithVirtualBase class_with_virtual_base;
 
 class WithFlexibleArray1 {
-public:
+ public:
   WithFlexibleArray1() {}
   ~WithFlexibleArray1() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1[33];
-  int flexible[]; // Don't insert padding after this field.
+  int flexible[];  // Don't insert padding after this field.
 };
 
 WithFlexibleArray1 with_flexible_array1;
 // CHECK: %class.WithFlexibleArray1 = type { i32, [12 x i8], [33 x i8], [15 x i8], [0 x i32] }
 
 class WithFlexibleArray2 {
-public:
+ public:
   char x[21];
-  WithFlexibleArray1 flex1; // Don't insert padding after this field.
+  WithFlexibleArray1 flex1;  // Don't insert padding after this field.
 };
 
 WithFlexibleArray2 with_flexible_array2;
 // CHECK: %class.WithFlexibleArray2 = type { [21 x i8], [11 x i8], %class.WithFlexibleArray1 }
 
 class WithFlexibleArray3 {
-public:
+ public:
   char x[13];
-  WithFlexibleArray2 flex2; // Don't insert padding after this field.
+  WithFlexibleArray2 flex2;  // Don't insert padding after this field.
 };
 
 WithFlexibleArray3 with_flexible_array3;
 
+
 class Negative1 {
-public:
+ public:
   Negative1() {}
   int public1, public2;
 };
@@ -98,10 +97,9 @@ Negative1 negative1;
 // CHECK: type { i32, i32 }
 
 class Negative2 {
-public:
+ public:
   Negative2() {}
-
-private:
+ private:
   int private1, private2;
 };
 Negative2 negative2;
@@ -116,12 +114,11 @@ Negative3 negative3;
 // CHECK: type { i64 }
 
 class Negative4 {
-public:
+ public:
   Negative4() {}
   // No DTOR
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1;
   int private2;
 };
@@ -130,12 +127,11 @@ Negative4 negative4;
 // CHECK: type { i32, i8, i32 }
 
 class __attribute__((packed)) Negative5 {
-public:
+ public:
   Negative5() {}
   ~Negative5() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1;
   int private2;
 };
@@ -143,33 +139,32 @@ private:
 Negative5 negative5;
 // CHECK: type <{ i32, i8, i32 }>
 
+
 namespace SomeNamespace {
 class BlacklistedByName {
-public:
+ public:
   BlacklistedByName() {}
   ~BlacklistedByName() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1;
   int private2;
 };
-} // namespace SomeNamespace
+}  // SomeNamespace
 
 SomeNamespace::BlacklistedByName blacklisted_by_name;
 
 extern "C" {
 class ExternCStruct {
-public:
+ public:
   ExternCStruct() {}
   ~ExternCStruct() {}
   int make_it_non_standard_layout;
-
-private:
+ private:
   char private1;
   int private2;
 };
-} // extern "C"
+}  // extern "C"
 
 ExternCStruct extern_C_struct;
 
@@ -205,7 +200,7 @@ struct WithVirtualDtor {
   virtual ~WithVirtualDtor();
   int x, y;
 };
-struct InheritsFrom_WithVirtualDtor : WithVirtualDtor {
+struct InheritsFrom_WithVirtualDtor: WithVirtualDtor {
   int a, b;
   InheritsFrom_WithVirtualDtor() {}
   ~InheritsFrom_WithVirtualDtor() {}
@@ -214,6 +209,7 @@ struct InheritsFrom_WithVirtualDtor : WithVirtualDtor {
 void Create_InheritsFrom_WithVirtualDtor() {
   InheritsFrom_WithVirtualDtor x;
 }
+
 
 // Make sure the dtor of InheritsFrom_WithVirtualDtor remains in the code,
 // i.e. we ignore -mconstructor-aliases when field paddings are added
@@ -229,8 +225,7 @@ struct ClassWithTrivialCopy {
   ClassWithTrivialCopy();
   ~ClassWithTrivialCopy();
   void *a;
-
-private:
+ private:
   void *c;
 };
 

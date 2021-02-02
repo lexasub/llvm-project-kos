@@ -1,3 +1,7 @@
 #include "other.h"
 
-void Other::DoSomethingElse() { DoSomething(); }
+void 
+Other::DoSomethingElse()
+{
+  DoSomething();
+}

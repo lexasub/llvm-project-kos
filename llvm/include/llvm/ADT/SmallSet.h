@@ -79,7 +79,7 @@ public:
       new (&SetIter) SetIterTy(std::move(Other.SetIter));
   }
 
-  SmallSetIterator &operator=(const SmallSetIterator &Other) {
+  SmallSetIterator& operator=(const SmallSetIterator& Other) {
     // Call destructor for SetIter, so it gets properly destroyed if it is
     // not trivially destructible in case we are setting VecIter.
     if (!isSmall)
@@ -93,7 +93,7 @@ public:
     return *this;
   }
 
-  SmallSetIterator &operator=(SmallSetIterator &&Other) {
+  SmallSetIterator& operator=(SmallSetIterator&& Other) {
     // Call destructor for SetIter, so it gets properly destroyed if it is
     // not trivially destructible in case we are setting VecIter.
     if (!isSmall)
@@ -130,7 +130,8 @@ public:
 /// when the set is small (less than N).  In this case, the set can be
 /// maintained with no mallocs.  If the set gets large, we expand to using an
 /// std::set to maintain reasonable lookup times.
-template <typename T, unsigned N, typename C = std::less<T>> class SmallSet {
+template <typename T, unsigned N, typename C = std::less<T>>
+class SmallSet {
   /// Use a SmallVector to hold the elements here (even though it will never
   /// reach its 'large' stage) to avoid calling the default ctors of elements
   /// we will never use.
@@ -151,9 +152,13 @@ public:
 
   SmallSet() = default;
 
-  LLVM_NODISCARD bool empty() const { return Vector.empty() && Set.empty(); }
+  LLVM_NODISCARD bool empty() const {
+    return Vector.empty() && Set.empty();
+  }
 
-  size_type size() const { return isSmall() ? Vector.size() : Set.size(); }
+  size_type size() const {
+    return isSmall() ? Vector.size() : Set.size();
+  }
 
   /// count - Return 1 if the element is in the set, 0 otherwise.
   size_type count(const T &V) const {
@@ -177,7 +182,7 @@ public:
       return std::make_pair(None, Set.insert(V).second);
 
     VIterator I = vfind(V);
-    if (I != Vector.end()) // Don't reinsert if it already exists.
+    if (I != Vector.end())    // Don't reinsert if it already exists.
       return std::make_pair(None, false);
     if (Vector.size() < N) {
       Vector.push_back(V);
@@ -193,7 +198,8 @@ public:
     return std::make_pair(None, true);
   }
 
-  template <typename IterT> void insert(IterT I, IterT E) {
+  template <typename IterT>
+  void insert(IterT I, IterT E) {
     for (; I != E; ++I)
       insert(*I);
   }
@@ -247,7 +253,7 @@ private:
 /// If this set is of pointer values, transparently switch over to using
 /// SmallPtrSet for performance.
 template <typename PointeeType, unsigned N>
-class SmallSet<PointeeType *, N> : public SmallPtrSet<PointeeType *, N> {};
+class SmallSet<PointeeType*, N> : public SmallPtrSet<PointeeType*, N> {};
 
 /// Equality comparison for SmallSet.
 ///

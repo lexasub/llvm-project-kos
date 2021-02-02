@@ -31,3 +31,4 @@ int main() {
 
 // CHECK: user fopen
 // CHECK-NOT: ThreadSanitizer
+

@@ -25,8 +25,8 @@ using namespace llvm;
 // Clauses longer then 15 instructions would overflow one of the counters
 // and stall. They can stall even earlier if there are outstanding counters.
 static cl::opt<unsigned>
-    MaxClause("amdgpu-max-memory-clause", cl::Hidden, cl::init(15),
-              cl::desc("Maximum length of a memory clause, instructions"));
+MaxClause("amdgpu-max-memory-clause", cl::Hidden, cl::init(15),
+          cl::desc("Maximum length of a memory clause, instructions"));
 
 namespace {
 
@@ -43,7 +43,9 @@ public:
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
-  StringRef getPassName() const override { return "SI Form memory clauses"; }
+  StringRef getPassName() const override {
+    return "SI Form memory clauses";
+  }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<LiveIntervals>();
@@ -79,11 +81,12 @@ private:
 
 } // End anonymous namespace.
 
-INITIALIZE_PASS_BEGIN(SIFormMemoryClauses, DEBUG_TYPE, "SI Form memory clauses",
-                      false, false)
+INITIALIZE_PASS_BEGIN(SIFormMemoryClauses, DEBUG_TYPE,
+                      "SI Form memory clauses", false, false)
 INITIALIZE_PASS_DEPENDENCY(LiveIntervals)
-INITIALIZE_PASS_END(SIFormMemoryClauses, DEBUG_TYPE, "SI Form memory clauses",
-                    false, false)
+INITIALIZE_PASS_END(SIFormMemoryClauses, DEBUG_TYPE,
+                    "SI Form memory clauses", false, false)
+
 
 char SIFormMemoryClauses::ID = 0;
 
@@ -115,8 +118,7 @@ static bool isValidClauseInst(const MachineInstr &MI, bool IsVMEMClause) {
     return false;
   if (!IsVMEMClause && !isSMEMClauseInst(MI))
     return false;
-  // If this is a load instruction where the result has been coalesced with an
-  // operand, then we cannot clause it.
+  // If this is a load instruction where the result has been coalesced with an operand, then we cannot clause it.
   for (const MachineOperand &ResMO : MI.defs()) {
     Register ResReg = ResMO.getReg();
     for (const MachineOperand &MO : MI.uses()) {
@@ -258,8 +260,8 @@ bool SIFormMemoryClauses::checkPressure(const MachineInstr &MI,
 }
 
 // Collect register defs and uses along with their lane masks and states.
-void SIFormMemoryClauses::collectRegUses(const MachineInstr &MI, RegUse &Defs,
-                                         RegUse &Uses) const {
+void SIFormMemoryClauses::collectRegUses(const MachineInstr &MI,
+                                         RegUse &Defs, RegUse &Uses) const {
   for (const MachineOperand &MO : MI.operands()) {
     if (!MO.isReg())
       continue;
@@ -286,8 +288,8 @@ void SIFormMemoryClauses::collectRegUses(const MachineInstr &MI, RegUse &Defs,
 // Check register def/use conflicts, occupancy limits and collect def/use maps.
 // Return true if instruction can be bundled with previous. It it cannot
 // def/use maps are not updated.
-bool SIFormMemoryClauses::processRegUses(const MachineInstr &MI, RegUse &Defs,
-                                         RegUse &Uses,
+bool SIFormMemoryClauses::processRegUses(const MachineInstr &MI,
+                                         RegUse &Defs, RegUse &Uses,
                                          GCNDownwardRPTracker &RPT) {
   if (!canBundle(MI, Defs, Uses))
     return false;
@@ -347,7 +349,7 @@ bool SIFormMemoryClauses::runOnMachineFunction(MachineFunction &MF) {
       }
 
       unsigned Length = 1;
-      for (; Next != E && Length < FuncMaxClause; ++Next) {
+      for ( ; Next != E && Length < FuncMaxClause; ++Next) {
         if (!isValidClauseInst(*Next, IsVMEM))
           break;
 

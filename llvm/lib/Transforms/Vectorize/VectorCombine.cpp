@@ -42,9 +42,9 @@ STATISTIC(NumShufOfBitcast, "Number of shuffles moved after bitcast");
 STATISTIC(NumScalarBO, "Number of scalar binops formed");
 STATISTIC(NumScalarCmp, "Number of scalar compares formed");
 
-static cl::opt<bool>
-    DisableVectorCombine("disable-vector-combine", cl::init(false), cl::Hidden,
-                         cl::desc("Disable all vector combine transforms"));
+static cl::opt<bool> DisableVectorCombine(
+    "disable-vector-combine", cl::init(false), cl::Hidden,
+    cl::desc("Disable all vector combine transforms"));
 
 static cl::opt<bool> DisableBinopExtractShuffle(
     "disable-binop-extract-shuffle", cl::init(false), cl::Hidden,
@@ -706,8 +706,8 @@ bool VectorCombine::foldExtractedCmps(Instruction &I) {
   // The original scalar pattern is:
   // binop i1 (cmp Pred (ext X, Index0), C0), (cmp Pred (ext X, Index1), C1)
   CmpInst::Predicate Pred = P0;
-  unsigned CmpOpcode =
-      CmpInst::isFPPredicate(Pred) ? Instruction::FCmp : Instruction::ICmp;
+  unsigned CmpOpcode = CmpInst::isFPPredicate(Pred) ? Instruction::FCmp
+                                                    : Instruction::ICmp;
   auto *VecTy = dyn_cast<FixedVectorType>(X->getType());
   if (!VecTy)
     return false;
@@ -744,8 +744,8 @@ bool VectorCombine::foldExtractedCmps(Instruction &I) {
   Value *VCmp = Builder.CreateCmp(Pred, X, ConstantVector::get(CmpC));
 
   Value *Shuf = createShiftShuffle(VCmp, ExpensiveIndex, CheapIndex, Builder);
-  Value *VecLogic =
-      Builder.CreateBinOp(cast<BinaryOperator>(I).getOpcode(), VCmp, Shuf);
+  Value *VecLogic = Builder.CreateBinOp(cast<BinaryOperator>(I).getOpcode(),
+                                        VCmp, Shuf);
   Value *NewExt = Builder.CreateExtractElement(VecLogic, CheapIndex);
   replaceValue(I, *NewExt);
   ++NumVecCmpBO;
@@ -825,11 +825,14 @@ public:
 
 char VectorCombineLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(VectorCombineLegacyPass, "vector-combine",
-                      "Optimize scalar/vector ops", false, false)
+                      "Optimize scalar/vector ops", false,
+                      false)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
 INITIALIZE_PASS_END(VectorCombineLegacyPass, "vector-combine",
                     "Optimize scalar/vector ops", false, false)
-Pass *llvm::createVectorCombinePass() { return new VectorCombineLegacyPass(); }
+Pass *llvm::createVectorCombinePass() {
+  return new VectorCombineLegacyPass();
+}
 
 PreservedAnalyses VectorCombinePass::run(Function &F,
                                          FunctionAnalysisManager &FAM) {

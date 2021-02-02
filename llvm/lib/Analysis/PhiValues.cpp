@@ -212,7 +212,9 @@ bool PhiValuesWrapperPass::runOnFunction(Function &F) {
   return false;
 }
 
-void PhiValuesWrapperPass::releaseMemory() { Result->releaseMemory(); }
+void PhiValuesWrapperPass::releaseMemory() {
+  Result->releaseMemory();
+}
 
 void PhiValuesWrapperPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesAll();
@@ -220,5 +222,5 @@ void PhiValuesWrapperPass::getAnalysisUsage(AnalysisUsage &AU) const {
 
 char PhiValuesWrapperPass::ID = 0;
 
-INITIALIZE_PASS(PhiValuesWrapperPass, "phi-values", "Phi Values Analysis",
-                false, true)
+INITIALIZE_PASS(PhiValuesWrapperPass, "phi-values", "Phi Values Analysis", false,
+                true)

@@ -34,8 +34,8 @@ static uint8_t *roundTripAllocateCodeSection(void *object, uintptr_t size,
                                              unsigned sectionID,
                                              const char *sectionName) {
   didCallAllocateCodeSection = true;
-  return static_cast<SectionMemoryManager *>(object)->allocateCodeSection(
-      size, alignment, sectionID, sectionName);
+  return static_cast<SectionMemoryManager*>(object)->allocateCodeSection(
+    size, alignment, sectionID, sectionName);
 }
 
 static uint8_t *roundTripAllocateDataSection(void *object, uintptr_t size,
@@ -45,14 +45,14 @@ static uint8_t *roundTripAllocateDataSection(void *object, uintptr_t size,
                                              LLVMBool isReadOnly) {
   if (!strcmp(sectionName, "__compact_unwind"))
     didAllocateCompactUnwindSection = true;
-  return static_cast<SectionMemoryManager *>(object)->allocateDataSection(
-      size, alignment, sectionID, sectionName, isReadOnly);
+  return static_cast<SectionMemoryManager*>(object)->allocateDataSection(
+    size, alignment, sectionID, sectionName, isReadOnly);
 }
 
 static LLVMBool roundTripFinalizeMemory(void *object, char **errMsg) {
   std::string errMsgString;
-  bool result = static_cast<SectionMemoryManager *>(object)->finalizeMemory(
-      &errMsgString);
+  bool result =
+    static_cast<SectionMemoryManager*>(object)->finalizeMemory(&errMsgString);
   if (result) {
     *errMsg = LLVMCreateMessage(errMsgString.c_str());
     return 1;
@@ -61,15 +61,17 @@ static LLVMBool roundTripFinalizeMemory(void *object, char **errMsg) {
 }
 
 static void roundTripDestroy(void *object) {
-  delete static_cast<SectionMemoryManager *>(object);
+  delete static_cast<SectionMemoryManager*>(object);
 }
 
-static void yield(LLVMContextRef, void *) { didCallYield = true; }
+static void yield(LLVMContextRef, void *) {
+  didCallYield = true;
+}
 
 namespace {
 
 // memory manager to test reserve allocation space callback
-class TestReserveAllocationSpaceMemoryManager : public SectionMemoryManager {
+class TestReserveAllocationSpaceMemoryManager: public SectionMemoryManager {
 public:
   uintptr_t ReservedCodeSize;
   uintptr_t UsedCodeSize;
@@ -77,10 +79,11 @@ public:
   uintptr_t UsedDataSizeRO;
   uintptr_t ReservedDataSizeRW;
   uintptr_t UsedDataSizeRW;
-
-  TestReserveAllocationSpaceMemoryManager()
-      : ReservedCodeSize(0), UsedCodeSize(0), ReservedDataSizeRO(0),
-        UsedDataSizeRO(0), ReservedDataSizeRW(0), UsedDataSizeRW(0) {}
+  
+  TestReserveAllocationSpaceMemoryManager() : 
+    ReservedCodeSize(0), UsedCodeSize(0), ReservedDataSizeRO(0), 
+    UsedDataSizeRO(0), ReservedDataSizeRW(0), UsedDataSizeRW(0) {    
+  }
 
   bool needsToReserveAllocationSpace() override { return true; }
 
@@ -93,10 +96,9 @@ public:
     ReservedDataSizeRW = DataSizeRW;
   }
 
-  void useSpace(uintptr_t *UsedSize, uintptr_t Size, unsigned Alignment) {
+  void useSpace(uintptr_t* UsedSize, uintptr_t Size, unsigned Alignment) {
     uintptr_t AlignedSize = (Size + Alignment - 1) / Alignment * Alignment;
-    uintptr_t AlignedBegin =
-        (*UsedSize + Alignment - 1) / Alignment * Alignment;
+    uintptr_t AlignedBegin = (*UsedSize + Alignment - 1) / Alignment * Alignment;
     *UsedSize = AlignedBegin + AlignedSize;
   }
 
@@ -104,16 +106,16 @@ public:
                                unsigned SectionID, StringRef SectionName,
                                bool IsReadOnly) override {
     useSpace(IsReadOnly ? &UsedDataSizeRO : &UsedDataSizeRW, Size, Alignment);
-    return SectionMemoryManager::allocateDataSection(Size, Alignment, SectionID,
-                                                     SectionName, IsReadOnly);
+    return SectionMemoryManager::allocateDataSection(Size, Alignment, 
+      SectionID, SectionName, IsReadOnly);
   }
 
   uint8_t *allocateCodeSection(uintptr_t Size, unsigned Alignment,
                                unsigned SectionID,
                                StringRef SectionName) override {
     useSpace(&UsedCodeSize, Size, Alignment);
-    return SectionMemoryManager::allocateCodeSection(Size, Alignment, SectionID,
-                                                     SectionName);
+    return SectionMemoryManager::allocateCodeSection(Size, Alignment, 
+      SectionID, SectionName);
   }
 };
 
@@ -159,164 +161,165 @@ protected:
     else if (Module)
       LLVMDisposeModule(Module);
   }
-
+  
   void buildSimpleFunction() {
     Module = LLVMModuleCreateWithName("simple_module");
-
+    
     LLVMSetTarget(Module, HostTriple.c_str());
-
-    Function =
-        LLVMAddFunction(Module, "simple_function",
-                        LLVMFunctionType(LLVMInt32Type(), nullptr, 0, 0));
+    
+    Function = LLVMAddFunction(Module, "simple_function",
+                               LLVMFunctionType(LLVMInt32Type(), nullptr,0, 0));
     LLVMSetFunctionCallConv(Function, LLVMCCallConv);
-
+    
     LLVMBasicBlockRef entry = LLVMAppendBasicBlock(Function, "entry");
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMPositionBuilderAtEnd(builder, entry);
     LLVMBuildRet(builder, LLVMConstInt(LLVMInt32Type(), 42, 0));
-
+    
     LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
     LLVMDisposeMessage(Error);
-
+    
     LLVMDisposeBuilder(builder);
   }
-
+  
   void buildFunctionThatUsesStackmap() {
     Module = LLVMModuleCreateWithName("simple_module");
-
+    
     LLVMSetTarget(Module, HostTriple.c_str());
-
-    LLVMTypeRef stackmapParamTypes[] = {LLVMInt64Type(), LLVMInt32Type()};
+    
+    LLVMTypeRef stackmapParamTypes[] = { LLVMInt64Type(), LLVMInt32Type() };
     LLVMValueRef stackmap = LLVMAddFunction(
-        Module, "llvm.experimental.stackmap",
-        LLVMFunctionType(LLVMVoidType(), stackmapParamTypes, 2, 1));
+      Module, "llvm.experimental.stackmap",
+      LLVMFunctionType(LLVMVoidType(), stackmapParamTypes, 2, 1));
     LLVMSetLinkage(stackmap, LLVMExternalLinkage);
-
-    Function =
-        LLVMAddFunction(Module, "simple_function",
-                        LLVMFunctionType(LLVMInt32Type(), nullptr, 0, 0));
-
+    
+    Function = LLVMAddFunction(Module, "simple_function",
+                              LLVMFunctionType(LLVMInt32Type(), nullptr, 0, 0));
+    
     LLVMBasicBlockRef entry = LLVMAppendBasicBlock(Function, "entry");
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMPositionBuilderAtEnd(builder, entry);
-    LLVMValueRef stackmapArgs[] = {LLVMConstInt(LLVMInt64Type(), 0, 0),
-                                   LLVMConstInt(LLVMInt32Type(), 5, 0),
-                                   LLVMConstInt(LLVMInt32Type(), 42, 0)};
+    LLVMValueRef stackmapArgs[] = {
+      LLVMConstInt(LLVMInt64Type(), 0, 0), LLVMConstInt(LLVMInt32Type(), 5, 0),
+      LLVMConstInt(LLVMInt32Type(), 42, 0)
+    };
     LLVMBuildCall(builder, stackmap, stackmapArgs, 3, "");
     LLVMBuildRet(builder, LLVMConstInt(LLVMInt32Type(), 42, 0));
-
+    
     LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
     LLVMDisposeMessage(Error);
-
+    
     LLVMDisposeBuilder(builder);
   }
-
+  
   void buildModuleWithCodeAndData() {
     Module = LLVMModuleCreateWithName("simple_module");
-
+    
     LLVMSetTarget(Module, HostTriple.c_str());
-
+    
     // build a global int32 variable initialized to 42.
-    LLVMValueRef GlobalVar = LLVMAddGlobal(Module, LLVMInt32Type(), "intVal");
+    LLVMValueRef GlobalVar = LLVMAddGlobal(Module, LLVMInt32Type(), "intVal");    
     LLVMSetInitializer(GlobalVar, LLVMConstInt(LLVMInt32Type(), 42, 0));
-
+    
     {
-      Function =
-          LLVMAddFunction(Module, "getGlobal",
-                          LLVMFunctionType(LLVMInt32Type(), nullptr, 0, 0));
-      LLVMSetFunctionCallConv(Function, LLVMCCallConv);
-
-      LLVMBasicBlockRef Entry = LLVMAppendBasicBlock(Function, "entry");
-      LLVMBuilderRef Builder = LLVMCreateBuilder();
-      LLVMPositionBuilderAtEnd(Builder, Entry);
-
-      LLVMValueRef IntVal = LLVMBuildLoad(Builder, GlobalVar, "intVal");
-      LLVMBuildRet(Builder, IntVal);
-
-      LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
-      LLVMDisposeMessage(Error);
-
-      LLVMDisposeBuilder(Builder);
+        Function = LLVMAddFunction(Module, "getGlobal",
+                              LLVMFunctionType(LLVMInt32Type(), nullptr, 0, 0));
+        LLVMSetFunctionCallConv(Function, LLVMCCallConv);
+        
+        LLVMBasicBlockRef Entry = LLVMAppendBasicBlock(Function, "entry");
+        LLVMBuilderRef Builder = LLVMCreateBuilder();
+        LLVMPositionBuilderAtEnd(Builder, Entry);
+        
+        LLVMValueRef IntVal = LLVMBuildLoad(Builder, GlobalVar, "intVal");
+        LLVMBuildRet(Builder, IntVal);
+        
+        LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
+        LLVMDisposeMessage(Error);
+        
+        LLVMDisposeBuilder(Builder);
     }
-
+    
     {
-      LLVMTypeRef ParamTypes[] = {LLVMInt32Type()};
-      Function2 =
-          LLVMAddFunction(Module, "setGlobal",
-                          LLVMFunctionType(LLVMVoidType(), ParamTypes, 1, 0));
-      LLVMSetFunctionCallConv(Function2, LLVMCCallConv);
-
-      LLVMBasicBlockRef Entry = LLVMAppendBasicBlock(Function2, "entry");
-      LLVMBuilderRef Builder = LLVMCreateBuilder();
-      LLVMPositionBuilderAtEnd(Builder, Entry);
-
-      LLVMValueRef Arg = LLVMGetParam(Function2, 0);
-      LLVMBuildStore(Builder, Arg, GlobalVar);
-      LLVMBuildRetVoid(Builder);
-
-      LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
-      LLVMDisposeMessage(Error);
-
-      LLVMDisposeBuilder(Builder);
+        LLVMTypeRef ParamTypes[] = { LLVMInt32Type() };
+        Function2 = LLVMAddFunction(
+          Module, "setGlobal", LLVMFunctionType(LLVMVoidType(), ParamTypes, 1, 0));
+        LLVMSetFunctionCallConv(Function2, LLVMCCallConv);
+        
+        LLVMBasicBlockRef Entry = LLVMAppendBasicBlock(Function2, "entry");
+        LLVMBuilderRef Builder = LLVMCreateBuilder();
+        LLVMPositionBuilderAtEnd(Builder, Entry);
+        
+        LLVMValueRef Arg = LLVMGetParam(Function2, 0);
+        LLVMBuildStore(Builder, Arg, GlobalVar);
+        LLVMBuildRetVoid(Builder);
+        
+        LLVMVerifyModule(Module, LLVMAbortProcessAction, &Error);
+        LLVMDisposeMessage(Error);
+        
+        LLVMDisposeBuilder(Builder);
     }
   }
-
+  
   void buildMCJITOptions() {
     LLVMInitializeMCJITCompilerOptions(&Options, sizeof(Options));
     Options.OptLevel = 2;
-
+    
     // Just ensure that this field still exists.
     Options.NoFramePointerElim = false;
   }
-
+  
   void useRoundTripSectionMemoryManager() {
     Options.MCJMM = LLVMCreateSimpleMCJITMemoryManager(
-        new SectionMemoryManager(), roundTripAllocateCodeSection,
-        roundTripAllocateDataSection, roundTripFinalizeMemory,
-        roundTripDestroy);
+      new SectionMemoryManager(),
+      roundTripAllocateCodeSection,
+      roundTripAllocateDataSection,
+      roundTripFinalizeMemory,
+      roundTripDestroy);
   }
 
   void buildMCJITEngine() {
-    ASSERT_EQ(0, LLVMCreateMCJITCompilerForModule(&Engine, Module, &Options,
-                                                  sizeof(Options), &Error));
+    ASSERT_EQ(
+      0, LLVMCreateMCJITCompilerForModule(&Engine, Module, &Options,
+                                          sizeof(Options), &Error));
   }
-
+  
   void buildAndRunPasses() {
     LLVMPassManagerRef pass = LLVMCreatePassManager();
     LLVMAddInstructionCombiningPass(pass);
     LLVMRunPassManager(pass, Module);
     LLVMDisposePassManager(pass);
   }
-
+  
   void buildAndRunOptPasses() {
     LLVMPassManagerBuilderRef passBuilder;
-
+    
     passBuilder = LLVMPassManagerBuilderCreate();
     LLVMPassManagerBuilderSetOptLevel(passBuilder, 2);
     LLVMPassManagerBuilderSetSizeLevel(passBuilder, 0);
-
+    
     LLVMPassManagerRef functionPasses =
-        LLVMCreateFunctionPassManagerForModule(Module);
-    LLVMPassManagerRef modulePasses = LLVMCreatePassManager();
-
+      LLVMCreateFunctionPassManagerForModule(Module);
+    LLVMPassManagerRef modulePasses =
+      LLVMCreatePassManager();
+    
     LLVMPassManagerBuilderPopulateFunctionPassManager(passBuilder,
                                                       functionPasses);
     LLVMPassManagerBuilderPopulateModulePassManager(passBuilder, modulePasses);
-
+    
     LLVMPassManagerBuilderDispose(passBuilder);
-
+    
     LLVMInitializeFunctionPassManager(functionPasses);
-    for (LLVMValueRef value = LLVMGetFirstFunction(Module); value;
-         value = LLVMGetNextFunction(value))
+    for (LLVMValueRef value = LLVMGetFirstFunction(Module);
+         value; value = LLVMGetNextFunction(value))
       LLVMRunFunctionPassManager(functionPasses, value);
     LLVMFinalizeFunctionPassManager(functionPasses);
-
+    
     LLVMRunPassManager(modulePasses, Module);
-
+    
     LLVMDisposePassManager(functionPasses);
     LLVMDisposePassManager(modulePasses);
   }
-
+  
   LLVMModuleRef Module;
   LLVMValueRef Function;
   LLVMValueRef Function2;
@@ -328,7 +331,7 @@ protected:
 
 TEST_F(MCJITCAPITest, simple_function) {
   SKIP_UNSUPPORTED_PLATFORM;
-
+  
   buildSimpleFunction();
   buildMCJITOptions();
   buildMCJITEngine();
@@ -345,8 +348,7 @@ TEST_F(MCJITCAPITest, gva) {
 
   Module = LLVMModuleCreateWithName("simple_module");
   LLVMSetTarget(Module, HostTriple.c_str());
-  LLVMValueRef GlobalVar =
-      LLVMAddGlobal(Module, LLVMInt32Type(), "simple_value");
+  LLVMValueRef GlobalVar = LLVMAddGlobal(Module, LLVMInt32Type(), "simple_value");
   LLVMSetInitializer(GlobalVar, LLVMConstInt(LLVMInt32Type(), 42, 0));
 
   buildMCJITOptions();
@@ -354,7 +356,7 @@ TEST_F(MCJITCAPITest, gva) {
   buildAndRunPasses();
 
   uint64_t raw = LLVMGetGlobalValueAddress(Engine, "simple_value");
-  int32_t *usable = (int32_t *)raw;
+  int32_t *usable  = (int32_t *) raw;
 
   EXPECT_EQ(42, *usable);
 }
@@ -368,14 +370,14 @@ TEST_F(MCJITCAPITest, gfa) {
   buildAndRunPasses();
 
   uint64_t raw = LLVMGetFunctionAddress(Engine, "simple_function");
-  int (*usable)() = (int (*)())raw;
+  int (*usable)() = (int (*)()) raw;
 
   EXPECT_EQ(42, usable());
 }
 
 TEST_F(MCJITCAPITest, custom_memory_manager) {
   SKIP_UNSUPPORTED_PLATFORM;
-
+  
   buildSimpleFunction();
   buildMCJITOptions();
   useRoundTripSectionMemoryManager();
@@ -391,11 +393,11 @@ TEST_F(MCJITCAPITest, custom_memory_manager) {
 
 TEST_F(MCJITCAPITest, stackmap_creates_compact_unwind_on_darwin) {
   SKIP_UNSUPPORTED_PLATFORM;
-
+  
   // This test is also not supported on non-x86 platforms.
   if (Triple(HostTriple).getArch() != Triple::x86_64)
     return;
-
+  
   buildFunctionThatUsesStackmap();
   buildMCJITOptions();
   useRoundTripSectionMemoryManager();
@@ -407,7 +409,7 @@ TEST_F(MCJITCAPITest, stackmap_creates_compact_unwind_on_darwin) {
 
   EXPECT_EQ(42, functionPointer());
   EXPECT_TRUE(didCallAllocateCodeSection);
-
+  
   // Up to this point, the test is specific only to X86-64. But this next
   // expectation is only valid on Darwin because it assumes that unwind
   // data is made available only through compact_unwind. It would be
@@ -416,9 +418,10 @@ TEST_F(MCJITCAPITest, stackmap_creates_compact_unwind_on_darwin) {
   //
   // FIXME: Currently, MCJIT relies on a configure-time check to determine which
   // sections to emit. The JIT client should have runtime control over this.
-  EXPECT_TRUE(Triple(HostTriple).getOS() != Triple::Darwin ||
-              Triple(HostTriple).isMacOSXVersionLT(10, 7) ||
-              didAllocateCompactUnwindSection);
+  EXPECT_TRUE(
+    Triple(HostTriple).getOS() != Triple::Darwin ||
+    Triple(HostTriple).isMacOSXVersionLT(10, 7) ||
+    didAllocateCompactUnwindSection);
 }
 
 #if defined(__APPLE__) && defined(__aarch64__)
@@ -430,9 +433,8 @@ TEST_F(MCJITCAPITest, stackmap_creates_compact_unwind_on_darwin) {
 TEST_F(MCJITCAPITest, MAYBE_reserve_allocation_space) {
   SKIP_UNSUPPORTED_PLATFORM;
 
-  TestReserveAllocationSpaceMemoryManager *MM =
-      new TestReserveAllocationSpaceMemoryManager();
-
+  TestReserveAllocationSpaceMemoryManager* MM = new TestReserveAllocationSpaceMemoryManager();
+  
   buildModuleWithCodeAndData();
   buildMCJITOptions();
   Options.MCJMM = wrap(MM);
@@ -450,7 +452,7 @@ TEST_F(MCJITCAPITest, MAYBE_reserve_allocation_space) {
   EXPECT_LE(MM->UsedCodeSize, MM->ReservedCodeSize);
   EXPECT_LE(MM->UsedDataSizeRO, MM->ReservedDataSizeRO);
   EXPECT_LE(MM->UsedDataSizeRW, MM->ReservedDataSizeRW);
-  EXPECT_TRUE(MM->UsedCodeSize > 0);
+  EXPECT_TRUE(MM->UsedCodeSize > 0); 
   EXPECT_TRUE(MM->UsedDataSizeRW > 0);
 }
 
@@ -471,7 +473,9 @@ TEST_F(MCJITCAPITest, yield) {
   EXPECT_TRUE(didCallYield);
 }
 
-static int localTestFunc() { return 42; }
+static int localTestFunc() {
+  return 42;
+}
 
 TEST_F(MCJITCAPITest, addGlobalMapping) {
   SKIP_UNSUPPORTED_PLATFORM;
@@ -502,7 +506,7 @@ TEST_F(MCJITCAPITest, addGlobalMapping) {
   buildAndRunPasses();
 
   uint64_t raw = LLVMGetFunctionAddress(Engine, "test_fn");
-  int (*usable)() = (int (*)())raw;
+  int (*usable)() = (int (*)()) raw;
 
   EXPECT_EQ(42, usable());
 }

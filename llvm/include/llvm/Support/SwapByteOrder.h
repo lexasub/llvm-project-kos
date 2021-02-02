@@ -100,17 +100,15 @@ constexpr bool IsBigEndianHost = false;
 
 static const bool IsLittleEndianHost = !IsBigEndianHost;
 
-inline unsigned char getSwappedBytes(unsigned char C) { return C; }
-inline signed char getSwappedBytes(signed char C) { return C; }
-inline char getSwappedBytes(char C) { return C; }
+inline unsigned char  getSwappedBytes(unsigned char C) { return C; }
+inline   signed char  getSwappedBytes(signed char C) { return C; }
+inline          char  getSwappedBytes(char C) { return C; }
 
-inline unsigned short getSwappedBytes(unsigned short C) {
-  return ByteSwap_16(C);
-}
-inline signed short getSwappedBytes(signed short C) { return ByteSwap_16(C); }
+inline unsigned short getSwappedBytes(unsigned short C) { return ByteSwap_16(C); }
+inline   signed short getSwappedBytes(  signed short C) { return ByteSwap_16(C); }
 
-inline unsigned int getSwappedBytes(unsigned int C) { return ByteSwap_32(C); }
-inline signed int getSwappedBytes(signed int C) { return ByteSwap_32(C); }
+inline unsigned int   getSwappedBytes(unsigned int   C) { return ByteSwap_32(C); }
+inline   signed int   getSwappedBytes(  signed int   C) { return ByteSwap_32(C); }
 
 inline unsigned long getSwappedBytes(unsigned long C) {
   // Handle LLP64 and LP64 platforms.
@@ -156,7 +154,8 @@ inline std::enable_if_t<std::is_enum<T>::value, T> getSwappedBytes(T C) {
       getSwappedBytes(static_cast<std::underlying_type_t<T>>(C)));
 }
 
-template <typename T> inline void swapByteOrder(T &Value) {
+template<typename T>
+inline void swapByteOrder(T &Value) {
   Value = getSwappedBytes(Value);
 }
 

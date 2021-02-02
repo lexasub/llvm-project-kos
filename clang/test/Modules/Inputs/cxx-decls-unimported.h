@@ -1,1 +1,1 @@
-void operator delete(void *);
+void operator delete(void*);

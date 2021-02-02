@@ -30,7 +30,7 @@ public:
                                      /// dependency, which can avoid some 'make'
                                      /// problems.
   unsigned AddMissingHeaderDeps : 1; ///< Add missing headers to dependency list
-  unsigned IncludeModuleFiles : 1;   ///< Include module file dependencies.
+  unsigned IncludeModuleFiles : 1; ///< Include module file dependencies.
 
   /// Destination of cl.exe style /showIncludes info.
   ShowIncludesDestination ShowIncludesDest = ShowIncludesDestination::None;
@@ -69,6 +69,6 @@ public:
         AddMissingHeaderDeps(0), IncludeModuleFiles(0) {}
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

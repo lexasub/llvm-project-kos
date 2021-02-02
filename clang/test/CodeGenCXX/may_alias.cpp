@@ -3,11 +3,11 @@
 
 enum class __attribute__((may_alias)) E {};
 
-template <typename T> struct A {
+template<typename T> struct A {
   using B __attribute__((may_alias)) = enum {};
 };
 
-template <typename T> using Alias = typename A<T>::B;
+template<typename T> using Alias = typename A<T>::B;
 
 // CHECK-LABEL: define {{.*}}foo
 // CHECK: load i{{[0-9]*}}, {{.*}}, !tbaa ![[MAY_ALIAS:[^ ,]*]]

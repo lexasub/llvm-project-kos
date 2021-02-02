@@ -19,4 +19,8 @@
 #error header must provide _LIBCPP_VERSION
 #endif
 
-int main(int, char**) { return 0; }
+int main(int, char**)
+{
+
+  return 0;
+}

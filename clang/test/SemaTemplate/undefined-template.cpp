@@ -2,20 +2,20 @@
 
 #if !defined(INCLUDE)
 template <class T> struct C1 {
-  static char s_var_1;    // expected-note{{forward declaration of template entity is here}}
-  static char s_var_2;    // expected-note{{forward declaration of template entity is here}}
-  static void s_func_1(); // expected-note{{forward declaration of template entity is here}}
-  static void s_func_2(); // expected-note{{forward declaration of template entity is here}}
-  void meth_1();          // expected-note2{{forward declaration of template entity is here}}
+  static char s_var_1;       // expected-note{{forward declaration of template entity is here}}
+  static char s_var_2;       // expected-note{{forward declaration of template entity is here}}
+  static void s_func_1();    // expected-note{{forward declaration of template entity is here}}
+  static void s_func_2();    // expected-note{{forward declaration of template entity is here}}
+  void meth_1();             // expected-note2{{forward declaration of template entity is here}}
   void meth_2();
-  template <class T1> static char s_tvar_2;    // expected-note{{forward declaration of template entity is here}}
-  template <class T1> static void s_tfunc_2(); // expected-note{{forward declaration of template entity is here}}
-  template <typename T1> struct C2 {
-    static char s_var_2;                      // expected-note{{forward declaration of template entity is here}}
-    static void s_func_2();                   // expected-note{{forward declaration of template entity is here}}
-    void meth_2();                            // expected-note{{forward declaration of template entity is here}}
-    template <class T2> static char s_tvar_2; // expected-note{{forward declaration of template entity is here}}
-    template <class T2> void tmeth_2();       // expected-note{{forward declaration of template entity is here}}
+  template <class T1> static char s_tvar_2;      // expected-note{{forward declaration of template entity is here}}
+  template <class T1> static void s_tfunc_2();   // expected-note{{forward declaration of template entity is here}}
+  template<typename T1> struct C2 {
+    static char s_var_2;     // expected-note{{forward declaration of template entity is here}}
+    static void s_func_2();  // expected-note{{forward declaration of template entity is here}}
+    void meth_2();           // expected-note{{forward declaration of template entity is here}}
+    template <class T2> static char s_tvar_2;    // expected-note{{forward declaration of template entity is here}}
+    template <class T2> void tmeth_2();          // expected-note{{forward declaration of template entity is here}}
   };
 };
 
@@ -59,8 +59,8 @@ void func_06() {
 }
 
 void func_07(C1<int> *x) {
-  x->meth_1(); // expected-warning{{instantiation of function 'C1<int>::meth_1' required here, but no definition is available}}
-               // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::meth_1' is explicitly instantiated in another translation unit}}
+  x->meth_1();  // expected-warning{{instantiation of function 'C1<int>::meth_1' required here, but no definition is available}}
+                // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::meth_1' is explicitly instantiated in another translation unit}}
 }
 
 void func_08(C1<int> *x) {
@@ -68,8 +68,8 @@ void func_08(C1<int> *x) {
 }
 
 void func_09(C1<char> *x) {
-  x->meth_1(); // expected-warning{{instantiation of function 'C1<char>::meth_1' required here, but no definition is available}}
-               // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<char>::meth_1' is explicitly instantiated in another translation unit}}
+  x->meth_1();  // expected-warning{{instantiation of function 'C1<char>::meth_1' required here, but no definition is available}}
+                // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<char>::meth_1' is explicitly instantiated in another translation unit}}
 }
 
 char func_10() {
@@ -95,8 +95,8 @@ char func_14() {
 }
 
 char func_15() {
-  return C1<int>::C2<char>::s_var_2; //expected-warning {{instantiation of variable 'C1<int>::C2<char>::s_var_2' required here, but no definition is available}}
-                                     // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::s_var_2' is explicitly instantiated in another translation unit}}
+  return C1<int>::C2<char>::s_var_2;  //expected-warning {{instantiation of variable 'C1<int>::C2<char>::s_var_2' required here, but no definition is available}}
+                                      // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::s_var_2' is explicitly instantiated in another translation unit}}
 }
 
 void func_16() {
@@ -105,7 +105,7 @@ void func_16() {
 
 void func_17() {
   C1<int>::C2<char>::s_func_2(); // expected-warning{{instantiation of function 'C1<int>::C2<char>::s_func_2' required here, but no definition is available}}
-                                 // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::s_func_2' is explicitly instantiated in another translation unit}}
+                        // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::s_func_2' is explicitly instantiated in another translation unit}}
 }
 
 void func_18(C1<int>::C2<long> *x) {
@@ -113,8 +113,8 @@ void func_18(C1<int>::C2<long> *x) {
 }
 
 void func_19(C1<int>::C2<char> *x) {
-  x->meth_2(); // expected-warning{{instantiation of function 'C1<int>::C2<char>::meth_2' required here, but no definition is available}}
-               // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::meth_2' is explicitly instantiated in another translation unit}}
+  x->meth_2();   // expected-warning{{instantiation of function 'C1<int>::C2<char>::meth_2' required here, but no definition is available}}
+                        // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<char>::meth_2' is explicitly instantiated in another translation unit}}
 }
 
 char func_20() {
@@ -123,7 +123,7 @@ char func_20() {
 
 char func_21() {
   return C1<int>::C2<long>::s_tvar_2<long>; // expected-warning{{instantiation of variable 'C1<int>::C2<long>::s_tvar_2<long>' required here, but no definition is available}}
-                                            // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<long>::s_tvar_2<long>' is explicitly instantiated in another translation unit}}
+                                  // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<long>::s_tvar_2<long>' is explicitly instantiated in another translation unit}}
 }
 
 void func_22(C1<int>::C2<long> *x) {
@@ -131,17 +131,17 @@ void func_22(C1<int>::C2<long> *x) {
 }
 
 void func_23(C1<int>::C2<long> *x) {
-  x->tmeth_2<int>(); // expected-warning{{instantiation of function 'C1<int>::C2<long>::tmeth_2<int>' required here, but no definition is available}}
-                     // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<long>::tmeth_2<int>' is explicitly instantiated in another translation unit}}
+  x->tmeth_2<int>();    // expected-warning{{instantiation of function 'C1<int>::C2<long>::tmeth_2<int>' required here, but no definition is available}}
+                        // expected-note@-1{{add an explicit instantiation declaration to suppress this warning if 'C1<int>::C2<long>::tmeth_2<int>' is explicitly instantiated in another translation unit}}
 }
 
 namespace test_24 {
-template <typename T> struct X {
-  friend void g(int);
-  operator int() { return 0; }
-};
-void h(X<int> x) { g(x); } // no warning for use of 'g' despite the declaration having been instantiated from a template
-} // namespace test_24
+  template <typename T> struct X {
+    friend void g(int);
+    operator int() { return 0; }
+  };
+  void h(X<int> x) { g(x); } // no warning for use of 'g' despite the declaration having been instantiated from a template
+}
 
 #define INCLUDE
 #include "undefined-template.cpp"

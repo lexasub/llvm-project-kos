@@ -19,11 +19,13 @@
 
 #include <latch>
 
-int main(int, char**) {
-  std::latch latch(10);
-  latch.count_down();       // expected-error {{is unavailable}}
-  latch.count_down(3);      // expected-error {{is unavailable}}
-  latch.wait();             // expected-error {{is unavailable}}
-  latch.arrive_and_wait();  // expected-error {{is unavailable}}
-  latch.arrive_and_wait(3); // expected-error {{is unavailable}}
+
+int main(int, char**)
+{
+    std::latch latch(10);
+    latch.count_down(); // expected-error {{is unavailable}}
+    latch.count_down(3); // expected-error {{is unavailable}}
+    latch.wait(); // expected-error {{is unavailable}}
+    latch.arrive_and_wait(); // expected-error {{is unavailable}}
+    latch.arrive_and_wait(3); // expected-error {{is unavailable}}
 }

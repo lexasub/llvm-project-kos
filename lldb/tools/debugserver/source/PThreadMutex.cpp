@@ -43,14 +43,12 @@ void PThreadMutex::Locker::Lock() {
   if (m_pMutex) {
     m_lock_time = DNBTimer::GetTimeOfDay();
     if (::pthread_mutex_trylock(m_pMutex) != 0) {
-      fprintf(stdout,
-              "::pthread_mutex_trylock (%8.8p) mutex is locked "
-              "(function %s in %s:%i), waiting...\n",
+      fprintf(stdout, "::pthread_mutex_trylock (%8.8p) mutex is locked "
+                      "(function %s in %s:%i), waiting...\n",
               m_pMutex, m_function, m_file, m_line);
       ::pthread_mutex_lock(m_pMutex);
-      fprintf(stdout,
-              "::pthread_mutex_lock (%8.8p) succeeded after %6llu "
-              "usecs (function %s in %s:%i)\n",
+      fprintf(stdout, "::pthread_mutex_lock (%8.8p) succeeded after %6llu "
+                      "usecs (function %s in %s:%i)\n",
               m_pMutex, DNBTimer::GetTimeOfDay() - m_lock_time, m_function,
               m_file, m_line);
     }
@@ -58,9 +56,8 @@ void PThreadMutex::Locker::Lock() {
 }
 
 void PThreadMutex::Locker::Unlock() {
-  fprintf(stdout,
-          "::pthread_mutex_unlock (%8.8p) had lock for %6llu usecs in "
-          "%s in %s:%i\n",
+  fprintf(stdout, "::pthread_mutex_unlock (%8.8p) had lock for %6llu usecs in "
+                  "%s in %s:%i\n",
           m_pMutex, DNBTimer::GetTimeOfDay() - m_lock_time, m_function, m_file,
           m_line);
   ::pthread_mutex_unlock(m_pMutex);

@@ -50,7 +50,10 @@ struct ParserValue {
 class Diagnostics {
 public:
   /// Parser context types.
-  enum ContextType { CT_MatcherArg = 0, CT_MatcherConstruct = 1 };
+  enum ContextType {
+    CT_MatcherArg = 0,
+    CT_MatcherConstruct = 1
+  };
 
   /// All errors from the system.
   enum ErrorType {
@@ -118,11 +121,11 @@ public:
   /// as "candidate" overloads for the same matcher.
   struct OverloadContext {
   public:
-    OverloadContext(Diagnostics *Error);
-    ~OverloadContext();
+   OverloadContext(Diagnostics* Error);
+   ~OverloadContext();
 
-    /// Revert all errors that happened within this context.
-    void revertErrors();
+   /// Revert all errors that happened within this context.
+   void revertErrors();
 
   private:
     Diagnostics *const Error;
@@ -175,8 +178,8 @@ private:
   std::vector<ErrorContent> Errors;
 };
 
-} // namespace dynamic
-} // namespace ast_matchers
-} // namespace clang
+}  // namespace dynamic
+}  // namespace ast_matchers
+}  // namespace clang
 
-#endif // LLVM_CLANG_AST_MATCHERS_DYNAMIC_DIAGNOSTICS_H
+#endif  // LLVM_CLANG_AST_MATCHERS_DYNAMIC_DIAGNOSTICS_H

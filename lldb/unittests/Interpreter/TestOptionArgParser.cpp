@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lldb/Interpreter/OptionArgParser.h"
 #include "gtest/gtest.h"
+#include "lldb/Interpreter/OptionArgParser.h"
 
 using namespace lldb_private;
 

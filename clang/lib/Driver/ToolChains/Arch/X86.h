@@ -29,7 +29,7 @@ void getX86TargetFeatures(const Driver &D, const llvm::Triple &Triple,
                           std::vector<llvm::StringRef> &Features);
 
 } // end namespace x86
-} // namespace tools
+} // end namespace target
 } // end namespace driver
 } // end namespace clang
 

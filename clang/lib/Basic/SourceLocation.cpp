@@ -59,7 +59,7 @@ void llvm::FoldingSetTrait<SourceLocation>::Profile(
   ID.AddInteger(X.ID);
 }
 
-void SourceLocation::print(raw_ostream &OS, const SourceManager &SM) const {
+void SourceLocation::print(raw_ostream &OS, const SourceManager &SM)const{
   if (!isValid()) {
     OS << "<invalid loc>";
     return;
@@ -73,8 +73,8 @@ void SourceLocation::print(raw_ostream &OS, const SourceManager &SM) const {
       return;
     }
     // The macro expansion and spelling pos is identical for file locs.
-    OS << PLoc.getFilename() << ':' << PLoc.getLine() << ':'
-       << PLoc.getColumn();
+    OS << PLoc.getFilename() << ':' << PLoc.getLine()
+       << ':' << PLoc.getColumn();
     return;
   }
 

@@ -64,6 +64,6 @@ public:
   // FIXME make private.
   lldb_private::ArchSpec m_target_arch;
 };
-} // namespace lldb_private
+}
 
 #endif

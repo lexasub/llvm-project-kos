@@ -9,8 +9,8 @@
 #ifndef LLVM_DEBUGINFO_PDB_RAW_PDBDBISTREAM_H
 #define LLVM_DEBUGINFO_PDB_RAW_PDBDBISTREAM_H
 
-#include "llvm/DebugInfo/CodeView/DebugFrameDataSubsection.h"
 #include "llvm/DebugInfo/CodeView/DebugSubsection.h"
+#include "llvm/DebugInfo/CodeView/DebugFrameDataSubsection.h"
 #include "llvm/DebugInfo/MSF/MappedBlockStream.h"
 #include "llvm/DebugInfo/PDB/Native/DbiModuleDescriptor.h"
 #include "llvm/DebugInfo/PDB/Native/DbiModuleList.h"
@@ -27,7 +27,7 @@ namespace llvm {
 namespace object {
 struct FpoData;
 struct coff_section;
-} // namespace object
+}
 
 namespace pdb {
 class DbiStreamBuilder;
@@ -126,13 +126,13 @@ private:
 
   std::unique_ptr<msf::MappedBlockStream> OldFpoStream;
   FixedStreamArray<object::FpoData> OldFpoRecords;
-
+  
   std::unique_ptr<msf::MappedBlockStream> NewFpoStream;
   codeview::DebugFrameDataSubsectionRef NewFpoRecords;
 
   const DbiStreamHeader *Header;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 
 #endif

@@ -32,11 +32,10 @@ using namespace lldb_private;
 
 #define PREFIX_NAME "<lldb wrapper prefix>"
 
-const llvm::StringRef ClangExpressionSourceCode::g_prefix_file_name =
-    PREFIX_NAME;
+const llvm::StringRef ClangExpressionSourceCode::g_prefix_file_name = PREFIX_NAME;
 
 const char *ClangExpressionSourceCode::g_expression_prefix =
-    "#line 1 \"" PREFIX_NAME R"("
+"#line 1 \"" PREFIX_NAME R"("
 #ifndef offsetof
 #define offsetof(t, d) __builtin_offsetof(t, d)
 #endif
@@ -271,6 +270,7 @@ void ClangExpressionSourceCode::AddLocalVariableDecls(
     lldb::VariableSP var_sp = var_list_sp->GetVariableAtIndex(i);
 
     ConstString var_name = var_sp->GetName();
+
 
     // We can check for .block_descriptor w/o checking for langauge since this
     // is not a valid identifier in either C or C++.

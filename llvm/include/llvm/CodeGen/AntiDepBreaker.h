@@ -31,7 +31,8 @@ class RegisterClassInfo;
 /// registers to break register anti-dependencies (WAR hazards).
 class AntiDepBreaker {
 public:
-  using DbgValueVector = std::vector<std::pair<MachineInstr *, MachineInstr *>>;
+  using DbgValueVector =
+      std::vector<std::pair<MachineInstr *, MachineInstr *>>;
 
   virtual ~AntiDepBreaker();
 

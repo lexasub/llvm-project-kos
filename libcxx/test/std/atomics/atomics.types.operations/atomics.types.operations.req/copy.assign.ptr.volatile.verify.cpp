@@ -16,9 +16,9 @@
 
 #include <atomic>
 
-int main(int, char**) {
-  volatile std::atomic<int*> obj1;
-  std::atomic<int*> obj2;
-  obj1 =
-      obj2; // expected-error {{overload resolution selected deleted operator '='}}
+int main(int, char**)
+{
+    volatile std::atomic<int*> obj1;
+    std::atomic<int*> obj2;
+    obj1 = obj2; // expected-error {{overload resolution selected deleted operator '='}}
 }

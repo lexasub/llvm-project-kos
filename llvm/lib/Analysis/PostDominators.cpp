@@ -85,12 +85,11 @@ void PostDominatorTreeWrapperPass::verifyAnalysis() const {
     assert(DT.verify(PostDominatorTree::VerificationLevel::Basic));
 }
 
-void PostDominatorTreeWrapperPass::print(raw_ostream &OS,
-                                         const Module *) const {
+void PostDominatorTreeWrapperPass::print(raw_ostream &OS, const Module *) const {
   DT.print(OS);
 }
 
-FunctionPass *llvm::createPostDomTree() {
+FunctionPass* llvm::createPostDomTree() {
   return new PostDominatorTreeWrapperPass();
 }
 
@@ -103,7 +102,7 @@ PostDominatorTree PostDominatorTreeAnalysis::run(Function &F,
 }
 
 PostDominatorTreePrinterPass::PostDominatorTreePrinterPass(raw_ostream &OS)
-    : OS(OS) {}
+  : OS(OS) {}
 
 PreservedAnalyses
 PostDominatorTreePrinterPass::run(Function &F, FunctionAnalysisManager &AM) {

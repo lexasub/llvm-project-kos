@@ -72,7 +72,7 @@ public:
     return cast<SpecificAttr>(*Current);
   }
 
-  specific_attr_iterator &operator++() {
+  specific_attr_iterator& operator++() {
     ++Current;
     return *this;
   }
@@ -99,22 +99,22 @@ public:
 
 template <typename SpecificAttr, typename Container>
 inline specific_attr_iterator<SpecificAttr, Container>
-specific_attr_begin(const Container &container) {
+          specific_attr_begin(const Container& container) {
   return specific_attr_iterator<SpecificAttr, Container>(container.begin());
 }
 template <typename SpecificAttr, typename Container>
 inline specific_attr_iterator<SpecificAttr, Container>
-specific_attr_end(const Container &container) {
+          specific_attr_end(const Container& container) {
   return specific_attr_iterator<SpecificAttr, Container>(container.end());
 }
 
 template <typename SpecificAttr, typename Container>
-inline bool hasSpecificAttr(const Container &container) {
+inline bool hasSpecificAttr(const Container& container) {
   return specific_attr_begin<SpecificAttr>(container) !=
-         specific_attr_end<SpecificAttr>(container);
+          specific_attr_end<SpecificAttr>(container);
 }
 template <typename SpecificAttr, typename Container>
-inline SpecificAttr *getSpecificAttr(const Container &container) {
+inline SpecificAttr *getSpecificAttr(const Container& container) {
   specific_attr_iterator<SpecificAttr, Container> i =
       specific_attr_begin<SpecificAttr>(container);
   if (i != specific_attr_end<SpecificAttr>(container))

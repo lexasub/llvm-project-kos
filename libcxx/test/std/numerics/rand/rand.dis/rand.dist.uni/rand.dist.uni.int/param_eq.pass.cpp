@@ -19,21 +19,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::uniform_int_distribution<long> D;
-    typedef D::param_type param_type;
-    param_type p1(5, 10);
-    param_type p2(5, 10);
-    assert(p1 == p2);
-  }
-  {
-    typedef std::uniform_int_distribution<long> D;
-    typedef D::param_type param_type;
-    param_type p1(5, 10);
-    param_type p2(6, 10);
-    assert(p1 != p2);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::uniform_int_distribution<long> D;
+        typedef D::param_type param_type;
+        param_type p1(5, 10);
+        param_type p2(5, 10);
+        assert(p1 == p2);
+    }
+    {
+        typedef std::uniform_int_distribution<long> D;
+        typedef D::param_type param_type;
+        param_type p1(5, 10);
+        param_type p2(6, 10);
+        assert(p1 != p2);
+    }
 
   return 0;
 }

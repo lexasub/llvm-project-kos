@@ -19,13 +19,13 @@ struct SS {
   SS(int &d) : a(0), b(0), c(d) {
 #pragma omp parallel firstprivate(a, b, c)
 #pragma omp single copyprivate(a, this->b, (this)->c)
-    // CHECK: #pragma omp parallel firstprivate(this->a,this->b,this->c)
-    // CHECK-NEXT: #pragma omp single copyprivate(this->a,this->b,this->c){{$}}
+// CHECK: #pragma omp parallel firstprivate(this->a,this->b,this->c)
+// CHECK-NEXT: #pragma omp single copyprivate(this->a,this->b,this->c){{$}}
     ++this->a, --b, (this)->c /= 1;
   }
 };
 
-template <typename T>
+template<typename T>
 struct SST {
   T a;
   SST() : a(T()) {
@@ -61,7 +61,7 @@ T tmain(T argc) {
 }
 
 int main(int argc, char **argv) {
-  // CHECK: int main(int argc, char **argv) {
+// CHECK: int main(int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   static int a;
   SS ss(a);

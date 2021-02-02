@@ -40,9 +40,8 @@ struct HexagonEvaluator : public BitTracker::MachineEvaluator {
 
   uint16_t getPhysRegBitWidth(MCRegister Reg) const override;
 
-  const TargetRegisterClass &
-  composeWithSubRegIndex(const TargetRegisterClass &RC,
-                         unsigned Idx) const override;
+  const TargetRegisterClass &composeWithSubRegIndex(
+        const TargetRegisterClass &RC, unsigned Idx) const override;
 
   MachineFunction &MF;
   MachineFrameInfo &MFI;

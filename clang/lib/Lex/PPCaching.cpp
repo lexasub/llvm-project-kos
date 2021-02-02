@@ -30,16 +30,16 @@ void Preprocessor::EnableBacktrackAtThisPos() {
 
 // Disable the last EnableBacktrackAtThisPos call.
 void Preprocessor::CommitBacktrackedTokens() {
-  assert(!BacktrackPositions.empty() &&
-         "EnableBacktrackAtThisPos was not called!");
+  assert(!BacktrackPositions.empty()
+         && "EnableBacktrackAtThisPos was not called!");
   BacktrackPositions.pop_back();
 }
 
 // Make Preprocessor re-lex the tokens that were lexed since
 // EnableBacktrackAtThisPos() was previously called.
 void Preprocessor::Backtrack() {
-  assert(!BacktrackPositions.empty() &&
-         "EnableBacktrackAtThisPos was not called!");
+  assert(!BacktrackPositions.empty()
+         && "EnableBacktrackAtThisPos was not called!");
   CachedLexPos = BacktrackPositions.back();
   BacktrackPositions.pop_back();
   recomputeCurLexerKind();
@@ -101,6 +101,7 @@ void Preprocessor::EnterCachingLexModeUnchecked() {
   CurLexerKind = CLK_CachingLexer;
 }
 
+
 const Token &Preprocessor::PeekAhead(unsigned N) {
   assert(CachedLexPos + N > CachedTokens.size() && "Confused caching.");
   ExitCachingLexMode();
@@ -115,14 +116,13 @@ const Token &Preprocessor::PeekAhead(unsigned N) {
 void Preprocessor::AnnotatePreviousCachedTokens(const Token &Tok) {
   assert(Tok.isAnnotation() && "Expected annotation token");
   assert(CachedLexPos != 0 && "Expected to have some cached tokens");
-  assert(CachedTokens[CachedLexPos - 1].getLastLoc() ==
-             Tok.getAnnotationEndLoc() &&
-         "The annotation should be until the most recent cached token");
+  assert(CachedTokens[CachedLexPos-1].getLastLoc() == Tok.getAnnotationEndLoc()
+         && "The annotation should be until the most recent cached token");
 
   // Start from the end of the cached tokens list and look for the token
   // that is the beginning of the annotation token.
   for (CachedTokensTy::size_type i = CachedLexPos; i != 0; --i) {
-    CachedTokensTy::iterator AnnotBegin = CachedTokens.begin() + i - 1;
+    CachedTokensTy::iterator AnnotBegin = CachedTokens.begin() + i-1;
     if (AnnotBegin->getLocation() == Tok.getLocation()) {
       assert((BacktrackPositions.empty() || BacktrackPositions.back() <= i) &&
              "The backtrack pos points inside the annotated tokens!");

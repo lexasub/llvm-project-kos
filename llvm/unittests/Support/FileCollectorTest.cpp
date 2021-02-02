@@ -35,7 +35,9 @@ public:
   using FileCollector::Seen;
   using FileCollector::VFSWriter;
 
-  bool hasSeen(StringRef fs) { return Seen.find(fs) != Seen.end(); }
+  bool hasSeen(StringRef fs) {
+    return Seen.find(fs) != Seen.end();
+  }
 };
 
 } // end anonymous namespace

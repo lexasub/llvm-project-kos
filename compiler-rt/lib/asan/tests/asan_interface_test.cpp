@@ -9,28 +9,26 @@
 // This file is a part of AddressSanitizer, an address sanity checker.
 //
 //===----------------------------------------------------------------------===//
-#include <sanitizer/allocator_interface.h>
-#include <sanitizer/asan_interface.h>
-
-#include <vector>
-
 #include "asan_test_utils.h"
 #include "sanitizer_common/sanitizer_internal_defs.h"
+#include <sanitizer/allocator_interface.h>
+#include <sanitizer/asan_interface.h>
+#include <vector>
 
 TEST(AddressSanitizerInterface, GetEstimatedAllocatedSize) {
   EXPECT_EQ(0U, __sanitizer_get_estimated_allocated_size(0));
-  const size_t sizes[] = {1, 30, 1 << 30};
+  const size_t sizes[] = { 1, 30, 1<<30 };
   for (size_t i = 0; i < 3; i++) {
     EXPECT_EQ(sizes[i], __sanitizer_get_estimated_allocated_size(sizes[i]));
   }
 }
 
-static const char *kGetAllocatedSizeErrorMsg =
-    "attempting to call __sanitizer_get_allocated_size";
+static const char* kGetAllocatedSizeErrorMsg =
+  "attempting to call __sanitizer_get_allocated_size";
 
 TEST(AddressSanitizerInterface, GetAllocatedSizeAndOwnershipTest) {
   const size_t kArraySize = 100;
-  char *array = Ident((char *)malloc(kArraySize));
+  char *array = Ident((char*)malloc(kArraySize));
   int *int_ptr = Ident(new int);
 
   // Allocated memory is owned by allocator. Allocated size should be
@@ -42,7 +40,7 @@ TEST(AddressSanitizerInterface, GetAllocatedSizeAndOwnershipTest) {
 
   // We cannot call GetAllocatedSize from the memory we didn't map,
   // and from the interior pointers (not returned by previous malloc).
-  void *wild_addr = (void *)0x1;
+  void *wild_addr = (void*)0x1;
   EXPECT_FALSE(__sanitizer_get_ownership(wild_addr));
   EXPECT_DEATH(__sanitizer_get_allocated_size(wild_addr),
                kGetAllocatedSizeErrorMsg);
@@ -80,7 +78,7 @@ TEST(AddressSanitizerInterface, GetCurrentAllocatedBytesTest) {
   const size_t kMallocSize = 100;
   before_malloc = __sanitizer_get_current_allocated_bytes();
 
-  array = Ident((char *)malloc(kMallocSize));
+  array = Ident((char*)malloc(kMallocSize));
   after_malloc = __sanitizer_get_current_allocated_bytes();
   EXPECT_EQ(before_malloc + kMallocSize, after_malloc);
 
@@ -94,7 +92,7 @@ TEST(AddressSanitizerInterface, GetHeapSizeTest) {
   // The chunk should be greater than the quarantine size,
   // otherwise it will be stuck in quarantine instead of being unmaped.
   static const size_t kLargeMallocSize = (1 << 28) + 1;  // 256M
-  free(Ident(malloc(kLargeMallocSize)));                 // Drain quarantine.
+  free(Ident(malloc(kLargeMallocSize)));  // Drain quarantine.
   size_t old_heap_size = __sanitizer_get_heap_size();
   for (int i = 0; i < 3; i++) {
     // fprintf(stderr, "allocating %zu bytes:\n", kLargeMallocSize);
@@ -104,10 +102,10 @@ TEST(AddressSanitizerInterface, GetHeapSizeTest) {
 }
 
 #if !defined(__NetBSD__)
-static const size_t kManyThreadsMallocSizes[] = {5, 1UL << 10, 1UL << 14, 357};
+static const size_t kManyThreadsMallocSizes[] = {5, 1UL<<10, 1UL<<14, 357};
 static const size_t kManyThreadsIterations = 250;
 static const size_t kManyThreadsNumThreads =
-    (SANITIZER_WORDSIZE == 32) ? 40 : 200;
+  (SANITIZER_WORDSIZE == 32) ? 40 : 200;
 
 static void *ManyThreadsWithStatsWorker(void *arg) {
   (void)arg;
@@ -127,7 +125,7 @@ TEST(AddressSanitizerInterface, ManyThreadsWithStatsStressTest) {
   before_test = __sanitizer_get_current_allocated_bytes();
   for (i = 0; i < kManyThreadsNumThreads; i++) {
     PTHREAD_CREATE(&threads[i], 0,
-                   (void *(*)(void *x))ManyThreadsWithStatsWorker, (void *)i);
+                   (void* (*)(void *x))ManyThreadsWithStatsWorker, (void*)i);
   }
   for (i = 0; i < kManyThreadsNumThreads; i++) {
     PTHREAD_JOIN(threads[i], 0);
@@ -135,7 +133,7 @@ TEST(AddressSanitizerInterface, ManyThreadsWithStatsStressTest) {
   after_test = __sanitizer_get_current_allocated_bytes();
   // ASan stats also reflect memory usage of internal ASan RTL structs,
   // so we can't check for equality here.
-  EXPECT_LT(after_test, before_test + (1UL << 20));
+  EXPECT_LT(after_test, before_test + (1UL<<20));
 }
 #endif
 
@@ -156,17 +154,17 @@ TEST(AddressSanitizerInterface, DeathCallbackTest) {
   __asan_set_death_callback(NULL);
 }
 
-#define GOOD_ACCESS(ptr, offset) \
-  EXPECT_FALSE(__asan_address_is_poisoned(ptr + offset))
+#define GOOD_ACCESS(ptr, offset)  \
+    EXPECT_FALSE(__asan_address_is_poisoned(ptr + offset))
 
 #define BAD_ACCESS(ptr, offset) \
-  EXPECT_TRUE(__asan_address_is_poisoned(ptr + offset))
+    EXPECT_TRUE(__asan_address_is_poisoned(ptr + offset))
 
 #if !defined(ASAN_SHADOW_SCALE) || ASAN_SHADOW_SCALE == 3
-static const char *kUseAfterPoisonErrorMessage = "use-after-poison";
+static const char* kUseAfterPoisonErrorMessage = "use-after-poison";
 
 TEST(AddressSanitizerInterface, SimplePoisonMemoryRegionTest) {
-  char *array = Ident((char *)malloc(120));
+  char *array = Ident((char*)malloc(120));
   // poison array[40..80)
   __asan_poison_memory_region(array + 40, 40);
   GOOD_ACCESS(array, 39);
@@ -184,7 +182,7 @@ TEST(AddressSanitizerInterface, SimplePoisonMemoryRegionTest) {
 }
 
 TEST(AddressSanitizerInterface, OverlappingPoisonMemoryRegionTest) {
-  char *array = Ident((char *)malloc(120));
+  char *array = Ident((char*)malloc(120));
   // Poison [0..40) and [80..120)
   __asan_poison_memory_region(array, 40);
   __asan_poison_memory_region(array + 80, 40);
@@ -207,7 +205,7 @@ TEST(AddressSanitizerInterface, OverlappingPoisonMemoryRegionTest) {
 
 TEST(AddressSanitizerInterface, PushAndPopWithPoisoningTest) {
   // Vector of capacity 20
-  char *vec = Ident((char *)malloc(20));
+  char *vec = Ident((char*)malloc(20));
   __asan_poison_memory_region(vec, 20);
   for (size_t i = 0; i < 7; i++) {
     // Simulate push_back.
@@ -219,8 +217,7 @@ TEST(AddressSanitizerInterface, PushAndPopWithPoisoningTest) {
     // Simulate pop_back.
     __asan_poison_memory_region(vec + i - 1, 1);
     BAD_ACCESS(vec, i - 1);
-    if (i > 1)
-      GOOD_ACCESS(vec, i - 2);
+    if (i > 1) GOOD_ACCESS(vec, i - 2);
   }
   free(vec);
 }
@@ -244,7 +241,7 @@ static void MakeShadowValid(bool *shadow, int length, int granularity) {
 TEST(AddressSanitizerInterface, PoisoningStressTest) {
   const size_t kSize = 24;
   bool expected[kSize];
-  char *arr = Ident((char *)malloc(kSize));
+  char *arr = Ident((char*)malloc(kSize));
   for (size_t l1 = 0; l1 < kSize; l1++) {
     for (size_t s1 = 1; l1 + s1 <= kSize; s1++) {
       for (size_t l2 = 0; l2 < kSize; l2++) {
@@ -347,7 +344,7 @@ TEST(AddressSanitizerInterface, PoisonedRegion) {
         }
       }
     }
-    delete[] p;
+    delete [] p;
   }
 }
 
@@ -361,22 +358,24 @@ TEST(AddressSanitizerInterface, PoisonedRegion) {
 TEST(AddressSanitizerInterface, DISABLED_StressLargeMemset) {
   size_t size = 1 << 20;
   char *x = new char[size];
-  for (int i = 0; i < 100000; i++) Ident(memset)(x, 0, size);
-  delete[] x;
+  for (int i = 0; i < 100000; i++)
+    Ident(memset)(x, 0, size);
+  delete [] x;
 }
 
 // Same here, but we run memset with small sizes.
 TEST(AddressSanitizerInterface, DISABLED_StressSmallMemset) {
   size_t size = 32;
   char *x = new char[size];
-  for (int i = 0; i < 100000000; i++) Ident(memset)(x, 0, size);
-  delete[] x;
+  for (int i = 0; i < 100000000; i++)
+    Ident(memset)(x, 0, size);
+  delete [] x;
 }
 static const char *kInvalidPoisonMessage = "invalid-poison-memory-range";
 static const char *kInvalidUnpoisonMessage = "invalid-unpoison-memory-range";
 
 TEST(AddressSanitizerInterface, DISABLED_InvalidPoisonAndUnpoisonCallsTest) {
-  char *array = Ident((char *)malloc(120));
+  char *array = Ident((char*)malloc(120));
   __asan_unpoison_memory_region(array, 120);
   // Try to unpoison not owned memory
   EXPECT_DEATH(__asan_unpoison_memory_region(array, 121),
@@ -398,17 +397,18 @@ TEST(AddressSanitizerInterface, GetOwnershipStressTest) {
   const size_t kNumMallocs = 1 << 9;
   for (size_t i = 0; i < kNumMallocs; i++) {
     size_t size = i * 100 + 1;
-    pointers.push_back((char *)malloc(size));
+    pointers.push_back((char*)malloc(size));
     sizes.push_back(size);
   }
   for (size_t i = 0; i < 4000000; i++) {
     EXPECT_FALSE(__sanitizer_get_ownership(&pointers));
-    EXPECT_FALSE(__sanitizer_get_ownership((void *)0x1234));
+    EXPECT_FALSE(__sanitizer_get_ownership((void*)0x1234));
     size_t idx = i % kNumMallocs;
     EXPECT_TRUE(__sanitizer_get_ownership(pointers[idx]));
     EXPECT_EQ(sizes[idx], __sanitizer_get_allocated_size(pointers[idx]));
   }
-  for (size_t i = 0, n = pointers.size(); i < n; i++) free(pointers[i]);
+  for (size_t i = 0, n = pointers.size(); i < n; i++)
+    free(pointers[i]);
 }
 
 TEST(AddressSanitizerInterface, HandleNoReturnTest) {

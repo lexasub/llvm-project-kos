@@ -20,27 +20,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     using namespace std::chrono;
-    ASSERT_NOEXCEPT(4d);
+    ASSERT_NOEXCEPT(               4d);
     ASSERT_SAME_TYPE(day, decltype(4d));
 
-    static_assert(7d == day(7), "");
+    static_assert( 7d == day(7), "");
     day d1 = 4d;
-    assert(d1 == day(4));
-  }
+    assert (d1 == day(4));
+    }
 
-  {
+    {
     using namespace std::literals;
-    ASSERT_NOEXCEPT(4d);
+    ASSERT_NOEXCEPT(                            4d);
     ASSERT_SAME_TYPE(std::chrono::day, decltype(4d));
 
-    static_assert(7d == std::chrono::day(7), "");
+    static_assert( 7d == std::chrono::day(7), "");
 
     std::chrono::day d1 = 4d;
-    assert(d1 == std::chrono::day(4));
-  }
+    assert (d1 == std::chrono::day(4));
+    }
+
 
   return 0;
 }

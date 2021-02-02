@@ -15,12 +15,14 @@ struct S {
   } u;
 } s;
 
+
 void f(char);
 void f2(U);
-void f3(U &);
-void f4(U *);
+void f3(U&);
+void f4(U*);
 
-void check() {
+void check()
+{
   u.union_member1 = true;
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: do not access members of unions; use (boost::)variant instead [cppcoreguidelines-pro-type-union-access]
   auto b = u.union_member2;
@@ -33,7 +35,7 @@ void check() {
   s.non_union_member = 2; // OK
 
   U u2 = u; // OK
-  f2(u);    // OK
-  f3(u);    // OK
-  f4(&u);   // OK
+  f2(u); // OK
+  f3(u); // OK
+  f4(&u); // OK
 }

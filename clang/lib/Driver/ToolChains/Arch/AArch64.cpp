@@ -11,8 +11,8 @@
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
 #include "llvm/Option/ArgList.h"
-#include "llvm/Support/Host.h"
 #include "llvm/Support/TargetParser.h"
+#include "llvm/Support/Host.h"
 
 using namespace clang::driver;
 using namespace clang::driver::tools;
@@ -82,8 +82,7 @@ static bool DecodeAArch64Features(const Driver &D, StringRef text,
     // +sve implies +f32mm if the base architecture is v8.6A or v8.7A
     // it isn't the case in general that sve implies both f64mm and f32mm
     if ((ArchKind == llvm::AArch64::ArchKind::ARMV8_6A ||
-         ArchKind == llvm::AArch64::ArchKind::ARMV8_7A) &&
-        Feature == "sve")
+         ArchKind == llvm::AArch64::ArchKind::ARMV8_7A) && Feature == "sve")
       Features.push_back("+f32mm");
   }
   return true;
@@ -110,18 +109,19 @@ static bool DecodeAArch64Mcpu(const Driver &D, StringRef Mcpu, StringRef &CPU,
     uint64_t Extension = llvm::AArch64::getDefaultExtensions(CPU, ArchKind);
     if (!llvm::AArch64::getExtensionFeatures(Extension, Features))
       return false;
-  }
+   }
 
-  if (Split.second.size() &&
-      !DecodeAArch64Features(D, Split.second, Features, ArchKind))
-    return false;
+   if (Split.second.size() &&
+       !DecodeAArch64Features(D, Split.second, Features, ArchKind))
+     return false;
 
-  return true;
+   return true;
 }
 
-static bool getAArch64ArchFeaturesFromMarch(const Driver &D, StringRef March,
-                                            const ArgList &Args,
-                                            std::vector<StringRef> &Features) {
+static bool
+getAArch64ArchFeaturesFromMarch(const Driver &D, StringRef March,
+                                const ArgList &Args,
+                                std::vector<StringRef> &Features) {
   std::string MarchLowerCase = March.lower();
   std::pair<StringRef, StringRef> Split = StringRef(MarchLowerCase).split("+");
 
@@ -135,9 +135,10 @@ static bool getAArch64ArchFeaturesFromMarch(const Driver &D, StringRef March,
   return true;
 }
 
-static bool getAArch64ArchFeaturesFromMcpu(const Driver &D, StringRef Mcpu,
-                                           const ArgList &Args,
-                                           std::vector<StringRef> &Features) {
+static bool
+getAArch64ArchFeaturesFromMcpu(const Driver &D, StringRef Mcpu,
+                               const ArgList &Args,
+                               std::vector<StringRef> &Features) {
   StringRef CPU;
   std::string McpuLowerCase = Mcpu.lower();
   if (!DecodeAArch64Mcpu(D, McpuLowerCase, CPU, Features))
@@ -273,26 +274,22 @@ void aarch64::getAArch64TargetFeatures(const Driver &D,
   // Handle (arch-dependent) fp16fml/fullfp16 relationship.
   // FIXME: this fp16fml option handling will be reimplemented after the
   // TargetParser rewrite.
-  const auto ItRNoFullFP16 =
-      std::find(Features.rbegin(), Features.rend(), "-fullfp16");
-  const auto ItRFP16FML =
-      std::find(Features.rbegin(), Features.rend(), "+fp16fml");
+  const auto ItRNoFullFP16 = std::find(Features.rbegin(), Features.rend(), "-fullfp16");
+  const auto ItRFP16FML = std::find(Features.rbegin(), Features.rend(), "+fp16fml");
   if (llvm::is_contained(Features, "+v8.4a")) {
-    const auto ItRFullFP16 =
-        std::find(Features.rbegin(), Features.rend(), "+fullfp16");
+    const auto ItRFullFP16  = std::find(Features.rbegin(), Features.rend(), "+fullfp16");
     if (ItRFullFP16 < ItRNoFullFP16 && ItRFullFP16 < ItRFP16FML) {
-      // Only entangled feature that can be to the right of this +fullfp16 is
-      // -fp16fml. Only append the +fp16fml if there is no -fp16fml after the
-      // +fullfp16.
+      // Only entangled feature that can be to the right of this +fullfp16 is -fp16fml.
+      // Only append the +fp16fml if there is no -fp16fml after the +fullfp16.
       if (std::find(Features.rbegin(), ItRFullFP16, "-fp16fml") == ItRFullFP16)
         Features.push_back("+fp16fml");
-    } else
+    }
+    else
       goto fp16_fml_fallthrough;
   } else {
-  fp16_fml_fallthrough:
-    // In both of these cases, putting the 'other' feature on the end of the
-    // vector will result in the same effect as placing it immediately after the
-    // current feature.
+fp16_fml_fallthrough:
+    // In both of these cases, putting the 'other' feature on the end of the vector will
+    // result in the same effect as placing it immediately after the current feature.
     if (ItRNoFullFP16 < ItRFP16FML)
       Features.push_back("-fp16fml");
     else if (ItRNoFullFP16 > ItRFP16FML)
@@ -310,7 +307,7 @@ void aarch64::getAArch64TargetFeatures(const Driver &D,
   const auto ItREnd = Features.rend();
   const auto ItRCrypto = std::find(ItRBegin, ItREnd, "+crypto");
   const auto ItRNoCrypto = std::find(ItRBegin, ItREnd, "-crypto");
-  const auto HasCrypto = ItRCrypto != ItREnd;
+  const auto HasCrypto  = ItRCrypto != ItREnd;
   const auto HasNoCrypto = ItRNoCrypto != ItREnd;
   const ptrdiff_t PosCrypto = ItRCrypto - ItRBegin;
   const ptrdiff_t PosNoCrypto = ItRNoCrypto - ItRBegin;
@@ -326,10 +323,10 @@ void aarch64::getAArch64TargetFeatures(const Driver &D,
       // Check if we have NOT disabled an algorithm with something like:
       //   +crypto, -algorithm
       // And if "-algorithm" does not occur, we enable that crypto algorithm.
-      const bool HasSM4 = (std::find(ItBegin, ItEnd, "-sm4") == ItEnd);
+      const bool HasSM4  = (std::find(ItBegin, ItEnd, "-sm4") == ItEnd);
       const bool HasSHA3 = (std::find(ItBegin, ItEnd, "-sha3") == ItEnd);
       const bool HasSHA2 = (std::find(ItBegin, ItEnd, "-sha2") == ItEnd);
-      const bool HasAES = (std::find(ItBegin, ItEnd, "-aes") == ItEnd);
+      const bool HasAES  = (std::find(ItBegin, ItEnd, "-aes") == ItEnd);
       if (HasSM4)
         Features.push_back("+sm4");
       if (HasSHA3)
@@ -342,10 +339,10 @@ void aarch64::getAArch64TargetFeatures(const Driver &D,
       // Check if we have NOT enabled a crypto algorithm with something like:
       //   -crypto, +algorithm
       // And if "+algorithm" does not occur, we disable that crypto algorithm.
-      const bool HasSM4 = (std::find(ItBegin, ItEnd, "+sm4") != ItEnd);
+      const bool HasSM4  = (std::find(ItBegin, ItEnd, "+sm4") != ItEnd);
       const bool HasSHA3 = (std::find(ItBegin, ItEnd, "+sha3") != ItEnd);
       const bool HasSHA2 = (std::find(ItBegin, ItEnd, "+sha2") != ItEnd);
-      const bool HasAES = (std::find(ItBegin, ItEnd, "+aes") != ItEnd);
+      const bool HasAES  = (std::find(ItBegin, ItEnd, "+aes") != ItEnd);
       if (!HasSM4)
         Features.push_back("-sm4");
       if (!HasSHA3)
@@ -365,7 +362,7 @@ void aarch64::getAArch64TargetFeatures(const Driver &D,
         Features.push_back("+aes");
     } else if (HasNoCrypto) {
       const bool HasSHA2 = (std::find(ItBegin, ItEnd, "+sha2") != ItEnd);
-      const bool HasAES = (std::find(ItBegin, ItEnd, "+aes") != ItEnd);
+      const bool HasAES  = (std::find(ItBegin, ItEnd, "+aes") != ItEnd);
       const bool HasV82a = (std::find(ItBegin, ItEnd, "+v8.2a") != ItEnd);
       const bool HasV83a = (std::find(ItBegin, ItEnd, "+v8.3a") != ItEnd);
       const bool HasV84a = (std::find(ItBegin, ItEnd, "+v8.4a") != ItEnd);

@@ -6,6 +6,7 @@
 // RUN:     not %run %t >%t.out 2>&1
 // RUN: FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-%short-stack --check-prefix=CHECK-HEAP < %t.out
 
+
 // RUN: %clangxx_msan -mllvm -msan-instrumentation-with-call-threshold=0 -fsanitize-memory-track-origins=2 -O3 %s -o %t && \
 // RUN:     not %run %t >%t.out 2>&1
 // RUN: FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-%short-stack --check-prefix=CHECK-STACK < %t.out
@@ -18,21 +19,24 @@
 
 volatile int x, y;
 
-__attribute__((noinline)) void fn_g(int a) {
+__attribute__((noinline))
+void fn_g(int a) {
   x = a;
 }
 
-__attribute__((noinline)) void fn_f(int a) {
+__attribute__((noinline))
+void fn_f(int a) {
   fn_g(a);
 }
 
-__attribute__((noinline)) void fn_h() {
+__attribute__((noinline))
+void fn_h() {
   y = x;
 }
 
 int main(int argc, char *argv[]) {
 #ifdef HEAP
-  int *volatile zz = new int;
+  int * volatile zz = new int;
   int z = *zz;
 #else
   int volatile z;

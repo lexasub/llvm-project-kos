@@ -62,7 +62,11 @@ enum ModuleKind {
 /// bools indicating whether this was an overridden buffer or if it was
 /// out-of-date or not-found.
 class InputFile {
-  enum { Overridden = 1, OutOfDate = 2, NotFound = 3 };
+  enum {
+    Overridden = 1,
+    OutOfDate = 2,
+    NotFound = 3
+  };
   llvm::PointerIntPair<const FileEntryRef::MapEntry *, 2, unsigned> Val;
 
 public:
@@ -126,7 +130,9 @@ public:
   /// The base directory of the module.
   std::string BaseDirectory;
 
-  std::string getTimestampFilename() const { return FileName + ".timestamp"; }
+  std::string getTimestampFilename() const {
+    return FileName + ".timestamp";
+  }
 
   /// The original source file name that was used to build the
   /// primary AST file, which may have been modified for

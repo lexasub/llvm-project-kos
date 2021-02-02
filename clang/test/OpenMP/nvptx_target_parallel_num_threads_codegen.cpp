@@ -19,21 +19,18 @@
 // CHECK-DAG: {{@__omp_offloading_.+l28}}_exec_mode = weak constant i8 0
 // CHECK-DAG: {{@__omp_offloading_.+l33}}_exec_mode = weak constant i8 0
 
-template <typename tx>
+template<typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-#pragma omp target parallel map(tofrom \
-                                : aa) num_threads(1024)
+  #pragma omp target parallel map(tofrom: aa) num_threads(1024)
   {
     aa += 1;
   }
 
-#pragma omp target parallel map(tofrom                 \
-                                : a, aa, b) if (target \
-                                                : n > 40) num_threads(n)
+  #pragma omp target parallel map(tofrom:a, aa, b) if(target: n>40) num_threads(n)
   {
     a += 1;
     aa += 1;
@@ -43,7 +40,7 @@ tx ftemplate(int n) {
   return a;
 }
 
-int bar(int n) {
+int bar(int n){
   int a = 0;
 
   a += ftemplate<int>(n);

@@ -25,6 +25,7 @@ struct Test {
       // should always be the same.
       j = local_j;
     }
+
   }
 };
 

@@ -37,7 +37,8 @@ bool shouldOptimizeForSize(const MachineBasicBlock *MBB,
 /// Returns true if machine basic block \p MBB is suggested to be size-optimized
 /// based on the profile.
 bool shouldOptimizeForSize(const MachineBasicBlock *MBB,
-                           ProfileSummaryInfo *PSI, MBFIWrapper *MBFIWrapper,
+                           ProfileSummaryInfo *PSI,
+                           MBFIWrapper *MBFIWrapper,
                            PGSOQueryType QueryType = PGSOQueryType::Other);
 
 } // end namespace llvm

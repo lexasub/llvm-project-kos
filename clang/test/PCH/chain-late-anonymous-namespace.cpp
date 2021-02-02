@@ -14,50 +14,50 @@ namespace os {}
 #define PASS2
 
 namespace ns {
-namespace {
-extern int x;
+  namespace {
+    extern int x;
+  }
 }
-} // namespace ns
 
 namespace {
-extern int y;
+  extern int y;
 }
 namespace {
 }
 
 namespace os {
-extern "C" {
-namespace {
-extern int z;
+  extern "C" {
+    namespace {
+      extern int z;
+    }
+  }
 }
-}
-} // namespace os
 
 #else
 
 namespace ns {
-namespace {
-int x;
+  namespace {
+    int x;
+  }
+  void test() {
+    (void)x;
+  }
 }
-void test() {
-  (void)x;
-}
-} // namespace ns
 
 namespace {
-int y;
+  int y;
 }
 void test() {
   (void)y;
 }
 
 namespace os {
-namespace {
-int z;
+  namespace {
+    int z;
+  }
+  void test() {
+    (void)z;
+  }
 }
-void test() {
-  (void)z;
-}
-} // namespace os
 
 #endif

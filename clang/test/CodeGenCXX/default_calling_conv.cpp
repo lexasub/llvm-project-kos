@@ -18,7 +18,7 @@ void test1() {}
 // STDCALL: define{{.*}} void @_Z12testVariadicz
 // VECTORCALL: define{{.*}} void @_Z12testVariadicz
 // REGCALL: define{{.*}} void @_Z12testVariadicz
-void testVariadic(...) {}
+void testVariadic(...){}
 
 // ALL: define{{.*}} void @_Z5test2v
 void __attribute__((cdecl)) test2() {}

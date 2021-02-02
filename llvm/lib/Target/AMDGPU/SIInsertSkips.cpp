@@ -25,10 +25,9 @@ using namespace llvm;
 #define DEBUG_TYPE "si-insert-skips"
 
 static cl::opt<unsigned> SkipThresholdFlag(
-    "amdgpu-skip-threshold-legacy",
-    cl::desc(
-        "Number of instructions before jumping over divergent control flow"),
-    cl::init(12), cl::Hidden);
+  "amdgpu-skip-threshold-legacy",
+  cl::desc("Number of instructions before jumping over divergent control flow"),
+  cl::init(12), cl::Hidden);
 
 namespace {
 
@@ -320,7 +319,8 @@ bool SIInsertSkips::kill(MachineInstr &MI) {
 
     assert(MI.getOperand(0).isReg());
 
-    if (TRI->isVGPR(MBB.getParent()->getRegInfo(), MI.getOperand(0).getReg())) {
+    if (TRI->isVGPR(MBB.getParent()->getRegInfo(),
+                    MI.getOperand(0).getReg())) {
       Opcode = AMDGPU::getVOPe32(Opcode);
       BuildMI(MBB, &MI, DL, TII->get(Opcode))
           .add(MI.getOperand(1))
@@ -330,12 +330,12 @@ bool SIInsertSkips::kill(MachineInstr &MI) {
       if (!ST.hasNoSdstCMPX())
         I.addReg(AMDGPU::VCC, RegState::Define);
 
-      I.addImm(0) // src0 modifiers
-          .add(MI.getOperand(1))
-          .addImm(0) // src1 modifiers
-          .add(MI.getOperand(0));
+      I.addImm(0)  // src0 modifiers
+        .add(MI.getOperand(1))
+        .addImm(0)  // src1 modifiers
+        .add(MI.getOperand(0));
 
-      I.addImm(0); // omod
+      I.addImm(0);  // omod
     }
     return true;
   }
@@ -353,10 +353,9 @@ bool SIInsertSkips::kill(MachineInstr &MI) {
       assert(Imm == 0 || Imm == -1);
 
       if (Imm == KillVal) {
-        BuildMI(MBB, &MI, DL,
-                TII->get(ST.isWave32() ? AMDGPU::S_MOV_B32 : AMDGPU::S_MOV_B64),
-                Exec)
-            .addImm(0);
+        BuildMI(MBB, &MI, DL, TII->get(ST.isWave32() ? AMDGPU::S_MOV_B32
+                                                     : AMDGPU::S_MOV_B64), Exec)
+          .addImm(0);
         return true;
       }
       return false;
@@ -365,7 +364,9 @@ bool SIInsertSkips::kill(MachineInstr &MI) {
     unsigned Opcode = KillVal ? AMDGPU::S_ANDN2_B64 : AMDGPU::S_AND_B64;
     if (ST.isWave32())
       Opcode = KillVal ? AMDGPU::S_ANDN2_B32 : AMDGPU::S_AND_B32;
-    BuildMI(MBB, &MI, DL, TII->get(Opcode), Exec).addReg(Exec).add(Op);
+    BuildMI(MBB, &MI, DL, TII->get(Opcode), Exec)
+        .addReg(Exec)
+        .add(Op);
     return true;
   }
   default:
@@ -401,7 +402,8 @@ bool SIInsertSkips::skipMaskBranch(MachineInstr &MI,
   const DebugLoc &DL = MI.getDebugLoc();
   MachineBasicBlock::iterator InsPt = std::next(MI.getIterator());
 
-  BuildMI(SrcMBB, InsPt, DL, TII->get(AMDGPU::S_CBRANCH_EXECZ)).addMBB(DestBB);
+  BuildMI(SrcMBB, InsPt, DL, TII->get(AMDGPU::S_CBRANCH_EXECZ))
+    .addMBB(DestBB);
 
   return true;
 }

@@ -6,7 +6,7 @@
 // Stub for testing, just invokes annotations.
 // Meant to be synchronized externally with test barrier.
 class Mutex {
-public:
+ public:
   void Create(bool linker_initialized = false) {
     if (linker_initialized)
       ANNOTATE_RWLOCK_CREATE_STATIC(&state_);
@@ -26,7 +26,7 @@ public:
     ANNOTATE_RWLOCK_RELEASED(&state_, true);
   }
 
-private:
+ private:
   long long state_;
 };
 

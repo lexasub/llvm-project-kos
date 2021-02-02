@@ -2,33 +2,33 @@
 
 struct A {
   A();
-  A(const A &);
+  A(const A&);
   ~A();
 };
 
 struct B {
   B();
-  B(const B &);
+  B(const B&);
   ~B();
 };
 
 struct C {
   C();
-  C(const C &);
+  C(const C&);
   ~C();
 };
 
 struct D {
   D();
-  D(const D &);
+  D(const D&);
   ~D();
 
   B *begin();
   B *end();
 };
 
-B *begin(C &);
-B *end(C &);
+B *begin(C&);
+B *end(C&);
 
 extern B array[5];
 

@@ -22,9 +22,9 @@ class GIMatchTreePartitioner;
 class GIMatchTreeVariableBinding {
   /// The name of the variable described by this binding.
   StringRef Name;
-  // The matched instruction it is bound to.
+  // The matched instruction it is bound to. 
   unsigned InstrID;
-  // The matched operand (if appropriate) it is bound to.
+  // The matched operand (if appropriate) it is bound to. 
   Optional<unsigned> OpIdx;
 
 public:
@@ -47,8 +47,7 @@ public:
   using const_var_binding_iterator =
       std::vector<GIMatchTreeVariableBinding>::const_iterator;
   using UntestedPredicatesTy = SmallVector<const GIMatchDagPredicate *, 1>;
-  using const_untested_predicates_iterator =
-      UntestedPredicatesTy::const_iterator;
+  using const_untested_predicates_iterator = UntestedPredicatesTy::const_iterator;
 
 protected:
   /// A name for the matchable. This is primarily for debugging.
@@ -103,8 +102,7 @@ public:
   iterator_range<const_var_binding_iterator> var_bindings() const {
     return make_range(VarBindings.begin(), VarBindings.end());
   }
-  iterator_range<const_untested_predicates_iterator>
-  untested_predicates() const {
+  iterator_range<const_untested_predicates_iterator> untested_predicates() const {
     return make_range(UntestedPredicates.begin(), UntestedPredicates.end());
   }
   void addUntestedPredicate(const GIMatchDagPredicate *P) {
@@ -178,13 +176,16 @@ public:
   LeafVector::const_iterator possible_leaves_end() const {
     return PossibleLeaves.end();
   }
-  iterator_range<LeafVector::const_iterator> possible_leaves() const {
+  iterator_range<LeafVector::const_iterator>
+  possible_leaves() const {
     return make_range(possible_leaves_begin(), possible_leaves_end());
   }
   LeafVector::iterator possible_leaves_begin() {
     return PossibleLeaves.begin();
   }
-  LeafVector::iterator possible_leaves_end() { return PossibleLeaves.end(); }
+  LeafVector::iterator possible_leaves_end() {
+    return PossibleLeaves.end();
+  }
   iterator_range<LeafVector::iterator> possible_leaves() {
     return make_range(possible_leaves_begin(), possible_leaves_end());
   }

@@ -24,44 +24,48 @@
 #include "test_macros.h"
 #include "any_helpers.h"
 
-int main(int, char**) {
-  using std::any;
-  using std::any_cast;
-  // empty
-  {
-    any a;
+int main(int, char**)
+{
+    using std::any;
+    using std::any_cast;
+    // empty
+    {
+        any a;
 
-    // noexcept check
-    static_assert(noexcept(a.reset()), "any.reset() must be noexcept");
+        // noexcept check
+        static_assert(
+            noexcept(a.reset())
+          , "any.reset() must be noexcept"
+          );
 
-    assertEmpty(a);
+        assertEmpty(a);
 
-    a.reset();
+        a.reset();
 
-    assertEmpty(a);
-  }
-  // small object
-  {
-    any a((small(1)));
-    assert(small::count == 1);
-    assertContains<small>(a, 1);
+        assertEmpty(a);
+    }
+    // small object
+    {
+        any a((small(1)));
+        assert(small::count == 1);
+        assertContains<small>(a, 1);
 
-    a.reset();
+        a.reset();
 
-    assertEmpty<small>(a);
-    assert(small::count == 0);
-  }
-  // large object
-  {
-    any a(large(1));
-    assert(large::count == 1);
-    assertContains<large>(a, 1);
+        assertEmpty<small>(a);
+        assert(small::count == 0);
+    }
+    // large object
+    {
+        any a(large(1));
+        assert(large::count == 1);
+        assertContains<large>(a, 1);
 
-    a.reset();
+        a.reset();
 
-    assertEmpty<large>(a);
-    assert(large::count == 0);
-  }
+        assertEmpty<large>(a);
+        assert(large::count == 0);
+    }
 
   return 0;
 }

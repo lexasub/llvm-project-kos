@@ -40,12 +40,12 @@ size_t MutationDispatcher::CrossOver(const uint8_t *Data1, size_t Size1,
       (*InPos) += ExtraSize;
     }
     // Use the other input data on the next iteration.
-    InPos = CurrentlyUsingFirstData ? &Pos2 : &Pos1;
+    InPos  = CurrentlyUsingFirstData ? &Pos2 : &Pos1;
     InSize = CurrentlyUsingFirstData ? Size2 : Size1;
-    Data = CurrentlyUsingFirstData ? Data2 : Data1;
+    Data   = CurrentlyUsingFirstData ? Data2 : Data1;
     CurrentlyUsingFirstData = !CurrentlyUsingFirstData;
   }
   return OutPos;
 }
 
-} // namespace fuzzer
+}  // namespace fuzzer

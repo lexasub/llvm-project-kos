@@ -111,9 +111,7 @@ public:
     VS2017OrNewer,
     DevDivInternal,
   };
-  bool getIsVS2017OrNewer() const {
-    return VSLayout == ToolsetLayout::VS2017OrNewer;
-  }
+  bool getIsVS2017OrNewer() const { return VSLayout == ToolsetLayout::VS2017OrNewer; }
 
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
@@ -128,8 +126,8 @@ public:
   void AddHIPIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                          llvm::opt::ArgStringList &CC1Args) const override;
 
-  bool getWindowsSDKLibraryPath(const llvm::opt::ArgList &Args,
-                                std::string &path) const;
+  bool getWindowsSDKLibraryPath(
+      const llvm::opt::ArgList &Args, std::string &path) const;
   bool getUniversalCRTLibraryPath(const llvm::opt::ArgList &Args,
                                   std::string &path) const;
   bool useUniversalCRT() const;
@@ -155,7 +153,6 @@ protected:
 
   Tool *buildLinker() const override;
   Tool *buildAssembler() const override;
-
 private:
   std::string VCToolChainPath;
   ToolsetLayout VSLayout = ToolsetLayout::OlderVS;

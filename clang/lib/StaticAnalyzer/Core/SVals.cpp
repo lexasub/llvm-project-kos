@@ -62,7 +62,7 @@ bool SVal::hasConjuredSymbol() const {
 
 const FunctionDecl *SVal::getAsFunctionDecl() const {
   if (Optional<loc::MemRegionVal> X = getAs<loc::MemRegionVal>()) {
-    const MemRegion *R = X->getRegion();
+    const MemRegion* R = X->getRegion();
     if (const FunctionCodeRegion *CTR = R->getAs<FunctionCodeRegion>())
       if (const auto *FD = dyn_cast<FunctionDecl>(CTR->getDecl()))
         return FD;
@@ -138,15 +138,15 @@ const MemRegion *SVal::getAsRegion() const {
 
 const MemRegion *loc::MemRegionVal::stripCasts(bool StripBaseCasts) const {
   const MemRegion *R = getRegion();
-  return R ? R->StripCasts(StripBaseCasts) : nullptr;
+  return R ?  R->StripCasts(StripBaseCasts) : nullptr;
 }
 
 const void *nonloc::LazyCompoundVal::getStore() const {
-  return static_cast<const LazyCompoundValData *>(Data)->getStore();
+  return static_cast<const LazyCompoundValData*>(Data)->getStore();
 }
 
 const TypedValueRegion *nonloc::LazyCompoundVal::getRegion() const {
-  return static_cast<const LazyCompoundValData *>(Data)->getRegion();
+  return static_cast<const LazyCompoundValData*>(Data)->getRegion();
 }
 
 bool nonloc::PointerToMember::isNullMemberPointer() const {
@@ -209,7 +209,9 @@ bool SVal::isConstant(int I) const {
   return false;
 }
 
-bool SVal::isZeroConstant() const { return isConstant(0); }
+bool SVal::isZeroConstant() const {
+  return isConstant(0);
+}
 
 //===----------------------------------------------------------------------===//
 // Transfer function dispatch for Non-Locs.
@@ -217,9 +219,9 @@ bool SVal::isZeroConstant() const { return isConstant(0); }
 
 SVal nonloc::ConcreteInt::evalBinOp(SValBuilder &svalBuilder,
                                     BinaryOperator::Opcode Op,
-                                    const nonloc::ConcreteInt &R) const {
-  const llvm::APSInt *X = svalBuilder.getBasicValueFactory().evalAPSInt(
-      Op, getValue(), R.getValue());
+                                    const nonloc::ConcreteInt& R) const {
+  const llvm::APSInt* X =
+    svalBuilder.getBasicValueFactory().evalAPSInt(Op, getValue(), R.getValue());
 
   if (X)
     return nonloc::ConcreteInt(*X);
@@ -241,9 +243,9 @@ nonloc::ConcreteInt::evalMinus(SValBuilder &svalBuilder) const {
 // Transfer function dispatch for Locs.
 //===----------------------------------------------------------------------===//
 
-SVal loc::ConcreteInt::evalBinOp(BasicValueFactory &BasicVals,
+SVal loc::ConcreteInt::evalBinOp(BasicValueFactory& BasicVals,
                                  BinaryOperator::Opcode Op,
-                                 const loc::ConcreteInt &R) const {
+                                 const loc::ConcreteInt& R) const {
   assert(BinaryOperator::isComparisonOp(Op) || Op == BO_Sub);
 
   const llvm::APSInt *X = BasicVals.evalAPSInt(Op, getValue(), R.getValue());
@@ -271,97 +273,99 @@ void SVal::printJson(raw_ostream &Out, bool AddQuotes) const {
 
 void SVal::dumpToStream(raw_ostream &os) const {
   switch (getBaseKind()) {
-  case UnknownValKind:
-    os << "Unknown";
-    break;
-  case NonLocKind:
-    castAs<NonLoc>().dumpToStream(os);
-    break;
-  case LocKind:
-    castAs<Loc>().dumpToStream(os);
-    break;
-  case UndefinedValKind:
-    os << "Undefined";
-    break;
+    case UnknownValKind:
+      os << "Unknown";
+      break;
+    case NonLocKind:
+      castAs<NonLoc>().dumpToStream(os);
+      break;
+    case LocKind:
+      castAs<Loc>().dumpToStream(os);
+      break;
+    case UndefinedValKind:
+      os << "Undefined";
+      break;
   }
 }
 
 void NonLoc::dumpToStream(raw_ostream &os) const {
   switch (getSubKind()) {
-  case nonloc::ConcreteIntKind: {
-    const auto &Value = castAs<nonloc::ConcreteInt>().getValue();
-    os << Value << ' ' << (Value.isSigned() ? 'S' : 'U') << Value.getBitWidth()
-       << 'b';
-    break;
-  }
-  case nonloc::SymbolValKind:
-    os << castAs<nonloc::SymbolVal>().getSymbol();
-    break;
-
-  case nonloc::LocAsIntegerKind: {
-    const nonloc::LocAsInteger &C = castAs<nonloc::LocAsInteger>();
-    os << C.getLoc() << " [as " << C.getNumBits() << " bit integer]";
-    break;
-  }
-  case nonloc::CompoundValKind: {
-    const nonloc::CompoundVal &C = castAs<nonloc::CompoundVal>();
-    os << "compoundVal{";
-    bool first = true;
-    for (const auto &I : C) {
-      if (first) {
-        os << ' ';
-        first = false;
-      } else
-        os << ", ";
-
-      I.dumpToStream(os);
+    case nonloc::ConcreteIntKind: {
+      const auto &Value = castAs<nonloc::ConcreteInt>().getValue();
+      os << Value << ' ' << (Value.isSigned() ? 'S' : 'U')
+         << Value.getBitWidth() << 'b';
+      break;
     }
-    os << "}";
-    break;
-  }
-  case nonloc::LazyCompoundValKind: {
-    const nonloc::LazyCompoundVal &C = castAs<nonloc::LazyCompoundVal>();
-    os << "lazyCompoundVal{" << const_cast<void *>(C.getStore()) << ','
-       << C.getRegion() << '}';
-    break;
-  }
-  case nonloc::PointerToMemberKind: {
-    os << "pointerToMember{";
-    const nonloc::PointerToMember &CastRes = castAs<nonloc::PointerToMember>();
-    if (CastRes.getDecl())
-      os << "|" << CastRes.getDecl()->getQualifiedNameAsString() << "|";
-    bool first = true;
-    for (const auto &I : CastRes) {
-      if (first) {
-        os << ' ';
-        first = false;
-      } else
-        os << ", ";
+    case nonloc::SymbolValKind:
+      os << castAs<nonloc::SymbolVal>().getSymbol();
+      break;
 
-      os << (*I).getType().getAsString();
+    case nonloc::LocAsIntegerKind: {
+      const nonloc::LocAsInteger& C = castAs<nonloc::LocAsInteger>();
+      os << C.getLoc() << " [as " << C.getNumBits() << " bit integer]";
+      break;
     }
+    case nonloc::CompoundValKind: {
+      const nonloc::CompoundVal& C = castAs<nonloc::CompoundVal>();
+      os << "compoundVal{";
+      bool first = true;
+      for (const auto &I : C) {
+        if (first) {
+          os << ' '; first = false;
+        }
+        else
+          os << ", ";
 
-    os << '}';
-    break;
-  }
-  default:
-    assert(false && "Pretty-printed not implemented for this NonLoc.");
-    break;
+        I.dumpToStream(os);
+      }
+      os << "}";
+      break;
+    }
+    case nonloc::LazyCompoundValKind: {
+      const nonloc::LazyCompoundVal &C = castAs<nonloc::LazyCompoundVal>();
+      os << "lazyCompoundVal{" << const_cast<void *>(C.getStore())
+         << ',' << C.getRegion()
+         << '}';
+      break;
+    }
+    case nonloc::PointerToMemberKind: {
+      os << "pointerToMember{";
+      const nonloc::PointerToMember &CastRes =
+          castAs<nonloc::PointerToMember>();
+      if (CastRes.getDecl())
+        os << "|" << CastRes.getDecl()->getQualifiedNameAsString() << "|";
+      bool first = true;
+      for (const auto &I : CastRes) {
+        if (first) {
+          os << ' '; first = false;
+        }
+        else
+          os << ", ";
+
+        os << (*I).getType().getAsString();
+      }
+
+      os << '}';
+      break;
+    }
+    default:
+      assert(false && "Pretty-printed not implemented for this NonLoc.");
+      break;
   }
 }
 
 void Loc::dumpToStream(raw_ostream &os) const {
   switch (getSubKind()) {
-  case loc::ConcreteIntKind:
-    os << castAs<loc::ConcreteInt>().getValue().getZExtValue() << " (Loc)";
-    break;
-  case loc::GotoLabelKind:
-    os << "&&" << castAs<loc::GotoLabel>().getLabel()->getName();
-    break;
-  case loc::MemRegionValKind:
-    os << '&' << castAs<loc::MemRegionVal>().getRegion()->getString();
-    break;
-  default:
-    llvm_unreachable("Pretty-printing not implemented for this Loc.");
+    case loc::ConcreteIntKind:
+      os << castAs<loc::ConcreteInt>().getValue().getZExtValue() << " (Loc)";
+      break;
+    case loc::GotoLabelKind:
+      os << "&&" << castAs<loc::GotoLabel>().getLabel()->getName();
+      break;
+    case loc::MemRegionValKind:
+      os << '&' << castAs<loc::MemRegionVal>().getRegion()->getString();
+      break;
+    default:
+      llvm_unreachable("Pretty-printing not implemented for this Loc.");
   }
 }

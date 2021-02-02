@@ -59,8 +59,8 @@ public:
     LiveRegs.setUniverse(TRI.getNumRegs());
   }
 
-  LivePhysRegs(const LivePhysRegs &) = delete;
-  LivePhysRegs &operator=(const LivePhysRegs &) = delete;
+  LivePhysRegs(const LivePhysRegs&) = delete;
+  LivePhysRegs &operator=(const LivePhysRegs&) = delete;
 
   /// (re-)initializes and clears the set.
   void init(const TargetRegisterInfo &TRI) {
@@ -94,10 +94,9 @@ public:
   }
 
   /// Removes physical registers clobbered by the regmask operand \p MO.
-  void removeRegsInMask(
-      const MachineOperand &MO,
-      SmallVectorImpl<std::pair<MCPhysReg, const MachineOperand *>> *Clobbers =
-          nullptr);
+  void removeRegsInMask(const MachineOperand &MO,
+        SmallVectorImpl<std::pair<MCPhysReg, const MachineOperand*>> *Clobbers =
+        nullptr);
 
   /// Returns true if register \p Reg is contained in the set. This also
   /// works if only the super register of \p Reg has been defined, because
@@ -126,9 +125,8 @@ public:
   /// this function. The clobbers set will be the list of registers either
   /// defined or clobbered by a regmask.  The operand will identify whether this
   /// is a regmask or register operand.
-  void stepForward(
-      const MachineInstr &MI,
-      SmallVectorImpl<std::pair<MCPhysReg, const MachineOperand *>> &Clobbers);
+  void stepForward(const MachineInstr &MI,
+        SmallVectorImpl<std::pair<MCPhysReg, const MachineOperand*>> &Clobbers);
 
   /// Adds all live-in registers of basic block \p MBB.
   /// Live in registers are the registers in the blocks live-in list and the
@@ -169,7 +167,7 @@ private:
   void addPristines(const MachineFunction &MF);
 };
 
-inline raw_ostream &operator<<(raw_ostream &OS, const LivePhysRegs &LR) {
+inline raw_ostream &operator<<(raw_ostream &OS, const LivePhysRegs& LR) {
   LR.print(OS);
   return OS;
 }
@@ -187,7 +185,8 @@ void recomputeLivenessFlags(MachineBasicBlock &MBB);
 void addLiveIns(MachineBasicBlock &MBB, const LivePhysRegs &LiveRegs);
 
 /// Convenience function combining computeLiveIns() and addLiveIns().
-void computeAndAddLiveIns(LivePhysRegs &LiveRegs, MachineBasicBlock &MBB);
+void computeAndAddLiveIns(LivePhysRegs &LiveRegs,
+                          MachineBasicBlock &MBB);
 
 /// Convenience function for recomputing live-in's for \p MBB.
 static inline void recomputeLiveIns(MachineBasicBlock &MBB) {

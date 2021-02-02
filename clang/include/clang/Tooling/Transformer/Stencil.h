@@ -61,7 +61,7 @@ Stencil catVector(std::vector<Stencil> Parts);
 
 /// Concatenates 0+ stencil pieces into a single stencil. Arguments can be raw
 /// text, ranges in the matched code (\p RangeSelector) or other `Stencil`s.
-template <typename... Ts> Stencil cat(Ts &&...Parts) {
+template <typename... Ts> Stencil cat(Ts &&... Parts) {
   return catVector({detail::makeStencil(std::forward<Ts>(Parts))...});
 }
 

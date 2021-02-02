@@ -40,24 +40,24 @@
 // CK8-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 800]
 
 // CK8-LABEL: implicit_maps_float{{.*}}(
-void implicit_maps_float(int a) {
+void implicit_maps_float (int a){
   float f = (float)a;
 
-// CK8-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-// CK8-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-// CK8-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-// CK8-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-// CK8-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-// CK8-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
-// CK8-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
-// CK8-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
-// CK8-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
-// CK8-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
-// CK8-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to float*
-// CK8-DAG: store float {{.+}}, float* [[CADDR]],
+  // CK8-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+  // CK8-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+  // CK8-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+  // CK8-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+  // CK8-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+  // CK8-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
+  // CK8-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
+  // CK8-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
+  // CK8-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
+  // CK8-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
+  // CK8-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to float*
+  // CK8-DAG: store float {{.+}}, float* [[CADDR]],
 
-// CK8: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
-#pragma omp target
+  // CK8: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
+  #pragma omp target
   {
     f += 1.0;
   }

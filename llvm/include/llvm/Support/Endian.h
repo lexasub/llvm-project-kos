@@ -24,16 +24,17 @@
 namespace llvm {
 namespace support {
 
-enum endianness { big, little, native };
+enum endianness {big, little, native};
 
 // These are named values for common alignments.
-enum { aligned = 0, unaligned = 1 };
+enum {aligned = 0, unaligned = 1};
 
 namespace detail {
 
 /// ::value is either alignment, or alignof(T) if alignment is 0.
-template <class T, int alignment> struct PickAlignment {
-  enum { value = alignment == 0 ? alignof(T) : alignment };
+template<class T, int alignment>
+struct PickAlignment {
+ enum { value = alignment == 0 ? alignof(T) : alignment };
 };
 
 } // end namespace detail
@@ -52,7 +53,7 @@ inline value_type byte_swap(value_type value, endianness endian) {
 }
 
 /// Swap the bytes of value to match the given endianness.
-template <typename value_type, endianness endian>
+template<typename value_type, endianness endian>
 inline value_type byte_swap(value_type value) {
   return byte_swap(value, endian);
 }
@@ -69,7 +70,9 @@ inline value_type read(const void *memory, endianness endian) {
   return byte_swap<value_type>(ret, endian);
 }
 
-template <typename value_type, endianness endian, std::size_t alignment>
+template<typename value_type,
+         endianness endian,
+         std::size_t alignment>
 inline value_type read(const void *memory) {
   return read<value_type, alignment>(memory, endian);
 }
@@ -83,8 +86,8 @@ inline value_type readNext(const CharT *&memory, endianness endian) {
   return ret;
 }
 
-template <typename value_type, endianness endian, std::size_t alignment,
-          typename CharT>
+template<typename value_type, endianness endian, std::size_t alignment,
+         typename CharT>
 inline value_type readNext(const CharT *&memory) {
   return readNext<value_type, alignment, CharT>(memory, endian);
 }
@@ -98,7 +101,9 @@ inline void write(void *memory, value_type value, endianness endian) {
          &value, sizeof(value_type));
 }
 
-template <typename value_type, endianness endian, std::size_t alignment>
+template<typename value_type,
+         endianness endian,
+         std::size_t alignment>
 inline void write(void *memory, value_type value) {
   write<value_type, alignment>(memory, value, endian);
 }
@@ -209,12 +214,12 @@ struct packed_endian_specific_integral {
 
   operator value_type() const {
     return endian::read<value_type, endian, alignment>(
-        (const void *)Value.buffer);
+      (const void*)Value.buffer);
   }
 
   void operator=(value_type newValue) {
-    endian::write<value_type, endian, alignment>((void *)Value.buffer,
-                                                 newValue);
+    endian::write<value_type, endian, alignment>(
+      (void*)Value.buffer, newValue);
   }
 
   packed_endian_specific_integral &operator+=(value_type newValue) {

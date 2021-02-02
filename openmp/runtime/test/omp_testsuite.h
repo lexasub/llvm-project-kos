@@ -20,21 +20,21 @@
 #define NUM_TASKS 25
 #define MAX_TASKS_PER_THREAD 5
 
-#ifdef _WIN32
+#ifdef  _WIN32
 // Windows versions of pthread_create() and pthread_join()
-#include <windows.h>
+# include <windows.h>
 typedef HANDLE pthread_t;
 
 // encapsulates the information about a pthread-callable function
 struct thread_func_info_t {
-  void *(*start_routine)(void *);
-  void *arg;
+  void* (*start_routine)(void*);
+  void* arg;
 };
 
 // call the void* start_routine(void*);
 static DWORD __thread_func_wrapper(LPVOID lpParameter) {
-  struct thread_func_info_t *function_information;
-  function_information = (struct thread_func_info_t *)lpParameter;
+  struct thread_func_info_t* function_information;
+  function_information = (struct thread_func_info_t*)lpParameter;
   function_information->start_routine(function_information->arg);
   free(function_information);
   return 0;
@@ -42,10 +42,10 @@ static DWORD __thread_func_wrapper(LPVOID lpParameter) {
 
 // attr is ignored
 static int pthread_create(pthread_t *thread, void *attr,
-                          void *(*start_routine)(void *), void *arg) {
+                          void *(*start_routine) (void *), void *arg) {
   pthread_t pthread;
-  struct thread_func_info_t *info;
-  info = (struct thread_func_info_t *)malloc(sizeof(struct thread_func_info_t));
+  struct thread_func_info_t* info;
+  info = (struct thread_func_info_t*)malloc(sizeof(struct thread_func_info_t));
   info->start_routine = start_routine;
   info->arg = arg;
   pthread = CreateThread(NULL, 0, __thread_func_wrapper, info, 0, NULL);
@@ -73,7 +73,7 @@ static int pthread_join(pthread_t thread, void **retval) {
   return 0;
 }
 #else
-#include <pthread.h>
+# include <pthread.h>
 #endif
 
 #endif

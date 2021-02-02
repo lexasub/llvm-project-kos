@@ -11,19 +11,19 @@ static int __attribute__((used)) ignore_transparent_context;
 }
 
 namespace N {
-int b;
+  int b;
 // CHECK-DAG: @"?b@N@@3HA"
 
-namespace {
-int anonymous;
+  namespace {
+    int anonymous;
 // CHECK-DAG: @"?anonymous@?A0x{{[^@]*}}@N@@3HA"
-} // namespace
-} // namespace N
+  }
+}
 
 static int c;
 // CHECK-DAG: @c
 
-int _c(void) { return N::anonymous + c; }
+int _c(void) {return N::anonymous + c;}
 // CHECK-DAG: @"?_c@@YAHXZ"
 // X64-DAG:   @"?_c@@YAHXZ"
 
@@ -33,35 +33,35 @@ const int &NeedsReferenceTemporary = 2;
 
 class foo {
   static const short d;
-  // CHECK-DAG: @"?d@foo@@0FB"
+// CHECK-DAG: @"?d@foo@@0FB"
 protected:
   static volatile long e;
-  // CHECK-DAG: @"?e@foo@@1JC"
+// CHECK-DAG: @"?e@foo@@1JC"
 public:
   static const volatile char f;
-  // CHECK-DAG: @"?f@foo@@2DD"
+// CHECK-DAG: @"?f@foo@@2DD"
   int operator+(int a);
-  foo() {}
-  // CHECK-DAG: @"??0foo@@QAE@XZ"
-  // X64-DAG:   @"??0foo@@QEAA@XZ"
+  foo(){}
+// CHECK-DAG: @"??0foo@@QAE@XZ"
+// X64-DAG:   @"??0foo@@QEAA@XZ"
 
-  ~foo() {}
-  // CHECK-DAG: @"??1foo@@QAE@XZ"
-  // X64-DAG:   @"??1foo@@QEAA@XZ
+  ~foo(){}
+// CHECK-DAG: @"??1foo@@QAE@XZ"
+// X64-DAG:   @"??1foo@@QEAA@XZ
 
-  foo(int i) {}
-  // CHECK-DAG: @"??0foo@@QAE@H@Z"
-  // X64-DAG:   @"??0foo@@QEAA@H@Z"
+  foo(int i){}
+// CHECK-DAG: @"??0foo@@QAE@H@Z"
+// X64-DAG:   @"??0foo@@QEAA@H@Z"
 
-  foo(char *q) {}
-  // CHECK-DAG: @"??0foo@@QAE@PAD@Z"
-  // X64-DAG:   @"??0foo@@QEAA@PEAD@Z"
+  foo(char *q){}
+// CHECK-DAG: @"??0foo@@QAE@PAD@Z"
+// X64-DAG:   @"??0foo@@QEAA@PEAD@Z"
 
-  static foo *static_method() { return 0; }
+  static foo* static_method() { return 0; }
 
-} f, s1(1), s2((char *)0);
+}f,s1(1),s2((char*)0);
 
-typedef foo(foo2);
+typedef foo (foo2);
 
 struct bar {
   static int g;
@@ -84,12 +84,12 @@ foo bar() { return foo(); }
 // X64-DAG:   @"?bar@@YA?AVfoo@@XZ"
 
 int foo::operator+(int a) {
-  // CHECK-DAG: @"??Hfoo@@QAEHH@Z"
-  // X64-DAG:   @"??Hfoo@@QEAAHH@Z"
+// CHECK-DAG: @"??Hfoo@@QAEHH@Z"
+// X64-DAG:   @"??Hfoo@@QEAAHH@Z"
 
   foo::static_method();
-  // CHECK-DAG: @"?static_method@foo@@SAPAV1@XZ"
-  // X64-DAG:   @"?static_method@foo@@SAPEAV1@XZ"
+// CHECK-DAG: @"?static_method@foo@@SAPAV1@XZ"
+// X64-DAG:   @"?static_method@foo@@SAPEAV1@XZ"
   bar();
   return a;
 }
@@ -101,11 +101,11 @@ const volatile char foo::f = 'C';
 int bar::g;
 // CHECK-DAG: @"?g@bar@@2HA"
 
-extern int *const h1 = &a;
+extern int * const h1 = &a;
 // CHECK-DAG: @"?h1@@3QAHA"
-extern const int *const h2 = &a;
+extern const int * const h2 = &a;
 // CHECK-DAG: @"?h2@@3QBHB"
-extern int *const __restrict h3 = &a;
+extern int * const __restrict h3 = &a;
 // CHECK-DAG: @"?h3@@3QIAHIA"
 // X64-DAG: @"?h3@@3QEIAHEIA"
 
@@ -117,7 +117,7 @@ FunT FunArr[10][20];
 // CHECK-DAG: @"?FunArr@@3PAY0BE@P6AHHH@ZA"
 // X64-DAG: @"?FunArr@@3PAY0BE@P6AHHH@ZA"
 
-int(__stdcall *j)(signed char, unsigned char);
+int (__stdcall *j)(signed char, unsigned char);
 // CHECK-DAG: @"?j@@3P6GHCE@ZA"
 
 const char foo2::*m;
@@ -148,8 +148,8 @@ cvInt g_cvInt = 3;
 // Also make sure calling conventions, arglists, and throw specs work.
 static void __stdcall alpha(float a, double b) throw() {}
 bool __fastcall beta(long long a, wchar_t b) throw(signed char, unsigned char) {
-  // CHECK-DAG: @"?beta@@YI_N_J_W@Z"
-  // X64-DAG:   @"?beta@@YA_N_J_W@Z"
+// CHECK-DAG: @"?beta@@YI_N_J_W@Z"
+// X64-DAG:   @"?beta@@YA_N_J_W@Z"
   alpha(0.f, 0.0);
   return false;
 }
@@ -163,7 +163,7 @@ void gamma(class foo, struct bar, union baz, enum quux) {}
 // X64-DAG:   @"?gamma@@YAXVfoo@@Ubar@@Tbaz@@W4quux@@@Z"
 
 // Make sure pointer/reference-type mangling works.
-void delta(int *const a, const long &) {}
+void delta(int * const a, const long &) {}
 // CHECK-DAG: @"?delta@@YAXQAHABJ@Z"
 // X64-DAG:   @"?delta@@YAXQEAHAEBJ@Z"
 
@@ -181,26 +181,26 @@ void zeta(int (*)(int, int)) {}
 void eta(int (^)(int, int)) {}
 // CHECK-DAG: @"?eta@@YAXP_EAHHH@Z@Z"
 
-typedef int theta_arg(int, int);
-void theta(theta_arg ^ block) {}
+typedef int theta_arg(int,int);
+void theta(theta_arg^ block) {}
 // CHECK-DAG: @"?theta@@YAXP_EAHHH@Z@Z"
 
 void operator_new_delete() {
   char *ptr = new char;
-  // CHECK-DAG: @"??2@YAPAXI@Z"
+// CHECK-DAG: @"??2@YAPAXI@Z"
 
   delete ptr;
-  // CHECK-DAG: @"??3@YAXPAX@Z"
+// CHECK-DAG: @"??3@YAXPAX@Z"
 
   char *array = new char[42];
-  // CHECK-DAG: @"??_U@YAPAXI@Z"
+// CHECK-DAG: @"??_U@YAPAXI@Z"
 
-  delete[] array;
-  // CHECK-DAG: @"??_V@YAXPAX@Z"
+  delete [] array;
+// CHECK-DAG: @"??_V@YAXPAX@Z"
 }
 
 // PR13022
-void(redundant_parens)();
+void (redundant_parens)();
 void redundant_parens_use() { redundant_parens(); }
 // CHECK-DAG: @"?redundant_parens@@YAXXZ"
 // X64-DAG:   @"?redundant_parens@@YAXXZ"
@@ -213,40 +213,40 @@ extern const RGB color2 = {};
 // CHECK-DAG: @"?color2@@3QBNB"
 extern RGB const color3[5] = {};
 // CHECK-DAG: @"?color3@@3QAY02$$CBNA"
-extern RGB const((color4)[5]) = {};
+extern RGB const ((color4)[5]) = {};
 // CHECK-DAG: @"?color4@@3QAY02$$CBNA"
 
 struct B;
-volatile int B::*volatile memptr1;
+volatile int B::* volatile memptr1;
 // X64-DAG: @"?memptr1@@3RESB@@HES1@"
-volatile int B::*memptr2;
+volatile int B::* memptr2;
 // X64-DAG: @"?memptr2@@3PESB@@HES1@"
-int B::*volatile memptr3;
+int B::* volatile memptr3;
 // X64-DAG: @"?memptr3@@3REQB@@HEQ1@"
 typedef int (*fun)();
-volatile fun B::*volatile funmemptr1;
+volatile fun B::* volatile funmemptr1;
 // X64-DAG: @"?funmemptr1@@3RESB@@R6AHXZES1@"
-volatile fun B::*funmemptr2;
+volatile fun B::* funmemptr2;
 // X64-DAG: @"?funmemptr2@@3PESB@@R6AHXZES1@"
-fun B::*volatile funmemptr3;
+fun B::* volatile funmemptr3;
 // X64-DAG: @"?funmemptr3@@3REQB@@P6AHXZEQ1@"
-void (B::*volatile memptrtofun1)();
+void (B::* volatile memptrtofun1)();
 // X64-DAG: @"?memptrtofun1@@3R8B@@EAAXXZEQ1@"
-const void (B::*memptrtofun2)();
+const void (B::* memptrtofun2)();
 // X64-DAG: @"?memptrtofun2@@3P8B@@EAAXXZEQ1@"
-volatile void (B::*memptrtofun3)();
+volatile void (B::* memptrtofun3)();
 // X64-DAG: @"?memptrtofun3@@3P8B@@EAAXXZEQ1@"
-int (B::*volatile memptrtofun4)();
+int (B::* volatile memptrtofun4)();
 // X64-DAG: @"?memptrtofun4@@3R8B@@EAAHXZEQ1@"
-volatile int (B::*memptrtofun5)();
+volatile int (B::* memptrtofun5)();
 // X64-DAG: @"?memptrtofun5@@3P8B@@EAA?CHXZEQ1@"
-const int (B::*memptrtofun6)();
+const int (B::* memptrtofun6)();
 // X64-DAG: @"?memptrtofun6@@3P8B@@EAA?BHXZEQ1@"
-fun (B::*volatile memptrtofun7)();
+fun (B::* volatile memptrtofun7)();
 // X64-DAG: @"?memptrtofun7@@3R8B@@EAAP6AHXZXZEQ1@"
-volatile fun (B::*memptrtofun8)();
+volatile fun (B::* memptrtofun8)();
 // X64-DAG: @"?memptrtofun8@@3P8B@@EAAR6AHXZXZEQ1@"
-const fun (B::*memptrtofun9)();
+const fun (B::* memptrtofun9)();
 // X64-DAG: @"?memptrtofun9@@3P8B@@EAAQ6AHXZXZEQ1@"
 
 // PR12603
@@ -261,30 +261,30 @@ class X {};
 X fooX() { return X(); }
 
 namespace PR13182 {
-extern char s0[];
-// CHECK-DAG: @"?s0@PR13182@@3PADA"
-extern char s1[42];
-// CHECK-DAG: @"?s1@PR13182@@3PADA"
-extern const char s2[];
-// CHECK-DAG: @"?s2@PR13182@@3QBDB"
-extern const char s3[42];
-// CHECK-DAG: @"?s3@PR13182@@3QBDB"
-extern volatile char s4[];
-// CHECK-DAG: @"?s4@PR13182@@3RCDC"
-extern const volatile char s5[];
-// CHECK-DAG: @"?s5@PR13182@@3SDDD"
-extern const char *const *s6;
-// CHECK-DAG: @"?s6@PR13182@@3PBQBDB"
+  extern char s0[];
+  // CHECK-DAG: @"?s0@PR13182@@3PADA"
+  extern char s1[42];
+  // CHECK-DAG: @"?s1@PR13182@@3PADA"
+  extern const char s2[];
+  // CHECK-DAG: @"?s2@PR13182@@3QBDB"
+  extern const char s3[42];
+  // CHECK-DAG: @"?s3@PR13182@@3QBDB"
+  extern volatile char s4[];
+  // CHECK-DAG: @"?s4@PR13182@@3RCDC"
+  extern const volatile char s5[];
+  // CHECK-DAG: @"?s5@PR13182@@3SDDD"
+  extern const char* const* s6;
+  // CHECK-DAG: @"?s6@PR13182@@3PBQBDB"
 
-char foo() {
-  return s0[0] + s1[0] + s2[0] + s3[0] + s4[0] + s5[0] + s6[0][0];
+  char foo() {
+    return s0[0] + s1[0] + s2[0] + s3[0] + s4[0] + s5[0] + s6[0][0];
+  }
 }
-} // namespace PR13182
 
 extern "C" inline void extern_c_func() {
   static int local;
-  // CHECK-DAG: @"?local@?1??extern_c_func@@9@4HA"
-  // X64-DAG:   @"?local@?1??extern_c_func@@9@4HA"
+// CHECK-DAG: @"?local@?1??extern_c_func@@9@4HA"
+// X64-DAG:   @"?local@?1??extern_c_func@@9@4HA"
 }
 
 void call_extern_c_func() {
@@ -314,7 +314,7 @@ int DllMain() { return 0; }
 inline int inline_function_with_local_type() {
   static struct {
     int a_field;
-  } static_variable_in_inline_function = {20}, second_static = {40};
+  } static_variable_in_inline_function = { 20 }, second_static = { 40 };
   // CHECK: @"?static_variable_in_inline_function@?1??inline_function_with_local_type@@YAHXZ@4U<unnamed-type-static_variable_in_inline_function>@?1??1@YAHXZ@A"
 
   return static_variable_in_inline_function.a_field + second_static.a_field;
@@ -328,8 +328,8 @@ template <typename T>
 inline int templated_inline_function_with_local_type() {
   static struct {
     int a_field;
-  } static_variable_in_templated_inline_function = {20},
-    second_static = {40};
+  } static_variable_in_templated_inline_function = { 20 },
+    second_static = { 40 };
   // CHECK: @"?static_variable_in_templated_inline_function@?1???$templated_inline_function_with_local_type@H@@YAHXZ@4U<unnamed-type-static_variable_in_templated_inline_function>@?1???$templated_inline_function_with_local_type@H@@YAHXZ@A"
 
   return static_variable_in_templated_inline_function.a_field +
@@ -353,8 +353,8 @@ struct OverloadedNewDelete {
 
 void *OverloadedNewDelete::operator new(__SIZE_TYPE__ s) { return 0; }
 void *OverloadedNewDelete::operator new[](__SIZE_TYPE__ s) { return 0; }
-void OverloadedNewDelete::operator delete(void *) {}
-void OverloadedNewDelete::operator delete[](void *) {}
+void OverloadedNewDelete::operator delete(void *) { }
+void OverloadedNewDelete::operator delete[](void *) { }
 int OverloadedNewDelete::operator+(int x) { return x; };
 
 // CHECK-DAG: ??2OverloadedNewDelete@@SAPAXI@Z
@@ -384,15 +384,15 @@ struct TypedefNewDelete {
 
 void *TypedefNewDelete::operator new(__SIZE_TYPE__ s) { return 0; }
 void *TypedefNewDelete::operator new[](__SIZE_TYPE__ s) { return 0; }
-void TypedefNewDelete::operator delete(void *) {}
-void TypedefNewDelete::operator delete[](void *) {}
+void TypedefNewDelete::operator delete(void *) { }
+void TypedefNewDelete::operator delete[](void *) { }
 
 // CHECK-DAG: ??2TypedefNewDelete@@SAPAXI@Z
 // CHECK-DAG: ??_UTypedefNewDelete@@SAPAXI@Z
 // CHECK-DAG: ??3TypedefNewDelete@@SAXPAX@Z
 // CHECK-DAG: ??_VTypedefNewDelete@@SAXPAX@Z
 
-void __vectorcall vector_func() {}
+void __vectorcall vector_func() { }
 // CHECK-DAG: @"?vector_func@@YQXXZ"
 
 template <void (*)(void)>
@@ -413,15 +413,11 @@ extern "C" void overloaded_fn3() {}
 
 namespace UnnamedType {
 struct S {
-  typedef struct {
-  } * T1[1];
-  typedef struct {
-  } T2;
-  typedef struct {
-  } * T3, T4;
+  typedef struct {} *T1[1];
+  typedef struct {} T2;
+  typedef struct {} *T3, T4;
   using T5 = struct {};
-  using T6 = struct {
-  } *;
+  using T6 = struct {} *;
 };
 void f(S::T1) {}
 void f(S::T2) {}
@@ -442,7 +438,7 @@ void f(S::T6) {}
 // X64-DAG: @"?f@UnnamedType@@YAXUT4@S@1@@Z"
 // X64-DAG: @"?f@UnnamedType@@YAXUT5@S@1@@Z"
 // X64-DAG: @"?f@UnnamedType@@YAXPEAU<unnamed-type-T6>@S@1@@Z"
-} // namespace UnnamedType
+}
 
 namespace PassObjectSize {
 // NOTE: This mangling is subject to change.
@@ -467,21 +463,21 @@ int qux(int *const i __attribute__((pass_object_size(1))), int *const j __attrib
 int zot(int *const i __attribute__((pass_object_size(1))), int *const j __attribute__((pass_object_size(1)))) { return 0; }
 // CHECK-DAG: define dso_local i32 @"?silly_word@PassObjectSize@@YAHQAHW4__pass_dynamic_object_size1@__clang@@@Z"
 int silly_word(int *const i __attribute__((pass_dynamic_object_size(1)))) { return 0; }
-} // namespace PassObjectSize
+}
 
 namespace Atomic {
 // CHECK-DAG: define dso_local void @"?f@Atomic@@YAXU?$_Atomic@H@__clang@@@Z"(
 void f(_Atomic(int)) {}
-} // namespace Atomic
+}
 namespace Complex {
 // CHECK-DAG: define dso_local void @"?f@Complex@@YAXU?$_Complex@H@__clang@@@Z"(
 void f(_Complex int) {}
-} // namespace Complex
+}
 #ifdef ARM
 namespace Float16 {
 // ARM-DAG: define dso_local void @"?f@Float16@@YAXU_Float16@__clang@@@Z"(
 void f(_Float16) {}
-} // namespace Float16
+}
 #endif // ARM
 
 namespace PR26029 {
@@ -491,7 +487,7 @@ struct L {
 };
 template <class>
 class H;
-struct M : L<H<int *>> {};
+struct M : L<H<int *> > {};
 
 template <class>
 struct H {};
@@ -503,8 +499,8 @@ void m_fn3() {
 }
 
 void runOnFunction() {
-  L<H<int *>> b;
+  L<H<int *> > b;
   m_fn3<int>();
 }
 // CHECK-DAG: call {{.*}} @"??0?$L@V?$H@PAH@PR26029@@@PR26029@@QAE@XZ"
-} // namespace PR26029
+}

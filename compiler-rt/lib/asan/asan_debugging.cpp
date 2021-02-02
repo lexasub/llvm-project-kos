@@ -47,24 +47,19 @@ static void FindInfoForStackVar(uptr addr, const char *frame_descr, uptr offset,
 }
 
 uptr AsanGetStack(uptr addr, uptr *trace, u32 size, u32 *thread_id,
-                  bool alloc_stack) {
+                         bool alloc_stack) {
   AsanChunkView chunk = FindHeapChunkByAddress(addr);
-  if (!chunk.IsValid())
-    return 0;
+  if (!chunk.IsValid()) return 0;
 
   StackTrace stack(nullptr, 0);
   if (alloc_stack) {
-    if (chunk.AllocTid() == kInvalidTid)
-      return 0;
+    if (chunk.AllocTid() == kInvalidTid) return 0;
     stack = chunk.GetAllocStack();
-    if (thread_id)
-      *thread_id = chunk.AllocTid();
+    if (thread_id) *thread_id = chunk.AllocTid();
   } else {
-    if (chunk.FreeTid() == kInvalidTid)
-      return 0;
+    if (chunk.FreeTid() == kInvalidTid) return 0;
     stack = chunk.GetFreeStack();
-    if (thread_id)
-      *thread_id = chunk.FreeTid();
+    if (thread_id) *thread_id = chunk.FreeTid();
   }
 
   if (trace && size) {
@@ -88,8 +83,7 @@ const char *__asan_locate_address(uptr addr, char *name, uptr name_size,
   uptr region_address = 0;
   uptr region_size = 0;
   const char *region_kind = nullptr;
-  if (name && name_size > 0)
-    name[0] = 0;
+  if (name && name_size > 0) name[0] = 0;
 
   if (auto shadow = descr.AsShadow()) {
     // region_{address,size} are already 0
@@ -128,10 +122,8 @@ const char *__asan_locate_address(uptr addr, char *name, uptr name_size,
   }
 
   CHECK(region_kind);
-  if (region_address_ptr)
-    *region_address_ptr = region_address;
-  if (region_size_ptr)
-    *region_size_ptr = region_size;
+  if (region_address_ptr) *region_address_ptr = region_address;
+  if (region_size_ptr) *region_size_ptr = region_size;
   return region_kind;
 }
 

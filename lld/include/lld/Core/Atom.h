@@ -16,7 +16,8 @@ namespace lld {
 
 class File;
 
-template <typename T> class OwningAtomPtr;
+template<typename T>
+class OwningAtomPtr;
 
 ///
 /// The linker has a Graph Theory model of linking. An object file is seen
@@ -26,7 +27,7 @@ template <typename T> class OwningAtomPtr;
 /// undefined symbol (extern declaration).
 ///
 class Atom {
-  template <typename T> friend class OwningAtomPtr;
+  template<typename T> friend class OwningAtomPtr;
 
 public:
   /// Whether this atom is defined or a proxy for an undefined symbol
@@ -39,16 +40,16 @@ public:
 
   /// The scope in which this atom is accessible to other atoms.
   enum Scope {
-    scopeTranslationUnit, ///< Accessible only to atoms in the same translation
-                          ///  unit (e.g. a C static).
-    scopeLinkageUnit,     ///< Accessible to atoms being linked but not visible
-                          ///  to runtime loader (e.g. visibility=hidden).
-    scopeGlobal           ///< Accessible to all atoms and visible to runtime
-                          ///  loader (e.g. visibility=default).
+    scopeTranslationUnit,  ///< Accessible only to atoms in the same translation
+                           ///  unit (e.g. a C static).
+    scopeLinkageUnit,      ///< Accessible to atoms being linked but not visible
+                           ///  to runtime loader (e.g. visibility=hidden).
+    scopeGlobal            ///< Accessible to all atoms and visible to runtime
+                           ///  loader (e.g. visibility=default).
   };
 
   /// file - returns the File that produced/owns this Atom
-  virtual const File &file() const = 0;
+  virtual const File& file() const = 0;
 
   /// name - The name of the atom. For a function atom, it is the (mangled)
   /// name of the function.
@@ -76,34 +77,43 @@ private:
 
 /// Class which owns an atom pointer and runs the atom destructor when the
 /// owning pointer goes out of scope.
-template <typename T> class OwningAtomPtr {
+template<typename T>
+class OwningAtomPtr {
 private:
   OwningAtomPtr(const OwningAtomPtr &) = delete;
   void operator=(const OwningAtomPtr &) = delete;
 
 public:
   OwningAtomPtr() = default;
-  OwningAtomPtr(T *atom) : atom(atom) {}
+  OwningAtomPtr(T *atom) : atom(atom) { }
 
   ~OwningAtomPtr() {
     if (atom)
       runDestructor(atom);
   }
 
-  void runDestructor(Atom *atom) { atom->~Atom(); }
+  void runDestructor(Atom *atom) {
+    atom->~Atom();
+  }
 
-  OwningAtomPtr(OwningAtomPtr &&ptr) : atom(ptr.atom) { ptr.atom = nullptr; }
+  OwningAtomPtr(OwningAtomPtr &&ptr) : atom(ptr.atom) {
+    ptr.atom = nullptr;
+  }
 
-  void operator=(OwningAtomPtr &&ptr) {
+  void operator=(OwningAtomPtr&& ptr) {
     if (atom)
       runDestructor(atom);
     atom = ptr.atom;
     ptr.atom = nullptr;
   }
 
-  T *const &get() const { return atom; }
+  T *const &get() const {
+    return atom;
+  }
 
-  T *&get() { return atom; }
+  T *&get() {
+    return atom;
+  }
 
   T *release() {
     auto *v = atom;

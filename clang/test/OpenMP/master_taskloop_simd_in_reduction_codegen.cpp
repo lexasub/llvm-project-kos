@@ -15,26 +15,23 @@
 struct S {
   int a;
   S() : a(0) {}
-  S(const S &) {}
-  S &operator=(const S &) { return *this; }
+  S(const S&) {}
+  S& operator=(const S&) {return *this;}
   ~S() {}
-  friend S operator+(const S &a, const S &b) { return a; }
+  friend S operator+(const S&a, const S&b) {return a;}
 };
+
 
 int main(int argc, char **argv) {
   int a;
   float b;
   S c[5];
   short d[argc];
-#pragma omp taskgroup task_reduction(+ \
-                                     : a, b, argc)
+#pragma omp taskgroup task_reduction(+: a, b, argc)
   {
-#pragma omp taskgroup task_reduction(- \
-                                     : c, d)
+#pragma omp taskgroup task_reduction(-:c, d)
 #pragma omp parallel
-#pragma omp master taskloop simd in_reduction(+                   \
-                                              : a) in_reduction(- \
-                                                                : d)
+#pragma omp master taskloop simd in_reduction(+:a) in_reduction(-:d)
     for (int i = 0; i < 5; ++i)
       a += d[a];
   }

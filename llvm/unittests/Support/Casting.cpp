@@ -28,7 +28,6 @@ struct bar {
   struct foo *caz();
   struct foo *daz();
   struct foo *naz();
-
 private:
   bar(const bar &);
 };
@@ -59,13 +58,22 @@ template <typename T> struct isa_impl<foo, T> {
   static inline bool doit(const T &Val) { return false; }
 };
 
-foo *bar::baz() { return cast<foo>(this); }
+foo *bar::baz() {
+    return cast<foo>(this);
+}
 
-foo *bar::caz() { return cast_or_null<foo>(this); }
+foo *bar::caz() {
+    return cast_or_null<foo>(this);
+}
 
-foo *bar::daz() { return dyn_cast<foo>(this); }
+foo *bar::daz() {
+    return dyn_cast<foo>(this);
+}
 
-foo *bar::naz() { return dyn_cast_or_null<foo>(this); }
+foo *bar::naz() {
+    return dyn_cast_or_null<foo>(this);
+}
+
 
 bar *fub();
 
@@ -74,9 +82,10 @@ template <> struct simplify_type<foo> {
   static SimpleType getSimplifiedValue(foo &Val) { return 0; }
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 using namespace llvm;
+
 
 // Test the peculiar behavior of Use in simplify_type.
 static_assert(std::is_same<simplify_type<Use>::SimpleType, Value *>::value,
@@ -147,7 +156,7 @@ TEST(CastingTest, cast_or_null) {
   EXPECT_NE(F12, null_foo);
   const foo *F13 = cast_or_null<foo>(B4);
   EXPECT_NE(F13, null_foo);
-  const foo *F14 = cast_or_null<foo>(fub()); // Shouldn't print.
+  const foo *F14 = cast_or_null<foo>(fub());  // Shouldn't print.
   EXPECT_EQ(F14, null_foo);
   foo *F15 = B1.caz();
   EXPECT_NE(F15, null_foo);
@@ -237,14 +246,14 @@ TEST(CastingTest, unique_dyn_cast) {
 }
 
 // These lines are errors...
-// foo *F20 = cast<foo>(B2);  // Yields const foo*
-// foo &F21 = cast<foo>(B3);  // Yields const foo&
-// foo *F22 = cast<foo>(B4);  // Yields const foo*
-// foo &F23 = cast_or_null<foo>(B1);
-// const foo &F24 = cast_or_null<foo>(B3);
+//foo *F20 = cast<foo>(B2);  // Yields const foo*
+//foo &F21 = cast<foo>(B3);  // Yields const foo&
+//foo *F22 = cast<foo>(B4);  // Yields const foo*
+//foo &F23 = cast_or_null<foo>(B1);
+//const foo &F24 = cast_or_null<foo>(B3);
 
 const bar *B2 = &B;
-} // anonymous namespace
+}  // anonymous namespace
 
 bar *llvm::fub() { return nullptr; }
 
@@ -277,13 +286,16 @@ TEST(CastingTest, UpcastIsInferred) {
   EXPECT_TRUE(BP != nullptr);
 }
 
+
 // This test verifies that the inferred upcast takes precedence over an
 // explicitly written one. This is important because it verifies that the
 // dynamic check gets optimized away.
 class UseInferredUpcast {
 public:
   int Dummy;
-  static bool classof(const UseInferredUpcast *) { return false; }
+  static bool classof(const UseInferredUpcast *) {
+    return false;
+  }
 };
 
 TEST(CastingTest, InferredUpcastTakesPrecedence) {
@@ -299,7 +311,7 @@ TEST(CastingTest, InferredUpcastTakesPrecedence) {
 namespace TemporaryCast {
 struct pod {};
 IllegalCast *testIllegalCast() { return cast<foo>(pod()); }
-} // namespace TemporaryCast
+}
 
 namespace {
 namespace pointer_wrappers {
@@ -316,7 +328,6 @@ struct Derived : Base {
 
 class PTy {
   Base *B;
-
 public:
   PTy(Base *B) : B(B) {}
   explicit operator bool() const { return get(); }

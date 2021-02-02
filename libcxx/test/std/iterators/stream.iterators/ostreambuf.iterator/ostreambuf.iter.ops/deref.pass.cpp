@@ -18,19 +18,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::ostringstream outf;
-    std::ostreambuf_iterator<char> i(outf);
-    std::ostreambuf_iterator<char>& iref = *i;
-    assert(&iref == &i);
-  }
-  {
-    std::wostringstream outf;
-    std::ostreambuf_iterator<wchar_t> i(outf);
-    std::ostreambuf_iterator<wchar_t>& iref = *i;
-    assert(&iref == &i);
-  }
+int main(int, char**)
+{
+    {
+        std::ostringstream outf;
+        std::ostreambuf_iterator<char> i(outf);
+        std::ostreambuf_iterator<char>& iref = *i;
+        assert(&iref == &i);
+    }
+    {
+        std::wostringstream outf;
+        std::ostreambuf_iterator<wchar_t> i(outf);
+        std::ostreambuf_iterator<wchar_t>& iref = *i;
+        assert(&iref == &i);
+    }
 
   return 0;
 }

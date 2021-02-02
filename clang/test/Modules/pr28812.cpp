@@ -19,3 +19,4 @@ VarStreamArray<int> a;
 auto b = a.begin();
 
 // expected-no-diagnostics
+

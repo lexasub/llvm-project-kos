@@ -19,6 +19,6 @@ const char *getMinimalTypeForRange(uint64_t Range, unsigned MaxSize = 64);
 
 /// Returns the smallest unsigned integer type that can hold the given bitfield.
 const char *getMinimalTypeForEnumBitfield(uint64_t Size);
-} // namespace llvm
+}
 
 #endif

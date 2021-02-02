@@ -101,9 +101,9 @@ static void addByteCountSuffix(raw_ostream &OS, const Function *F,
   for (Function::const_arg_iterator AI = F->arg_begin(), AE = F->arg_end();
        AI != AE; ++AI) {
     // 'Dereference' type in case of byval or inalloca parameter attribute.
-    uint64_t AllocSize = AI->hasPassPointeeByValueCopyAttr()
-                             ? AI->getPassPointeeByValueCopySize(DL)
-                             : DL.getTypeAllocSize(AI->getType());
+    uint64_t AllocSize = AI->hasPassPointeeByValueCopyAttr() ?
+      AI->getPassPointeeByValueCopySize(DL) :
+      DL.getTypeAllocSize(AI->getType());
 
     // Size should be aligned to pointer size.
     ArgWords += alignTo(AllocSize, PtrSize);
@@ -253,3 +253,4 @@ void llvm::emitLinkerFlagsForUsedCOFF(raw_ostream &OS, const GlobalValue *GV,
   if (NeedQuotes)
     OS << "\"";
 }
+

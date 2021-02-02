@@ -10,7 +10,7 @@
 
 int exported_var = 0;
 
-#else // BUILD_SO
+#else  // BUILD_SO
 
 #include "test.h"
 #include <dlfcn.h>
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-#endif // BUILD_SO
+#endif  // BUILD_SO
 
 // CHECK-NOT: WARNING: ThreadSanitizer: data race
 // CHECK: DONE

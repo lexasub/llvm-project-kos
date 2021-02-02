@@ -1,19 +1,20 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=standalone -triple x86_64-apple-darwin %s -o - | FileCheck %s
 
-class Test {
+class Test
+{
 public:
-  Test() : reserved(new data()) {}
+    Test () : reserved (new data()) {}
 
-  unsigned
-  getID() const {
-    return reserved->objectID;
-  }
-
+    unsigned
+    getID() const
+    {
+        return reserved->objectID;
+    }
 protected:
-  struct data {
-    unsigned objectID;
-  };
-  data *reserved;
+    struct data {
+        unsigned objectID;
+    };
+    data* reserved;
 };
 
 Test t;

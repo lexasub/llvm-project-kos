@@ -21,20 +21,20 @@
 // RUN: clang-format -style="{IndentWidth: 7}" -fallback-style=none %s | FileCheck -strict-whitespace -check-prefix=CHECK11 %s
 
 void f() {
-  // CHECK1: {{^        int\* i;$}}
-  // CHECK2: {{^       int \*i;$}}
-  // CHECK3: Unknown value for BasedOnStyle: invalid
-  // CHECK3: Error parsing -style: {{I|i}}nvalid argument
-  // CHECK4: Error parsing -style: {{I|i}}nvalid argument
-  // CHECK5: {{^     int\* i;$}}
-  // CHECK6: {{^Error reading .*\.clang-format: (I|i)nvalid argument}}
-  // CHECK7: {{^      int\* i;$}}
-  // CHECK8: {{^  int\* i;$}}
-  // CHECK9: {{^    int \*i;$}}
-  // CHECK10: {{^      int \*i;$}}
-  // CHECK11: {{^       int \*i;$}}
-  int *i;
-  int j;
+// CHECK1: {{^        int\* i;$}}
+// CHECK2: {{^       int \*i;$}}
+// CHECK3: Unknown value for BasedOnStyle: invalid
+// CHECK3: Error parsing -style: {{I|i}}nvalid argument
+// CHECK4: Error parsing -style: {{I|i}}nvalid argument
+// CHECK5: {{^     int\* i;$}}
+// CHECK6: {{^Error reading .*\.clang-format: (I|i)nvalid argument}}
+// CHECK7: {{^      int\* i;$}}
+// CHECK8: {{^  int\* i;$}}
+// CHECK9: {{^    int \*i;$}}
+// CHECK10: {{^      int \*i;$}}
+// CHECK11: {{^       int \*i;$}}
+int*i;
+int j;
 }
 
 // On Windows, the 'rm' commands fail when the previous process is still alive.

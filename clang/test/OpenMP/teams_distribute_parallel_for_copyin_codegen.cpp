@@ -46,61 +46,61 @@ int main() {
   // LAMBDA-LABEL: @main
   // LAMBDA: call void [[OUTER_LAMBDA:@.+]](
   [&]() {
-  // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-  // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // LAMBDA: call void @[[LOFFL1:.+]](
-  // LAMBDA:  ret
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+    // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+    // LAMBDA: call void @[[LOFFL1:.+]](
+    // LAMBDA:  ret
 #pragma omp target
 #pragma omp teams distribute parallel for copyin(x)
-    for (int i = 0; i < 2; ++i) {
-      // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](
-      // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 {{.+}}, {{.+}} @[[LOUTL1:.+]] to {{.+}})
-      // LAMBDA: ret void
+  for (int i = 0; i < 2; ++i) {
+    // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](
+    // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 {{.+}}, {{.+}} @[[LOUTL1:.+]] to {{.+}})
+    // LAMBDA: ret void
 
-      // LAMBDA: define internal void @[[LOUTL1]](
-      // Skip global, bound tid and loop vars
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
+    // LAMBDA: define internal void @[[LOUTL1]](
+    // Skip global, bound tid and loop vars
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    a[i] = x;
+
+    // LAMBDA: call void @__kmpc_for_static_init_4(
+    // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
+    // LAMBDA: call void @__kmpc_for_static_fini(
+    // LAMBDA: ret void
+
+    // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
+    // Skip global, bound tid and loop vars
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: {{.+}} = alloca i32*,
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: {{%.+}} = alloca [2 x i{{[0-9]+}}]*,
+    // LAMBDA: [[X_ADDR:%.+]] = alloca i{{[0-9]+}}*,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+    // LAMBDA: alloca i32,
+
+    // LAMBDA:  [[X_REF:%.+]] = load {{.+}}, {{.+}} [[X_ADDR]],
+
+    // LAMBDA: call void @__kmpc_for_static_init_4(
+    // LAMBDA: [[X_VAL:%.+]] = load {{.+}}, {{.+}} [[X_REF]],
+    // LAMBDA: store {{.+}} [[X_VAL]],
+    // LAMBDA: call void [[INNER_LAMBDA:@.+]](
+    // LAMBDA: call void @__kmpc_for_static_fini(
+    // LAMBDA: ret void
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
       a[i] = x;
-
-      // LAMBDA: call void @__kmpc_for_static_init_4(
-      // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
-      // LAMBDA: call void @__kmpc_for_static_fini(
-      // LAMBDA: ret void
-
-      // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
-      // Skip global, bound tid and loop vars
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: {{.+}} = alloca i32*,
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: {{%.+}} = alloca [2 x i{{[0-9]+}}]*,
-      // LAMBDA: [[X_ADDR:%.+]] = alloca i{{[0-9]+}}*,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-      // LAMBDA: alloca i32,
-
-      // LAMBDA:  [[X_REF:%.+]] = load {{.+}}, {{.+}} [[X_ADDR]],
-
-      // LAMBDA: call void @__kmpc_for_static_init_4(
-      // LAMBDA: [[X_VAL:%.+]] = load {{.+}}, {{.+}} [[X_REF]],
-      // LAMBDA: store {{.+}} [[X_VAL]],
-      // LAMBDA: call void [[INNER_LAMBDA:@.+]](
-      // LAMBDA: call void @__kmpc_for_static_fini(
-      // LAMBDA: ret void
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        a[i] = x;
-      }();
-    }
+    }();
+  }
   }();
   return 0;
 #else
@@ -207,5 +207,6 @@ int main() {
 // CHECK: store {{.+}} [[X_VAL]],
 // CHECK: call void @__kmpc_for_static_fini(
 // CHECK: ret void
+
 
 #endif

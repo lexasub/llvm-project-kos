@@ -11,7 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "sanitizer_common.h"
-
 #include "sanitizer_allocator_interface.h"
 #include "sanitizer_allocator_internal.h"
 #include "sanitizer_atomic.h"
@@ -46,10 +45,9 @@ void NORETURN ReportMmapFailureAndDie(uptr size, const char *mem_type,
     Die();
   }
   recursion_count++;
-  Report(
-      "ERROR: %s failed to "
-      "%s 0x%zx (%zd) bytes of %s (error code: %d)\n",
-      SanitizerToolName, mmap_type, size, size, mem_type, err);
+  Report("ERROR: %s failed to "
+         "%s 0x%zx (%zd) bytes of %s (error code: %d)\n",
+         SanitizerToolName, mmap_type, size, size, mem_type, err);
 #if !SANITIZER_GO
   DumpProcessMap();
 #endif
@@ -61,10 +59,8 @@ typedef bool U32ComparisonFunction(const u32 &a, const u32 &b);
 
 const char *StripPathPrefix(const char *filepath,
                             const char *strip_path_prefix) {
-  if (!filepath)
-    return nullptr;
-  if (!strip_path_prefix)
-    return filepath;
+  if (!filepath) return nullptr;
+  if (!strip_path_prefix) return filepath;
   const char *res = filepath;
   if (const char *pos = internal_strstr(filepath, strip_path_prefix))
     res = pos + internal_strlen(strip_path_prefix);
@@ -165,7 +161,7 @@ void LoadedModule::addAddressRange(uptr beg, uptr end, bool executable,
                                    bool writable, const char *name) {
   void *mem = InternalAlloc(sizeof(AddressRange));
   AddressRange *r =
-      new (mem) AddressRange(beg, end, executable, writable, name);
+      new(mem) AddressRange(beg, end, executable, writable, name);
   ranges_.push_back(r);
   if (executable && end > max_executable_address_)
     max_executable_address_ = end;
@@ -182,8 +178,7 @@ bool LoadedModule::containsAddress(uptr address) const {
 static atomic_uintptr_t g_total_mmaped;
 
 void IncreaseTotalMmap(uptr size) {
-  if (!common_flags()->mmap_limit_mb)
-    return;
+  if (!common_flags()->mmap_limit_mb) return;
   uptr total_mmaped =
       atomic_fetch_add(&g_total_mmaped, size, memory_order_relaxed) + size;
   // Since for now mmap_limit_mb is not a user-facing flag, just kill
@@ -192,8 +187,7 @@ void IncreaseTotalMmap(uptr size) {
 }
 
 void DecreaseTotalMmap(uptr size) {
-  if (!common_flags()->mmap_limit_mb)
-    return;
+  if (!common_flags()->mmap_limit_mb) return;
   atomic_fetch_sub(&g_total_mmaped, size, memory_order_relaxed);
 }
 
@@ -217,8 +211,8 @@ bool TemplateMatch(const char *templ, const char *str) {
       return str[0] == 0 || asterisk;
     if (str[0] == 0)
       return false;
-    char *tpos = (char *)internal_strchr(templ, '*');
-    char *tpos1 = (char *)internal_strchr(templ, '$');
+    char *tpos = (char*)internal_strchr(templ, '*');
+    char *tpos1 = (char*)internal_strchr(templ, '$');
     if ((!tpos) || (tpos1 && tpos1 < tpos))
       tpos = tpos1;
     if (tpos)
@@ -242,7 +236,9 @@ bool TemplateMatch(const char *templ, const char *str) {
 static char binary_name_cache_str[kMaxPathLength];
 static char process_name_cache_str[kMaxPathLength];
 
-const char *GetProcessName() { return process_name_cache_str; }
+const char *GetProcessName() {
+  return process_name_cache_str;
+}
 
 static uptr ReadProcessName(/*out*/ char *buf, uptr buf_len) {
   ReadLongProcessName(buf, buf_len);
@@ -267,7 +263,7 @@ void CacheBinaryName() {
   ReadProcessName(process_name_cache_str, sizeof(process_name_cache_str));
 }
 
-uptr ReadBinaryNameCached(/*out*/ char *buf, uptr buf_len) {
+uptr ReadBinaryNameCached(/*out*/char *buf, uptr buf_len) {
   CacheBinaryName();
   uptr name_len = internal_strlen(binary_name_cache_str);
   name_len = (name_len < buf_len - 1) ? name_len : buf_len - 1;
@@ -281,10 +277,10 @@ uptr ReadBinaryNameCached(/*out*/ char *buf, uptr buf_len) {
 #if !SANITIZER_GO
 void PrintCmdline() {
   char **argv = GetArgv();
-  if (!argv)
-    return;
+  if (!argv) return;
   Printf("\nCommand: ");
-  for (uptr i = 0; argv[i]; ++i) Printf("%s ", argv[i]);
+  for (uptr i = 0; argv[i]; ++i)
+    Printf("%s ", argv[i]);
   Printf("\n\n");
 }
 #endif
@@ -301,8 +297,7 @@ static MallocFreeHook MFHooks[kMaxMallocFreeHooks];
 void RunMallocHooks(const void *ptr, uptr size) {
   for (int i = 0; i < kMaxMallocFreeHooks; i++) {
     auto hook = MFHooks[i].malloc_hook;
-    if (!hook)
-      return;
+    if (!hook) return;
     hook(ptr, size);
   }
 }
@@ -310,16 +305,14 @@ void RunMallocHooks(const void *ptr, uptr size) {
 void RunFreeHooks(const void *ptr) {
   for (int i = 0; i < kMaxMallocFreeHooks; i++) {
     auto hook = MFHooks[i].free_hook;
-    if (!hook)
-      return;
+    if (!hook) return;
     hook(ptr);
   }
 }
 
 static int InstallMallocFreeHooks(void (*malloc_hook)(const void *, uptr),
                                   void (*free_hook)(const void *)) {
-  if (!malloc_hook || !free_hook)
-    return 0;
+  if (!malloc_hook || !free_hook) return 0;
   for (int i = 0; i < kMaxMallocFreeHooks; i++) {
     if (MFHooks[i].malloc_hook == nullptr) {
       MFHooks[i].malloc_hook = malloc_hook;
@@ -330,7 +323,7 @@ static int InstallMallocFreeHooks(void (*malloc_hook)(const void *, uptr),
   return 0;
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 using namespace __sanitizer;
 
@@ -352,4 +345,4 @@ int __sanitizer_install_malloc_and_free_hooks(void (*malloc_hook)(const void *,
                                               void (*free_hook)(const void *)) {
   return InstallMallocFreeHooks(malloc_hook, free_hook);
 }
-}  // extern "C"
+} // extern "C"

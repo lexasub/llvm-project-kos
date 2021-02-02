@@ -28,7 +28,8 @@ using namespace llvm;
 /// arguments we expect to pass in.
 template <class ArgIt>
 static CallInst *ReplaceCallWith(const char *NewFn, CallInst *CI,
-                                 ArgIt ArgBegin, ArgIt ArgEnd, Type *RetTy) {
+                                 ArgIt ArgBegin, ArgIt ArgEnd,
+                                 Type *RetTy) {
   // If we haven't already looked up this function, check to see if the
   // program already contains a function with this name.
   Module *M = CI->getModule();
@@ -50,36 +51,36 @@ static CallInst *ReplaceCallWith(const char *NewFn, CallInst *CI,
 
 /// Emit the code to lower bswap of V before the specified instruction IP.
 static Value *LowerBSWAP(LLVMContext &Context, Value *V, Instruction *IP) {
-  assert(V->getType()->isIntOrIntVectorTy() &&
-         "Can't bswap a non-integer type!");
+  assert(V->getType()->isIntOrIntVectorTy() && "Can't bswap a non-integer type!");
 
   unsigned BitSize = V->getType()->getScalarSizeInBits();
 
   IRBuilder<> Builder(IP);
 
-  switch (BitSize) {
-  default:
-    llvm_unreachable("Unhandled type size of value to byteswap!");
+  switch(BitSize) {
+  default: llvm_unreachable("Unhandled type size of value to byteswap!");
   case 16: {
-    Value *Tmp1 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 8), "bswap.2");
-    Value *Tmp2 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8), "bswap.1");
+    Value *Tmp1 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 8),
+                                    "bswap.2");
+    Value *Tmp2 = Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8),
+                                     "bswap.1");
     V = Builder.CreateOr(Tmp1, Tmp2, "bswap.i16");
     break;
   }
   case 32: {
-    Value *Tmp4 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 24), "bswap.4");
-    Value *Tmp3 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 8), "bswap.3");
-    Value *Tmp2 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8), "bswap.2");
-    Value *Tmp1 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 24), "bswap.1");
-    Tmp3 = Builder.CreateAnd(Tmp3, ConstantInt::get(V->getType(), 0xFF0000),
+    Value *Tmp4 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 24),
+                                    "bswap.4");
+    Value *Tmp3 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 8),
+                                    "bswap.3");
+    Value *Tmp2 = Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8),
+                                     "bswap.2");
+    Value *Tmp1 = Builder.CreateLShr(V,ConstantInt::get(V->getType(), 24),
+                                     "bswap.1");
+    Tmp3 = Builder.CreateAnd(Tmp3,
+                         ConstantInt::get(V->getType(), 0xFF0000),
                              "bswap.and3");
-    Tmp2 = Builder.CreateAnd(Tmp2, ConstantInt::get(V->getType(), 0xFF00),
+    Tmp2 = Builder.CreateAnd(Tmp2,
+                           ConstantInt::get(V->getType(), 0xFF00),
                              "bswap.and2");
     Tmp4 = Builder.CreateOr(Tmp4, Tmp3, "bswap.or1");
     Tmp2 = Builder.CreateOr(Tmp2, Tmp1, "bswap.or2");
@@ -87,34 +88,48 @@ static Value *LowerBSWAP(LLVMContext &Context, Value *V, Instruction *IP) {
     break;
   }
   case 64: {
-    Value *Tmp8 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 56), "bswap.8");
-    Value *Tmp7 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 40), "bswap.7");
-    Value *Tmp6 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 24), "bswap.6");
-    Value *Tmp5 =
-        Builder.CreateShl(V, ConstantInt::get(V->getType(), 8), "bswap.5");
-    Value *Tmp4 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8), "bswap.4");
-    Value *Tmp3 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 24), "bswap.3");
-    Value *Tmp2 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 40), "bswap.2");
-    Value *Tmp1 =
-        Builder.CreateLShr(V, ConstantInt::get(V->getType(), 56), "bswap.1");
-    Tmp7 = Builder.CreateAnd(
-        Tmp7, ConstantInt::get(V->getType(), 0xFF000000000000ULL),
-        "bswap.and7");
-    Tmp6 = Builder.CreateAnd(
-        Tmp6, ConstantInt::get(V->getType(), 0xFF0000000000ULL), "bswap.and6");
-    Tmp5 = Builder.CreateAnd(
-        Tmp5, ConstantInt::get(V->getType(), 0xFF00000000ULL), "bswap.and5");
-    Tmp4 = Builder.CreateAnd(
-        Tmp4, ConstantInt::get(V->getType(), 0xFF000000ULL), "bswap.and4");
-    Tmp3 = Builder.CreateAnd(Tmp3, ConstantInt::get(V->getType(), 0xFF0000ULL),
+    Value *Tmp8 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 56),
+                                    "bswap.8");
+    Value *Tmp7 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 40),
+                                    "bswap.7");
+    Value *Tmp6 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 24),
+                                    "bswap.6");
+    Value *Tmp5 = Builder.CreateShl(V, ConstantInt::get(V->getType(), 8),
+                                    "bswap.5");
+    Value* Tmp4 = Builder.CreateLShr(V, ConstantInt::get(V->getType(), 8),
+                                     "bswap.4");
+    Value* Tmp3 = Builder.CreateLShr(V,
+                                     ConstantInt::get(V->getType(), 24),
+                                     "bswap.3");
+    Value* Tmp2 = Builder.CreateLShr(V,
+                                     ConstantInt::get(V->getType(), 40),
+                                     "bswap.2");
+    Value* Tmp1 = Builder.CreateLShr(V,
+                                     ConstantInt::get(V->getType(), 56),
+                                     "bswap.1");
+    Tmp7 = Builder.CreateAnd(Tmp7,
+                             ConstantInt::get(V->getType(),
+                                              0xFF000000000000ULL),
+                             "bswap.and7");
+    Tmp6 = Builder.CreateAnd(Tmp6,
+                             ConstantInt::get(V->getType(),
+                                              0xFF0000000000ULL),
+                             "bswap.and6");
+    Tmp5 = Builder.CreateAnd(Tmp5,
+                        ConstantInt::get(V->getType(),
+                             0xFF00000000ULL),
+                             "bswap.and5");
+    Tmp4 = Builder.CreateAnd(Tmp4,
+                        ConstantInt::get(V->getType(),
+                             0xFF000000ULL),
+                             "bswap.and4");
+    Tmp3 = Builder.CreateAnd(Tmp3,
+                             ConstantInt::get(V->getType(),
+                             0xFF0000ULL),
                              "bswap.and3");
-    Tmp2 = Builder.CreateAnd(Tmp2, ConstantInt::get(V->getType(), 0xFF00ULL),
+    Tmp2 = Builder.CreateAnd(Tmp2,
+                             ConstantInt::get(V->getType(),
+                             0xFF00ULL),
                              "bswap.and2");
     Tmp8 = Builder.CreateOr(Tmp8, Tmp7, "bswap.or1");
     Tmp6 = Builder.CreateOr(Tmp6, Tmp5, "bswap.or2");
@@ -134,8 +149,10 @@ static Value *LowerCTPOP(LLVMContext &Context, Value *V, Instruction *IP) {
   assert(V->getType()->isIntegerTy() && "Can't ctpop a non-integer type!");
 
   static const uint64_t MaskValues[6] = {
-      0x5555555555555555ULL, 0x3333333333333333ULL, 0x0F0F0F0F0F0F0F0FULL,
-      0x00FF00FF00FF00FFULL, 0x0000FFFF0000FFFFULL, 0x00000000FFFFFFFFULL};
+    0x5555555555555555ULL, 0x3333333333333333ULL,
+    0x0F0F0F0F0F0F0F0FULL, 0x00FF00FF00FF00FFULL,
+    0x0000FFFF0000FFFFULL, 0x00000000FFFFFFFFULL
+  };
 
   IRBuilder<> Builder(IP);
 
@@ -145,12 +162,13 @@ static Value *LowerCTPOP(LLVMContext &Context, Value *V, Instruction *IP) {
 
   for (unsigned n = 0; n < WordSize; ++n) {
     Value *PartValue = V;
-    for (unsigned i = 1, ct = 0; i < (BitSize > 64 ? 64 : BitSize);
+    for (unsigned i = 1, ct = 0; i < (BitSize>64 ? 64 : BitSize);
          i <<= 1, ++ct) {
       Value *MaskCst = ConstantInt::get(V->getType(), MaskValues[ct]);
       Value *LHS = Builder.CreateAnd(PartValue, MaskCst, "cppop.and1");
-      Value *VShift = Builder.CreateLShr(
-          PartValue, ConstantInt::get(V->getType(), i), "ctpop.sh");
+      Value *VShift = Builder.CreateLShr(PartValue,
+                                        ConstantInt::get(V->getType(), i),
+                                         "ctpop.sh");
       Value *RHS = Builder.CreateAnd(VShift, MaskCst, "cppop.and2");
       PartValue = Builder.CreateAdd(LHS, RHS, "ctpop.step");
     }
@@ -182,10 +200,10 @@ static Value *LowerCTLZ(LLVMContext &Context, Value *V, Instruction *IP) {
 }
 
 static void ReplaceFPIntrinsicWithCall(CallInst *CI, const char *Fname,
-                                       const char *Dname, const char *LDname) {
+                                       const char *Dname,
+                                       const char *LDname) {
   switch (CI->getArgOperand(0)->getType()->getTypeID()) {
-  default:
-    llvm_unreachable("Invalid type in intrinsic");
+  default: llvm_unreachable("Invalid type in intrinsic");
   case Type::FloatTyID:
     ReplaceCallWith(Fname, CI, CI->arg_begin(), CI->arg_end(),
                     Type::getFloatTy(CI->getContext()));
@@ -212,11 +230,11 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
 
   switch (Callee->getIntrinsicID()) {
   case Intrinsic::not_intrinsic:
-    report_fatal_error("Cannot lower a call to a non-intrinsic function '" +
-                       Callee->getName() + "'!");
+    report_fatal_error("Cannot lower a call to a non-intrinsic function '"+
+                      Callee->getName() + "'!");
   default:
-    report_fatal_error("Code generator does not support intrinsic function '" +
-                       Callee->getName() + "'!");
+    report_fatal_error("Code generator does not support intrinsic function '"+
+                      Callee->getName()+"'!");
 
   case Intrinsic::expect: {
     // Just replace __builtin_expect(exp, c) with EXP.
@@ -253,9 +271,8 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
   case Intrinsic::stackrestore: {
     if (!Warned)
       errs() << "WARNING: this target does not support the llvm.stack"
-             << (Callee->getIntrinsicID() == Intrinsic::stacksave ? "save"
-                                                                  : "restore")
-             << " intrinsic.\n";
+             << (Callee->getIntrinsicID() == Intrinsic::stacksave ?
+               "save" : "restore") << " intrinsic.\n";
     Warned = true;
     if (Callee->getIntrinsicID() == Intrinsic::stacksave)
       CI->replaceAllUsesWith(Constant::getNullValue(CI->getType()));
@@ -272,9 +289,8 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
   case Intrinsic::returnaddress:
   case Intrinsic::frameaddress:
     errs() << "WARNING: this target does not support the llvm."
-           << (Callee->getIntrinsicID() == Intrinsic::returnaddress ? "return"
-                                                                    : "frame")
-           << "address intrinsic.\n";
+           << (Callee->getIntrinsicID() == Intrinsic::returnaddress ?
+             "return" : "frame") << "address intrinsic.\n";
     CI->replaceAllUsesWith(
         ConstantPointerNull::get(cast<PointerType>(CI->getType())));
     break;
@@ -286,10 +302,10 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
     break;
 
   case Intrinsic::prefetch:
-    break; // Simply strip out prefetches on unsupported architectures
+    break;    // Simply strip out prefetches on unsupported architectures
 
   case Intrinsic::pcmarker:
-    break; // Simply strip out pcmarker on unsupported architectures
+    break;    // Simply strip out pcmarker on unsupported architectures
   case Intrinsic::readcyclecounter: {
     errs() << "WARNING: this target does not support the llvm.readcyclecoun"
            << "ter intrinsic.  It is being lowered to a constant 0\n";
@@ -299,7 +315,7 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
 
   case Intrinsic::dbg_declare:
   case Intrinsic::dbg_label:
-    break; // Simply strip out debugging intrinsics
+    break;    // Simply strip out debugging intrinsics
 
   case Intrinsic::eh_typeid_for:
     // Return something different to eh_selector.
@@ -315,7 +331,7 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
   case Intrinsic::assume:
   case Intrinsic::experimental_noalias_scope_decl:
   case Intrinsic::var_annotation:
-    break; // Strip out these intrinsics
+    break;   // Strip out these intrinsics
 
   case Intrinsic::memcpy: {
     Type *IntPtr = DL.getIntPtrType(Context);
@@ -325,8 +341,7 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
     Ops[0] = CI->getArgOperand(0);
     Ops[1] = CI->getArgOperand(1);
     Ops[2] = Size;
-    ReplaceCallWith("memcpy", CI, Ops, Ops + 3,
-                    CI->getArgOperand(0)->getType());
+    ReplaceCallWith("memcpy", CI, Ops, Ops+3, CI->getArgOperand(0)->getType());
     break;
   }
   case Intrinsic::memmove: {
@@ -337,8 +352,7 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
     Ops[0] = CI->getArgOperand(0);
     Ops[1] = CI->getArgOperand(1);
     Ops[2] = Size;
-    ReplaceCallWith("memmove", CI, Ops, Ops + 3,
-                    CI->getArgOperand(0)->getType());
+    ReplaceCallWith("memmove", CI, Ops, Ops+3, CI->getArgOperand(0)->getType());
     break;
   }
   case Intrinsic::memset: {
@@ -349,12 +363,11 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
     Value *Ops[3];
     Ops[0] = Op0;
     // Extend the amount to i32.
-    Ops[1] =
-        Builder.CreateIntCast(CI->getArgOperand(1), Type::getInt32Ty(Context),
-                              /* isSigned */ false);
+    Ops[1] = Builder.CreateIntCast(CI->getArgOperand(1),
+                                   Type::getInt32Ty(Context),
+                                   /* isSigned */ false);
     Ops[2] = Size;
-    ReplaceCallWith("memset", CI, Ops, Ops + 3,
-                    CI->getArgOperand(0)->getType());
+    ReplaceCallWith("memset", CI, Ops, Ops+3, CI->getArgOperand(0)->getType());
     break;
   }
   case Intrinsic::sqrt: {
@@ -418,10 +431,10 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
     break;
   }
   case Intrinsic::flt_rounds:
-    // Lower to "round to the nearest"
-    if (!CI->getType()->isVoidTy())
-      CI->replaceAllUsesWith(ConstantInt::get(CI->getType(), 1));
-    break;
+     // Lower to "round to the nearest"
+     if (!CI->getType()->isVoidTy())
+       CI->replaceAllUsesWith(ConstantInt::get(CI->getType(), 1));
+     break;
   case Intrinsic::invariant_start:
   case Intrinsic::lifetime_start:
     // Discard region information.

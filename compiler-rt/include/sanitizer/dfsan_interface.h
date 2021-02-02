@@ -13,9 +13,9 @@
 #ifndef DFSAN_INTERFACE_H
 #define DFSAN_INTERFACE_H
 
-#include <sanitizer/common_interface_defs.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sanitizer/common_interface_defs.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -111,7 +111,7 @@ void dfsan_weak_hook_strncmp(void *caller_pc, const char *s1, const char *s2,
                              size_t n, dfsan_label s1_label,
                              dfsan_label s2_label, dfsan_label n_label);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 
 template <typename T>
 void dfsan_set_label(dfsan_label label, T &data) { // NOLINT
@@ -120,4 +120,4 @@ void dfsan_set_label(dfsan_label label, T &data) { // NOLINT
 
 #endif
 
-#endif // DFSAN_INTERFACE_H
+#endif  // DFSAN_INTERFACE_H

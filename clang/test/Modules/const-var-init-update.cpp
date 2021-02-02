@@ -2,13 +2,10 @@
 // expected-no-diagnostics
 
 #pragma clang module build std
-module std {
-  module limits {}
-  module other {}
-}
+module std { module limits {} module other {} }
 #pragma clang module contents
 #pragma clang module begin std.limits
-template <typename T> struct numeric_limits {
+template<typename T> struct numeric_limits {
   static constexpr T __max = 5;
   static constexpr T max() { return __max; }
 };

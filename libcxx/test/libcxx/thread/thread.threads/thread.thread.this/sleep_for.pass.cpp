@@ -24,7 +24,8 @@
 #include <cassert>
 #include <chrono>
 
-int main(int, char**) {
+int main(int, char**)
+{
   typedef std::chrono::system_clock Clock;
   typedef Clock::time_point time_point;
   std::chrono::milliseconds ms(500);

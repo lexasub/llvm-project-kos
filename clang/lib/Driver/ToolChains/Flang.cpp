@@ -6,6 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #include "Flang.h"
 #include "CommonArgs.h"
 
@@ -88,7 +89,7 @@ void Flang::ConstructJob(Compilation &C, const JobAction &JA,
   assert(Input.isFilename() && "Invalid input.");
   CmdArgs.push_back(Input.getFilename());
 
-  const auto &D = C.getDriver();
+  const auto& D = C.getDriver();
   // TODO: Replace flang-new with flang once the new driver replaces the
   // throwaway driver
   const char *Exec = Args.MakeArgString(D.GetProgramPath("flang-new", TC));

@@ -49,6 +49,7 @@ void usage() {
 // WINDOWS: %[[RET:[0-9a-zA-Z]+]] = musttail call i32 @"?bar@@YAHUFoo@@@Z"(<{ %struct.Foo }>* %0)
 // WINDOWS-NEXT: ret i32 %[[RET]]
 
+
 // WINDOWS64: define dso_local i32 @"?bar@@YAHUFoo@@@Z"(%struct.Foo* %[[O:[0-9a-zA-Z]+]])
 // WINDOWS64: %[[X:[0-9a-zA-Z]+]] = getelementptr inbounds %struct.Foo, %struct.Foo* %[[O]], i32 0, i32 0
 // WINDOWS64: %[[LOAD:[0-9a-zA-Z]+]] = load i32, i32* %[[X]]

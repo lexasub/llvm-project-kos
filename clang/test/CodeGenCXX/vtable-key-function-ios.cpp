@@ -15,9 +15,7 @@
 // the entire namespace at once) subverts the ordering that we're
 // trying to test.
 
-namespace std {
-class type_info;
-}
+namespace std { class type_info; }
 extern void use(const std::type_info &rtti);
 
 /*** Test0a ******************************************************************/
@@ -30,7 +28,7 @@ struct Test0a {
 
 // V-table should be defined externally.
 Test0a::Test0a() { use(typeid(Test0a)); }
-// CHECK: @_ZTV6Test0a = external {{(dso_local )?}}unnamed_addr constant
+// CHECK: @_ZTV6Test0a = external {{(dso_local )?}}unnamed_addr constant 
 // CHECK-UNIX: @_ZTI6Test0a = external {{(dso_local )?}}constant
 // CHECK-MINGW: @_ZTI6Test0a = linkonce_odr {{(dso_local )?}}constant
 
@@ -50,7 +48,7 @@ void Test0b::foo() {}
 
 // V-table should be defined externally.
 Test0b::Test0b() { use(typeid(Test0b)); }
-// CHECK: @_ZTV6Test0b = external {{(dso_local )?}}unnamed_addr constant
+// CHECK: @_ZTV6Test0b = external {{(dso_local )?}}unnamed_addr constant 
 // CHECK-UNIX: @_ZTI6Test0b = external {{(dso_local )?}}constant
 // CHECK-MINGW: @_ZTI6Test0b = linkonce_odr {{(dso_local )?}}constant
 
@@ -64,7 +62,7 @@ struct Test1a {
 
 // V-table needs to be defined weakly.
 Test1a::Test1a() { use(typeid(Test1a)); }
-// CHECK:      @_ZTV6Test1a = linkonce_odr {{(dso_local )?}}unnamed_addr constant
+// CHECK:      @_ZTV6Test1a = linkonce_odr {{(dso_local )?}}unnamed_addr constant 
 // CHECK-LATE: @_ZTS6Test1a = linkonce_odr {{(dso_local )?}}constant
 // CHECK-LATE: @_ZTI6Test1a = linkonce_odr {{(dso_local )?}}constant
 
@@ -84,7 +82,7 @@ inline void Test1b::foo() {}
 
 // V-table should be defined weakly..
 Test1b::Test1b() { use(typeid(Test1b)); }
-// CHECK: @_ZTV6Test1b = linkonce_odr {{(dso_local )?}}unnamed_addr constant
+// CHECK: @_ZTV6Test1b = linkonce_odr {{(dso_local )?}}unnamed_addr constant 
 // CHECK: @_ZTS6Test1b = linkonce_odr {{(dso_local )?}}constant
 // CHECK: @_ZTI6Test1b = linkonce_odr {{(dso_local )?}}constant
 

@@ -58,7 +58,7 @@ void f_1() {
   // CHECK-FIXES: std::ios_base::iostate a;
 
   // Check that spaces aren't modified unnecessarily.
-  std ::ios_base ::io_state b;
+  std :: ios_base :: io_state b;
   // CHECK-MESSAGES: :[[@LINE-1]]:22: warning: 'std::ios_base::io_state' is deprecated
   // CHECK-FIXES: std :: ios_base :: iostate b;
 
@@ -151,8 +151,7 @@ void f_4() {
 
 #define MACRO_4(type) type::io_state
   // CHECK-MESSAGES: :[[@LINE-1]]:29: warning: 'std::ios_base::io_state' is deprecated
-  MACRO_4(std::ios_base)
-  d;
+  MACRO_4(std::ios_base) d;
 
 #undef MACRO_1
 #undef MACRO_2

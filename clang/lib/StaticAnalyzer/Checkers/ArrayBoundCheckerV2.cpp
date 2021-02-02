@@ -29,7 +29,8 @@ using namespace ento;
 using namespace taint;
 
 namespace {
-class ArrayBoundCheckerV2 : public Checker<check::Location> {
+class ArrayBoundCheckerV2 :
+    public Checker<check::Location> {
   mutable std::unique_ptr<BuiltinBug> BT;
 
   enum OOB_Kind { OOB_Precedes, OOB_Excedes, OOB_Tainted };
@@ -38,7 +39,7 @@ class ArrayBoundCheckerV2 : public Checker<check::Location> {
                  std::unique_ptr<BugReporterVisitor> Visitor = nullptr) const;
 
 public:
-  void checkLocation(SVal l, bool isLoad, const Stmt *S,
+  void checkLocation(SVal l, bool isLoad, const Stmt*S,
                      CheckerContext &C) const;
 };
 
@@ -48,22 +49,24 @@ private:
   const SubRegion *baseRegion;
   SVal byteOffset;
 
-  RegionRawOffsetV2() : baseRegion(nullptr), byteOffset(UnknownVal()) {}
+  RegionRawOffsetV2()
+    : baseRegion(nullptr), byteOffset(UnknownVal()) {}
 
 public:
-  RegionRawOffsetV2(const SubRegion *base, SVal offset)
-      : baseRegion(base), byteOffset(offset) {}
+  RegionRawOffsetV2(const SubRegion* base, SVal offset)
+    : baseRegion(base), byteOffset(offset) {}
 
   NonLoc getByteOffset() const { return byteOffset.castAs<NonLoc>(); }
   const SubRegion *getRegion() const { return baseRegion; }
 
-  static RegionRawOffsetV2
-  computeOffset(ProgramStateRef state, SValBuilder &svalBuilder, SVal location);
+  static RegionRawOffsetV2 computeOffset(ProgramStateRef state,
+                                         SValBuilder &svalBuilder,
+                                         SVal location);
 
   void dump() const;
   void dumpToStream(raw_ostream &os) const;
 };
-} // namespace
+}
 
 static SVal computeExtentBegin(SValBuilder &svalBuilder,
                                const MemRegion *region) {
@@ -111,7 +114,7 @@ getSimplifiedOffsets(NonLoc offset, nonloc::ConcreteInt extent,
 }
 
 void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
-                                        const Stmt *LoadS,
+                                        const Stmt* LoadS,
                                         CheckerContext &checkerContext) const {
 
   // NOTE: Instead of using ProgramState::assumeInBound(), we are prototyping
@@ -127,7 +130,7 @@ void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
 
   SValBuilder &svalBuilder = checkerContext.getSValBuilder();
   const RegionRawOffsetV2 &rawOffset =
-      RegionRawOffsetV2::computeOffset(state, svalBuilder, location);
+    RegionRawOffsetV2::computeOffset(state, svalBuilder, location);
 
   if (!rawOffset.getRegion())
     return;
@@ -144,7 +147,8 @@ void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
     if (NV->getAs<nonloc::ConcreteInt>()) {
       std::pair<NonLoc, nonloc::ConcreteInt> simplifiedOffsets =
           getSimplifiedOffsets(rawOffset.getByteOffset(),
-                               NV->castAs<nonloc::ConcreteInt>(), svalBuilder);
+                               NV->castAs<nonloc::ConcreteInt>(),
+                               svalBuilder);
       rawOffsetVal = simplifiedOffsets.first;
       *NV = simplifiedOffsets.second;
     }
@@ -158,7 +162,7 @@ void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
 
     ProgramStateRef state_precedesLowerBound, state_withinLowerBound;
     std::tie(state_precedesLowerBound, state_withinLowerBound) =
-        state->assume(*lowerBoundToCheck);
+      state->assume(*lowerBoundToCheck);
 
     // Are we constrained enough to definitely precede the lower bound?
     if (state_precedesLowerBound && !state_withinLowerBound) {
@@ -197,7 +201,7 @@ void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
 
     ProgramStateRef state_exceedsUpperBound, state_withinUpperBound;
     std::tie(state_exceedsUpperBound, state_withinUpperBound) =
-        state->assume(*upperboundToCheck);
+      state->assume(*upperboundToCheck);
 
     // If we are under constrained and the index variables are tainted, report.
     if (state_exceedsUpperBound && state_withinUpperBound) {
@@ -217,7 +221,8 @@ void ArrayBoundCheckerV2::checkLocation(SVal location, bool isLoad,
 
     assert(state_withinUpperBound);
     state = state_withinUpperBound;
-  } while (false);
+  }
+  while (false);
 
   checkerContext.addTransition(state);
 }
@@ -275,8 +280,9 @@ static inline SVal getValue(SVal val, SValBuilder &svalBuilder) {
 
 // Scale a base value by a scaling factor, and return the scaled
 // value as an SVal.  Used by 'computeOffset'.
-static inline SVal scaleValue(ProgramStateRef state, NonLoc baseVal,
-                              CharUnits scaling, SValBuilder &sb) {
+static inline SVal scaleValue(ProgramStateRef state,
+                              NonLoc baseVal, CharUnits scaling,
+                              SValBuilder &sb) {
   return sb.evalBinOpNN(state, BO_Mul, baseVal,
                         sb.makeArrayIndex(scaling.getQuantity()),
                         sb.getArrayIndexType());
@@ -300,44 +306,47 @@ static SVal addValue(ProgramStateRef state, SVal x, SVal y,
 /// checking.
 RegionRawOffsetV2 RegionRawOffsetV2::computeOffset(ProgramStateRef state,
                                                    SValBuilder &svalBuilder,
-                                                   SVal location) {
+                                                   SVal location)
+{
   const MemRegion *region = location.getAsRegion();
   SVal offset = UndefinedVal();
 
   while (region) {
     switch (region->getKind()) {
-    default: {
-      if (const SubRegion *subReg = dyn_cast<SubRegion>(region)) {
-        offset = getValue(offset, svalBuilder);
-        if (!offset.isUnknownOrUndef())
-          return RegionRawOffsetV2(subReg, offset);
+      default: {
+        if (const SubRegion *subReg = dyn_cast<SubRegion>(region)) {
+          offset = getValue(offset, svalBuilder);
+          if (!offset.isUnknownOrUndef())
+            return RegionRawOffsetV2(subReg, offset);
+        }
+        return RegionRawOffsetV2();
       }
-      return RegionRawOffsetV2();
-    }
-    case MemRegion::ElementRegionKind: {
-      const ElementRegion *elemReg = cast<ElementRegion>(region);
-      SVal index = elemReg->getIndex();
-      if (!index.getAs<NonLoc>())
-        return RegionRawOffsetV2();
-      QualType elemType = elemReg->getElementType();
-      // If the element is an incomplete type, go no further.
-      ASTContext &astContext = svalBuilder.getContext();
-      if (elemType->isIncompleteType())
-        return RegionRawOffsetV2();
+      case MemRegion::ElementRegionKind: {
+        const ElementRegion *elemReg = cast<ElementRegion>(region);
+        SVal index = elemReg->getIndex();
+        if (!index.getAs<NonLoc>())
+          return RegionRawOffsetV2();
+        QualType elemType = elemReg->getElementType();
+        // If the element is an incomplete type, go no further.
+        ASTContext &astContext = svalBuilder.getContext();
+        if (elemType->isIncompleteType())
+          return RegionRawOffsetV2();
 
-      // Update the offset.
-      offset = addValue(state, getValue(offset, svalBuilder),
-                        scaleValue(state, index.castAs<NonLoc>(),
-                                   astContext.getTypeSizeInChars(elemType),
-                                   svalBuilder),
-                        svalBuilder);
+        // Update the offset.
+        offset = addValue(state,
+                          getValue(offset, svalBuilder),
+                          scaleValue(state,
+                          index.castAs<NonLoc>(),
+                          astContext.getTypeSizeInChars(elemType),
+                          svalBuilder),
+                          svalBuilder);
 
-      if (offset.isUnknownOrUndef())
-        return RegionRawOffsetV2();
+        if (offset.isUnknownOrUndef())
+          return RegionRawOffsetV2();
 
-      region = elemReg->getSuperRegion();
-      continue;
-    }
+        region = elemReg->getSuperRegion();
+        continue;
+      }
     }
   }
   return RegionRawOffsetV2();

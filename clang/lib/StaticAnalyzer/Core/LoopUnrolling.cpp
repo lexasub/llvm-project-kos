@@ -12,11 +12,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Core/PathSensitive/LoopUnrolling.h"
-#include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/LoopUnrolling.h"
 
 using namespace clang;
 using namespace ento;
@@ -156,8 +156,7 @@ static internal::Matcher<Stmt> forLoopMatcher() {
                  hasUnaryOperand(declRefExpr(
                      to(varDecl(allOf(equalsBoundNode("initVarName"),
                                       hasType(isInteger())))))))),
-             unless(hasBody(hasSuspiciousStmt("initVarName"))))
-      .bind("forLoop");
+             unless(hasBody(hasSuspiciousStmt("initVarName")))).bind("forLoop");
 }
 
 static bool isPossiblyEscaped(const VarDecl *VD, ExplodedNode *N) {
@@ -302,5 +301,5 @@ bool isUnrolledState(ProgramStateRef State) {
     return false;
   return true;
 }
-} // namespace ento
-} // namespace clang
+}
+}

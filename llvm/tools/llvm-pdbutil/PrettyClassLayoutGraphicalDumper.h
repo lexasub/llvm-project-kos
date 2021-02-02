@@ -52,6 +52,6 @@ private:
   uint32_t CurrentAbsoluteOffset = 0;
   bool DumpedAnything = false;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 #endif

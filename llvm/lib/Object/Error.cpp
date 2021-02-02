@@ -24,10 +24,10 @@ namespace {
 // deal with the Error value directly, rather than converting to error_code.
 class _object_error_category : public std::error_category {
 public:
-  const char *name() const noexcept override;
+  const char* name() const noexcept override;
   std::string message(int ev) const override;
 };
-} // namespace
+}
 
 const char *_object_error_category::name() const noexcept {
   return "llvm.object";
@@ -69,11 +69,15 @@ GenericBinaryError::GenericBinaryError(const Twine &Msg,
   setErrorCode(make_error_code(ECOverride));
 }
 
-void GenericBinaryError::log(raw_ostream &OS) const { OS << Msg; }
+void GenericBinaryError::log(raw_ostream &OS) const {
+  OS << Msg;
+}
 
 static ManagedStatic<_object_error_category> error_category;
 
-const std::error_category &object::object_category() { return *error_category; }
+const std::error_category &object::object_category() {
+  return *error_category;
+}
 
 llvm::Error llvm::object::isNotObjectErrorInvalidFileType(llvm::Error Err) {
   return handleErrors(std::move(Err), [](std::unique_ptr<ECError> M) -> Error {

@@ -17,22 +17,23 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::ofstream bytestream("myfile.txt");
-    std::wbuffer_convert<std::codecvt_utf8<wchar_t> > mybuf(bytestream.rdbuf());
-    std::wostream mystr(&mybuf);
-    mystr << L"Hello" << std::endl;
-  }
-  {
-    std::ifstream bytestream("myfile.txt");
-    std::wbuffer_convert<std::codecvt_utf8<wchar_t> > mybuf(bytestream.rdbuf());
-    std::wistream mystr(&mybuf);
-    std::wstring ws;
-    mystr >> ws;
-    assert(ws == L"Hello");
-  }
-  std::remove("myfile.txt");
+int main(int, char**)
+{
+    {
+        std::ofstream bytestream("myfile.txt");
+        std::wbuffer_convert<std::codecvt_utf8<wchar_t> > mybuf(bytestream.rdbuf());
+        std::wostream mystr(&mybuf);
+        mystr << L"Hello" << std::endl;
+    }
+    {
+        std::ifstream bytestream("myfile.txt");
+        std::wbuffer_convert<std::codecvt_utf8<wchar_t> > mybuf(bytestream.rdbuf());
+        std::wistream mystr(&mybuf);
+        std::wstring ws;
+        mystr >> ws;
+        assert(ws == L"Hello");
+    }
+    std::remove("myfile.txt");
 
   return 0;
 }

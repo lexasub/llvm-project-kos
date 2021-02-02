@@ -7,13 +7,13 @@
 #include <assert.h>
 #include <cstddef>
 #include <cstdint>
-#include <cstdlib>
 #include <cstring>
+#include <cstdlib>
 #include <thread>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   auto C = [&] {
-    void *volatile a = malloc(5639);
+    void * volatile a = malloc(5639);
     free((void *)a);
   };
   std::thread T[] = {std::thread(C), std::thread(C), std::thread(C),

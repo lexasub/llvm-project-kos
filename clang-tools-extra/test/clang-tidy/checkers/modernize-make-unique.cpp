@@ -1,7 +1,7 @@
 // RUN: %check_clang_tidy -std=c++14-or-later %s modernize-make-unique %t -- -- -I %S/Inputs/modernize-smart-ptr
 
-#include "initializer_list.h"
 #include "unique_ptr.h"
+#include "initializer_list.h"
 // CHECK-FIXES: #include <memory>
 
 struct Base {
@@ -24,12 +24,13 @@ struct DPair {
   int a, b;
 };
 
-template <typename T>
+template<typename T>
 struct MyVector {
   MyVector(std::initializer_list<T>);
 };
 
 struct Empty {};
+
 
 struct E {
   E(std::initializer_list<int>);
@@ -430,10 +431,10 @@ void initialization(int T, Base b) {
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use std::make_unique instead
   // CHECK-FIXES: PJ2.reset(new J(E{1, 2}, 1));
 
-  std::unique_ptr<J> PJ3 = std::unique_ptr<J>(new J{{1, 2}, 1});
+  std::unique_ptr<J> PJ3 = std::unique_ptr<J>(new J{ {1, 2}, 1 });
   // CHECK-MESSAGES: :[[@LINE-1]]:28: warning: use std::make_unique instead
   // CHECK-FIXES: std::unique_ptr<J> PJ3 = std::unique_ptr<J>(new J{ {1, 2}, 1 });
-  PJ3.reset(new J{{1, 2}, 1});
+  PJ3.reset(new J{ {1, 2}, 1 });
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use std::make_unique instead
   // CHECK-FIXES:  PJ3.reset(new J{ {1, 2}, 1 });
 
@@ -503,8 +504,8 @@ void aliases() {
   // We use 'Base' instead of 'struct Base'.
   typedef std::unique_ptr<Base> BasePtr;
   BasePtr StructType = BasePtr(new Base);
-  // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: use std::make_unique instead
-  // CHECK-FIXES: BasePtr StructType = std::make_unique<Base>();
+// CHECK-MESSAGES: :[[@LINE-1]]:24: warning: use std::make_unique instead
+// CHECK-FIXES: BasePtr StructType = std::make_unique<Base>();
 
 #define PTR unique_ptr<int>
   std::unique_ptr<int> Macro = std::PTR(new int());
@@ -562,7 +563,7 @@ void reset() {
 }
 
 #define DEFINE(...) __VA_ARGS__
-template <typename T>
+template<typename T>
 void g2(std::unique_ptr<Foo> *t) {
   DEFINE(auto p = std::unique_ptr<Foo>(new Foo); t->reset(new Foo););
 }
@@ -573,7 +574,7 @@ void macro() {
 #undef DEFINE
 
 class UniqueFoo : public std::unique_ptr<Foo> {
-public:
+ public:
   void foo() {
     reset(new Foo);
     this->reset(new Foo);
@@ -592,8 +593,8 @@ public:
 };
 
 // Ignore statements inside a template instantiation.
-template <typename T>
-void template_fun(T *t) {
+template<typename T>
+void template_fun(T* t) {
   std::unique_ptr<T> t2 = std::unique_ptr<T>(new T);
   std::unique_ptr<T> t3 = std::unique_ptr<T>(new T());
   t2.reset(new T);
@@ -601,7 +602,7 @@ void template_fun(T *t) {
 }
 
 void invoke_template() {
-  Foo *foo;
+  Foo* foo;
   template_fun(foo);
 }
 

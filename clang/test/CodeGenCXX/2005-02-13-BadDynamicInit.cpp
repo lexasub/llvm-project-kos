@@ -6,4 +6,4 @@ struct Data {
 };
 
 // CHECK-NOT: llvm.global_ctors
-Data shared_null = {shared_null.array};
+Data shared_null = { shared_null.array };

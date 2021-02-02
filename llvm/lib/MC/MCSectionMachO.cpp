@@ -64,23 +64,20 @@ static constexpr struct {
   unsigned AttrFlag;
   StringLiteral AssemblerName, EnumName;
 } SectionAttrDescriptors[] = {
-#define ENTRY(ASMNAME, ENUM)                                                   \
-  {MachO::ENUM, StringLiteral(ASMNAME), StringLiteral(#ENUM)},
-    ENTRY("pure_instructions", S_ATTR_PURE_INSTRUCTIONS)
-        ENTRY("no_toc", S_ATTR_NO_TOC) ENTRY("strip_static_syms",
-                                             S_ATTR_STRIP_STATIC_SYMS)
-            ENTRY("no_dead_strip", S_ATTR_NO_DEAD_STRIP)
-                ENTRY("live_support", S_ATTR_LIVE_SUPPORT)
-                    ENTRY("self_modifying_code", S_ATTR_SELF_MODIFYING_CODE)
-                        ENTRY("debug", S_ATTR_DEBUG)
-                            ENTRY("" /*FIXME*/, S_ATTR_SOME_INSTRUCTIONS)
-                                ENTRY("" /*FIXME*/, S_ATTR_EXT_RELOC) ENTRY(
-                                    "" /*FIXME*/, S_ATTR_LOC_RELOC)
+#define ENTRY(ASMNAME, ENUM) \
+  { MachO::ENUM, StringLiteral(ASMNAME), StringLiteral(#ENUM) },
+ENTRY("pure_instructions",   S_ATTR_PURE_INSTRUCTIONS)
+ENTRY("no_toc",              S_ATTR_NO_TOC)
+ENTRY("strip_static_syms",   S_ATTR_STRIP_STATIC_SYMS)
+ENTRY("no_dead_strip",       S_ATTR_NO_DEAD_STRIP)
+ENTRY("live_support",        S_ATTR_LIVE_SUPPORT)
+ENTRY("self_modifying_code", S_ATTR_SELF_MODIFYING_CODE)
+ENTRY("debug",               S_ATTR_DEBUG)
+ENTRY("" /*FIXME*/,          S_ATTR_SOME_INSTRUCTIONS)
+ENTRY("" /*FIXME*/,          S_ATTR_EXT_RELOC)
+ENTRY("" /*FIXME*/,          S_ATTR_LOC_RELOC)
 #undef ENTRY
-                                    {0, StringLiteral("none"),
-                                     StringLiteral(
-                                         "")}, // used if section has no
-                                               // attributes but has a stub size
+  { 0, StringLiteral("none"), StringLiteral("") }, // used if section has no attributes but has a stub size
 };
 
 MCSectionMachO::MCSectionMachO(StringRef Segment, StringRef Section,
@@ -136,7 +133,8 @@ void MCSectionMachO::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
 
   // Check each attribute to see if we have it.
   char Separator = ',';
-  for (unsigned i = 0; SectionAttrs != 0 && SectionAttrDescriptors[i].AttrFlag;
+  for (unsigned i = 0;
+       SectionAttrs != 0 && SectionAttrDescriptors[i].AttrFlag;
        ++i) {
     // Check to see if we have this attribute.
     if ((SectionAttrDescriptors[i].AttrFlag & SectionAttrs) == 0)
@@ -166,7 +164,8 @@ bool MCSectionMachO::UseCodeAlign() const {
 }
 
 bool MCSectionMachO::isVirtualSection() const {
-  return (getType() == MachO::S_ZEROFILL || getType() == MachO::S_GB_ZEROFILL ||
+  return (getType() == MachO::S_ZEROFILL ||
+          getType() == MachO::S_GB_ZEROFILL ||
           getType() == MachO::S_THREAD_LOCAL_ZEROFILL);
 }
 
@@ -175,12 +174,12 @@ bool MCSectionMachO::isVirtualSection() const {
 /// flavored .s file.  If successful, this fills in the specified Out
 /// parameters and returns an empty string.  When an invalid section
 /// specifier is present, this returns a string indicating the problem.
-std::string MCSectionMachO::ParseSectionSpecifier(StringRef Spec,       // In.
-                                                  StringRef &Segment,   // Out.
-                                                  StringRef &Section,   // Out.
-                                                  unsigned &TAA,        // Out.
-                                                  bool &TAAParsed,      // Out.
-                                                  unsigned &StubSize) { // Out.
+std::string MCSectionMachO::ParseSectionSpecifier(StringRef Spec,        // In.
+                                                  StringRef &Segment,    // Out.
+                                                  StringRef &Section,    // Out.
+                                                  unsigned  &TAA,        // Out.
+                                                  bool      &TAAParsed,  // Out.
+                                                  unsigned  &StubSize) { // Out.
   TAAParsed = false;
 
   SmallVector<StringRef, 5> SplitSpec;
@@ -260,7 +259,7 @@ std::string MCSectionMachO::ParseSectionSpecifier(StringRef Spec,       // In.
     // S_SYMBOL_STUBS always require a symbol stub size specifier.
     if (TAA == MachO::S_SYMBOL_STUBS)
       return "mach-o section specifier of type 'symbol_stubs' requires a size "
-             "specifier";
+      "specifier";
     return "";
   }
 

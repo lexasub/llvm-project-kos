@@ -15,11 +15,11 @@
 #define SCUDO_ALLOCATOR_COMBINED_H_
 
 #ifndef SCUDO_ALLOCATOR_H_
-#error "This file must be included inside scudo_allocator.h."
+# error "This file must be included inside scudo_allocator.h."
 #endif
 
 class CombinedAllocator {
-public:
+ public:
   using PrimaryAllocator = PrimaryT;
   using SecondaryAllocator = SecondaryT;
   using AllocatorCache = typename PrimaryAllocator::AllocatorCache;
@@ -45,23 +45,31 @@ public:
     Cache->Deallocate(&Primary, ClassId, Ptr);
   }
 
-  void deallocateSecondary(void *Ptr) { Secondary.Deallocate(&Stats, Ptr); }
+  void deallocateSecondary(void *Ptr) {
+    Secondary.Deallocate(&Stats, Ptr);
+  }
 
-  void initCache(AllocatorCache *Cache) { Cache->Init(&Stats); }
+  void initCache(AllocatorCache *Cache) {
+    Cache->Init(&Stats);
+  }
 
-  void destroyCache(AllocatorCache *Cache) { Cache->Destroy(&Primary, &Stats); }
+  void destroyCache(AllocatorCache *Cache) {
+    Cache->Destroy(&Primary, &Stats);
+  }
 
-  void getStats(AllocatorStatCounters StatType) const { Stats.Get(StatType); }
+  void getStats(AllocatorStatCounters StatType) const {
+    Stats.Get(StatType);
+  }
 
   void printStats() {
     Primary.PrintStats();
     Secondary.PrintStats();
   }
 
-private:
+ private:
   PrimaryAllocator Primary;
   SecondaryAllocator Secondary;
   AllocatorGlobalStats Stats;
 };
 
-#endif // SCUDO_ALLOCATOR_COMBINED_H_
+#endif  // SCUDO_ALLOCATOR_COMBINED_H_

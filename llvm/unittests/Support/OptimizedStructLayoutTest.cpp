@@ -33,8 +33,7 @@ public:
   LayoutTest &flexible(uint64_t Size, uint64_t Alignment,
                        uint64_t ExpectedOffset) {
     Fields.push_back({Size, Align(Alignment),
-                      OptimizedStructLayoutField::FlexibleOffset,
-                      ExpectedOffset});
+                      OptimizedStructLayoutField::FlexibleOffset, ExpectedOffset});
     return *this;
   }
 
@@ -63,65 +62,71 @@ public:
   }
 };
 
-} // namespace
+}
 
 TEST(OptimizedStructLayoutTest, Basic) {
-  LayoutTest().flexible(12, 4, 8).flexible(8, 8, 0).flexible(4, 4, 20).verify(
-      24, 8);
+  LayoutTest()
+    .flexible(12, 4, 8)
+    .flexible(8,  8, 0)
+    .flexible(4,  4, 20)
+    .verify(24, 8);
 }
 
 TEST(OptimizedStructLayoutTest, OddSize) {
   LayoutTest()
-      .flexible(8, 8, 16)
-      .flexible(4, 4, 12)
-      .flexible(1, 1, 10)
-      .flexible(10, 8, 0)
-      .verify(24, 8);
+    .flexible(8,  8, 16)
+    .flexible(4,  4, 12)
+    .flexible(1,  1, 10)
+    .flexible(10, 8, 0)
+    .verify(24, 8);
 }
 
 TEST(OptimizedStructLayoutTest, Gaps) {
   LayoutTest()
-      .fixed(4, 4, 8)
-      .fixed(4, 4, 16)
-      .flexible(4, 4, 0)
-      .flexible(4, 4, 4)
-      .flexible(4, 4, 12)
-      .flexible(4, 4, 20)
-      .verify(24, 4);
+    .fixed(4, 4, 8)
+    .fixed(4, 4, 16)
+    .flexible(4, 4, 0)
+    .flexible(4, 4, 4)
+    .flexible(4, 4, 12)
+    .flexible(4, 4, 20)
+    .verify(24, 4);
 }
 
 TEST(OptimizedStructLayoutTest, Greed) {
   // The greedy algorithm doesn't find the optimal layout here, which
   // would be to put the 5-byte field at the end.
   LayoutTest()
-      .fixed(4, 4, 8)
-      .flexible(5, 4, 0)
-      .flexible(4, 4, 12)
-      .flexible(4, 4, 16)
-      .flexible(4, 4, 20)
-      .verify(24, 4);
+    .fixed(4, 4, 8)
+    .flexible(5, 4, 0)
+    .flexible(4, 4, 12)
+    .flexible(4, 4, 16)
+    .flexible(4, 4, 20)
+    .verify(24, 4);
 }
 
 TEST(OptimizedStructLayoutTest, Jagged) {
-  LayoutTest().flexible(1, 2, 18).flexible(13, 8, 0).flexible(3, 2, 14).verify(
-      19, 8);
+  LayoutTest()
+    .flexible(1, 2, 18)
+    .flexible(13, 8, 0)
+    .flexible(3, 2, 14)
+    .verify(19, 8);
 }
 
 TEST(OptimizedStructLayoutTest, GardenPath) {
   // The 4-byte-aligned field is our highest priority, but the less-aligned
   // fields keep leaving the end offset mis-aligned.
   LayoutTest()
-      .fixed(7, 4, 0)
-      .flexible(4, 4, 44)
-      .flexible(6, 1, 7)
-      .flexible(5, 1, 13)
-      .flexible(7, 2, 18)
-      .flexible(4, 1, 25)
-      .flexible(4, 1, 29)
-      .flexible(1, 1, 33)
-      .flexible(4, 2, 34)
-      .flexible(4, 2, 38)
-      .flexible(2, 2, 42)
-      .flexible(2, 2, 48)
-      .verify(50, 4);
+    .fixed(7, 4, 0)
+    .flexible(4, 4, 44)
+    .flexible(6, 1, 7)
+    .flexible(5, 1, 13)
+    .flexible(7, 2, 18)
+    .flexible(4, 1, 25)
+    .flexible(4, 1, 29)
+    .flexible(1, 1, 33)
+    .flexible(4, 2, 34)
+    .flexible(4, 2, 38)
+    .flexible(2, 2, 42)
+    .flexible(2, 2, 48)
+    .verify(50, 4);
 }

@@ -215,9 +215,7 @@ TEST(CFGBuilder, Deletions) {
       {"entry", "a"}, {"a", "b"}, {"a", "c"}, {"c", "d"}, {"d", "b"}};
   const auto Delete = CFGBuilder::ActionKind::Delete;
   std::vector<CFGBuilder::Update> Updates = {
-      {Delete, {"c", "d"}},
-      {Delete, {"a", "c"}},
-      {Delete, {"entry", "a"}},
+      {Delete, {"c", "d"}}, {Delete, {"a", "c"}}, {Delete, {"entry", "a"}},
   };
   const size_t NumUpdates = Updates.size();
 

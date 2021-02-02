@@ -9,12 +9,9 @@ int ga, gb;
 // CHECK-NEXT: | |-DeclRefExpr {{.+}} <col:27> 'int' lvalue Var {{.+}} 'ga' 'int'
 // CHECK-NEXT: | `-DeclRefExpr {{.+}} <col:31> 'int' lvalue Var {{.+}} 'gb' 'int'
 
-#pragma omp declare reduction(+           \
-                              : int, char \
-                              : omp_out *= omp_in)
+#pragma omp declare reduction(+ : int, char : omp_out *= omp_in)
 
-#pragma omp declare reduction(fun:float \
-                              : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
+#pragma omp declare reduction(fun : float : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
 
 // CHECK:      |-OMPDeclareReductionDecl {{.+}} <line:[[@LINE-4]]:35> col:35 operator+ 'int' combiner 0x{{.+}}
 // CHECK-NEXT: | |-CompoundAssignOperator {{.+}} <col:47, col:58> 'int' lvalue '*=' ComputeLHSTy='int' ComputeResultTy='int'

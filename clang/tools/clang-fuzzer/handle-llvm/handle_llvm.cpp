@@ -8,7 +8,7 @@
 //
 // Implements HandleLLVM for use by the Clang fuzzers. First runs a loop
 // vectorizer optimization pass over the given IR code. Then mimics lli on both
-// versions to JIT the generated code and execute it. Currently, functions are
+// versions to JIT the generated code and execute it. Currently, functions are 
 // executed on dummy inputs.
 //
 //===----------------------------------------------------------------------===//
@@ -51,42 +51,34 @@ using namespace llvm;
 static codegen::RegisterCodeGenFlags CGF;
 
 // Define a type for the functions that are compiled and executed
-typedef void (*LLVMFunc)(int *, int *, int *, int);
+typedef void (*LLVMFunc)(int*, int*, int*, int);
 
 // Helper function to parse command line args and find the optimization level
 static void getOptLevel(const std::vector<const char *> &ExtraArgs,
-                        CodeGenOpt::Level &OLvl) {
+                              CodeGenOpt::Level &OLvl) {
   // Find the optimization level from the command line args
   OLvl = CodeGenOpt::Default;
   for (auto &A : ExtraArgs) {
     if (A[0] == '-' && A[1] == 'O') {
-      switch (A[2]) {
-      case '0':
-        OLvl = CodeGenOpt::None;
-        break;
-      case '1':
-        OLvl = CodeGenOpt::Less;
-        break;
-      case '2':
-        OLvl = CodeGenOpt::Default;
-        break;
-      case '3':
-        OLvl = CodeGenOpt::Aggressive;
-        break;
-      default:
-        errs() << "error: opt level must be between 0 and 3.\n";
-        std::exit(1);
+      switch(A[2]) {
+        case '0': OLvl = CodeGenOpt::None; break;
+        case '1': OLvl = CodeGenOpt::Less; break;
+        case '2': OLvl = CodeGenOpt::Default; break;
+        case '3': OLvl = CodeGenOpt::Aggressive; break;
+        default:
+          errs() << "error: opt level must be between 0 and 3.\n";
+          std::exit(1);
       }
     }
   }
 }
 
 static void ErrorAndExit(std::string message) {
-  errs() << "ERROR: " << message << "\n";
+  errs()<< "ERROR: " << message << "\n";
   std::exit(1);
 }
 
-// Helper function to add optimization passes to the TargetMachine at the
+// Helper function to add optimization passes to the TargetMachine at the 
 // specified optimization level, OptLevel
 static void AddOptimizationPasses(legacy::PassManagerBase &MPM,
                                   CodeGenOpt::Level OptLevel,
@@ -129,7 +121,7 @@ static std::string OptLLVM(const std::string &IR, CodeGenOpt::Level OLvl) {
                                  codegen::getFeaturesStr(), *M);
 
   legacy::PassManager Passes;
-
+  
   Passes.add(new TargetLibraryInfoWrapperPass(ModuleTriple));
   Passes.add(createTargetTransformInfoWrapperPass(TM->getTargetIRAnalysis()));
 

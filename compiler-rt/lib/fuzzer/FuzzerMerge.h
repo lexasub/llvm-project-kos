@@ -77,9 +77,11 @@ void CrashResistantMerge(const Vector<std::string> &Args,
                          Vector<std::string> *NewFiles,
                          const Set<uint32_t> &InitialFeatures,
                          Set<uint32_t> *NewFeatures,
-                         const Set<uint32_t> &InitialCov, Set<uint32_t> *NewCov,
-                         const std::string &CFPath, bool Verbose);
+                         const Set<uint32_t> &InitialCov,
+                         Set<uint32_t> *NewCov,
+                         const std::string &CFPath,
+                         bool Verbose);
 
-} // namespace fuzzer
+}  // namespace fuzzer
 
-#endif // LLVM_FUZZER_MERGE_H
+#endif  // LLVM_FUZZER_MERGE_H

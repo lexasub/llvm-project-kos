@@ -18,19 +18,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef int T;
-    T a1[] = {1, 2, 3, 4, 5};
-    T a2[] = {6, 12, 18, 24, 30};
-    const unsigned N = sizeof(a1) / sizeof(a1[0]);
-    std::valarray<T> v1(a1, N);
-    std::valarray<T> v2(a2, N);
-    v2 /= 6;
-    assert(v1.size() == v2.size());
-    for (std::size_t i = 0; i < v1.size(); ++i)
-      assert(v1[i] == v2[i]);
-  }
+int main(int, char**)
+{
+    {
+        typedef int T;
+        T a1[] = {1,  2,  3,  4,  5};
+        T a2[] = {6, 12, 18, 24, 30};
+        const unsigned N = sizeof(a1)/sizeof(a1[0]);
+        std::valarray<T> v1(a1, N);
+        std::valarray<T> v2(a2, N);
+        v2 /= 6;
+        assert(v1.size() == v2.size());
+        for (std::size_t i = 0; i < v1.size(); ++i)
+            assert(v1[i] == v2[i]);
+    }
 
   return 0;
 }

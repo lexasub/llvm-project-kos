@@ -159,7 +159,7 @@ public:
 protected:
   // Member variables.
   FileSpec m_file; ///< The file that represents this container objects (which
-                   /// can be different from the module's file).
+                   ///can be different from the module's file).
   lldb::addr_t
       m_offset; ///< The offset in bytes into the file, or the address in memory
   lldb::addr_t m_length; ///< The size in bytes if known (can be zero).

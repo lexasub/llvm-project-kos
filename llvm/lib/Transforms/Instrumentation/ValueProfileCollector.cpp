@@ -61,8 +61,7 @@ public:
 } // end anonymous namespace
 
 /// ValueProfileCollectorImpl inherits the API of PluginChainFinal.
-class ValueProfileCollector::ValueProfileCollectorImpl
-    : public PluginChainFinal {
+class ValueProfileCollector::ValueProfileCollectorImpl : public PluginChainFinal {
 public:
   using PluginChainFinal::PluginChainFinal;
 };

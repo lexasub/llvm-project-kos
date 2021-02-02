@@ -63,3 +63,5 @@ int fooFalsePositiveClone(int a) { // expected-note{{Similar code here}}
   a = a + 1 / 1 + 1 + 1 + 1;
   return a;
 }
+
+

@@ -17,7 +17,7 @@
 #define HEADER
 
 struct S {
-  S() : a(0) {}
+  S(): a(0) {}
   S(int v) : a(v) {}
   int a;
   typedef int type;
@@ -56,10 +56,10 @@ class S8 : public S7<S> {
   S8() {}
 
 public:
-  S8(int v) : S7<S>(v) {
+  S8(int v) : S7<S>(v){
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for simd private(a) private(this->a) private(S7 <S>::a)
+#pragma omp distribute parallel for simd private(a) private(this->a) private(S7<S>::a)
     for (int k = 0; k < a.a; ++k)
       ++this->a.a;
   }
@@ -80,7 +80,7 @@ template <class T, int N>
 T tmain(T argc) {
   T b = argc, c, d, e, f, h;
   static T a;
-  // CHECK: static T a;
+// CHECK: static T a;
   static T g;
 #pragma omp threadprivate(g)
 #pragma omp target
@@ -93,20 +93,18 @@ T tmain(T argc) {
 // CHECK-NEXT: a = 2;
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for simd allocate(argc) private(argc, b), firstprivate(c, d), lastprivate(f) collapse(N) schedule(static, N) if (parallel                                                     \
-                                                                                                                                                 : argc) num_threads(N) default(shared) shared(e) reduction(+ \
-                                                                                                                                                                                                            : h) dist_schedule(static, N)
+#pragma omp distribute parallel for simd allocate(argc) private(argc, b), firstprivate(c, d), lastprivate(f) collapse(N) schedule(static, N) if (parallel :argc) num_threads(N) default(shared) shared(e) reduction(+ : h) dist_schedule(static,N)
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 2; ++j)
       for (int j = 0; j < 2; ++j)
         for (int j = 0; j < 2; ++j)
           for (int j = 0; j < 2; ++j)
-            for (int i = 0; i < 2; ++i)
-              for (int j = 0; j < 2; ++j)
-                for (int j = 0; j < 2; ++j)
-                  for (int j = 0; j < 2; ++j)
-                    for (int j = 0; j < 2; ++j)
-                      a++;
+  for (int i = 0; i < 2; ++i)
+    for (int j = 0; j < 2; ++j)
+      for (int j = 0; j < 2; ++j)
+        for (int j = 0; j < 2; ++j)
+          for (int j = 0; j < 2; ++j)
+            a++;
   // CHECK: #pragma omp distribute parallel for simd allocate(argc) private(argc,b) firstprivate(c,d) lastprivate(f) collapse(N) schedule(static, N) if(parallel: argc) num_threads(N) default(shared) shared(e) reduction(+: h) dist_schedule(static, N)
   // CHECK-NEXT: for (int i = 0; i < 2; ++i)
   // CHECK-NEXT: for (int j = 0; j < 2; ++j)
@@ -126,7 +124,7 @@ int main(int argc, char **argv) {
   int b = argc, c, d, e, f, h;
   int x[200];
   static int a;
-  // CHECK: static int a;
+// CHECK: static int a;
   static float g;
 #pragma omp threadprivate(g)
 #pragma omp target
@@ -139,8 +137,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: a = 2;
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) schedule(auto) if (argc) num_threads(a) default(shared) shared(e) reduction(+ \
-                                                                                                                                                                                            : h) dist_schedule(static, b)
+#pragma omp distribute parallel for simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) schedule(auto) if (argc) num_threads(a) default(shared) shared(e) reduction(+ : h) dist_schedule(static, b)
   for (int i = 0; i < 10; ++i)
     for (int j = 0; j < 10; ++j)
       a++;
@@ -153,10 +150,9 @@ int main(int argc, char **argv) {
 #pragma omp target
 #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute parallel for simd aligned(x : 8) linear(i : 2) safelen(8) simdlen(8) if (simd \
-                                                                                                : argc) nontemporal(argc, c, d) order(concurrent)
+#pragma omp distribute parallel for simd aligned(x:8) linear(i:2) safelen(8) simdlen(8) if(simd: argc) nontemporal(argc, c, d) order(concurrent)
 #else
-#pragma omp distribute parallel for simd aligned(x : 8) linear(i : 2) safelen(8) simdlen(8)
+#pragma omp distribute parallel for simd aligned(x:8) linear(i:2) safelen(8) simdlen(8)
 #endif // OMP5
   for (i = 0; i < 100; i++)
     for (int j = 0; j < 200; j++)

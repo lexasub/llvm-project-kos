@@ -148,7 +148,9 @@ public:
     return false;
   }
 
-  bool emitGetActiveLaneMask() const { return false; }
+  bool emitGetActiveLaneMask() const {
+    return false;
+  }
 
   Optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                IntrinsicInst &II) const {
@@ -897,7 +899,7 @@ public:
 
     Type *Ty = U->getType();
     Type *OpTy =
-        U->getNumOperands() == 1 ? U->getOperand(0)->getType() : nullptr;
+      U->getNumOperands() == 1 ? U->getOperand(0)->getType() : nullptr;
     unsigned Opcode = Operator::getOpcode(U);
     auto *I = dyn_cast<Instruction>(U);
     switch (Opcode) {
@@ -948,14 +950,13 @@ public:
       TTI::OperandValueProperties Op1VP = TTI::OP_None;
       TTI::OperandValueProperties Op2VP = TTI::OP_None;
       TTI::OperandValueKind Op1VK =
-          TTI::getOperandInfo(U->getOperand(0), Op1VP);
-      TTI::OperandValueKind Op2VK =
-          Opcode != Instruction::FNeg
-              ? TTI::getOperandInfo(U->getOperand(1), Op2VP)
-              : TTI::OK_AnyValue;
+        TTI::getOperandInfo(U->getOperand(0), Op1VP);
+      TTI::OperandValueKind Op2VK = Opcode != Instruction::FNeg ?
+        TTI::getOperandInfo(U->getOperand(1), Op2VP) : TTI::OK_AnyValue;
       SmallVector<const Value *, 2> Operands(U->operand_values());
-      return TargetTTI->getArithmeticInstrCost(
-          Opcode, Ty, CostKind, Op1VK, Op2VK, Op1VP, Op2VP, Operands, I);
+      return TargetTTI->getArithmeticInstrCost(Opcode, Ty, CostKind,
+                                               Op1VK, Op2VK,
+                                               Op1VP, Op2VP, Operands, I);
     }
     case Instruction::IntToPtr:
     case Instruction::PtrToInt:
@@ -976,14 +977,14 @@ public:
       auto *SI = cast<StoreInst>(U);
       Type *ValTy = U->getOperand(0)->getType();
       return TargetTTI->getMemoryOpCost(Opcode, ValTy, SI->getAlign(),
-                                        SI->getPointerAddressSpace(), CostKind,
-                                        I);
+                                        SI->getPointerAddressSpace(),
+                                        CostKind, I);
     }
     case Instruction::Load: {
       auto *LI = cast<LoadInst>(U);
       return TargetTTI->getMemoryOpCost(Opcode, U->getType(), LI->getAlign(),
-                                        LI->getPointerAddressSpace(), CostKind,
-                                        I);
+                                        LI->getPointerAddressSpace(),
+                                        CostKind, I);
     }
     case Instruction::Select: {
       Type *CondTy = U->getOperand(0)->getType();

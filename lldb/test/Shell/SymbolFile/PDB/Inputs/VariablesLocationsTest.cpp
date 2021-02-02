@@ -5,12 +5,15 @@ void __fastcall foo(short arg_0, float arg_1) {
   double loc_1 = 0.5678;
 }
 
-__declspec(align(128)) struct S { int a = 1234; };
+__declspec(align(128)) struct S {
+  int a = 1234;
+};
 
 void bar(int arg_0) {
-  S loc_0;
-  int loc_1 = 5678;
+ S loc_0;
+ int loc_1 = 5678;
 }
+
 
 int main(int argc, char *argv[]) {
   bool loc_0 = true;

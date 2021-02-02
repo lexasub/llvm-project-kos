@@ -82,8 +82,7 @@ public:
   unsigned getNumBlocks() const { return Blocks.size(); }
   std::vector<MachineBasicBlock *> &getBlocksVector() { return Blocks; }
 
-  const std::vector<std::unique_ptr<WebAssemblyException>> &
-  getSubExceptions() const {
+  const std::vector<std::unique_ptr<WebAssemblyException>> &getSubExceptions() const {
     return SubExceptions;
   }
   std::vector<std::unique_ptr<WebAssemblyException>> &getSubExceptions() {

@@ -19,7 +19,7 @@ namespace llvm {
 namespace sys {
 class DynamicLibrary;
 }
-} // namespace llvm
+}
 
 namespace lldb_private {
 class Platform;
@@ -107,12 +107,8 @@ struct OptionValidator {
   virtual const char *LongConditionString() const = 0;
 };
 
-typedef struct type128 {
-  uint64_t x[2];
-} type128;
-typedef struct type256 {
-  uint64_t x[4];
-} type256;
+typedef struct type128 { uint64_t x[2]; } type128;
+typedef struct type256 { uint64_t x[4]; } type256;
 
 } // namespace lldb_private
 

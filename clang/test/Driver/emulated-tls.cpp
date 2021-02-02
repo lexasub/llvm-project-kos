@@ -29,6 +29,7 @@
 // RUN: %clang -### -target i686-pc-openbsd %s -femulated-tls -fno-emulated-tls 2>&1 \
 // RUN: | FileCheck -check-prefix=NOEMU %s
 
+
 // Default without -f[no-]emulated-tls, will be decided by the target triple.
 // DEFAULT-NOT: "-cc1" {{.*}}"-femulated-tls"
 // DEFAULT-NOT: "-cc1" {{.*}}"-fno-emulated-tls"

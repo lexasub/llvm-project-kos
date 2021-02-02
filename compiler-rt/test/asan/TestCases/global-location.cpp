@@ -20,10 +20,8 @@ int C::array[10];
 int main(int argc, char **argv) {
   int one = argc - 1;
   switch (argv[1][0]) {
-  case 'g':
-    return global[one * 11];
-  case 'c':
-    return C::array[one * 11];
+  case 'g': return global[one * 11];
+  case 'c': return C::array[one * 11];
   case 'f':
     static int array[10];
     // FUNC_STATIC: 0x{{.*}} is located 4 bytes to the right of global variable 'array' defined in '{{.*}}global-location.cpp:[[@LINE-1]]:16' {{.*}} of size 40

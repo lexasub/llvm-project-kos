@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
 struct A {
-  template <typename T>
+  template<typename T>
   void f();
 };
 class A::f<int>;

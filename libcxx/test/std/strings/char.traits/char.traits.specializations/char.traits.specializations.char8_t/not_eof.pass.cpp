@@ -18,13 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
 #if defined(__cpp_lib_char8_t) && __cpp_lib_char8_t >= 201811L
-  assert(std::char_traits<char8_t>::not_eof(u8 'a') == u8 'a');
-  assert(std::char_traits<char8_t>::not_eof(u8 'A') == u8 'A');
-  assert(std::char_traits<char8_t>::not_eof(0) == 0);
-  assert(std::char_traits<char8_t>::not_eof(std::char_traits<char8_t>::eof()) !=
-         std::char_traits<char8_t>::eof());
+    assert(std::char_traits<char8_t>::not_eof(u8'a') == u8'a');
+    assert(std::char_traits<char8_t>::not_eof(u8'A') == u8'A');
+    assert(std::char_traits<char8_t>::not_eof(0) == 0);
+    assert(std::char_traits<char8_t>::not_eof(std::char_traits<char8_t>::eof()) !=
+           std::char_traits<char8_t>::eof());
 #endif
 
   return 0;

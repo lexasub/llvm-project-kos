@@ -89,9 +89,7 @@ public:
     Description &getDescription() { return Desc; }
     uint8_t getCode() { return Opcode; }
     uint64_t getRawOperand(unsigned Idx) { return Operands[Idx]; }
-    uint64_t getOperandEndOffset(unsigned Idx) {
-      return OperandEndOffsets[Idx];
-    }
+    uint64_t getOperandEndOffset(unsigned Idx) { return OperandEndOffsets[Idx]; }
     uint64_t getEndOffset() { return EndOffset; }
     bool extract(DataExtractor Data, uint8_t AddressSize, uint64_t Offset,
                  Optional<dwarf::DwarfFormat> Format);
@@ -171,5 +169,5 @@ inline bool operator==(const DWARFExpression::iterator &LHS,
                        const DWARFExpression::iterator &RHS) {
   return LHS.Expr == RHS.Expr && LHS.Offset == RHS.Offset;
 }
-} // namespace llvm
+}
 #endif

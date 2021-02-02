@@ -5,6 +5,7 @@
 
 extern "C" int printf(...);
 
+
 struct C {
   C() : iC(6) {}
   int iC;
@@ -15,9 +16,9 @@ int foo() {
 };
 
 class X { // ...
-public:
+public: 
   X(int) {}
-  X(const X &, int i = 1, int j = 2, int k = foo()) {
+  X(const X&, int i = 1, int j = 2, int k = foo()) {
     printf("X(const X&, %d, %d, %d)\n", i, j, k);
   }
 };

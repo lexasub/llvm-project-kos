@@ -1,5 +1,5 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
-class C {};
+class C { };
 
 C c;
 
@@ -7,7 +7,8 @@ void D(int);
 
 class D {};
 
-void foo() {
+void foo()
+{
   D(5);
   class D d;
 }
@@ -16,17 +17,19 @@ class D; // expected-note {{previous use is here}}
 
 enum D; // expected-error {{use of 'D' with tag type that does not match previous declaration}}
 
-class A *A;
+class A * A;
 
-class A *a2;
+class A * a2;
 
-void bar() {
+void bar()
+{
   A = 0;
 }
 
 void C(int);
 
-void bar2() {
+void bar2()
+{
   C(17);
 }
 

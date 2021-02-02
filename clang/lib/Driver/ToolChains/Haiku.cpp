@@ -16,8 +16,10 @@ using namespace llvm::opt;
 
 /// Haiku - Haiku tool chain which can call as(1) and ld(1) directly.
 
-Haiku::Haiku(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
-    : Generic_ELF(D, Triple, Args) {}
+Haiku::Haiku(const Driver &D, const llvm::Triple& Triple, const ArgList &Args)
+  : Generic_ELF(D, Triple, Args) {
+
+}
 
 void Haiku::addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
                                   llvm::opt::ArgStringList &CC1Args) const {

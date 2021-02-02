@@ -382,17 +382,16 @@ void CommandInterpreter::Initialize() {
     CommandAlias *parray_alias =
         AddAlias("parray", cmd_obj_sp, "--element-count %1 --");
     if (parray_alias) {
-      parray_alias->SetHelp(
-          "parray <COUNT> <EXPRESSION> -- lldb will evaluate EXPRESSION "
-          "to get a typed-pointer-to-an-array in memory, and will display "
-          "COUNT elements of that type from the array.");
-      parray_alias->SetHelpLong("");
+        parray_alias->SetHelp
+          ("parray <COUNT> <EXPRESSION> -- lldb will evaluate EXPRESSION "
+           "to get a typed-pointer-to-an-array in memory, and will display "
+           "COUNT elements of that type from the array.");
+        parray_alias->SetHelpLong("");
     }
-    CommandAlias *poarray_alias = AddAlias(
-        "poarray", cmd_obj_sp, "--object-description --element-count %1 --");
+    CommandAlias *poarray_alias = AddAlias("poarray", cmd_obj_sp,
+             "--object-description --element-count %1 --");
     if (poarray_alias) {
-      poarray_alias->SetHelp(
-          "poarray <COUNT> <EXPRESSION> -- lldb will "
+      poarray_alias->SetHelp("poarray <COUNT> <EXPRESSION> -- lldb will "
           "evaluate EXPRESSION to get the address of an array of COUNT "
           "objects in memory, and will call po on them.");
       poarray_alias->SetHelpLong("");
@@ -466,7 +465,9 @@ void CommandInterpreter::Initialize() {
   }
 }
 
-void CommandInterpreter::Clear() { m_command_io_handler_sp.reset(); }
+void CommandInterpreter::Clear() {
+  m_command_io_handler_sp.reset();
+}
 
 const char *CommandInterpreter::ProcessEmbeddedScriptCommands(const char *arg) {
   // This function has not yet been implemented.
@@ -782,10 +783,8 @@ void CommandInterpreter::LoadCommandDictionary() {
                                          "thread backtrace -c %1") &&
         bt_regex_cmd_up->AddRegexCommand("^-c ([[:digit:]]+)[[:space:]]*$",
                                          "thread backtrace -c %1") &&
-        bt_regex_cmd_up->AddRegexCommand("^all[[:space:]]*$",
-                                         "thread backtrace all") &&
-        bt_regex_cmd_up->AddRegexCommand("^[[:space:]]*$",
-                                         "thread backtrace")) {
+        bt_regex_cmd_up->AddRegexCommand("^all[[:space:]]*$", "thread backtrace all") &&
+        bt_regex_cmd_up->AddRegexCommand("^[[:space:]]*$", "thread backtrace")) {
       CommandObjectSP command_sp(bt_regex_cmd_up.release());
       m_command_dict[std::string(command_sp->GetCommandName())] = command_sp;
     }
@@ -1644,7 +1643,7 @@ bool CommandInterpreter::HandleCommand(const char *command_line,
 
   Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_COMMANDS));
   llvm::PrettyStackTraceFormat stack_trace("HandleCommand(command = \"%s\")",
-                                           command_line);
+                                   command_line);
 
   LLDB_LOGF(log, "Processing command: %s", command_line);
   LLDB_SCOPED_TIMERF("Processing command: %s.", command_line);
@@ -1751,8 +1750,7 @@ bool CommandInterpreter::HandleCommand(const char *command_line,
   // has the command expanded to the full name.  For example, if the input was
   // "br s -n main", command_string is now "breakpoint set -n main".
   if (log) {
-    llvm::StringRef command_name =
-        cmd_obj ? cmd_obj->GetCommandName() : "<not found>";
+    llvm::StringRef command_name = cmd_obj ? cmd_obj->GetCommandName() : "<not found>";
     LLDB_LOGF(log, "HandleCommand, cmd_obj : '%s'", command_name.str().c_str());
     LLDB_LOGF(log, "HandleCommand, (revised) command_string: '%s'",
               command_string.c_str());
@@ -1921,15 +1919,11 @@ CommandInterpreter::GetAlias(llvm::StringRef alias_name) const {
   return nullptr;
 }
 
-bool CommandInterpreter::HasCommands() const {
-  return (!m_command_dict.empty());
-}
+bool CommandInterpreter::HasCommands() const { return (!m_command_dict.empty()); }
 
 bool CommandInterpreter::HasAliases() const { return (!m_alias_dict.empty()); }
 
-bool CommandInterpreter::HasUserCommands() const {
-  return (!m_user_dict.empty());
-}
+bool CommandInterpreter::HasUserCommands() const { return (!m_user_dict.empty()); }
 
 bool CommandInterpreter::HasAliasOptions() const { return HasAliases(); }
 
@@ -2814,9 +2808,9 @@ bool CommandInterpreter::EchoCommandNonInteractive(
 
 void CommandInterpreter::IOHandlerInputComplete(IOHandler &io_handler,
                                                 std::string &line) {
-  // If we were interrupted, bail out...
-  if (WasInterrupted())
-    return;
+    // If we were interrupted, bail out...
+    if (WasInterrupted())
+      return;
 
   const bool is_interactive = io_handler.GetIsInteractive();
   if (!is_interactive) {

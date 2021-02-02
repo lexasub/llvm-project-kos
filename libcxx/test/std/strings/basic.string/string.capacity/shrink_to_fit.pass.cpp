@@ -17,18 +17,21 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(S s) {
-  typename S::size_type old_cap = s.capacity();
-  S s0 = s;
-  s.shrink_to_fit();
-  LIBCPP_ASSERT(s.__invariants());
-  assert(s == s0);
-  assert(s.capacity() <= old_cap);
-  assert(s.capacity() >= s.size());
+void
+test(S s)
+{
+    typename S::size_type old_cap = s.capacity();
+    S s0 = s;
+    s.shrink_to_fit();
+    LIBCPP_ASSERT(s.__invariants());
+    assert(s == s0);
+    assert(s.capacity() <= old_cap);
+    assert(s.capacity() >= s.size());
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     S s;
     test(s);
@@ -40,12 +43,10 @@ int main(int, char**) {
     s.assign(100, 'a');
     s.erase(50);
     test(s);
-  }
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     S s;
     test(s);
 
@@ -56,7 +57,7 @@ int main(int, char**) {
     s.assign(100, 'a');
     s.erase(50);
     test(s);
-  }
+    }
 #endif
 
   return 0;

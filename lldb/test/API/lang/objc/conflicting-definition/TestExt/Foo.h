@@ -2,8 +2,8 @@
 #define __Foo_h__
 
 typedef struct {
-  float s;
-  float d;
+    float s;
+    float d;
 } CMTimeRange;
 
 #endif

@@ -65,7 +65,7 @@ bool BasicBlockEdge::isSingleEdge() const {
 
 template class llvm::DomTreeNodeBase<BasicBlock>;
 template class llvm::DominatorTreeBase<BasicBlock, false>; // DomTreeBase
-template class llvm::DominatorTreeBase<BasicBlock, true>;  // PostDomTreeBase
+template class llvm::DominatorTreeBase<BasicBlock, true>; // PostDomTreeBase
 
 template class llvm::cfg::Update<BasicBlock *>;
 
@@ -222,8 +222,8 @@ bool DominatorTree::dominates(const BasicBlockEdge &BBE,
   // other predecessors. Since the only way out of X is via NormalDest, X can
   // only properly dominate a node if NormalDest dominates that node too.
   int IsDuplicateEdge = 0;
-  for (const_pred_iterator PI = pred_begin(End), E = pred_end(End); PI != E;
-       ++PI) {
+  for (const_pred_iterator PI = pred_begin(End), E = pred_end(End);
+       PI != E; ++PI) {
     const BasicBlock *BB = *PI;
     if (BB == Start) {
       // If there are multiple edges between Start and End, by definition they
@@ -322,8 +322,7 @@ bool DominatorTree::isReachableFromEntry(const Use &U) const {
 
   // ConstantExprs aren't really reachable from the entry block, but they
   // don't need to be treated like unreachable code either.
-  if (!I)
-    return true;
+  if (!I) return true;
 
   // PHI nodes use their operands on their incoming edges.
   if (PHINode *PN = dyn_cast<PHINode>(I))

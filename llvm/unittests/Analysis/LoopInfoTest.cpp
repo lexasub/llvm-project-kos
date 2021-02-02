@@ -257,7 +257,8 @@ TEST(LoopInfoTest, CanonicalLoop) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -315,7 +316,8 @@ TEST(LoopInfoTest, LoopWithInverseGuardSuccs) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -373,7 +375,8 @@ TEST(LoopInfoTest, LoopWithSwappedGuardCmp) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -431,7 +434,8 @@ TEST(LoopInfoTest, LoopWithInverseLatchSuccs) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -489,7 +493,8 @@ TEST(LoopInfoTest, LoopWithLatchCmpNE) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -548,7 +553,8 @@ TEST(LoopInfoTest, LoopWithGuardCmpSLE) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -606,7 +612,8 @@ TEST(LoopInfoTest, LoopNonConstantStep) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -661,7 +668,8 @@ TEST(LoopInfoTest, LoopUnsignedBounds) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -719,7 +727,8 @@ TEST(LoopInfoTest, DecreasingLoop) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -777,7 +786,8 @@ TEST(LoopInfoTest, CannotFindDirection) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -816,8 +826,7 @@ TEST(LoopInfoTest, ZextIndVar) {
       "for.preheader:\n"
       "  br label %for.body\n"
       "for.body:\n"
-      "  %indvars.iv = phi i64 [ 0, %for.preheader ], [ %indvars.iv.next, "
-      "%for.body ]\n"
+      "  %indvars.iv = phi i64 [ 0, %for.preheader ], [ %indvars.iv.next, %for.body ]\n"
       "  %i = phi i32 [ 0, %for.preheader ], [ %inc, %for.body ]\n"
       "  %idxprom = sext i32 %i to i64\n"
       "  %arrayidx = getelementptr inbounds i32, i32* %A, i64 %idxprom\n"
@@ -838,7 +847,8 @@ TEST(LoopInfoTest, ZextIndVar) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -898,7 +908,8 @@ TEST(LoopInfoTest, MultiExitingLoop) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -959,7 +970,8 @@ TEST(LoopInfoTest, MultiExitLoop) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         // First two basic block are entry and for.preheader - skip them.
         ++FI;
@@ -1011,7 +1023,8 @@ TEST(LoopInfoTest, UnguardedLoop) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         // First basic block is entry - skip it.
         BasicBlock *Header = &*(++FI);
@@ -1065,7 +1078,8 @@ TEST(LoopInfoTest, UnguardedLoopWithControlFlow) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -1105,8 +1119,7 @@ TEST(LoopInfoTest, LoopNest) {
       "for.outer.preheader:\n"
       "  br label %for.outer\n"
       "for.outer:\n"
-      "  %j = phi i32 [ 0, %for.outer.preheader ], [ %inc.outer, "
-      "%for.outer.latch ]\n"
+      "  %j = phi i32 [ 0, %for.outer.preheader ], [ %inc.outer, %for.outer.latch ]\n"
       "  br i1 %guardcmp, label %for.inner.preheader, label %for.outer.latch\n"
       "for.inner.preheader:\n"
       "  br label %for.inner\n"
@@ -1135,7 +1148,8 @@ TEST(LoopInfoTest, LoopNest) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *OuterGuard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -1203,12 +1217,9 @@ TEST(LoopInfoTest, AuxiliaryIV) {
       "for.body:\n"
       "  %i = phi i32 [ 0, %for.preheader ], [ %inc, %for.body ]\n"
       "  %aux = phi i32 [ 0, %for.preheader ], [ %auxinc, %for.body ]\n"
-      "  %loopvariant = phi i32 [ 0, %for.preheader ], [ %loopvariantinc, "
-      "%for.body ]\n"
-      "  %usedoutside = phi i32 [ 0, %for.preheader ], [ %usedoutsideinc, "
-      "%for.body ]\n"
-      "  %mulopcode = phi i32 [ 0, %for.preheader ], [ %mulopcodeinc, "
-      "%for.body ]\n"
+      "  %loopvariant = phi i32 [ 0, %for.preheader ], [ %loopvariantinc, %for.body ]\n"
+      "  %usedoutside = phi i32 [ 0, %for.preheader ], [ %usedoutsideinc, %for.body ]\n"
+      "  %mulopcode = phi i32 [ 0, %for.preheader ], [ %mulopcodeinc, %for.body ]\n"
       "  %idxprom = sext i32 %i to i64\n"
       "  %arrayidx = getelementptr inbounds i32, i32* %A, i64 %idxprom\n"
       "  store i32 %i, i32* %arrayidx, align 4\n"
@@ -1231,7 +1242,8 @@ TEST(LoopInfoTest, AuxiliaryIV) {
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
   runWithLoopInfoPlus(
-      *M, "foo", [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
         Function::iterator FI = F.begin();
         BasicBlock *Entry = &*(FI);
         BranchInst *Guard = dyn_cast<BranchInst>(Entry->getTerminator());
@@ -1341,24 +1353,24 @@ TEST(LoopInfoTest, LoopLatchNotExiting) {
   LLVMContext Context;
   std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
 
-  runWithLoopInfoPlus(*M, "foo",
-                      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
-                        Function::iterator FI = F.begin();
-                        // First two basic block are entry and for.preheader -
-                        // skip them.
-                        ++FI;
-                        BasicBlock *Header = &*(++FI);
-                        BasicBlock *Latch = &*(++FI);
-                        assert(Header && "No header");
-                        Loop *L = LI.getLoopFor(Header);
-                        EXPECT_NE(L, nullptr);
-                        EXPECT_TRUE(L->isLoopSimplifyForm());
-                        EXPECT_EQ(L->getLoopLatch(), Latch);
-                        EXPECT_FALSE(L->isLoopExiting(Latch));
-                        // No loop guard becuase loop is not exiting on latch.
-                        EXPECT_EQ(L->getLoopGuardBranch(), nullptr);
-                        EXPECT_FALSE(L->isGuarded());
-                      });
+  runWithLoopInfoPlus(
+      *M, "foo",
+      [&](Function &F, LoopInfo &LI, ScalarEvolution &SE) {
+        Function::iterator FI = F.begin();
+        // First two basic block are entry and for.preheader - skip them.
+        ++FI;
+        BasicBlock *Header = &*(++FI);
+        BasicBlock *Latch = &*(++FI);
+        assert(Header && "No header");
+        Loop *L = LI.getLoopFor(Header);
+        EXPECT_NE(L, nullptr);
+        EXPECT_TRUE(L->isLoopSimplifyForm());
+        EXPECT_EQ(L->getLoopLatch(), Latch);
+        EXPECT_FALSE(L->isLoopExiting(Latch));
+        // No loop guard becuase loop is not exiting on latch.
+        EXPECT_EQ(L->getLoopGuardBranch(), nullptr);
+        EXPECT_FALSE(L->isGuarded());
+      });
 }
 
 // Examine getUniqueExitBlocks/getUniqueNonLatchExitBlocks functions.

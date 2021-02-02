@@ -28,7 +28,7 @@ namespace {
 struct D {
   virtual void foo();
 };
-} // namespace
+}
 
 void f() {
   void (C::*ptr)();
@@ -38,15 +38,13 @@ void f() {
   int (C::*ptr2)(int, double);
   ptr2 = &C::bar;
 
-  S (C::*ptr3)
-  (int);
+  S (C::*ptr3)(int);
   ptr3 = &C::baz;
 
   void (D::*ptr4)();
   ptr4 = &D::foo;
 
-  S (C::*ptr5)
-  (U);
+  S (C::*ptr5)(U);
   ptr5 = &C::qux;
 
   void (C::*ptr6)(...);
@@ -54,20 +52,22 @@ void f() {
 
   auto ptr7 = &C::plugh;
 
-  // CHECK32-LABEL: define dso_local void @"?f@@YAXXZ"()
-  // CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BA@AE" to i8*), i8** %ptr
-  // CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B3AE" to i8*), i8** %ptr2
-  // CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B7AE" to i8*), i8** %ptr3
-  // CHECK32: store i8* bitcast (void (%"struct.(anonymous namespace)::D"*, ...)* @"??_9D@?A0x{{[^@]*}}@@$BA@AE" to i8*), i8** %ptr4
-  // CHECK32: }
-  //
-  // CHECK64-LABEL: define dso_local void @"?f@@YAXXZ"()
-  // CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BA@AA" to i8*), i8** %ptr
-  // CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B7AA" to i8*), i8** %ptr2
-  // CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BBA@AA" to i8*), i8** %ptr3
-  // CHECK64: store i8* bitcast (void (%"struct.(anonymous namespace)::D"*, ...)* @"??_9D@?A0x{{[^@]*}}@@$BA@AA" to i8*), i8** %ptr
-  // CHECK64: }
+
+// CHECK32-LABEL: define dso_local void @"?f@@YAXXZ"()
+// CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BA@AE" to i8*), i8** %ptr
+// CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B3AE" to i8*), i8** %ptr2
+// CHECK32: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B7AE" to i8*), i8** %ptr3
+// CHECK32: store i8* bitcast (void (%"struct.(anonymous namespace)::D"*, ...)* @"??_9D@?A0x{{[^@]*}}@@$BA@AE" to i8*), i8** %ptr4
+// CHECK32: }
+//
+// CHECK64-LABEL: define dso_local void @"?f@@YAXXZ"()
+// CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BA@AA" to i8*), i8** %ptr
+// CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$B7AA" to i8*), i8** %ptr2
+// CHECK64: store i8* bitcast (void (%struct.C*, ...)* @"??_9C@@$BBA@AA" to i8*), i8** %ptr3
+// CHECK64: store i8* bitcast (void (%"struct.(anonymous namespace)::D"*, ...)* @"??_9D@?A0x{{[^@]*}}@@$BA@AA" to i8*), i8** %ptr
+// CHECK64: }
 }
+
 
 // Thunk for calling the 1st virtual function in C with no parameters.
 // CHECK32-LABEL: define linkonce_odr x86_thiscallcc void @"??_9C@@$BA@AE"(%struct.C* %this, ...)

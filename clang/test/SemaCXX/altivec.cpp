@@ -32,10 +32,12 @@ void test_vec_step(vector short arg1) {
   int res13[vec_step(*pvi) == 4 ? 1 : -1];
 }
 
-void f(V4i a) {
+void f(V4i a)
+{
 }
 
-void test1() {
+void test1()
+{
   V4i vGCC;
   vector int vAltiVec;
 
@@ -45,12 +47,13 @@ void test1() {
   vAltiVec = 0 ? vGCC : vGCC;
 }
 
-template <typename T>
+template<typename T>
 void template_f(T param) {
   param++;
 }
 
-void test2() {
+void test2()
+{
   vector int vi;
   ++vi;
   vi++;
@@ -59,23 +62,22 @@ void test2() {
   vector float vf;
   vf++;
 
-  ++vi = vi; // expected-warning {{unsequenced}}
-  (++vi)[1] = 1;
+  ++vi=vi; // expected-warning {{unsequenced}}
+  (++vi)[1]=1;
   template_f(vi);
 }
 
 namespace LValueToRValueConversions {
-struct Struct {
-  float f();
-  int n();
-};
+  struct Struct {
+    float f();
+    int n();
+  };
 
-vector float initFloat = (vector float)(Struct().f); // expected-error {{did you mean to call it}}
-vector int initInt = (vector int)(Struct().n);       // expected-error {{did you mean to call it}}
-} // namespace LValueToRValueConversions
+  vector float initFloat = (vector float)(Struct().f); // expected-error {{did you mean to call it}}
+  vector int initInt = (vector int)(Struct().n); // expected-error {{did you mean to call it}}
+}
 
 void f() {
-  try {
-  } catch (vector pixel px) {
-  }
+  try {}
+  catch (vector pixel px) {}
 };

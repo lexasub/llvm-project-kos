@@ -4,19 +4,19 @@
 
 struct [[nodiscard]] S {};
 S get_s();
-S &get_s_ref();
+S& get_s_ref();
 
-enum [[nodiscard]] E{};
+enum [[nodiscard]] E {};
 E get_e();
 
 [[nodiscard]] int get_i();
 [[nodiscard]] volatile int &get_vi();
 
 void f() {
-  get_s();  // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
-  get_i();  // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  get_s(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  get_i(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
   get_vi(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
-  get_e();  // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  get_e(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
 
   // Okay, warnings are not encouraged
   get_s_ref();
@@ -49,10 +49,10 @@ void f() {
   fp3 three;
   fp2_alias four;
 
-  one();   // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
-  two();   // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  one(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  two(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
   three(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
-  four();  // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  four(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
 
   // These are all okay because of the explicit cast to void.
   (void)one();
@@ -62,9 +62,9 @@ void f() {
 }
 } // namespace PR31526
 
-struct [[nodiscard("reason")]] ReasonStruct{};
+struct [[nodiscard("reason")]] ReasonStruct {};
 struct LaterReason;
-struct [[nodiscard("later reason")]] LaterReason{};
+struct [[nodiscard("later reason")]] LaterReason {};
 
 ReasonStruct get_reason();
 LaterReason get_later_reason();
@@ -74,14 +74,14 @@ LaterReason get_later_reason();
 [[nodiscard("special reason")]] int conflicting_reason();
 
 void cxx20_use() {
-  get_reason();         // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: reason}}
-  get_later_reason();   // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: later reason}}
-  another_reason();     // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: another reason}}
+  get_reason(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: reason}}
+  get_later_reason(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: later reason}}
+  another_reason(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: another reason}}
   conflicting_reason(); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: special reason}}
 }
 
 namespace p1771 {
-struct [[nodiscard("Don't throw me away!")]] ConvertTo{};
+struct[[nodiscard("Don't throw me away!")]] ConvertTo{};
 struct S {
   [[nodiscard]] S();
   [[nodiscard("Don't let that S-Char go!")]] S(char);
@@ -92,7 +92,7 @@ struct S {
   [[nodiscard("Don't throw away as a double")]] operator double();
 };
 
-struct [[nodiscard("Don't throw me away either!")]] Y{};
+struct[[nodiscard("Don't throw me away either!")]] Y{};
 
 void usage() {
   S();    // expected-warning {{ignoring temporary created by a constructor declared with 'nodiscard' attribute}}
@@ -119,7 +119,7 @@ void usage() {
 // expected-warning@+2 {{ignoring temporary created by a constructor declared with 'nodiscard' attribute: Don't throw me away!}}
 #endif
   static_cast<ConvertTo>(s);
-  static_cast<int>(s);    // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  static_cast<int>(s); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
   static_cast<double>(s); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute: Don't throw away as a double}}
 }
 }; // namespace p1771

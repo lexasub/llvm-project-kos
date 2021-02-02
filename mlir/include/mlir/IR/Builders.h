@@ -81,8 +81,7 @@ public:
   NoneType getNoneType();
 
   /// Get or construct an instance of the type 'ty' with provided arguments.
-  template <typename Ty, typename... Args>
-  Ty getType(Args... args) {
+  template <typename Ty, typename... Args> Ty getType(Args... args) {
     return Ty::get(context, args...);
   }
 
@@ -392,7 +391,7 @@ public:
 
   /// Create an operation of specific op type at the current insertion point.
   template <typename OpTy, typename... Args>
-  OpTy create(Location location, Args &&...args) {
+  OpTy create(Location location, Args &&... args) {
     OperationState state(location, OpTy::getOperationName());
     if (!state.name.getAbstractOperation())
       llvm::report_fatal_error("Building op `" +
@@ -410,7 +409,7 @@ public:
   /// the results after folding the operation.
   template <typename OpTy, typename... Args>
   void createOrFold(SmallVectorImpl<Value> &results, Location location,
-                    Args &&...args) {
+                    Args &&... args) {
     // Create the operation without using 'createOperation' as we don't want to
     // insert it yet.
     OperationState state(location, OpTy::getOperationName());
@@ -432,7 +431,7 @@ public:
   template <typename OpTy, typename... Args>
   typename std::enable_if<OpTy::template hasTrait<OpTrait::OneResult>(),
                           Value>::type
-  createOrFold(Location location, Args &&...args) {
+  createOrFold(Location location, Args &&... args) {
     SmallVector<Value, 1> results;
     createOrFold<OpTy>(results, location, std::forward<Args>(args)...);
     return results.front();
@@ -442,7 +441,7 @@ public:
   template <typename OpTy, typename... Args>
   typename std::enable_if<OpTy::template hasTrait<OpTrait::ZeroResult>(),
                           OpTy>::type
-  createOrFold(Location location, Args &&...args) {
+  createOrFold(Location location, Args &&... args) {
     auto op = create<OpTy>(location, std::forward<Args>(args)...);
     SmallVector<Value, 0> unused;
     tryFold(op.getOperation(), unused);
@@ -474,8 +473,7 @@ public:
   Operation *cloneWithoutRegions(Operation &op) {
     return insert(op.cloneWithoutRegions());
   }
-  template <typename OpT>
-  OpT cloneWithoutRegions(OpT op) {
+  template <typename OpT> OpT cloneWithoutRegions(OpT op) {
     return cast<OpT>(cloneWithoutRegions(*op.getOperation()));
   }
 

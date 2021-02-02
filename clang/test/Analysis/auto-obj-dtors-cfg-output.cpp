@@ -20,27 +20,27 @@ class A {
 public:
   int x;
 
-  // CHECK:      [B1 (ENTRY)]
-  // CHECK-NEXT:   Succs (1): B0
-  // CHECK:      [B0 (EXIT)]
-  // CHECK-NEXT:   Preds (1): B1
+// CHECK:      [B1 (ENTRY)]
+// CHECK-NEXT:   Succs (1): B0
+// CHECK:      [B0 (EXIT)]
+// CHECK-NEXT:   Preds (1): B1
   A() {}
 
-  // CHECK:      [B1 (ENTRY)]
-  // CHECK-NEXT:   Succs (1): B0
-  // CHECK:      [B0 (EXIT)]
-  // CHECK-NEXT:   Preds (1): B1
+// CHECK:      [B1 (ENTRY)]
+// CHECK-NEXT:   Succs (1): B0
+// CHECK:      [B0 (EXIT)]
+// CHECK-NEXT:   Preds (1): B1
   ~A() {}
 
-  // CHECK:      [B2 (ENTRY)]
-  // CHECK-NEXT:   Succs (1): B1
-  // CHECK:      [B1]
-  // CHECK-NEXT:   1: 1
-  // CHECK-NEXT:   2: return [B1.1];
-  // CHECK-NEXT:   Preds (1): B2
-  // CHECK-NEXT:   Succs (1): B0
-  // CHECK:      [B0 (EXIT)]
-  // CHECK-NEXT:   Preds (1): B1
+// CHECK:      [B2 (ENTRY)]
+// CHECK-NEXT:   Succs (1): B1
+// CHECK:      [B1]
+// CHECK-NEXT:   1: 1
+// CHECK-NEXT:   2: return [B1.1];
+// CHECK-NEXT:   Preds (1): B2
+// CHECK-NEXT:   Succs (1): B0
+// CHECK:      [B0 (EXIT)]
+// CHECK-NEXT:   Preds (1): B1
   operator int() const { return 1; }
 };
 
@@ -69,8 +69,8 @@ extern const bool UV;
 // CHECK-NEXT:   Preds (1): B1
 void test_const_ref() {
   A a;
-  const A &b = a;
-  const A &c = A();
+  const A& b = a;
+  const A& c = A();
 }
 
 // CHECK:      [B2 (ENTRY)]
@@ -398,8 +398,7 @@ void test_array() {
 // CHECK-NEXT:   Preds (1): B1
 void test_scope() {
   A a;
-  {
-    A c;
+  { A c;
     A d;
   }
   A b;
@@ -439,8 +438,7 @@ void test_scope() {
 void test_return() {
   A a;
   A b;
-  if (UV)
-    return;
+  if (UV) return;
   A c;
 }
 
@@ -506,12 +504,9 @@ void test_goto() {
   A a;
 l0:
   A b;
-  {
-    A a;
-    if (UV)
-      goto l0;
-    if (UV)
-      goto l1;
+  { A a;
+    if (UV) goto l0;
+    if (UV) goto l1;
     A b;
   }
 l1:
@@ -563,8 +558,7 @@ void test_if_implicit_scope() {
   A a;
   if (A b = a)
     A c;
-  else
-    A c;
+  else A c;
 }
 
 // CHECK:      [B9 (ENTRY)]
@@ -650,13 +644,11 @@ void test_if_jumps() {
   A a;
   if (A b = a) {
     A c;
-    if (UV)
-      return;
+    if (UV) return;
     A d;
   } else {
     A c;
-    if (UV)
-      return;
+    if (UV) return;
     A d;
   }
   A e;
@@ -798,12 +790,9 @@ void test_while_jumps() {
   A a;
   while (A b = a) {
     A c;
-    if (UV)
-      break;
-    if (UV)
-      continue;
-    if (UV)
-      return;
+    if (UV) break;
+    if (UV) continue;
+    if (UV) return;
     A d;
   }
   A e;
@@ -830,8 +819,7 @@ void test_while_jumps() {
 // CHECK:      [B0 (EXIT)]
 // CHECK-NEXT:   Preds (1): B1
 void test_do_implicit_scope() {
-  do
-    A a;
+  do A a;
   while (UV);
 }
 
@@ -911,12 +899,9 @@ void test_do_jumps() {
   A a;
   do {
     A b;
-    if (UV)
-      break;
-    if (UV)
-      continue;
-    if (UV)
-      return;
+    if (UV) break;
+    if (UV) continue;
+    if (UV) return;
     A c;
   } while (UV);
   A d;
@@ -1034,10 +1019,8 @@ void test_switch_jumps() {
   switch (A b = a) {
   case 0: {
     A c;
-    if (UV)
-      break;
-    if (UV)
-      return;
+    if (UV) break;
+    if (UV) return;
     A f;
   }
   case 1:
@@ -1088,7 +1071,7 @@ void test_switch_jumps() {
 // CHECK:      [B0 (EXIT)]
 // CHECK-NEXT:   Preds (1): B1
 void test_for_implicit_scope() {
-  for (A a; A b = a;)
+  for (A a; A b = a; )
     A c;
 }
 
@@ -1143,6 +1126,7 @@ void test_for_range_implicit_scope() {
   for (int n : nums)
     A c;
 }
+
 
 // CHECK:      [B12 (ENTRY)]
 // CHECK-NEXT:   Succs (1): B11
@@ -1235,14 +1219,11 @@ void test_for_range_implicit_scope() {
 // CHECK-NEXT:   Preds (2): B1 B4
 void test_for_jumps() {
   A a;
-  for (A b; A c = b;) {
+  for (A b; A c = b; ) {
     A d;
-    if (UV)
-      break;
-    if (UV)
-      continue;
-    if (UV)
-      return;
+    if (UV) break;
+    if (UV) continue;
+    if (UV) return;
     A e;
   }
   A f;
@@ -1263,7 +1244,7 @@ void test_for_jumps() {
 // CHECK-NEXT:   Preds (3): B2 B1 B3
 void test_catch_const_ref() {
   try {
-  } catch (const A &e) {
+  } catch (const A& e) {
   }
 }
 

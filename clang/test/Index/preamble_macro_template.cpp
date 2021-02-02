@@ -1,6 +1,6 @@
 template void foo(int *);
 
-int main() {}
+int main() { }
 
 // RUN: c-index-test -write-pch %t.pch -fno-delayed-template-parsing -x c++-header %S/Inputs/preamble_macro_template.h
 // RUN: env CINDEXTEST_EDITING=1 c-index-test -test-load-source-reparse 5 local -fno-delayed-template-parsing -I %S/Inputs -include %t %s 2>&1 | tee %t.check.txt | FileCheck %s

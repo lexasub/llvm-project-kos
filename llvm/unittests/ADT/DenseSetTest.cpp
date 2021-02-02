@@ -1,5 +1,4 @@
-//===- llvm/unittest/ADT/DenseSetTest.cpp - DenseSet unit tests --*- C++
-//-*-===//
+//===- llvm/unittest/ADT/DenseSetTest.cpp - DenseSet unit tests --*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -34,14 +33,14 @@ TEST(DenseSetTest, DoubleEntrySetTest) {
 struct TestDenseSetInfo {
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
-  static unsigned getHashValue(const unsigned &Val) { return Val * 37U; }
-  static unsigned getHashValue(const char *Val) {
+  static unsigned getHashValue(const unsigned& Val) { return Val * 37U; }
+  static unsigned getHashValue(const char* Val) {
     return (unsigned)(Val[0] - 'a') * 37U;
   }
-  static bool isEqual(const unsigned &LHS, const unsigned &RHS) {
+  static bool isEqual(const unsigned& LHS, const unsigned& RHS) {
     return LHS == RHS;
   }
-  static bool isEqual(const char *LHS, const unsigned &RHS) {
+  static bool isEqual(const char* LHS, const unsigned& RHS) {
     return (unsigned)(LHS[0] - 'a') == RHS;
   }
 };
@@ -192,7 +191,7 @@ template <> struct DenseMapInfo<CountCopyAndMove> {
     return LHS.Value == RHS.Value;
   }
 };
-} // namespace llvm
+}
 
 namespace {
 // Make sure reserve actually gives us enough buckets to insert N items
@@ -231,4 +230,4 @@ TEST(DenseSetCustomTest, ConstTest) {
   EXPECT_TRUE(Map.contains(B));
   EXPECT_TRUE(Map.contains(C));
 }
-} // namespace
+}

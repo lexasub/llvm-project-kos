@@ -90,7 +90,7 @@ bool llvm::formLCSSAForInstructions(SmallVectorImpl<Instruction *> &Worklist,
   // Cache the Loop ExitBlocks across this loop.  We expect to get a lot of
   // instructions within the same loops, computing the exit blocks is
   // expensive, and we're not mutating the loop structure.
-  SmallDenseMap<Loop *, SmallVector<BasicBlock *, 1>> LoopExitBlocks;
+  SmallDenseMap<Loop*, SmallVector<BasicBlock *,1>> LoopExitBlocks;
 
   while (!Worklist.empty()) {
     UsesToRewrite.clear();
@@ -168,8 +168,8 @@ bool llvm::formLCSSAForInstructions(SmallVectorImpl<Instruction *> &Worklist,
       // Add inputs from inside the loop for this PHI. This is valid
       // because `I` dominates `ExitBB` (checked above).  This implies
       // that every incoming block/edge is dominated by `I` as well,
-      // i.e. we can add uses of `I` to those incoming edges/append to the
-      // incoming blocks without violating the SSA dominance property.
+      // i.e. we can add uses of `I` to those incoming edges/append to the incoming
+      // blocks without violating the SSA dominance property.
       for (BasicBlock *Pred : PredCache.get(ExitBB)) {
         PN->addIncoming(I, Pred);
 
@@ -340,7 +340,7 @@ bool llvm::formLCSSA(Loop &L, const DominatorTree &DT, const LoopInfo *LI,
 
 #ifdef EXPENSIVE_CHECKS
   // Verify all sub-loops are in LCSSA form already.
-  for (Loop *SubLoop : L)
+  for (Loop *SubLoop: L)
     assert(SubLoop->isRecursivelyLCSSAForm(DT, *LI) && "Subloop not in LCSSA!");
 #endif
 
@@ -370,8 +370,9 @@ bool llvm::formLCSSA(Loop &L, const DominatorTree &DT, const LoopInfo *LI,
     for (Instruction &I : *BB) {
       // Reject two common cases fast: instructions with no uses (like stores)
       // and instructions with one use that is in the same block as this.
-      if (I.use_empty() || (I.hasOneUse() && I.user_back()->getParent() == BB &&
-                            !isa<PHINode>(I.user_back())))
+      if (I.use_empty() ||
+          (I.hasOneUse() && I.user_back()->getParent() == BB &&
+           !isa<PHINode>(I.user_back())))
         continue;
 
       // Tokens cannot be used in PHI nodes, so we skip over them.
@@ -470,7 +471,7 @@ struct LCSSAWrapperPass : public FunctionPass {
     AU.addPreserved<LCSSAVerificationPass>();
   }
 };
-} // namespace
+}
 
 char LCSSAWrapperPass::ID = 0;
 INITIALIZE_PASS_BEGIN(LCSSAWrapperPass, "lcssa", "Loop-Closed SSA Form Pass",

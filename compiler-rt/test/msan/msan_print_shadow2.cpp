@@ -12,9 +12,9 @@
 int main(void) {
   char *p = new char[16];
   __msan_print_shadow(p, 1);
-  __msan_print_shadow(p + 1, 1);
-  __msan_print_shadow(p + 3, 1);
-  __msan_print_shadow(p + 15, 1);
+  __msan_print_shadow(p+1, 1);
+  __msan_print_shadow(p+3, 1);
+  __msan_print_shadow(p+15, 1);
   __msan_print_shadow(p, 0);
   delete[] p;
   int x = 0;

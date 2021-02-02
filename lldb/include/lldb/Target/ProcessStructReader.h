@@ -99,6 +99,6 @@ public:
     return iter->second.offset;
   }
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_TARGET_PROCESSSTRUCTREADER_H

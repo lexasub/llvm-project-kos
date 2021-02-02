@@ -25,8 +25,7 @@ TEST(Endian, Read) {
   int32_t BigAsHost = 0x00010203;
   EXPECT_EQ(BigAsHost, (endian::read<int32_t, big, unaligned>(bigval)));
   int32_t LittleAsHost = 0x02030400;
-  EXPECT_EQ(LittleAsHost,
-            (endian::read<int32_t, little, unaligned>(littleval)));
+  EXPECT_EQ(LittleAsHost,(endian::read<int32_t, little, unaligned>(littleval)));
 
   EXPECT_EQ((endian::read<int32_t, big, unaligned>(bigval + 1)),
             (endian::read<int32_t, little, unaligned>(littleval + 1)));
@@ -193,8 +192,10 @@ TEST(Endian, PackedEndianSpecificIntegral) {
   // These are 5 bytes so we can be sure at least one of the reads is unaligned.
   unsigned char big[] = {0x00, 0x01, 0x02, 0x03, 0x04};
   unsigned char little[] = {0x00, 0x04, 0x03, 0x02, 0x01};
-  big32_t *big_val = reinterpret_cast<big32_t *>(big + 1);
-  little32_t *little_val = reinterpret_cast<little32_t *>(little + 1);
+  big32_t    *big_val    =
+    reinterpret_cast<big32_t *>(big + 1);
+  little32_t *little_val =
+    reinterpret_cast<little32_t *>(little + 1);
 
   EXPECT_EQ(*big_val, *little_val);
 }
@@ -208,4 +209,4 @@ TEST(Endian, PacketEndianSpecificIntegralAsEnum) {
   EXPECT_EQ(Test::ONETWO, *reinterpret_cast<BigTest *>(bytes));
 }
 
-} // namespace
+} // end anon namespace

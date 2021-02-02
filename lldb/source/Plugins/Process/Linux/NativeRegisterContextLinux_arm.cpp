@@ -49,7 +49,7 @@ std::unique_ptr<NativeRegisterContextLinux>
 NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
     const ArchSpec &target_arch, NativeThreadProtocol &native_thread) {
   return std::make_unique<NativeRegisterContextLinux_arm>(target_arch,
-                                                          native_thread);
+                                                           native_thread);
 }
 
 #endif // defined(__arm__)
@@ -852,7 +852,7 @@ Status NativeRegisterContextLinux_arm::DoWriteRegisterValue(
 Status NativeRegisterContextLinux_arm::ReadGPR() {
 #ifdef __arm__
   return NativeRegisterContextLinux::ReadGPR();
-#else // __aarch64__
+#else  // __aarch64__
   struct iovec ioVec;
   ioVec.iov_base = GetGPRBuffer();
   ioVec.iov_len = GetGPRSize();
@@ -864,7 +864,7 @@ Status NativeRegisterContextLinux_arm::ReadGPR() {
 Status NativeRegisterContextLinux_arm::WriteGPR() {
 #ifdef __arm__
   return NativeRegisterContextLinux::WriteGPR();
-#else // __aarch64__
+#else  // __aarch64__
   struct iovec ioVec;
   ioVec.iov_base = GetGPRBuffer();
   ioVec.iov_len = GetGPRSize();
@@ -878,7 +878,7 @@ Status NativeRegisterContextLinux_arm::ReadFPR() {
   return NativeProcessLinux::PtraceWrapper(PTRACE_GETVFPREGS, m_thread.GetID(),
                                            nullptr, GetFPRBuffer(),
                                            GetFPRSize());
-#else // __aarch64__
+#else  // __aarch64__
   struct iovec ioVec;
   ioVec.iov_base = GetFPRBuffer();
   ioVec.iov_len = GetFPRSize();
@@ -892,7 +892,7 @@ Status NativeRegisterContextLinux_arm::WriteFPR() {
   return NativeProcessLinux::PtraceWrapper(PTRACE_SETVFPREGS, m_thread.GetID(),
                                            nullptr, GetFPRBuffer(),
                                            GetFPRSize());
-#else // __aarch64__
+#else  // __aarch64__
   struct iovec ioVec;
   ioVec.iov_base = GetFPRBuffer();
   ioVec.iov_len = GetFPRSize();

@@ -190,12 +190,14 @@ public:
 
     std::string TripleName = Triple::normalize(sys::getDefaultTargetTriple());
     std::string Error;
-    const Target *TheTarget = TargetRegistry::lookupTarget(TripleName, Error);
+    const Target *TheTarget =
+        TargetRegistry::lookupTarget(TripleName, Error);
     if (!TheTarget)
       return;
 
     TargetOptions Options;
-    TM.reset(TheTarget->createTargetMachine(TripleName, "", "", Options, None));
+    TM.reset(TheTarget->createTargetMachine(TripleName, "", "",
+                                            Options, None));
   }
 };
 

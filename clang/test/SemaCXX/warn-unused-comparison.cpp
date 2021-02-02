@@ -1,13 +1,13 @@
 // RUN: %clang_cc1 -fsyntax-only -fcxx-exceptions -verify -Wno-unused -Wunused-comparison %s
 
 struct A {
-  bool operator==(const A &);
-  bool operator!=(const A &);
-  bool operator<(const A &);
-  bool operator>(const A &);
-  bool operator<=(const A &);
-  bool operator>=(const A &);
-  A operator|=(const A &);
+  bool operator==(const A&);
+  bool operator!=(const A&);
+  bool operator<(const A&);
+  bool operator>(const A&);
+  bool operator<=(const A&);
+  bool operator>=(const A&);
+  A operator|=(const A&);
   operator bool();
 };
 
@@ -40,44 +40,35 @@ void test() {
   a >= b; // expected-warning {{relational comparison result unused}}
 
   A() == b; // expected-warning {{equality comparison result unused}}
-  if (42)
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  if (42) x == 7; // expected-warning {{equality comparison result unused}} \
                   // expected-note {{use '=' to turn this equality comparison into an assignment}}
-  else if (42)
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  else if (42) x == 7; // expected-warning {{equality comparison result unused}} \
                        // expected-note {{use '=' to turn this equality comparison into an assignment}}
-  else
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  else x == 7; // expected-warning {{equality comparison result unused}} \
                // expected-note {{use '=' to turn this equality comparison into an assignment}}
-  do
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  do x == 7; // expected-warning {{equality comparison result unused}} \
              // expected-note {{use '=' to turn this equality comparison into an assignment}}
   while (false);
-  while (false)
-    x == 7;    // expected-warning {{equality comparison result unused}} \
+  while (false) x == 7; // expected-warning {{equality comparison result unused}} \
                         // expected-note {{use '=' to turn this equality comparison into an assignment}}
   for (x == 7; // expected-warning {{equality comparison result unused}} \
                // expected-note {{use '=' to turn this equality comparison into an assignment}}
        x == 7; // No warning -- result is used
        x == 7) // expected-warning {{equality comparison result unused}} \
                // expected-note {{use '=' to turn this equality comparison into an assignment}}
-    x == 7;    // expected-warning {{equality comparison result unused}} \
+    x == 7; // expected-warning {{equality comparison result unused}} \
             // expected-note {{use '=' to turn this equality comparison into an assignment}}
-  switch (42)
-  default:
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  switch (42) default: x == 7; // expected-warning {{equality comparison result unused}} \
                                // expected-note {{use '=' to turn this equality comparison into an assignment}}
-  switch (42)
-  case 42:
-    x == 7; // expected-warning {{equality comparison result unused}} \
+  switch (42) case 42: x == 7; // expected-warning {{equality comparison result unused}} \
                                // expected-note {{use '=' to turn this equality comparison into an assignment}}
   switch (42) {
-  case 1:
-  case 2:
-  default:
-  case 3:
-  case 4:
-    x == 7; // expected-warning {{equality comparison result unused}} \
+    case 1:
+    case 2:
+    default:
+    case 3:
+    case 4:
+      x == 7; // expected-warning {{equality comparison result unused}} \
               // expected-note {{use '=' to turn this equality comparison into an assignment}}
   }
 
@@ -85,13 +76,11 @@ void test() {
   (void)(p == p); // expected-warning {{self-comparison always evaluates to true}}
   { bool b = x == 7; }
 
-  {
-    bool b = ({ x == 7; // expected-warning {{equality comparison result unused}} \
+  { bool b = ({ x == 7; // expected-warning {{equality comparison result unused}} \
                         // expected-note {{use '=' to turn this equality comparison into an assignment}}
-                x == 7; });
-  } // no warning on the second, its result is used!
+                x == 7; }); } // no warning on the second, its result is used!
 
-#define EQ(x, y) (x) == (y)
+#define EQ(x,y) (x) == (y)
   EQ(x, 5);
 #undef EQ
 
@@ -99,21 +88,26 @@ void test() {
 }
 
 namespace PR10291 {
-template <typename T>
-class X {
-public:
-  X() : i(0) {}
+  template<typename T>
+  class X
+  {
+  public:
 
-  void foo() {
-    throw i == 0u ? 5 : 6;
-  }
+    X() : i(0) { } 
 
-private:
-  int i;
-};
+    void foo()
+    {   
+      throw 
+        i == 0u ?
+        5 : 6;
+    }   
 
-X<int> x;
-} // namespace PR10291
+  private:
+    int i;
+  };
+
+  X<int> x;
+}
 
 namespace PR19724 {
 class stream {
@@ -123,10 +117,10 @@ stream &operator<(stream &s, int);
 bool operator<(stream &s, stream &s2);
 
 void test() {
-  cout < 5;   // no warning, operator returns a reference
-  cout < cin; // expected-warning {{relational comparison result unused}}
+  cout < 5;    // no warning, operator returns a reference
+  cout < cin;  // expected-warning {{relational comparison result unused}}
 }
-} // namespace PR19724
+}
 
 namespace PR19791 {
 struct S {
@@ -137,7 +131,7 @@ struct S {
 void test() {
   S s;
   s != 1;
-  s == 1; // expected-warning{{equality comparison result unused}}
-          // expected-note@-1{{use '=' to turn this equality comparison into an assignment}}
+  s == 1;  // expected-warning{{equality comparison result unused}}
+           // expected-note@-1{{use '=' to turn this equality comparison into an assignment}}
 }
-} // namespace PR19791
+}

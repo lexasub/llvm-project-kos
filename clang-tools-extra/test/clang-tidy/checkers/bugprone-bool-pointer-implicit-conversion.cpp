@@ -1,9 +1,10 @@
 // RUN: %check_clang_tidy %s bugprone-bool-pointer-implicit-conversion %t
 
 bool *SomeFunction();
-void SomeOtherFunction(bool *);
+void SomeOtherFunction(bool*);
 bool F();
 void G(bool);
+
 
 template <typename T>
 void t(T b) {
@@ -14,13 +15,13 @@ void t(T b) {
 void foo() {
   bool *b = SomeFunction();
   if (b) {
-    // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: dubious check of 'bool *' against 'nullptr'
-    // CHECK-FIXES: if (*b) {
+// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: dubious check of 'bool *' against 'nullptr'
+// CHECK-FIXES: if (*b) {
   }
 
   if (F() && b) {
-    // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: dubious check of 'bool *' against 'nullptr'
-    // CHECK-FIXES: if (F() && *b) {
+// CHECK-MESSAGES: :[[@LINE-1]]:14: warning: dubious check of 'bool *' against 'nullptr'
+// CHECK-FIXES: if (F() && *b) {
   }
 
   // TODO: warn here.
@@ -71,7 +72,7 @@ void foo() {
 
   struct {
     bool *b;
-  } d = {SomeFunction()};
+  } d = { SomeFunction() };
 
   if (d.b) {
     // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: dubious check of 'bool *' against 'nullptr'

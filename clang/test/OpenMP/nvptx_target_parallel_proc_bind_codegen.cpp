@@ -20,22 +20,22 @@
 // CHECK-DAG: {{@__omp_offloading_.+l33}}_exec_mode = weak constant i8 0
 // CHECK-DAG: {{@__omp_offloading_.+l38}}_exec_mode = weak constant i8 0
 
-template <typename tx>
+template<typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-#pragma omp target parallel proc_bind(master)
+  #pragma omp target parallel proc_bind(master)
   {
   }
 
-#pragma omp target parallel proc_bind(spread)
+  #pragma omp target parallel proc_bind(spread)
   {
     aa += 1;
   }
 
-#pragma omp target parallel proc_bind(close)
+  #pragma omp target parallel proc_bind(close)
   {
     a += 1;
     aa += 1;
@@ -45,7 +45,7 @@ tx ftemplate(int n) {
   return a;
 }
 
-int bar(int n) {
+int bar(int n){
   int a = 0;
 
   a += ftemplate<int>(n);

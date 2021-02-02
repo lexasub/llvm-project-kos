@@ -46,6 +46,6 @@ inline raw_ostream &operator<<(raw_ostream &OS, const Printable &P) {
   return OS;
 }
 
-} // namespace llvm
+}
 
 #endif

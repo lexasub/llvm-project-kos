@@ -449,7 +449,7 @@ __DEVICE__ int __nv_vsubss2(int __a, int __b);
 __DEVICE__ int __nv_vsubss4(int __a, int __b);
 __DEVICE__ int __nv_vsubus2(int __a, int __b);
 __DEVICE__ int __nv_vsubus4(int __a, int __b);
-#endif // CUDA_VERSION
+#endif  // CUDA_VERSION
 __DEVICE__ double __nv_y0(double __a);
 __DEVICE__ float __nv_y0f(float __a);
 __DEVICE__ double __nv_y1(double __a);

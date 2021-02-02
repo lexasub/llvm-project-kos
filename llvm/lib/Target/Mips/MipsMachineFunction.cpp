@@ -19,12 +19,14 @@
 using namespace llvm;
 
 static cl::opt<bool>
-    FixGlobalBaseReg("mips-fix-global-base-reg", cl::Hidden, cl::init(true),
-                     cl::desc("Always use $gp as the global base register."));
+FixGlobalBaseReg("mips-fix-global-base-reg", cl::Hidden, cl::init(true),
+                 cl::desc("Always use $gp as the global base register."));
 
 MipsFunctionInfo::~MipsFunctionInfo() = default;
 
-bool MipsFunctionInfo::globalBaseRegSet() const { return GlobalBaseReg; }
+bool MipsFunctionInfo::globalBaseRegSet() const {
+  return GlobalBaseReg;
+}
 
 static const TargetRegisterClass &getGlobalBaseRegClass(MachineFunction &MF) {
   auto &STI = static_cast<const MipsSubtarget &>(MF.getSubtarget());
@@ -84,11 +86,9 @@ void MipsFunctionInfo::initGlobalBaseReg(MachineFunction &MF) {
     const GlobalValue *FName = &MF.getFunction();
     BuildMI(MBB, I, DL, TII.get(Mips::LUi64), V0)
         .addGlobalAddress(FName, 0, MipsII::MO_GPOFF_HI);
-    BuildMI(MBB, I, DL, TII.get(Mips::DADDu), V1)
-        .addReg(V0)
+    BuildMI(MBB, I, DL, TII.get(Mips::DADDu), V1).addReg(V0)
         .addReg(Mips::T9_64);
-    BuildMI(MBB, I, DL, TII.get(Mips::DADDiu), GlobalBaseReg)
-        .addReg(V1)
+    BuildMI(MBB, I, DL, TII.get(Mips::DADDiu), GlobalBaseReg).addReg(V1)
         .addGlobalAddress(FName, 0, MipsII::MO_GPOFF_LO);
     return;
   }
@@ -100,8 +100,7 @@ void MipsFunctionInfo::initGlobalBaseReg(MachineFunction &MF) {
     // addiu $globalbasereg, $v0, %lo(__gnu_local_gp)
     BuildMI(MBB, I, DL, TII.get(Mips::LUi), V0)
         .addExternalSymbol("__gnu_local_gp", MipsII::MO_ABS_HI);
-    BuildMI(MBB, I, DL, TII.get(Mips::ADDiu), GlobalBaseReg)
-        .addReg(V0)
+    BuildMI(MBB, I, DL, TII.get(Mips::ADDiu), GlobalBaseReg).addReg(V0)
         .addExternalSymbol("__gnu_local_gp", MipsII::MO_ABS_LO);
     return;
   }
@@ -117,8 +116,7 @@ void MipsFunctionInfo::initGlobalBaseReg(MachineFunction &MF) {
     BuildMI(MBB, I, DL, TII.get(Mips::LUi), V0)
         .addGlobalAddress(FName, 0, MipsII::MO_GPOFF_HI);
     BuildMI(MBB, I, DL, TII.get(Mips::ADDu), V1).addReg(V0).addReg(Mips::T9);
-    BuildMI(MBB, I, DL, TII.get(Mips::ADDiu), GlobalBaseReg)
-        .addReg(V1)
+    BuildMI(MBB, I, DL, TII.get(Mips::ADDiu), GlobalBaseReg).addReg(V1)
         .addGlobalAddress(FName, 0, MipsII::MO_GPOFF_LO);
     return;
   }
@@ -145,8 +143,7 @@ void MipsFunctionInfo::initGlobalBaseReg(MachineFunction &MF) {
   MF.getRegInfo().addLiveIn(Mips::V0);
   MBB.addLiveIn(Mips::V0);
   BuildMI(MBB, I, DL, TII.get(Mips::ADDu), GlobalBaseReg)
-      .addReg(Mips::V0)
-      .addReg(Mips::T9);
+      .addReg(Mips::V0).addReg(Mips::T9);
 }
 
 void MipsFunctionInfo::createEhDataRegsFI(MachineFunction &MF) {
@@ -176,8 +173,8 @@ void MipsFunctionInfo::createISRRegFI(MachineFunction &MF) {
 }
 
 bool MipsFunctionInfo::isEhDataRegFI(int FI) const {
-  return CallsEhReturn && (FI == EhDataRegFI[0] || FI == EhDataRegFI[1] ||
-                           FI == EhDataRegFI[2] || FI == EhDataRegFI[3]);
+  return CallsEhReturn && (FI == EhDataRegFI[0] || FI == EhDataRegFI[1]
+                        || FI == EhDataRegFI[2] || FI == EhDataRegFI[3]);
 }
 
 bool MipsFunctionInfo::isISRRegFI(int FI) const {

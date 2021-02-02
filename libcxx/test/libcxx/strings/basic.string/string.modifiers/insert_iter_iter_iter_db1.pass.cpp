@@ -21,15 +21,17 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::string v;
-    std::string v2;
-    char a[] = "123";
-    const int N = sizeof(a) / sizeof(a[0]);
-    std::string::iterator i = v.insert(v2.cbegin() + 10, a, a + N);
-    assert(false);
-  }
 
-  return 0;
+int main(int, char**)
+{
+    {
+        std::string v;
+        std::string v2;
+        char a[] = "123";
+        const int N = sizeof(a)/sizeof(a[0]);
+        std::string::iterator i = v.insert(v2.cbegin() + 10, a, a+N);
+        assert(false);
+    }
+
+    return 0;
 }

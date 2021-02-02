@@ -25,8 +25,7 @@ void test_reset_pointer() {
 #if TEST_STD_VER >= 11
   {
     using U = std::unique_ptr<VT>;
-    U u;
-    ((void)u);
+    U u; ((void)u);
     ASSERT_NOEXCEPT(u.reset((A*)nullptr));
   }
 #endif
@@ -63,8 +62,7 @@ void test_reset_nullptr() {
 #if TEST_STD_VER >= 11
   {
     using U = std::unique_ptr<VT>;
-    U u;
-    ((void)u);
+    U u; ((void)u);
     ASSERT_NOEXCEPT(u.reset(nullptr));
   }
 #endif
@@ -80,6 +78,7 @@ void test_reset_nullptr() {
   assert(A::count == 0);
 }
 
+
 template <bool IsArray>
 void test_reset_no_arg() {
   typedef typename std::conditional<IsArray, A[], A>::type VT;
@@ -87,8 +86,7 @@ void test_reset_no_arg() {
 #if TEST_STD_VER >= 11
   {
     using U = std::unique_ptr<VT>;
-    U u;
-    ((void)u);
+    U u; ((void)u);
     ASSERT_NOEXCEPT(u.reset());
   }
 #endif
@@ -111,7 +109,7 @@ int main(int, char**) {
     test_reset_no_arg<false>();
   }
   {
-    test_reset_pointer</*IsArray*/ true>();
+    test_reset_pointer</*IsArray*/true>();
     test_reset_nullptr<true>();
     test_reset_no_arg<true>();
   }

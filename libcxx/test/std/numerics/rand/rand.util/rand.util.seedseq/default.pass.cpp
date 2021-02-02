@@ -17,9 +17,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::seed_seq s;
-  assert(s.size() == 0);
+int main(int, char**)
+{
+    std::seed_seq s;
+    assert(s.size() == 0);
 
   return 0;
 }

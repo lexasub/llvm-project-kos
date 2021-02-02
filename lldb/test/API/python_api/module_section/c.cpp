@@ -1,1 +1,3 @@
-int c_function(int input) { return input * 3; }
+int c_function(int input) {
+    return input * 3;
+}

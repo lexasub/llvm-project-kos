@@ -230,7 +230,8 @@ private:
   BasicBlock *Block;
 };
 
-template <> struct ilist_alloc_traits<MemoryAccess> {
+template <>
+struct ilist_alloc_traits<MemoryAccess> {
   static void deleteNode(MemoryAccess *MA) { MA->deleteValue(); }
 };
 
@@ -344,9 +345,13 @@ public:
     return getDefiningAccess() && OptimizedID == getDefiningAccess()->getID();
   }
 
-  MemoryAccess *getOptimized() const { return getDefiningAccess(); }
+  MemoryAccess *getOptimized() const {
+    return getDefiningAccess();
+  }
 
-  void resetOptimized() { OptimizedID = INVALID_MEMORYACCESS_ID; }
+  void resetOptimized() {
+    OptimizedID = INVALID_MEMORYACCESS_ID;
+  }
 
 protected:
   friend class MemorySSA;
@@ -422,7 +427,8 @@ template <>
 struct OperandTraits<MemoryDef> : public FixedNumOperandTraits<MemoryDef, 2> {};
 DEFINE_TRANSPARENT_OPERAND_ACCESSORS(MemoryDef, MemoryAccess)
 
-template <> struct OperandTraits<MemoryUseOrDef> {
+template <>
+struct OperandTraits<MemoryUseOrDef> {
   static Use *op_begin(MemoryUseOrDef *MUD) {
     if (auto *MU = dyn_cast<MemoryUse>(MUD))
       return OperandTraits<MemoryUse>::op_begin(MU);

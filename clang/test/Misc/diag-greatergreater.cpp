@@ -1,7 +1,7 @@
 // RUN: not %clang_cc1 %s -fdiagnostics-print-source-range-info 2>&1 | FileCheck %s --strict-whitespace
 
-template <typename T> class C {};
-template <int> class D {};
+template<typename T> class C {};
+template<int> class D {};
 
 void g() {
   // The range ending in the first > character does not extend to the second >
@@ -19,7 +19,7 @@ void g() {
   D<C<C<int>>> b;
 }
 
-template <int> int V;
+template<int> int V;
 // Here, we split the >>= token into a > followed by a >=.
 // Then we split the >= token into a > followed by an =,
 // which we merge with the other = to form an ==.
@@ -34,10 +34,10 @@ template <int> int V;
 // CHECK:      :{[[@LINE+3]]:11-[[@LINE+3]]:17}: error:
 // CHECK-NEXT: int k = V<C<int>>==0;
 // CHECK-NEXT:           ^~~~~~{{$}}
-int k = V < C < int >>= = 0;
+int k = V<C<int>>==0;
 
-template <typename> int W;
+template<typename> int W;
 // CHECK:      :{[[@LINE+3]]:9-[[@LINE+3]]:18}{[[@LINE+3]]:20-[[@LINE+3]]:22}: error: comparison
 // CHECK-NEXT: int l = W<C<int>>==&k;
 // CHECK-NEXT:         ~~~~~~~~~^ ~~{{$}}
-int l = W < C < int >>= = &k;
+int l = W<C<int>>==&k;

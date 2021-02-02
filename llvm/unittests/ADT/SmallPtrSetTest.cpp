@@ -50,8 +50,8 @@ TEST(SmallPtrSetTest, Assignment) {
 TEST(SmallPtrSetTest, GrowthTest) {
   int i;
   int buf[8];
-  for (i = 0; i < 8; ++i)
-    buf[i] = 0;
+  for(i=0; i<8; ++i) buf[i]=0;
+
 
   SmallPtrSet<int *, 4> s;
   typedef SmallPtrSet<int *, 4>::iterator iter;
@@ -63,11 +63,11 @@ TEST(SmallPtrSetTest, GrowthTest) {
   EXPECT_EQ(4U, s.size());
 
   i = 0;
-  for (iter I = s.begin(), E = s.end(); I != E; ++I, ++i)
-    (**I)++;
+  for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+      (**I)++;
   EXPECT_EQ(4, i);
-  for (i = 0; i < 8; ++i)
-    EXPECT_EQ(i < 4 ? 1 : 0, buf[i]);
+  for(i=0; i<8; ++i)
+      EXPECT_EQ(i<4?1:0,buf[i]);
 
   s.insert(&buf[4]);
   s.insert(&buf[5]);
@@ -75,8 +75,8 @@ TEST(SmallPtrSetTest, GrowthTest) {
   s.insert(&buf[7]);
 
   i = 0;
-  for (iter I = s.begin(), E = s.end(); I != E; ++I, ++i)
-    (**I)++;
+  for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+      (**I)++;
   EXPECT_EQ(8, i);
   s.erase(&buf[4]);
   s.erase(&buf[5]);
@@ -85,22 +85,20 @@ TEST(SmallPtrSetTest, GrowthTest) {
   EXPECT_EQ(4U, s.size());
 
   i = 0;
-  for (iter I = s.begin(), E = s.end(); I != E; ++I, ++i)
-    (**I)++;
+  for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+      (**I)++;
   EXPECT_EQ(4, i);
-  for (i = 0; i < 8; ++i)
-    EXPECT_EQ(i < 4 ? 3 : 1, buf[i]);
+  for(i=0; i<8; ++i)
+      EXPECT_EQ(i<4?3:1,buf[i]);
 
   s.clear();
-  for (i = 0; i < 8; ++i)
-    buf[i] = 0;
-  for (i = 0; i < 128; ++i)
-    s.insert(&buf[i % 8]); // test repeated entires
+  for(i=0; i<8; ++i) buf[i]=0;
+  for(i=0; i<128; ++i) s.insert(&buf[i%8]); // test repeated entires
   EXPECT_EQ(8U, s.size());
-  for (iter I = s.begin(), E = s.end(); I != E; ++I, ++i)
-    (**I)++;
-  for (i = 0; i < 8; ++i)
-    EXPECT_EQ(1, buf[i]);
+  for(iter I=s.begin(), E=s.end(); I!=E; ++I, ++i)
+      (**I)++;
+  for(i=0; i<8; ++i)
+      EXPECT_EQ(1,buf[i]);
 }
 
 TEST(SmallPtrSetTest, CopyAndMoveTest) {
@@ -244,7 +242,7 @@ TEST(SmallPtrSetTest, SwapTest) {
   EXPECT_TRUE(a.count(&buf[3]));
 }
 
-void checkEraseAndIterators(SmallPtrSetImpl<int *> &S) {
+void checkEraseAndIterators(SmallPtrSetImpl<int*> &S) {
   int buf[3];
 
   S.insert(&buf[0]);
@@ -293,7 +291,7 @@ TEST(SmallPtrSetTest, dereferenceAndIterate) {
   }
 
   // Iterate from each and count how many times each element is found.
-  int Found[sizeof(Ints) / sizeof(int)] = {0};
+  int Found[sizeof(Ints)/sizeof(int)] = {0};
   for (int &I : Ints)
     for (auto F = S.find(&I), E = S.end(); F != E; ++F)
       ++Found[*F - Ints];

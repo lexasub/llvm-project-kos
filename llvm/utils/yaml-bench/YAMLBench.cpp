@@ -11,39 +11,46 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/Process.h"
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/Timer.h"
+#include "llvm/Support/Process.h"
 #include "llvm/Support/YAMLParser.h"
 #include "llvm/Support/raw_ostream.h"
 #include <system_error>
 
 using namespace llvm;
 
-static cl::opt<bool> DumpTokens("tokens",
-                                cl::desc("Print the tokenization of the file."),
-                                cl::init(false));
+static cl::opt<bool>
+  DumpTokens( "tokens"
+            , cl::desc("Print the tokenization of the file.")
+            , cl::init(false)
+            );
 
 static cl::opt<bool>
-    DumpCanonical("canonical",
-                  cl::desc("Print the canonical YAML for this file."),
-                  cl::init(false));
+  DumpCanonical( "canonical"
+               , cl::desc("Print the canonical YAML for this file.")
+               , cl::init(false)
+               );
 
-static cl::opt<std::string> Input(cl::Positional, cl::desc("<input>"));
+static cl::opt<std::string>
+ Input(cl::Positional, cl::desc("<input>"));
 
 static cl::opt<bool>
-    Verify("verify",
-           cl::desc("Run a quick verification useful for regression testing"),
-           cl::init(false));
+  Verify( "verify"
+        , cl::desc(
+            "Run a quick verification useful for regression testing")
+        , cl::init(false)
+        );
 
 static cl::opt<unsigned>
-    MemoryLimitMB("memory-limit",
-                  cl::desc("Do not use more megabytes of memory"),
-                  cl::init(1000));
+  MemoryLimitMB("memory-limit", cl::desc(
+                  "Do not use more megabytes of memory"),
+                cl::init(1000));
 
 cl::opt<cl::boolOrDefault>
     UseColor("use-color", cl::desc("Emit colored output (default=autodetect)"),
@@ -54,7 +61,7 @@ struct indent {
   indent(unsigned d) : distance(d) {}
 };
 
-static raw_ostream &operator<<(raw_ostream &os, const indent &in) {
+static raw_ostream &operator <<(raw_ostream &os, const indent &in) {
   for (unsigned i = 0; i < in.distance; ++i)
     os << "  ";
   return os;
@@ -74,8 +81,9 @@ static std::string prettyTag(yaml::Node *N) {
   return Ret;
 }
 
-static void dumpNode(yaml::Node *n, unsigned Indent = 0,
-                     bool SuppressFirstIndent = false) {
+static void dumpNode( yaml::Node *n
+                    , unsigned Indent = 0
+                    , bool SuppressFirstIndent = false) {
   if (!n)
     return;
   if (!SuppressFirstIndent)
@@ -92,8 +100,8 @@ static void dumpNode(yaml::Node *n, unsigned Indent = 0,
   } else if (yaml::SequenceNode *sn = dyn_cast<yaml::SequenceNode>(n)) {
     outs() << prettyTag(n) << " [\n";
     ++Indent;
-    for (yaml::SequenceNode::iterator i = sn->begin(), e = sn->end(); i != e;
-         ++i) {
+    for (yaml::SequenceNode::iterator i = sn->begin(), e = sn->end();
+                                      i != e; ++i) {
       dumpNode(i, Indent);
       outs() << ",\n";
     }
@@ -102,8 +110,8 @@ static void dumpNode(yaml::Node *n, unsigned Indent = 0,
   } else if (yaml::MappingNode *mn = dyn_cast<yaml::MappingNode>(n)) {
     outs() << prettyTag(n) << " {\n";
     ++Indent;
-    for (yaml::MappingNode::iterator i = mn->begin(), e = mn->end(); i != e;
-         ++i) {
+    for (yaml::MappingNode::iterator i = mn->begin(), e = mn->end();
+                                     i != e; ++i) {
       outs() << indent(Indent) << "? ";
       dumpNode(i->getKey(), Indent, true);
       outs() << "\n";
@@ -113,7 +121,7 @@ static void dumpNode(yaml::Node *n, unsigned Indent = 0,
     }
     --Indent;
     outs() << indent(Indent) << "}";
-  } else if (yaml::AliasNode *an = dyn_cast<yaml::AliasNode>(n)) {
+  } else if (yaml::AliasNode *an = dyn_cast<yaml::AliasNode>(n)){
     outs() << "*" << an->getName();
   } else if (isa<yaml::NullNode>(n)) {
     outs() << prettyTag(n) << " null";
@@ -140,18 +148,18 @@ static void benchmark(llvm::TimerGroup &Group, llvm::StringRef Name,
                        Group);
   BaseLine.startTimer();
   char C = 0;
-  for (llvm::StringRef::iterator I = JSONText.begin(), E = JSONText.end();
-       I != E; ++I) {
-    C += *I;
-  }
+  for (llvm::StringRef::iterator I = JSONText.begin(),
+                                 E = JSONText.end();
+       I != E; ++I) { C += *I; }
   BaseLine.stopTimer();
-  volatile char DontOptimizeOut = C;
-  (void)DontOptimizeOut;
+  volatile char DontOptimizeOut = C; (void)DontOptimizeOut;
 
   llvm::Timer Tokenizing((Name + ".tokenizing").str(),
                          (Description + ": Tokenizing").str(), Group);
   Tokenizing.startTimer();
-  { yaml::scanTokens(JSONText); }
+  {
+    yaml::scanTokens(JSONText);
+  }
   Tokenizing.stopTimer();
 
   llvm::Timer Parsing((Name + ".parsing").str(),
@@ -177,8 +185,7 @@ static std::string createJSONText(size_t MemoryMB, unsigned ValueSize) {
            << "  \"key3\": \"" << std::string(ValueSize, '*') << "\"\n"
            << " }";
     Stream.flush();
-    if (JSONText.size() < MemoryBytes)
-      Stream << ",";
+    if (JSONText.size() < MemoryBytes) Stream << ",";
     Stream << "\n";
   }
   Stream << "]\n";

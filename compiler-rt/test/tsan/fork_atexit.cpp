@@ -2,9 +2,9 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
 
 void foo() {
   fprintf(stderr, "CHILD ATEXIT\n");

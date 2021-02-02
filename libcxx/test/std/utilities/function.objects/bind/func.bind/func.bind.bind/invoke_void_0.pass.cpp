@@ -23,57 +23,55 @@
 int count = 0;
 
 template <class F>
-void test(F f) {
-  int save_count = count;
-  f();
-  assert(count == save_count + 1);
+void
+test(F f)
+{
+    int save_count = count;
+    f();
+    assert(count == save_count + 1);
 }
 
 template <class F>
-void test_const(const F& f) {
-  int save_count = count;
-  f();
-  assert(count == save_count + 2);
+void
+test_const(const F& f)
+{
+    int save_count = count;
+    f();
+    assert(count == save_count + 2);
 }
 
-void f() { ++count; }
+void f() {++count;}
 
-int g() {
-  ++count;
-  return 0;
-}
+int g() {++count; return 0;}
 
-struct A_void_0 {
-  void operator()() { ++count; }
-  void operator()() const { count += 2; }
+struct A_void_0
+{
+    void operator()() {++count;}
+    void operator()() const {count += 2;}
 };
 
-struct A_int_0 {
-  int operator()() {
-    ++count;
-    return 4;
-  }
-  int operator()() const {
-    count += 2;
-    return 5;
-  }
+struct A_int_0
+{
+    int operator()() {++count; return 4;}
+    int operator()() const {count += 2; return 5;}
 };
 
-int main(int, char**) {
-  test(std::bind(f));
-  test(std::bind(&f));
-  test(std::bind(A_void_0()));
-  test_const(std::bind(A_void_0()));
+int main(int, char**)
+{
+    test(std::bind(f));
+    test(std::bind(&f));
+    test(std::bind(A_void_0()));
+    test_const(std::bind(A_void_0()));
 
-  test(std::bind<void>(f));
-  test(std::bind<void>(&f));
-  test(std::bind<void>(A_void_0()));
-  test_const(std::bind<void>(A_void_0()));
+    test(std::bind<void>(f));
+    test(std::bind<void>(&f));
+    test(std::bind<void>(A_void_0()));
+    test_const(std::bind<void>(A_void_0()));
 
-  test(std::bind<void>(g));
-  test(std::bind<void>(&g));
-  test(std::bind<void>(A_int_0()));
-  test_const(std::bind<void>(A_int_0()));
+    test(std::bind<void>(g));
+    test(std::bind<void>(&g));
+    test(std::bind<void>(A_int_0()));
+    test_const(std::bind<void>(A_int_0()));
 
   return 0;
 }

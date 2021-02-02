@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/MSP430MCTargetDesc.h"
 #include "MSP430.h"
+#include "MCTargetDesc/MSP430MCTargetDesc.h"
 #include "TargetInfo/MSP430TargetInfo.h"
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCDisassembler/MCDisassembler.h"
@@ -64,10 +64,11 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeMSP430Disassembler() {
 }
 
 static const unsigned GR8DecoderTable[] = {
-    MSP430::PCB,  MSP430::SPB,  MSP430::SRB,  MSP430::CGB,
-    MSP430::R4B,  MSP430::R5B,  MSP430::R6B,  MSP430::R7B,
-    MSP430::R8B,  MSP430::R9B,  MSP430::R10B, MSP430::R11B,
-    MSP430::R12B, MSP430::R13B, MSP430::R14B, MSP430::R15B};
+  MSP430::PCB,  MSP430::SPB,  MSP430::SRB,  MSP430::CGB,
+  MSP430::R4B,  MSP430::R5B,  MSP430::R6B,  MSP430::R7B,
+  MSP430::R8B,  MSP430::R9B,  MSP430::R10B, MSP430::R11B,
+  MSP430::R12B, MSP430::R13B, MSP430::R14B, MSP430::R15B
+};
 
 static DecodeStatus DecodeGR8RegisterClass(MCInst &MI, uint64_t RegNo,
                                            uint64_t Address,
@@ -81,9 +82,11 @@ static DecodeStatus DecodeGR8RegisterClass(MCInst &MI, uint64_t RegNo,
 }
 
 static const unsigned GR16DecoderTable[] = {
-    MSP430::PC,  MSP430::SP,  MSP430::SR,  MSP430::CG, MSP430::R4,  MSP430::R5,
-    MSP430::R6,  MSP430::R7,  MSP430::R8,  MSP430::R9, MSP430::R10, MSP430::R11,
-    MSP430::R12, MSP430::R13, MSP430::R14, MSP430::R15};
+  MSP430::PC,  MSP430::SP,  MSP430::SR,  MSP430::CG,
+  MSP430::R4,  MSP430::R5,  MSP430::R6,  MSP430::R7,
+  MSP430::R8,  MSP430::R9,  MSP430::R10, MSP430::R11,
+  MSP430::R12, MSP430::R13, MSP430::R14, MSP430::R15
+};
 
 static DecodeStatus DecodeGR16RegisterClass(MCInst &MI, uint64_t RegNo,
                                             uint64_t Address,
@@ -100,7 +103,8 @@ static DecodeStatus DecodeCGImm(MCInst &MI, uint64_t Bits, uint64_t Address,
                                 const void *Decoder);
 
 static DecodeStatus DecodeMemOperand(MCInst &MI, uint64_t Bits,
-                                     uint64_t Address, const void *Decoder);
+                                     uint64_t Address,
+                                     const void *Decoder);
 
 #include "MSP430GenDisassemblerTables.inc"
 
@@ -110,38 +114,27 @@ static DecodeStatus DecodeCGImm(MCInst &MI, uint64_t Bits, uint64_t Address,
   switch (Bits) {
   default:
     llvm_unreachable("Invalid immediate value");
-  case 0x22:
-    Imm = 4;
-    break;
-  case 0x32:
-    Imm = 8;
-    break;
-  case 0x03:
-    Imm = 0;
-    break;
-  case 0x13:
-    Imm = 1;
-    break;
-  case 0x23:
-    Imm = 2;
-    break;
-  case 0x33:
-    Imm = -1;
-    break;
+  case 0x22: Imm =  4; break;
+  case 0x32: Imm =  8; break;
+  case 0x03: Imm =  0; break;
+  case 0x13: Imm =  1; break;
+  case 0x23: Imm =  2; break;
+  case 0x33: Imm = -1; break;
   }
   MI.addOperand(MCOperand::createImm(Imm));
   return MCDisassembler::Success;
 }
 
 static DecodeStatus DecodeMemOperand(MCInst &MI, uint64_t Bits,
-                                     uint64_t Address, const void *Decoder) {
+                                     uint64_t Address,
+                                     const void *Decoder) {
   unsigned Reg = Bits & 15;
   unsigned Imm = Bits >> 4;
 
   if (DecodeGR16RegisterClass(MI, Reg, Address, Decoder) !=
       MCDisassembler::Success)
     return MCDisassembler::Fail;
-
+  
   MI.addOperand(MCOperand::createImm((int16_t)Imm));
   return MCDisassembler::Success;
 }
@@ -161,20 +154,14 @@ enum AddrMode {
 static AddrMode DecodeSrcAddrMode(unsigned Rs, unsigned As) {
   switch (Rs) {
   case 0:
-    if (As == 1)
-      return amSymbolic;
-    if (As == 2)
-      return amInvalid;
-    if (As == 3)
-      return amImmediate;
+    if (As == 1) return amSymbolic;
+    if (As == 2) return amInvalid;
+    if (As == 3) return amImmediate;
     break;
   case 2:
-    if (As == 1)
-      return amAbsolute;
-    if (As == 2)
-      return amConstant;
-    if (As == 3)
-      return amConstant;
+    if (As == 1) return amAbsolute;
+    if (As == 2) return amConstant;
+    if (As == 3) return amConstant;
     break;
   case 3:
     return amConstant;
@@ -182,14 +169,10 @@ static AddrMode DecodeSrcAddrMode(unsigned Rs, unsigned As) {
     break;
   }
   switch (As) {
-  case 0:
-    return amRegister;
-  case 1:
-    return amIndexed;
-  case 2:
-    return amIndirect;
-  case 3:
-    return amIndirectPost;
+  case 0: return amRegister;
+  case 1: return amIndexed;
+  case 2: return amIndirect;
+  case 3: return amIndirectPost;
   default:
     llvm_unreachable("As out of range");
   }
@@ -211,10 +194,8 @@ static AddrMode DecodeDstAddrMode(unsigned Insn) {
   unsigned Rd = fieldFromInstruction(Insn, 0, 4);
   unsigned Ad = fieldFromInstruction(Insn, 7, 1);
   switch (Rd) {
-  case 0:
-    return Ad ? amSymbolic : amRegister;
-  case 2:
-    return Ad ? amAbsolute : amRegister;
+  case 0: return Ad ? amSymbolic : amRegister;
+  case 2: return Ad ? amAbsolute : amRegister;
   default:
     break;
   }
@@ -282,7 +263,7 @@ DecodeStatus MSP430Disassembler::getInstructionI(MCInst &MI, uint64_t &Size,
       return DecodeStatus::Fail;
     }
     Insn |= (uint64_t)support::endian::read16le(Bytes.data() + Words * 2)
-            << (Words * 16);
+        << (Words * 16);
     ++Words;
     break;
   default:
@@ -329,8 +310,8 @@ DecodeStatus MSP430Disassembler::getInstructionII(MCInst &MI, uint64_t &Size,
   }
 
   const uint8_t *DecoderTable = Words == 2 ? DecoderTable32 : DecoderTable16;
-  DecodeStatus Result =
-      decodeInstruction(DecoderTable, MI, Insn, Address, this, STI);
+  DecodeStatus Result = decodeInstruction(DecoderTable, MI, Insn, Address,
+                                          this, STI);
   if (Result != MCDisassembler::Fail) {
     Size = Words * 2;
     return Result;
@@ -342,22 +323,14 @@ DecodeStatus MSP430Disassembler::getInstructionII(MCInst &MI, uint64_t &Size,
 
 static MSP430CC::CondCodes getCondCode(unsigned Cond) {
   switch (Cond) {
-  case 0:
-    return MSP430CC::COND_NE;
-  case 1:
-    return MSP430CC::COND_E;
-  case 2:
-    return MSP430CC::COND_LO;
-  case 3:
-    return MSP430CC::COND_HS;
-  case 4:
-    return MSP430CC::COND_N;
-  case 5:
-    return MSP430CC::COND_GE;
-  case 6:
-    return MSP430CC::COND_L;
-  case 7:
-    return MSP430CC::COND_NONE;
+  case 0: return MSP430CC::COND_NE;
+  case 1: return MSP430CC::COND_E;
+  case 2: return MSP430CC::COND_LO;
+  case 3: return MSP430CC::COND_HS;
+  case 4: return MSP430CC::COND_N;
+  case 5: return MSP430CC::COND_GE;
+  case 6: return MSP430CC::COND_L;
+  case 7: return MSP430CC::COND_NONE;
   default:
     llvm_unreachable("Cond out of range");
   }

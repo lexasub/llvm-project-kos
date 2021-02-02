@@ -89,29 +89,29 @@
 #error wctrans defined
 #endif
 
-int main(int, char**) {
-  wint_t w = 0;
-  wctrans_t wctr = 0;
-  wctype_t wct = 0;
-  static_assert((std::is_same<decltype(iswalnum(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswalpha(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswblank(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswcntrl(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswdigit(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswgraph(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswlower(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswprint(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswpunct(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswspace(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswupper(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswxdigit(w)), int>::value), "");
-  static_assert((std::is_same<decltype(iswctype(w, wct)), int>::value), "");
-  static_assert((std::is_same<decltype(wctype("")), wctype_t>::value), "");
-  static_assert((std::is_same<decltype(towlower(w)), wint_t>::value), "");
-  static_assert((std::is_same<decltype(towupper(w)), wint_t>::value), "");
-  static_assert((std::is_same<decltype(towctrans(w, wctr)), wint_t>::value),
-                "");
-  static_assert((std::is_same<decltype(wctrans("")), wctrans_t>::value), "");
+int main(int, char**)
+{
+    wint_t w = 0;
+    wctrans_t wctr = 0;
+    wctype_t wct = 0;
+    static_assert((std::is_same<decltype(iswalnum(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswalpha(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswblank(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswcntrl(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswdigit(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswgraph(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswlower(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswprint(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswpunct(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswspace(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswupper(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswxdigit(w)), int>::value), "");
+    static_assert((std::is_same<decltype(iswctype(w, wct)), int>::value), "");
+    static_assert((std::is_same<decltype(wctype("")), wctype_t>::value), "");
+    static_assert((std::is_same<decltype(towlower(w)), wint_t>::value), "");
+    static_assert((std::is_same<decltype(towupper(w)), wint_t>::value), "");
+    static_assert((std::is_same<decltype(towctrans(w, wctr)), wint_t>::value), "");
+    static_assert((std::is_same<decltype(wctrans("")), wctrans_t>::value), "");
 
   return 0;
 }

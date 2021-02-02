@@ -18,22 +18,27 @@
 #include "test_macros.h"
 
 template <class T>
-void test(const T& lhs, const std::complex<T>& rhs, std::complex<T> x) {
-  assert(lhs * rhs == x);
+void
+test(const T& lhs, const std::complex<T>& rhs, std::complex<T> x)
+{
+    assert(lhs * rhs == x);
 }
 
 template <class T>
-void test() {
-  T lhs(1.5);
-  std::complex<T> rhs(1.5, 2.5);
-  std::complex<T> x(2.25, 3.75);
-  test(lhs, rhs, x);
+void
+test()
+{
+    T lhs(1.5);
+    std::complex<T> rhs(1.5, 2.5);
+    std::complex<T>   x(2.25, 3.75);
+    test(lhs, rhs, x);
 }
 
-int main(int, char**) {
-  test<float>();
-  test<double>();
-  test<long double>();
+int main(int, char**)
+{
+    test<float>();
+    test<double>();
+    test<long double>();
 
   return 0;
 }

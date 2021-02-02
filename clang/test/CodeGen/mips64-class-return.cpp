@@ -43,3 +43,4 @@ void foo3(D2 a0) {
 void foo4(D0 a0) {
   gd0 = a0;
 }
+

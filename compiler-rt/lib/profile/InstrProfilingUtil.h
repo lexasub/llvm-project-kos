@@ -34,9 +34,8 @@ FILE *lprofOpenFileEx(const char *Filename);
 #if __ORBIS__
 #include <sys/types.h>
 static inline char *getenv(const char *name) { return NULL; }
-static inline int setenv(const char *name, const char *value, int overwrite) {
-  return 0;
-}
+static inline int setenv(const char *name, const char *value, int overwrite)
+{ return 0; }
 static pid_t fork() { return -1; }
 #endif /* #if __ORBIS__ */
 

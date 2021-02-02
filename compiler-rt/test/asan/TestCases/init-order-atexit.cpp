@@ -13,12 +13,9 @@
 void AccessC();
 
 class A {
-public:
-  A() {}
-  ~A() {
-    AccessC();
-    printf("PASSED\n");
-  }
+ public:
+  A() { }
+  ~A() { AccessC(); printf("PASSED\n"); }
   // CHECK-NOT: AddressSanitizer
   // CHECK: PASSED
 };
@@ -26,9 +23,9 @@ public:
 A a;
 
 class B {
-public:
+ public:
   B() { exit(1); }
-  ~B() {}
+  ~B() { }
 };
 
 B b;

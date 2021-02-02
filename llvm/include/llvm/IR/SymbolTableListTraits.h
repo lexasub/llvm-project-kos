@@ -81,12 +81,12 @@ private:
                                            static_cast<ValueSubClass *>(
                                                nullptr))));
     ListTy *Anchor = static_cast<ListTy *>(this);
-    return reinterpret_cast<ItemParentClass *>(
-        reinterpret_cast<char *>(Anchor) - Offset);
+    return reinterpret_cast<ItemParentClass*>(reinterpret_cast<char*>(Anchor)-
+                                              Offset);
   }
 
   static ListTy &getList(ItemParentClass *Par) {
-    return Par->*(Par->getSublistAccess((ValueSubClass *)nullptr));
+    return Par->*(Par->getSublistAccess((ValueSubClass*)nullptr));
   }
 
   static ValueSymbolTable *getSymTab(ItemParentClass *Par) {
@@ -99,7 +99,8 @@ public:
   void transferNodesFromList(SymbolTableListTraits &L2, iterator first,
                              iterator last);
   // private:
-  template <typename TPtr> void setSymTabObject(TPtr *, TPtr);
+  template<typename TPtr>
+  void setSymTabObject(TPtr *, TPtr);
   static ValueSymbolTable *toPtr(ValueSymbolTable *P) { return P; }
   static ValueSymbolTable *toPtr(ValueSymbolTable &R) { return &R; }
 };

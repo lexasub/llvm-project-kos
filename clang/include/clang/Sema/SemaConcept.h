@@ -15,11 +15,11 @@
 #define LLVM_CLANG_SEMA_SEMACONCEPT_H
 #include "clang/AST/ASTConcept.h"
 #include "clang/AST/ASTContext.h"
-#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Expr.h"
+#include "clang/AST/DeclTemplate.h"
 #include "clang/Basic/SourceLocation.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/PointerUnion.h"
+#include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallVector.h"
 #include <string>
 #include <utility>
@@ -31,8 +31,8 @@ struct AtomicConstraint {
   const Expr *ConstraintExpr;
   Optional<MutableArrayRef<TemplateArgumentLoc>> ParameterMapping;
 
-  AtomicConstraint(Sema &S, const Expr *ConstraintExpr)
-      : ConstraintExpr(ConstraintExpr){};
+  AtomicConstraint(Sema &S, const Expr *ConstraintExpr) :
+      ConstraintExpr(ConstraintExpr) { };
 
   bool hasMatchingParameterMapping(ASTContext &C,
                                    const AtomicConstraint &Other) const {
@@ -90,13 +90,12 @@ struct NormalizedConstraint {
 
   llvm::PointerUnion<AtomicConstraint *, CompoundConstraint> Constraint;
 
-  NormalizedConstraint(AtomicConstraint *C) : Constraint{C} {};
+  NormalizedConstraint(AtomicConstraint *C): Constraint{C} { };
   NormalizedConstraint(ASTContext &C, NormalizedConstraint LHS,
                        NormalizedConstraint RHS, CompoundConstraintKind Kind)
       : Constraint{CompoundConstraint{
             new (C) std::pair<NormalizedConstraint, NormalizedConstraint>{
-                std::move(LHS), std::move(RHS)},
-            Kind}} {};
+                std::move(LHS), std::move(RHS)}, Kind}} { };
 
   NormalizedConstraint(ASTContext &C, const NormalizedConstraint &Other) {
     if (Other.isAtomic()) {
@@ -106,11 +105,11 @@ struct NormalizedConstraint {
           new (C) std::pair<NormalizedConstraint, NormalizedConstraint>{
               NormalizedConstraint(C, Other.getLHS()),
               NormalizedConstraint(C, Other.getRHS())},
-          Other.getCompoundKind());
+              Other.getCompoundKind());
     }
   }
-  NormalizedConstraint(NormalizedConstraint &&Other)
-      : Constraint(Other.Constraint) {
+  NormalizedConstraint(NormalizedConstraint &&Other):
+      Constraint(Other.Constraint) {
     Other.Constraint = nullptr;
   }
   NormalizedConstraint &operator=(const NormalizedConstraint &Other) = delete;
@@ -152,6 +151,6 @@ private:
   fromConstraintExpr(Sema &S, NamedDecl *D, const Expr *E);
 };
 
-} // namespace clang
+} // clang
 
-#endif // LLVM_CLANG_SEMA_SEMACONCEPT_H
+#endif //LLVM_CLANG_SEMA_SEMACONCEPT_H

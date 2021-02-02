@@ -9,7 +9,7 @@ struct a test __attribute__((no_caller_saved_registers)); // expected-warning {{
 
 __attribute__((no_caller_saved_registers(999))) void bar(int *) {} // expected-warning {{unknown attribute 'no_caller_saved_registers' ignored}}
 
-__attribute__((no_caller_saved_registers)) void foo(int *) {} // expected-warning {{unknown attribute 'no_caller_saved_registers' ignored}}
+__attribute__((no_caller_saved_registers)) void foo(int *){} // expected-warning {{unknown attribute 'no_caller_saved_registers' ignored}}
 
 [[gnu::no_caller_saved_registers]] void foo2(int *) {} // expected-warning {{unknown attribute 'no_caller_saved_registers' ignored}}
 

@@ -22,8 +22,7 @@ template <class T>
 T tmain(T argc) {
   static T a;
   int *argv;
-#pragma omp depobj(a) depend(in \
-                             : argv, ([3][*(int *)argv][4])argv)
+#pragma omp depobj(a) depend(in:argv, ([3][*(int*)argv][4])argv)
 #pragma omp depobj(argc) destroy
 #pragma omp depobj(argc) update(inout)
   return argc;
@@ -32,15 +31,10 @@ T tmain(T argc) {
 int main(int argc, char **argv) {
   static omp_depend_t a;
   omp_depend_t b;
-#pragma omp depobj(a) depend(out \
-                             : argc, argv)
+#pragma omp depobj(a) depend(out:argc, argv)
 #pragma omp depobj(b) destroy
 #pragma omp depobj(b) update(mutexinoutset)
-#pragma omp depobj(a) depend(iterator(char *p = argv[argc] \
-                                      : argv[0]            \
-                                      : -1),               \
-                             out                           \
-                             : p[0])
+#pragma omp depobj(a) depend(iterator(char *p = argv[argc]:argv[0]:-1), out: p[0])
   (void)tmain(a), tmain(b);
   return 0;
 }

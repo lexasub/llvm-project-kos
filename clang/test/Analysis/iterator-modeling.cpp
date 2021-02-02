@@ -13,18 +13,18 @@
 #include "Inputs/system-header-simulator-cxx.h"
 
 template <typename Container>
-long clang_analyzer_container_begin(const Container &);
+long clang_analyzer_container_begin(const Container&);
 template <typename Container>
-long clang_analyzer_container_end(const Container &);
+long clang_analyzer_container_end(const Container&);
 template <typename Iterator>
-long clang_analyzer_iterator_position(const Iterator &);
-long clang_analyzer_iterator_position(int *);
+long clang_analyzer_iterator_position(const Iterator&);
+long clang_analyzer_iterator_position(int*);
 template <typename Iterator>
-void *clang_analyzer_iterator_container(const Iterator &);
+void* clang_analyzer_iterator_container(const Iterator&);
 template <typename Iterator>
-bool clang_analyzer_iterator_validity(const Iterator &);
+bool clang_analyzer_iterator_validity(const Iterator&);
 
-void clang_analyzer_denote(long, const char *);
+void clang_analyzer_denote(long, const char*);
 void clang_analyzer_express(long);
 void clang_analyzer_eval(bool);
 void clang_analyzer_warnIfReached();
@@ -441,6 +441,7 @@ void forward_list_move_assignment(std::forward_list<int> &FL1,
 
   clang_analyzer_express(clang_analyzer_iterator_position(i1)); // expected-warning-re {{$FL2.begin(){{$}}}}
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -1757,6 +1758,7 @@ void deque_erase_ahead_of_end(std::deque<int> &D) {
 /// - Iterators to the erased element are invalidated. Other iterators are not
 ///   affected.
 
+
 void forward_list_erase_after_begin(std::forward_list<int> &FL) {
   auto i0 = FL.cbegin(), i1 = ++FL.cbegin(), i2 = i1, i3 = FL.cend();
   ++i2;
@@ -1779,7 +1781,7 @@ void forward_list_erase_after_begin(std::forward_list<int> &FL) {
 
 void forward_list_erase_after_unknown(std::forward_list<int> &FL) {
   auto i0 = FL.cbegin(), i1 = return_any_iterator(FL.cbegin()), i2 = i1,
-       i3 = i1, i4 = FL.cend();
+    i3 = i1, i4 = FL.cend();
   ++i2;
   ++i3;
   ++i3;
@@ -1805,21 +1807,20 @@ void forward_list_erase_after_unknown(std::forward_list<int> &FL) {
 
 struct simple_iterator_base {
   simple_iterator_base();
-  simple_iterator_base(const simple_iterator_base &rhs);
-  simple_iterator_base &operator=(const simple_iterator_base &rhs);
+  simple_iterator_base(const simple_iterator_base& rhs);
+  simple_iterator_base &operator=(const simple_iterator_base& rhs);
   virtual ~simple_iterator_base();
   bool friend operator==(const simple_iterator_base &lhs,
                          const simple_iterator_base &rhs);
   bool friend operator!=(const simple_iterator_base &lhs,
                          const simple_iterator_base &rhs);
-
 private:
   int *ptr;
 };
 
-struct simple_derived_iterator : public simple_iterator_base {
-  int &operator*();
-  int *operator->();
+struct simple_derived_iterator: public simple_iterator_base {
+  int& operator*();
+  int* operator->();
   simple_iterator_base &operator++();
   simple_iterator_base operator++(int);
   simple_iterator_base &operator--();
@@ -1888,11 +1889,11 @@ void non_std_find(std::vector<int> &V, int e) {
   }
 }
 
-template <typename T>
+template<typename T>
 struct cont_with_ptr_iterator {
-  typedef T *iterator;
-  T *begin() const;
-  T *end() const;
+  typedef T* iterator;
+  T* begin() const;
+  T* end() const;
 };
 
 void begin_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
@@ -1905,7 +1906,7 @@ void begin_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
   if (i != c.begin()) {
     clang_analyzer_warnIfReached();
   }
-}
+  }
 
 void prefix_increment_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
   auto i = c.begin();
@@ -1986,8 +1987,8 @@ void plus_lhs_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
   auto i2 = i1 + 2;
 
   clang_analyzer_eval(clang_analyzer_iterator_container(i2) == &c); // expected-warning{{TRUE}}
-  clang_analyzer_express(clang_analyzer_iterator_position(i1));     // expected-warning{{$c.begin()}}
-  clang_analyzer_express(clang_analyzer_iterator_position(i2));     // expected-warning{{$c.begin() + 2}}
+  clang_analyzer_express(clang_analyzer_iterator_position(i1)); // expected-warning{{$c.begin()}}
+  clang_analyzer_express(clang_analyzer_iterator_position(i2)); // expected-warning{{$c.begin() + 2}}
 }
 
 void plus_rhs_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
@@ -2010,8 +2011,8 @@ void minus_ptr_iterator(const cont_with_ptr_iterator<int> &c) {
   auto i2 = i1 - 2;
 
   clang_analyzer_eval(clang_analyzer_iterator_container(i2) == &c); // expected-warning{{TRUE}}
-  clang_analyzer_express(clang_analyzer_iterator_position(i1));     // expected-warning{{$c.end()}}
-  clang_analyzer_express(clang_analyzer_iterator_position(i2));     // expected-warning{{$c.end() - 2}}
+  clang_analyzer_express(clang_analyzer_iterator_position(i1)); // expected-warning{{$c.end()}}
+  clang_analyzer_express(clang_analyzer_iterator_position(i2)); // expected-warning{{$c.end() - 2}}
 }
 
 void ptr_iter_diff(cont_with_ptr_iterator<int> &c) {

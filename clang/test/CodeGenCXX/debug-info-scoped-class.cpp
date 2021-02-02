@@ -8,7 +8,7 @@ struct A {
   enum class Return;
   Return f1();
 };
-A::Return *f2() {}
+A::Return* f2() {}
 
 // CHECK: !DICompositeType(tag: DW_TAG_enumeration_type, name: "Return",
 // CHECK-SAME:             flags: DIFlagFwdDecl,

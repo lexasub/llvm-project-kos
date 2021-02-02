@@ -31,7 +31,6 @@ class ToolOutputFile {
   class CleanupInstaller {
     /// The name of the file.
     std::string Filename;
-
   public:
     /// The flag which indicates whether we should not delete the file.
     bool Keep;
@@ -67,6 +66,6 @@ public:
   void keep() { Installer.Keep = true; }
 };
 
-} // namespace llvm
+} // end llvm namespace
 
 #endif

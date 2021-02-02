@@ -30,7 +30,7 @@ struct has_less<T,
     : std::true_type {};
 #endif
 
-struct A; // purposefully incomplete
+struct A;  // purposefully incomplete
 struct B {
   int x;
   B() = default;

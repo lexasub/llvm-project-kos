@@ -16,7 +16,7 @@
 #if SANITIZER_LINUX || SANITIZER_FREEBSD || SANITIZER_NETBSD || \
     SANITIZER_SOLARIS
 
-#include <dlfcn.h>  // for dlsym() and dlvsym()
+#include <dlfcn.h>   // for dlsym() and dlvsym()
 
 namespace __interception {
 

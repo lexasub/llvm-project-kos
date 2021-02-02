@@ -41,7 +41,7 @@ int test_iteration_spaces() {
     c[i] = a[i] + b[i];
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{expression must have integral or unscoped enumeration type, not 'double'}}
+// expected-error@+1 {{expression must have integral or unscoped enumeration type, not 'double'}}
   for (long long i = 0; i < 10; i += 1.5) {
     c[i] = a[i] + b[i];
   }
@@ -50,63 +50,63 @@ int test_iteration_spaces() {
     c[i] = a[i] + b[i];
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{variable must be of integer or random access iterator type}}
+// expected-error@+1 {{variable must be of integer or random access iterator type}}
   for (float fi = 0; fi < 10.0; fi++) {
     c[(int)fi] = a[(int)fi] + b[(int)fi];
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{variable must be of integer or random access iterator type}}
+// expected-error@+1 {{variable must be of integer or random access iterator type}}
   for (double fi = 0; fi < 10.0; fi++) {
     c[(int)fi] = a[(int)fi] + b[(int)fi];
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (int &ref = ii; ref < 10; ref++) {
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (int i; i < 10; i++)
     c[i] = a[i];
 
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (int i = 0, j = 0; i < 10; ++i)
     c[i] = a[i];
 
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (; ii < 10; ++ii)
     c[ii] = a[ii];
 
 #pragma omp target teams distribute parallel for simd
-  // expected-warning@+2 {{expression result unused}}
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-warning@+2 {{expression result unused}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (ii + 1; ii < 10; ++ii)
     c[ii] = a[ii];
 
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (c[ii] = 0; ii < 10; ++ii)
     c[ii] = a[ii];
 
 #pragma omp target teams distribute parallel for simd
-  // Ok to skip parenthesises.
+// Ok to skip parenthesises.
   for (((ii)) = 0; ii < 10; ++ii)
     c[ii] = a[ii];
 
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
   for (int i = 0; i; i++)
     c[i] = a[i];
 
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+2 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+2 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
-  // expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'i'}}
+// omp45-error@+2 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+2 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
+// expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'i'}}
   for (int i = 0; jj < kk; ii++)
     c[i] = a[i];
 
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
   for (int i = 0; !!i; i++)
     c[i] = a[i];
 
@@ -116,7 +116,7 @@ int test_iteration_spaces() {
     c[i] = a[i];
 
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'i'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'i'}}
   for (int i = 0;; i++)
     c[i] = a[i];
 
@@ -243,7 +243,7 @@ int test_iteration_spaces() {
 
 // expected-error@+3 {{loop iteration variable in the associated loop of 'omp target teams distribute parallel for simd' directive may not be firstprivate, predetermined as linear}}
 // expected-note@+1 {{defined as firstprivate}}
-#pragma omp target teams distribute parallel for simd firstprivate(ii)
+#pragma omp target teams distribute parallel for simd firstprivate(ii) 
   for (ii = 0; ii < 10; ii++)
     c[ii] = a[ii];
 
@@ -264,9 +264,9 @@ int test_iteration_spaces() {
 
   {
 #pragma omp target teams distribute parallel for simd collapse(2)
-    for (ii = 0; ii < 10; ii += 1)
-      for (globalii = 0; globalii < 10; globalii += 1)
-        c[globalii] += a[globalii] + ii;
+  for (ii = 0; ii < 10; ii += 1)
+    for (globalii = 0; globalii < 10; globalii += 1)
+      c[globalii] += a[globalii] + ii;
   }
 
 // omp45-error@+2 {{statement after '#pragma omp target teams distribute parallel for simd' must be a for loop}}
@@ -306,7 +306,7 @@ struct iterator_traits {
 template <class Iter>
 typename iterator_traits<Iter>::difference_type
 distance(Iter first, Iter last) { return first - last; }
-} // namespace std
+}
 class Iter0 {
 public:
   Iter0() {}
@@ -368,102 +368,102 @@ int test_with_random_access_iterator() {
   for (GoodIter I = begin; I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (GoodIter &I = begin; I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
   for (GoodIter I = begin; I >= end; --I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (GoodIter I(begin); I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (GoodIter I(nullptr); I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (GoodIter I(0); I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (GoodIter I(1, 2); I < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
   for (begin = GoodIter(0); begin < end; ++begin)
     ++begin;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+2 {{invalid operands to binary expression ('GoodIter' and 'const Iter0')}}
-  // expected-error@+1 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
+// expected-error@+2 {{invalid operands to binary expression ('GoodIter' and 'const Iter0')}}
+// expected-error@+1 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
   for (begin = begin0; begin < end; ++begin)
     ++begin;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (++begin; begin < end; ++begin)
     ++begin;
 #pragma omp target teams distribute parallel for simd
   for (begin = end; begin < end; ++begin)
     ++begin;
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
   for (GoodIter I = begin; I - I; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
   for (GoodIter I = begin; begin < end; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
+// omp45-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', or '>=') of loop variable 'I'}} omp50-error@+1 {{condition of OpenMP for loop must be a relational comparison ('<', '<=', '>', '>=', or '!=') of loop variable 'I'}}
   for (GoodIter I = begin; !I; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (GoodIter I = begin; I >= end; I = I + 1)
     ++I;
 #pragma omp target teams distribute parallel for simd
   for (GoodIter I = begin; I >= end; I = I - 1)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'I'}}
+// expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'I'}}
   for (GoodIter I = begin; I >= end; I = -I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (GoodIter I = begin; I >= end; I = 2 + I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'I'}}
+// expected-error@+1 {{increment clause of OpenMP for loop must perform simple addition or subtraction on loop variable 'I'}}
   for (GoodIter I = begin; I >= end; I = 2 - I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+1 {{invalid operands to binary expression ('Iter0' and 'int')}}
+// expected-error@+1 {{invalid operands to binary expression ('Iter0' and 'int')}}
   for (Iter0 I = begin0; I < end0; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // Initializer is constructor without params.
-  // expected-error@+2 {{invalid operands to binary expression ('Iter0' and 'int')}}
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// Initializer is constructor without params.
+// expected-error@+2 {{invalid operands to binary expression ('Iter0' and 'int')}}
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (Iter0 I; I < end0; ++I)
     ++I;
   Iter1 begin1, end1;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+2 {{invalid operands to binary expression ('Iter1' and 'Iter1')}}
-  // expected-error@+1 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
+// expected-error@+2 {{invalid operands to binary expression ('Iter1' and 'Iter1')}}
+// expected-error@+1 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
   for (Iter1 I = begin1; I < end1; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (Iter1 I = begin1; I >= end1; ++I)
     ++I;
 #pragma omp target teams distribute parallel for simd
-  // expected-error@+4 {{invalid operands to binary expression ('Iter1' and 'float')}}
-  // expected-error@+3 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
-  // Initializer is constructor with all default params.
-  // expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
+// expected-error@+4 {{invalid operands to binary expression ('Iter1' and 'float')}}
+// expected-error@+3 {{could not calculate number of iterations calling 'operator-' with upper and lower loop bounds}}
+// Initializer is constructor with all default params.
+// expected-warning@+1 {{initialization clause of OpenMP for loop is not in canonical form ('var = init' or 'T var = init')}}
   for (Iter1 I; I < end1; ++I) {
   }
   return 0;
@@ -474,14 +474,14 @@ class TC {
 public:
   int dotest_lt(IT begin, IT end) {
 #pragma omp target teams distribute parallel for simd
-    // expected-note@+2 {{loop step is expected to be positive due to this condition}}
-    // expected-error@+1 {{increment expression must cause 'I' to increase on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be positive due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to increase on each iteration of OpenMP for loop}}
     for (IT I = begin; I < end; I = I + ST) {
       ++I;
     }
 #pragma omp target teams distribute parallel for simd
-    // expected-note@+2 {{loop step is expected to be positive due to this condition}}
-    // expected-error@+1 {{increment expression must cause 'I' to increase on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be positive due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to increase on each iteration of OpenMP for loop}}
     for (IT I = begin; I <= end; I += ST) {
       ++I;
     }
@@ -498,21 +498,21 @@ public:
 template <typename IT, int ST = 0>
 int dotest_gt(IT begin, IT end) {
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 2 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 2 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (IT I = begin; I >= end; I = I + ST) {
     ++I;
   }
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 2 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 2 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (IT I = begin; I >= end; I += ST) {
     ++I;
   }
 
 #pragma omp target teams distribute parallel for simd
-  // expected-note@+2 {{loop step is expected to be negative due to this condition}}
-  // expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
+// expected-note@+2 {{loop step is expected to be negative due to this condition}}
+// expected-error@+1 {{increment expression must cause 'I' to decrease on each iteration of OpenMP for loop}}
   for (IT I = begin; I >= end; ++I) {
     ++I;
   }
@@ -528,9 +528,9 @@ void test_with_template() {
   TC<GoodIter, 100> t1;
   TC<GoodIter, -100> t2;
   t1.dotest_lt(begin, end);
-  t2.dotest_lt(begin, end);        // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
-  dotest_gt(begin, end);           // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
-  dotest_gt<unsigned, 10>(0, 100); // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
+  t2.dotest_lt(begin, end);         // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
+  dotest_gt(begin, end);            // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
+  dotest_gt<unsigned, 10>(0, 100);  // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
 }
 
 void test_loop_break() {
@@ -585,7 +585,7 @@ void test_loop_eh() {
     } catch (float f) {
       if (f > 0.1)
         throw a[i]; // expected-error {{'throw' statement cannot be used in OpenMP simd region}}
-      return;       // expected-error {{cannot return from OpenMP region}}
+      return; // expected-error {{cannot return from OpenMP region}}
     }
     switch (i) {
     case 1:
@@ -644,3 +644,4 @@ void test_nowait() {
   for (int i = 0; i < 10; ++i)
     ;
 }
+

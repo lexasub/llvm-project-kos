@@ -3,11 +3,13 @@
 
 typedef float AVX2Float __attribute__((__vector_size__(32)));
 
-volatile float TestAlign(void) {
-  volatile AVX2Float *p = new AVX2Float;
-  *p = *p;
-  AVX2Float r = *p;
-  return r[0];
+
+volatile float TestAlign(void)
+{
+       volatile AVX2Float *p = new AVX2Float;
+        *p = *p;
+        AVX2Float r = *p;
+        return r[0];
 }
 
 // CHECK: [[R:%.*]] = alloca <8 x float>, align 32
@@ -25,17 +27,18 @@ volatile float TestAlign(void) {
 // CHECK-NEXT:  [[VECEXT:%.*]] = extractelement <8 x float> [[SIX]], i32 0
 // CHECK-NEXT:  ret float [[VECEXT]]
 
-typedef float AVX2Float_Explicitly_aligned __attribute__((__vector_size__(32))) __attribute__((aligned(32)));
+typedef float AVX2Float_Explicitly_aligned __attribute__((__vector_size__(32))) __attribute__((aligned (32)));
 
 typedef AVX2Float_Explicitly_aligned AVX2Float_indirect;
 
 typedef AVX2Float_indirect AVX2Float_use_existing_align;
 
-volatile float TestAlign2(void) {
-  volatile AVX2Float_use_existing_align *p = new AVX2Float_use_existing_align;
-  *p = *p;
-  AVX2Float_use_existing_align r = *p;
-  return r[0];
+volatile float TestAlign2(void)
+{
+       volatile AVX2Float_use_existing_align *p = new AVX2Float_use_existing_align;
+        *p = *p;
+        AVX2Float_use_existing_align r = *p;
+        return r[0];
 }
 
 // CHECK: [[R:%.*]] = alloca <8 x float>, align 32

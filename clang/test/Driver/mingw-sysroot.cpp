@@ -13,6 +13,7 @@
 // RUN: ln -s %clang %T/testroot-clang/bin/x86_64-w64-mingw32-clang
 // RUN: ln -s %S/Inputs/mingw_ubuntu_posix_tree/usr/x86_64-w64-mingw32 %T/testroot-clang/x86_64-w64-mingw32
 
+
 // If we find a gcc in the path with the right triplet prefix, pick that as
 // sysroot:
 
@@ -22,11 +23,13 @@
 // CHECK_TESTROOT_GCC: "{{.*}}/testroot-gcc{{/|\\\\}}lib{{/|\\\\}}gcc{{/|\\\\}}x86_64-w64-mingw32{{/|\\\\}}5.3-posix{{/|\\\\}}include{{/|\\\\}}c++{{/|\\\\}}backward"
 // CHECK_TESTROOT_GCC: "{{.*}}/testroot-gcc{{/|\\\\}}x86_64-w64-mingw32{{/|\\\\}}include"
 
+
 // If there's a matching sysroot next to the clang binary itself, prefer that
 // over a gcc in the path:
 
 // RUN: env "PATH=%T/testroot-gcc/bin:%PATH%" %T/testroot-clang/bin/x86_64-w64-mingw32-clang -target x86_64-w64-mingw32 -rtlib=compiler-rt -stdlib=libstdc++ --sysroot="" -c -### %s 2>&1 | FileCheck -check-prefix=CHECK_TESTROOT_CLANG %s
 // CHECK_TESTROOT_CLANG: "{{.*}}/testroot-clang{{/|\\\\}}x86_64-w64-mingw32{{/|\\\\}}include"
+
 
 // If we pick a root based on a sysroot next to the clang binary, which also
 // happens to be in the same directory as gcc, make sure we still can pick up

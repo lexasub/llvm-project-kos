@@ -17,9 +17,9 @@
 #ifdef SANITIZER_DLL_THUNK
 #include "asan_init_version.h"
 #include "interception/interception.h"
-#include "sanitizer_common/sanitizer_platform_interceptors.h"
 #include "sanitizer_common/sanitizer_win_defs.h"
 #include "sanitizer_common/sanitizer_win_dll_thunk.h"
+#include "sanitizer_common/sanitizer_platform_interceptors.h"
 
 // ASan own interface functions.
 #define INTERFACE_FUNCTION(Name) INTERCEPT_SANITIZER_FUNCTION(Name)
@@ -109,19 +109,18 @@ using namespace __sanitizer;
 extern "C" {
 int __asan_option_detect_stack_use_after_return;
 uptr __asan_shadow_memory_dynamic_address;
-}  // extern "C"
+} // extern "C"
 
 static int asan_dll_thunk_init() {
   typedef void (*fntype)();
   static fntype fn = 0;
   // asan_dll_thunk_init is expected to be called by only one thread.
-  if (fn)
-    return 0;
+  if (fn) return 0;
 
   // Ensure all interception was executed.
   __dll_thunk_init();
 
-  fn = (fntype)dllThunkGetRealAddrOrDie("__asan_init");
+  fn = (fntype) dllThunkGetRealAddrOrDie("__asan_init");
   fn();
   __asan_option_detect_stack_use_after_return =
       (__asan_should_detect_stack_use_after_return() != 0);
@@ -141,14 +140,13 @@ __declspec(allocate(".CRT$XIB")) int (*__asan_preinit)() = asan_dll_thunk_init;
 
 static void WINAPI asan_thread_init(void *mod, unsigned long reason,
                                     void *reserved) {
-  if (reason == /*DLL_PROCESS_ATTACH=*/1)
-    asan_dll_thunk_init();
+  if (reason == /*DLL_PROCESS_ATTACH=*/1) asan_dll_thunk_init();
 }
 
 #pragma section(".CRT$XLAB", long, read)
-__declspec(allocate(".CRT$XLAB")) void(WINAPI *__asan_tls_init)(
-    void *, unsigned long, void *) = asan_thread_init;
+__declspec(allocate(".CRT$XLAB")) void (WINAPI *__asan_tls_init)(void *,
+    unsigned long, void *) = asan_thread_init;
 
 WIN_FORCE_LINK(__asan_dso_reg_hook)
 
-#endif  // SANITIZER_DLL_THUNK
+#endif // SANITIZER_DLL_THUNK

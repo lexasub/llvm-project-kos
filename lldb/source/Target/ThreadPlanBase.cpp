@@ -125,7 +125,7 @@ bool ThreadPlanBase::ShouldStop(Event *event_ptr) {
       LLDB_LOGF(
           log,
           "Base plan discarding thread plans for thread tid = 0x%4.4" PRIx64
-          " (exception: %s)",
+          " (exception: %s)", 
           m_tid, stop_info_sp->GetDescription());
       GetThread().DiscardThreadPlans(false);
       return true;
@@ -148,7 +148,7 @@ bool ThreadPlanBase::ShouldStop(Event *event_ptr) {
         LLDB_LOGF(
             log,
             "Base plan discarding thread plans for thread tid = 0x%4.4" PRIx64
-            " (signal: %s)",
+            " (signal: %s)", 
             m_tid, stop_info_sp->GetDescription());
         GetThread().DiscardThreadPlans(false);
         return true;

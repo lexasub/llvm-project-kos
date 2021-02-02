@@ -57,7 +57,7 @@ public:
   }
 
   bool SingleStepEnabled() { return m_single_step; }
-
+  
   Thread &GetThread();
 
 protected:

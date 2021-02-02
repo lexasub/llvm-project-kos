@@ -23,69 +23,75 @@
 using namespace llvm;
 
 namespace {
-struct MemDepPrinter : public FunctionPass {
-  const Function *F;
+  struct MemDepPrinter : public FunctionPass {
+    const Function *F;
 
-  enum DepType { Clobber = 0, Def, NonFuncLocal, Unknown };
+    enum DepType {
+      Clobber = 0,
+      Def,
+      NonFuncLocal,
+      Unknown
+    };
 
-  static const char *const DepTypeStr[];
+    static const char *const DepTypeStr[];
 
-  typedef PointerIntPair<const Instruction *, 2, DepType> InstTypePair;
-  typedef std::pair<InstTypePair, const BasicBlock *> Dep;
-  typedef SmallSetVector<Dep, 4> DepSet;
-  typedef DenseMap<const Instruction *, DepSet> DepSetMap;
-  DepSetMap Deps;
+    typedef PointerIntPair<const Instruction *, 2, DepType> InstTypePair;
+    typedef std::pair<InstTypePair, const BasicBlock *> Dep;
+    typedef SmallSetVector<Dep, 4> DepSet;
+    typedef DenseMap<const Instruction *, DepSet> DepSetMap;
+    DepSetMap Deps;
 
-  static char ID; // Pass identifcation, replacement for typeid
-  MemDepPrinter() : FunctionPass(ID) {
-    initializeMemDepPrinterPass(*PassRegistry::getPassRegistry());
-  }
+    static char ID; // Pass identifcation, replacement for typeid
+    MemDepPrinter() : FunctionPass(ID) {
+      initializeMemDepPrinterPass(*PassRegistry::getPassRegistry());
+    }
 
-  bool runOnFunction(Function &F) override;
+    bool runOnFunction(Function &F) override;
 
-  void print(raw_ostream &OS, const Module * = nullptr) const override;
+    void print(raw_ostream &OS, const Module * = nullptr) const override;
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addRequiredTransitive<AAResultsWrapperPass>();
-    AU.addRequiredTransitive<MemoryDependenceWrapperPass>();
-    AU.setPreservesAll();
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.addRequiredTransitive<AAResultsWrapperPass>();
+      AU.addRequiredTransitive<MemoryDependenceWrapperPass>();
+      AU.setPreservesAll();
+    }
 
-  void releaseMemory() override {
-    Deps.clear();
-    F = nullptr;
-  }
+    void releaseMemory() override {
+      Deps.clear();
+      F = nullptr;
+    }
 
-private:
-  static InstTypePair getInstTypePair(MemDepResult dep) {
-    if (dep.isClobber())
-      return InstTypePair(dep.getInst(), Clobber);
-    if (dep.isDef())
-      return InstTypePair(dep.getInst(), Def);
-    if (dep.isNonFuncLocal())
-      return InstTypePair(dep.getInst(), NonFuncLocal);
-    assert(dep.isUnknown() && "unexpected dependence type");
-    return InstTypePair(dep.getInst(), Unknown);
-  }
-};
-} // namespace
+  private:
+    static InstTypePair getInstTypePair(MemDepResult dep) {
+      if (dep.isClobber())
+        return InstTypePair(dep.getInst(), Clobber);
+      if (dep.isDef())
+        return InstTypePair(dep.getInst(), Def);
+      if (dep.isNonFuncLocal())
+        return InstTypePair(dep.getInst(), NonFuncLocal);
+      assert(dep.isUnknown() && "unexpected dependence type");
+      return InstTypePair(dep.getInst(), Unknown);
+    }
+  };
+}
 
 char MemDepPrinter::ID = 0;
 INITIALIZE_PASS_BEGIN(MemDepPrinter, "print-memdeps",
                       "Print MemDeps of function", false, true)
 INITIALIZE_PASS_DEPENDENCY(MemoryDependenceWrapperPass)
-INITIALIZE_PASS_END(MemDepPrinter, "print-memdeps", "Print MemDeps of function",
-                    false, true)
+INITIALIZE_PASS_END(MemDepPrinter, "print-memdeps",
+                      "Print MemDeps of function", false, true)
 
-FunctionPass *llvm::createMemDepPrinter() { return new MemDepPrinter(); }
+FunctionPass *llvm::createMemDepPrinter() {
+  return new MemDepPrinter();
+}
 
-const char *const MemDepPrinter::DepTypeStr[] = {"Clobber", "Def",
-                                                 "NonFuncLocal", "Unknown"};
+const char *const MemDepPrinter::DepTypeStr[]
+  = {"Clobber", "Def", "NonFuncLocal", "Unknown"};
 
 bool MemDepPrinter::runOnFunction(Function &F) {
   this->F = &F;
-  MemoryDependenceResults &MDA =
-      getAnalysis<MemoryDependenceWrapperPass>().getMemDep();
+  MemoryDependenceResults &MDA = getAnalysis<MemoryDependenceWrapperPass>().getMemDep();
 
   // All this code uses non-const interfaces because MemDep is not
   // const-friendly, though nothing is actually modified.
@@ -110,9 +116,8 @@ bool MemDepPrinter::runOnFunction(Function &F) {
       }
     } else {
       SmallVector<NonLocalDepResult, 4> NLDI;
-      assert((isa<LoadInst>(Inst) || isa<StoreInst>(Inst) ||
-              isa<VAArgInst>(Inst)) &&
-             "Unknown memory instruction!");
+      assert( (isa<LoadInst>(Inst) || isa<StoreInst>(Inst) ||
+               isa<VAArgInst>(Inst)) && "Unknown memory instruction!");
       MDA.getNonLocalPointerDependency(Inst, NLDI);
 
       DepSet &InstDeps = Deps[Inst];

@@ -40,8 +40,9 @@ SBSymbolContext::SBSymbolContext(const SBSymbolContext &rhs) : m_opaque_up() {
 SBSymbolContext::~SBSymbolContext() = default;
 
 const SBSymbolContext &SBSymbolContext::operator=(const SBSymbolContext &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBSymbolContext &, SBSymbolContext, operator=,
-                     (const lldb::SBSymbolContext &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBSymbolContext &,
+                     SBSymbolContext, operator=,(const lldb::SBSymbolContext &),
+                     rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -232,14 +233,15 @@ SBSymbolContext::GetParentOfInlinedScope(const SBAddress &curr_frame_pc,
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBSymbolContext>(Registry &R) {
+template <>
+void RegisterMethods<SBSymbolContext>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBSymbolContext, ());
   LLDB_REGISTER_CONSTRUCTOR(SBSymbolContext,
                             (const lldb_private::SymbolContext *));
   LLDB_REGISTER_CONSTRUCTOR(SBSymbolContext, (const lldb::SBSymbolContext &));
-  LLDB_REGISTER_METHOD(const lldb::SBSymbolContext &,
-                       SBSymbolContext, operator=,
-                       (const lldb::SBSymbolContext &));
+  LLDB_REGISTER_METHOD(
+      const lldb::SBSymbolContext &,
+      SBSymbolContext, operator=,(const lldb::SBSymbolContext &));
   LLDB_REGISTER_METHOD_CONST(bool, SBSymbolContext, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBSymbolContext, operator bool, ());
   LLDB_REGISTER_METHOD(lldb::SBModule, SBSymbolContext, GetModule, ());
@@ -252,7 +254,8 @@ template <> void RegisterMethods<SBSymbolContext>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBSymbolContext, SetModule, (lldb::SBModule));
   LLDB_REGISTER_METHOD(void, SBSymbolContext, SetCompileUnit,
                        (lldb::SBCompileUnit));
-  LLDB_REGISTER_METHOD(void, SBSymbolContext, SetFunction, (lldb::SBFunction));
+  LLDB_REGISTER_METHOD(void, SBSymbolContext, SetFunction,
+                       (lldb::SBFunction));
   LLDB_REGISTER_METHOD(void, SBSymbolContext, SetBlock, (lldb::SBBlock));
   LLDB_REGISTER_METHOD(void, SBSymbolContext, SetLineEntry,
                        (lldb::SBLineEntry));
@@ -264,5 +267,5 @@ template <> void RegisterMethods<SBSymbolContext>(Registry &R) {
                              (const lldb::SBAddress &, lldb::SBAddress &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

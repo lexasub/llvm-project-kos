@@ -29,7 +29,7 @@ struct V4 : Z, V1, V2 {
   int y;
 };
 
-void use_somewhere_else(void *);
+void use_somewhere_else(void*);
 
 namespace simple {
 // In case of a single-layer virtual inheritance, the "this" adjustment for a
@@ -189,7 +189,7 @@ struct F : virtual E {
   // CHECK-NEXT:       [this adjustment: vtordisp at -12, -8 non-virtual]
 
   F();
-  virtual void g(); // Force a vtordisp.
+  virtual void g();  // Force a vtordisp.
   int f;
 
   // MANGLING-DAG: @"?g@F@simple@@$4PPPPPPPM@A@AEXXZ"{{.*}}??_EF@simple@@$4PPPPPPPM@A@AEPAXI@Z
@@ -218,7 +218,7 @@ struct G : F {
 };
 
 G::G() {}
-} // namespace simple
+}
 
 namespace extended {
 // If a virtual function requires vtordisp adjustment and the final overrider
@@ -323,7 +323,7 @@ struct E : virtual D {
 };
 
 E e;
-void use(E *obj) { delete obj; }
+void use(E *obj) { delete obj; } 
 
 struct F : virtual Z, virtual D {
   // CHECK-LABEL: VFTable for 'V2' in 'extended::D' in 'extended::F' (2 entries).
@@ -391,7 +391,7 @@ struct H : Z, A {
 
 H h;
 void use(H *obj) { delete obj; }
-} // namespace extended
+}
 
 namespace pr17738 {
 // These classes should have vtordispex thunks but MSVS CL miscompiles them.
@@ -414,7 +414,7 @@ struct A : virtual simple::B {
 
 A a;
 void use(A *obj) { delete obj; }
-} // namespace pr17738
+}
 
 namespace pr19408 {
 // In this test, the vptr used to vcall D::f() is located in the A vbase.
@@ -448,22 +448,19 @@ struct D : C {
 };
 
 D::D() {}
-} // namespace pr19408
+}
 
 namespace access {
 struct A {
   virtual ~A();
-
 protected:
   virtual void prot();
-
 private:
   virtual void priv();
 };
 
 struct B : virtual A {
   virtual ~B();
-
 protected:
   virtual void prot();
   // MANGLING-DAG: @"?prot@B@access@@$2PPPPPPPM@A@AEXXZ"
@@ -482,7 +479,7 @@ struct C : virtual B {
 };
 
 C c;
-} // namespace access
+}
 
 namespace pr19505 {
 struct A {
@@ -510,7 +507,7 @@ struct X : B, virtual C {
 } x;
 
 void build_vftable(X *obj) { obj->g(); }
-} // namespace pr19505
+}
 
 namespace pr19506 {
 struct A {
@@ -537,7 +534,7 @@ struct X : C, virtual B {
 } x;
 
 void build_vftable(X *obj) { obj->g(); }
-} // namespace pr19506
+}
 
 namespace pr19519 {
 // VS2013 CL miscompiles this, just make sure we don't regress.
@@ -569,4 +566,4 @@ struct X : B, C {
 };
 
 X::X() {}
-} // namespace pr19519
+}

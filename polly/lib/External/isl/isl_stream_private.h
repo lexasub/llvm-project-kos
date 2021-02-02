@@ -1,25 +1,25 @@
-#include <isl/stream.h>
 #include <isl_int.h>
+#include <isl/stream.h>
 #include <isl_yaml.h>
 
 struct isl_token {
-  int type;
+	int type;
 
-  unsigned int on_new_line : 1;
-  unsigned is_keyword : 1;
-  int line;
-  int col;
+	unsigned int on_new_line : 1;
+	unsigned is_keyword : 1;
+	int line;
+	int col;
 
-  union {
-    isl_int v;
-    char *s;
-    isl_map *map;
-    isl_pw_aff *pwaff;
-  } u;
+	union {
+		isl_int	v;
+		char	*s;
+		isl_map *map;
+		isl_pw_aff *pwaff;
+	} u;
 };
 
-struct isl_token *isl_token_new(isl_ctx *ctx, int line, int col,
-                                unsigned on_new_line);
+struct isl_token *isl_token_new(isl_ctx *ctx,
+	int line, int col, unsigned on_new_line);
 
 /* An input stream that may be either a file or a string.
  *
@@ -39,31 +39,31 @@ struct isl_token *isl_token_new(isl_ctx *ctx, int line, int col,
  * (such that the indentation is not relevant).
  */
 struct isl_stream {
-  struct isl_ctx *ctx;
-  FILE *file;
-  const char *str;
-  int line;
-  int col;
-  int start_line;
-  int start_col;
-  int last_line;
-  int eof;
+	struct isl_ctx	*ctx;
+	FILE        	*file;
+	const char  	*str;
+	int	    	line;
+	int	    	col;
+	int		start_line;
+	int		start_col;
+	int		last_line;
+	int	    	eof;
 
-  char *buffer;
-  size_t size;
-  size_t len;
-  int c;
-  int un[5];
-  int n_un;
+	char	    	*buffer;
+	size_t	    	size;
+	size_t	    	len;
+	int	    	c;
+	int		un[5];
+	int		n_un;
 
-  struct isl_token *tokens[5];
-  int n_token;
+	struct isl_token	*tokens[5];
+	int	    	n_token;
 
-  struct isl_hash_table *keywords;
-  enum isl_token_type next_type;
+	struct isl_hash_table	*keywords;
+	enum isl_token_type	 next_type;
 
-  int yaml_depth;
-  int yaml_size;
-  enum isl_yaml_state *yaml_state;
-  int *yaml_indent;
+	int			yaml_depth;
+	int			yaml_size;
+	enum isl_yaml_state	*yaml_state;
+	int			*yaml_indent;
 };

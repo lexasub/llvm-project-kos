@@ -12,9 +12,10 @@
 #include <utility>
 #include <vector>
 
+
+#include "lldb/lldb-enumerations.h"
 #include "lldb/Breakpoint/BreakpointID.h"
 #include "lldb/Breakpoint/BreakpointName.h"
-#include "lldb/lldb-enumerations.h"
 #include "lldb/lldb-private.h"
 
 namespace lldb_private {
@@ -56,10 +57,12 @@ public:
   static std::pair<llvm::StringRef, llvm::StringRef>
   SplitIDRangeExpression(llvm::StringRef in_string);
 
-  static void
-  FindAndReplaceIDRanges(Args &old_args, Target *target, bool allow_locations,
-                         BreakpointName::Permissions ::PermissionKinds purpose,
-                         CommandReturnObject &result, Args &new_args);
+  static void FindAndReplaceIDRanges(Args &old_args, Target *target,
+                                     bool allow_locations,
+                                     BreakpointName::Permissions
+                                       ::PermissionKinds purpose,
+                                     CommandReturnObject &result,
+                                     Args &new_args);
 
 private:
   BreakpointIDArray m_breakpoint_ids;

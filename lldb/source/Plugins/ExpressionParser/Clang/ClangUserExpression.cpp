@@ -154,7 +154,7 @@ void ClangUserExpression::ScanContext(ExecutionContext &exe_ctx, Status &err) {
     }
     m_needs_object_ptr = true;
   } else if (clang::CXXMethodDecl *method_decl =
-                 TypeSystemClang::DeclContextGetAsCXXMethodDecl(decl_context)) {
+          TypeSystemClang::DeclContextGetAsCXXMethodDecl(decl_context)) {
     if (m_allow_cxx && method_decl->isInstance()) {
       if (m_enforce_valid_object) {
         lldb::VariableListSP variable_list_sp(
@@ -325,8 +325,8 @@ static void ApplyObjcCastHack(std::string &expr) {
     expr.replace(offset, from.size(), to);
 }
 
-bool ClangUserExpression::SetupPersistentState(
-    DiagnosticManager &diagnostic_manager, ExecutionContext &exe_ctx) {
+bool ClangUserExpression::SetupPersistentState(DiagnosticManager &diagnostic_manager,
+                                 ExecutionContext &exe_ctx) {
   if (Target *target = exe_ctx.GetTargetPtr()) {
     if (PersistentExpressionState *persistent_state =
             target->GetPersistentExpressionStateForLanguage(
@@ -638,8 +638,7 @@ void ClangUserExpression::SetupCppModuleImports(ExecutionContext &exe_ctx) {
                             m_include_directories.end()));
 }
 
-static bool shouldRetryWithCppModule(Target &target,
-                                     ExecutionPolicy exe_policy) {
+static bool shouldRetryWithCppModule(Target &target, ExecutionPolicy exe_policy) {
   // Top-level expression don't yet support importing C++ modules.
   if (exe_policy == ExecutionPolicy::eExecutionPolicyTopLevel)
     return false;
@@ -679,9 +678,9 @@ bool ClangUserExpression::Parse(DiagnosticManager &diagnostic_manager,
   if (!exe_scope)
     exe_scope = exe_ctx.GetTargetPtr();
 
-  bool parse_success =
-      TryParse(diagnostic_manager, exe_scope, exe_ctx, execution_policy,
-               keep_result_in_memory, generate_debug_info);
+  bool parse_success = TryParse(diagnostic_manager, exe_scope, exe_ctx,
+                                execution_policy, keep_result_in_memory,
+                                generate_debug_info);
   // If the expression failed to parse, check if retrying parsing with a loaded
   // C++ module is possible.
   if (!parse_success && shouldRetryWithCppModule(*target, execution_policy)) {
@@ -695,9 +694,9 @@ bool ClangUserExpression::Parse(DiagnosticManager &diagnostic_manager,
                        /*for_completion*/ false);
       // Clear the error diagnostics from the previous parse attempt.
       diagnostic_manager.Clear();
-      parse_success =
-          TryParse(diagnostic_manager, exe_scope, exe_ctx, execution_policy,
-                   keep_result_in_memory, generate_debug_info);
+      parse_success = TryParse(diagnostic_manager, exe_scope, exe_ctx,
+                               execution_policy, keep_result_in_memory,
+                               generate_debug_info);
     }
   }
   if (!parse_success)
@@ -710,7 +709,9 @@ bool ClangUserExpression::Parse(DiagnosticManager &diagnostic_manager,
     if (!static_init_error.Success()) {
       const char *error_cstr = static_init_error.AsCString();
       if (error_cstr && error_cstr[0])
-        diagnostic_manager.Printf(eDiagnosticSeverityError, "%s\n", error_cstr);
+        diagnostic_manager.Printf(eDiagnosticSeverityError,
+                                  "%s\n",
+                                  error_cstr);
       else
         diagnostic_manager.PutString(eDiagnosticSeverityError,
                                      "couldn't run static initializers\n");
@@ -944,7 +945,8 @@ lldb::ExpressionVariableSP ClangUserExpression::GetResultAfterDematerialization(
 void ClangUserExpression::ClangUserExpressionHelper::ResetDeclMap(
     ExecutionContext &exe_ctx,
     Materializer::PersistentVariableDelegate &delegate,
-    bool keep_result_in_memory, ValueObject *ctx_obj) {
+    bool keep_result_in_memory,
+    ValueObject *ctx_obj) {
   std::shared_ptr<ClangASTImporter> ast_importer;
   auto *state = exe_ctx.GetTargetSP()->GetPersistentExpressionStateForLanguage(
       lldb::eLanguageTypeC);

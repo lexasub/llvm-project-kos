@@ -33,17 +33,14 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_TARGET_DESC
 #include "AArch64GenSubtargetInfo.inc"
 
-static cl::opt<bool> EnableEarlyIfConvert("aarch64-early-ifcvt",
-                                          cl::desc("Enable the early if "
-                                                   "converter pass"),
-                                          cl::init(true), cl::Hidden);
+static cl::opt<bool>
+EnableEarlyIfConvert("aarch64-early-ifcvt", cl::desc("Enable the early if "
+                     "converter pass"), cl::init(true), cl::Hidden);
 
 // If OS supports TBI, use this flag to enable it.
 static cl::opt<bool>
-    UseAddressTopByteIgnored("aarch64-use-tbi",
-                             cl::desc("Assume that top byte of "
-                                      "an address is ignored"),
-                             cl::init(false), cl::Hidden);
+UseAddressTopByteIgnored("aarch64-use-tbi", cl::desc("Assume that top byte of "
+                         "an address is ignored"), cl::init(false), cl::Hidden);
 
 static cl::opt<bool>
     UseNonLazyBind("aarch64-enable-nonlazybind",
@@ -215,7 +212,8 @@ AArch64Subtarget::AArch64Subtarget(const Triple &TT, const std::string &CPU,
     : AArch64GenSubtargetInfo(TT, CPU, /*TuneCPU*/ CPU, FS),
       ReserveXRegister(AArch64::GPR64commonRegClass.getNumRegs()),
       CustomCallSavedXRegs(AArch64::GPR64commonRegClass.getNumRegs()),
-      IsLittle(LittleEndian), TargetTriple(TT), FrameLowering(),
+      IsLittle(LittleEndian),
+      TargetTriple(TT), FrameLowering(),
       InstrInfo(initializeSubtargetDependencies(FS, CPU)), TSInfo(),
       TLInfo(TM, *this) {
   if (AArch64::isX18ReservedByDefault(TT))

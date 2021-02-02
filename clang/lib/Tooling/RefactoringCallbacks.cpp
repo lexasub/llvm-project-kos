@@ -13,8 +13,8 @@
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Lex/Lexer.h"
 
-using llvm::make_error;
 using llvm::StringError;
+using llvm::make_error;
 
 namespace clang {
 namespace tooling {

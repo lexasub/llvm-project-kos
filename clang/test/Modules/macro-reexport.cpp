@@ -20,11 +20,11 @@
 #if defined(F1)
 #include "f1.h"
 void f() { return assert(true); } // expected-error {{undeclared identifier 'd'}}
-#include "e2.h"                   // undefines d1's macro
+#include "e2.h" // undefines d1's macro
 void g() { return assert(true); } // expected-error {{undeclared identifier 'assert'}}
 #elif defined(D1)
-#include "d1.h"
 #include "e1.h" // undefines c1's macro but not d1's macro
+#include "d1.h"
 void f() { return assert(true); } // expected-error {{undeclared identifier 'd'}}
 #include "e2.h" // undefines d1's macro
 void g() { return assert(true); } // expected-error {{undeclared identifier 'assert'}}
@@ -33,7 +33,7 @@ void g() { return assert(true); } // expected-error {{undeclared identifier 'ass
 void f() { return assert(true); } // expected-error {{undeclared identifier 'b'}}
 #else
 // e2 undefines d1's macro, which overrides c1's macro.
-#include "c1.h"
 #include "e2.h"
+#include "c1.h"
 void f() { return assert(true); } // expected-error {{undeclared identifier 'assert'}}
 #endif

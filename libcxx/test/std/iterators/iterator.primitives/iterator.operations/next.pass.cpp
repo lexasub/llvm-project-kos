@@ -22,55 +22,48 @@
 
 template <class It>
 TEST_CONSTEXPR_CXX17 void
-check_next_n(It it, typename std::iterator_traits<It>::difference_type n,
-             It result) {
-  static_assert(std::is_same<decltype(std::next(it, n)), It>::value, "");
-  assert(std::next(it, n) == result);
+check_next_n(It it, typename std::iterator_traits<It>::difference_type n, It result)
+{
+    static_assert(std::is_same<decltype(std::next(it, n)), It>::value, "");
+    assert(std::next(it, n) == result);
 
-  It (*next_ptr)(It, typename std::iterator_traits<It>::difference_type) =
-      std::next;
-  assert(next_ptr(it, n) == result);
+    It (*next_ptr)(It, typename std::iterator_traits<It>::difference_type) = std::next;
+    assert(next_ptr(it, n) == result);
 }
 
 template <class It>
-TEST_CONSTEXPR_CXX17 void check_next_1(It it, It result) {
-  static_assert(std::is_same<decltype(std::next(it)), It>::value, "");
-  assert(std::next(it) == result);
+TEST_CONSTEXPR_CXX17 void
+check_next_1(It it, It result)
+{
+    static_assert(std::is_same<decltype(std::next(it)), It>::value, "");
+    assert(std::next(it) == result);
 }
 
-TEST_CONSTEXPR_CXX17 bool tests() {
-  const char* s = "1234567890";
-  check_next_n(input_iterator<const char*>(s), 10,
-               input_iterator<const char*>(s + 10));
-  check_next_n(forward_iterator<const char*>(s), 10,
-               forward_iterator<const char*>(s + 10));
-  check_next_n(bidirectional_iterator<const char*>(s), 10,
-               bidirectional_iterator<const char*>(s + 10));
-  check_next_n(bidirectional_iterator<const char*>(s + 10), -10,
-               bidirectional_iterator<const char*>(s));
-  check_next_n(random_access_iterator<const char*>(s), 10,
-               random_access_iterator<const char*>(s + 10));
-  check_next_n(random_access_iterator<const char*>(s + 10), -10,
-               random_access_iterator<const char*>(s));
-  check_next_n(s, 10, s + 10);
+TEST_CONSTEXPR_CXX17 bool tests()
+{
+    const char* s = "1234567890";
+    check_next_n(input_iterator<const char*>(s),             10, input_iterator<const char*>(s+10));
+    check_next_n(forward_iterator<const char*>(s),           10, forward_iterator<const char*>(s+10));
+    check_next_n(bidirectional_iterator<const char*>(s),     10, bidirectional_iterator<const char*>(s+10));
+    check_next_n(bidirectional_iterator<const char*>(s+10), -10, bidirectional_iterator<const char*>(s));
+    check_next_n(random_access_iterator<const char*>(s),     10, random_access_iterator<const char*>(s+10));
+    check_next_n(random_access_iterator<const char*>(s+10), -10, random_access_iterator<const char*>(s));
+    check_next_n(s, 10, s+10);
 
-  check_next_1(input_iterator<const char*>(s),
-               input_iterator<const char*>(s + 1));
-  check_next_1(forward_iterator<const char*>(s),
-               forward_iterator<const char*>(s + 1));
-  check_next_1(bidirectional_iterator<const char*>(s),
-               bidirectional_iterator<const char*>(s + 1));
-  check_next_1(random_access_iterator<const char*>(s),
-               random_access_iterator<const char*>(s + 1));
-  check_next_1(s, s + 1);
+    check_next_1(input_iterator<const char*>(s), input_iterator<const char*>(s+1));
+    check_next_1(forward_iterator<const char*>(s), forward_iterator<const char*>(s+1));
+    check_next_1(bidirectional_iterator<const char*>(s), bidirectional_iterator<const char*>(s+1));
+    check_next_1(random_access_iterator<const char*>(s), random_access_iterator<const char*>(s+1));
+    check_next_1(s, s+1);
 
-  return true;
+    return true;
 }
 
-int main(int, char**) {
-  tests();
+int main(int, char**)
+{
+    tests();
 #if TEST_STD_VER >= 17
-  static_assert(tests(), "");
+    static_assert(tests(), "");
 #endif
-  return 0;
+    return 0;
 }

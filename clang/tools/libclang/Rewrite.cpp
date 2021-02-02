@@ -25,14 +25,14 @@ CXRewriter clang_CXRewriter_create(CXTranslationUnit TU) {
 }
 
 void clang_CXRewriter_insertTextBefore(CXRewriter Rew, CXSourceLocation Loc,
-                                       const char *Insert) {
+                            const char *Insert) {
   assert(Rew);
   clang::Rewriter &R = *reinterpret_cast<clang::Rewriter *>(Rew);
   R.InsertTextBefore(clang::cxloc::translateSourceLocation(Loc), Insert);
 }
 
 void clang_CXRewriter_replaceText(CXRewriter Rew, CXSourceRange ToBeReplaced,
-                                  const char *Replacement) {
+                       const char *Replacement) {
   assert(Rew);
   clang::Rewriter &R = *reinterpret_cast<clang::Rewriter *>(Rew);
   R.ReplaceText(clang::cxloc::translateCXRangeToCharRange(ToBeReplaced),

@@ -44,6 +44,7 @@ private:
   bool processAtomicInsts(void);
 
 public:
+
   // Main entry point for this pass.
   bool runOnMachineFunction(MachineFunction &MF) override {
     if (!skipFunction(MF.getFunction())) {
@@ -104,7 +105,7 @@ void BPFMIPreEmitChecking::initialize(MachineFunction &MFParm) {
 // Dead correctly, and it is safe to use such information or our purpose.
 static bool hasLiveDefs(const MachineInstr &MI, const TargetRegisterInfo *TRI) {
   const MCRegisterClass *GPR64RegClass =
-      &BPFMCRegisterClasses[BPF::GPRRegClassID];
+    &BPFMCRegisterClasses[BPF::GPRRegClassID];
   std::vector<unsigned> GPR32LiveDefs;
   std::vector<unsigned> GPR64DeadDefs;
 
@@ -153,7 +154,8 @@ static bool hasLiveDefs(const MachineInstr &MI, const TargetRegisterInfo *TRI) {
 bool BPFMIPreEmitChecking::processAtomicInsts(void) {
   for (MachineBasicBlock &MBB : *MF) {
     for (MachineInstr &MI : MBB) {
-      if (MI.getOpcode() != BPF::XADDW && MI.getOpcode() != BPF::XADDD &&
+      if (MI.getOpcode() != BPF::XADDW &&
+          MI.getOpcode() != BPF::XADDD &&
           MI.getOpcode() != BPF::XADDW32)
         continue;
 
@@ -163,8 +165,7 @@ bool BPFMIPreEmitChecking::processAtomicInsts(void) {
         const DebugLoc &DL = MI.getDebugLoc();
         if (DL != Empty)
           report_fatal_error("line " + std::to_string(DL.getLine()) +
-                                 ": Invalid usage of the XADD return value",
-                             false);
+                             ": Invalid usage of the XADD return value", false);
         else
           report_fatal_error("Invalid usage of the XADD return value", false);
       }
@@ -238,12 +239,13 @@ bool BPFMIPreEmitChecking::processAtomicInsts(void) {
   return Changed;
 }
 
-} // namespace
+} // end default namespace
 
 INITIALIZE_PASS(BPFMIPreEmitChecking, "bpf-mi-pemit-checking",
                 "BPF PreEmit Checking", false, false)
 
 char BPFMIPreEmitChecking::ID = 0;
-FunctionPass *llvm::createBPFMIPreEmitCheckingPass() {
+FunctionPass* llvm::createBPFMIPreEmitCheckingPass()
+{
   return new BPFMIPreEmitChecking();
 }

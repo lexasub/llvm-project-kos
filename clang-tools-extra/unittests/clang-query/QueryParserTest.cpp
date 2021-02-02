@@ -82,14 +82,12 @@ TEST_F(QueryParserTest, Set) {
             cast<InvalidQuery>(Q)->ErrStr);
 
   Q = parse("set output dump");
-  ASSERT_TRUE(isa<SetExclusiveOutputQuery>(Q));
-  EXPECT_EQ(&QuerySession::DetailedASTOutput,
-            cast<SetExclusiveOutputQuery>(Q)->Var);
+  ASSERT_TRUE(isa<SetExclusiveOutputQuery >(Q));
+  EXPECT_EQ(&QuerySession::DetailedASTOutput, cast<SetExclusiveOutputQuery>(Q)->Var);
 
   Q = parse("set output detailed-ast");
   ASSERT_TRUE(isa<SetExclusiveOutputQuery>(Q));
-  EXPECT_EQ(&QuerySession::DetailedASTOutput,
-            cast<SetExclusiveOutputQuery>(Q)->Var);
+  EXPECT_EQ(&QuerySession::DetailedASTOutput, cast<SetExclusiveOutputQuery>(Q)->Var);
 
   Q = parse("enable output detailed-ast");
   ASSERT_TRUE(isa<EnableOutputQuery>(Q));
@@ -109,9 +107,9 @@ TEST_F(QueryParserTest, Set) {
             cast<InvalidQuery>(Q)->ErrStr);
 
   Q = parse("set bind-root true");
-  ASSERT_TRUE(isa<SetQuery<bool>>(Q));
-  EXPECT_EQ(&QuerySession::BindRoot, cast<SetQuery<bool>>(Q)->Var);
-  EXPECT_EQ(true, cast<SetQuery<bool>>(Q)->Value);
+  ASSERT_TRUE(isa<SetQuery<bool> >(Q));
+  EXPECT_EQ(&QuerySession::BindRoot, cast<SetQuery<bool> >(Q)->Var);
+  EXPECT_EQ(true, cast<SetQuery<bool> >(Q)->Value);
 
   Q = parse("set traversal AsIs");
   ASSERT_TRUE(isa<SetQuery<TraversalKind>>(Q));

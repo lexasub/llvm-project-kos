@@ -58,8 +58,7 @@ private:
   Movable M;
 };
 
-template <typename T>
-class Templated {
+template <typename T> class Templated {
 public:
   // No warning here, it is a templated class.
   Templated() = default;
@@ -114,7 +113,6 @@ int TemplateFunctionWithInnerClass() {
   class InnerNotAssignable {
   public:
     InnerNotAssignable &operator=(InnerNotAssignable &&Other) = default;
-
   private:
     const T TVar{};
   };

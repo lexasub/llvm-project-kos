@@ -4,9 +4,9 @@
 namespace absl {
 
 class string_view {
-public:
-  string_view();
-  string_view(const char *);
+  public:
+    string_view();
+    string_view(const char *);
 };
 
 namespace strings_internal {
@@ -27,9 +27,9 @@ strings_internal::Splitter StrSplit(absl::string_view, Delim, Pred) {
 }
 
 class ByAnyChar {
-public:
-  explicit ByAnyChar(absl::string_view);
-  ~ByAnyChar();
+  public:
+    explicit ByAnyChar(absl::string_view);
+    ~ByAnyChar();
 };
 
 template <typename Delim>

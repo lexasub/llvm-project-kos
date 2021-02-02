@@ -6,8 +6,7 @@ int also_before() {
   return 1;
 }
 
-#pragma omp begin declare variant match(implementation = {vendor(score(100) \
-                                                                 : llvm)})
+#pragma omp begin declare variant match(implementation={vendor(score(100):llvm)})
 int also_after(void) {
   return 2;
 }
@@ -18,8 +17,7 @@ int also_after(double) {
   return 0;
 }
 #pragma omp end declare variant
-#pragma omp begin declare variant match(implementation = {vendor(score(0) \
-                                                                 : llvm)})
+#pragma omp begin declare variant match(implementation={vendor(score(0):llvm)})
 int also_before() {
   return 0;
 }
@@ -35,15 +33,15 @@ int also_after(double) {
   return 6;
 }
 
-template <typename T>
+template<typename T>
 int test1() {
   // Should return 0.
   return also_after(T(0));
 }
 
-typedef int (*Ty)();
+typedef int(*Ty)();
 
-template <Ty fn>
+template<Ty fn>
 int test2() {
   // Should return 0.
   return fn();

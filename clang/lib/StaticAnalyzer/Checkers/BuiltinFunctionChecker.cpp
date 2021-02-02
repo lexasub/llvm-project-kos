@@ -28,7 +28,7 @@ public:
   bool evalCall(const CallEvent &Call, CheckerContext &C) const;
 };
 
-} // namespace
+}
 
 bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
                                       CheckerContext &C) const {
@@ -45,7 +45,7 @@ bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
     return false;
 
   case Builtin::BI__builtin_assume: {
-    assert(Call.getNumArgs() > 0);
+    assert (Call.getNumArgs() > 0);
     SVal Arg = Call.getArgSVal(0);
     if (Arg.isUndef())
       return true; // Return true to model purity.
@@ -72,7 +72,7 @@ bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
     // just return the value of the subexpression.
     // __builtin_addressof is going from a reference to a pointer, but those
     // are represented the same way in the analyzer.
-    assert(Call.getNumArgs() > 0);
+    assert (Call.getNumArgs() > 0);
     SVal Arg = Call.getArgSVal(0);
     C.addTransition(state->BindExpr(CE, LCtx, Arg));
     return true;
@@ -81,9 +81,9 @@ bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
   case Builtin::BI__builtin_alloca_with_align:
   case Builtin::BI__builtin_alloca: {
     // FIXME: Refactor into StoreManager itself?
-    MemRegionManager &RM = C.getStoreManager().getRegionManager();
-    const AllocaRegion *R =
-        RM.getAllocaRegion(CE, C.blockCount(), C.getLocationContext());
+    MemRegionManager& RM = C.getStoreManager().getRegionManager();
+    const AllocaRegion* R =
+      RM.getAllocaRegion(CE, C.blockCount(), C.getLocationContext());
 
     // Set the extent of the region in bytes. This enables us to use the
     // SVal of the argument directly. If we save the extent in bits, we
@@ -92,7 +92,7 @@ bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
     if (Size.isUndef())
       return true; // Return true to model purity.
 
-    SValBuilder &svalBuilder = C.getSValBuilder();
+    SValBuilder& svalBuilder = C.getSValBuilder();
     DefinedOrUnknownSVal DynSize = getDynamicSize(state, R, svalBuilder);
     DefinedOrUnknownSVal DynSizeMatchesSizeArg =
         svalBuilder.evalEQ(state, DynSize, Size.castAs<DefinedOrUnknownSVal>());
@@ -111,8 +111,7 @@ bool BuiltinFunctionChecker::evalCall(const CallEvent &Call,
     SValBuilder &SVB = C.getSValBuilder();
     SVal V = UnknownVal();
     Expr::EvalResult EVResult;
-    if (CE->EvaluateAsInt(EVResult, C.getASTContext(),
-                          Expr::SE_NoSideEffects)) {
+    if (CE->EvaluateAsInt(EVResult, C.getASTContext(), Expr::SE_NoSideEffects)) {
       // Make sure the result has the correct type.
       llvm::APSInt Result = EVResult.Val.getInt();
       BasicValueFactory &BVF = SVB.getBasicValueFactory();

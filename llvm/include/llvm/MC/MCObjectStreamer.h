@@ -50,7 +50,7 @@ class MCObjectStreamer : public MCStreamer {
   };
   SmallVector<PendingMCFixup, 2> PendingFixups;
 
-  virtual void emitInstToData(const MCInst &Inst, const MCSubtargetInfo &) = 0;
+  virtual void emitInstToData(const MCInst &Inst, const MCSubtargetInfo&) = 0;
   void emitCFIStartProcImpl(MCDwarfFrameInfo &Frame) override;
   void emitCFIEndProcImpl(MCDwarfFrameInfo &Frame) override;
   MCSymbol *emitCFILabel() override;
@@ -86,7 +86,7 @@ public:
   /// fragment is not a data fragment.
   /// Optionally a \p STI can be passed in so that a new fragment is created
   /// if the Subtarget differs from the current fragment.
-  MCDataFragment *getOrCreateDataFragment(const MCSubtargetInfo *STI = nullptr);
+  MCDataFragment *getOrCreateDataFragment(const MCSubtargetInfo* STI = nullptr);
 
 protected:
   bool changeSectionImpl(MCSection *Section, const MCExpr *Subsection);
@@ -94,7 +94,7 @@ protected:
   /// Assign a label to the current Section and Subsection even though a
   /// fragment is not yet present. Use flushPendingLabels(F) to associate
   /// a fragment with this label.
-  void addPendingLabel(MCSymbol *label);
+  void addPendingLabel(MCSymbol* label);
 
   /// If any labels have been emitted but not assigned fragments in the current
   /// Section and Subsection, ensure that they get assigned, either to fragment

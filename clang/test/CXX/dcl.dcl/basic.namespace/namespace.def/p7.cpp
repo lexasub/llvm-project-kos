@@ -5,14 +5,14 @@
 // namespace in the file, because there's no risk of the inlineness differing
 // across TUs in that case.
 
-namespace NIL {}        // namespace NIL
-inline namespace NIL {} // namespace NIL
-inline namespace IL {}  // namespace IL
-namespace IL {}         // namespace IL
+namespace NIL {} // expected-note {{previous definition}}
+inline namespace NIL {} // expected-error {{cannot be reopened as inline}}
+inline namespace IL {} // expected-note {{previous definition}}
+namespace IL {} // expected-warning{{inline namespace reopened as a non-inline namespace}}
 
-namespace {}        // namespace
-inline namespace {} // namespace
+namespace {} // expected-note {{previous definition}}
+inline namespace {} // expected-error {{cannot be reopened as inline}}
 namespace X {
-inline namespace {} // namespace
-namespace {}        // namespace
-} // namespace X
+  inline namespace {} // expected-note {{previous definition}}
+  namespace {} // expected-warning {{inline namespace reopened as a non-inline namespace}}
+}

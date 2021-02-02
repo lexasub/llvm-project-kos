@@ -6,5 +6,5 @@ int foo() { return 1; }
 int XXX = foo();
 int main() {
   printf("PASS\n");
-  // CHECK: PASS
+// CHECK: PASS
 }

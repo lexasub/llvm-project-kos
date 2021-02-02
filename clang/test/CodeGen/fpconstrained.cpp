@@ -8,18 +8,17 @@
 
 float f0, f1, f2;
 
-template <class>
-class aaaa {
-public:
-  ~aaaa();
-  void b();
-};
-
-template <class c>
-aaaa<c>::~aaaa() {
-  try {
+  template <class>
+  class aaaa {
+   public:
+    ~aaaa();
+    void b();
+  };
+  
+  template <class c>
+  aaaa<c>::~aaaa() { try {
     b();
-    // CHECK-LABEL: define {{.*}}void @_ZN4aaaaIiED2Ev{{.*}}
+  // CHECK-LABEL: define {{.*}}void @_ZN4aaaaIiED2Ev{{.*}}
 
   } catch (...) {
     // MAYTRAP: llvm.experimental.constrained.fadd.f32(float %{{.*}}, float %{{.*}}, metadata !"round.tonearest", metadata !"fpexcept.maytrap")
@@ -34,16 +33,17 @@ aaaa<c>::~aaaa() {
 
     // CHECK: ret void
   }
-}
-
-class d {
-public:
-  d(const char *, int);
-  aaaa<int> e;
-};
-
+  }
+  
+  class d {
+   public:
+    d(const char *, int);
+    aaaa<int> e;
+  };
+  
 float foo() {
   d x("", 1);
   aaaa<int> a;
   return f0;
 }
+

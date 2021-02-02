@@ -9,11 +9,11 @@ struct AAA {
 struct BBB : virtual AAA {
   unsigned long bbb;
 };
-struct CCC : virtual AAA {};
+struct CCC: virtual AAA { };
 struct DDD : CCC, BBB {
   DDD();
 };
-DDD::DDD() {}
+DDD::DDD()  { }
 int main() {
   DDD d;
   fprintf(stderr, "OK\n");

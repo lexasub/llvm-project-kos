@@ -1,8 +1,8 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include "test.h"
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 int fd;
 char buf;
@@ -21,8 +21,7 @@ void *Thread2(void *x) {
 int main() {
   barrier_init(&barrier, 2);
   fd = open("/dev/null", O_WRONLY);
-  if (fd < 0)
-    return 1;
+  if (fd < 0) return 1;
   pthread_t t[2];
   pthread_create(&t[0], NULL, Thread1, NULL);
   barrier_wait(&barrier);

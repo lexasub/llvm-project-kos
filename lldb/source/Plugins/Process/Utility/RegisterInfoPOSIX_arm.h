@@ -15,7 +15,7 @@
 
 class RegisterInfoPOSIX_arm : public lldb_private::RegisterInfoAndSetInterface {
 public:
-  enum { GPRegSet = 0, FPRegSet };
+  enum { GPRegSet = 0, FPRegSet};
 
   struct GPR {
     uint32_t r[16]; // R0-R15

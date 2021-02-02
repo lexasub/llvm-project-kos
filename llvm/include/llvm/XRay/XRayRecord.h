@@ -15,8 +15,8 @@
 #define LLVM_XRAY_XRAY_RECORD_H
 
 #include <cstdint>
-#include <string>
 #include <vector>
+#include <string>
 
 namespace llvm {
 namespace xray {

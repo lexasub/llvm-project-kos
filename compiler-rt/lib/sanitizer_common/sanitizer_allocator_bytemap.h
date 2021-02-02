@@ -18,19 +18,20 @@ template <u64 kSize, typename AddressSpaceViewTy = LocalAddressSpaceView>
 class FlatByteMap {
  public:
   using AddressSpaceView = AddressSpaceViewTy;
-  void Init() { internal_memset(map_, 0, sizeof(map_)); }
+  void Init() {
+    internal_memset(map_, 0, sizeof(map_));
+  }
 
   void set(uptr idx, u8 val) {
     CHECK_LT(idx, kSize);
     CHECK_EQ(0U, map_[idx]);
     map_[idx] = val;
   }
-  u8 operator[](uptr idx) {
+  u8 operator[] (uptr idx) {
     CHECK_LT(idx, kSize);
     // FIXME: CHECK may be too expensive here.
     return map_[idx];
   }
-
  private:
   u8 map_[kSize];
 };
@@ -54,8 +55,7 @@ class TwoLevelByteMap {
   void TestOnlyUnmap() {
     for (uptr i = 0; i < kSize1; i++) {
       u8 *p = Get(i);
-      if (!p)
-        continue;
+      if (!p) continue;
       MapUnmapCallback().OnUnmap(reinterpret_cast<uptr>(p), kSize2);
       UnmapOrDie(p, kSize2);
     }
@@ -72,11 +72,10 @@ class TwoLevelByteMap {
     map2[idx % kSize2] = val;
   }
 
-  u8 operator[](uptr idx) const {
+  u8 operator[] (uptr idx) const {
     CHECK_LT(idx, kSize1 * kSize2);
     u8 *map2 = Get(idx / kSize2);
-    if (!map2)
-      return 0;
+    if (!map2) return 0;
     auto value_ptr = AddressSpaceView::Load(&map2[idx % kSize2]);
     return *value_ptr;
   }
@@ -93,7 +92,7 @@ class TwoLevelByteMap {
     if (!res) {
       SpinMutexLock l(&mu_);
       if (!(res = Get(idx))) {
-        res = (u8 *)MmapOrDie(kSize2, "TwoLevelByteMap");
+        res = (u8*)MmapOrDie(kSize2, "TwoLevelByteMap");
         MapUnmapCallback().OnMap(reinterpret_cast<uptr>(res), kSize2);
         atomic_store(&map1_[idx], reinterpret_cast<uptr>(res),
                      memory_order_release);
@@ -105,3 +104,4 @@ class TwoLevelByteMap {
   atomic_uintptr_t map1_[kSize1];
   StaticSpinMutex mu_;
 };
+

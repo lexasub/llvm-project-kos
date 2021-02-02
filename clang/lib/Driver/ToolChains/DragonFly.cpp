@@ -142,18 +142,18 @@ void dragonfly::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
     if (Args.hasArg(options::OPT_static) ||
         Args.hasArg(options::OPT_static_libgcc)) {
-      CmdArgs.push_back("-lgcc");
-      CmdArgs.push_back("-lgcc_eh");
+        CmdArgs.push_back("-lgcc");
+        CmdArgs.push_back("-lgcc_eh");
     } else {
       if (Args.hasArg(options::OPT_shared_libgcc)) {
-        CmdArgs.push_back("-lgcc_pic");
-        if (!Args.hasArg(options::OPT_shared))
-          CmdArgs.push_back("-lgcc");
+          CmdArgs.push_back("-lgcc_pic");
+          if (!Args.hasArg(options::OPT_shared))
+            CmdArgs.push_back("-lgcc");
       } else {
-        CmdArgs.push_back("-lgcc");
-        CmdArgs.push_back("--as-needed");
-        CmdArgs.push_back("-lgcc_pic");
-        CmdArgs.push_back("--no-as-needed");
+          CmdArgs.push_back("-lgcc");
+          CmdArgs.push_back("--as-needed");
+          CmdArgs.push_back("-lgcc_pic");
+          CmdArgs.push_back("--no-as-needed");
       }
     }
   }

@@ -24,8 +24,8 @@ namespace llvm {
 
 namespace R600InstrFlags {
 enum : uint64_t {
-  REGISTER_STORE = UINT64_C(1) << 62,
-  REGISTER_LOAD = UINT64_C(1) << 63
+ REGISTER_STORE = UINT64_C(1) << 62,
+ REGISTER_LOAD = UINT64_C(1) << 63
 };
 }
 
@@ -56,7 +56,6 @@ private:
                                          unsigned ValueReg, unsigned Address,
                                          unsigned OffsetReg,
                                          unsigned AddrChan) const;
-
 public:
   enum BankSwizzle {
     ALU_VEC_012_SCL_210 = 0,
@@ -69,7 +68,9 @@ public:
 
   explicit R600InstrInfo(const R600Subtarget &);
 
-  const R600RegisterInfo &getRegisterInfo() const { return RI; }
+  const R600RegisterInfo &getRegisterInfo() const {
+    return RI;
+  }
 
   void copyPhysReg(MachineBasicBlock &MBB, MachineBasicBlock::iterator MI,
                    const DebugLoc &DL, MCRegister DestReg, MCRegister SrcReg,
@@ -118,17 +119,17 @@ public:
   SmallVector<std::pair<MachineOperand *, int64_t>, 3>
   getSrcs(MachineInstr &MI) const;
 
-  unsigned
-  isLegalUpTo(const std::vector<std::vector<std::pair<int, unsigned>>> &IGSrcs,
-              const std::vector<R600InstrInfo::BankSwizzle> &Swz,
-              const std::vector<std::pair<int, unsigned>> &TransSrcs,
-              R600InstrInfo::BankSwizzle TransSwz) const;
+  unsigned  isLegalUpTo(
+    const std::vector<std::vector<std::pair<int, unsigned> > > &IGSrcs,
+    const std::vector<R600InstrInfo::BankSwizzle> &Swz,
+    const std::vector<std::pair<int, unsigned> > &TransSrcs,
+    R600InstrInfo::BankSwizzle TransSwz) const;
 
   bool FindSwizzleForVectorSlot(
-      const std::vector<std::vector<std::pair<int, unsigned>>> &IGSrcs,
-      std::vector<R600InstrInfo::BankSwizzle> &SwzCandidate,
-      const std::vector<std::pair<int, unsigned>> &TransSrcs,
-      R600InstrInfo::BankSwizzle TransSwz) const;
+    const std::vector<std::vector<std::pair<int, unsigned> > > &IGSrcs,
+    std::vector<R600InstrInfo::BankSwizzle> &SwzCandidate,
+    const std::vector<std::pair<int, unsigned> > &TransSrcs,
+    R600InstrInfo::BankSwizzle TransSwz) const;
 
   /// Given the order VEC_012 < VEC_021 < VEC_120 < VEC_102 < VEC_201 < VEC_210
   /// returns true and the first (in lexical order) BankSwizzle affectation
@@ -149,7 +150,7 @@ public:
   /// this limitations
   bool fitsConstReadLimitations(const std::vector<MachineInstr *> &) const;
   /// Same but using const index set instead of MI set.
-  bool fitsConstReadLimitations(const std::vector<unsigned> &) const;
+  bool fitsConstReadLimitations(const std::vector<unsigned>&) const;
 
   /// Vector instructions are instructions that must fill all
   /// instruction slots within an instruction group.
@@ -160,8 +161,8 @@ public:
   DFAPacketizer *
   CreateTargetScheduleState(const TargetSubtargetInfo &) const override;
 
-  bool
-  reverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
+  bool reverseBranchCondition(
+    SmallVectorImpl<MachineOperand> &Cond) const override;
 
   bool analyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
                      MachineBasicBlock *&FBB,
@@ -185,10 +186,11 @@ public:
 
   bool isProfitableToIfCvt(MachineBasicBlock &MBB, unsigned NumCycles,
                            unsigned ExtraPredCycles,
-                           BranchProbability Probability) const override;
+                           BranchProbability Probability) const override ;
 
-  bool isProfitableToIfCvt(MachineBasicBlock &TMBB, unsigned NumTCycles,
-                           unsigned ExtraTCycles, MachineBasicBlock &FMBB,
+  bool isProfitableToIfCvt(MachineBasicBlock &TMBB,
+                           unsigned NumTCycles, unsigned ExtraTCycles,
+                           MachineBasicBlock &FMBB,
                            unsigned NumFCycles, unsigned ExtraFCycles,
                            BranchProbability Probability) const override;
 
@@ -210,7 +212,8 @@ public:
   bool expandPostRAPseudo(MachineInstr &MI) const override;
 
   /// Reserve the registers that may be accesed using indirect addressing.
-  void reserveIndirectRegisters(BitVector &Reserved, const MachineFunction &MF,
+  void reserveIndirectRegisters(BitVector &Reserved,
+                                const MachineFunction &MF,
                                 const R600RegisterInfo &TRI) const;
 
   /// Calculate the "Indirect Address" for the given \p RegIndex and
@@ -221,6 +224,7 @@ public:
   /// address in this virtual address space that maps to the given \p RegIndex
   /// and \p Channel.
   unsigned calculateIndirectAddress(unsigned RegIndex, unsigned Channel) const;
+
 
   /// \returns The register class to be used for loading and storing values
   /// from an "Indirect Address" .
@@ -261,21 +265,24 @@ public:
   /// to their default values.
   MachineInstrBuilder buildDefaultInstruction(MachineBasicBlock &MBB,
                                               MachineBasicBlock::iterator I,
-                                              unsigned Opcode, unsigned DstReg,
+                                              unsigned Opcode,
+                                              unsigned DstReg,
                                               unsigned Src0Reg,
                                               unsigned Src1Reg = 0) const;
 
   MachineInstr *buildSlotOfVectorInstruction(MachineBasicBlock &MBB,
-                                             MachineInstr *MI, unsigned Slot,
+                                             MachineInstr *MI,
+                                             unsigned Slot,
                                              unsigned DstReg) const;
 
   MachineInstr *buildMovImm(MachineBasicBlock &BB,
-                            MachineBasicBlock::iterator I, unsigned DstReg,
+                            MachineBasicBlock::iterator I,
+                            unsigned DstReg,
                             uint64_t Imm) const;
 
   MachineInstr *buildMovInstr(MachineBasicBlock *MBB,
-                              MachineBasicBlock::iterator I, unsigned DstReg,
-                              unsigned SrcReg) const;
+                              MachineBasicBlock::iterator I,
+                              unsigned DstReg, unsigned SrcReg) const;
 
   /// Get the index of Op in the MachineInstr.
   ///
@@ -290,14 +297,14 @@ public:
   /// Helper function for setting instruction flag values.
   void setImmOperand(MachineInstr &MI, unsigned Op, int64_t Imm) const;
 
-  /// Add one of the MO_FLAG* flags to the specified \p Operand.
+  ///Add one of the MO_FLAG* flags to the specified \p Operand.
   void addFlag(MachineInstr &MI, unsigned Operand, unsigned Flag) const;
 
-  /// Determine if the specified \p Flag is set on this \p Operand.
+  ///Determine if the specified \p Flag is set on this \p Operand.
   bool isFlagSet(const MachineInstr &MI, unsigned Operand, unsigned Flag) const;
 
-  /// \param SrcIdx The register source to set the flag on (e.g src0, src1,
-  /// src2) \param Flag The flag being set.
+  /// \param SrcIdx The register source to set the flag on (e.g src0, src1, src2)
+  /// \param Flag The flag being set.
   ///
   /// \returns the operand containing the flags for this instruction.
   MachineOperand &getFlagOp(MachineInstr &MI, unsigned SrcIdx = 0,
@@ -315,15 +322,16 @@ public:
     return get(MI.getOpcode()).TSFlags & R600InstrFlags::REGISTER_LOAD;
   }
 
-  unsigned getAddressSpaceForPseudoSourceKind(unsigned Kind) const override;
+  unsigned getAddressSpaceForPseudoSourceKind(
+      unsigned Kind) const override;
 };
 
 namespace R600 {
 
 int getLDSNoRetOp(uint16_t Opcode);
 
-} // namespace R600
+} //End namespace AMDGPU
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

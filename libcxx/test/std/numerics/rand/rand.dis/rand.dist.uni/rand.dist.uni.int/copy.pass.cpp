@@ -18,15 +18,18 @@
 
 #include "test_macros.h"
 
-void test1() {
-  typedef std::uniform_int_distribution<long> D;
-  D d1(2, 5);
-  D d2 = d1;
-  assert(d1 == d2);
+void
+test1()
+{
+    typedef std::uniform_int_distribution<long> D;
+    D d1(2, 5);
+    D d2 = d1;
+    assert(d1 == d2);
 }
 
-int main(int, char**) {
-  test1();
+int main(int, char**)
+{
+    test1();
 
   return 0;
 }

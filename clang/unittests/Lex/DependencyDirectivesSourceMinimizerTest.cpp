@@ -685,10 +685,10 @@ ort \
                "export import :l [[rename]];\n"
                "import <<= 3;\nimport a b d e d e f e;\n"
                "import foo [[no_unique_address]];\nimport foo();\n"
-               "import f(:sefse);\nimport f(->a = 3);\n",
-               Out.data());
+               "import f(:sefse);\nimport f(->a = 3);\n", Out.data());
   ASSERT_EQ(Tokens.size(), 12u);
-  EXPECT_EQ(Tokens[0].K, minimize_source_to_dependency_directives::pp_include);
+  EXPECT_EQ(Tokens[0].K,
+            minimize_source_to_dependency_directives::pp_include);
   EXPECT_EQ(Tokens[2].K,
             minimize_source_to_dependency_directives::cxx_module_decl);
 }

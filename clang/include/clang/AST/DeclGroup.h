@@ -28,7 +28,7 @@ class DeclGroup final : private llvm::TrailingObjects<DeclGroup, Decl *> {
 
 private:
   DeclGroup() = default;
-  DeclGroup(unsigned numdecls, Decl **decls);
+  DeclGroup(unsigned numdecls, Decl** decls);
 
 public:
   friend TrailingObjects;
@@ -37,13 +37,13 @@ public:
 
   unsigned size() const { return NumDecls; }
 
-  Decl *&operator[](unsigned i) {
-    assert(i < NumDecls && "Out-of-bounds access.");
+  Decl*& operator[](unsigned i) {
+    assert (i < NumDecls && "Out-of-bounds access.");
     return getTrailingObjects<Decl *>()[i];
   }
 
-  Decl *const &operator[](unsigned i) const {
-    assert(i < NumDecls && "Out-of-bounds access.");
+  Decl* const& operator[](unsigned i) const {
+    assert (i < NumDecls && "Out-of-bounds access.");
     return getTrailingObjects<Decl *>()[i];
   }
 };
@@ -51,17 +51,19 @@ public:
 class DeclGroupRef {
   // Note this is not a PointerIntPair because we need the address of the
   // non-group case to be valid as a Decl** for iteration.
-  enum Kind { SingleDeclKind = 0x0, DeclGroupKind = 0x1, Mask = 0x1 };
+  enum Kind { SingleDeclKind=0x0, DeclGroupKind=0x1, Mask=0x1 };
 
-  Decl *D = nullptr;
+  Decl* D = nullptr;
 
-  Kind getKind() const { return (Kind)(reinterpret_cast<uintptr_t>(D) & Mask); }
+  Kind getKind() const {
+    return (Kind) (reinterpret_cast<uintptr_t>(D) & Mask);
+  }
 
 public:
   DeclGroupRef() = default;
-  explicit DeclGroupRef(Decl *d) : D(d) {}
-  explicit DeclGroupRef(DeclGroup *dg)
-      : D((Decl *)(reinterpret_cast<uintptr_t>(dg) | DeclGroupKind)) {}
+  explicit DeclGroupRef(Decl* d) : D(d) {}
+  explicit DeclGroupRef(DeclGroup* dg)
+    : D((Decl*) (reinterpret_cast<uintptr_t>(dg) | DeclGroupKind)) {}
 
   static DeclGroupRef Create(ASTContext &C, Decl **Decls, unsigned NumDecls) {
     if (NumDecls == 0)
@@ -72,7 +74,7 @@ public:
   }
 
   using iterator = Decl **;
-  using const_iterator = Decl *const *;
+  using const_iterator = Decl * const *;
 
   bool isNull() const { return D == nullptr; }
   bool isSingleDecl() const { return getKind() == SingleDeclKind; }
@@ -83,15 +85,15 @@ public:
     return D;
   }
   const Decl *getSingleDecl() const {
-    return const_cast<DeclGroupRef *>(this)->getSingleDecl();
+    return const_cast<DeclGroupRef*>(this)->getSingleDecl();
   }
 
   DeclGroup &getDeclGroup() {
     assert(isDeclGroup() && "Isn't a declgroup");
-    return *((DeclGroup *)(reinterpret_cast<uintptr_t>(D) & ~Mask));
+    return *((DeclGroup*)(reinterpret_cast<uintptr_t>(D) & ~Mask));
   }
   const DeclGroup &getDeclGroup() const {
-    return const_cast<DeclGroupRef *>(this)->getDeclGroup();
+    return const_cast<DeclGroupRef*>(this)->getDeclGroup();
   }
 
   iterator begin() {
@@ -102,7 +104,7 @@ public:
 
   iterator end() {
     if (isSingleDecl())
-      return D ? &D + 1 : nullptr;
+      return D ? &D+1 : nullptr;
     DeclGroup &G = getDeclGroup();
     return &G[0] + G.size();
   }
@@ -115,7 +117,7 @@ public:
 
   const_iterator end() const {
     if (isSingleDecl())
-      return D ? &D + 1 : nullptr;
+      return D ? &D+1 : nullptr;
     const DeclGroup &G = getDeclGroup();
     return &G[0] + G.size();
   }
@@ -123,7 +125,7 @@ public:
   void *getAsOpaquePtr() const { return D; }
   static DeclGroupRef getFromOpaquePtr(void *Ptr) {
     DeclGroupRef X;
-    X.D = static_cast<Decl *>(Ptr);
+    X.D = static_cast<Decl*>(Ptr);
     return X;
   }
 };
@@ -132,19 +134,21 @@ public:
 
 namespace llvm {
 
-// DeclGroupRef is "like a pointer", implement PointerLikeTypeTraits.
-template <typename T> struct PointerLikeTypeTraits;
-template <> struct PointerLikeTypeTraits<clang::DeclGroupRef> {
-  static inline void *getAsVoidPointer(clang::DeclGroupRef P) {
-    return P.getAsOpaquePtr();
-  }
+  // DeclGroupRef is "like a pointer", implement PointerLikeTypeTraits.
+  template <typename T>
+  struct PointerLikeTypeTraits;
+  template <>
+  struct PointerLikeTypeTraits<clang::DeclGroupRef> {
+    static inline void *getAsVoidPointer(clang::DeclGroupRef P) {
+      return P.getAsOpaquePtr();
+    }
 
-  static inline clang::DeclGroupRef getFromVoidPointer(void *P) {
-    return clang::DeclGroupRef::getFromOpaquePtr(P);
-  }
+    static inline clang::DeclGroupRef getFromVoidPointer(void *P) {
+      return clang::DeclGroupRef::getFromOpaquePtr(P);
+    }
 
-  static constexpr int NumLowBitsAvailable = 0;
-};
+    static constexpr int NumLowBitsAvailable = 0;
+  };
 
 } // namespace llvm
 

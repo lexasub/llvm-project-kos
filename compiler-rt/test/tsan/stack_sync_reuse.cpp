@@ -23,7 +23,7 @@ long sink;
 
 void *Thread(void *x) {
   while (__atomic_load_n(&syncp, __ATOMIC_ACQUIRE) == 0)
-    usleep(1000); // spin wait
+    usleep(1000);  // spin wait
   global = 42;
   __atomic_store_n(syncp, 1, __ATOMIC_RELEASE);
   __atomic_store_n(&syncp, 0, __ATOMIC_RELAXED);
@@ -37,7 +37,7 @@ void __attribute__((noinline)) foobar() {
   __atomic_store_n(&s, 0, __ATOMIC_RELAXED);
   __atomic_store_n(&syncp, &s, __ATOMIC_RELEASE);
   while (__atomic_load_n(&syncp, __ATOMIC_RELAXED) != 0)
-    usleep(1000); // spin wait
+    usleep(1000);  // spin wait
 }
 
 void __attribute__((noinline)) barfoo() {
@@ -64,3 +64,4 @@ int main() {
   fprintf(stderr, "DONE\n");
   return 0;
 }
+

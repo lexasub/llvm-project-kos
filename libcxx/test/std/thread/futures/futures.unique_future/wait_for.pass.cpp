@@ -28,20 +28,23 @@ typedef std::chrono::milliseconds ms;
 static const ms sleepTime(500);
 static const ms waitTime(5000);
 
-void func1(std::promise<int> p) {
+void func1(std::promise<int> p)
+{
   std::this_thread::sleep_for(sleepTime);
   p.set_value(3);
 }
 
 int j = 0;
 
-void func3(std::promise<int&> p) {
+void func3(std::promise<int&> p)
+{
   std::this_thread::sleep_for(sleepTime);
   j = 5;
   p.set_value(j);
 }
 
-void func5(std::promise<void> p) {
+void func5(std::promise<void> p)
+{
   std::this_thread::sleep_for(sleepTime);
   p.set_value();
 }
@@ -72,7 +75,8 @@ void test(F func, bool waitFirst) {
   assert(t1 - t0 >= sleepTime);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   test<int>(func1, true);
   test<int&>(func3, true);
   test<void>(func5, true);

@@ -47,32 +47,31 @@ public:
 
   friend bool operator==(const BaseSubobject &LHS, const BaseSubobject &RHS) {
     return LHS.Base == RHS.Base && LHS.BaseOffset == RHS.BaseOffset;
-  }
+ }
 };
 
 } // namespace clang
 
 namespace llvm {
 
-template <> struct DenseMapInfo<clang::BaseSubobject> {
+template<> struct DenseMapInfo<clang::BaseSubobject> {
   static clang::BaseSubobject getEmptyKey() {
     return clang::BaseSubobject(
-        DenseMapInfo<const clang::CXXRecordDecl *>::getEmptyKey(),
-        clang::CharUnits::fromQuantity(DenseMapInfo<int64_t>::getEmptyKey()));
+      DenseMapInfo<const clang::CXXRecordDecl *>::getEmptyKey(),
+      clang::CharUnits::fromQuantity(DenseMapInfo<int64_t>::getEmptyKey()));
   }
 
   static clang::BaseSubobject getTombstoneKey() {
     return clang::BaseSubobject(
-        DenseMapInfo<const clang::CXXRecordDecl *>::getTombstoneKey(),
-        clang::CharUnits::fromQuantity(
-            DenseMapInfo<int64_t>::getTombstoneKey()));
+      DenseMapInfo<const clang::CXXRecordDecl *>::getTombstoneKey(),
+      clang::CharUnits::fromQuantity(DenseMapInfo<int64_t>::getTombstoneKey()));
   }
 
   static unsigned getHashValue(const clang::BaseSubobject &Base) {
     using PairTy = std::pair<const clang::CXXRecordDecl *, clang::CharUnits>;
 
-    return DenseMapInfo<PairTy>::getHashValue(
-        PairTy(Base.getBase(), Base.getBaseOffset()));
+    return DenseMapInfo<PairTy>::getHashValue(PairTy(Base.getBase(),
+                                                     Base.getBaseOffset()));
   }
 
   static bool isEqual(const clang::BaseSubobject &LHS,

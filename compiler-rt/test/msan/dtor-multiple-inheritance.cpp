@@ -11,8 +11,8 @@
 
 // RUN: %clangxx_msan %s -O2 -fsanitize=memory -fsanitize-memory-use-after-dtor -o %t && MSAN_OPTIONS=poison_in_dtor=1 %run %t >%t.out 2>&1
 
-#include <assert.h>
 #include <sanitizer/msan_interface.h>
+#include <assert.h>
 
 int *temp_x;
 int *temp_y;
@@ -73,6 +73,7 @@ public:
     assert(__msan_test_shadow(&this->w, sizeof(this->w)) == -1);
   }
 };
+
 
 int main() {
   Derived *d = new Derived();

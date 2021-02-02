@@ -31,41 +31,41 @@
 #include "variant_test_helpers.h"
 
 struct NoCopy {
-  NoCopy(const NoCopy&) = delete;
-  NoCopy& operator=(const NoCopy&) = default;
+  NoCopy(const NoCopy &) = delete;
+  NoCopy &operator=(const NoCopy &) = default;
 };
 
 struct CopyOnly {
-  CopyOnly(const CopyOnly&) = default;
-  CopyOnly(CopyOnly&&) = delete;
-  CopyOnly& operator=(const CopyOnly&) = default;
-  CopyOnly& operator=(CopyOnly&&) = delete;
+  CopyOnly(const CopyOnly &) = default;
+  CopyOnly(CopyOnly &&) = delete;
+  CopyOnly &operator=(const CopyOnly &) = default;
+  CopyOnly &operator=(CopyOnly &&) = delete;
 };
 
 struct MoveOnly {
-  MoveOnly(const MoveOnly&) = delete;
-  MoveOnly(MoveOnly&&) = default;
-  MoveOnly& operator=(const MoveOnly&) = delete;
-  MoveOnly& operator=(MoveOnly&&) = default;
+  MoveOnly(const MoveOnly &) = delete;
+  MoveOnly(MoveOnly &&) = default;
+  MoveOnly &operator=(const MoveOnly &) = delete;
+  MoveOnly &operator=(MoveOnly &&) = default;
 };
 
 struct MoveOnlyNT {
-  MoveOnlyNT(const MoveOnlyNT&) = delete;
-  MoveOnlyNT(MoveOnlyNT&&) {}
-  MoveOnlyNT& operator=(const MoveOnlyNT&) = delete;
-  MoveOnlyNT& operator=(MoveOnlyNT&&) = default;
+  MoveOnlyNT(const MoveOnlyNT &) = delete;
+  MoveOnlyNT(MoveOnlyNT &&) {}
+  MoveOnlyNT &operator=(const MoveOnlyNT &) = delete;
+  MoveOnlyNT &operator=(MoveOnlyNT &&) = default;
 };
 
 struct MoveOnlyOddNothrow {
-  MoveOnlyOddNothrow(MoveOnlyOddNothrow&&) noexcept(false) {}
-  MoveOnlyOddNothrow(const MoveOnlyOddNothrow&) = delete;
-  MoveOnlyOddNothrow& operator=(MoveOnlyOddNothrow&&) noexcept = default;
-  MoveOnlyOddNothrow& operator=(const MoveOnlyOddNothrow&) = delete;
+  MoveOnlyOddNothrow(MoveOnlyOddNothrow &&) noexcept(false) {}
+  MoveOnlyOddNothrow(const MoveOnlyOddNothrow &) = delete;
+  MoveOnlyOddNothrow &operator=(MoveOnlyOddNothrow &&) noexcept = default;
+  MoveOnlyOddNothrow &operator=(const MoveOnlyOddNothrow &) = delete;
 };
 
 struct MoveAssignOnly {
-  MoveAssignOnly(MoveAssignOnly&&) = delete;
-  MoveAssignOnly& operator=(MoveAssignOnly&&) = default;
+  MoveAssignOnly(MoveAssignOnly &&) = delete;
+  MoveAssignOnly &operator=(MoveAssignOnly &&) = default;
 };
 
 struct MoveAssign {
@@ -73,11 +73,11 @@ struct MoveAssign {
   static int move_assign;
   static void reset() { move_construct = move_assign = 0; }
   MoveAssign(int v) : value(v) {}
-  MoveAssign(MoveAssign&& o) : value(o.value) {
+  MoveAssign(MoveAssign &&o) : value(o.value) {
     ++move_construct;
     o.value = -1;
   }
-  MoveAssign& operator=(MoveAssign&& o) {
+  MoveAssign &operator=(MoveAssign &&o) {
     value = o.value;
     ++move_assign;
     o.value = -1;
@@ -91,10 +91,10 @@ int MoveAssign::move_assign = 0;
 
 struct NTMoveAssign {
   constexpr NTMoveAssign(int v) : value(v) {}
-  NTMoveAssign(const NTMoveAssign&) = default;
-  NTMoveAssign(NTMoveAssign&&) = default;
-  NTMoveAssign& operator=(const NTMoveAssign& that) = default;
-  NTMoveAssign& operator=(NTMoveAssign&& that) {
+  NTMoveAssign(const NTMoveAssign &) = default;
+  NTMoveAssign(NTMoveAssign &&) = default;
+  NTMoveAssign &operator=(const NTMoveAssign &that) = default;
+  NTMoveAssign &operator=(NTMoveAssign &&that) {
     value = that.value;
     that.value = -1;
     return *this;
@@ -107,10 +107,10 @@ static_assert(std::is_move_assignable<NTMoveAssign>::value, "");
 
 struct TMoveAssign {
   constexpr TMoveAssign(int v) : value(v) {}
-  TMoveAssign(const TMoveAssign&) = delete;
-  TMoveAssign(TMoveAssign&&) = default;
-  TMoveAssign& operator=(const TMoveAssign&) = delete;
-  TMoveAssign& operator=(TMoveAssign&&) = default;
+  TMoveAssign(const TMoveAssign &) = delete;
+  TMoveAssign(TMoveAssign &&) = default;
+  TMoveAssign &operator=(const TMoveAssign &) = delete;
+  TMoveAssign &operator=(TMoveAssign &&) = default;
   int value;
 };
 
@@ -118,13 +118,13 @@ static_assert(std::is_trivially_move_assignable<TMoveAssign>::value, "");
 
 struct TMoveAssignNTCopyAssign {
   constexpr TMoveAssignNTCopyAssign(int v) : value(v) {}
-  TMoveAssignNTCopyAssign(const TMoveAssignNTCopyAssign&) = default;
-  TMoveAssignNTCopyAssign(TMoveAssignNTCopyAssign&&) = default;
-  TMoveAssignNTCopyAssign& operator=(const TMoveAssignNTCopyAssign& that) {
+  TMoveAssignNTCopyAssign(const TMoveAssignNTCopyAssign &) = default;
+  TMoveAssignNTCopyAssign(TMoveAssignNTCopyAssign &&) = default;
+  TMoveAssignNTCopyAssign &operator=(const TMoveAssignNTCopyAssign &that) {
     value = that.value;
     return *this;
   }
-  TMoveAssignNTCopyAssign& operator=(TMoveAssignNTCopyAssign&&) = default;
+  TMoveAssignNTCopyAssign &operator=(TMoveAssignNTCopyAssign &&) = default;
   int value;
 };
 
@@ -133,17 +133,15 @@ static_assert(std::is_trivially_move_assignable_v<TMoveAssignNTCopyAssign>, "");
 struct TrivialCopyNontrivialMove {
   TrivialCopyNontrivialMove(TrivialCopyNontrivialMove const&) = default;
   TrivialCopyNontrivialMove(TrivialCopyNontrivialMove&&) noexcept {}
-  TrivialCopyNontrivialMove&
-  operator=(TrivialCopyNontrivialMove const&) = default;
+  TrivialCopyNontrivialMove& operator=(TrivialCopyNontrivialMove const&) = default;
   TrivialCopyNontrivialMove& operator=(TrivialCopyNontrivialMove&&) noexcept {
     return *this;
   }
 };
 
-static_assert(std::is_trivially_copy_assignable_v<TrivialCopyNontrivialMove>,
-              "");
-static_assert(!std::is_trivially_move_assignable_v<TrivialCopyNontrivialMove>,
-              "");
+static_assert(std::is_trivially_copy_assignable_v<TrivialCopyNontrivialMove>, "");
+static_assert(!std::is_trivially_move_assignable_v<TrivialCopyNontrivialMove>, "");
+
 
 void test_move_assignment_noexcept() {
   {
@@ -239,7 +237,7 @@ void test_move_assignment_empty_empty() {
     makeEmpty(v1);
     V v2(std::in_place_index<0>);
     makeEmpty(v2);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.valueless_by_exception());
     assert(v1.index() == std::variant_npos);
@@ -255,7 +253,7 @@ void test_move_assignment_non_empty_empty() {
     V v1(std::in_place_index<0>, 42);
     V v2(std::in_place_index<0>);
     makeEmpty(v2);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.valueless_by_exception());
     assert(v1.index() == std::variant_npos);
@@ -265,7 +263,7 @@ void test_move_assignment_non_empty_empty() {
     V v1(std::in_place_index<2>, "hello");
     V v2(std::in_place_index<0>);
     makeEmpty(v2);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.valueless_by_exception());
     assert(v1.index() == std::variant_npos);
@@ -281,7 +279,7 @@ void test_move_assignment_empty_non_empty() {
     V v1(std::in_place_index<0>);
     makeEmpty(v1);
     V v2(std::in_place_index<0>, 42);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 0);
     assert(std::get<0>(v1) == 42);
@@ -291,7 +289,7 @@ void test_move_assignment_empty_non_empty() {
     V v1(std::in_place_index<0>);
     makeEmpty(v1);
     V v2(std::in_place_type<std::string>, "hello");
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 2);
     assert(std::get<2>(v1) == "hello");
@@ -299,18 +297,14 @@ void test_move_assignment_empty_non_empty() {
 #endif // TEST_HAS_NO_EXCEPTIONS
 }
 
-template <typename T>
-struct Result {
-  size_t index;
-  T value;
-};
+template <typename T> struct Result { size_t index; T value; };
 
 void test_move_assignment_same_index() {
   {
     using V = std::variant<int>;
     V v1(43);
     V v2(42);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 0);
     assert(std::get<0>(v1) == 42);
@@ -319,7 +313,7 @@ void test_move_assignment_same_index() {
     using V = std::variant<int, long, unsigned>;
     V v1(43l);
     V v2(42l);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 1);
     assert(std::get<1>(v1) == 42);
@@ -329,7 +323,7 @@ void test_move_assignment_same_index() {
     V v1(std::in_place_type<MoveAssign>, 43);
     V v2(std::in_place_type<MoveAssign>, 42);
     MoveAssign::reset();
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 1);
     assert(std::get<1>(v1).value == 42);
@@ -341,7 +335,7 @@ void test_move_assignment_same_index() {
   {
     using V = std::variant<int, MET, std::string>;
     V v1(std::in_place_type<MET>);
-    MET& mref = std::get<1>(v1);
+    MET &mref = std::get<1>(v1);
     V v2(std::in_place_type<MET>);
     try {
       v1 = std::move(v2);
@@ -405,7 +399,7 @@ void test_move_assignment_different_index() {
     using V = std::variant<int, long, unsigned>;
     V v1(43);
     V v2(42l);
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 1);
     assert(std::get<1>(v1) == 42);
@@ -415,7 +409,7 @@ void test_move_assignment_different_index() {
     V v1(std::in_place_type<unsigned>, 43u);
     V v2(std::in_place_type<MoveAssign>, 42);
     MoveAssign::reset();
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 1);
     assert(std::get<1>(v1).value == 42);
@@ -440,7 +434,7 @@ void test_move_assignment_different_index() {
     using V = std::variant<int, MET, std::string>;
     V v1(std::in_place_type<MET>);
     V v2(std::in_place_type<std::string>, "hello");
-    V& vref = (v1 = std::move(v2));
+    V &vref = (v1 = std::move(v2));
     assert(&vref == &v1);
     assert(v1.index() == 2);
     assert(std::get<2>(v1) == "hello");
@@ -481,12 +475,15 @@ void test_move_assignment_different_index() {
 }
 
 template <size_t NewIdx, class ValueType>
-constexpr bool test_constexpr_assign_imp(std::variant<long, void*, int>&& v,
-                                         ValueType&& new_value) {
-  std::variant<long, void*, int> v2(std::forward<ValueType>(new_value));
+constexpr bool test_constexpr_assign_imp(
+    std::variant<long, void*, int>&& v, ValueType&& new_value)
+{
+  std::variant<long, void*, int> v2(
+      std::forward<ValueType>(new_value));
   const auto cp = v2;
   v = std::move(v2);
-  return v.index() == NewIdx && std::get<NewIdx>(v) == std::get<NewIdx>(cp);
+  return v.index() == NewIdx &&
+        std::get<NewIdx>(v) == std::get<NewIdx>(cp);
 }
 
 void test_constexpr_move_assignment() {

@@ -40,6 +40,7 @@ int *h() {
   return new int[int(-3 * (1.0 / 3.0))]; // norounding-error {{too large}}
 }
 
+
 // nextUp(1.F) == 0x1.000002p0F
 static_assert(1.0F + 0x0.000001p0F == 0x1.0p0F, "");
 

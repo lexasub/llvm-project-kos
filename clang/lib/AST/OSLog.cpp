@@ -137,8 +137,8 @@ public:
     for (auto &Data : ArgsData) {
       if (!Data.MaskType.empty()) {
         CharUnits Size = CharUnits::fromQuantity(8);
-        Layout.Items.emplace_back(OSLogBufferItem::MaskKind, nullptr, Size, 0,
-                                  Data.MaskType);
+        Layout.Items.emplace_back(OSLogBufferItem::MaskKind, nullptr,
+                                  Size, 0, Data.MaskType);
       }
 
       if (Data.FieldWidth) {

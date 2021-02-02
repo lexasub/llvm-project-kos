@@ -5,38 +5,14 @@ struct __multiple_inheritance M;
 struct __virtual_inheritance V;
 struct U;
 
-struct SD {
-  char a;
-  int S::*mp;
-};
-struct MD {
-  char a;
-  int M::*mp;
-};
-struct VD {
-  char a;
-  int V::*mp;
-};
-struct UD {
-  char a;
-  int U::*mp;
-};
-struct SF {
-  char a;
-  int (S::*mp)();
-};
-struct MF {
-  char a;
-  int (M::*mp)();
-};
-struct VF {
-  char a;
-  int (V::*mp)();
-};
-struct UF {
-  char a;
-  int (U::*mp)();
-};
+struct SD { char a; int S::*mp; };
+struct MD { char a; int M::*mp; };
+struct VD { char a; int V::*mp; };
+struct UD { char a; int U::*mp; };
+struct SF { char a; int (S::*mp)(); };
+struct MF { char a; int (M::*mp)(); };
+struct VF { char a; int (V::*mp)(); };
+struct UF { char a; int (U::*mp)(); };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct SD

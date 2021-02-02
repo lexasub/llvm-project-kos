@@ -18,14 +18,14 @@ int U1::k3;
 const double U1::k4;
 const double U1::k5;
 
-template <typename T>
+template<typename T>
 union U2 {
   static const int k1;
   static double k2;
   T t;
 };
-template <typename T> constexpr int U2<T>::k1 = sizeof(U2<T>);
-template <typename T> double U2<T>::k2 = 5.3;
+template<typename T> constexpr int U2<T>::k1 = sizeof(U2<T>);
+template<typename T> double U2<T>::k2 = 5.3;
 
 static_assert(U2<int>::k1 == sizeof(int), "");
 static_assert(U2<char>::k1 == sizeof(char), "");

@@ -33,7 +33,7 @@ class MSFBuilder;
 namespace object {
 struct coff_section;
 struct FpoData;
-} // namespace object
+}
 namespace pdb {
 class DbiStream;
 struct DbiStreamHeader;
@@ -134,7 +134,7 @@ private:
   std::vector<SecMapEntry> SectionMap;
   std::array<Optional<DebugStream>, (int)DbgHeaderType::Max> DbgStreams;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 
 #endif

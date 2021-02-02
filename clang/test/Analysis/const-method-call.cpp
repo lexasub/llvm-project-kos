@@ -76,7 +76,7 @@ void checkThatConstMethodDoesInvalidatePointedAtMemory() {
   C t;
   t.p = &x;
   t.foo();
-  clang_analyzer_eval(x);         // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(x); // expected-warning{{UNKNOWN}}
   clang_analyzer_eval(t.p == &x); // expected-warning{{TRUE}}
 }
 
@@ -92,7 +92,7 @@ void checkThatConstMethodDoesInvalidateInheritedPointedAtMemory() {
   PDerived t;
   t.p = &x;
   t.foo();
-  clang_analyzer_eval(x);         // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(x); // expected-warning{{UNKNOWN}}
   clang_analyzer_eval(t.p == &x); // expected-warning{{TRUE}}
 }
 
@@ -102,8 +102,8 @@ void checkThatConstMethodDoesInvalidateContainedPointedAtMemory() {
   t.x = 2;
   t.in.p = &x;
   t.foo();
-  clang_analyzer_eval(x);            // expected-warning{{UNKNOWN}}
-  clang_analyzer_eval(t.x == 2);     // expected-warning{{TRUE}}
+  clang_analyzer_eval(x); // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(t.x == 2); // expected-warning{{TRUE}}
   clang_analyzer_eval(t.in.p == &x); // expected-warning{{TRUE}}
 }
 
@@ -112,7 +112,7 @@ void checkThatContainedConstMethodDoesNotInvalidateObjects() {
   t.x = 1;
   t.in.x = 2;
   t.in.bar();
-  clang_analyzer_eval(t.x == 1);    // expected-warning{{TRUE}}
+  clang_analyzer_eval(t.x == 1); // expected-warning{{TRUE}}
   clang_analyzer_eval(t.in.x == 2); // expected-warning{{TRUE}}
 }
 
@@ -179,7 +179,7 @@ void checkThatInheritedConstMethodDoesInvalidatePointedAtMemory() {
   D3 t;
   t.p = &x;
   t.foo();
-  clang_analyzer_eval(x);         // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(x); // expected-warning{{UNKNOWN}}
   clang_analyzer_eval(t.p == &x); // expected-warning{{TRUE}}
 }
 
@@ -190,9 +190,9 @@ void checkThatInheritedConstMethodDoesInvalidateContainedPointedAtMemory() {
   t.in.x = 3;
   t.in.p = &x;
   t.foo();
-  clang_analyzer_eval(x);            // expected-warning{{UNKNOWN}}
-  clang_analyzer_eval(t.x == 2);     // expected-warning{{TRUE}}
-  clang_analyzer_eval(t.in.x == 3);  // expected-warning{{TRUE}}
+  clang_analyzer_eval(x); // expected-warning{{UNKNOWN}}
+  clang_analyzer_eval(t.x == 2); // expected-warning{{TRUE}}
+  clang_analyzer_eval(t.in.x == 3); // expected-warning{{TRUE}}
   clang_analyzer_eval(t.in.p == &x); // expected-warning{{TRUE}}
 }
 
@@ -201,30 +201,31 @@ void checkThatInheritedContainedConstMethodDoesNotInvalidateObjects() {
   t.x = 1;
   t.in.x = 2;
   t.in.foo();
-  clang_analyzer_eval(t.x == 1);    // expected-warning{{TRUE}}
+  clang_analyzer_eval(t.x == 1); // expected-warning{{TRUE}}
   clang_analyzer_eval(t.in.x == 2); // expected-warning{{TRUE}}
 }
 
 // --- PR21606 --- //
 
 struct s1 {
-  void g(const int *i) const;
+    void g(const int *i) const;
 };
 
 struct s2 {
-  void f(int *i) {
-    m_i = i;
-    m_s.g(m_i);
-    if (m_i)
-      *i = 42; // no-warning
-  }
+    void f(int *i) {
+        m_i = i;
+        m_s.g(m_i);
+        if (m_i)
+            *i = 42; // no-warning
+    }
 
-  int *m_i;
-  s1 m_s;
+    int *m_i;
+    s1 m_s;
 };
 
-void PR21606() {
-  s2().f(0);
+void PR21606()
+{
+    s2().f(0);
 }
 
 // --- PR25392 --- //
@@ -234,7 +235,7 @@ public:
   void constMemberFunction() const;
 };
 
-HasConstMemberFunction hasNoReturn() {} // expected-warning {{non-void function does not return a value}}
+HasConstMemberFunction hasNoReturn() { } // expected-warning {{non-void function does not return a value}}
 
 void testUnknownWithConstMemberFunction() {
   hasNoReturn().constMemberFunction();
@@ -243,8 +244,7 @@ void testUnknownWithConstMemberFunction() {
 void testNonRegionLocWithConstMemberFunction() {
   (*((HasConstMemberFunction *)(&&label))).constMemberFunction();
 
-label:
-  return;
+  label: return;
 }
 
 // FIXME

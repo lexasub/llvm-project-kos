@@ -19,13 +19,14 @@
 namespace clang {
 
 template <class Derived, class RetTy = void> struct DestructedTypeVisitor {
-  template <class... Ts> RetTy visit(QualType FT, Ts &&...Args) {
+  template <class... Ts> RetTy visit(QualType FT, Ts &&... Args) {
     return asDerived().visitWithKind(FT.isDestructedType(), FT,
                                      std::forward<Ts>(Args)...);
   }
 
   template <class... Ts>
-  RetTy visitWithKind(QualType::DestructionKind DK, QualType FT, Ts &&...Args) {
+  RetTy visitWithKind(QualType::DestructionKind DK, QualType FT,
+                      Ts &&... Args) {
     switch (DK) {
     case QualType::DK_objc_strong_lifetime:
       return asDerived().visitARCStrong(FT, std::forward<Ts>(Args)...);
@@ -47,7 +48,7 @@ template <class Derived, class RetTy = void> struct DestructedTypeVisitor {
 
 template <class Derived, class RetTy = void>
 struct DefaultInitializedTypeVisitor {
-  template <class... Ts> RetTy visit(QualType FT, Ts &&...Args) {
+  template <class... Ts> RetTy visit(QualType FT, Ts &&... Args) {
     return asDerived().visitWithKind(
         FT.isNonTrivialToPrimitiveDefaultInitialize(), FT,
         std::forward<Ts>(Args)...);
@@ -55,7 +56,7 @@ struct DefaultInitializedTypeVisitor {
 
   template <class... Ts>
   RetTy visitWithKind(QualType::PrimitiveDefaultInitializeKind PDIK,
-                      QualType FT, Ts &&...Args) {
+                      QualType FT, Ts &&... Args) {
     switch (PDIK) {
     case QualType::PDIK_ARCStrong:
       return asDerived().visitARCStrong(FT, std::forward<Ts>(Args)...);
@@ -75,7 +76,7 @@ struct DefaultInitializedTypeVisitor {
 
 template <class Derived, bool IsMove, class RetTy = void>
 struct CopiedTypeVisitor {
-  template <class... Ts> RetTy visit(QualType FT, Ts &&...Args) {
+  template <class... Ts> RetTy visit(QualType FT, Ts &&... Args) {
     QualType::PrimitiveCopyKind PCK =
         IsMove ? FT.isNonTrivialToPrimitiveDestructiveMove()
                : FT.isNonTrivialToPrimitiveCopy();
@@ -84,7 +85,7 @@ struct CopiedTypeVisitor {
 
   template <class... Ts>
   RetTy visitWithKind(QualType::PrimitiveCopyKind PCK, QualType FT,
-                      Ts &&...Args) {
+                      Ts &&... Args) {
     asDerived().preVisit(PCK, FT, std::forward<Ts>(Args)...);
 
     switch (PCK) {

@@ -83,8 +83,7 @@ Status DomainSocket::Connect(llvm::StringRef name) {
   if (error.Fail())
     return error;
   if (llvm::sys::RetryAfterSignal(-1, ::connect, GetNativeSocket(),
-                                  (struct sockaddr *)&saddr_un,
-                                  saddr_un_len) < 0)
+        (struct sockaddr *)&saddr_un, saddr_un_len) < 0)
     SetLastError(error);
 
   return error;
@@ -135,10 +134,10 @@ std::string DomainSocket::GetSocketName() const {
     if (::getpeername(m_socket, (struct sockaddr *)&saddr_un, &sock_addr_len) ==
         0) {
       std::string name(saddr_un.sun_path + GetNameOffset(),
-                       sock_addr_len - offsetof(struct sockaddr_un, sun_path) -
+                       sock_addr_len -
+                           offsetof(struct sockaddr_un, sun_path) -
                            GetNameOffset());
-      if (name.back() == '\0')
-        name.pop_back();
+      if (name.back() == '\0') name.pop_back();
       return name;
     }
   }

@@ -23,8 +23,8 @@
 #include "llvm/CodeGen/ValueTypes.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
-#include "llvm/Support/MathExtras.h"
 #include <initializer_list>
+#include "llvm/Support/MathExtras.h"
 
 #define DEBUG_TYPE "aarch64-legalinfo"
 
@@ -94,8 +94,7 @@ AArch64LegalizerInfo::AArch64LegalizerInfo(const AArch64Subtarget &ST)
             return std::make_pair(0, EltTy);
           });
 
-  getActionDefinitionsBuilder(G_PHI)
-      .legalFor({p0, s16, s32, s64})
+  getActionDefinitionsBuilder(G_PHI).legalFor({p0, s16, s32, s64})
       .legalFor(PackedVectorAllTypeList)
       .clampScalar(0, s16, s64)
       .widenScalarToNextPow2(0);
@@ -733,8 +732,8 @@ static void extractParts(Register Reg, MachineRegisterInfo &MRI,
   MIRBuilder.buildUnmerge(VRegs, Reg);
 }
 
-bool AArch64LegalizerInfo::legalizeVectorTrunc(MachineInstr &MI,
-                                               LegalizerHelper &Helper) const {
+bool AArch64LegalizerInfo::legalizeVectorTrunc(
+    MachineInstr &MI, LegalizerHelper &Helper) const {
   MachineIRBuilder &MIRBuilder = Helper.MIRBuilder;
   MachineRegisterInfo &MRI = *MIRBuilder.getMRI();
   // Similar to how operand splitting is done in SelectiondDAG, we can handle

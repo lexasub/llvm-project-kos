@@ -10,7 +10,7 @@
 
 #define SHADOW(a) __extension__({ int v = a; v; })
 
-#define OLD_STYLE_CAST(a) ((int)(a))
+#define OLD_STYLE_CAST(a) ((int) (a))
 
 #else
 

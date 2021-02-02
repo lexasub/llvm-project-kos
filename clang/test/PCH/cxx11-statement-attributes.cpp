@@ -12,5 +12,5 @@
 // expected-note@Inputs/cxx11-statement-attributes.h:10 {{insert 'break;'}}
 
 void g(int n) {
-  f<1>(n); // expected-note {{in instantiation of function template specialization 'f<1>' requested here}}
+  f<1>(n);  // expected-note {{in instantiation of function template specialization 'f<1>' requested here}}
 }

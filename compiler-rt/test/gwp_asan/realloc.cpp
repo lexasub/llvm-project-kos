@@ -26,10 +26,11 @@ int main() {
   // CHECK-MALLOC: Invalid (Wild) Free at 0x{{[a-f0-9]+}} (1 byte to the right
   // CHECK-MALLOC-SAME: of a 1-byte allocation
 #elif defined(TEST_FREE)
-  char *Ptr = (char *)malloc(1);
+  char *Ptr = (char *) malloc(1);
   // realloc(ptr, 0) is equivalent to free(ptr) and must return nullptr. Note
   // that this is only the specification in C++98 and C.
   if (realloc(Ptr, 0) != NULL) {
+
   }
   // Trigger a USE_AFTER_FREE.
   *Ptr = 0;

@@ -8,8 +8,7 @@ typedef signed char BOOL;
 - (Class)class;
 @end
 
-@interface NSObject <NSObject> {
-}
+@interface NSObject <NSObject> {}
 + (instancetype)alloc;
 - (void)dealloc;
 - (id)init;
@@ -20,7 +19,7 @@ typedef signed char BOOL;
 @interface NSRunLoop : NSObject
 + (NSRunLoop *)currentRunLoop;
 + (NSRunLoop *)mainRunLoop;
-- (void)run;
+- (void) run;
 - (void)cancelPerformSelectorsWithTarget:(id)target;
 @end
 

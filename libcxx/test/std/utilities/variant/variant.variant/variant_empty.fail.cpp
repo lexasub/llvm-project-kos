@@ -18,9 +18,10 @@
 #include "test_macros.h"
 #include "variant_test_helpers.h"
 
-int main(int, char**) {
-  // expected-error@variant:* 1 {{static_assert failed}}
-  std::variant<> v; // expected-note {{requested here}}
+int main(int, char**)
+{
+    // expected-error@variant:* 1 {{static_assert failed}}
+    std::variant<> v; // expected-note {{requested here}}
 
   return 0;
 }

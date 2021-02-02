@@ -19,8 +19,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "AArch64GlobalISelUtils.h"
 #include "AArch64TargetMachine.h"
+#include "AArch64GlobalISelUtils.h"
 #include "MCTargetDesc/AArch64MCTargetDesc.h"
 #include "llvm/CodeGen/GlobalISel/Combiner.h"
 #include "llvm/CodeGen/GlobalISel/CombinerHelper.h"
@@ -46,8 +46,8 @@ using namespace AArch64GISelUtils;
 ///
 /// Used for matching target-supported shuffles before codegen.
 struct ShuffleVectorPseudo {
-  unsigned Opc;                 ///< Opcode for the instruction. (E.g. G_ZIP1)
-  Register Dst;                 ///< Destination register.
+  unsigned Opc; ///< Opcode for the instruction. (E.g. G_ZIP1)
+  Register Dst; ///< Destination register.
   SmallVector<SrcOp, 2> SrcOps; ///< Source registers.
   ShuffleVectorPseudo(unsigned Opc, Register Dst,
                       std::initializer_list<SrcOp> SrcOps)
@@ -168,9 +168,9 @@ static bool isZipMask(ArrayRef<int> M, unsigned NumElts,
   WhichResult = (M[0] == 0 ? 0 : 1);
   unsigned Idx = WhichResult * NumElts / 2;
   for (unsigned i = 0; i != NumElts; i += 2) {
-    if ((M[i] >= 0 && static_cast<unsigned>(M[i]) != Idx) ||
-        (M[i + 1] >= 0 && static_cast<unsigned>(M[i + 1]) != Idx + NumElts))
-      return false;
+      if ((M[i] >= 0 && static_cast<unsigned>(M[i]) != Idx) ||
+          (M[i + 1] >= 0 && static_cast<unsigned>(M[i + 1]) != Idx + NumElts))
+        return false;
     Idx += 1;
   }
   return true;
@@ -275,8 +275,7 @@ static bool matchDupFromInsertVectorElt(int Lane, MachineInstr &MI,
   // %cst0:gpr(s32) = G_CONSTANT i32 0
   // %zerovec:fpr(<2 x s32>) = G_BUILD_VECTOR %cst0(s32), %cst0(s32)
   // %ins:fpr(<2 x s64>) = G_INSERT_VECTOR_ELT %undef, %scalar(s64), %cst0(s32)
-  // %splat:fpr(<2 x s64>) = G_SHUFFLE_VECTOR %ins(<2 x s64>), %undef,
-  // %zerovec(<2 x s32>)
+  // %splat:fpr(<2 x s64>) = G_SHUFFLE_VECTOR %ins(<2 x s64>), %undef, %zerovec(<2 x s32>)
   //
   // ...into:
   // %splat = G_DUP %scalar
@@ -427,7 +426,7 @@ static bool applyVAshrLshrImm(MachineInstr &MI, MachineRegisterInfo &MRI,
 /// \note This assumes that the comparison has been legalized.
 Optional<std::pair<uint64_t, CmpInst::Predicate>>
 tryAdjustICmpImmAndPred(Register RHS, CmpInst::Predicate P,
-                        const MachineRegisterInfo &MRI) {
+                          const MachineRegisterInfo &MRI) {
   const auto &Ty = MRI.getType(RHS);
   if (Ty.isVector())
     return None;

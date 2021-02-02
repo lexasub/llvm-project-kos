@@ -17,9 +17,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  const std::basic_ios<char> ios(0);
-  assert(ios.tie() == 0);
+int main(int, char**)
+{
+    const std::basic_ios<char> ios(0);
+    assert(ios.tie() == 0);
 
   return 0;
 }

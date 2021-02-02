@@ -16,8 +16,9 @@
 
 using namespace llvm;
 
-static KnownBits computeForAddCarry(const KnownBits &LHS, const KnownBits &RHS,
-                                    bool CarryZero, bool CarryOne) {
+static KnownBits computeForAddCarry(
+    const KnownBits &LHS, const KnownBits &RHS,
+    bool CarryZero, bool CarryOne) {
   assert(!(CarryZero && CarryOne) &&
          "Carry can't be zero and one at the same time");
 
@@ -44,26 +45,25 @@ static KnownBits computeForAddCarry(const KnownBits &LHS, const KnownBits &RHS,
   return KnownOut;
 }
 
-KnownBits KnownBits::computeForAddCarry(const KnownBits &LHS,
-                                        const KnownBits &RHS,
-                                        const KnownBits &Carry) {
+KnownBits KnownBits::computeForAddCarry(
+    const KnownBits &LHS, const KnownBits &RHS, const KnownBits &Carry) {
   assert(Carry.getBitWidth() == 1 && "Carry must be 1-bit");
-  return ::computeForAddCarry(LHS, RHS, Carry.Zero.getBoolValue(),
-                              Carry.One.getBoolValue());
+  return ::computeForAddCarry(
+      LHS, RHS, Carry.Zero.getBoolValue(), Carry.One.getBoolValue());
 }
 
-KnownBits KnownBits::computeForAddSub(bool Add, bool NSW, const KnownBits &LHS,
-                                      KnownBits RHS) {
+KnownBits KnownBits::computeForAddSub(bool Add, bool NSW,
+                                      const KnownBits &LHS, KnownBits RHS) {
   KnownBits KnownOut;
   if (Add) {
     // Sum = LHS + RHS + 0
-    KnownOut =
-        ::computeForAddCarry(LHS, RHS, /*CarryZero*/ true, /*CarryOne*/ false);
+    KnownOut = ::computeForAddCarry(
+        LHS, RHS, /*CarryZero*/true, /*CarryOne*/false);
   } else {
     // Sum = LHS + ~RHS + 1
     std::swap(RHS.Zero, RHS.One);
-    KnownOut =
-        ::computeForAddCarry(LHS, RHS, /*CarryZero*/ false, /*CarryOne*/ true);
+    KnownOut = ::computeForAddCarry(
+        LHS, RHS, /*CarryZero*/false, /*CarryOne*/true);
   }
 
   // Are we still trying to solve for the sign bit?

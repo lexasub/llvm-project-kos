@@ -6,6 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+
+
+
 #include "lldb/DataFormatters/FormatCache.h"
 
 using namespace lldb;
@@ -58,13 +61,13 @@ FormatCache::Entry &FormatCache::GetEntry(ConstString type) {
 
 namespace lldb_private {
 
-template <> bool FormatCache::Entry::IsCached<lldb::TypeFormatImplSP>() {
+template<> bool FormatCache::Entry::IsCached<lldb::TypeFormatImplSP>() {
   return IsFormatCached();
 }
-template <> bool FormatCache::Entry::IsCached<lldb::TypeSummaryImplSP>() {
+template<> bool FormatCache::Entry::IsCached<lldb::TypeSummaryImplSP> () {
   return IsSummaryCached();
 }
-template <> bool FormatCache::Entry::IsCached<lldb::SyntheticChildrenSP>() {
+template<> bool FormatCache::Entry::IsCached<lldb::SyntheticChildrenSP>() {
   return IsSyntheticCached();
 }
 

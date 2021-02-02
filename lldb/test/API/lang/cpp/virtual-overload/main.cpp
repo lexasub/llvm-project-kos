@@ -14,3 +14,4 @@ int main(int argc, char **argv) {
   obj.f(1, 2); //% self.expect("fr var", "not crashing", substrs = ["obj"])
   return 0;
 }
+

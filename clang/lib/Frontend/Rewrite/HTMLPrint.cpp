@@ -28,28 +28,28 @@ using namespace clang;
 //===----------------------------------------------------------------------===//
 
 namespace {
-class HTMLPrinter : public ASTConsumer {
-  Rewriter R;
-  std::unique_ptr<raw_ostream> Out;
-  Preprocessor &PP;
-  bool SyntaxHighlight, HighlightMacros;
+  class HTMLPrinter : public ASTConsumer {
+    Rewriter R;
+    std::unique_ptr<raw_ostream> Out;
+    Preprocessor &PP;
+    bool SyntaxHighlight, HighlightMacros;
 
-public:
-  HTMLPrinter(std::unique_ptr<raw_ostream> OS, Preprocessor &pp,
-              bool _SyntaxHighlight, bool _HighlightMacros)
+  public:
+    HTMLPrinter(std::unique_ptr<raw_ostream> OS, Preprocessor &pp,
+                bool _SyntaxHighlight, bool _HighlightMacros)
       : Out(std::move(OS)), PP(pp), SyntaxHighlight(_SyntaxHighlight),
         HighlightMacros(_HighlightMacros) {}
 
-  void Initialize(ASTContext &context) override;
-  void HandleTranslationUnit(ASTContext &Ctx) override;
-};
-} // namespace
+    void Initialize(ASTContext &context) override;
+    void HandleTranslationUnit(ASTContext &Ctx) override;
+  };
+}
 
 std::unique_ptr<ASTConsumer>
 clang::CreateHTMLPrinter(std::unique_ptr<raw_ostream> OS, Preprocessor &PP,
                          bool SyntaxHighlight, bool HighlightMacros) {
   return std::make_unique<HTMLPrinter>(std::move(OS), PP, SyntaxHighlight,
-                                       HighlightMacros);
+                                        HighlightMacros);
 }
 
 void HTMLPrinter::Initialize(ASTContext &context) {
@@ -62,7 +62,7 @@ void HTMLPrinter::HandleTranslationUnit(ASTContext &Ctx) {
 
   // Format the file.
   FileID FID = R.getSourceMgr().getMainFileID();
-  const FileEntry *Entry = R.getSourceMgr().getFileEntryForID(FID);
+  const FileEntry* Entry = R.getSourceMgr().getFileEntryForID(FID);
   StringRef Name;
   // In some cases, in particular the case where the input is from stdin,
   // there is no entry.  Fall back to the memory buffer for a name in those
@@ -79,10 +79,8 @@ void HTMLPrinter::HandleTranslationUnit(ASTContext &Ctx) {
   // We might not have a preprocessor if we come from a deserialized AST file,
   // for example.
 
-  if (SyntaxHighlight)
-    html::SyntaxHighlight(R, FID, PP);
-  if (HighlightMacros)
-    html::HighlightMacros(R, FID, PP);
+  if (SyntaxHighlight) html::SyntaxHighlight(R, FID, PP);
+  if (HighlightMacros) html::HighlightMacros(R, FID, PP);
   html::EscapeText(R, FID, false, true);
 
   // Emit the HTML.

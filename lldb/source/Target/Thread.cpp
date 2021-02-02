@@ -73,7 +73,8 @@ enum {
 
 class ThreadOptionValueProperties : public OptionValueProperties {
 public:
-  ThreadOptionValueProperties(ConstString name) : OptionValueProperties(name) {}
+  ThreadOptionValueProperties(ConstString name)
+      : OptionValueProperties(name) {}
 
   // This constructor is used when creating ThreadOptionValueProperties when it
   // is part of a new lldb_private::Thread instance. It will copy all current
@@ -348,14 +349,14 @@ lldb::StopInfoSP Thread::GetStopInfo() {
   // from completed plan stack - m_stop_info_sp (trace stop reason is OK now) -
   // ask GetPrivateStopInfo to set stop info
 
-  bool have_valid_stop_info = m_stop_info_sp && m_stop_info_sp->IsValid() &&
-                              m_stop_info_stop_id == stop_id;
-  bool have_valid_completed_plan =
-      completed_plan_sp && completed_plan_sp->PlanSucceeded();
+  bool have_valid_stop_info = m_stop_info_sp &&
+      m_stop_info_sp ->IsValid() &&
+      m_stop_info_stop_id == stop_id;
+  bool have_valid_completed_plan = completed_plan_sp && completed_plan_sp->PlanSucceeded();
   bool plan_failed = completed_plan_sp && !completed_plan_sp->PlanSucceeded();
   bool plan_overrides_trace =
-      have_valid_stop_info && have_valid_completed_plan &&
-      (m_stop_info_sp->GetStopReason() == eStopReasonTrace);
+    have_valid_stop_info && have_valid_completed_plan
+    && (m_stop_info_sp->GetStopReason() == eStopReasonTrace);
 
   if (have_valid_stop_info && !plan_overrides_trace && !plan_failed) {
     return m_stop_info_sp;
@@ -989,7 +990,7 @@ Vote Thread::ShouldReportStop(Event *event_ptr) {
   }
 
   if (GetPlans().AnyCompletedPlans()) {
-    // Pass skip_private = false to GetCompletedPlan, since we want to ask
+    // Pass skip_private = false to GetCompletedPlan, since we want to ask 
     // the last plan, regardless of whether it is private or not.
     LLDB_LOGF(log,
               "Thread::ShouldReportStop() tid = 0x%4.4" PRIx64
@@ -1027,7 +1028,7 @@ Vote Thread::ShouldReportRun(Event *event_ptr) {
 
   Log *log(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_STEP));
   if (GetPlans().AnyCompletedPlans()) {
-    // Pass skip_private = false to GetCompletedPlan, since we want to ask
+    // Pass skip_private = false to GetCompletedPlan, since we want to ask 
     // the last plan, regardless of whether it is private or not.
     LLDB_LOGF(log,
               "Current Plan for thread %d(%p) (0x%4.4" PRIx64
@@ -1080,7 +1081,7 @@ void Thread::PushPlan(ThreadPlanSP thread_plan_sp) {
               static_cast<void *>(this), s.GetData(),
               thread_plan_sp->GetThread().GetID());
   }
-
+  
   GetPlans().PushPlan(std::move(thread_plan_sp));
 }
 
@@ -1098,7 +1099,7 @@ void Thread::DiscardPlan() {
   ThreadPlanSP discarded_plan_sp = GetPlans().PopPlan();
 
   LLDB_LOGF(log, "Discarding plan: \"%s\", tid = 0x%4.4" PRIx64 ".",
-            discarded_plan_sp->GetName(),
+            discarded_plan_sp->GetName(), 
             discarded_plan_sp->GetThread().GetID());
 }
 
@@ -1146,7 +1147,7 @@ bool Thread::CompletedPlanOverridesBreakpoint() const {
   return GetPlans().AnyCompletedPlans();
 }
 
-ThreadPlan *Thread::GetPreviousPlan(ThreadPlan *current_plan) const {
+ThreadPlan *Thread::GetPreviousPlan(ThreadPlan *current_plan) const{
   return GetPlans().GetPreviousPlan(current_plan);
 }
 
@@ -1235,7 +1236,7 @@ Status Thread::UnwindInnermostExpression() {
   if (!innermost_expr_plan) {
     error.SetErrorString("No expressions currently active on this thread");
     return error;
-  }
+  }  
   DiscardThreadPlansUpToPlan(innermost_expr_plan);
   return error;
 }
@@ -1383,18 +1384,18 @@ ThreadPlanSP Thread::QueueThreadPlanForStepUntil(
 }
 
 lldb::ThreadPlanSP Thread::QueueThreadPlanForStepScripted(
-    bool abort_other_plans, const char *class_name,
-    StructuredData::ObjectSP extra_args_sp, bool stop_other_threads,
+    bool abort_other_plans, const char *class_name, 
+    StructuredData::ObjectSP extra_args_sp,  bool stop_other_threads,
     Status &status) {
-
-  StructuredDataImpl *extra_args_impl = nullptr;
+    
+  StructuredDataImpl *extra_args_impl = nullptr; 
   if (extra_args_sp) {
     extra_args_impl = new StructuredDataImpl();
     extra_args_impl->SetObjectSP(extra_args_sp);
   }
 
-  ThreadPlanSP thread_plan_sp(
-      new ThreadPlanPython(*this, class_name, extra_args_impl));
+  ThreadPlanSP thread_plan_sp(new ThreadPlanPython(*this, class_name, 
+                                                   extra_args_impl));
   thread_plan_sp->SetStopOthers(stop_other_threads);
   status = QueueThreadPlan(thread_plan_sp, abort_other_plans);
   return thread_plan_sp;

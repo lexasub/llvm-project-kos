@@ -838,7 +838,7 @@ AArch64LoadStoreOpt::mergePairedInsns(MachineBasicBlock::iterator I,
                   TRI->regsOverlap(MOP.getReg(), RegToRename)) {
                 assert((MOP.isImplicit() ||
                         (MOP.isRenamable() && !MOP.isEarlyClobber())) &&
-                       "Need renamable operands");
+                           "Need renamable operands");
                 MOP.setReg(GetMatchingSubReg(MOP.getReg()));
               }
             }
@@ -1027,8 +1027,8 @@ AArch64LoadStoreOpt::promoteLoadFromStore(MachineBasicBlock::iterator LoadI,
     // Remove the load, if the destination register of the loads is the same
     // register for stored value.
     if (StRt == LdRt && LoadSize == 8) {
-      for (MachineInstr &MI :
-           make_range(StoreI->getIterator(), LoadI->getIterator())) {
+      for (MachineInstr &MI : make_range(StoreI->getIterator(),
+                                         LoadI->getIterator())) {
         if (MI.killsRegister(StRt, TRI)) {
           MI.clearRegisterKills(StRt, TRI);
           break;
@@ -1101,8 +1101,8 @@ AArch64LoadStoreOpt::promoteLoadFromStore(MachineBasicBlock::iterator LoadI,
   }
 
   // Clear kill flags between store and load.
-  for (MachineInstr &MI :
-       make_range(StoreI->getIterator(), BitExtMI->getIterator()))
+  for (MachineInstr &MI : make_range(StoreI->getIterator(),
+                                     BitExtMI->getIterator()))
     if (MI.killsRegister(StRt, TRI)) {
       MI.clearRegisterKills(StRt, TRI);
       break;
@@ -1775,8 +1775,7 @@ MachineBasicBlock::iterator AArch64LoadStoreOpt::findMatchingUpdateInsnForward(
   MachineBasicBlock::iterator MBBI = I;
 
   Register BaseReg = getLdStBaseOp(MemMI).getReg();
-  int MIUnscaledOffset =
-      getLdStOffsetOp(MemMI).getImm() * TII->getMemScale(MemMI);
+  int MIUnscaledOffset = getLdStOffsetOp(MemMI).getImm() * TII->getMemScale(MemMI);
 
   // Scan forward looking for post-index opportunities.  Updating instructions
   // can't be formed if the memory instruction doesn't have the offset we're
@@ -2000,8 +1999,8 @@ bool AArch64LoadStoreOpt::tryToPairLdStInst(MachineBasicBlock::iterator &MBBI) {
   return false;
 }
 
-bool AArch64LoadStoreOpt::tryToMergeLdStUpdate(
-    MachineBasicBlock::iterator &MBBI) {
+bool AArch64LoadStoreOpt::tryToMergeLdStUpdate
+    (MachineBasicBlock::iterator &MBBI) {
   MachineInstr &MI = *MBBI;
   MachineBasicBlock::iterator E = MI.getParent()->end();
   MachineBasicBlock::iterator Update;

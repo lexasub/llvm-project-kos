@@ -1,31 +1,31 @@
 // RUN: %clang_cc1 -fsyntax-only -Wunused-local-typedef -verify -std=c++1y %s
 
 struct S {
-  typedef int Foo; // no diag
+  typedef int Foo;  // no diag
 };
 
 namespace N {
-typedef int Foo;  // no diag
-typedef int Foo2; // no diag
-} // namespace N
+  typedef int Foo;  // no diag
+  typedef int Foo2;  // no diag
+}
 
 template <class T> class Vec {};
 
-typedef int global_foo; // no diag
+typedef int global_foo;  // no diag
 
 void f() {
-  typedef int foo0;      // expected-warning {{unused typedef 'foo0'}}
-  using foo0alias = int; // expected-warning {{unused type alias 'foo0alias'}}
+  typedef int foo0;  // expected-warning {{unused typedef 'foo0'}}
+  using foo0alias = int ;  // expected-warning {{unused type alias 'foo0alias'}}
 
-  typedef int foo1 __attribute__((unused)); // no diag
+  typedef int foo1 __attribute__((unused));  // no diag
 
   typedef int foo2;
   {
-    typedef int foo2; // expected-warning {{unused typedef 'foo2'}}
+    typedef int foo2;  // expected-warning {{unused typedef 'foo2'}}
   }
   typedef foo2 foo3; // expected-warning {{unused typedef 'foo3'}}
 
-  typedef int foo2_2; // expected-warning {{unused typedef 'foo2_2'}}
+  typedef int foo2_2;  // expected-warning {{unused typedef 'foo2_2'}}
   {
     typedef int foo2_2;
     typedef foo2_2 foo3_2; // expected-warning {{unused typedef 'foo3_2'}}
@@ -34,29 +34,27 @@ void f() {
   typedef int foo4;
   foo4 the_thing;
 
-  typedef int *foo5;
-  typedef foo5 *foo6; // no diag
+  typedef int* foo5;
+  typedef foo5* foo6;  // no diag
   foo6 *myptr;
 
   struct S2 {
-    typedef int Foo;  // no diag
+    typedef int Foo; // no diag
     typedef int Foo2; // expected-warning {{unused typedef 'Foo2'}}
 
     struct Deeper {
-      typedef int DeepFoo; // expected-warning {{unused typedef 'DeepFoo'}}
+      typedef int DeepFoo;  // expected-warning {{unused typedef 'DeepFoo'}}
     };
   };
 
   S2::Foo s2foo;
 
-  typedef struct {
-  } foostruct; // expected-warning {{unused typedef 'foostruct'}}
+  typedef struct {} foostruct; // expected-warning {{unused typedef 'foostruct'}}
 
-  typedef struct {
-  } foostruct2; // no diag
+  typedef struct {} foostruct2; // no diag
   foostruct2 fs2;
 
-  typedef int vecint; // no diag
+  typedef int vecint;  // no diag
   Vec<vecint> v;
 
   N::Foo nfoo;
@@ -99,7 +97,7 @@ void template_fun(T t) {
   typename S2::Foo s2foo;
   typename T::Foo s3foo;
 
-  typedef typename S2::Foo3 TTSF; // expected-warning {{unused typedef 'TTSF'}}
+  typedef typename S2::Foo3 TTSF;  // expected-warning {{unused typedef 'TTSF'}}
 }
 void template_fun_user() {
   struct Local {
@@ -110,13 +108,13 @@ void template_fun_user() {
 }
 
 void typedef_in_nested_name() {
-  typedef struct {   // expected-warning {{add a tag name}}
+  typedef struct { // expected-warning {{add a tag name}}
     typedef int Foo; // expected-note {{}}
-  } A;               // expected-note {{}}
+  } A; // expected-note {{}}
   A::Foo adsf;
 
   using A2 = struct { // expected-warning {{add a tag name}} expected-note {{this alias declaration}}
-    typedef int Foo;  // expected-note {{}}
+    typedef int Foo; // expected-note {{}}
   };
   A2::Foo adsf2;
 }
@@ -170,26 +168,23 @@ auto nstatic_sneaky() {
 }
 auto nsx = nstatic_sneaky();
 decltype(nsx)::t nsy;
-} // namespace
+}
 
 // Like sneaky(), but returning pointer to local type
-template <typename T>
+template<typename T>
 struct remove_reference { typedef T type; };
-template <typename T> struct remove_reference<T &> { typedef T type; };
+template<typename T> struct remove_reference<T&> { typedef T type; };
 auto pointer_sneaky() {
   struct S {
     typedef int t;
     typedef int s;
   };
-  return (S *)nullptr;
+  return (S*)nullptr;
 }
 remove_reference<decltype(*pointer_sneaky())>::type::t py;
 
 // Like sneaky(), but returning templated struct referencing local type.
-template <class T> struct container {
-  int a;
-  T t;
-};
+template <class T> struct container { int a; T t; };
 auto template_sneaky() {
   struct S {
     typedef int t;
@@ -232,7 +227,7 @@ void typedefs_in_constructors() {
 
 void *operator new(__SIZE_TYPE__, void *p) throw() { return p; }
 void placement_new_and_delete() {
-  struct MyStruct {};
+  struct MyStruct { };
   char memory[sizeof(MyStruct)];
   void *p = memory;
 

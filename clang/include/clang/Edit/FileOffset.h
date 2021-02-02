@@ -46,7 +46,9 @@ public:
     return std::tie(LHS.FID, LHS.Offs) < std::tie(RHS.FID, RHS.Offs);
   }
 
-  friend bool operator>(FileOffset LHS, FileOffset RHS) { return RHS < LHS; }
+  friend bool operator>(FileOffset LHS, FileOffset RHS) {
+    return RHS < LHS;
+  }
 
   friend bool operator>=(FileOffset LHS, FileOffset RHS) {
     return !(LHS < RHS);

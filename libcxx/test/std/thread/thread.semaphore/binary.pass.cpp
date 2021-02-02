@@ -29,14 +29,15 @@
 #include "make_test_thread.h"
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::binary_semaphore s(1);
 
-  auto l = [&]() {
-    for (int i = 0; i < 1024; ++i) {
-      s.acquire();
-      std::this_thread::sleep_for(std::chrono::microseconds(1));
-      s.release();
+  auto l = [&](){
+    for(int i = 0; i < 1024; ++i) {
+        s.acquire();
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+        s.release();
     }
   };
 

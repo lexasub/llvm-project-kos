@@ -22,8 +22,7 @@
 using namespace llvm;
 
 /// Moves I before IP. Returns new insert point.
-static BasicBlock::iterator moveBeforeInsertPoint(BasicBlock::iterator I,
-                                                  BasicBlock::iterator IP) {
+static BasicBlock::iterator moveBeforeInsertPoint(BasicBlock::iterator I, BasicBlock::iterator IP) {
   // If I is IP, move the insert point down.
   if (I == IP) {
     ++IP;
@@ -76,8 +75,7 @@ GlobalVariable *llvm::createPrivateGlobalForString(Module &M, StringRef Str,
 
 Comdat *llvm::GetOrCreateFunctionComdat(Function &F, Triple &T,
                                         const std::string &ModuleId) {
-  if (auto Comdat = F.getComdat())
-    return Comdat;
+  if (auto Comdat = F.getComdat()) return Comdat;
   assert(F.hasName());
   Module *M = F.getParent();
   std::string Name = std::string(F.getName());

@@ -24,7 +24,7 @@ using namespace llvm;
 
 void Interval::print(raw_ostream &OS) const {
   OS << "-------------------------------------------------------------\n"
-     << "Interval Contents:\n";
+       << "Interval Contents:\n";
 
   // Print out all of the basic blocks in the interval...
   for (const BasicBlock *Node : Nodes)

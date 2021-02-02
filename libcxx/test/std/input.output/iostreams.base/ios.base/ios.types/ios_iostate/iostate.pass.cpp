@@ -20,15 +20,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  assert(std::ios_base::badbit);
-  assert(std::ios_base::eofbit);
-  assert(std::ios_base::failbit);
+int main(int, char**)
+{
+    assert(std::ios_base::badbit);
+    assert(std::ios_base::eofbit);
+    assert(std::ios_base::failbit);
 
-  assert((std::ios_base::badbit & std::ios_base::eofbit &
-          std::ios_base::failbit) == 0);
+    assert
+    (
+        ( std::ios_base::badbit
+        & std::ios_base::eofbit
+        & std::ios_base::failbit) == 0
+    );
 
-  assert(std::ios_base::goodbit == 0);
+    assert(std::ios_base::goodbit == 0);
 
   return 0;
 }

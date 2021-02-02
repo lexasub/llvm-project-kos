@@ -4,7 +4,7 @@ struct HasNested {
   enum InnerEnum { _BUF_SIZE = 1 };
   typedef int InnerTypedef;
   enum { InnerEnumerator = 2 };
-  struct InnerStruct {};
+  struct InnerStruct { };
 };
 HasNested f;
 

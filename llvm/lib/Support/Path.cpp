@@ -32,132 +32,137 @@ using namespace llvm;
 using namespace llvm::support::endian;
 
 namespace {
-using llvm::StringRef;
-using llvm::sys::path::is_separator;
-using llvm::sys::path::Style;
+  using llvm::StringRef;
+  using llvm::sys::path::is_separator;
+  using llvm::sys::path::Style;
 
-inline Style real_style(Style style) {
+  inline Style real_style(Style style) {
 #ifdef _WIN32
-  return (style == Style::posix) ? Style::posix : Style::windows;
+    return (style == Style::posix) ? Style::posix : Style::windows;
 #else
-  return (style == Style::windows) ? Style::windows : Style::posix;
+    return (style == Style::windows) ? Style::windows : Style::posix;
 #endif
-}
-
-inline const char *separators(Style style) {
-  if (real_style(style) == Style::windows)
-    return "\\/";
-  return "/";
-}
-
-inline char preferred_separator(Style style) {
-  if (real_style(style) == Style::windows)
-    return '\\';
-  return '/';
-}
-
-StringRef find_first_component(StringRef path, Style style) {
-  // Look for this first component in the following order.
-  // * empty (in this case we return an empty string)
-  // * either C: or {//,\\}net.
-  // * {/,\}
-  // * {file,directory}name
-
-  if (path.empty())
-    return path;
-
-  if (real_style(style) == Style::windows) {
-    // C:
-    if (path.size() >= 2 && std::isalpha(static_cast<unsigned char>(path[0])) &&
-        path[1] == ':')
-      return path.substr(0, 2);
   }
 
-  // //net
-  if ((path.size() > 2) && is_separator(path[0], style) && path[0] == path[1] &&
-      !is_separator(path[2], style)) {
-    // Find the next directory separator.
-    size_t end = path.find_first_of(separators(style), 2);
+  inline const char *separators(Style style) {
+    if (real_style(style) == Style::windows)
+      return "\\/";
+    return "/";
+  }
+
+  inline char preferred_separator(Style style) {
+    if (real_style(style) == Style::windows)
+      return '\\';
+    return '/';
+  }
+
+  StringRef find_first_component(StringRef path, Style style) {
+    // Look for this first component in the following order.
+    // * empty (in this case we return an empty string)
+    // * either C: or {//,\\}net.
+    // * {/,\}
+    // * {file,directory}name
+
+    if (path.empty())
+      return path;
+
+    if (real_style(style) == Style::windows) {
+      // C:
+      if (path.size() >= 2 &&
+          std::isalpha(static_cast<unsigned char>(path[0])) && path[1] == ':')
+        return path.substr(0, 2);
+    }
+
+    // //net
+    if ((path.size() > 2) && is_separator(path[0], style) &&
+        path[0] == path[1] && !is_separator(path[2], style)) {
+      // Find the next directory separator.
+      size_t end = path.find_first_of(separators(style), 2);
+      return path.substr(0, end);
+    }
+
+    // {/,\}
+    if (is_separator(path[0], style))
+      return path.substr(0, 1);
+
+    // * {file,directory}name
+    size_t end = path.find_first_of(separators(style));
     return path.substr(0, end);
   }
 
-  // {/,\}
-  if (is_separator(path[0], style))
-    return path.substr(0, 1);
+  // Returns the first character of the filename in str. For paths ending in
+  // '/', it returns the position of the '/'.
+  size_t filename_pos(StringRef str, Style style) {
+    if (str.size() > 0 && is_separator(str[str.size() - 1], style))
+      return str.size() - 1;
 
-  // * {file,directory}name
-  size_t end = path.find_first_of(separators(style));
-  return path.substr(0, end);
-}
+    size_t pos = str.find_last_of(separators(style), str.size() - 1);
 
-// Returns the first character of the filename in str. For paths ending in
-// '/', it returns the position of the '/'.
-size_t filename_pos(StringRef str, Style style) {
-  if (str.size() > 0 && is_separator(str[str.size() - 1], style))
-    return str.size() - 1;
+    if (real_style(style) == Style::windows) {
+      if (pos == StringRef::npos)
+        pos = str.find_last_of(':', str.size() - 2);
+    }
 
-  size_t pos = str.find_last_of(separators(style), str.size() - 1);
+    if (pos == StringRef::npos || (pos == 1 && is_separator(str[0], style)))
+      return 0;
 
-  if (real_style(style) == Style::windows) {
-    if (pos == StringRef::npos)
-      pos = str.find_last_of(':', str.size() - 2);
+    return pos + 1;
   }
 
-  if (pos == StringRef::npos || (pos == 1 && is_separator(str[0], style)))
-    return 0;
+  // Returns the position of the root directory in str. If there is no root
+  // directory in str, it returns StringRef::npos.
+  size_t root_dir_start(StringRef str, Style style) {
+    // case "c:/"
+    if (real_style(style) == Style::windows) {
+      if (str.size() > 2 && str[1] == ':' && is_separator(str[2], style))
+        return 2;
+    }
 
-  return pos + 1;
-}
+    // case "//net"
+    if (str.size() > 3 && is_separator(str[0], style) && str[0] == str[1] &&
+        !is_separator(str[2], style)) {
+      return str.find_first_of(separators(style), 2);
+    }
 
-// Returns the position of the root directory in str. If there is no root
-// directory in str, it returns StringRef::npos.
-size_t root_dir_start(StringRef str, Style style) {
-  // case "c:/"
-  if (real_style(style) == Style::windows) {
-    if (str.size() > 2 && str[1] == ':' && is_separator(str[2], style))
-      return 2;
+    // case "/"
+    if (str.size() > 0 && is_separator(str[0], style))
+      return 0;
+
+    return StringRef::npos;
   }
 
-  // case "//net"
-  if (str.size() > 3 && is_separator(str[0], style) && str[0] == str[1] &&
-      !is_separator(str[2], style)) {
-    return str.find_first_of(separators(style), 2);
+  // Returns the position past the end of the "parent path" of path. The parent
+  // path will not end in '/', unless the parent is the root directory. If the
+  // path has no parent, 0 is returned.
+  size_t parent_path_end(StringRef path, Style style) {
+    size_t end_pos = filename_pos(path, style);
+
+    bool filename_was_sep =
+        path.size() > 0 && is_separator(path[end_pos], style);
+
+    // Skip separators until we reach root dir (or the start of the string).
+    size_t root_dir_pos = root_dir_start(path, style);
+    while (end_pos > 0 &&
+           (root_dir_pos == StringRef::npos || end_pos > root_dir_pos) &&
+           is_separator(path[end_pos - 1], style))
+      --end_pos;
+
+    if (end_pos == root_dir_pos && !filename_was_sep) {
+      // We've reached the root dir and the input path was *not* ending in a
+      // sequence of slashes. Include the root dir in the parent path.
+      return root_dir_pos + 1;
+    }
+
+    // Otherwise, just include before the last slash.
+    return end_pos;
   }
-
-  // case "/"
-  if (str.size() > 0 && is_separator(str[0], style))
-    return 0;
-
-  return StringRef::npos;
-}
-
-// Returns the position past the end of the "parent path" of path. The parent
-// path will not end in '/', unless the parent is the root directory. If the
-// path has no parent, 0 is returned.
-size_t parent_path_end(StringRef path, Style style) {
-  size_t end_pos = filename_pos(path, style);
-
-  bool filename_was_sep = path.size() > 0 && is_separator(path[end_pos], style);
-
-  // Skip separators until we reach root dir (or the start of the string).
-  size_t root_dir_pos = root_dir_start(path, style);
-  while (end_pos > 0 &&
-         (root_dir_pos == StringRef::npos || end_pos > root_dir_pos) &&
-         is_separator(path[end_pos - 1], style))
-    --end_pos;
-
-  if (end_pos == root_dir_pos && !filename_was_sep) {
-    // We've reached the root dir and the input path was *not* ending in a
-    // sequence of slashes. Include the root dir in the parent path.
-    return root_dir_pos + 1;
-  }
-
-  // Otherwise, just include before the last slash.
-  return end_pos;
-}
 } // end unnamed namespace
 
-enum FSEntity { FS_Dir, FS_File, FS_Name };
+enum FSEntity {
+  FS_Dir,
+  FS_File,
+  FS_Name
+};
 
 static std::error_code
 createUniqueEntity(const Twine &Model, int &ResultFD,
@@ -213,22 +218,22 @@ createUniqueEntity(const Twine &Model, int &ResultFD,
 }
 
 namespace llvm {
-namespace sys {
+namespace sys  {
 namespace path {
 
 const_iterator begin(StringRef path, Style style) {
   const_iterator i;
-  i.Path = path;
+  i.Path      = path;
   i.Component = find_first_component(path, style);
-  i.Position = 0;
+  i.Position  = 0;
   i.S = style;
   return i;
 }
 
 const_iterator end(StringRef path) {
   const_iterator i;
-  i.Path = path;
-  i.Position = path.size();
+  i.Path      = path;
+  i.Position  = path.size();
   return i;
 }
 
@@ -416,14 +421,10 @@ void append(SmallVectorImpl<char> &path, Style style, const Twine &a,
   SmallString<32> d_storage;
 
   SmallVector<StringRef, 4> components;
-  if (!a.isTriviallyEmpty())
-    components.push_back(a.toStringRef(a_storage));
-  if (!b.isTriviallyEmpty())
-    components.push_back(b.toStringRef(b_storage));
-  if (!c.isTriviallyEmpty())
-    components.push_back(c.toStringRef(c_storage));
-  if (!d.isTriviallyEmpty())
-    components.push_back(d.toStringRef(d_storage));
+  if (!a.isTriviallyEmpty()) components.push_back(a.toStringRef(a_storage));
+  if (!b.isTriviallyEmpty()) components.push_back(b.toStringRef(b_storage));
+  if (!c.isTriviallyEmpty()) components.push_back(c.toStringRef(c_storage));
+  if (!d.isTriviallyEmpty()) components.push_back(d.toStringRef(d_storage));
 
   for (auto &component : components) {
     bool path_has_sep =
@@ -875,6 +876,7 @@ std::error_code createTemporaryFile(const Twine &Prefix, StringRef Suffix,
   return EC;
 }
 
+
 // This is a mkdtemp with a different pattern. We use createUniqueEntity mostly
 // for consistency. We should try using mkdtemp.
 std::error_code createUniqueDirectory(const Twine &Prefix,
@@ -933,10 +935,10 @@ void make_absolute(const Twine &current_directory,
   }
 
   if (rootName && !rootDirectory) {
-    StringRef pRootName = path::root_name(p);
+    StringRef pRootName      = path::root_name(p);
     StringRef bRootDirectory = path::root_directory(current_dir);
-    StringRef bRelativePath = path::relative_path(current_dir);
-    StringRef pRelativePath = path::relative_path(p);
+    StringRef bRelativePath  = path::relative_path(current_dir);
+    StringRef pRelativePath  = path::relative_path(p);
 
     SmallString<128> res;
     path::append(res, pRootName, bRootDirectory, bRelativePath, pRelativePath);
@@ -979,7 +981,7 @@ std::error_code create_directories(const Twine &Path, bool IgnoreExisting,
     return EC;
 
   if ((EC = create_directories(Parent, IgnoreExisting, Perms)))
-    return EC;
+      return EC;
 
   return create_directory(P, IgnoreExisting, Perms);
 }
@@ -1122,7 +1124,9 @@ std::error_code is_symlink_file(const Twine &path, bool &result) {
 }
 
 bool is_other(const basic_file_status &status) {
-  return exists(status) && !is_regular_file(status) && !is_directory(status);
+  return exists(status) &&
+         !is_regular_file(status) &&
+         !is_directory(status);
 }
 
 std::error_code is_other(const Twine &Path, bool &Result) {
@@ -1215,7 +1219,7 @@ Error TempFile::keep(const Twine &Name) {
     RenameEC = rename_fd(FD, Name);
     // If rename failed because it's cross-device, copy instead
     if (RenameEC ==
-        std::error_code(ERROR_NOT_SAME_DEVICE, std::system_category())) {
+      std::error_code(ERROR_NOT_SAME_DEVICE, std::system_category())) {
       RenameEC = copy_file(TmpName, Name);
       setDeleteDisposition(H, true);
     }

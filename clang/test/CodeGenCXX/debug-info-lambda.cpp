@@ -8,9 +8,9 @@ void lambda_in_func(int &ref) {
   // CHECK-NEXT: store i32* %1, i32** %0, align {{.*}}, !dbg [[lambda_decl_loc]]
   // CHECK-NEXT: call {{.*}}void {{.*}}, !dbg [[lambda_call_loc:![0-9]+]]
 
-  auto helper = [          // CHECK: [[lambda_decl_loc]] = !DILocation(line: [[@LINE]], column: 17
-                    &]() { // CHECK: [[capture_init_loc]] = !DILocation(line: [[@LINE]], column: 18
+  auto helper = [       // CHECK: [[lambda_decl_loc]] = !DILocation(line: [[@LINE]], column: 17
+                 &]() { // CHECK: [[capture_init_loc]] = !DILocation(line: [[@LINE]], column: 18
     ++ref;
   };
-  helper(); // CHECK: [[lambda_call_loc]] = !DILocation(line: [[@LINE]]
+  helper();             // CHECK: [[lambda_call_loc]] = !DILocation(line: [[@LINE]]
 }

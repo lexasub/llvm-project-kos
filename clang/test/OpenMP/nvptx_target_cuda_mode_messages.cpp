@@ -14,16 +14,15 @@ int foo(int n, double *ptr) {
   double c[5][10];
   TT<long long, char> d;
 
-#pragma omp target firstprivate(a) map(tofrom \
-                                       : b) // expected-note 2 {{defined as threadprivate or thread local}}
+#pragma omp target firstprivate(a) map(tofrom: b) // expected-note 2 {{defined as threadprivate or thread local}}
   {
     int c;                               // expected-note {{defined as threadprivate or thread local}}
 #pragma omp parallel shared(a, b, c, aa) // expected-error 3 {{threadprivate or thread local variable cannot be shared}}
     b[a] = a;
 #pragma omp parallel for
     for (int i = 0; i < 10; ++i) // expected-note {{defined as threadprivate or thread local}}
-#pragma omp parallel shared(i)   // expected-error {{threadprivate or thread local variable cannot be shared}}
-      ++i;
+#pragma omp parallel shared(i) // expected-error {{threadprivate or thread local variable cannot be shared}}
+    ++i;
   }
 
 #pragma omp target map(aa, b, c, d)
@@ -106,3 +105,4 @@ int bar(int n, double *ptr) {
 
   return a;
 }
+

@@ -28,7 +28,9 @@ using namespace llvm;
 // llvm_shutdown is run.  Ideally we should find a solution so that we don't
 // leak the map, AND can still resurrect after shutdown.
 static ManagedStatic<PassRegistry> PassRegistryObj;
-PassRegistry *PassRegistry::getPassRegistry() { return &*PassRegistryObj; }
+PassRegistry *PassRegistry::getPassRegistry() {
+  return &*PassRegistryObj;
+}
 
 //===----------------------------------------------------------------------===//
 // Accessors

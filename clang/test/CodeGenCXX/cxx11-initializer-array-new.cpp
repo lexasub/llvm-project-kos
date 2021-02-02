@@ -2,14 +2,9 @@
 
 // PR10878
 
-struct S {
-  S();
-  S(int);
-  ~S();
-  int n;
-};
+struct S { S(); S(int); ~S(); int n; };
 
-void *p = new S[2][3]{{1, 2, 3}, {4, 5, 6}};
+void *p = new S[2][3]{ { 1, 2, 3 }, { 4, 5, 6 } };
 
 // CHECK-LABEL: define
 // CHECK: %[[ALLOC:.*]] = call noalias nonnull i8* @_Znam(i64 32)
@@ -47,7 +42,7 @@ void *p = new S[2][3]{{1, 2, 3}, {4, 5, 6}};
 // CHECK: }
 
 int n;
-void *q = new S[n][3]{{1, 2, 3}, {4, 5, 6}};
+void *q = new S[n][3]{ { 1, 2, 3 }, { 4, 5, 6 } };
 
 // CHECK-LABEL: define
 //
@@ -106,10 +101,8 @@ void *q = new S[n][3]{{1, 2, 3}, {4, 5, 6}};
 //
 // CHECK: }
 
-struct T {
-  int a;
-};
-void *r = new T[n][3]{{1, 2, 3}, {4, 5, 6}};
+struct T { int a; };
+void *r = new T[n][3]{ { 1, 2, 3 }, { 4, 5, 6 } };
 
 // CHECK-LABEL: define
 //

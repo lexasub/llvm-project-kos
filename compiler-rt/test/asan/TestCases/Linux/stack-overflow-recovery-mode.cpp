@@ -4,16 +4,16 @@
 // RUN: %env_asan_opts=halt_on_error=false not %run %t 2>&1 | FileCheck %s
 
 #include <assert.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
-#include <unistd.h>
 
 static volatile int *recurse(volatile int n, volatile int *p) {
   // CHECK: {{stack-overflow on address 0x.* \(pc 0x.* bp 0x.* sp 0x.* T.*\)}}
-  if (n >= 0)
-    *recurse(n + 1, p) += n;
+  if (n >= 0) *recurse(n + 1, p) += n;
   return p;
 }
+
 
 void LimitStackAndReexec(int argc, char **argv) {
   struct rlimit rlim;

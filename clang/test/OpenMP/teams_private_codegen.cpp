@@ -58,7 +58,7 @@ struct SS {
   }
 };
 
-template <typename T>
+template<typename T>
 struct SST {
   T a;
   SST() : a(T()) {
@@ -144,7 +144,7 @@ int main() {
   // LAMBDA: [[C_TMP_VAL:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[C_TMP_REF]],
   // LAMBDA: store i{{[0-9]+}}* [[C_TMP_VAL]], i{{[0-9]+}}** [[CAP_C_REF]],
   // call void [[INNER_LAMBDA_CONSTR:@.+]]([[CAP_0_TY]]*
-
+  
   // inner lambda in struct constructor
   // define{{.*}} void [[INNER_LAMBDA_CONSTR]]([[CAP_0_TY]]*
   // LAMBDA: [[CAP_A_REF_1:%.+]] = getelementptr {{.+}} [[CAP_0_TY]], [[CAP_0_TY]]* {{.+}}, i{{[0-9]+}} 0, i{{[0-9]+}} 1
@@ -165,31 +165,31 @@ int main() {
   // LAMBDA: [[C_DEC_VAL:%.+]] = sdiv{{.*}} i{{[0-9]+}} [[C_VAL_FROM_CAP]], 1
   // LAMBDA: store i{{[0-9]+}} [[C_DEC_VAL]], i{{[0-9]+}}* [[C_REF_FROM_CAP]],
   // ret
-
-  [&]() {
+    
+  [&]() {    
 #pragma omp target
 #pragma omp teams private(g, sivar)
-    {
-      // LAMBDA: define{{.+}} @[[OMP_OFFLOADING]]()
-      // LAMBDA: call void (%{{.+}}*, i{{[0-9]+}}, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)*, ...) @__kmpc_fork_teams(%{{.+}}* @{{.+}}, i{{[0-9]+}} 0, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)* bitcast (void (i{{[0-9]+}}*, i{{[0-9]+}}*)* [[OMP_OUTLINED_1:@.+]] to void
-
-      // LAMBDA: define {{.+}} [[OMP_OUTLINED_1]](i{{[0-9]+}}* {{.+}}, i{{[0-9]+}}* {{.+}}
-      // LAMBDA: [[G_LOC_OUTER:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: [[SIVAR_LOC_OUTER:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_LOC_OUTER]]
-      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_LOC_OUTER]]
-      // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@[^(]+]]([[CAP_1_TY]]*
-      // LAMBDA: ret
-      g = 1;
-      sivar = 2;
-      [&]() {
-        // LAMBDA: define {{.+}} [[INNER_LAMBDA]]([[CAP_1_TY]]* {{.+}})
-        g = 2;
-        sivar = 4;
-        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}*
-        // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}*
-      }();
-    }
+  {
+    // LAMBDA: define{{.+}} @[[OMP_OFFLOADING]]()
+    // LAMBDA: call void (%{{.+}}*, i{{[0-9]+}}, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)*, ...) @__kmpc_fork_teams(%{{.+}}* @{{.+}}, i{{[0-9]+}} 0, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)* bitcast (void (i{{[0-9]+}}*, i{{[0-9]+}}*)* [[OMP_OUTLINED_1:@.+]] to void
+    
+    // LAMBDA: define {{.+}} [[OMP_OUTLINED_1]](i{{[0-9]+}}* {{.+}}, i{{[0-9]+}}* {{.+}}
+    // LAMBDA: [[G_LOC_OUTER:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: [[SIVAR_LOC_OUTER:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_LOC_OUTER]]
+    // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_LOC_OUTER]]
+    // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@[^(]+]]([[CAP_1_TY]]*
+    // LAMBDA: ret
+    g = 1;
+    sivar = 2;
+    [&]() {
+      // LAMBDA: define {{.+}} [[INNER_LAMBDA]]([[CAP_1_TY]]* {{.+}})
+      g = 2;
+      sivar = 4;
+      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}*
+      // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}*
+    }();
+  }
   }();
   return 0;
 #else
@@ -310,3 +310,4 @@ int main() {
 // CHECK: ret
 
 #endif
+

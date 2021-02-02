@@ -7,16 +7,16 @@
 
 // FIXME: This should really include <typeinfo>, but we don't have that yet.
 namespace std {
-class type_info;
+  class type_info;
 }
 
 struct Poly {
   virtual ~Poly();
 };
 
-struct NonPoly {};
+struct NonPoly { };
 
-template <typename T, typename Result = T>
+template<typename T, typename Result = T> 
 struct X {
   Result f(T t) { return t + t; } // expected-error{{invalid operands}}
 
@@ -25,7 +25,7 @@ struct X {
   }
 };
 
-void test(X<Poly> xp, X<Poly, Poly &> xpr, X<NonPoly> xnp, X<NonPoly, NonPoly &> xnpr) {
+void test(X<Poly> xp, X<Poly, Poly&> xpr, X<NonPoly> xnp, X<NonPoly, NonPoly&> xnpr) {
   // These are okay (although GCC and EDG get them wrong).
   xp.g(Poly());
   xnp.g(NonPoly());

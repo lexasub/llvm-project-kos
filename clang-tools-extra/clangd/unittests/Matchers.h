@@ -84,7 +84,7 @@ template <typename... M> class PolySubsequenceMatcher {
   std::tuple<M...> Matchers;
 
 public:
-  PolySubsequenceMatcher(M &&...Args)
+  PolySubsequenceMatcher(M &&... Args)
       : Matchers(std::make_tuple(std::forward<M>(Args)...)) {}
 
   template <typename T> operator Matcher<const std::vector<T> &>() const {
@@ -103,7 +103,7 @@ private:
 // m1, m2 ... in that order.
 // The real implementation is in SubsequenceMatcher.
 template <typename... Args>
-PolySubsequenceMatcher<Args...> HasSubsequence(Args &&...M) {
+PolySubsequenceMatcher<Args...> HasSubsequence(Args &&... M) {
   return PolySubsequenceMatcher<Args...>(std::forward<Args>(M)...);
 }
 

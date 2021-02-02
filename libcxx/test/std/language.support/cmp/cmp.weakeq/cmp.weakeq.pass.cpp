@@ -12,6 +12,7 @@
 
 // class weak_equality
 
+
 #include <compare>
 #include <cassert>
 #include "test_macros.h"
@@ -31,10 +32,10 @@ void test_signatures() {
   ASSERT_NOEXCEPT(Eq != 0);
   ASSERT_NOEXCEPT(0 != Eq);
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  ASSERT_NOEXCEPT(0 <= > Eq);
-  ASSERT_NOEXCEPT(Eq <= > 0);
-  ASSERT_SAME_TYPE(decltype(Eq <= > 0), std::weak_equality);
-  ASSERT_SAME_TYPE(decltype(0 <= > Eq), std::weak_equality);
+  ASSERT_NOEXCEPT(0 <=> Eq);
+  ASSERT_NOEXCEPT(Eq <=> 0);
+  ASSERT_SAME_TYPE(decltype(Eq <=> 0), std::weak_equality);
+  ASSERT_SAME_TYPE(decltype(0 <=> Eq), std::weak_equality);
 #endif
 }
 
@@ -52,9 +53,9 @@ constexpr bool test_constexpr() {
   assert((0 != NEq) == true);
 
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  std::weak_equality res = (Eq <= > 0);
+  std::weak_equality res = (Eq <=> 0);
   ((void)res);
-  res = (0 <= > Eq);
+  res = (0 <=> Eq);
   ((void)res);
 #endif
 

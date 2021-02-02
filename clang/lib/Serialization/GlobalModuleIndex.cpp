@@ -39,25 +39,25 @@ using namespace serialization;
 // Shared constants
 //----------------------------------------------------------------------------//
 namespace {
-enum {
-  /// The block containing the index.
-  GLOBAL_INDEX_BLOCK_ID = llvm::bitc::FIRST_APPLICATION_BLOCKID
-};
+  enum {
+    /// The block containing the index.
+    GLOBAL_INDEX_BLOCK_ID = llvm::bitc::FIRST_APPLICATION_BLOCKID
+  };
 
-/// Describes the record types in the index.
-enum IndexRecordTypes {
-  /// Contains version information and potentially other metadata,
-  /// used to determine if we can read this global index file.
-  INDEX_METADATA,
-  /// Describes a module, including its file name and dependencies.
-  MODULE,
-  /// The index for identifiers.
-  IDENTIFIER_INDEX
-};
-} // namespace
+  /// Describes the record types in the index.
+  enum IndexRecordTypes {
+    /// Contains version information and potentially other metadata,
+    /// used to determine if we can read this global index file.
+    INDEX_METADATA,
+    /// Describes a module, including its file name and dependencies.
+    MODULE,
+    /// The index for identifiers.
+    IDENTIFIER_INDEX
+  };
+}
 
 /// The name of the global index file.
-static const char *const IndexFileName = "modules.idx";
+static const char * const IndexFileName = "modules.idx";
 
 /// The global index file version.
 static const unsigned CurrentVersion = 1;
@@ -78,35 +78,34 @@ public:
   typedef unsigned hash_value_type;
   typedef unsigned offset_type;
 
-  static bool EqualKey(const internal_key_type &a, const internal_key_type &b) {
+  static bool EqualKey(const internal_key_type& a, const internal_key_type& b) {
     return a == b;
   }
 
-  static hash_value_type ComputeHash(const internal_key_type &a) {
+  static hash_value_type ComputeHash(const internal_key_type& a) {
     return llvm::djbHash(a);
   }
 
   static std::pair<unsigned, unsigned>
-  ReadKeyDataLength(const unsigned char *&d) {
+  ReadKeyDataLength(const unsigned char*& d) {
     using namespace llvm::support;
     unsigned KeyLen = endian::readNext<uint16_t, little, unaligned>(d);
     unsigned DataLen = endian::readNext<uint16_t, little, unaligned>(d);
     return std::make_pair(KeyLen, DataLen);
   }
 
-  static const internal_key_type &GetInternalKey(const external_key_type &x) {
-    return x;
-  }
+  static const internal_key_type&
+  GetInternalKey(const external_key_type& x) { return x; }
 
-  static const external_key_type &GetExternalKey(const internal_key_type &x) {
-    return x;
-  }
+  static const external_key_type&
+  GetExternalKey(const internal_key_type& x) { return x; }
 
-  static internal_key_type ReadKey(const unsigned char *d, unsigned n) {
+  static internal_key_type ReadKey(const unsigned char* d, unsigned n) {
     return StringRef((const char *)d, n);
   }
 
-  static data_type ReadData(const internal_key_type &k, const unsigned char *d,
+  static data_type ReadData(const internal_key_type& k,
+                            const unsigned char* d,
                             unsigned DataLen) {
     using namespace llvm::support;
 
@@ -124,7 +123,7 @@ public:
 typedef llvm::OnDiskIterableChainedHashTable<IdentifierIndexReaderTrait>
     IdentifierIndexTable;
 
-} // namespace
+}
 
 GlobalModuleIndex::GlobalModuleIndex(
     std::unique_ptr<llvm::MemoryBuffer> IndexBuffer,
@@ -158,6 +157,7 @@ GlobalModuleIndex::GlobalModuleIndex(
         continue;
       }
       return;
+
 
     case llvm::BitstreamEntry::Record:
       // Entries in the global index block are handled below.
@@ -281,8 +281,8 @@ GlobalModuleIndex::readIndex(StringRef Path) {
                         llvm::Error::success());
 }
 
-void GlobalModuleIndex::getKnownModules(
-    SmallVectorImpl<ModuleFile *> &ModuleFiles) {
+void
+GlobalModuleIndex::getKnownModules(SmallVectorImpl<ModuleFile *> &ModuleFiles) {
   ModuleFiles.clear();
   for (unsigned I = 0, N = Modules.size(); I != N; ++I) {
     if (ModuleFile *MF = Modules[I].File)
@@ -291,10 +291,11 @@ void GlobalModuleIndex::getKnownModules(
 }
 
 void GlobalModuleIndex::getModuleDependencies(
-    ModuleFile *File, SmallVectorImpl<ModuleFile *> &Dependencies) {
+       ModuleFile *File,
+       SmallVectorImpl<ModuleFile *> &Dependencies) {
   // Look for information about this module file.
-  llvm::DenseMap<ModuleFile *, unsigned>::iterator Known =
-      ModulesByFile.find(File);
+  llvm::DenseMap<ModuleFile *, unsigned>::iterator Known
+    = ModulesByFile.find(File);
   if (Known == ModulesByFile.end())
     return;
 
@@ -316,8 +317,8 @@ bool GlobalModuleIndex::lookupIdentifier(StringRef Name, HitSet &Hits) {
 
   // Look into the identifier index.
   ++NumIdentifierLookups;
-  IdentifierIndexTable &Table =
-      *static_cast<IdentifierIndexTable *>(IdentifierIndex);
+  IdentifierIndexTable &Table
+    = *static_cast<IdentifierIndexTable *>(IdentifierIndex);
   IdentifierIndexTable::iterator Known = Table.find(Name);
   if (Known == Table.end()) {
     return false;
@@ -365,7 +366,7 @@ void GlobalModuleIndex::printStats() {
   if (NumIdentifierLookups) {
     fprintf(stderr, "  %u / %u identifier lookups succeeded (%f%%)\n",
             NumIdentifierLookupHits, NumIdentifierLookups,
-            (double)NumIdentifierLookupHits * 100.0 / NumIdentifierLookups);
+            (double)NumIdentifierLookupHits*100.0/NumIdentifierLookups);
   }
   std::fprintf(stderr, "\n");
 }
@@ -388,81 +389,81 @@ LLVM_DUMP_METHOD void GlobalModuleIndex::dump() {
 //----------------------------------------------------------------------------//
 
 namespace {
-/// Provides information about a specific module file.
-struct ModuleFileInfo {
-  /// The numberic ID for this module file.
-  unsigned ID;
+  /// Provides information about a specific module file.
+  struct ModuleFileInfo {
+    /// The numberic ID for this module file.
+    unsigned ID;
 
-  /// The set of modules on which this module depends. Each entry is
-  /// a module ID.
-  SmallVector<unsigned, 4> Dependencies;
-  ASTFileSignature Signature;
-};
+    /// The set of modules on which this module depends. Each entry is
+    /// a module ID.
+    SmallVector<unsigned, 4> Dependencies;
+    ASTFileSignature Signature;
+  };
 
-struct ImportedModuleFileInfo {
-  off_t StoredSize;
-  time_t StoredModTime;
-  ASTFileSignature StoredSignature;
-  ImportedModuleFileInfo(off_t Size, time_t ModTime, ASTFileSignature Sig)
-      : StoredSize(Size), StoredModTime(ModTime), StoredSignature(Sig) {}
-};
+  struct ImportedModuleFileInfo {
+    off_t StoredSize;
+    time_t StoredModTime;
+    ASTFileSignature StoredSignature;
+    ImportedModuleFileInfo(off_t Size, time_t ModTime, ASTFileSignature Sig)
+        : StoredSize(Size), StoredModTime(ModTime), StoredSignature(Sig) {}
+  };
 
-/// Builder that generates the global module index file.
-class GlobalModuleIndexBuilder {
-  FileManager &FileMgr;
-  const PCHContainerReader &PCHContainerRdr;
+  /// Builder that generates the global module index file.
+  class GlobalModuleIndexBuilder {
+    FileManager &FileMgr;
+    const PCHContainerReader &PCHContainerRdr;
 
-  /// Mapping from files to module file information.
-  typedef llvm::MapVector<const FileEntry *, ModuleFileInfo> ModuleFilesMap;
+    /// Mapping from files to module file information.
+    typedef llvm::MapVector<const FileEntry *, ModuleFileInfo> ModuleFilesMap;
 
-  /// Information about each of the known module files.
-  ModuleFilesMap ModuleFiles;
+    /// Information about each of the known module files.
+    ModuleFilesMap ModuleFiles;
 
-  /// Mapping from the imported module file to the imported
-  /// information.
-  typedef std::multimap<const FileEntry *, ImportedModuleFileInfo>
-      ImportedModuleFilesMap;
+    /// Mapping from the imported module file to the imported
+    /// information.
+    typedef std::multimap<const FileEntry *, ImportedModuleFileInfo>
+        ImportedModuleFilesMap;
 
-  /// Information about each importing of a module file.
-  ImportedModuleFilesMap ImportedModuleFiles;
+    /// Information about each importing of a module file.
+    ImportedModuleFilesMap ImportedModuleFiles;
 
-  /// Mapping from identifiers to the list of module file IDs that
-  /// consider this identifier to be interesting.
-  typedef llvm::StringMap<SmallVector<unsigned, 2>> InterestingIdentifierMap;
+    /// Mapping from identifiers to the list of module file IDs that
+    /// consider this identifier to be interesting.
+    typedef llvm::StringMap<SmallVector<unsigned, 2> > InterestingIdentifierMap;
 
-  /// A mapping from all interesting identifiers to the set of module
-  /// files in which those identifiers are considered interesting.
-  InterestingIdentifierMap InterestingIdentifiers;
+    /// A mapping from all interesting identifiers to the set of module
+    /// files in which those identifiers are considered interesting.
+    InterestingIdentifierMap InterestingIdentifiers;
 
-  /// Write the block-info block for the global module index file.
-  void emitBlockInfoBlock(llvm::BitstreamWriter &Stream);
+    /// Write the block-info block for the global module index file.
+    void emitBlockInfoBlock(llvm::BitstreamWriter &Stream);
 
-  /// Retrieve the module file information for the given file.
-  ModuleFileInfo &getModuleFileInfo(const FileEntry *File) {
-    llvm::MapVector<const FileEntry *, ModuleFileInfo>::iterator Known =
-        ModuleFiles.find(File);
-    if (Known != ModuleFiles.end())
-      return Known->second;
+    /// Retrieve the module file information for the given file.
+    ModuleFileInfo &getModuleFileInfo(const FileEntry *File) {
+      llvm::MapVector<const FileEntry *, ModuleFileInfo>::iterator Known
+        = ModuleFiles.find(File);
+      if (Known != ModuleFiles.end())
+        return Known->second;
 
-    unsigned NewID = ModuleFiles.size();
-    ModuleFileInfo &Info = ModuleFiles[File];
-    Info.ID = NewID;
-    return Info;
-  }
+      unsigned NewID = ModuleFiles.size();
+      ModuleFileInfo &Info = ModuleFiles[File];
+      Info.ID = NewID;
+      return Info;
+    }
 
-public:
-  explicit GlobalModuleIndexBuilder(FileManager &FileMgr,
-                                    const PCHContainerReader &PCHContainerRdr)
-      : FileMgr(FileMgr), PCHContainerRdr(PCHContainerRdr) {}
+  public:
+    explicit GlobalModuleIndexBuilder(
+        FileManager &FileMgr, const PCHContainerReader &PCHContainerRdr)
+        : FileMgr(FileMgr), PCHContainerRdr(PCHContainerRdr) {}
 
-  /// Load the contents of the given module file into the builder.
-  llvm::Error loadModuleFile(const FileEntry *File);
+    /// Load the contents of the given module file into the builder.
+    llvm::Error loadModuleFile(const FileEntry *File);
 
-  /// Write the index to the given bitstream.
-  /// \returns true if an error occurred, false otherwise.
-  bool writeIndex(llvm::BitstreamWriter &Stream);
-};
-} // namespace
+    /// Write the index to the given bitstream.
+    /// \returns true if an error occurred, false otherwise.
+    bool writeIndex(llvm::BitstreamWriter &Stream);
+  };
+}
 
 static void emitBlockID(unsigned ID, const char *Name,
                         llvm::BitstreamWriter &Stream,
@@ -472,8 +473,7 @@ static void emitBlockID(unsigned ID, const char *Name,
   Stream.EmitRecord(llvm::bitc::BLOCKINFO_CODE_SETBID, Record);
 
   // Emit the block name if present.
-  if (!Name || Name[0] == 0)
-    return;
+  if (!Name || Name[0] == 0) return;
   Record.clear();
   while (*Name)
     Record.push_back(*Name++);
@@ -490,12 +490,12 @@ static void emitRecordID(unsigned ID, const char *Name,
   Stream.EmitRecord(llvm::bitc::BLOCKINFO_CODE_SETRECORDNAME, Record);
 }
 
-void GlobalModuleIndexBuilder::emitBlockInfoBlock(
-    llvm::BitstreamWriter &Stream) {
+void
+GlobalModuleIndexBuilder::emitBlockInfoBlock(llvm::BitstreamWriter &Stream) {
   SmallVector<uint64_t, 64> Record;
   Stream.EnterBlockInfoBlock();
 
-#define BLOCK(X) emitBlockID(X##_ID, #X, Stream, Record)
+#define BLOCK(X) emitBlockID(X ## _ID, #X, Stream, Record)
 #define RECORD(X) emitRecordID(X, #X, Stream, Record)
   BLOCK(GLOBAL_INDEX_BLOCK);
   RECORD(INDEX_METADATA);
@@ -508,24 +508,25 @@ void GlobalModuleIndexBuilder::emitBlockInfoBlock(
 }
 
 namespace {
-class InterestingASTIdentifierLookupTrait
+  class InterestingASTIdentifierLookupTrait
     : public serialization::reader::ASTIdentifierLookupTraitBase {
 
-public:
-  /// The identifier and whether it is "interesting".
-  typedef std::pair<StringRef, bool> data_type;
+  public:
+    /// The identifier and whether it is "interesting".
+    typedef std::pair<StringRef, bool> data_type;
 
-  data_type ReadData(const internal_key_type &k, const unsigned char *d,
-                     unsigned DataLen) {
-    // The first bit indicates whether this identifier is interesting.
-    // That's all we care about.
-    using namespace llvm::support;
-    unsigned RawID = endian::readNext<uint32_t, little, unaligned>(d);
-    bool IsInteresting = RawID & 0x01;
-    return std::make_pair(k, IsInteresting);
-  }
-};
-} // namespace
+    data_type ReadData(const internal_key_type& k,
+                       const unsigned char* d,
+                       unsigned DataLen) {
+      // The first bit indicates whether this identifier is interesting.
+      // That's all we care about.
+      using namespace llvm::support;
+      unsigned RawID = endian::readNext<uint32_t, little, unaligned>(d);
+      bool IsInteresting = RawID & 0x01;
+      return std::make_pair(k, IsInteresting);
+    }
+  };
+}
 
 llvm::Error GlobalModuleIndexBuilder::loadModuleFile(const FileEntry *File) {
   // Open the module file.
@@ -658,8 +659,9 @@ llvm::Error GlobalModuleIndexBuilder::loadModuleFile(const FileEntry *File) {
         Idx += Length;
 
         // Find the imported module file.
-        auto DependsOnFile = FileMgr.getFile(ImportedFile, /*OpenFile=*/false,
-                                             /*CacheFailure=*/false);
+        auto DependsOnFile
+          = FileMgr.getFile(ImportedFile, /*OpenFile=*/false,
+                            /*CacheFailure=*/false);
 
         if (!DependsOnFile)
           return llvm::createStringError(std::errc::bad_file_descriptor,
@@ -683,8 +685,7 @@ llvm::Error GlobalModuleIndexBuilder::loadModuleFile(const FileEntry *File) {
     // Handle the identifier table
     if (State == ASTBlock && Code == IDENTIFIER_TABLE && Record[0] > 0) {
       typedef llvm::OnDiskIterableChainedHashTable<
-          InterestingASTIdentifierLookupTrait>
-          InterestingIdentifierTable;
+          InterestingASTIdentifierLookupTrait> InterestingIdentifierTable;
       std::unique_ptr<InterestingIdentifierTable> Table(
           InterestingIdentifierTable::Create(
               (const unsigned char *)Blob.data() + Record[0],
@@ -729,8 +730,8 @@ public:
     return llvm::djbHash(Key);
   }
 
-  std::pair<unsigned, unsigned>
-  EmitKeyDataLength(raw_ostream &Out, key_type_ref Key, data_type_ref Data) {
+  std::pair<unsigned,unsigned>
+  EmitKeyDataLength(raw_ostream& Out, key_type_ref Key, data_type_ref Data) {
     using namespace llvm::support;
     endian::Writer LE(Out, little);
     unsigned KeyLen = Key.size();
@@ -740,11 +741,11 @@ public:
     return std::make_pair(KeyLen, DataLen);
   }
 
-  void EmitKey(raw_ostream &Out, key_type_ref Key, unsigned KeyLen) {
+  void EmitKey(raw_ostream& Out, key_type_ref Key, unsigned KeyLen) {
     Out.write(Key.data(), KeyLen);
   }
 
-  void EmitData(raw_ostream &Out, key_type_ref Key, data_type_ref Data,
+  void EmitData(raw_ostream& Out, key_type_ref Key, data_type_ref Data,
                 unsigned DataLen) {
     using namespace llvm::support;
     for (unsigned I = 0, N = Data.size(); I != N; ++I)
@@ -752,7 +753,7 @@ public:
   }
 };
 
-} // namespace
+}
 
 bool GlobalModuleIndexBuilder::writeIndex(llvm::BitstreamWriter &Stream) {
   for (auto MapEntry : ImportedModuleFiles) {
@@ -878,7 +879,8 @@ GlobalModuleIndex::writeIndex(FileManager &FileMgr,
 
   // Load each of the module files.
   std::error_code EC;
-  for (llvm::sys::fs::directory_iterator D(Path, EC), DEnd; D != DEnd && !EC;
+  for (llvm::sys::fs::directory_iterator D(Path, EC), DEnd;
+       D != DEnd && !EC;
        D.increment(EC)) {
     // If this isn't a module file, we don't care.
     if (llvm::sys::path::extension(D->path()) != ".pcm") {
@@ -916,32 +918,32 @@ GlobalModuleIndex::writeIndex(FileManager &FileMgr,
 }
 
 namespace {
-class GlobalIndexIdentifierIterator : public IdentifierIterator {
-  /// The current position within the identifier lookup table.
-  IdentifierIndexTable::key_iterator Current;
+  class GlobalIndexIdentifierIterator : public IdentifierIterator {
+    /// The current position within the identifier lookup table.
+    IdentifierIndexTable::key_iterator Current;
 
-  /// The end position within the identifier lookup table.
-  IdentifierIndexTable::key_iterator End;
+    /// The end position within the identifier lookup table.
+    IdentifierIndexTable::key_iterator End;
 
-public:
-  explicit GlobalIndexIdentifierIterator(IdentifierIndexTable &Idx) {
-    Current = Idx.key_begin();
-    End = Idx.key_end();
-  }
+  public:
+    explicit GlobalIndexIdentifierIterator(IdentifierIndexTable &Idx) {
+      Current = Idx.key_begin();
+      End = Idx.key_end();
+    }
 
-  StringRef Next() override {
-    if (Current == End)
-      return StringRef();
+    StringRef Next() override {
+      if (Current == End)
+        return StringRef();
 
-    StringRef Result = *Current;
-    ++Current;
-    return Result;
-  }
-};
-} // namespace
+      StringRef Result = *Current;
+      ++Current;
+      return Result;
+    }
+  };
+}
 
 IdentifierIterator *GlobalModuleIndex::createIdentifierIterator() const {
   IdentifierIndexTable &Table =
-      *static_cast<IdentifierIndexTable *>(IdentifierIndex);
+    *static_cast<IdentifierIndexTable *>(IdentifierIndex);
   return new GlobalIndexIdentifierIterator(Table);
 }

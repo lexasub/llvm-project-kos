@@ -166,7 +166,7 @@ void DataSection::finalizeContents() {
         initExpr.Value.Int64 = static_cast<int64_t>(segment->startVA);
       } else {
         initExpr.Opcode = WASM_OPCODE_I32_CONST;
-        initExpr.Value.Int32 = static_cast<int32_t>(segment->startVA);
+        initExpr.Value.Int32 = static_cast<int32_t>(segment->startVA);      
       }
       writeInitExpr(os, initExpr);
     }

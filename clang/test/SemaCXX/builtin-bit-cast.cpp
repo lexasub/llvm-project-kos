@@ -15,8 +15,7 @@ int x = instantiate<int, 32>();
 struct secret_ctor {
   char member;
 
-private:
-  secret_ctor() = default;
+private: secret_ctor() = default;
 };
 
 void test1() {
@@ -46,4 +45,4 @@ extern S<int> extern_decl;
 
 int x = __builtin_bit_cast(int, extern_decl);
 S<char> y = __builtin_bit_cast(S<char>, 0);
-} // namespace PR42936
+}

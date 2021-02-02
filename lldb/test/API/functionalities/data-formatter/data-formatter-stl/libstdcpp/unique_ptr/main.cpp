@@ -26,8 +26,8 @@ int main() {
   std::unique_ptr<Foo> fp(new Foo{3});
 
   // Set up a structure where we have a loop in the unique_ptr chain.
-  Foo *f1 = new Foo{1};
-  Foo *f2 = new Foo{2};
+  Foo* f1 = new Foo{1};
+  Foo* f2 = new Foo{2};
   f1->fp.reset(f2);
   f2->fp.reset(f1);
 

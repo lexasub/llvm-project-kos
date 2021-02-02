@@ -13,7 +13,7 @@ struct unique_ptr {
   void reset(T *ptr);
   T &operator*() const;
   T *operator->() const;
-  T &operator[](size_t i) const;
+  T& operator[](size_t i) const;
 };
 
 template <typename T>
@@ -247,13 +247,13 @@ void standardSmartPtr() {
   // Make sure we treat references to smart pointers correctly.
   {
     std::unique_ptr<A> ptr;
-    std::unique_ptr<A> &ref_to_ptr = ptr;
+    std::unique_ptr<A>& ref_to_ptr = ptr;
     std::move(ref_to_ptr);
     ref_to_ptr.get();
   }
   {
     std::unique_ptr<A> ptr;
-    std::unique_ptr<A> &&rvalue_ref_to_ptr = std::move(ptr);
+    std::unique_ptr<A>&& rvalue_ref_to_ptr = std::move(ptr);
     std::move(rvalue_ref_to_ptr);
     rvalue_ref_to_ptr.get();
   }
@@ -1207,20 +1207,17 @@ void ifWhileAndSwitchSequenceInitDeclAndCondition() {
   }
   for (int i = 0; i < 10; ++i) {
     // init followed by condition with move, but without variable declaration.
-    if (A a1; A(std::move(a1)).getInt() > 0) {
-    }
+    if (A a1; A(std::move(a1)).getInt() > 0) {}
   }
   for (int i = 0; i < 10; ++i) {
-    if (A a1; A(std::move(a1)).getInt() > a1.getInt()) {
-    }
+    if (A a1; A(std::move(a1)).getInt() > a1.getInt()) {}
     // CHECK-NOTES: [[@LINE-1]]:43: warning: 'a1' used after it was moved
     // CHECK-NOTES: [[@LINE-2]]:15: note: move occurred here
     // CHECK-NOTES: [[@LINE-3]]:43: note: the use and move are unsequenced
   }
   for (int i = 0; i < 10; ++i) {
     A a1;
-    if (A a2 = std::move(a1); A(a1) > 0) {
-    }
+    if (A a2 = std::move(a1); A(a1) > 0) {}
     // CHECK-NOTES: [[@LINE-1]]:33: warning: 'a1' used after it was moved
     // CHECK-NOTES: [[@LINE-2]]:16: note: move occurred here
   }
@@ -1230,15 +1227,15 @@ void ifWhileAndSwitchSequenceInitDeclAndCondition() {
   for (int i = 0; i < 10; ++i) {
     A a1;
     switch (A a2 = std::move(a1); a2) {
-    case true:
-      std::move(a2);
+      case true:
+        std::move(a2);
     }
   }
   for (int i = 0; i < 10; ++i) {
     A a1;
     switch (A a2 = a1; A a3 = std::move(a2)) {
-    case true:
-      std::move(a3);
+      case true:
+        std::move(a3);
     }
   }
 }
@@ -1247,8 +1244,7 @@ void ifWhileAndSwitchSequenceInitDeclAndCondition() {
 // be shared between the uninstantiated and instantiated versions of the
 // template and therefore have multiple parents. Make sure the sequencing code
 // handles this correctly.
-template <class>
-void nullStatementSequencesInTemplate() {
+template <class> void nullStatementSequencesInTemplate() {
   int c = 0;
   (void)c;
   ;

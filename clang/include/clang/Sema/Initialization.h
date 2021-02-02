@@ -209,7 +209,7 @@ private:
     struct C Capture;
   };
 
-  InitializedEntity(){};
+  InitializedEntity() {};
 
   /// Create the initialization entity for a variable.
   InitializedEntity(VarDecl *Var, EntityKind EK = EK_Variable)
@@ -229,17 +229,15 @@ private:
   /// Create the initialization entity for a member subobject.
   InitializedEntity(FieldDecl *Member, const InitializedEntity *Parent,
                     bool Implicit, bool DefaultMemberInit)
-      : Kind(EK_Member), Parent(Parent),
-        Type(Member->getType()), Variable{Member, Implicit, DefaultMemberInit} {
-  }
+      : Kind(EK_Member), Parent(Parent), Type(Member->getType()),
+        Variable{Member, Implicit, DefaultMemberInit} {}
 
   /// Create the initialization entity for an array element.
   InitializedEntity(ASTContext &Context, unsigned Index,
                     const InitializedEntity &Parent);
 
   /// Create the initialization entity for a lambda capture.
-  InitializedEntity(IdentifierInfo *VarID, QualType FieldType,
-                    SourceLocation Loc)
+  InitializedEntity(IdentifierInfo *VarID, QualType FieldType, SourceLocation Loc)
       : Kind(EK_LambdaCapture), Type(FieldType) {
     new (&Capture) C;
     Capture.VarID = VarID;
@@ -269,17 +267,18 @@ public:
     InitializedEntity Entity;
     Entity.Kind = EK_Parameter;
     Entity.Type =
-        Context.getVariableArrayDecayedType(Type.getUnqualifiedType());
+      Context.getVariableArrayDecayedType(Type.getUnqualifiedType());
     Entity.Parent = nullptr;
-    Entity.Parameter =
-        (static_cast<uintptr_t>(Consumed) | reinterpret_cast<uintptr_t>(Parm));
+    Entity.Parameter
+      = (static_cast<uintptr_t>(Consumed) | reinterpret_cast<uintptr_t>(Parm));
     return Entity;
   }
 
   /// Create the initialization entity for a parameter that is
   /// only known by its type.
   static InitializedEntity InitializeParameter(ASTContext &Context,
-                                               QualType Type, bool Consumed) {
+                                               QualType Type,
+                                               bool Consumed) {
     InitializedEntity Entity;
     Entity.Kind = EK_Parameter;
     Entity.Type = Context.getVariableArrayDecayedType(Type);
@@ -306,7 +305,7 @@ public:
   }
 
   static InitializedEntity InitializeStmtExprResult(SourceLocation ReturnLoc,
-                                                    QualType Type) {
+                                            QualType Type) {
     return InitializedEntity(EK_StmtExprResult, ReturnLoc, Type);
   }
 
@@ -371,7 +370,8 @@ public:
 
   /// Create the initialization entity for a member subobject.
   static InitializedEntity
-  InitializeMember(FieldDecl *Member, const InitializedEntity *Parent = nullptr,
+  InitializeMember(FieldDecl *Member,
+                   const InitializedEntity *Parent = nullptr,
                    bool Implicit = false) {
     return InitializedEntity(Member, Parent, Implicit, false);
   }
@@ -454,7 +454,8 @@ public:
   bool allowsNRVO() const;
 
   bool isParameterKind() const {
-    return (getKind() == EK_Parameter || getKind() == EK_Parameter_CF_Audited);
+    return (getKind() == EK_Parameter  ||
+            getKind() == EK_Parameter_CF_Audited);
   }
 
   bool isParamOrTemplateParamKind() const {
@@ -541,7 +542,9 @@ public:
     return Capture.Location;
   }
 
-  void setParameterCFAudited() { Kind = EK_Parameter_CF_Audited; }
+  void setParameterCFAudited() {
+    Kind = EK_Parameter_CF_Audited;
+  }
 
   unsigned allocateManglingNumber() const { return ++ManglingNumber; }
 
@@ -620,8 +623,8 @@ public:
   static InitializationKind CreateDirect(SourceLocation InitLoc,
                                          SourceLocation LParenLoc,
                                          SourceLocation RParenLoc) {
-    return InitializationKind(IK_Direct, IC_Normal, InitLoc, LParenLoc,
-                              RParenLoc);
+    return InitializationKind(IK_Direct, IC_Normal,
+                              InitLoc, LParenLoc, RParenLoc);
   }
 
   static InitializationKind CreateDirectList(SourceLocation InitLoc) {
@@ -667,7 +670,7 @@ public:
                                        SourceLocation EqualLoc,
                                        bool AllowExplicitConvs = false) {
     return InitializationKind(IK_Copy,
-                              AllowExplicitConvs ? IC_ExplicitConvs : IC_Normal,
+                              AllowExplicitConvs? IC_ExplicitConvs : IC_Normal,
                               InitLoc, EqualLoc, EqualLoc);
   }
 
@@ -689,8 +692,7 @@ public:
   /// initialization from a parenthesized list, will be a ParenListExpr).
   static InitializationKind CreateForInit(SourceLocation Loc, bool DirectInit,
                                           Expr *Init) {
-    if (!Init)
-      return CreateDefault(Loc);
+    if (!Init) return CreateDefault(Loc);
     if (!DirectInit)
       return CreateCopy(Loc, Init->getBeginLoc());
     if (isa<InitListExpr>(Init))
@@ -699,22 +701,32 @@ public:
   }
 
   /// Determine the initialization kind.
-  InitKind getKind() const { return Kind; }
+  InitKind getKind() const {
+    return Kind;
+  }
 
   /// Determine whether this initialization is an explicit cast.
-  bool isExplicitCast() const { return Context >= IC_StaticCast; }
+  bool isExplicitCast() const {
+    return Context >= IC_StaticCast;
+  }
 
   /// Determine whether this initialization is a static cast.
   bool isStaticCast() const { return Context == IC_StaticCast; }
 
   /// Determine whether this initialization is a C-style cast.
-  bool isCStyleOrFunctionalCast() const { return Context >= IC_CStyleCast; }
+  bool isCStyleOrFunctionalCast() const {
+    return Context >= IC_CStyleCast;
+  }
 
   /// Determine whether this is a C-style cast.
-  bool isCStyleCast() const { return Context == IC_CStyleCast; }
+  bool isCStyleCast() const {
+    return Context == IC_CStyleCast;
+  }
 
   /// Determine whether this is a functional-style cast.
-  bool isFunctionalCast() const { return Context == IC_FunctionalCast; }
+  bool isFunctionalCast() const {
+    return Context == IC_FunctionalCast;
+  }
 
   /// Determine whether this initialization is an implicit
   /// value-initialization, e.g., as occurs during aggregate
@@ -1106,7 +1118,7 @@ private:
 public:
   /// Call for initializations are invalid but that would be valid
   /// zero initialzations if Fixit was applied.
-  void SetZeroInitializationFixit(const std::string &Fixit, SourceLocation L) {
+  void SetZeroInitializationFixit(const std::string& Fixit, SourceLocation L) {
     ZeroInitializationFixit = Fixit;
     ZeroInitializationFixitLoc = L;
   }
@@ -1136,8 +1148,10 @@ public:
   ///        narrowing conversions in C++11 onwards.
   /// \param TreatUnavailableAsInvalid true if we want to treat unavailable
   ///        as invalid.
-  InitializationSequence(Sema &S, const InitializedEntity &Entity,
-                         const InitializationKind &Kind, MultiExprArg Args,
+  InitializationSequence(Sema &S,
+                         const InitializedEntity &Entity,
+                         const InitializationKind &Kind,
+                         MultiExprArg Args,
                          bool TopLevelOfInitList = false,
                          bool TreatUnavailableAsInvalid = true);
   void InitializeFrom(Sema &S, const InitializedEntity &Entity,
@@ -1167,16 +1181,20 @@ public:
   /// \returns an expression that performs the actual object initialization, if
   /// the initialization is well-formed. Otherwise, emits diagnostics
   /// and returns an invalid expression.
-  ExprResult Perform(Sema &S, const InitializedEntity &Entity,
-                     const InitializationKind &Kind, MultiExprArg Args,
+  ExprResult Perform(Sema &S,
+                     const InitializedEntity &Entity,
+                     const InitializationKind &Kind,
+                     MultiExprArg Args,
                      QualType *ResultType = nullptr);
 
   /// Diagnose an potentially-invalid initialization sequence.
   ///
   /// \returns true if the initialization sequence was ill-formed,
   /// false otherwise.
-  bool Diagnose(Sema &S, const InitializedEntity &Entity,
-                const InitializationKind &Kind, ArrayRef<Expr *> Args);
+  bool Diagnose(Sema &S,
+                const InitializedEntity &Entity,
+                const InitializationKind &Kind,
+                ArrayRef<Expr *> Args);
 
   /// Determine the kind of initialization sequence computed.
   enum SequenceKind getKind() const { return SequenceKind; }
@@ -1193,7 +1211,7 @@ public:
   using step_iterator = SmallVectorImpl<Step>::const_iterator;
 
   step_iterator step_begin() const { return Steps.begin(); }
-  step_iterator step_end() const { return Steps.end(); }
+  step_iterator step_end()   const { return Steps.end(); }
 
   using step_range = llvm::iterator_range<step_iterator>;
 
@@ -1226,7 +1244,8 @@ public:
   ///
   /// \param Category Indicates whether the result will be treated as an
   /// rvalue, an xvalue, or an lvalue.
-  void AddDerivedToBaseCastStep(QualType BaseType, ExprValueKind Category);
+  void AddDerivedToBaseCastStep(QualType BaseType,
+                                ExprValueKind Category);
 
   /// Add a new step binding a reference to an object.
   ///
@@ -1253,12 +1272,15 @@ public:
 
   /// Add a new step invoking a conversion function, which is either
   /// a constructor or a conversion function.
-  void AddUserConversionStep(FunctionDecl *Function, DeclAccessPair FoundDecl,
-                             QualType T, bool HadMultipleCandidates);
+  void AddUserConversionStep(FunctionDecl *Function,
+                             DeclAccessPair FoundDecl,
+                             QualType T,
+                             bool HadMultipleCandidates);
 
   /// Add a new step that performs a qualification conversion to the
   /// given type.
-  void AddQualificationConversionStep(QualType Ty, ExprValueKind Category);
+  void AddQualificationConversionStep(QualType Ty,
+                                     ExprValueKind Category);
 
   /// Add a new step that performs a function reference conversion to the
   /// given type.
@@ -1282,7 +1304,8 @@ public:
   /// \param AsInitList The constructor is called as an init list constructor.
   void AddConstructorInitializationStep(DeclAccessPair FoundDecl,
                                         CXXConstructorDecl *Constructor,
-                                        QualType T, bool HadMultipleCandidates,
+                                        QualType T,
+                                        bool HadMultipleCandidates,
                                         bool FromInitList, bool AsInitList);
 
   /// Add a zero-initialization step.
@@ -1348,7 +1371,9 @@ public:
 
   /// Retrieve a reference to the candidate set when overload
   /// resolution fails.
-  OverloadCandidateSet &getFailedCandidateSet() { return FailedCandidateSet; }
+  OverloadCandidateSet &getFailedCandidateSet() {
+    return FailedCandidateSet;
+  }
 
   /// Get the overloading result, for when the initialization
   /// sequence failed due to a bad overload.

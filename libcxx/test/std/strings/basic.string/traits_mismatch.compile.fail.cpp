@@ -11,8 +11,9 @@
 
 #include <string>
 
-int main(int, char**) {
-  std::basic_string<char, std::char_traits<wchar_t> > s;
+int main(int, char**)
+{
+    std::basic_string<char, std::char_traits<wchar_t>> s;
 
   return 0;
 }

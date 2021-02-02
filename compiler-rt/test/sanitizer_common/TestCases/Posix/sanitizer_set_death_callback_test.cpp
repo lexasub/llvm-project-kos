@@ -19,12 +19,14 @@ void Death() {
 char global;
 volatile char *sink;
 
-__attribute__((noinline)) void MaybeInit(int *uninitialized) {
+__attribute__((noinline))
+void MaybeInit(int *uninitialized) {
   if (zero)
     *uninitialized = 1;
 }
 
-__attribute__((noinline)) void Leak() {
+__attribute__((noinline))
+void Leak() {
   // Trigger lsan report. Two attempts in case the address of the first
   // allocation remained on the stack.
   sink = new char[100];
@@ -35,11 +37,11 @@ int main(int argc, char **argv) {
   int uninitialized;
   __sanitizer_set_death_callback(Death);
   MaybeInit(&uninitialized);
-  if (uninitialized) // trigger msan report.
+  if (uninitialized)  // trigger msan report.
     global = 77;
   sink = new char[100];
   delete[] sink;
-  global = sink[0]; // use-after-free: trigger asan/tsan report.
+  global = sink[0];  // use-after-free: trigger asan/tsan report.
   Leak();
   sink = 0;
 }

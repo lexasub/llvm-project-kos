@@ -22,11 +22,11 @@
 #include "llvm/ADT/StringRef.h"
 
 namespace clang {
-class Token;
-class IdentifierInfo;
-class MacroDefinition;
-class MacroDirective;
-class MacroArgs;
+  class Token;
+  class IdentifierInfo;
+  class MacroDefinition;
+  class MacroDirective;
+  class MacroArgs;
 
 /// This interface provides a way to observe the actions of the
 /// preprocessor as it does its thing.
@@ -36,7 +36,9 @@ class PPCallbacks {
 public:
   virtual ~PPCallbacks();
 
-  enum FileChangeReason { EnterFile, ExitFile, SystemHeaderPragma, RenameFile };
+  enum FileChangeReason {
+    EnterFile, ExitFile, SystemHeaderPragma, RenameFile
+  };
 
   /// Callback invoked whenever a source file is entered or exited.
   ///
@@ -44,7 +46,8 @@ public:
   /// \param PrevFID the file that was exited if \p Reason is ExitFile.
   virtual void FileChanged(SourceLocation Loc, FileChangeReason Reason,
                            SrcMgr::CharacteristicKind FileType,
-                           FileID PrevFID = FileID()) {}
+                           FileID PrevFID = FileID()) {
+  }
 
   /// Callback invoked whenever a source file is skipped as the result
   /// of header guard optimization.
@@ -117,12 +120,16 @@ public:
   /// implicitly 'extern "C"' in C++ mode.
   ///
   virtual void InclusionDirective(SourceLocation HashLoc,
-                                  const Token &IncludeTok, StringRef FileName,
-                                  bool IsAngled, CharSourceRange FilenameRange,
-                                  const FileEntry *File, StringRef SearchPath,
+                                  const Token &IncludeTok,
+                                  StringRef FileName,
+                                  bool IsAngled,
+                                  CharSourceRange FilenameRange,
+                                  const FileEntry *File,
+                                  StringRef SearchPath,
                                   StringRef RelativePath,
                                   const Module *Imported,
-                                  SrcMgr::CharacteristicKind FileType) {}
+                                  SrcMgr::CharacteristicKind FileType) {
+  }
 
   /// Callback invoked whenever a submodule was entered.
   ///
@@ -133,7 +140,7 @@ public:
   /// \param ForPragma If entering from pragma directive.
   ///
   virtual void EnteredSubmodule(Module *M, SourceLocation ImportLoc,
-                                bool ForPragma) {}
+                                bool ForPragma) { }
 
   /// Callback invoked whenever a submodule was left.
   ///
@@ -144,7 +151,7 @@ public:
   /// \param ForPragma If entering from pragma directive.
   ///
   virtual void LeftSubmodule(Module *M, SourceLocation ImportLoc,
-                             bool ForPragma) {}
+                             bool ForPragma) { }
 
   /// Callback invoked whenever there was an explicit module-import
   /// syntax.
@@ -156,37 +163,45 @@ public:
   ///
   /// \param Imported The imported module; can be null if importing failed.
   ///
-  virtual void moduleImport(SourceLocation ImportLoc, ModuleIdPath Path,
-                            const Module *Imported) {}
+  virtual void moduleImport(SourceLocation ImportLoc,
+                            ModuleIdPath Path,
+                            const Module *Imported) {
+  }
 
   /// Callback invoked when the end of the main file is reached.
   ///
   /// No subsequent callbacks will be made.
-  virtual void EndOfMainFile() {}
+  virtual void EndOfMainFile() {
+  }
 
   /// Callback invoked when a \#ident or \#sccs directive is read.
   /// \param Loc The location of the directive.
   /// \param str The text of the directive.
   ///
-  virtual void Ident(SourceLocation Loc, StringRef str) {}
+  virtual void Ident(SourceLocation Loc, StringRef str) {
+  }
 
   /// Callback invoked when start reading any pragma directive.
   virtual void PragmaDirective(SourceLocation Loc,
-                               PragmaIntroducerKind Introducer) {}
+                               PragmaIntroducerKind Introducer) {
+  }
 
   /// Callback invoked when a \#pragma comment directive is read.
   virtual void PragmaComment(SourceLocation Loc, const IdentifierInfo *Kind,
-                             StringRef Str) {}
+                             StringRef Str) {
+  }
 
   /// Callback invoked when a \#pragma detect_mismatch directive is
   /// read.
   virtual void PragmaDetectMismatch(SourceLocation Loc, StringRef Name,
-                                    StringRef Value) {}
+                                    StringRef Value) {
+  }
 
   /// Callback invoked when a \#pragma clang __debug directive is read.
   /// \param Loc The location of the debug directive.
   /// \param DebugType The identifier following __debug.
-  virtual void PragmaDebug(SourceLocation Loc, StringRef DebugType) {}
+  virtual void PragmaDebug(SourceLocation Loc, StringRef DebugType) {
+  }
 
   /// Determines the kind of \#pragma invoking a call to PragmaMessage.
   enum PragmaMessageKind {
@@ -206,15 +221,20 @@ public:
   /// \param Kind The type of the message directive.
   /// \param Str The text of the message directive.
   virtual void PragmaMessage(SourceLocation Loc, StringRef Namespace,
-                             PragmaMessageKind Kind, StringRef Str) {}
+                             PragmaMessageKind Kind, StringRef Str) {
+  }
 
   /// Callback invoked when a \#pragma gcc diagnostic push directive
   /// is read.
-  virtual void PragmaDiagnosticPush(SourceLocation Loc, StringRef Namespace) {}
+  virtual void PragmaDiagnosticPush(SourceLocation Loc,
+                                    StringRef Namespace) {
+  }
 
   /// Callback invoked when a \#pragma gcc diagnostic pop directive
   /// is read.
-  virtual void PragmaDiagnosticPop(SourceLocation Loc, StringRef Namespace) {}
+  virtual void PragmaDiagnosticPop(SourceLocation Loc,
+                                   StringRef Namespace) {
+  }
 
   /// Callback invoked when a \#pragma gcc diagnostic directive is read.
   virtual void PragmaDiagnostic(SourceLocation Loc, StringRef Namespace,
@@ -224,17 +244,21 @@ public:
   /// enabled with a pragma.
   virtual void PragmaOpenCLExtension(SourceLocation NameLoc,
                                      const IdentifierInfo *Name,
-                                     SourceLocation StateLoc, unsigned State) {}
+                                     SourceLocation StateLoc, unsigned State) {
+  }
 
   /// Callback invoked when a \#pragma warning directive is read.
   virtual void PragmaWarning(SourceLocation Loc, StringRef WarningSpec,
-                             ArrayRef<int> Ids) {}
+                             ArrayRef<int> Ids) {
+  }
 
   /// Callback invoked when a \#pragma warning(push) directive is read.
-  virtual void PragmaWarningPush(SourceLocation Loc, int Level) {}
+  virtual void PragmaWarningPush(SourceLocation Loc, int Level) {
+  }
 
   /// Callback invoked when a \#pragma warning(pop) directive is read.
-  virtual void PragmaWarningPop(SourceLocation Loc) {}
+  virtual void PragmaWarningPop(SourceLocation Loc) {
+  }
 
   /// Callback invoked when a \#pragma execution_character_set(push) directive
   /// is read.
@@ -260,7 +284,8 @@ public:
 
   /// Hook called whenever a macro definition is seen.
   virtual void MacroDefined(const Token &MacroNameTok,
-                            const MacroDirective *MD) {}
+                            const MacroDirective *MD) {
+  }
 
   /// Hook called whenever a macro \#undef is seen.
   /// \param MacroNameTok The active Token
@@ -270,12 +295,14 @@ public:
   /// MD is released immediately following this callback.
   virtual void MacroUndefined(const Token &MacroNameTok,
                               const MacroDefinition &MD,
-                              const MacroDirective *Undef) {}
+                              const MacroDirective *Undef) {
+  }
 
   /// Hook called whenever the 'defined' operator is seen.
   /// \param MD The MacroDirective if the name was a macro, null otherwise.
   virtual void Defined(const Token &MacroNameTok, const MacroDefinition &MD,
-                       SourceRange Range) {}
+                       SourceRange Range) {
+  }
 
   /// Hook called when a '__has_include' or '__has_include_next' directive is
   /// read.
@@ -289,9 +316,12 @@ public:
   /// \param EndifLoc The end location of the 'endif' token, which may precede
   /// the range skipped by the directive (e.g excluding comments after an
   /// 'endif').
-  virtual void SourceRangeSkipped(SourceRange Range, SourceLocation EndifLoc) {}
+  virtual void SourceRangeSkipped(SourceRange Range, SourceLocation EndifLoc) {
+  }
 
-  enum ConditionValueKind { CVK_NotEvaluated, CVK_False, CVK_True };
+  enum ConditionValueKind {
+    CVK_NotEvaluated, CVK_False, CVK_True
+  };
 
   /// Hook called whenever an \#if is seen.
   /// \param Loc the source location of the directive.
@@ -300,7 +330,8 @@ public:
   ///
   // FIXME: better to pass in a list (or tree!) of Tokens.
   virtual void If(SourceLocation Loc, SourceRange ConditionRange,
-                  ConditionValueKind ConditionValue) {}
+                  ConditionValueKind ConditionValue) {
+  }
 
   /// Hook called whenever an \#elif is seen.
   /// \param Loc the source location of the directive.
@@ -309,31 +340,36 @@ public:
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
   // FIXME: better to pass in a list (or tree!) of Tokens.
   virtual void Elif(SourceLocation Loc, SourceRange ConditionRange,
-                    ConditionValueKind ConditionValue, SourceLocation IfLoc) {}
+                    ConditionValueKind ConditionValue, SourceLocation IfLoc) {
+  }
 
   /// Hook called whenever an \#ifdef is seen.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefinition if the name was a macro, null otherwise.
   virtual void Ifdef(SourceLocation Loc, const Token &MacroNameTok,
-                     const MacroDefinition &MD) {}
+                     const MacroDefinition &MD) {
+  }
 
   /// Hook called whenever an \#ifndef is seen.
   /// \param Loc the source location of the directive.
   /// \param MacroNameTok Information on the token being tested.
   /// \param MD The MacroDefiniton if the name was a macro, null otherwise.
   virtual void Ifndef(SourceLocation Loc, const Token &MacroNameTok,
-                      const MacroDefinition &MD) {}
+                      const MacroDefinition &MD) {
+  }
 
   /// Hook called whenever an \#else is seen.
   /// \param Loc the source location of the directive.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
-  virtual void Else(SourceLocation Loc, SourceLocation IfLoc) {}
+  virtual void Else(SourceLocation Loc, SourceLocation IfLoc) {
+  }
 
   /// Hook called whenever an \#endif is seen.
   /// \param Loc the source location of the directive.
   /// \param IfLoc the source location of the \#if/\#ifdef/\#ifndef directive.
-  virtual void Endif(SourceLocation Loc, SourceLocation IfLoc) {}
+  virtual void Endif(SourceLocation Loc, SourceLocation IfLoc) {
+  }
 };
 
 /// Simple wrapper class for chaining callbacks.
@@ -343,7 +379,7 @@ class PPChainedCallbacks : public PPCallbacks {
 public:
   PPChainedCallbacks(std::unique_ptr<PPCallbacks> _First,
                      std::unique_ptr<PPCallbacks> _Second)
-      : First(std::move(_First)), Second(std::move(_Second)) {}
+    : First(std::move(_First)), Second(std::move(_Second)) {}
 
   ~PPChainedCallbacks() override;
 
@@ -511,7 +547,8 @@ public:
     Second->MacroDefined(MacroNameTok, MD);
   }
 
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
+  void MacroUndefined(const Token &MacroNameTok,
+                      const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
     First->MacroUndefined(MacroNameTok, MD, Undef);
     Second->MacroUndefined(MacroNameTok, MD, Undef);
@@ -569,6 +606,6 @@ public:
   }
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

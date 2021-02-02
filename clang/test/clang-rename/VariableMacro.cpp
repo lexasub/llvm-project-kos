@@ -3,10 +3,10 @@
 void foo(int value) {}
 
 void macro() {
-  int Foo; /* Test 1 */  // CHECK: int Bar;
-  Foo = 42; /* Test 2 */ // CHECK: Bar = 42;
+  int Foo;  /* Test 1 */  // CHECK: int Bar;
+  Foo = 42; /* Test 2 */  // CHECK: Bar = 42;
   Baz -= 0;
-  foo(Foo); /* Test 3 */ // CHECK: foo(Bar);
+  foo(Foo); /* Test 3 */  // CHECK: foo(Bar);
   foo(Baz);
 }
 

@@ -48,8 +48,8 @@ public:
   lldb::addr_t SetupDispatchFunction(Thread &thread,
                                      ValueList &dispatch_values);
   const DispatchFunction *FindDispatchFunction(lldb::addr_t addr);
-  void ForEachDispatchFunction(
-      std::function<void(lldb::addr_t, const DispatchFunction &)>);
+  void ForEachDispatchFunction(std::function<void(lldb::addr_t, 
+                                                  const DispatchFunction &)>);
 
 private:
   static const char *g_lookup_implementation_function_name;

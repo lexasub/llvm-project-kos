@@ -147,7 +147,7 @@ void LoopVersioning::addPHINodes(
     if (!PN) {
       PN = PHINode::Create(Inst->getType(), 2, Inst->getName() + ".lver",
                            &PHIBlock->front());
-      SmallVector<User *, 8> UsersToUpdate;
+      SmallVector<User*, 8> UsersToUpdate;
       for (User *U : Inst->users())
         if (!VersionedLoop->contains(cast<Instruction>(U)->getParent()))
           UsersToUpdate.push_back(U);
@@ -323,7 +323,7 @@ public:
 
   static char ID;
 };
-} // namespace
+}
 
 #define LVER_OPTION "loop-versioning"
 #define DEBUG_TYPE LVER_OPTION

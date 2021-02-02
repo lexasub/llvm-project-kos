@@ -2,8 +2,8 @@
 // RUN: not %run %t 2>&1 | FileCheck %s
 // RUN: MSAN_OPTIONS=intercept_memcmp=0 %run %t
 
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 int main(int argc, char **argv) {
   char a1[4];
   char a2[4];

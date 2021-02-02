@@ -18,8 +18,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/StmtVisitor.h"
 #include "clang/Basic/SourceManager.h"
@@ -45,8 +45,8 @@ static bool isEmptyARCMTMacroStatement(NullStmt *S,
   std::vector<SourceLocation>::iterator I = llvm::upper_bound(
       MacroLocs, SemiLoc, BeforeThanCompare<SourceLocation>(SM));
   --I;
-  SourceLocation AfterMacroLoc =
-      I->getLocWithOffset(getARCMTMacroName().size());
+  SourceLocation
+      AfterMacroLoc = I->getLocWithOffset(getARCMTMacroName().size());
   assert(AfterMacroLoc.isFileID());
 
   if (AfterMacroLoc == SemiLoc)
@@ -79,7 +79,7 @@ class EmptyChecker : public StmtVisitor<EmptyChecker, bool> {
 
 public:
   EmptyChecker(ASTContext &ctx, std::vector<SourceLocation> &macroLocs)
-      : Ctx(ctx), MacroLocs(macroLocs) {}
+    : Ctx(ctx), MacroLocs(macroLocs) { }
 
   bool VisitNullStmt(NullStmt *S) {
     return isEmptyARCMTMacroStatement(S, MacroLocs, Ctx);
@@ -143,17 +143,17 @@ public:
   }
 };
 
-class EmptyStatementsRemover
-    : public RecursiveASTVisitor<EmptyStatementsRemover> {
+class EmptyStatementsRemover :
+                            public RecursiveASTVisitor<EmptyStatementsRemover> {
   MigrationPass &Pass;
 
 public:
-  EmptyStatementsRemover(MigrationPass &pass) : Pass(pass) {}
+  EmptyStatementsRemover(MigrationPass &pass) : Pass(pass) { }
 
   bool TraverseStmtExpr(StmtExpr *E) {
     CompoundStmt *S = E->getSubStmt();
-    for (CompoundStmt::body_iterator I = S->body_begin(), E = S->body_end();
-         I != E; ++I) {
+    for (CompoundStmt::body_iterator
+           I = S->body_begin(), E = S->body_end(); I != E; ++I) {
       if (I != E - 1)
         check(*I);
       TraverseStmt(*I);
@@ -171,8 +171,7 @@ public:
 
 private:
   void check(Stmt *S) {
-    if (!S)
-      return;
+    if (!S) return;
     if (EmptyChecker(Pass.Ctx, Pass.ARCMTMacroLocs).Visit(S)) {
       Transaction Trans(Pass.TA);
       Pass.TA.removeStmt(S);
@@ -199,10 +198,9 @@ static void cleanupDeallocOrFinalize(MigrationPass &pass) {
       Ctx.Selectors.getNullarySelector(&pass.Ctx.Idents.get("finalize"));
 
   typedef DeclContext::specific_decl_iterator<ObjCImplementationDecl>
-      impl_iterator;
+    impl_iterator;
   for (impl_iterator I = impl_iterator(DC->decls_begin()),
-                     E = impl_iterator(DC->decls_end());
-       I != E; ++I) {
+                     E = impl_iterator(DC->decls_end()); I != E; ++I) {
     ObjCMethodDecl *DeallocM = nullptr;
     ObjCMethodDecl *FinalizeM = nullptr;
     for (auto *MD : I->instance_methods()) {

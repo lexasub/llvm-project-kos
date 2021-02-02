@@ -21,13 +21,9 @@ void f(int n) {
     while (false)
       [[fallthrough]]; // expected-error {{does not directly precede switch label}}
   case 5:
-    do
-      [[fallthrough]];
-    while (true); // expected-error {{does not directly precede switch label}}
+    do [[fallthrough]]; while (true); // expected-error {{does not directly precede switch label}}
   case 6:
-    do
-      [[fallthrough]];
-    while (false); // expected-error {{does not directly precede switch label}}
+    do [[fallthrough]]; while (false); // expected-error {{does not directly precede switch label}}
   case 7:
     switch (n) {
     case 0:
@@ -51,14 +47,13 @@ void f(int n) {
 typedef int [[fallthrough]] n; // expected-error {{'fallthrough' attribute cannot be applied to types}}
 typedef int n [[fallthrough]]; // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
 
-enum [[fallthrough]] E{};   // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
+enum [[fallthrough]] E {}; // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
 class [[fallthrough]] C {}; // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
 
 [[fallthrough]] // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
-void
-g() {
+void g() {
   [[fallthrough]] int n; // expected-error {{'fallthrough' attribute cannot be applied to a declaration}}
-  [[fallthrough]]++ n;   // expected-error-re {{{{^}}fallthrough attribute is only allowed on empty statements}}
+  [[fallthrough]] ++n; // expected-error-re {{{{^}}fallthrough attribute is only allowed on empty statements}}
 
   switch (n) {
     // FIXME: This should be an error.

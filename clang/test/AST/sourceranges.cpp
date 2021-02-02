@@ -1,20 +1,17 @@
 // RUN: %clang_cc1 -triple i686-mingw32 -ast-dump %s | FileCheck %s
 // RUN: %clang_cc1 -triple i686-mingw32 -std=c++1z -ast-dump %s | FileCheck %s -check-prefix=CHECK-1Z
 
-template <class T>
+template<class T>
 class P {
-public:
-  P(T *t) {}
+ public:
+  P(T* t) {}
 };
 
 namespace foo {
-class A {
-public:
-  A(int = 0) {}
-};
+class A { public: A(int = 0) {} };
 enum B {};
 typedef int C;
-} // namespace foo
+}
 
 // CHECK: VarDecl {{0x[0-9a-fA-F]+}} <line:[[@LINE+1]]:1, col:36> col:15 ImplicitConstrArray 'foo::A [2]'
 static foo::A ImplicitConstrArray[2];
@@ -56,13 +53,11 @@ void construct() {
 }
 
 namespace PR38987 {
-struct A {
-  A();
-};
+struct A { A(); };
 template <class T> void f() { T{}; }
 template void f<A>();
 // CHECK: CXXTemporaryObjectExpr {{.*}} <col:31, col:33> 'PR38987::A':'PR38987::A'
-} // namespace PR38987
+}
 
 void abort() __attribute__((noreturn));
 
@@ -88,7 +83,7 @@ struct string {
   ~string() { abort(); }
 };
 
-template <typename K, typename V>
+template<typename K, typename V>
 struct map {
   using T = pair<K, V>;
   map(initializer_list<T> i, const string &s = string()) {}
@@ -99,51 +94,49 @@ struct map {
 
 // CHECK: NamespaceDecl {{.*}} attributed_decl
 namespace attributed_decl {
-void f() {
-  // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:28>
-  [[maybe_unused]] int i1;
-  // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:35>
-  __attribute__((unused)) int i2;
-  // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:35>
-  int __attribute__((unused)) i3;
-  // CHECK: DeclStmt {{.*}} <<built-in>:{{.*}}, {{.*}}:[[@LINE+1]]:40>
-  __declspec(dllexport) extern int i4;
-  // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:40>
-  extern int __declspec(dllexport) i5;
+  void f() {
+    // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:28>
+    [[maybe_unused]] int i1;
+    // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:35>
+    __attribute__((unused)) int i2;
+    // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:35>
+    int __attribute__((unused)) i3;
+    // CHECK: DeclStmt {{.*}} <<built-in>:{{.*}}, {{.*}}:[[@LINE+1]]:40>
+    __declspec(dllexport) extern int i4;
+    // CHECK: DeclStmt {{.*}} <line:[[@LINE+1]]:5, col:40>
+    extern int __declspec(dllexport) i5;
+  }
 }
-} // namespace attributed_decl
 
 // CHECK: NamespaceDecl {{.*}} attributed_stmt
 namespace attributed_stmt {
-// In DO_PRAGMA and _Pragma cases, `LoopHintAttr` comes from <scratch space>
-// file.
+  // In DO_PRAGMA and _Pragma cases, `LoopHintAttr` comes from <scratch space>
+  // file.
 
-#define DO_PRAGMA(x) _Pragma(#x)
+  #define DO_PRAGMA(x) _Pragma (#x)
 
-void f() {
-  // CHECK: AttributedStmt {{.*}} <line:[[@LINE-3]]:24, line:[[@LINE+2]]:33>
-  DO_PRAGMA(unroll(2))
-  for (int i = 0; i < 10; ++i)
-    ;
+  void f() {
+    // CHECK: AttributedStmt {{.*}} <line:[[@LINE-3]]:24, line:[[@LINE+2]]:33>
+    DO_PRAGMA (unroll(2))
+    for (int i = 0; i < 10; ++i);
 
-// CHECK: AttributedStmt {{.*}} <line:[[@LINE+2]]:5, line:[[@LINE+3]]:33>
-// CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:13, col:22>
-#pragma unroll(2)
-  for (int i = 0; i < 10; ++i)
-    ;
+    // CHECK: AttributedStmt {{.*}} <line:[[@LINE+2]]:5, line:[[@LINE+3]]:33>
+    // CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:13, col:22>
+    #pragma unroll(2)
+    for (int i = 0; i < 10; ++i);
 
-// CHECK: AttributedStmt {{.*}} <line:[[@LINE+2]]:5, line:[[@LINE+5]]:33>
-// CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:19, col:41>
-#pragma clang loop vectorize(enable)
-// CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:19, col:42>
-#pragma clang loop interleave(enable)
-  for (int i = 0; i < 10; ++i)
-    ;
+    // CHECK: AttributedStmt {{.*}} <line:[[@LINE+2]]:5, line:[[@LINE+5]]:33>
+    // CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:19, col:41>
+    #pragma clang loop vectorize(enable)
+    // CHECK: LoopHintAttr {{.*}} <line:[[@LINE+1]]:19, col:42>
+    #pragma clang loop interleave(enable)
+    for (int i = 0; i < 10; ++i);
 
-  // CHECK: AttributedStmt {{.*}} <line:[[@LINE+1]]:5, line:[[@LINE+2]]:33>
-  _Pragma("unroll(2)") for (int i = 0; i < 10; ++i);
+    // CHECK: AttributedStmt {{.*}} <line:[[@LINE+1]]:5, line:[[@LINE+2]]:33>
+    _Pragma("unroll(2)")
+    for (int i = 0; i < 10; ++i);
+  }
 }
-} // namespace attributed_stmt
 
 #if __cplusplus >= 201703L
 // CHECK-1Z: FunctionDecl {{.*}} construct_with_init_list
@@ -159,41 +152,41 @@ std::map<int, int> construct_with_init_list() {
 
 // CHECK-1Z: NamespaceDecl {{.*}} in_class_init
 namespace in_class_init {
-struct A {};
+  struct A {};
 
-// CHECK-1Z: CXXRecordDecl {{.*}} struct B definition
-struct B {
-  // CHECK-1Z: FieldDecl {{.*}} a 'in_class_init::A'
-  // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:11, col:12
-  A a = {};
-};
-} // namespace in_class_init
+  // CHECK-1Z: CXXRecordDecl {{.*}} struct B definition
+  struct B {
+    // CHECK-1Z: FieldDecl {{.*}} a 'in_class_init::A'
+    // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:11, col:12
+    A a = {};
+  };
+}
 
 // CHECK-1Z: NamespaceDecl {{.*}} delegating_constructor_init
 namespace delegating_constructor_init {
-struct A {};
+  struct A {};
 
-struct B : A {
-  A a;
-  B(A a) : a(a) {}
-};
+  struct B : A {
+    A a;
+    B(A a) : a(a) {}
+  };
 
-// CHECK-1Z: CXXRecordDecl {{.*}} struct C definition
-struct C : B {
-  // CHECK-1Z: CXXConstructorDecl {{.*}} C
-  // CHECK-1Z-NEXT: CXXCtorInitializer 'delegating_constructor_init::B'
-  // CHECK-1Z-NEXT: CXXConstructExpr {{.*}} <col:11, col:15
-  // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:13, col:14
-  C() : B({}){};
-};
-} // namespace delegating_constructor_init
+  // CHECK-1Z: CXXRecordDecl {{.*}} struct C definition
+  struct C : B {
+    // CHECK-1Z: CXXConstructorDecl {{.*}} C
+    // CHECK-1Z-NEXT: CXXCtorInitializer 'delegating_constructor_init::B'
+    // CHECK-1Z-NEXT: CXXConstructExpr {{.*}} <col:11, col:15
+    // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:13, col:14
+    C() : B({}) {};
+  };
+}
 
 // CHECK-1Z: NamespaceDecl {{.*}} new_init
 namespace new_init {
-void A() {
-  // CHECK-1Z: CXXNewExpr {{.*}} <line:[[@LINE+2]]:5, col:14
-  // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:12, col:14
-  new int{0};
+  void A() {
+    // CHECK-1Z: CXXNewExpr {{.*}} <line:[[@LINE+2]]:5, col:14
+    // CHECK-1Z-NEXT: InitListExpr {{.*}} <col:12, col:14
+    new int{0};
+  }
 }
-} // namespace new_init
 #endif

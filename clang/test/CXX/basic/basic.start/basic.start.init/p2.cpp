@@ -9,11 +9,13 @@ struct foo_t {
   } u;
 };
 
-__attribute__((__require_constant_initialization__)) static const foo_t x = {{0}};
+__attribute__((__require_constant_initialization__))
+static const foo_t x = {{0}};
 
 union foo_u {
   int i;
   volatile int j;
 };
 
-__attribute__((__require_constant_initialization__)) static const foo_u y = {0};
+__attribute__((__require_constant_initialization__))
+static const foo_u y = {0};

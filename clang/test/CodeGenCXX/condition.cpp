@@ -1,20 +1,20 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10 -emit-llvm -o - %s | FileCheck %s
 void *f();
 
-template <typename T> T *g() {
-  if (T *t = f())
-    return t;
+template <typename T> T* g() {
+ if (T* t = f())
+   return t;
 
-  return 0;
+ return 0;
 }
 
 void h() {
-  void *a = g<void>();
+ void *a = g<void>();
 }
 
 struct X {
   X();
-  X(const X &);
+  X(const X&);
   ~X();
   operator bool();
 };
@@ -53,8 +53,7 @@ void if_destruct(int z) {
   // CHECK: call zeroext i1 @_ZN1XcvbEv
   // CHECK: call void @_ZN1XD1Ev
   // CHECK: br
-  if (getX()) {
-  }
+  if (getX()) { }
 
   // CHECK: ret
 }
@@ -85,7 +84,7 @@ void switch_destruct(int z) {
   // CHECK: call void @_Z12getConvToIntv
   // CHECK: call i32 @_ZN16ConvertibleToIntcviEv
   // CHECK: call void @_ZN16ConvertibleToIntD1Ev
-  switch (getConvToInt()) {
+  switch(getConvToInt()) {
   case 0:
     break;
   }
@@ -128,8 +127,7 @@ void while_destruct(int z) {
   // CHECK-NEXT: call zeroext i1 @_ZN1XcvbEv
   // CHECK-NEXT: call void @_ZN1XD1Ev
   // CHECK-NEXT: br
-  while (getX()) {
-  }
+  while(getX()) { }
 
   // CHECK: store i32 25, i32* [[Z]]
   z = 25;
@@ -146,7 +144,7 @@ void for_destruct(int z) {
   // CHECK-NEXT: br
   // -> %for.cond
 
-  for (Y y = Y(); X x = X(); ++z) {
+  for(Y y = Y(); X x = X(); ++z) {
     // %for.cond: The loop condition.
     // CHECK: call void @_ZN1XC1Ev
     // CHECK-NEXT: [[COND:%.*]] = call zeroext i1 @_ZN1XcvbEv(
@@ -216,8 +214,7 @@ void for_destruct(int z) {
   // CHECK-NEXT: br
   // -> %for.cond6
   int i = 0;
-  for (; getX(); getX(), ++i) {
-  }
+  for(; getX(); getX(), ++i) { }
 
   // %for.end16
   // CHECK: store i32 26
@@ -241,10 +238,10 @@ void do_destruct(int z) {
   // CHECK: ret
 }
 
-int f(X);
+int f(X); 
 
-template <typename T>
-int instantiated(T x) {
+template<typename T>
+int instantiated(T x) { 
   int result;
 
   // CHECK: call void @_ZN1XC1ERKS_
@@ -254,11 +251,7 @@ int instantiated(T x) {
   // CHECK: store i32 2
   // CHECK: br
   // CHECK: store i32 3
-  if (f(x)) {
-    result = 2;
-  } else {
-    result = 3;
-  }
+  if (f(x)) { result = 2; } else { result = 3; }
 
   // CHECK: call void @_ZN1XC1ERKS_
   // CHECK: call i32 @_Z1f1X
@@ -266,9 +259,7 @@ int instantiated(T x) {
   // CHECK: br
   // CHECK: store i32 4
   // CHECK: br
-  while (f(x)) {
-    result = 4;
-  }
+  while (f(x)) { result = 4; }
 
   // CHECK: call void @_ZN1XC1ERKS_
   // CHECK: call i32 @_Z1f1X
@@ -292,7 +283,7 @@ int instantiated(T x) {
   // CHECK: store i32 7
   // CHECK: store i32 8
   switch (f(x)) {
-  case 0:
+  case 0: 
     result = 7;
     break;
 

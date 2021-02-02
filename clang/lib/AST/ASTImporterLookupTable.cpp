@@ -140,7 +140,7 @@ void ASTImporterLookupTable::dump(DeclContext *DC) const {
     DeclarationName Name = Entry.first;
     llvm::errs() << "==== Name: ";
     Name.dump();
-    const DeclList &List = Entry.second;
+    const DeclList& List = Entry.second;
     for (NamedDecl *ND : List) {
       ND->dump();
     }

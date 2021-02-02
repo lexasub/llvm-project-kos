@@ -42,6 +42,7 @@ bool FalseBool = bool(FALSE_MACRO);
 // CHECK-FIXES: {{^}}bool FalseBool = bool(FALSE_MACRO);{{$}}
 
 void boolFunction(bool bar) {
+
 }
 
 char Character = 0; // OK
@@ -58,14 +59,14 @@ bool ManyMacrosDependent = MACRO_DEPENDENT_CAST(FALSE_MACRO);
 // CHECK-FIXES: {{^}}bool ManyMacrosDependent = MACRO_DEPENDENT_CAST(FALSE_MACRO);{{$}}
 
 class FooClass {
-public:
+  public:
   FooClass() : JustBool(0) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: converting integer literal to bool
   // CHECK-FIXES: {{^ *}}FooClass() : JustBool(false) {}{{$}}
   FooClass(int) : JustBool{0} {}
   // CHECK-MESSAGES: :[[@LINE-1]]:28: warning: converting integer literal to bool
   // CHECK-FIXES: {{^ *}}FooClass(int) : JustBool{false} {}{{$}}
-private:
+  private:
   bool JustBool;
   bool BoolWithBraces{0};
   // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: converting integer literal to bool
@@ -76,19 +77,19 @@ private:
   bool SimpleBool = true; // OK
 };
 
-template <typename type>
+template<typename type>
 void templateFunction(type) {
   type TemplateType = 0;
   // CHECK-FIXES: {{^ *}}type TemplateType = 0;{{$}}
 }
 
-template <int c>
+template<int c>
 void valueDependentTemplateFunction() {
   bool Boolean = c;
   // CHECK-FIXES: {{^ *}}bool Boolean = c;{{$}}
 }
 
-template <typename type>
+template<typename type>
 void anotherTemplateFunction(type) {
   bool JustBool = 0;
   // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: converting integer literal to bool

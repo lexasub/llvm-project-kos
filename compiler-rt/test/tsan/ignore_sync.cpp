@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <stdio.h>
 
-extern "C" void AnnotateIgnoreSyncBegin(const char *, int);
-extern "C" void AnnotateIgnoreSyncEnd(const char *, int);
+extern "C" void AnnotateIgnoreSyncBegin(const char*, int);
+extern "C" void AnnotateIgnoreSyncEnd(const char*, int);
 
 int Global;
 pthread_mutex_t Mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -27,3 +27,4 @@ int main() {
 }
 
 // CHECK: WARNING: ThreadSanitizer: data race
+

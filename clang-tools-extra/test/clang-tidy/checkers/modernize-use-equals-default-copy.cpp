@@ -119,7 +119,7 @@ Empty &Empty::operator=(const Empty &Other) { return *this; }
 struct BF {
   BF() = default;
   BF(const BF &Other) : Field1(Other.Field1), Field2(Other.Field2), Field3(Other.Field3),
-                        Field4(Other.Field4){};
+                        Field4(Other.Field4) {};
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use '= default'
   // CHECK-FIXES: BF(const BF &Other) {{$}}
   // CHECK-FIXES:                     = default;
@@ -499,8 +499,8 @@ STRUCT_WITH_COPY_ASSIGN(unsigned char, Hex8CopyAssign)
 // CHECK-MESSAGES: :[[@LINE-9]]:40: note:
 
 // Use of braces
-struct UOB {
-  UOB(const UOB &Other) : j{Other.j} {}
+struct UOB{
+  UOB(const UOB &Other):j{Other.j}{}
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use '= default' to define a trivial copy constructor [modernize-use-equals-default]
   // CHECK-FIXES: UOB(const UOB &Other)= default;
   int j;

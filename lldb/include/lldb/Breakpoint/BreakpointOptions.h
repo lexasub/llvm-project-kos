@@ -25,22 +25,22 @@ namespace lldb_private {
 /// breakpoint or breakpoint location.
 
 class BreakpointOptions {
-  friend class BreakpointLocation;
-  friend class BreakpointName;
-  friend class lldb_private::BreakpointOptionGroup;
-  friend class Breakpoint;
+friend class BreakpointLocation;
+friend class BreakpointName;
+friend class lldb_private::BreakpointOptionGroup;
+friend class Breakpoint;
 
 public:
   enum OptionKind {
-    eCallback = 1 << 0,
-    eEnabled = 1 << 1,
-    eOneShot = 1 << 2,
-    eIgnoreCount = 1 << 3,
-    eThreadSpec = 1 << 4,
-    eCondition = 1 << 5,
+    eCallback     = 1 << 0,
+    eEnabled      = 1 << 1,
+    eOneShot      = 1 << 2,
+    eIgnoreCount  = 1 << 3,
+    eThreadSpec   = 1 << 4,
+    eCondition    = 1 << 5,
     eAutoContinue = 1 << 6,
-    eAllOptions = (eCallback | eEnabled | eOneShot | eIgnoreCount |
-                   eThreadSpec | eCondition | eAutoContinue)
+    eAllOptions   = (eCallback | eEnabled | eOneShot | eIgnoreCount | eThreadSpec
+                     | eCondition | eAutoContinue)
   };
   struct CommandData {
     CommandData()
@@ -344,11 +344,16 @@ public:
 
   void Clear();
 
-  bool AnySet() const { return m_set_flags.AnySet(eAllOptions); }
+  bool AnySet() const {
+    return m_set_flags.AnySet(eAllOptions);
+  }
 
 protected:
   // Classes that inherit from BreakpointOptions can see and modify these
-  bool IsOptionSet(OptionKind kind) { return m_set_flags.Test(kind); }
+  bool IsOptionSet(OptionKind kind)
+  {
+    return m_set_flags.Test(kind);
+  }
 
   enum class OptionNames {
     ConditionText = 0,

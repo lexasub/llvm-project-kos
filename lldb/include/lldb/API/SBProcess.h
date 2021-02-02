@@ -301,13 +301,13 @@ public:
   /// paths till you find a matching library.
   ///
   /// \param[in] image_spec
-  ///     The name of the shared library that you want to load.
+  ///     The name of the shared library that you want to load.  
   ///     If image_spec is a relative path, the relative path will be
   ///     appended to the search paths.
   ///     If the image_spec is an absolute path, just the basename is used.
   ///
   /// \param[in] paths
-  ///     A list of paths to search for the library whose basename is
+  ///     A list of paths to search for the library whose basename is 
   ///     local_spec.
   ///
   /// \param[out] loaded_path
@@ -325,7 +325,7 @@ public:
   ///     library can't be opened.
   uint32_t LoadImageUsingPaths(const lldb::SBFileSpec &image_spec,
                                SBStringList &paths,
-                               lldb::SBFileSpec &loaded_path,
+                               lldb::SBFileSpec &loaded_path, 
                                lldb::SBError &error);
 
   lldb::SBError UnloadImage(uint32_t image_token);

@@ -1,31 +1,34 @@
 // RUN: %clangxx_asan -O %s -o %t && %run %t
 
 #include <assert.h>
-#include <sanitizer/asan_interface.h>
 #include <stdio.h>
+#include <sanitizer/asan_interface.h>
 
-__attribute__((noinline)) void Throw() {
+__attribute__((noinline))
+void Throw() {
   int local;
   fprintf(stderr, "Throw:  %p\n", &local);
   throw 1;
 }
 
-__attribute__((noinline)) void ThrowAndCatch() {
+__attribute__((noinline))
+void ThrowAndCatch() {
   int local;
   try {
     Throw();
-  } catch (...) {
+  } catch(...) {
     fprintf(stderr, "Catch:  %p\n", &local);
   }
 }
 
-__attribute__((noinline)) void TestThrow() {
+__attribute__((noinline))
+void TestThrow() {
   char x[32];
   fprintf(stderr, "Before: %p poisoned: %d\n", &x,
           __asan_address_is_poisoned(x + 32));
   assert(__asan_address_is_poisoned(x + 32));
   ThrowAndCatch();
-  fprintf(stderr, "After:  %p poisoned: %d\n", &x,
+  fprintf(stderr, "After:  %p poisoned: %d\n",  &x,
           __asan_address_is_poisoned(x + 32));
   // FIXME: Invert this assertion once we fix
   // https://code.google.com/p/address-sanitizer/issues/detail?id=258
@@ -34,17 +37,18 @@ __attribute__((noinline)) void TestThrow() {
     assert(!__asan_address_is_poisoned(x + 32));
 }
 
-__attribute__((noinline)) void TestThrowInline() {
+__attribute__((noinline))
+void TestThrowInline() {
   char x[32];
   fprintf(stderr, "Before: %p poisoned: %d\n", &x,
           __asan_address_is_poisoned(x + 32));
   assert(__asan_address_is_poisoned(x + 32));
   try {
     Throw();
-  } catch (...) {
+  } catch(...) {
     fprintf(stderr, "Catch\n");
   }
-  fprintf(stderr, "After:  %p poisoned: %d\n", &x,
+  fprintf(stderr, "After:  %p poisoned: %d\n",  &x,
           __asan_address_is_poisoned(x + 32));
   // FIXME: Invert this assertion once we fix
   // https://code.google.com/p/address-sanitizer/issues/detail?id=258

@@ -37,6 +37,7 @@
 
 // CK14-LABEL: @.__omp_offloading_{{.*}}foo{{.*}}_l{{[0-9]+}}.region_id = weak constant i8 0
 
+
 // Map types:
 // - OMP_MAP_TARGET_PARAM = 32
 // - OMP_MAP_TO + OMP_MAP_FROM | OMP_MAP_IMPLICIT | OMP_MAP_MEMBER_OF = 281474976711171
@@ -49,7 +50,7 @@ public:
   double b;
 
   void foo(int c) {
-#pragma omp target
+    #pragma omp target
     {
       a += c;
       b += (double)c;
@@ -60,7 +61,7 @@ public:
 };
 
 // CK14-LABEL: implicit_maps_class{{.*}}(
-void implicit_maps_class(int a) {
+void implicit_maps_class (int a){
   SSS sss(a, (double)a);
 
   // CK14: define {{.*}}void @{{.+}}foo{{.+}}([[ST]]* {{[^,]+}}, i32 {{[^,]+}})

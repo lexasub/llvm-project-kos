@@ -23,12 +23,11 @@ using namespace llvm;
 // Whether the given intrinsic reads threadIdx.x/y/z.
 static bool readsThreadIndex(const IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
-  default:
-    return false;
-  case Intrinsic::nvvm_read_ptx_sreg_tid_x:
-  case Intrinsic::nvvm_read_ptx_sreg_tid_y:
-  case Intrinsic::nvvm_read_ptx_sreg_tid_z:
-    return true;
+    default: return false;
+    case Intrinsic::nvvm_read_ptx_sreg_tid_x:
+    case Intrinsic::nvvm_read_ptx_sreg_tid_y:
+    case Intrinsic::nvvm_read_ptx_sreg_tid_z:
+      return true;
   }
 }
 
@@ -39,34 +38,33 @@ static bool readsLaneId(const IntrinsicInst *II) {
 // Whether the given intrinsic is an atomic instruction in PTX.
 static bool isNVVMAtomic(const IntrinsicInst *II) {
   switch (II->getIntrinsicID()) {
-  default:
-    return false;
-  case Intrinsic::nvvm_atomic_load_inc_32:
-  case Intrinsic::nvvm_atomic_load_dec_32:
+    default: return false;
+    case Intrinsic::nvvm_atomic_load_inc_32:
+    case Intrinsic::nvvm_atomic_load_dec_32:
 
-  case Intrinsic::nvvm_atomic_add_gen_f_cta:
-  case Intrinsic::nvvm_atomic_add_gen_f_sys:
-  case Intrinsic::nvvm_atomic_add_gen_i_cta:
-  case Intrinsic::nvvm_atomic_add_gen_i_sys:
-  case Intrinsic::nvvm_atomic_and_gen_i_cta:
-  case Intrinsic::nvvm_atomic_and_gen_i_sys:
-  case Intrinsic::nvvm_atomic_cas_gen_i_cta:
-  case Intrinsic::nvvm_atomic_cas_gen_i_sys:
-  case Intrinsic::nvvm_atomic_dec_gen_i_cta:
-  case Intrinsic::nvvm_atomic_dec_gen_i_sys:
-  case Intrinsic::nvvm_atomic_inc_gen_i_cta:
-  case Intrinsic::nvvm_atomic_inc_gen_i_sys:
-  case Intrinsic::nvvm_atomic_max_gen_i_cta:
-  case Intrinsic::nvvm_atomic_max_gen_i_sys:
-  case Intrinsic::nvvm_atomic_min_gen_i_cta:
-  case Intrinsic::nvvm_atomic_min_gen_i_sys:
-  case Intrinsic::nvvm_atomic_or_gen_i_cta:
-  case Intrinsic::nvvm_atomic_or_gen_i_sys:
-  case Intrinsic::nvvm_atomic_exch_gen_i_cta:
-  case Intrinsic::nvvm_atomic_exch_gen_i_sys:
-  case Intrinsic::nvvm_atomic_xor_gen_i_cta:
-  case Intrinsic::nvvm_atomic_xor_gen_i_sys:
-    return true;
+    case Intrinsic::nvvm_atomic_add_gen_f_cta:
+    case Intrinsic::nvvm_atomic_add_gen_f_sys:
+    case Intrinsic::nvvm_atomic_add_gen_i_cta:
+    case Intrinsic::nvvm_atomic_add_gen_i_sys:
+    case Intrinsic::nvvm_atomic_and_gen_i_cta:
+    case Intrinsic::nvvm_atomic_and_gen_i_sys:
+    case Intrinsic::nvvm_atomic_cas_gen_i_cta:
+    case Intrinsic::nvvm_atomic_cas_gen_i_sys:
+    case Intrinsic::nvvm_atomic_dec_gen_i_cta:
+    case Intrinsic::nvvm_atomic_dec_gen_i_sys:
+    case Intrinsic::nvvm_atomic_inc_gen_i_cta:
+    case Intrinsic::nvvm_atomic_inc_gen_i_sys:
+    case Intrinsic::nvvm_atomic_max_gen_i_cta:
+    case Intrinsic::nvvm_atomic_max_gen_i_sys:
+    case Intrinsic::nvvm_atomic_min_gen_i_cta:
+    case Intrinsic::nvvm_atomic_min_gen_i_sys:
+    case Intrinsic::nvvm_atomic_or_gen_i_cta:
+    case Intrinsic::nvvm_atomic_or_gen_i_sys:
+    case Intrinsic::nvvm_atomic_exch_gen_i_cta:
+    case Intrinsic::nvvm_atomic_exch_gen_i_sys:
+    case Intrinsic::nvvm_atomic_xor_gen_i_cta:
+    case Intrinsic::nvvm_atomic_xor_gen_i_sys:
+      return true;
   }
 }
 
@@ -372,8 +370,8 @@ NVPTXTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
 
 int NVPTXTTIImpl::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
-    TTI::OperandValueKind Opd1Info, TTI::OperandValueKind Opd2Info,
-    TTI::OperandValueProperties Opd1PropInfo,
+    TTI::OperandValueKind Opd1Info,
+    TTI::OperandValueKind Opd2Info, TTI::OperandValueProperties Opd1PropInfo,
     TTI::OperandValueProperties Opd2PropInfo, ArrayRef<const Value *> Args,
     const Instruction *CxtI) {
   // Legalize the type.
@@ -384,7 +382,8 @@ int NVPTXTTIImpl::getArithmeticInstrCost(
   switch (ISD) {
   default:
     return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                         Opd2Info, Opd1PropInfo, Opd2PropInfo);
+                                         Opd2Info,
+                                         Opd1PropInfo, Opd2PropInfo);
   case ISD::ADD:
   case ISD::MUL:
   case ISD::XOR:
@@ -397,7 +396,8 @@ int NVPTXTTIImpl::getArithmeticInstrCost(
       return 2 * LT.first;
     // Delegate other cases to the basic TTI.
     return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                         Opd2Info, Opd1PropInfo, Opd2PropInfo);
+                                         Opd2Info,
+                                         Opd1PropInfo, Opd2PropInfo);
   }
 }
 

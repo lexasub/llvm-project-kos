@@ -11,16 +11,16 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/Lex/HeaderMap.h"
+#include "clang/Lex/HeaderMapTypes.h"
 #include "clang/Basic/CharInfo.h"
 #include "clang/Basic/FileManager.h"
-#include "clang/Lex/HeaderMapTypes.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/DataTypes.h"
-#include "llvm/Support/Debug.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SwapByteOrder.h"
+#include "llvm/Support/Debug.h"
 #include <cstring>
 #include <memory>
 using namespace clang;
@@ -37,6 +37,8 @@ static inline unsigned HashHMapKey(StringRef Str) {
   return Result;
 }
 
+
+
 //===----------------------------------------------------------------------===//
 // Verification and Construction
 //===----------------------------------------------------------------------===//
@@ -49,8 +51,7 @@ std::unique_ptr<HeaderMap> HeaderMap::Create(const FileEntry *FE,
                                              FileManager &FM) {
   // If the file is too small to be a header map, ignore it.
   unsigned FileSize = FE->getSize();
-  if (FileSize <= sizeof(HMapHeader))
-    return nullptr;
+  if (FileSize <= sizeof(HMapHeader)) return nullptr;
 
   auto FileBuffer = FM.getBufferForFile(FE);
   if (!FileBuffer || !*FileBuffer)
@@ -58,8 +59,7 @@ std::unique_ptr<HeaderMap> HeaderMap::Create(const FileEntry *FE,
   bool NeedsByteSwap;
   if (!checkHeader(**FileBuffer, NeedsByteSwap))
     return nullptr;
-  return std::unique_ptr<HeaderMap>(
-      new HeaderMap(std::move(*FileBuffer), NeedsByteSwap));
+  return std::unique_ptr<HeaderMap>(new HeaderMap(std::move(*FileBuffer), NeedsByteSwap));
 }
 
 bool HeaderMapImpl::checkHeader(const llvm::MemoryBuffer &File,
@@ -69,7 +69,7 @@ bool HeaderMapImpl::checkHeader(const llvm::MemoryBuffer &File,
   const char *FileStart = File.getBufferStart();
 
   // We know the file is at least as big as the header, check it now.
-  const HMapHeader *Header = reinterpret_cast<const HMapHeader *>(FileStart);
+  const HMapHeader *Header = reinterpret_cast<const HMapHeader*>(FileStart);
 
   // Sniff it to see if it's a headermap by checking the magic number and
   // version.
@@ -78,9 +78,9 @@ bool HeaderMapImpl::checkHeader(const llvm::MemoryBuffer &File,
     NeedsByteSwap = false;
   else if (Header->Magic == llvm::ByteSwap_32(HMAP_HeaderMagicNumber) &&
            Header->Version == llvm::ByteSwap_16(HMAP_HeaderVersion))
-    NeedsByteSwap = true; // Mixed endianness headermap.
+    NeedsByteSwap = true;  // Mixed endianness headermap.
   else
-    return false; // Not a header map.
+    return false;  // Not a header map.
 
   if (Header->Reserved != 0)
     return false;
@@ -104,14 +104,14 @@ bool HeaderMapImpl::checkHeader(const llvm::MemoryBuffer &File,
 //  Utility Methods
 //===----------------------------------------------------------------------===//
 
+
 /// getFileName - Return the filename of the headermap.
 StringRef HeaderMapImpl::getFileName() const {
   return FileBuffer->getBufferIdentifier();
 }
 
 unsigned HeaderMapImpl::getEndianAdjustedWord(unsigned X) const {
-  if (!NeedsBSwap)
-    return X;
+  if (!NeedsBSwap) return X;
   return llvm::ByteSwap_32(X);
 }
 
@@ -119,7 +119,7 @@ unsigned HeaderMapImpl::getEndianAdjustedWord(unsigned X) const {
 /// This method cannot fail.
 const HMapHeader &HeaderMapImpl::getHeader() const {
   // We know the file is at least as big as the header.  Return it.
-  return *reinterpret_cast<const HMapHeader *>(FileBuffer->getBufferStart());
+  return *reinterpret_cast<const HMapHeader*>(FileBuffer->getBufferStart());
 }
 
 /// getBucket - Return the specified hash table bucket from the header map,
@@ -133,12 +133,13 @@ HMapBucket HeaderMapImpl::getBucket(unsigned BucketNo) const {
   HMapBucket Result;
   Result.Key = HMAP_EmptyBucketKey;
 
-  const HMapBucket *BucketArray = reinterpret_cast<const HMapBucket *>(
-      FileBuffer->getBufferStart() + sizeof(HMapHeader));
-  const HMapBucket *BucketPtr = BucketArray + BucketNo;
+  const HMapBucket *BucketArray =
+    reinterpret_cast<const HMapBucket*>(FileBuffer->getBufferStart() +
+                                        sizeof(HMapHeader));
+  const HMapBucket *BucketPtr = BucketArray+BucketNo;
 
   // Load the values, bswapping as needed.
-  Result.Key = getEndianAdjustedWord(BucketPtr->Key);
+  Result.Key    = getEndianAdjustedWord(BucketPtr->Key);
   Result.Prefix = getEndianAdjustedWord(BucketPtr->Prefix);
   Result.Suffix = getEndianAdjustedWord(BucketPtr->Suffix);
   return Result;
@@ -183,8 +184,7 @@ LLVM_DUMP_METHOD void HeaderMapImpl::dump() const {
 
   for (unsigned i = 0; i != NumBuckets; ++i) {
     HMapBucket B = getBucket(i);
-    if (B.Key == HMAP_EmptyBucketKey)
-      continue;
+    if (B.Key == HMAP_EmptyBucketKey) continue;
 
     StringRef Key = getStringOrInvalid(B.Key);
     StringRef Prefix = getStringOrInvalid(B.Prefix);
@@ -217,9 +217,8 @@ StringRef HeaderMapImpl::lookupFilename(StringRef Filename,
 
   // Linearly probe the hash table.
   for (unsigned Bucket = HashHMapKey(Filename);; ++Bucket) {
-    HMapBucket B = getBucket(Bucket & (NumBuckets - 1));
-    if (B.Key == HMAP_EmptyBucketKey)
-      return StringRef(); // Hash miss.
+    HMapBucket B = getBucket(Bucket & (NumBuckets-1));
+    if (B.Key == HMAP_EmptyBucketKey) return StringRef(); // Hash miss.
 
     // See if the key matches.  If not, probe on.
     Optional<StringRef> Key = getString(B.Key);

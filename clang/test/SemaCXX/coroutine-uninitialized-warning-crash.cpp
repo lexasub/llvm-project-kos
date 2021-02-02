@@ -3,12 +3,14 @@
 
 using namespace std::experimental;
 
+
 struct A {
   bool await_ready() { return true; }
   int await_resume() { return 42; }
   template <typename F>
   void await_suspend(F) {}
 };
+
 
 struct coro_t {
   struct promise_type {

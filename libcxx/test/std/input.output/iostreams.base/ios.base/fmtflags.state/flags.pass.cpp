@@ -17,14 +17,20 @@
 
 #include "test_macros.h"
 
-class test : public std::ios {
+class test
+    : public std::ios
+{
 public:
-  test() { init(0); }
+    test()
+    {
+        init(0);
+    }
 };
 
-int main(int, char**) {
-  const test t;
-  assert(t.flags() == (test::skipws | test::dec));
+int main(int, char**)
+{
+    const test t;
+    assert(t.flags() == (test::skipws | test::dec));
 
   return 0;
 }

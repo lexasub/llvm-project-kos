@@ -63,6 +63,8 @@ private:
   const MemoryCache &operator=(const MemoryCache &) = delete;
 };
 
+    
+
 class AllocatedBlock {
 public:
   AllocatedBlock(lldb::addr_t addr, uint32_t byte_size, uint32_t permissions,
@@ -82,7 +84,9 @@ public:
 
   uint32_t GetChunkSize() const { return m_chunk_size; }
 
-  bool Contains(lldb::addr_t addr) const { return m_range.Contains(addr); }
+  bool Contains(lldb::addr_t addr) const {
+    return m_range.Contains(addr);
+  }
 
 protected:
   uint32_t TotalChunks() const { return GetByteSize() / GetChunkSize(); }

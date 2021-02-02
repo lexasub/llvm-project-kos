@@ -2,8 +2,7 @@
 
 namespace dr2338 {
 namespace A {
-enum E { Zero,
-         One };
+enum E { Zero, One };
 E a(int x) { return static_cast<E>(x); }
 // CHECK-LABEL: define{{.*}} i32 @_ZN6dr23381A1aEi
 // CHECK: ret i32 %0
@@ -14,8 +13,7 @@ E b(int x) { return (E)x; }
 
 } // namespace A
 namespace B {
-enum E : bool { Zero,
-                One };
+enum E : bool { Zero, One };
 E a(int x) { return static_cast<E>(x); }
 // CHECK-LABEL: define{{.*}} zeroext i1 @_ZN6dr23381B1aEi
 // CHECK: ret i1 %tobool
@@ -26,8 +24,7 @@ E b(int x) { return (E)x; }
 
 } // namespace B
 namespace C {
-enum class E { Zero,
-               One };
+enum class E { Zero, One };
 E a(int x) { return static_cast<E>(x); }
 // CHECK-LABEL: define{{.*}} i32 @_ZN6dr23381C1aEi
 // CHECK: ret i32 %0
@@ -38,8 +35,7 @@ E b(int x) { return (E)x; }
 
 } // namespace C
 namespace D {
-enum class E : bool { Zero,
-                      One };
+enum class E : bool { Zero, One };
 E a(int x) { return static_cast<E>(x); }
 // CHECK-LABEL: define{{.*}} zeroext i1 @_ZN6dr23381D1aEi
 // CHECK: ret i1 %tobool

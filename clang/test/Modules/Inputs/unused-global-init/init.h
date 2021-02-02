@@ -1,4 +1,1 @@
-struct Init {
-  Init();
-  ~Init();
-} init;
+struct Init { Init(); ~Init(); } init;

@@ -72,9 +72,7 @@ void enemy();
 
 namespace macros {
 #define DECLARE(x) extern int x
-#define DEFINE(x) \
-  extern int x;   \
-  int x = 42
+#define DEFINE(x) extern int x; int x = 42
 DECLARE(test);
 DEFINE(test);
 // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: redundant 'test' declaration

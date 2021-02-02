@@ -17,7 +17,12 @@ namespace llvm {
 class GlobalValue;
 
 namespace SystemZCP {
-enum SystemZCPModifier { TLSGD, TLSLDM, DTPOFF, NTPOFF };
+enum SystemZCPModifier {
+  TLSGD,
+  TLSLDM,
+  DTPOFF,
+  NTPOFF
+};
 } // end namespace SystemZCP
 
 /// A SystemZ-specific constant pool value.  At present, the only
@@ -34,7 +39,7 @@ protected:
 
 public:
   static SystemZConstantPoolValue *
-  Create(const GlobalValue *GV, SystemZCP::SystemZCPModifier Modifier);
+    Create(const GlobalValue *GV, SystemZCP::SystemZCPModifier Modifier);
 
   // Override MachineConstantPoolValue.
   int getExistingMachineCPValue(MachineConstantPool *CP,

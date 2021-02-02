@@ -19,7 +19,4 @@ struct SomeClass {
   // is now invalidated and LLDB crashes.
   SomeClass(ParamClass) {}
 };
-int main() {
-  ParamClass e;
-  SomeClass y(e);
-}
+int main() { ParamClass e; SomeClass y(e); }

@@ -11,3 +11,4 @@ void quack() {
 void quack2() {
   foo(4);
 }
+

@@ -17,94 +17,94 @@
 
 // PR5564.
 namespace test1 {
-struct A {
-  static const int a = 10;
-};
+  struct A {
+    static const int a = 10;
+  };
 
-const int A::a;
+  const int A::a;
 
-struct S {
-  static int i;
-};
+  struct S { 
+    static int i;
+  };
 
-void f() {
-  int a = S::i;
+  void f() { 
+    int a = S::i;
+  }
 }
-} // namespace test1
 
 // Test that we don't use guards for initializing template static data
 // members with internal linkage.
 namespace test2 {
-int foo();
+  int foo();
 
-namespace {
-template <class T> struct A {
-  static int x;
-};
+  namespace {
+    template <class T> struct A {
+      static int x;
+    };
 
-template <class T> int A<T>::x = foo();
-template struct A<int>;
-} // namespace
+    template <class T> int A<T>::x = foo();
+    template struct A<int>;
+  }
 
-// CHECK-LABEL: define internal void @__cxx_global_var_init()
-// CHECK:      [[TMP:%.*]] = call i32 @_ZN5test23fooEv()
-// CHECK-NEXT: store i32 [[TMP]], i32* @_ZN5test212_GLOBAL__N_11AIiE1xE, align 4
-// CHECK-NEXT: ret void
-} // namespace test2
+  // CHECK-LABEL: define internal void @__cxx_global_var_init()
+  // CHECK:      [[TMP:%.*]] = call i32 @_ZN5test23fooEv()
+  // CHECK-NEXT: store i32 [[TMP]], i32* @_ZN5test212_GLOBAL__N_11AIiE1xE, align 4
+  // CHECK-NEXT: ret void
+}
 
 // Test that we don't use threadsafe statics when initializing
 // template static data members.
 namespace test3 {
-int foo();
+  int foo();
 
-template <class T> struct A {
-  static int x;
-};
+  template <class T> struct A {
+    static int x;
+  };
 
-template <class T> int A<T>::x = foo();
-template struct A<int>;
+  template <class T> int A<T>::x = foo();
+  template struct A<int>;
 
-// CHECK-LABEL: define internal void @__cxx_global_var_init.1() {{.*}} comdat($_ZN5test31AIiE1xE)
-// MACHO-LABEL: define internal void @__cxx_global_var_init.1()
-// MACHO-NOT: comdat
-// CHECK:      [[GUARDBYTE:%.*]] = load i8, i8* bitcast (i64* @_ZGVN5test31AIiE1xE to i8*)
-// CHECK-NEXT: [[UNINITIALIZED:%.*]] = icmp eq i8 [[GUARDBYTE]], 0
-// CHECK-NEXT: br i1 [[UNINITIALIZED]]
-// CHECK:      [[TMP:%.*]] = call i32 @_ZN5test33fooEv()
-// CHECK-NEXT: store i32 [[TMP]], i32* @_ZN5test31AIiE1xE, align 4
-// CHECK-NEXT: store i64 1, i64* @_ZGVN5test31AIiE1xE
-// CHECK-NEXT: br label
-// CHECK:      ret void
-} // namespace test3
+  // CHECK-LABEL: define internal void @__cxx_global_var_init.1() {{.*}} comdat($_ZN5test31AIiE1xE)
+  // MACHO-LABEL: define internal void @__cxx_global_var_init.1()
+  // MACHO-NOT: comdat
+  // CHECK:      [[GUARDBYTE:%.*]] = load i8, i8* bitcast (i64* @_ZGVN5test31AIiE1xE to i8*)
+  // CHECK-NEXT: [[UNINITIALIZED:%.*]] = icmp eq i8 [[GUARDBYTE]], 0
+  // CHECK-NEXT: br i1 [[UNINITIALIZED]]
+  // CHECK:      [[TMP:%.*]] = call i32 @_ZN5test33fooEv()
+  // CHECK-NEXT: store i32 [[TMP]], i32* @_ZN5test31AIiE1xE, align 4
+  // CHECK-NEXT: store i64 1, i64* @_ZGVN5test31AIiE1xE
+  // CHECK-NEXT: br label
+  // CHECK:      ret void
+}
 
 // Test that we can fold member lookup expressions which resolve to static data
 // members.
 namespace test4 {
-struct A {
-  static const int n = 76;
-};
+  struct A {
+    static const int n = 76;
+  };
 
-int f(A *a) {
-  // CHECK-LABEL: define{{.*}} i32 @_ZN5test41fEPNS_1AE
-  // CHECK: ret i32 76
-  return a->n;
+  int f(A *a) {
+    // CHECK-LABEL: define{{.*}} i32 @_ZN5test41fEPNS_1AE
+    // CHECK: ret i32 76
+    return a->n;
+  }
 }
-} // namespace test4
 
 // Test that static data members in unions behave properly.
 namespace test5 {
-union U {
-  static int k0;
-  static const int k1;
-  static const int k2 = 76;
-  static const int k3;
-  static const int k4 = 81;
-};
-int U::k0;
-const int U::k1 = (k0 = 9, 42);
-const int U::k2;
+  union U {
+    static int k0;
+    static const int k1;
+    static const int k2 = 76;
+    static const int k3;
+    static const int k4 = 81;
+  };
+  int U::k0;
+  const int U::k1 = (k0 = 9, 42);
+  const int U::k2;
 
-// CHECK: store i32 9, i32* @_ZN5test51U2k0E
-// CHECK: store i32 {{.*}}, i32* @_ZN5test51U2k1E
-// CHECK-NOT: store {{.*}} i32* @_ZN5test51U2k2E
-} // namespace test5
+  // CHECK: store i32 9, i32* @_ZN5test51U2k0E
+  // CHECK: store i32 {{.*}}, i32* @_ZN5test51U2k1E
+  // CHECK-NOT: store {{.*}} i32* @_ZN5test51U2k2E
+}

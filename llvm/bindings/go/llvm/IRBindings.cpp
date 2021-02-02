@@ -12,8 +12,8 @@
 
 #include "IRBindings.h"
 #include "llvm/IR/Attributes.h"
-#include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
+#include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
@@ -25,8 +25,7 @@ LLVMMetadataRef LLVMConstantAsMetadata(LLVMValueRef C) {
   return wrap(ConstantAsMetadata::get(unwrap<Constant>(C)));
 }
 
-LLVMMetadataRef LLVMMDString2(LLVMContextRef C, const char *Str,
-                              unsigned SLen) {
+LLVMMetadataRef LLVMMDString2(LLVMContextRef C, const char *Str, unsigned SLen) {
   return wrap(MDString::get(*unwrap(C), StringRef(Str, SLen)));
 }
 
@@ -52,8 +51,8 @@ void LLVMSetMetadata2(LLVMValueRef Inst, unsigned KindID, LLVMMetadataRef MD) {
 }
 
 void LLVMGoSetCurrentDebugLocation(LLVMBuilderRef Bref, unsigned Line,
-                                   unsigned Col, LLVMMetadataRef Scope,
-                                   LLVMMetadataRef InlinedAt) {
+                                  unsigned Col, LLVMMetadataRef Scope,
+                                  LLVMMetadataRef InlinedAt) {
   if (!Scope)
     unwrap(Bref)->SetCurrentDebugLocation(DebugLoc());
   else
@@ -63,13 +62,14 @@ void LLVMGoSetCurrentDebugLocation(LLVMBuilderRef Bref, unsigned Line,
 }
 
 LLVMDebugLocMetadata LLVMGoGetCurrentDebugLocation(LLVMBuilderRef Bref) {
-  const auto &Loc = unwrap(Bref)->getCurrentDebugLocation();
-  const auto *InlinedAt = Loc.getInlinedAt();
+  const auto& Loc = unwrap(Bref)->getCurrentDebugLocation();
+  const auto* InlinedAt = Loc.getInlinedAt();
   const LLVMDebugLocMetadata md{
-      Loc.getLine(),
-      Loc.getCol(),
-      wrap(Loc.getScope()),
-      InlinedAt == nullptr ? nullptr : wrap(InlinedAt->getRawInlinedAt()),
+    Loc.getLine(),
+    Loc.getCol(),
+    wrap(Loc.getScope()),
+    InlinedAt == nullptr ? nullptr : wrap(InlinedAt->getRawInlinedAt()),
   };
   return md;
 }
+

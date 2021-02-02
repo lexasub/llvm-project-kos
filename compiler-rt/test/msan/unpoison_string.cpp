@@ -4,8 +4,8 @@
 // RUN: %run %t
 
 #include <assert.h>
-#include <sanitizer/msan_interface.h>
 #include <string.h>
+#include <sanitizer/msan_interface.h>
 
 int main(int argc, char **argv) {
   char s[20] = "string";

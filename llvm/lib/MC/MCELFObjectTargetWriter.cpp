@@ -22,8 +22,10 @@ bool MCELFObjectTargetWriter::needsRelocateWithSymbol(const MCSymbol &Sym,
   return false;
 }
 
-void MCELFObjectTargetWriter::sortRelocs(
-    const MCAssembler &Asm, std::vector<ELFRelocationEntry> &Relocs) {}
+void
+MCELFObjectTargetWriter::sortRelocs(const MCAssembler &Asm,
+                                    std::vector<ELFRelocationEntry> &Relocs) {
+}
 
 void MCELFObjectTargetWriter::addTargetSectionFlags(MCContext &Ctx,
                                                     MCSectionELF &Sec) {}

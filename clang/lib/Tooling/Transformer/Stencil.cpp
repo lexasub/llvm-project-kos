@@ -365,7 +365,7 @@ template <typename T> class StencilImpl : public StencilInterface {
 
 public:
   template <typename... Ps>
-  explicit StencilImpl(Ps &&...Args) : Data(std::forward<Ps>(Args)...) {}
+  explicit StencilImpl(Ps &&... Args) : Data(std::forward<Ps>(Args)...) {}
 
   Error eval(const MatchFinder::MatchResult &Match,
              std::string *Result) const override {

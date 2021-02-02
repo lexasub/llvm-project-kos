@@ -27,8 +27,7 @@ static cl::opt<bool> PrintAll("print-all-alias-modref-info", cl::ReallyHidden);
 
 static cl::opt<bool> PrintNoAlias("print-no-aliases", cl::ReallyHidden);
 static cl::opt<bool> PrintMayAlias("print-may-aliases", cl::ReallyHidden);
-static cl::opt<bool> PrintPartialAlias("print-partial-aliases",
-                                       cl::ReallyHidden);
+static cl::opt<bool> PrintPartialAlias("print-partial-aliases", cl::ReallyHidden);
 static cl::opt<bool> PrintMustAlias("print-must-aliases", cl::ReallyHidden);
 
 static cl::opt<bool> PrintNoModRef("print-no-modref", cl::ReallyHidden);
@@ -83,7 +82,8 @@ static inline void PrintLoadStoreResults(AliasResult AR, bool P,
 }
 
 static inline bool isInterestingPointer(Value *V) {
-  return V->getType()->isPointerTy() && !isa<ConstantPointerNull>(V);
+  return V->getType()->isPointerTy()
+      && !isa<ConstantPointerNull>(V);
 }
 
 PreservedAnalyses AAEvaluator::run(Function &F, FunctionAnalysisManager &AM) {
@@ -102,7 +102,7 @@ void AAEvaluator::runInternal(Function &F, AAResults &AA) {
   SetVector<Value *> Stores;
 
   for (auto &I : F.args())
-    if (I.getType()->isPointerTy()) // Add all pointer arguments.
+    if (I.getType()->isPointerTy())    // Add all pointer arguments.
       Pointers.insert(&I);
 
   for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I) {
@@ -189,8 +189,7 @@ void AAEvaluator::runInternal(Function &F, AAResults &AA) {
           ++MayAliasCount;
           break;
         case PartialAlias:
-          PrintLoadStoreResults(AR, PrintPartialAlias, Load, Store,
-                                F.getParent());
+          PrintLoadStoreResults(AR, PrintPartialAlias, Load, Store, F.getParent());
           ++PartialAliasCount;
           break;
         case MustAlias:
@@ -422,7 +421,7 @@ public:
     return false;
   }
 };
-} // namespace llvm
+}
 
 char AAEvalLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(AAEvalLegacyPass, "aa-eval",

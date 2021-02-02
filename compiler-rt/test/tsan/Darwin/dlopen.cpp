@@ -26,7 +26,7 @@
 extern "C" void foo() {
   fprintf(stderr, "Hello world.\n");
 }
-#else // defined(SHARED_LIB)
+#else  // defined(SHARED_LIB)
 int main(int argc, char *argv[]) {
   void *handle = dlopen(argv[1], RTLD_NOW);
   fprintf(stderr, "handle = %p\n", handle);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "foo = %p\n", foo);
   foo();
 }
-#endif // defined(SHARED_LIB)
+#endif  // defined(SHARED_LIB)
 
 // CHECK: Hello world.
 // CHECK-NOT: ERROR: Interceptors are not working.

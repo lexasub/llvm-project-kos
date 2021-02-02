@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/Support/ErrorHandling.h"
 #include "lld/Core/DefinedAtom.h"
 #include "lld/Core/File.h"
-#include "llvm/Support/ErrorHandling.h"
 
 namespace lld {
 
@@ -78,4 +78,4 @@ DefinedAtom::ContentPermissions DefinedAtom::permissions(ContentType type) {
   llvm_unreachable("unknown content type");
 }
 
-} // namespace lld
+} // namespace

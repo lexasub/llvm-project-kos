@@ -41,14 +41,14 @@ std::string x86::getX86TargetCPU(const ArgList &Args,
     // Mapping built by looking at lib/Basic's X86TargetInfo::initFeatureMap().
     StringRef Arch = A->getValue();
     StringRef CPU;
-    if (Triple.getArch() == llvm::Triple::x86) { // 32-bit-only /arch: flags.
+    if (Triple.getArch() == llvm::Triple::x86) {  // 32-bit-only /arch: flags.
       CPU = llvm::StringSwitch<StringRef>(Arch)
                 .Case("IA32", "i386")
                 .Case("SSE", "pentium3")
                 .Case("SSE2", "pentium4")
                 .Default("");
     }
-    if (CPU.empty()) { // 32-bit and 64-bit /arch: flags.
+    if (CPU.empty()) {  // 32-bit and 64-bit /arch: flags.
       CPU = llvm::StringSwitch<StringRef>(Arch)
                 .Case("AVX", "sandybridge")
                 .Case("AVX2", "haswell")

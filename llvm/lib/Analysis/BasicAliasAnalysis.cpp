@@ -75,8 +75,8 @@ static cl::opt<bool> EnableRecPhiAnalysis("basic-aa-recphi", cl::Hidden,
 /// common enough to worry about.
 static cl::opt<bool> ForceAtLeast64Bits("basic-aa-force-at-least-64b",
                                         cl::Hidden, cl::init(true));
-static cl::opt<bool> DoubleCalcBits("basic-aa-double-calc-bits", cl::Hidden,
-                                    cl::init(false));
+static cl::opt<bool> DoubleCalcBits("basic-aa-double-calc-bits",
+                                    cl::Hidden, cl::init(false));
 
 /// SearchLimitReached / SearchTimes shows how often the limit of
 /// to decompose GEPs is reached. It will affect the precision
@@ -136,7 +136,8 @@ static bool isEscapeSource(const Value *V) {
 
 /// Returns the size of the object specified by V or UnknownSize if unknown.
 static uint64_t getObjectSize(const Value *V, const DataLayout &DL,
-                              const TargetLibraryInfo &TLI, bool NullIsValidLoc,
+                              const TargetLibraryInfo &TLI,
+                              bool NullIsValidLoc,
                               bool RoundToAlign = false) {
   uint64_t Size;
   ObjectSizeOpts Opts;
@@ -397,10 +398,8 @@ static APInt adjustToPointerSize(const APInt &Offset, unsigned PointerSize) {
 
 static unsigned getMaxPointerSize(const DataLayout &DL) {
   unsigned MaxPointerSize = DL.getMaxPointerSizeInBits();
-  if (MaxPointerSize < 64 && ForceAtLeast64Bits)
-    MaxPointerSize = 64;
-  if (DoubleCalcBits)
-    MaxPointerSize *= 2;
+  if (MaxPointerSize < 64 && ForceAtLeast64Bits) MaxPointerSize = 64;
+  if (DoubleCalcBits) MaxPointerSize *= 2;
 
   return MaxPointerSize;
 }
@@ -552,8 +551,8 @@ BasicAAResult::DecomposeGEPExpression(const Value *V, const DataLayout &DL,
       // (C1*Scale)*V+C2*Scale can also overflow. We should check for this
       // possibility.
       bool Overflow;
-      APInt ScaledOffset =
-          IndexOffset.sextOrTrunc(MaxPointerSize).smul_ov(Scale, Overflow);
+      APInt ScaledOffset = IndexOffset.sextOrTrunc(MaxPointerSize)
+                           .smul_ov(Scale, Overflow);
       if (Overflow) {
         Index = OrigIndex;
         IndexScale = 1;
@@ -911,8 +910,8 @@ ModRefInfo BasicAAResult::getModRefInfo(const CallBase *Call,
   if (isMallocOrCallocLikeFn(Call, &TLI)) {
     // Be conservative if the accessed pointer may alias the allocation -
     // fallback to the generic handling below.
-    if (getBestAAResults().alias(MemoryLocation::getBeforeOrAfter(Call), Loc,
-                                 AAQI) == NoAlias)
+    if (getBestAAResults().alias(MemoryLocation::getBeforeOrAfter(Call),
+                                 Loc, AAQI) == NoAlias)
       return ModRefInfo::NoModRef;
   }
 
@@ -1048,9 +1047,9 @@ ModRefInfo BasicAAResult::getModRefInfo(const CallBase *Call1,
 // point into the same object. But since %f0 points to the beginning of %alloca,
 // the highest %f1 can be is (%alloca + 3). This means %random can not be higher
 // than (%alloca - 1), and so is not inbounds, a contradiction.
-bool BasicAAResult::isGEPBaseAtNegativeOffset(
-    const GEPOperator *GEPOp, const DecomposedGEP &DecompGEP,
-    const DecomposedGEP &DecompObject, LocationSize MaybeObjectAccessSize) {
+bool BasicAAResult::isGEPBaseAtNegativeOffset(const GEPOperator *GEPOp,
+      const DecomposedGEP &DecompGEP, const DecomposedGEP &DecompObject,
+      LocationSize MaybeObjectAccessSize) {
   // If the object access size is unknown, or the GEP isn't inbounds, bail.
   if (!MaybeObjectAccessSize.hasValue() || !GEPOp->isInBounds())
     return false;
@@ -1148,9 +1147,9 @@ AliasResult BasicAAResult::aliasGEP(
     if (!V1Size.hasValue() && !V2Size.hasValue())
       return MayAlias;
 
-    AliasResult R =
-        getBestAAResults().alias(MemoryLocation::getBeforeOrAfter(UnderlyingV1),
-                                 MemoryLocation(V2, V2Size, V2AAInfo), AAQI);
+    AliasResult R = getBestAAResults().alias(
+        MemoryLocation::getBeforeOrAfter(UnderlyingV1),
+        MemoryLocation(V2, V2Size, V2AAInfo), AAQI);
     if (R != MustAlias) {
       // If V2 may alias GEP base pointer, conservatively returns MayAlias.
       // If V2 is known not to alias GEP base pointer, then the two values
@@ -1319,12 +1318,11 @@ static AliasResult MergeAliasResults(AliasResult A, AliasResult B) {
 
 /// Provides a bunch of ad-hoc rules to disambiguate a Select instruction
 /// against another.
-AliasResult BasicAAResult::aliasSelect(const SelectInst *SI,
-                                       LocationSize SISize,
-                                       const AAMDNodes &SIAAInfo,
-                                       const Value *V2, LocationSize V2Size,
-                                       const AAMDNodes &V2AAInfo,
-                                       AAQueryInfo &AAQI) {
+AliasResult
+BasicAAResult::aliasSelect(const SelectInst *SI, LocationSize SISize,
+                           const AAMDNodes &SIAAInfo, const Value *V2,
+                           LocationSize V2Size, const AAMDNodes &V2AAInfo,
+                           AAQueryInfo &AAQI) {
   // If the values are Selects with the same condition, we can do a more precise
   // check: just check for aliases between the values on corresponding arms.
   if (const SelectInst *SI2 = dyn_cast<SelectInst>(V2))
@@ -1479,9 +1477,9 @@ AliasResult BasicAAResult::aliasPHI(const PHINode *PN, LocationSize PNSize,
   for (unsigned i = 1, e = V1Srcs.size(); i != e; ++i) {
     Value *V = V1Srcs[i];
 
-    AliasResult ThisAlias =
-        getBestAAResults().alias(MemoryLocation(V2, V2Size, V2AAInfo),
-                                 MemoryLocation(V, PNSize, PNAAInfo), *UseAAQI);
+    AliasResult ThisAlias = getBestAAResults().alias(
+        MemoryLocation(V2, V2Size, V2AAInfo),
+        MemoryLocation(V, PNSize, PNAAInfo), *UseAAQI);
     Alias = MergeAliasResults(ThisAlias, Alias);
     if (Alias == MayAlias)
       break;
@@ -1598,8 +1596,8 @@ AliasResult BasicAAResult::aliasCheck(const Value *V1, LocationSize V1Size,
                             MemoryLocation(V2, V2Size, V2AAInfo));
   if (V1 > V2)
     std::swap(Locs.first, Locs.second);
-  const auto &Pair =
-      AAQI.AliasCache.try_emplace(Locs, AAQueryInfo::CacheEntry{NoAlias, 0});
+  const auto &Pair = AAQI.AliasCache.try_emplace(
+      Locs, AAQueryInfo::CacheEntry{NoAlias, 0});
   if (!Pair.second) {
     auto &Entry = Pair.first->second;
     if (!Entry.isDefinitive()) {
@@ -1816,7 +1814,7 @@ bool BasicAAResult::constantOffsetHeuristic(
   APInt MinDiff = V0Offset - V1Offset, Wrapped = -MinDiff;
   MinDiff = APIntOps::umin(MinDiff, Wrapped);
   APInt MinDiffBytes =
-      MinDiff.zextOrTrunc(Var0.Scale.getBitWidth()) * Var0.Scale.abs();
+    MinDiff.zextOrTrunc(Var0.Scale.getBitWidth()) * Var0.Scale.abs();
 
   // We can't definitely say whether GEP1 is before or after V2 due to wrapping
   // arithmetic (i.e. for some values of GEP1 and V2 GEP1 < V2, and for other

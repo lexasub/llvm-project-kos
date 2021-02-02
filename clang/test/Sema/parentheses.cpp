@@ -33,12 +33,12 @@ class Stream {
 public:
   operator int();
   Stream &operator<<(int);
-  Stream &operator<<(const char *);
+  Stream &operator<<(const char*);
   Stream &operator>>(int);
-  Stream &operator>>(const char *);
+  Stream &operator>>(const char*);
 };
 
-void f(Stream &s, bool b) {
+void f(Stream& s, bool b) {
   (void)(s << b ? "foo" : "bar"); // expected-warning {{operator '?:' has lower precedence than '<<'}} \
                                   // expected-note {{place parentheses around the '<<' expression to silence this warning}} \
                                   // expected-note {{place parentheses around the '?:' expression to evaluate it first}}
@@ -103,123 +103,115 @@ void test(int a, int b, int c) {
 }
 
 namespace PR15628 {
-struct BlockInputIter {
-  void *operator++(int);
-  void *operator--(int);
-};
+  struct BlockInputIter {
+    void* operator++(int);
+    void* operator--(int);
+  };
 
-void test(BlockInputIter i) {
-  (void)(i++ ? true : false); // no-warning
-  (void)(i-- ? true : false); // no-warning
+  void test(BlockInputIter i) {
+    (void)(i++ ? true : false); // no-warning
+    (void)(i-- ? true : false); // no-warning
+  }
 }
-} // namespace PR15628
 
 namespace PR20735 {
-struct X {
-  static int state;
-  static int get();
-  int get_num();
-  int num;
-};
-namespace ns {
-int num = 0;
-int get();
-} // namespace ns
-void test(X x) {
-  if (5 & x.get_num() != 0) {
+  struct X {
+    static int state;
+    static int get();
+    int get_num();
+    int num;
+  };
+  namespace ns {
+    int num = 0;
+    int get();
   }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:29-[[@LINE-6]]:29}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:24-[[@LINE-9]]:24}:")"
+  void test(X x) {
+    if (5 & x.get_num() != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:29-[[@LINE-6]]:29}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:24-[[@LINE-9]]:24}:")"
 
-  if (5 & x.num != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:23-[[@LINE-6]]:23}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:18-[[@LINE-9]]:18}:")"
+    if (5 & x.num != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:23-[[@LINE-6]]:23}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:18-[[@LINE-9]]:18}:")"
 
-  if (5 & x.state != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
+    if (5 & x.state != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
 
-  if (5 & x.get() != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
+    if (5 & x.get() != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
 
-  if (5 & X::state != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:26-[[@LINE-6]]:26}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:21-[[@LINE-9]]:21}:")"
+    if (5 & X::state != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:26-[[@LINE-6]]:26}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:21-[[@LINE-9]]:21}:")"
 
-  if (5 & X::get() != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:26-[[@LINE-6]]:26}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:21-[[@LINE-9]]:21}:")"
+    if (5 & X::get() != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:26-[[@LINE-6]]:26}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:21-[[@LINE-9]]:21}:")"
 
-  if (5 & ns::get() != 0) {
-  }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:27-[[@LINE-6]]:27}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:22-[[@LINE-9]]:22}:")"
+    if (5 & ns::get() != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:27-[[@LINE-6]]:27}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:22-[[@LINE-9]]:22}:")"
 
-  if (5 & ns::num != 0) {
+    if (5 & ns::num != 0) {}
+    // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
+    // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
+    // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
+    // CHECK: place parentheses around the '!=' expression to silence this warning
+    // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
+    // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
+    // CHECK: place parentheses around the & expression to evaluate it first
+    // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
+    // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
   }
-  // expected-warning@-1 {{& has lower precedence than !=; != will be evaluated first}}
-  // expected-note@-2 {{place parentheses around the '!=' expression to silence this warning}}
-  // expected-note@-3 {{place parentheses around the & expression to evaluate it first}}
-  // CHECK: place parentheses around the '!=' expression to silence this warning
-  // fix-it:"{{.*}}":{[[@LINE-5]]:13-[[@LINE-5]]:13}:"("
-  // fix-it:"{{.*}}":{[[@LINE-6]]:25-[[@LINE-6]]:25}:")"
-  // CHECK: place parentheses around the & expression to evaluate it first
-  // fix-it:"{{.*}}":{[[@LINE-8]]:9-[[@LINE-8]]:9}:"("
-  // fix-it:"{{.*}}":{[[@LINE-9]]:20-[[@LINE-9]]:20}:")"
 }
-} // namespace PR20735

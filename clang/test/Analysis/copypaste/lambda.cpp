@@ -3,21 +3,22 @@
 // expected-no-diagnostics
 
 void foo1(int a, long b) {
-  auto l = [a, b]() {};
+  auto l = [a, b](){};
 }
 
 void foo2(int a, long b) {
-  auto l = [&a, b]() {};
+  auto l = [&a, b](){};
 }
 
 void foo3(int a, long b) {
-  auto l = [a]() {};
+  auto l = [a](){};
 }
 
 void foo4(int a, long b) {
-  auto l = [=]() {};
+  auto l = [=](){};
 }
 
 void foo5(int a, long b) {
-  auto l = [&]() {};
+  auto l = [&](){};
 }
+

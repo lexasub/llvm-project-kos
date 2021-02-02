@@ -9,21 +9,19 @@
 class versa_string;
 typedef versa_string string;
 
-namespace std {
-template <typename T> class vector;
-}
+namespace std {template <typename T> class vector;}
 using std::vector;
 
 void f(vector<string> v);
 
 namespace std {
-class basic_string;
-typedef basic_string string;
-template <typename T> class vector {};
-void g() {
-  vector<string> v;
-  f(v);
-}
+  class basic_string;
+  typedef basic_string string;
+  template <typename T> class vector {};
+  void g() {
+    vector<string> v;
+    f(v);
+  }
 } // end namespace std
 // CHECK-ELIDE-NOTREE: no matching function for call to 'f'
 // CHECK-ELIDE-NOTREE: candidate function not viable: no known conversion from 'vector<std::string>' to 'vector<string>' for 1st argument
@@ -39,10 +37,10 @@ void g() {
 // CHECK-NOELIDE-TREE:     [std::string != string]>
 
 template <int... A>
-class I1 {};
-void set1(I1<1, 2, 3, 4, 2, 3, 4, 3>){};
+class I1{};
+void set1(I1<1,2,3,4,2,3,4,3>) {};
 void test1() {
-  set1(I1<1, 2, 3, 4, 2, 2, 4, 3, 7>());
+  set1(I1<1,2,3,4,2,2,4,3,7>());
 }
 // CHECK-ELIDE-NOTREE: no matching function for call to 'set1'
 // CHECK-ELIDE-NOTREE: candidate function not viable: no known conversion from 'I1<[5 * ...], 2, [2 * ...], 7>' to 'I1<[5 * ...], 3, [2 * ...], (no argument)>' for 1st argument
@@ -69,8 +67,8 @@ void test1() {
 // CHECK-NOELIDE-TREE:     [7 != (no argument)]>
 
 template <class A, class B, class C = void>
-class I2 {};
-void set2(I2<int, int>){};
+class I2{};
+void set2(I2<int, int>) {};
 void test2() {
   set2(I2<double, int, int>());
 }
@@ -82,7 +80,7 @@ void test2() {
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   I2<
 // CHECK-ELIDE-TREE:     [double != int],
-// CHECK-ELIDE-TREE:     [...],
+// CHECK-ELIDE-TREE:     [...], 
 // CHECK-ELIDE-TREE:     [int != (default) void]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set2'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
@@ -92,9 +90,9 @@ void test2() {
 // CHECK-NOELIDE-TREE:     [int != (default) void]>
 
 int V1, V2, V3;
-template <int *A, int *B>
-class I3 {};
-void set3(I3<&V1, &V2>){};
+template <int* A, int *B>
+class I3{};
+void set3(I3<&V1, &V2>) {};
 void test3() {
   set3(I3<&V3, &V2>());
 }
@@ -114,13 +112,13 @@ void test3() {
 // CHECK-NOELIDE-TREE:     &V2>
 
 template <class A, class B>
-class Alpha {};
+class Alpha{};
 template <class A, class B>
-class Beta {};
+class Beta{};
 template <class A, class B>
-class Gamma {};
+class Gamma{};
 template <class A, class B>
-class Delta {};
+class Delta{};
 
 void set4(Alpha<int, int>);
 void test4() {
@@ -185,8 +183,8 @@ void test6() {
 // CHECK-NOELIDE-TREE:     int>
 
 int a7, b7;
-int c7[] = {1, 2, 3};
-template <int *A>
+int c7[] = {1,2,3};
+template<int *A>
 class class7 {};
 void set7(class7<&a7> A) {}
 void test7() {
@@ -232,8 +230,8 @@ void test7() {
 // CHECK-NOELIDE-TREE:   class7<
 // CHECK-NOELIDE-TREE:     [nullptr != &a7]>
 
-template <typename... T> struct S8 {};
-template <typename T> using U8 = S8<int, char, T>;
+template<typename ...T> struct S8 {};
+template<typename T> using U8 = S8<int, char, T>;
 int f8(S8<int, char, double>);
 int k8 = f8(U8<char>());
 // CHECK-ELIDE-NOTREE: no matching function for call to 'f8'
@@ -243,18 +241,18 @@ int k8 = f8(U8<char>());
 // CHECK-ELIDE-TREE: no matching function for call to 'f8'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   S8<
-// CHECK-ELIDE-TREE:     [2 * ...],
+// CHECK-ELIDE-TREE:     [2 * ...], 
 // CHECK-ELIDE-TREE:     [char != double]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'f8'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   S8<
-// CHECK-NOELIDE-TREE:     int,
-// CHECK-NOELIDE-TREE:     char,
+// CHECK-NOELIDE-TREE:     int, 
+// CHECK-NOELIDE-TREE:     char, 
 // CHECK-NOELIDE-TREE:     [char != double]>
 
-template <typename... T> struct S9 {};
-template <typename T> using U9 = S9<int, char, T>;
-template <typename T> using V9 = U9<U9<T>>;
+template<typename ...T> struct S9 {};
+template<typename T> using U9 = S9<int, char, T>;
+template<typename T> using V9 = U9<U9<T>>;
 int f9(S9<int, char, U9<const double>>);
 int k9 = f9(V9<double>());
 
@@ -265,21 +263,21 @@ int k9 = f9(V9<double>());
 // CHECK-ELIDE-TREE: no matching function for call to 'f9'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   S9<
-// CHECK-ELIDE-TREE:     [2 * ...],
+// CHECK-ELIDE-TREE:     [2 * ...], 
 // CHECK-ELIDE-TREE:     S9<
-// CHECK-ELIDE-TREE:       [2 * ...],
+// CHECK-ELIDE-TREE:       [2 * ...], 
 // CHECK-ELIDE-TREE:       [double != const double]>>
 // CHECK-NOELIDE-TREE: no matching function for call to 'f9'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   S9<
-// CHECK-NOELIDE-TREE:     int,
-// CHECK-NOELIDE-TREE:     char,
+// CHECK-NOELIDE-TREE:     int, 
+// CHECK-NOELIDE-TREE:     char, 
 // CHECK-NOELIDE-TREE:     S9<
-// CHECK-NOELIDE-TREE:       int,
-// CHECK-NOELIDE-TREE:       char,
+// CHECK-NOELIDE-TREE:       int, 
+// CHECK-NOELIDE-TREE:       char, 
 // CHECK-NOELIDE-TREE:       [double != const double]>>
 
-template <typename... A> class class_types {};
+template<typename ...A> class class_types {};
 void set10(class_types<int, int>) {}
 void test10() {
   set10(class_types<int>());
@@ -297,26 +295,26 @@ void test10() {
 // CHECK-ELIDE-TREE: no matching function for call to 'set10'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_types<
-// CHECK-ELIDE-TREE:     [...],
+// CHECK-ELIDE-TREE:     [...], 
 // CHECK-ELIDE-TREE:     [(no argument) != int]>
 // CHECK-ELIDE-TREE: no matching function for call to 'set10'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_types<
-// CHECK-ELIDE-TREE:     [2 * ...],
+// CHECK-ELIDE-TREE:     [2 * ...], 
 // CHECK-ELIDE-TREE:     [int != (no argument)]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set10'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_types<
-// CHECK-NOELIDE-TREE:     int,
+// CHECK-NOELIDE-TREE:     int, 
 // CHECK-NOELIDE-TREE:     [(no argument) != int]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set10'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_types<
-// CHECK-NOELIDE-TREE:     int,
-// CHECK-NOELIDE-TREE:     int,
+// CHECK-NOELIDE-TREE:     int, 
+// CHECK-NOELIDE-TREE:     int, 
 // CHECK-NOELIDE-TREE:     [int != (no argument)]>
 
-template <int... A> class class_ints {};
+template<int ...A> class class_ints {};
 void set11(class_ints<2, 3>) {}
 void test11() {
   set11(class_ints<1>());
@@ -333,29 +331,29 @@ void test11() {
 // CHECK-ELIDE-TREE: no matching function for call to 'set11'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_ints<
-// CHECK-ELIDE-TREE:     [1 != 2],
+// CHECK-ELIDE-TREE:     [1 != 2], 
 // CHECK-ELIDE-TREE:     [(no argument) != 3]>
 // CHECK-ELIDE-TREE: no matching function for call to 'set11'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_ints<
-// CHECK-ELIDE-TREE:     [0 != 2],
-// CHECK-ELIDE-TREE:     [...],
+// CHECK-ELIDE-TREE:     [0 != 2], 
+// CHECK-ELIDE-TREE:     [...], 
 // CHECK-ELIDE-TREE:     [6 != (no argument)]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set11'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_ints<
-// CHECK-NOELIDE-TREE:     [1 != 2],
+// CHECK-NOELIDE-TREE:     [1 != 2], 
 // CHECK-NOELIDE-TREE:     [(no argument) != 3]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set11'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_ints<
-// CHECK-NOELIDE-TREE:     [0 != 2],
-// CHECK-NOELIDE-TREE:     3,
+// CHECK-NOELIDE-TREE:     [0 != 2], 
+// CHECK-NOELIDE-TREE:     3, 
 // CHECK-NOELIDE-TREE:     [6 != (no argument)]>
 
-template <template <class> class... A> class class_template_templates {};
-template <class> class tt1 {};
-template <class> class tt2 {};
+template<template<class> class ...A> class class_template_templates {};
+template<class> class tt1 {};
+template<class> class tt2 {};
 void set12(class_template_templates<tt1, tt1>) {}
 void test12() {
   set12(class_template_templates<tt2>());
@@ -372,27 +370,27 @@ void test12() {
 // CHECK-ELIDE-TREE: no matching function for call to 'set12'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_template_templates<
-// CHECK-ELIDE-TREE:     [template tt2 != template tt1],
+// CHECK-ELIDE-TREE:     [template tt2 != template tt1], 
 // CHECK-ELIDE-TREE:     [template (no argument) != template tt1]>
 // CHECK-ELIDE-TREE: no matching function for call to 'set12'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_template_templates<
-// CHECK-ELIDE-TREE:     [2 * ...],
+// CHECK-ELIDE-TREE:     [2 * ...], 
 // CHECK-ELIDE-TREE:     [template tt1 != template (no argument)]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set12'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_template_templates<
-// CHECK-NOELIDE-TREE:     [template tt2 != template tt1],
+// CHECK-NOELIDE-TREE:     [template tt2 != template tt1], 
 // CHECK-NOELIDE-TREE:     [template (no argument) != template tt1]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set12'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_template_templates<
-// CHECK-NOELIDE-TREE:     template tt1,
-// CHECK-NOELIDE-TREE:     template tt1,
+// CHECK-NOELIDE-TREE:     template tt1, 
+// CHECK-NOELIDE-TREE:     template tt1, 
 // CHECK-NOELIDE-TREE:     [template tt1 != template (no argument)]>
 
 double a13, b13, c13, d13;
-template <double *...A> class class_ptrs {};
+template<double* ...A> class class_ptrs {};
 void set13(class_ptrs<&a13, &b13>) {}
 void test13() {
   set13(class_ptrs<&c13>());
@@ -409,29 +407,29 @@ void test13() {
 // CHECK-ELIDE-TREE: no matching function for call to 'set13'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_ptrs<
-// CHECK-ELIDE-TREE:     [&c13 != &a13],
+// CHECK-ELIDE-TREE:     [&c13 != &a13], 
 // CHECK-ELIDE-TREE:     [(no argument) != &b13]>
 // CHECK-ELIDE-TREE: no matching function for call to 'set13'
 // CHECK-ELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   class_ptrs<
-// CHECK-ELIDE-TREE:     [2 * ...],
+// CHECK-ELIDE-TREE:     [2 * ...], 
 // CHECK-ELIDE-TREE:     [&d13 != (no argument)]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set13'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_ptrs<
-// CHECK-NOELIDE-TREE:     [&c13 != &a13],
+// CHECK-NOELIDE-TREE:     [&c13 != &a13], 
 // CHECK-NOELIDE-TREE:     [(no argument) != &b13]>
 // CHECK-NOELIDE-TREE: no matching function for call to 'set13'
 // CHECK-NOELIDE-TREE: candidate function not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   class_ptrs<
-// CHECK-NOELIDE-TREE:     &a13,
-// CHECK-NOELIDE-TREE:     &b13,
+// CHECK-NOELIDE-TREE:     &a13, 
+// CHECK-NOELIDE-TREE:     &b13, 
 // CHECK-NOELIDE-TREE:     [&d13 != (no argument)]>
 
-template <typename T> struct s14 {};
-template <typename T> using a14 = s14<T>;
+template<typename T> struct s14 {};
+template<typename T> using a14 = s14<T>;
 typedef a14<int> b14;
-template <typename T> using c14 = b14;
+template<typename T> using c14 = b14;
 int f14(c14<int>);
 int k14 = f14(a14<char>());
 // CHECK-ELIDE-NOTREE: no matching function for call to 'f14'
@@ -548,13 +546,14 @@ void test20() {
 // CHECK-NOELIDE-TREE:     [const != const volatile] vector<
 // CHECK-NOELIDE-TREE:       int>>
 
+
 // Checks that volatile does not show up in diagnostics.
-template <typename T> struct S21 {};
-template <typename T> using U21 = volatile S21<T>;
+template<typename T> struct S21 {};
+template<typename T> using U21 = volatile S21<T>;
 int f21(vector<const U21<int>>);
 int k21 = f21(vector<U21<int>>());
 // CHECK-ELIDE-NOTREE: no matching function for call to 'f21'
-// CHECK-ELIDE-NOTREE: candidate function not viable: no known conversion from 'vector<U21<...>>' to 'vector<const U21<...>>' for 1st argument
+// CHECK-ELIDE-NOTREE: candidate function not viable: no known conversion from 'vector<U21<...>>' to 'vector<const U21<...>>' for 1st argument 
 // CHECK-NOELIDE-NOTREE: no matching function for call to 'f21'
 // CHECK-NOELIDE-NOTREE: candidate function not viable: no known conversion from 'vector<U21<int>>' to 'vector<const U21<int>>' for 1st argument
 // CHECK-ELIDE-TREE: no matching function for call to 'f21'
@@ -568,8 +567,8 @@ int k21 = f21(vector<U21<int>>());
 // CHECK-NOELIDE-TREE:        int>>
 
 // Checks that volatile does not show up in diagnostics.
-template <typename T> struct S22 {};
-template <typename T> using U22 = volatile S22<T>;
+template<typename T> struct S22 {};
+template<typename T> using U22 = volatile S22<T>;
 int f22(vector<volatile const U22<int>>);
 int k22 = f22(vector<volatile U22<int>>());
 // CHECK-ELIDE-NOTREE: no matching function for call to 'f22'
@@ -587,10 +586,10 @@ int k22 = f22(vector<volatile U22<int>>());
 // CHECK-NOELIDE-TREE:        int>>
 
 // Testing qualifiers and typedefs.
-template <class T> struct D23 {};
+template <class T> struct D23{};
 template <class T> using C23 = D23<T>;
 typedef const C23<int> B23;
-template <class... T> using A23 = B23;
+template<class ...T> using A23 = B23;
 
 void foo23(D23<A23<>> b) {}
 void test23() {
@@ -628,7 +627,7 @@ void test23() {
 namespace PR14015 {
 template <unsigned N> class Foo1 {};
 template <unsigned N = 2> class Foo2 {};
-template <unsigned... N> class Foo3 {};
+template <unsigned ...N> class Foo3 {};
 
 void Play1() {
   Foo1<1> F1;
@@ -752,7 +751,7 @@ void Play3() {
 // CHECK-ELIDE-TREE: no viable overloaded '='
 // CHECK-ELIDE-TREE: candidate function (the implicit copy assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   [(no qualifiers) != const] Foo3<
-// CHECK-ELIDE-TREE:     [1 != 2],
+// CHECK-ELIDE-TREE:     [1 != 2], 
 // CHECK-ELIDE-TREE:     [(no argument) != 1]>
 // CHECK-ELIDE-TREE: candidate function (the implicit move assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   Foo3<
@@ -765,283 +764,285 @@ void Play3() {
 // CHECK-ELIDE-TREE:     [1 != (no argument)]>
 // CHECK-ELIDE-TREE: candidate function (the implicit move assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-ELIDE-TREE:   Foo3<
-// CHECK-ELIDE-TREE:     [2 != 1],
+// CHECK-ELIDE-TREE:     [2 != 1], 
 // CHECK-ELIDE-TREE:     [1 != (no argument)]>
 // CHECK-NOELIDE-TREE: no viable overloaded '='
 // CHECK-NOELIDE-TREE: candidate function (the implicit copy assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   [(no qualifiers) != const] Foo3<
-// CHECK-NOELIDE-TREE:     [1 != 2],
+// CHECK-NOELIDE-TREE:     [1 != 2], 
 // CHECK-NOELIDE-TREE:     [(no argument) != 1]>
 // CHECK-NOELIDE-TREE: candidate function (the implicit move assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   Foo3<
-// CHECK-NOELIDE-TREE:     [1 != 2],
+// CHECK-NOELIDE-TREE:     [1 != 2], 
 // CHECK-NOELIDE-TREE:     [(no argument) != 1]>
 // CHECK-NOELIDE-TREE: no viable overloaded '='
 // CHECK-NOELIDE-TREE: candidate function (the implicit copy assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   [(no qualifiers) != const] Foo3<
-// CHECK-NOELIDE-TREE:     [2 != 1],
+// CHECK-NOELIDE-TREE:     [2 != 1], 
 // CHECK-NOELIDE-TREE:     [1 != (no argument)]>
 // CHECK-NOELIDE-TREE: candidate function (the implicit move assignment operator) not viable: no known conversion from argument type to parameter type for 1st argument
 // CHECK-NOELIDE-TREE:   Foo3<
-// CHECK-NOELIDE-TREE:     [2 != 1],
+// CHECK-NOELIDE-TREE:     [2 != 1], 
 // CHECK-NOELIDE-TREE:     [1 != (no argument)]>
 }
 
 namespace PR14342 {
-template <typename T, short a> struct X {};
-X<int, (signed char)-1> x = X<long, -1>();
-X<int, 3UL> y = X<int, 2>();
-// CHECK-ELIDE-NOTREE: error: no viable conversion from 'X<long, [...]>' to 'X<int, [...]>'
-// CHECK-ELIDE-NOTREE: error: no viable conversion from 'X<[...], 2>' to 'X<[...], 3>'
+  template<typename T, short a> struct X {};
+  X<int, (signed char)-1> x = X<long, -1>();
+  X<int, 3UL> y = X<int, 2>();
+  // CHECK-ELIDE-NOTREE: error: no viable conversion from 'X<long, [...]>' to 'X<int, [...]>'
+  // CHECK-ELIDE-NOTREE: error: no viable conversion from 'X<[...], 2>' to 'X<[...], 3>'
 }
 
 namespace PR14489 {
-// The important thing here is that the diagnostic diffs a template specialization
-// with no arguments against itself.  (We might need a different test if this
-// diagnostic changes).
-template <class... V>
-struct VariableList {
-  void ConnectAllToAll(VariableList<> &params = VariableList<>()) {
-  }
-};
-// CHECK-ELIDE-NOTREE: non-const lvalue reference to type 'VariableList<>' cannot bind to a temporary of type 'VariableList<>'
+  // The important thing here is that the diagnostic diffs a template specialization
+  // with no arguments against itself.  (We might need a different test if this
+  // diagnostic changes).
+  template<class ...V>
+  struct VariableList   {
+    void ConnectAllToAll(VariableList<>& params = VariableList<>())    {
+    }
+  };
+  // CHECK-ELIDE-NOTREE: non-const lvalue reference to type 'VariableList<>' cannot bind to a temporary of type 'VariableList<>'
 }
 
 namespace rdar12456626 {
-struct IntWrapper {
-  typedef int type;
-};
-
-template <typename T, typename T::type V>
-struct X {};
-
-struct A {
-  virtual X<IntWrapper, 1> foo();
-};
-
-struct B : A {
-  // CHECK-ELIDE-NOTREE: virtual function 'foo' has a different return type
-  virtual X<IntWrapper, 2> foo();
-};
+  struct IntWrapper {
+    typedef int type;
+  };
+  
+  template<typename T, typename T::type V>
+  struct X { };
+  
+  struct A {
+    virtual X<IntWrapper, 1> foo();
+  };
+  
+  struct B : A {
+    // CHECK-ELIDE-NOTREE: virtual function 'foo' has a different return type
+    virtual X<IntWrapper, 2> foo();
+  };
 }
 
 namespace PR15023 {
-// Don't crash when non-QualTypes are passed to a diff modifier.
-template <typename... Args>
-void func(void (*func)(Args...), Args...) {}
+  // Don't crash when non-QualTypes are passed to a diff modifier.
+  template <typename... Args>
+  void func(void (*func)(Args...), Args...) { }
 
-void bar(int, int &) {
-}
+  void bar(int, int &) {
+  }
 
-void foo(int x) {
-  func(bar, 1, x)
-}
-// CHECK-ELIDE-NOTREE: no matching function for call to 'func'
-// CHECK-ELIDE-NOTREE: candidate template ignored: deduced conflicting types for parameter 'Args' (<int, int &> vs. <int, int>)
+  void foo(int x) {
+    func(bar, 1, x)
+  }
+  // CHECK-ELIDE-NOTREE: no matching function for call to 'func'
+  // CHECK-ELIDE-NOTREE: candidate template ignored: deduced conflicting types for parameter 'Args' (<int, int &> vs. <int, int>)
 }
 
 namespace rdar12931988 {
-namespace A {
-template <typename T> struct X {};
-}
+  namespace A {
+    template<typename T> struct X { };
+  }
 
-namespace B {
-template <typename T> struct X {};
-}
+  namespace B {
+    template<typename T> struct X { };
+  }
 
-void foo(A::X<int> &ax, B::X<int> bx) {
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B::X<int>' to 'const rdar12931988::A::X<int>'
-  ax = bx;
-}
+  void foo(A::X<int> &ax, B::X<int> bx) {
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B::X<int>' to 'const rdar12931988::A::X<int>'
+    ax = bx;
+  }
 
-template <template <typename> class> class Y {};
+  template<template<typename> class> class Y {};
 
-void bar(Y<A::X> ya, Y<B::X> yb) {
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'Y<template rdar12931988::B::X>' to 'Y<template rdar12931988::A::X>'
-  ya = yb;
-}
+  void bar(Y<A::X> ya, Y<B::X> yb) {
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'Y<template rdar12931988::B::X>' to 'Y<template rdar12931988::A::X>'
+    ya = yb;
+  }
 }
 
 namespace ValueDecl {
-int int1, int2, default_int;
-template <const int &T = default_int>
-struct S {};
+  int int1, int2, default_int;
+  template <const int& T = default_int>
+  struct S {};
 
-typedef S<int1> T1;
-typedef S<int2> T2;
-typedef S<> TD;
+  typedef S<int1> T1;
+  typedef S<int2> T2;
+  typedef S<> TD;
 
-void test() {
-  T1 t1;
-  T2 t2;
-  TD td;
+  void test() {
+    T1 t1;
+    T2 t2;
+    TD td;
 
-  t1 = t2;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'S<int2>' to 'S<int1>'
+    t1 = t2;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'S<int2>' to 'S<int1>'
 
-  t2 = t1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'S<int1>' to 'S<int2>'
+    t2 = t1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'S<int1>' to 'S<int2>'
 
-  td = t1;
-  // TODO: Find out why (default) isn't printed on second template.
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'S<int1>' to 'S<default_int>'
+    td = t1;
+    // TODO: Find out why (default) isn't printed on second template.
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'S<int1>' to 'S<default_int>'
 
-  t2 = td;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'S<(default) default_int>' to 'S<int2>'
-}
+    t2 = td;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'S<(default) default_int>' to 'S<int2>'
+
+  }
 }
 
 namespace DependentDefault {
-template <typename> struct Trait {
-  enum { V = 40 };
-  typedef int Ty;
-  static int I;
-};
-int other;
+  template <typename> struct Trait {
+    enum { V = 40 };
+    typedef int Ty;
+    static int I;
+  };
+  int other;
 
-template <typename T, int = Trait<T>::V> struct A {};
-template <typename T, typename = Trait<T>::Ty> struct B {};
-template <typename T, int & = Trait<T>::I> struct C {};
+  template <typename T, int = Trait<T>::V > struct A {};
+  template <typename T, typename = Trait<T>::Ty > struct B {};
+  template <typename T, int& = Trait<T>::I > struct C {};
 
-void test() {
+  void test() {
 
-  A<int> a1;
-  A<char> a2;
-  A<int, 10> a3;
-  a1 = a2;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'A<char, [...]>' to 'A<int, [...]>'
-  a3 = a1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'A<[...], (default) Trait<T>::V aka 40>' to 'A<[...], 10>'
-  a2 = a3;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'A<int, 10>' to 'A<char, 40>'
+    A<int> a1;
+    A<char> a2;
+    A<int, 10> a3;
+    a1 = a2;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'A<char, [...]>' to 'A<int, [...]>'
+    a3 = a1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'A<[...], (default) Trait<T>::V aka 40>' to 'A<[...], 10>'
+    a2 = a3;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'A<int, 10>' to 'A<char, 40>'
 
-  B<int> b1;
-  B<char> b2;
-  B<int, char> b3;
-  b1 = b2;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B<char, [...]>' to 'B<int, [...]>'
-  b3 = b1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B<[...], (default) int>' to 'B<[...], char>'
-  b2 = b3;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B<int, char>' to 'B<char, int>'
+    B<int> b1;
+    B<char> b2;
+    B<int, char> b3;
+    b1 = b2;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B<char, [...]>' to 'B<int, [...]>'
+    b3 = b1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B<[...], (default) int>' to 'B<[...], char>'
+    b2 = b3;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B<int, char>' to 'B<char, int>'
 
-  C<int> c1;
-  C<char> c2;
-  C<int, other> c3;
-  c1 = c2;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'C<char, (default) I>' to 'C<int, I>'
-  c3 = c1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'C<[...], (default) I>' to 'C<[...], other>'
-  c2 = c3;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'C<int, other>' to 'C<char, I>'
-}
+    C<int> c1;
+    C<char> c2;
+    C<int, other> c3;
+    c1 = c2;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'C<char, (default) I>' to 'C<int, I>'
+    c3 = c1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'C<[...], (default) I>' to 'C<[...], other>'
+    c2 = c3;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'C<int, other>' to 'C<char, I>'
+  }
 }
 
 namespace VariadicDefault {
-int i1, i2, i3;
-template <int = 5, int...> struct A {};
-template <int & = i1, int &...> struct B {};
-template <typename = void, typename...> struct C {};
+  int i1, i2, i3;
+  template <int = 5, int...> struct A {};
+  template <int& = i1, int& ...> struct B {};
+  template <typename = void, typename...> struct C {};
 
-void test() {
-  A<> a1;
-  A<5, 6, 7> a2;
-  A<1, 2> a3;
-  a2 = a1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'A<[...], (no argument), (no argument)>' to 'A<[...], 6, 7>'
-  a3 = a1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'A<(default) 5, (no argument)>' to 'A<1, 2>'
+  void test() {
+    A<> a1;
+    A<5, 6, 7> a2;
+    A<1, 2> a3;
+    a2 = a1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'A<[...], (no argument), (no argument)>' to 'A<[...], 6, 7>'
+    a3 = a1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'A<(default) 5, (no argument)>' to 'A<1, 2>'
 
-  B<> b1;
-  B<i1, i2, i3> b2;
-  B<i2, i3> b3;
-  b2 = b1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B<[...], (no argument), (no argument)>' to 'B<[...], i2, i3>'
-  b3 = b1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'B<(default) i1, (no argument)>' to 'B<i2, i3>'
+    B<> b1;
+    B<i1, i2, i3> b2;
+    B<i2, i3> b3;
+    b2 = b1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B<[...], (no argument), (no argument)>' to 'B<[...], i2, i3>'
+    b3 = b1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'B<(default) i1, (no argument)>' to 'B<i2, i3>'
 
-  B<i1, i2, i3> b4 = b1;
-  // CHECK-ELIDE-NOTREE: no viable conversion from 'B<[...], (no argument), (no argument)>' to 'B<[...], i2, i3>'
-  B<i2, i3> b5 = b1;
-  // CHECK-ELIDE-NOTREE: no viable conversion from 'B<(default) i1, (no argument)>' to 'B<i2, i3>'
+    B<i1, i2, i3> b4 = b1;
+    // CHECK-ELIDE-NOTREE: no viable conversion from 'B<[...], (no argument), (no argument)>' to 'B<[...], i2, i3>'
+    B<i2, i3> b5 = b1;
+    // CHECK-ELIDE-NOTREE: no viable conversion from 'B<(default) i1, (no argument)>' to 'B<i2, i3>'
 
-  C<> c1;
-  C<void, void> c2;
-  C<char, char> c3;
-  c2 = c1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'C<[...], (no argument)>' to 'C<[...], void>'
-  c3 = c1;
-  // CHECK-ELIDE-NOTREE: no viable overloaded '='
-  // CHECK-ELIDE-NOTREE: no known conversion from 'C<(default) void, (no argument)>' to 'C<char, char>'
-}
+    C<> c1;
+    C<void, void> c2;
+    C<char, char> c3;
+    c2 = c1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'C<[...], (no argument)>' to 'C<[...], void>'
+    c3 = c1;
+    // CHECK-ELIDE-NOTREE: no viable overloaded '='
+    // CHECK-ELIDE-NOTREE: no known conversion from 'C<(default) void, (no argument)>' to 'C<char, char>'
+  }
 }
 
 namespace PointerArguments {
-template <int *p> class T {};
-template <int *...> class U {};
-int a, b, c;
-int z[5];
-void test() {
-  T<&a> ta;
-  T<z> tz;
-  T<&b> tb(ta);
-  // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'T<&b>'
-  // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'T<&a>' to 'const T<&b>' for 1st argument
-  T<&c> tc(tz);
-  // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'T<&c>'
-  // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'T<z>' to 'const T<&c>' for 1st argument
+  template <int *p> class T {};
+  template <int* ...> class U {};
+  int a, b, c;
+  int z[5];
+  void test() {
+    T<&a> ta;
+    T<z> tz;
+    T<&b> tb(ta);
+    // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'T<&b>'
+    // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'T<&a>' to 'const T<&b>' for 1st argument
+    T<&c> tc(tz);
+    // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'T<&c>'
+    // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'T<z>' to 'const T<&c>' for 1st argument
 
-  U<&a, &a> uaa;
-  U<&b> ub(uaa);
-  // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'U<&b>'
-  // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'U<&a, &a>' to 'const U<&b, (no argument)>' for 1st argument
+    U<&a, &a> uaa;
+    U<&b> ub(uaa);
+    // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'U<&b>'
+    // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'U<&a, &a>' to 'const U<&b, (no argument)>' for 1st argument
 
-  U<&b, &b, &b> ubbb(uaa);
-  // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'U<&b, &b, &b>'
-  // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'U<&a, &a, (no argument)>' to 'const U<&b, &b, &b>' for 1st argument
-}
+    U<&b, &b, &b> ubbb(uaa);
+    // CHECK-ELIDE-NOTREE: no matching constructor for initialization of 'U<&b, &b, &b>'
+    // CHECK-ELIDE-NOTREE: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'U<&a, &a, (no argument)>' to 'const U<&b, &b, &b>' for 1st argument
+
+  }
 }
 
 namespace DependentInt {
-template <int Num> struct INT;
+  template<int Num> struct INT;
 
-template <class CLASS, class Int_wrapper = INT<CLASS::val>>
-struct C;
+  template <class CLASS, class Int_wrapper = INT<CLASS::val> >
+  struct C;
 
-struct N {
-  static const int val = 1;
-};
+  struct N {
+    static const int val = 1;
+  };
 
-template <class M_T>
-struct M {};
+  template <class M_T>
+  struct M {};
 
-void test() {
-  using T1 = M<C<int, INT<0>>>;
-  using T2 = M<C<N>>;
-  T2 p;
-  T1 x = p;
-  // CHECK-ELIDE-NOTREE: no viable conversion from 'M<C<DependentInt::N, INT<1>>>' to 'M<C<int, INT<0>>>'
-}
+  void test() {
+    using T1 = M<C<int, INT<0>>>;
+    using T2 = M<C<N>>;
+    T2 p;
+    T1 x = p;
+    // CHECK-ELIDE-NOTREE: no viable conversion from 'M<C<DependentInt::N, INT<1>>>' to 'M<C<int, INT<0>>>'
+  }
 }
 
 namespace PR17510 {
@@ -1050,9 +1051,9 @@ class Atom;
 template <typename T> class allocator;
 template <typename T, typename A> class vector;
 
-typedef vector<const Atom *, allocator<const Atom *>> AtomVector;
+typedef vector<const Atom *, allocator<const Atom *> > AtomVector;
 
-template <typename T, typename A = allocator<const Atom *>> class vector {};
+template <typename T, typename A = allocator<const Atom *> > class vector {};
 
 void foo() {
   vector<Atom *> v;
@@ -1063,7 +1064,7 @@ void foo() {
 
 namespace PR15677 {
 template <bool>
-struct A {};
+struct A{};
 
 template <typename T>
 using B = A<T::value>;
@@ -1073,7 +1074,7 @@ using B = A<!T::value>;
 // CHECK-ELIDE-NOTREE: type alias template redefinition with different types ('A<!T::value>' vs 'A<T::value>')
 
 template <int>
-struct C {};
+struct C{};
 
 template <typename T>
 using D = C<T::value>;
@@ -1099,7 +1100,7 @@ using F = C<21 + 21>;
 }
 
 namespace AddressOf {
-template <int *>
+template <int*>
 struct S {};
 
 template <class T>
@@ -1108,7 +1109,7 @@ struct Wrapper {};
 template <class T>
 Wrapper<T> MakeWrapper();
 int global, global2;
-constexpr int *ptr = nullptr;
+constexpr int * ptr = nullptr;
 Wrapper<S<ptr>> W = MakeWrapper<S<&global>>();
 // Don't print an extra '&' for 'ptr'
 // CHECK-ELIDE-NOTREE: no viable conversion from 'Wrapper<S<&global>>' to 'Wrapper<S<ptr aka nullptr>>'
@@ -1123,7 +1124,7 @@ Wrapper<S<(&global2)>> W4 = MakeWrapper<S<(&global)>>();
 }
 
 namespace NullPtr {
-template <int *, int *>
+template <int*, int*>
 struct S {};
 
 template <class T>
@@ -1132,8 +1133,8 @@ struct Wrapper {};
 template <class T>
 Wrapper<T> MakeWrapper();
 int global, global2;
-constexpr int *ptr = nullptr;
-constexpr int *ptr2 = static_cast<int *>(0);
+constexpr int * ptr = nullptr;
+constexpr int * ptr2 = static_cast<int*>(0);
 
 S<&global> s1 = S<&global, ptr>();
 S<&global, nullptr> s2 = S<&global, ptr>();
@@ -1144,7 +1145,7 @@ S<&global, ptr> s4 = S<&global, &global>();
 // CHECK-ELIDE-NOTREE: no viable conversion from 'S<[...], &global>' to 'S<[...], ptr aka nullptr>
 
 Wrapper<S<&global, nullptr>> W1 = MakeWrapper<S<&global, ptr>>();
-Wrapper<S<&global, static_cast<int *>(0)>> W2 = MakeWrapper<S<&global, ptr>>();
+Wrapper<S<&global, static_cast<int*>(0)>> W2 = MakeWrapper<S<&global, ptr>>();
 
 Wrapper<S<&global, nullptr>> W3 = MakeWrapper<S<&global, &global>>();
 // CHECK-ELIDE-NOTREE: no viable conversion from 'Wrapper<S<[...], &global>>' to 'Wrapper<S<[...], nullptr>>'
@@ -1177,11 +1178,11 @@ Wrapper<S<&global, ptr>> W14 = MakeWrapper<S<&global, &global>>();
 }
 
 namespace TemplateTemplateDefault {
-template <class> class A {};
-template <class> class B {};
-template <class> class C {};
+template <class> class A{};
+template <class> class B{};
+template <class> class C{};
 template <template <class> class, template <class> class = A>
-class T {};
+        class T {};
 
 T<A> t1 = T<A, C>();
 // CHECK-ELIDE-NOTREE: no viable conversion from 'T<[...], template C>' to 'T<[...], (default) template A>'
@@ -1198,7 +1199,7 @@ T<B> t6 = T<A, A>();
 }
 
 namespace Bool {
-template <class> class A {};
+template <class> class A{};
 A<bool> a1 = A<int>();
 // CHECK-ELIDE-NOTREE: no viable conversion from 'A<int>' to 'A<bool>'
 A<int> a2 = A<bool>();
@@ -1223,7 +1224,7 @@ template <class T> using A3 = A<(T::num)>;
 template <class T> using A3 = A<T::num>;
 // CHECK-ELIDE-NOTREE: error: type alias template redefinition with different types ('A<T::num>' vs 'A<(T::num)>')
 
-template <class T> using A4 = A<(T::num)>;
+          template <class T> using A4 = A<(T::num)>;
 template <class T> using A4 = A<((T::num))>;
 // CHECK-ELIDE-NOTREE: type alias template redefinition with different types ('A<((T::num))>' vs 'A<(T::num)>')
 
@@ -1244,7 +1245,7 @@ namespace TemplateArgumentImplicitConversion {
 template <int X> struct condition {};
 
 struct is_const {
-  constexpr operator int() const { return 10; }
+    constexpr operator int() const { return 10; }
 };
 
 using T = condition<(is_const())>;
@@ -1268,8 +1269,8 @@ void test() {
 }
 
 namespace DifferentIntegralTypes {
-template <typename T, T n>
-class A {};
+template<typename T, T n>
+class A{};
 void foo() {
   A<int, 1> a1 = A<long long, 1>();
   A<unsigned int, 1> a2 = A<int, 5>();
@@ -1281,14 +1282,14 @@ void foo() {
 }
 
 namespace MixedDeclarationIntegerArgument {
-template <typename T, T n> class A {};
+template<typename T, T n> class A{};
 int x;
 int y[5];
 
-A<int, 5> a1 = A<int &, x>();
-A<int, 5 - 1> a2 = A<int *, &x>();
-A<int, 5 + 1> a3 = A<int *, y>();
-A<int, 0> a4 = A<int **, nullptr>();
+A<int, 5> a1 = A<int&, x>();
+A<int, 5 - 1> a2 = A<int*, &x>();
+A<int, 5 + 1> a3 = A<int*, y>();
+A<int, 0> a4 = A<int**, nullptr>();
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int &, x>' to 'A<int, 5>'
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int *, &x>' to 'A<int, 5 - 1 aka 4>'
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int *, y>' to 'A<int, 5 + 1 aka 6>'
@@ -1310,10 +1311,10 @@ A<int, 0> a4 = A<int **, nullptr>();
 // CHECK-ELIDE-TREE:     [int ** != int],
 // CHECK-ELIDE-TREE:     [nullptr != 0]>
 
-A<int &, x> a5 = A<int, 3>();
-A<int *, &x> a6 = A<int, 3 - 1>();
-A<int *, y> a7 = A<int, 3 + 1>();
-A<int **, nullptr> a8 = A<int, 3>();
+A<int&, x> a5 = A<int, 3>();
+A<int*, &x> a6 = A<int, 3 - 1>();
+A<int*, y> a7 = A<int, 3 + 1>();
+A<int**, nullptr> a8 = A<int, 3>();
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int, 3>' to 'A<int &, x>'
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int, 3 - 1 aka 2>' to 'A<int *, &x>'
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'A<int, 3 + 1 aka 4>' to 'A<int *, y>'
@@ -1335,8 +1336,8 @@ A<int **, nullptr> a8 = A<int, 3>();
 // CHECK-ELIDE-TREE:     [int != int **],
 // CHECK-ELIDE-TREE:     [3 != nullptr]>
 
-template <class T, T n = x> class B {};
-B<int, 5> b1 = B<int &>();
+template<class T, T n = x> class B{} ;
+B<int, 5> b1 = B<int&>();
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'B<int &, (default) x>' to 'B<int, 5>'
 // CHECK-ELIDE-TREE: error: no viable conversion
 // CHECK-ELIDE-TREE:   B<
@@ -1349,8 +1350,8 @@ B<int &> b2 = B<int, 2>();
 // CHECK-ELIDE-TREE:     [int != int &],
 // CHECK-ELIDE-TREE:     [2 != (default) x]>
 
-template <class T, T n = 11> class C {};
-C<int> c1 = C<int &, x>();
+template<class T, T n = 11> class C {};
+C<int> c1 = C<int&, x>();
 // CHECK-ELIDE-NOTREE: error: no viable conversion from 'C<int &, x>' to 'C<int, (default) 11>'
 // CHECK-ELIDE-TREE: error: no viable conversion
 // CHECK-ELIDE-TREE:   C<
@@ -1365,16 +1366,16 @@ C<int &, x> c2 = C<int>();
 }
 
 namespace default_args {
-template <int x, int y = 1 + 1, int z = 2>
-class A {};
+  template <int x, int y = 1+1, int z = 2>
+  class A {};
 
-void foo(A<0> &M) {
-  // CHECK-ELIDE-NOTREE: no viable conversion from 'A<[...], (default) 1 + 1 aka 2, (default) 2>' to 'A<[...], 0, 0>'
-  A<0, 0, 0> N = M;
+  void foo(A<0> &M) {
+    // CHECK-ELIDE-NOTREE: no viable conversion from 'A<[...], (default) 1 + 1 aka 2, (default) 2>' to 'A<[...], 0, 0>'
+    A<0, 0, 0> N = M;
 
-  // CHECK-ELIDE-NOTREE: no viable conversion from 'A<[2 * ...], (default) 2>' to 'A<[2 * ...], 0>'
-  A<0, 2, 0> N2 = M;
-}
+    // CHECK-ELIDE-NOTREE: no viable conversion from 'A<[2 * ...], (default) 2>' to 'A<[2 * ...], 0>'
+    A<0, 2, 0> N2 = M;
+  }
 }
 
 namespace DefaultNonTypeArgWithDependentType {
@@ -1391,7 +1392,7 @@ namespace PR24587 {
 template <typename T, T v>
 struct integral_constant {};
 
-auto false_ = integral_constant<bool, false>{};
+auto false_ = integral_constant<bool, false> {};
 
 template <typename T>
 void f(T, decltype(false_));
@@ -1438,15 +1439,16 @@ enum class X {
   X2,
 };
 
-template <X x> struct EnumToType;
+template<X x> struct EnumToType;
 
 template <> struct EnumToType<X::X1> { using type = int; };
 
 template <> struct EnumToType<X::X2> { using type = double; };
 
+
 template <X x> using VectorType = vector<typename EnumToType<x>::type>;
 
-template <X x> void D(const VectorType<x> &);
+template <X x> void D(const VectorType<x>&);
 
 void run() {
   D<X::X1>(VectorType<X::X2>());
@@ -1473,16 +1475,16 @@ void take_ref(A_ref<int>);
 
 void run(A_reg<float> reg, A_ptr<float> ptr, A_ref<float> ref) {
   take_reg(reg);
-  // CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_reg'
-  // CHECK-ELIDE-NOTREE: note:     candidate function not viable: no known conversion from 'A_reg<float>' to 'A_reg<int>' for 1st argument
+// CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_reg'
+// CHECK-ELIDE-NOTREE: note:     candidate function not viable: no known conversion from 'A_reg<float>' to 'A_reg<int>' for 1st argument
 
   take_ptr(ptr);
-  // CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_ptr'
-  // CHECK-ELIDE-NOTREE: note:     candidate function not viable: no known conversion from 'A_ptr<float>' to 'A_ptr<int>' for 1st argument
+// CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_ptr'
+// CHECK-ELIDE-NOTREE: note:     candidate function not viable: no known conversion from 'A_ptr<float>' to 'A_ptr<int>' for 1st argument
 
   take_ref(ref);
-  // CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_ref'
-  // CHECK-ELIDE-NOTREE: note: candidate function not viable: no known conversion from 'const A<float>' to 'const A<int>' for 1st argument
+// CHECK-ELIDE-NOTREE: error: no matching function for call to 'take_ref'
+// CHECK-ELIDE-NOTREE: note: candidate function not viable: no known conversion from 'const A<float>' to 'const A<int>' for 1st argument
 }
 }
 
@@ -1492,6 +1494,6 @@ void run(A_reg<float> reg, A_ptr<float> ptr, A_ref<float> ref) {
 // CHECK-NOELIDE-TREE: {{[0-9]*}} errors generated.
 
 namespace pr30831 {
-template <typename T> struct A { static A<T> const a; };
-template <typename T> A<T> A<T>::a = A<T>();
+  template <typename T> struct A { static A<T> const a; };
+  template <typename T> A<T> A<T>::a = A<T>();
 }

@@ -49,7 +49,8 @@ StringRef makeCanonicalName(StringRef Str, IncludeSorter::IncludeStyle Style) {
     if (StartIndex == StringRef::npos) {
       StartIndex = 0;
     }
-    return Canonical.substr(0, Canonical.find_first_of('+', StartIndex));
+    return Canonical.substr(
+        0, Canonical.find_first_of('+', StartIndex));
   }
   return removeFirstSuffix(
       removeFirstSuffix(Str, {".cc", ".cpp", ".c", ".h", ".hpp"}),
@@ -76,8 +77,8 @@ determineIncludeKind(StringRef CanonicalFile, StringRef IncludeFile,
                                       : IncludeSorter::IK_CXXSystemInclude;
   }
   StringRef CanonicalInclude = makeCanonicalName(IncludeFile, Style);
-  if (CanonicalFile.endswith(CanonicalInclude) ||
-      CanonicalInclude.endswith(CanonicalFile)) {
+  if (CanonicalFile.endswith(CanonicalInclude)
+      || CanonicalInclude.endswith(CanonicalFile)) {
     return IncludeSorter::IK_MainTUInclude;
   }
   if ((Style == IncludeSorter::IS_Google) ||

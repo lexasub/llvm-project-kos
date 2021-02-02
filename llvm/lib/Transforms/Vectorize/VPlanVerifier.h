@@ -38,4 +38,4 @@ struct VPlanVerifier {
 };
 } // namespace llvm
 
-#endif // LLVM_TRANSFORMS_VECTORIZE_VPLANVERIFIER_H
+#endif //LLVM_TRANSFORMS_VECTORIZE_VPLANVERIFIER_H

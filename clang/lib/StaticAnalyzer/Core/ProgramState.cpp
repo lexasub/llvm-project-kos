@@ -23,18 +23,17 @@
 using namespace clang;
 using namespace ento;
 
-namespace clang {
-namespace ento {
+namespace clang { namespace  ento {
 /// Increments the number of times this state is referenced.
 
 void ProgramStateRetain(const ProgramState *state) {
-  ++const_cast<ProgramState *>(state)->refCount;
+  ++const_cast<ProgramState*>(state)->refCount;
 }
 
 /// Decrement the number of times this state is referenced.
 void ProgramStateRelease(const ProgramState *state) {
   assert(state->refCount > 0);
-  ProgramState *s = const_cast<ProgramState *>(state);
+  ProgramState *s = const_cast<ProgramState*>(state);
   if (--s->refCount == 0) {
     ProgramStateManager &Mgr = s->getStateManager();
     Mgr.StateSet.RemoveNode(s);
@@ -42,18 +41,25 @@ void ProgramStateRelease(const ProgramState *state) {
     Mgr.freeStates.push_back(s);
   }
 }
-} // namespace ento
-} // namespace clang
+}}
 
-ProgramState::ProgramState(ProgramStateManager *mgr, const Environment &env,
-                           StoreRef st, GenericDataMap gdm)
-    : stateMgr(mgr), Env(env), store(st.getStore()), GDM(gdm), refCount(0) {
+ProgramState::ProgramState(ProgramStateManager *mgr, const Environment& env,
+                 StoreRef st, GenericDataMap gdm)
+  : stateMgr(mgr),
+    Env(env),
+    store(st.getStore()),
+    GDM(gdm),
+    refCount(0) {
   stateMgr->getStoreManager().incrementReferenceCount(store);
 }
 
 ProgramState::ProgramState(const ProgramState &RHS)
-    : llvm::FoldingSetNode(), stateMgr(RHS.stateMgr), Env(RHS.Env),
-      store(RHS.store), GDM(RHS.GDM), refCount(0) {
+    : llvm::FoldingSetNode(),
+      stateMgr(RHS.stateMgr),
+      Env(RHS.Env),
+      store(RHS.store),
+      GDM(RHS.GDM),
+      refCount(0) {
   stateMgr->getStoreManager().incrementReferenceCount(store);
 }
 
@@ -71,16 +77,17 @@ ProgramStateManager::ProgramStateManager(ASTContext &Ctx,
                                          ConstraintManagerCreator CreateCMgr,
                                          llvm::BumpPtrAllocator &alloc,
                                          ExprEngine *ExprEng)
-    : Eng(ExprEng), EnvMgr(alloc), GDMFactory(alloc),
-      svalBuilder(createSimpleSValBuilder(alloc, Ctx, *this)),
-      CallEventMgr(new CallEventManager(alloc)), Alloc(alloc) {
+  : Eng(ExprEng), EnvMgr(alloc), GDMFactory(alloc),
+    svalBuilder(createSimpleSValBuilder(alloc, Ctx, *this)),
+    CallEventMgr(new CallEventManager(alloc)), Alloc(alloc) {
   StoreMgr = (*CreateSMgr)(*this);
   ConstraintMgr = (*CreateCMgr)(*this, ExprEng);
 }
 
+
 ProgramStateManager::~ProgramStateManager() {
-  for (GDMContextsTy::iterator I = GDMContexts.begin(), E = GDMContexts.end();
-       I != E; ++I)
+  for (GDMContextsTy::iterator I=GDMContexts.begin(), E=GDMContexts.end();
+       I!=E; ++I)
     I->second.second(I->second.first);
 }
 
@@ -99,20 +106,21 @@ ProgramStateRef ProgramStateManager::removeDeadBindingsFromEnvironmentAndStore(
   NewState.Env = EnvMgr.removeDeadBindings(NewState.Env, SymReaper, state);
 
   // Clean up the store.
-  StoreRef newStore =
-      StoreMgr->removeDeadBindings(NewState.getStore(), LCtx, SymReaper);
+  StoreRef newStore = StoreMgr->removeDeadBindings(NewState.getStore(), LCtx,
+                                                   SymReaper);
   NewState.setStore(newStore);
   SymReaper.setReapedStore(newStore);
 
   return getPersistentState(NewState);
 }
 
-ProgramStateRef ProgramState::bindLoc(Loc LV, SVal V,
+ProgramStateRef ProgramState::bindLoc(Loc LV,
+                                      SVal V,
                                       const LocationContext *LCtx,
                                       bool notifyChanges) const {
   ProgramStateManager &Mgr = getStateManager();
-  ProgramStateRef newState =
-      makeWithStore(Mgr.StoreMgr->Bind(getStore(), LV, V));
+  ProgramStateRef newState = makeWithStore(Mgr.StoreMgr->Bind(getStore(),
+                                                             LV, V));
   const MemRegion *MR = LV.getAsRegion();
   if (MR && notifyChanges)
     return Mgr.getOwningEngine().processRegionChange(newState, MR, LCtx);
@@ -142,35 +150,44 @@ ProgramState::bindDefaultZero(SVal loc, const LocationContext *LCtx) const {
 typedef ArrayRef<const MemRegion *> RegionList;
 typedef ArrayRef<SVal> ValueList;
 
-ProgramStateRef ProgramState::invalidateRegions(
-    RegionList Regions, const Expr *E, unsigned Count,
-    const LocationContext *LCtx, bool CausedByPointerEscape,
-    InvalidatedSymbols *IS, const CallEvent *Call,
-    RegionAndSymbolInvalidationTraits *ITraits) const {
+ProgramStateRef
+ProgramState::invalidateRegions(RegionList Regions,
+                             const Expr *E, unsigned Count,
+                             const LocationContext *LCtx,
+                             bool CausedByPointerEscape,
+                             InvalidatedSymbols *IS,
+                             const CallEvent *Call,
+                             RegionAndSymbolInvalidationTraits *ITraits) const {
   SmallVector<SVal, 8> Values;
-  for (RegionList::const_iterator I = Regions.begin(), End = Regions.end();
-       I != End; ++I)
+  for (RegionList::const_iterator I = Regions.begin(),
+                                  End = Regions.end(); I != End; ++I)
     Values.push_back(loc::MemRegionVal(*I));
 
   return invalidateRegionsImpl(Values, E, Count, LCtx, CausedByPointerEscape,
                                IS, ITraits, Call);
 }
 
-ProgramStateRef ProgramState::invalidateRegions(
-    ValueList Values, const Expr *E, unsigned Count,
-    const LocationContext *LCtx, bool CausedByPointerEscape,
-    InvalidatedSymbols *IS, const CallEvent *Call,
-    RegionAndSymbolInvalidationTraits *ITraits) const {
+ProgramStateRef
+ProgramState::invalidateRegions(ValueList Values,
+                             const Expr *E, unsigned Count,
+                             const LocationContext *LCtx,
+                             bool CausedByPointerEscape,
+                             InvalidatedSymbols *IS,
+                             const CallEvent *Call,
+                             RegionAndSymbolInvalidationTraits *ITraits) const {
 
   return invalidateRegionsImpl(Values, E, Count, LCtx, CausedByPointerEscape,
                                IS, ITraits, Call);
 }
 
-ProgramStateRef ProgramState::invalidateRegionsImpl(
-    ValueList Values, const Expr *E, unsigned Count,
-    const LocationContext *LCtx, bool CausedByPointerEscape,
-    InvalidatedSymbols *IS, RegionAndSymbolInvalidationTraits *ITraits,
-    const CallEvent *Call) const {
+ProgramStateRef
+ProgramState::invalidateRegionsImpl(ValueList Values,
+                                    const Expr *E, unsigned Count,
+                                    const LocationContext *LCtx,
+                                    bool CausedByPointerEscape,
+                                    InvalidatedSymbols *IS,
+                                    RegionAndSymbolInvalidationTraits *ITraits,
+                                    const CallEvent *Call) const {
   ProgramStateManager &Mgr = getStateManager();
   ExprEngine &Eng = Mgr.getOwningEngine();
 
@@ -184,15 +201,18 @@ ProgramStateRef ProgramState::invalidateRegionsImpl(
 
   StoreManager::InvalidatedRegions TopLevelInvalidated;
   StoreManager::InvalidatedRegions Invalidated;
-  const StoreRef &newStore = Mgr.StoreMgr->invalidateRegions(
-      getStore(), Values, E, Count, LCtx, Call, *IS, *ITraits,
-      &TopLevelInvalidated, &Invalidated);
+  const StoreRef &newStore
+  = Mgr.StoreMgr->invalidateRegions(getStore(), Values, E, Count, LCtx, Call,
+                                    *IS, *ITraits, &TopLevelInvalidated,
+                                    &Invalidated);
 
   ProgramStateRef newState = makeWithStore(newStore);
 
   if (CausedByPointerEscape) {
-    newState = Eng.notifyCheckersOfPointerEscape(
-        newState, IS, TopLevelInvalidated, Call, *ITraits);
+    newState = Eng.notifyCheckersOfPointerEscape(newState, IS,
+                                                 TopLevelInvalidated,
+                                                 Call,
+                                                 *ITraits);
   }
 
   return Eng.processRegionChanges(newState, IS, TopLevelInvalidated,
@@ -204,7 +224,7 @@ ProgramStateRef ProgramState::killBinding(Loc LV) const {
 
   Store OldStore = getStore();
   const StoreRef &newStore =
-      getStateManager().StoreMgr->killBinding(OldStore, LV);
+    getStateManager().StoreMgr->killBinding(OldStore, LV);
 
   if (newStore.getStore() == OldStore)
     return this;
@@ -216,7 +236,7 @@ ProgramStateRef
 ProgramState::enterStackFrame(const CallEvent &Call,
                               const StackFrameContext *CalleeCtx) const {
   const StoreRef &NewStore =
-      getStateManager().StoreMgr->enterStackFrame(getStore(), Call, CalleeCtx);
+    getStateManager().StoreMgr->enterStackFrame(getStore(), Call, CalleeCtx);
   return makeWithStore(NewStore);
 }
 
@@ -254,8 +274,9 @@ SVal ProgramState::getSVal(Loc location, QualType T) const {
   // to the type of T, which is not always the case (e.g. for void).
   if (!T.isNull() && (T->isIntegralOrEnumerationType() || Loc::isLocType(T))) {
     if (SymbolRef sym = V.getAsSymbol()) {
-      if (const llvm::APSInt *Int =
-              getStateManager().getConstraintManager().getSymVal(this, sym)) {
+      if (const llvm::APSInt *Int = getStateManager()
+                                    .getConstraintManager()
+                                    .getSymVal(this, sym)) {
         // FIXME: Because we don't correctly model (yet) sign-extension
         // and truncation of symbolic values, we need to convert
         // the integer value to the correct signedness and bitwidth.
@@ -284,10 +305,11 @@ SVal ProgramState::getSVal(Loc location, QualType T) const {
 }
 
 ProgramStateRef ProgramState::BindExpr(const Stmt *S,
-                                       const LocationContext *LCtx, SVal V,
-                                       bool Invalidate) const {
-  Environment NewEnv = getStateManager().EnvMgr.bindExpr(
-      Env, EnvironmentEntry(S, LCtx), V, Invalidate);
+                                           const LocationContext *LCtx,
+                                           SVal V, bool Invalidate) const{
+  Environment NewEnv =
+    getStateManager().EnvMgr.bindExpr(Env, EnvironmentEntry(S, LCtx), V,
+                                      Invalidate);
   if (NewEnv == Env)
     return this;
 
@@ -297,9 +319,9 @@ ProgramStateRef ProgramState::BindExpr(const Stmt *S,
 }
 
 ProgramStateRef ProgramState::assumeInBound(DefinedOrUnknownSVal Idx,
-                                            DefinedOrUnknownSVal UpperBound,
-                                            bool Assumption,
-                                            QualType indexTy) const {
+                                      DefinedOrUnknownSVal UpperBound,
+                                      bool Assumption,
+                                      QualType indexTy) const {
   if (Idx.isUnknown() || UpperBound.isUnknown())
     return this;
 
@@ -317,14 +339,15 @@ ProgramStateRef ProgramState::assumeInBound(DefinedOrUnknownSVal Idx,
   nonloc::ConcreteInt Min(BVF.getMinValue(indexTy));
 
   // Adjust the index.
-  SVal newIdx =
-      svalBuilder.evalBinOpNN(this, BO_Add, Idx.castAs<NonLoc>(), Min, indexTy);
+  SVal newIdx = svalBuilder.evalBinOpNN(this, BO_Add,
+                                        Idx.castAs<NonLoc>(), Min, indexTy);
   if (newIdx.isUnknownOrUndef())
     return this;
 
   // Adjust the upper bound.
-  SVal newBound = svalBuilder.evalBinOpNN(
-      this, BO_Add, UpperBound.castAs<NonLoc>(), Min, indexTy);
+  SVal newBound =
+    svalBuilder.evalBinOpNN(this, BO_Add, UpperBound.castAs<NonLoc>(),
+                            Min, indexTy);
 
   if (newBound.isUnknownOrUndef())
     return this;
@@ -365,18 +388,18 @@ ConditionTruthVal ProgramState::isNull(SVal V) const {
   return getStateManager().ConstraintMgr->isNull(this, Sym);
 }
 
-ProgramStateRef
-ProgramStateManager::getInitialState(const LocationContext *InitLoc) {
-  ProgramState State(this, EnvMgr.getInitialEnvironment(),
-                     StoreMgr->getInitialStore(InitLoc),
-                     GDMFactory.getEmptyMap());
+ProgramStateRef ProgramStateManager::getInitialState(const LocationContext *InitLoc) {
+  ProgramState State(this,
+                EnvMgr.getInitialEnvironment(),
+                StoreMgr->getInitialStore(InitLoc),
+                GDMFactory.getEmptyMap());
 
   return getPersistentState(State);
 }
 
-ProgramStateRef
-ProgramStateManager::getPersistentStateWithGDM(ProgramStateRef FromState,
-                                               ProgramStateRef GDMState) {
+ProgramStateRef ProgramStateManager::getPersistentStateWithGDM(
+                                                     ProgramStateRef FromState,
+                                                     ProgramStateRef GDMState) {
   ProgramState NewState(*FromState);
   NewState.GDM = GDMState->GDM;
   return getPersistentState(NewState);
@@ -395,8 +418,9 @@ ProgramStateRef ProgramStateManager::getPersistentState(ProgramState &State) {
   if (!freeStates.empty()) {
     newState = freeStates.back();
     freeStates.pop_back();
-  } else {
-    newState = (ProgramState *)Alloc.Allocate<ProgramState>();
+  }
+  else {
+    newState = (ProgramState*) Alloc.Allocate<ProgramState>();
   }
   new (newState) ProgramState(State);
   StateSet.InsertNode(newState, InsertPos);
@@ -454,9 +478,11 @@ void ProgramState::printDOT(raw_ostream &Out, const LocationContext *LCtx,
   printJson(Out, LCtx, /*NL=*/"\\l", Space, /*IsDot=*/true);
 }
 
-LLVM_DUMP_METHOD void ProgramState::dump() const { printJson(llvm::errs()); }
+LLVM_DUMP_METHOD void ProgramState::dump() const {
+  printJson(llvm::errs());
+}
 
-AnalysisManager &ProgramState::getAnalysisManager() const {
+AnalysisManager& ProgramState::getAnalysisManager() const {
   return stateMgr->getOwningEngine().getAnalysisManager();
 }
 
@@ -464,13 +490,16 @@ AnalysisManager &ProgramState::getAnalysisManager() const {
 // Generic Data Map.
 //===----------------------------------------------------------------------===//
 
-void *const *ProgramState::FindGDM(void *K) const { return GDM.lookup(K); }
+void *const* ProgramState::FindGDM(void *K) const {
+  return GDM.lookup(K);
+}
 
-void *ProgramStateManager::FindGDMContext(
-    void *K, void *(*CreateContext)(llvm::BumpPtrAllocator &),
-    void (*DeleteContext)(void *)) {
+void*
+ProgramStateManager::FindGDMContext(void *K,
+                               void *(*CreateContext)(llvm::BumpPtrAllocator&),
+                               void (*DeleteContext)(void*)) {
 
-  std::pair<void *, void (*)(void *)> &p = GDMContexts[K];
+  std::pair<void*, void (*)(void*)>& p = GDMContexts[K];
   if (!p.first) {
     p.first = CreateContext(Alloc);
     p.second = DeleteContext;
@@ -479,8 +508,7 @@ void *ProgramStateManager::FindGDMContext(
   return p.first;
 }
 
-ProgramStateRef ProgramStateManager::addGDM(ProgramStateRef St, void *Key,
-                                            void *Data) {
+ProgramStateRef ProgramStateManager::addGDM(ProgramStateRef St, void *Key, void *Data){
   ProgramState::GenericDataMap M1 = St->getGDM();
   ProgramState::GenericDataMap M2 = GDMFactory.add(M1, Key, Data);
 
@@ -492,8 +520,7 @@ ProgramStateRef ProgramStateManager::addGDM(ProgramStateRef St, void *Key,
   return getPersistentState(NewSt);
 }
 
-ProgramStateRef ProgramStateManager::removeGDM(ProgramStateRef state,
-                                               void *Key) {
+ProgramStateRef ProgramStateManager::removeGDM(ProgramStateRef state, void *Key) {
   ProgramState::GenericDataMap OldM = state->getGDM();
   ProgramState::GenericDataMap NewM = GDMFactory.remove(OldM, Key);
 
@@ -519,8 +546,7 @@ bool ScanReachableSymbols::scan(nonloc::LazyCompoundVal val) {
 }
 
 bool ScanReachableSymbols::scan(nonloc::CompoundVal val) {
-  for (nonloc::CompoundVal::iterator I = val.begin(), E = val.end(); I != E;
-       ++I)
+  for (nonloc::CompoundVal::iterator I=val.begin(), E=val.end(); I!=E; ++I)
     if (!scan(*I))
       return false;
 
@@ -596,7 +622,7 @@ bool ScanReachableSymbols::scan(const MemRegion *R) {
   if (const BlockDataRegion *BDR = dyn_cast<BlockDataRegion>(R)) {
     BlockDataRegion::referenced_vars_iterator I = BDR->referenced_vars_begin(),
                                               E = BDR->referenced_vars_end();
-    for (; I != E; ++I) {
+    for ( ; I != E; ++I) {
       if (!scan(I.getCapturedRegion()))
         return false;
     }
@@ -605,8 +631,7 @@ bool ScanReachableSymbols::scan(const MemRegion *R) {
   return true;
 }
 
-bool ProgramState::scanReachableSymbols(SVal val,
-                                        SymbolVisitor &visitor) const {
+bool ProgramState::scanReachableSymbols(SVal val, SymbolVisitor& visitor) const {
   ScanReachableSymbols S(this, visitor);
   return S.scan(val);
 }

@@ -152,18 +152,18 @@ private:
   clang::ASTContext
       *m_ast_context; ///< The AST context to use for identifiers and types.
   clang::ASTConsumer *m_passthrough; ///< The ASTConsumer down the chain, for
-                                     /// passthrough.  NULL if it's a
-                                     /// SemaConsumer.
+                                     ///passthrough.  NULL if it's a
+                                     ///SemaConsumer.
   clang::SemaConsumer *m_passthrough_sema; ///< The SemaConsumer down the chain,
-                                           /// for passthrough.  NULL if it's an
-                                           /// ASTConsumer.
+                                           ///for passthrough.  NULL if it's an
+                                           ///ASTConsumer.
 
   std::vector<clang::NamedDecl *> m_decls; ///< Persistent declarations to
-                                           /// register assuming the expression
-                                           /// succeeds.
+                                           ///register assuming the expression
+                                           ///succeeds.
 
   Target &m_target;    ///< The target, which contains the persistent variable
-                       /// store and the
+                       ///store and the
   clang::Sema *m_sema; ///< The Sema to use.
   bool m_top_level;
 };

@@ -37,10 +37,10 @@ struct WasmObjectHeader {
 };
 
 struct WasmDylinkInfo {
-  uint32_t MemorySize;           // Memory size in bytes
-  uint32_t MemoryAlignment;      // P2 alignment of memory
-  uint32_t TableSize;            // Table size in elements
-  uint32_t TableAlignment;       // P2 alignment of table
+  uint32_t MemorySize; // Memory size in bytes
+  uint32_t MemoryAlignment;  // P2 alignment of memory
+  uint32_t TableSize;  // Table size in elements
+  uint32_t TableAlignment;  // P2 alignment of table
   std::vector<StringRef> Needed; // Shared library dependencies
 };
 
@@ -137,11 +137,11 @@ struct WasmFunction {
   ArrayRef<uint8_t> Body;
   uint32_t CodeSectionOffset;
   uint32_t Size;
-  uint32_t CodeOffset;            // start of Locals and Body
+  uint32_t CodeOffset;  // start of Locals and Body
   Optional<StringRef> ExportName; // from the "export" section
-  StringRef SymbolName;           // from the "linking" section
-  StringRef DebugName;            // from the "name" section
-  uint32_t Comdat;                // from the "comdat info" section
+  StringRef SymbolName; // from the "linking" section
+  StringRef DebugName;  // from the "name" section
+  uint32_t Comdat;      // from the "comdat info" section
 };
 
 struct WasmDataSegment {

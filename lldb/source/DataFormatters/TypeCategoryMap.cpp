@@ -11,6 +11,7 @@
 #include "lldb/DataFormatters/FormatClasses.h"
 #include "lldb/Utility/Log.h"
 
+
 using namespace lldb;
 using namespace lldb_private;
 
@@ -178,7 +179,9 @@ void TypeCategoryMap::Get(FormattersMatchData &match_data, ImplSP &retval) {
   if (log) {
     for (auto match : match_data.GetMatchesVector()) {
       LLDB_LOGF(
-          log, "[%s] candidate match = %s %s %s %s", __FUNCTION__,
+          log,
+          "[%s] candidate match = %s %s %s %s",
+          __FUNCTION__,
           match.GetTypeName().GetCString(),
           match.DidStripPointer() ? "strip-pointers" : "no-strip-pointers",
           match.DidStripReference() ? "strip-reference" : "no-strip-reference",

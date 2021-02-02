@@ -71,7 +71,7 @@ CmpInst::Predicate IRInstructionData::getPredicate() const {
 
   if (RevisedPredicate.hasValue())
     return RevisedPredicate.getValue();
-
+  
   return cast<CmpInst>(Inst)->getPredicate();
 }
 
@@ -232,11 +232,11 @@ unsigned IRInstructionMapper::mapToLegalUnsigned(
 IRInstructionData *
 IRInstructionMapper::allocateIRInstructionData(Instruction &I, bool Legality,
                                                IRInstructionDataList &IDL) {
-  return new (InstDataAllocator->Allocate())
-      IRInstructionData(I, Legality, IDL);
+  return new (InstDataAllocator->Allocate()) IRInstructionData(I, Legality, IDL);
 }
 
-IRInstructionDataList *IRInstructionMapper::allocateIRInstructionDataList() {
+IRInstructionDataList *
+IRInstructionMapper::allocateIRInstructionDataList() {
   return new (IDLAllocator->Allocate()) IRInstructionDataList();
 }
 
@@ -367,9 +367,10 @@ bool IRSimilarityCandidate::isSimilar(const IRSimilarityCandidate &A,
 /// \returns true if there exists a possible mapping between the source
 /// Instruction operands and the target Instruction operands, and false if not.
 static bool checkNumberingAndReplaceCommutative(
-    const DenseMap<Value *, unsigned> &SourceValueToNumberMapping,
-    DenseMap<unsigned, DenseSet<unsigned>> &CurrentSrcTgtNumberMapping,
-    ArrayRef<Value *> &SourceOperands, DenseSet<unsigned> &TargetValueNumbers) {
+  const DenseMap<Value *, unsigned> &SourceValueToNumberMapping,
+  DenseMap<unsigned, DenseSet<unsigned>> &CurrentSrcTgtNumberMapping,
+  ArrayRef<Value *> &SourceOperands,
+  DenseSet<unsigned> &TargetValueNumbers){
 
   DenseMap<unsigned, DenseSet<unsigned>>::iterator ValueMappingIt;
 
@@ -405,7 +406,7 @@ static bool checkNumberingAndReplaceCommutative(
     // If we could not find a Value, return 0.
     if (NewSet.empty())
       return false;
-
+    
     // Otherwise replace the old mapping with the newly constructed one.
     if (NewSet.size() != ValueMappingIt->second.size())
       ValueMappingIt->second.swap(NewSet);
@@ -414,6 +415,7 @@ static bool checkNumberingAndReplaceCommutative(
     // any items from the other operands, so we move to check the next operand.
     if (ValueMappingIt->second.size() != 1)
       continue;
+
 
     unsigned ValToRemove = *ValueMappingIt->second.begin();
     // When there is only one item left in the mapping for and operand, remove
@@ -526,9 +528,9 @@ bool IRSimilarityCandidate::compareNonCommutativeOperandMapping(
   return true;
 }
 
-bool IRSimilarityCandidate::compareCommutativeOperandMapping(OperandMapping A,
-                                                             OperandMapping B) {
-  DenseSet<unsigned> ValueNumbersA;
+bool IRSimilarityCandidate::compareCommutativeOperandMapping(
+    OperandMapping A, OperandMapping B) {
+  DenseSet<unsigned> ValueNumbersA;      
   DenseSet<unsigned> ValueNumbersB;
 
   ArrayRef<Value *>::iterator VItA = A.OperVals.begin();
@@ -536,7 +538,8 @@ bool IRSimilarityCandidate::compareCommutativeOperandMapping(OperandMapping A,
   unsigned OperandLength = A.OperVals.size();
 
   // Find the value number sets for the operands.
-  for (unsigned Idx = 0; Idx < OperandLength; Idx++, VItA++, VItB++) {
+  for (unsigned Idx = 0; Idx < OperandLength;
+       Idx++, VItA++, VItB++) {
     ValueNumbersA.insert(A.IRSC.ValueToNumber.find(*VItA)->second);
     ValueNumbersB.insert(B.IRSC.ValueToNumber.find(*VItB)->second);
   }
@@ -905,7 +908,7 @@ bool IRSimilarityIdentifierWrapperPass::runOnModule(Module &M) {
 
 AnalysisKey IRSimilarityAnalysis::Key;
 IRSimilarityIdentifier IRSimilarityAnalysis::run(Module &M,
-                                                 ModuleAnalysisManager &) {
+                                               ModuleAnalysisManager &) {
 
   return IRSimilarityIdentifier(M);
 }

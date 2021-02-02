@@ -8,10 +8,10 @@
 // RUN: %env_asan_opts=thread_local_quarantine_size_kb=0:quarantine_size_mb=64 not %run %t 2>&1 | \
 // RUN:   FileCheck %s --check-prefix=CHECK-FOR-PARAMETER-ERROR
 
-#include <sanitizer/allocator_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sanitizer/allocator_interface.h>
 
 // The idea is allocate a lot of small blocks, totaling 5Mb of user memory,
 // and verify that quarantine does not incur too much memory overhead.
@@ -30,7 +30,7 @@ int main() {
   for (int i = 0; i < kNumAllocs; i++) {
     char *temp = new char[kAllocSize];
     memset(temp, -1, kAllocSize);
-    delete[](temp);
+    delete [] (temp);
   }
 
   size_t new_heap_size = __sanitizer_get_heap_size();

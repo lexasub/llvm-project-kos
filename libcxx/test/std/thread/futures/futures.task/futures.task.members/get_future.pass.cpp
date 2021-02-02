@@ -20,43 +20,50 @@
 
 #include "test_macros.h"
 
-class A {
-  long data_;
+class A
+{
+    long data_;
 
 public:
-  explicit A(long i) : data_(i) {}
+    explicit A(long i) : data_(i) {}
 
-  long operator()(long i, long j) const { return data_ + i + j; }
+    long operator()(long i, long j) const {return data_ + i + j;}
 };
 
-int main(int, char**) {
-  {
-    std::packaged_task<double(int, char)> p(A(5));
-    std::future<double> f = p.get_future();
-    p(3, 'a');
-    assert(f.get() == 105.0);
-  }
+int main(int, char**)
+{
+    {
+        std::packaged_task<double(int, char)> p(A(5));
+        std::future<double> f = p.get_future();
+        p(3, 'a');
+        assert(f.get() == 105.0);
+    }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  {
-    std::packaged_task<double(int, char)> p(A(5));
-    std::future<double> f = p.get_future();
-    try {
-      f = p.get_future();
-      assert(false);
-    } catch (const std::future_error& e) {
-      assert(e.code() ==
-             make_error_code(std::future_errc::future_already_retrieved));
+    {
+        std::packaged_task<double(int, char)> p(A(5));
+        std::future<double> f = p.get_future();
+        try
+        {
+            f = p.get_future();
+            assert(false);
+        }
+        catch (const std::future_error& e)
+        {
+            assert(e.code() ==  make_error_code(std::future_errc::future_already_retrieved));
+        }
     }
-  }
-  {
-    std::packaged_task<double(int, char)> p;
-    try {
-      std::future<double> f = p.get_future();
-      assert(false);
-    } catch (const std::future_error& e) {
-      assert(e.code() == make_error_code(std::future_errc::no_state));
+    {
+        std::packaged_task<double(int, char)> p;
+        try
+        {
+            std::future<double> f = p.get_future();
+            assert(false);
+        }
+        catch (const std::future_error& e)
+        {
+            assert(e.code() ==  make_error_code(std::future_errc::no_state));
+        }
     }
-  }
 #endif
 
   return 0;

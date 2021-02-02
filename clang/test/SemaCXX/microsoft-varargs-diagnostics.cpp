@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -triple thumbv7-windows -fms-compatibility -fsyntax-only %s -verify
 
 extern "C" {
-typedef char *va_list;
+typedef char * va_list;
 }
 
 void test_no_arguments(int i, ...) {
@@ -39,3 +39,4 @@ void test_non_pointer_addressof(int i, ...) {
   // expected-error@-1{{passing 'int' to parameter of incompatible type 'const char *': type mismatch at 2nd parameter ('int' vs 'const char *')}}
   // expected-error@-2{{passing 'int' to parameter of incompatible type 'unsigned int': type mismatch at 3rd parameter ('int' vs 'unsigned int')}}
 }
+

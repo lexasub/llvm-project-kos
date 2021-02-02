@@ -40,7 +40,7 @@ LLVM_ATTRIBUTE_NORETURN inline void exitWithError(Error E, StringRef Whence) {
 }
 
 template <typename T, typename... Ts>
-T unwrapOrError(Expected<T> EO, Ts &&...Args) {
+T unwrapOrError(Expected<T> EO, Ts &&... Args) {
   if (EO)
     return std::move(*EO);
   exitWithError(EO.takeError(), std::forward<Ts>(Args)...);

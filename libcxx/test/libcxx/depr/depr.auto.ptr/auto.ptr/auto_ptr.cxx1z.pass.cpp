@@ -23,8 +23,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::auto_ptr<int> p;
+int main(int, char**)
+{
+    std::auto_ptr<int> p;
 
   return 0;
 }

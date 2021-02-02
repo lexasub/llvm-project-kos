@@ -159,7 +159,7 @@ void getSignature(const CodeCompletionString &CCS, std::string *Signature,
       *Snippet += Chunk.Text;
       break;
     case CodeCompletionString::CK_Optional:
-      assert(Chunk.Optional);
+      assert(Chunk.Optional);      
       // No need to create placeholders for default arguments in Snippet.
       appendOptionalChunk(*Chunk.Optional, Signature);
       break;

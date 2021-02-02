@@ -7,9 +7,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "MipsTargetObjectFile.h"
-#include "MCTargetDesc/MipsMCExpr.h"
 #include "MipsSubtarget.h"
 #include "MipsTargetMachine.h"
+#include "MCTargetDesc/MipsMCExpr.h"
 #include "llvm/BinaryFormat/ELF.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -20,29 +20,29 @@
 #include "llvm/Target/TargetMachine.h"
 using namespace llvm;
 
-static cl::opt<unsigned> SSThreshold(
-    "mips-ssection-threshold", cl::Hidden,
-    cl::desc("Small data and bss section threshold size (default=8)"),
-    cl::init(8));
+static cl::opt<unsigned>
+SSThreshold("mips-ssection-threshold", cl::Hidden,
+            cl::desc("Small data and bss section threshold size (default=8)"),
+            cl::init(8));
 
 static cl::opt<bool>
-    LocalSData("mlocal-sdata", cl::Hidden,
-               cl::desc("MIPS: Use gp_rel for object-local data."),
-               cl::init(true));
+LocalSData("mlocal-sdata", cl::Hidden,
+           cl::desc("MIPS: Use gp_rel for object-local data."),
+           cl::init(true));
 
 static cl::opt<bool>
-    ExternSData("mextern-sdata", cl::Hidden,
-                cl::desc("MIPS: Use gp_rel for data that is not defined by the "
-                         "current object."),
-                cl::init(true));
+ExternSData("mextern-sdata", cl::Hidden,
+            cl::desc("MIPS: Use gp_rel for data that is not defined by the "
+                     "current object."),
+            cl::init(true));
 
 static cl::opt<bool>
-    EmbeddedData("membedded-data", cl::Hidden,
-                 cl::desc("MIPS: Try to allocate variables in the following"
-                          " sections if possible: .rodata, .sdata, .data ."),
-                 cl::init(false));
+EmbeddedData("membedded-data", cl::Hidden,
+             cl::desc("MIPS: Try to allocate variables in the following"
+                      " sections if possible: .rodata, .sdata, .data ."),
+             cl::init(false));
 
-void MipsTargetObjectFile::Initialize(MCContext &Ctx, const TargetMachine &TM) {
+void MipsTargetObjectFile::Initialize(MCContext &Ctx, const TargetMachine &TM){
   TargetLoweringObjectFileELF::Initialize(Ctx, TM);
 
   SmallDataSection = getContext().getELFSection(
@@ -79,9 +79,9 @@ bool MipsTargetObjectFile::IsGlobalInSmallSection(
 
 /// Return true if this global address should be placed into small data/bss
 /// section.
-bool MipsTargetObjectFile::IsGlobalInSmallSection(const GlobalObject *GO,
-                                                  const TargetMachine &TM,
-                                                  SectionKind Kind) const {
+bool MipsTargetObjectFile::
+IsGlobalInSmallSection(const GlobalObject *GO, const TargetMachine &TM,
+                       SectionKind Kind) const {
   return IsGlobalInSmallSectionImpl(GO, TM) &&
          (Kind.isData() || Kind.isBSS() || Kind.isCommon() ||
           Kind.isReadOnly());
@@ -90,8 +90,9 @@ bool MipsTargetObjectFile::IsGlobalInSmallSection(const GlobalObject *GO,
 /// Return true if this global address should be placed into small data/bss
 /// section. This method does all the work, except for checking the section
 /// kind.
-bool MipsTargetObjectFile::IsGlobalInSmallSectionImpl(
-    const GlobalObject *GO, const TargetMachine &TM) const {
+bool MipsTargetObjectFile::
+IsGlobalInSmallSectionImpl(const GlobalObject *GO,
+                           const TargetMachine &TM) const {
   const MipsSubtarget &Subtarget =
       *static_cast<const MipsTargetMachine &>(TM).getSubtargetImpl();
 

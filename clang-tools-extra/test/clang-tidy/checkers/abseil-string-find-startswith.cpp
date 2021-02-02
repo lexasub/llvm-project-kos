@@ -2,10 +2,8 @@
 // RUN:   -config="{CheckOptions: [{key: 'abseil-string-find-startswith.StringLikeClasses', value: '::std::basic_string;::basic_string'}]}"
 
 namespace std {
-template <typename T>
-class allocator {};
-template <typename T>
-class char_traits {};
+template <typename T> class allocator {};
+template <typename T> class char_traits {};
 template <typename C, typename T = std::char_traits<C>,
           typename A = std::allocator<C>>
 struct basic_string {
@@ -51,8 +49,7 @@ void tests(std::string s, global_string s2) {
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use !absl::StartsWith
   // CHECK-FIXES: {{^[[:space:]]*}}!absl::StartsWith(s, foo(foo(bar())));{{$}}
 
-  if (s.find("....") == 0) { /* do something */
-  }
+  if (s.find("....") == 0) { /* do something */ }
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use absl::StartsWith
   // CHECK-FIXES: {{^[[:space:]]*}}if (absl::StartsWith(s, "....")) { /* do something */ }{{$}}
 

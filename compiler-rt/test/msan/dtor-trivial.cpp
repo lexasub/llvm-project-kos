@@ -12,9 +12,8 @@
 #include <assert.h>
 #include <sanitizer/msan_interface.h>
 
-template <class T>
-class Vector {
-public:
+template <class T> class Vector {
+ public:
   int size;
   ~Vector() {}
 };

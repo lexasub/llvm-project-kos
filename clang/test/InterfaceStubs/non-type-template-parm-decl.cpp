@@ -7,4 +7,4 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template <bool T> struct S1 {};
+template<bool T> struct S1 {};

@@ -91,18 +91,18 @@ public:
 
   static std::tuple<FileSpec, ConstString> GetExceptionThrowLocation();
 
-  lldb::ValueObjectSP
-  GetExceptionObjectForThread(lldb::ThreadSP thread_sp) override;
+  lldb::ValueObjectSP GetExceptionObjectForThread(
+      lldb::ThreadSP thread_sp) override;
 
-  lldb::ThreadSP
-  GetBacktraceThreadFromException(lldb::ValueObjectSP thread_sp) override;
+  lldb::ThreadSP GetBacktraceThreadFromException(
+      lldb::ValueObjectSP thread_sp) override;
 
   uint32_t GetFoundationVersion();
 
   virtual void GetValuesForGlobalCFBooleans(lldb::addr_t &cf_true,
                                             lldb::addr_t &cf_false);
 
-  virtual bool IsTaggedPointer(lldb::addr_t addr) { return false; }
+  virtual bool IsTaggedPointer (lldb::addr_t addr) { return false; }
 
 protected:
   // Call CreateInstance instead.

@@ -6,4 +6,4 @@
 // RUN:   | FileCheck -strict-whitespace -check-prefix=CHECK2 %s
 // CHECK1: {{^a >>>= b;$}}
 // CHECK2: {{^a >> >= b;$}}
-a >> >= b;
+a >>>= b;

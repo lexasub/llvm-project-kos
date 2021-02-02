@@ -33,9 +33,9 @@ template <
     ,
     typename = std::enable_if_t<__is_trivially_constructible(To)>
 #else
-// See comment below.
+  // See comment below.
 #endif
-#if (__has_feature(is_trivially_copyable) && defined(_LIBCPP_VERSION)) ||      \
+#if (__has_feature(is_trivially_copyable) && defined(_LIBCPP_VERSION)) || \
     (defined(__GNUC__) && __GNUC__ >= 5)
     ,
     typename = std::enable_if_t<std::is_trivially_copyable<To>::value>,

@@ -30,13 +30,12 @@ using namespace llvm;
 #include "SparcGenRegisterInfo.inc"
 
 static cl::opt<bool>
-    ReserveAppRegisters("sparc-reserve-app-registers", cl::Hidden,
-                        cl::init(false),
-                        cl::desc("Reserve application registers (%g2-%g4)"));
+ReserveAppRegisters("sparc-reserve-app-registers", cl::Hidden, cl::init(false),
+                    cl::desc("Reserve application registers (%g2-%g4)"));
 
 SparcRegisterInfo::SparcRegisterInfo() : SparcGenRegisterInfo(SP::O7) {}
 
-const MCPhysReg *
+const MCPhysReg*
 SparcRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   return CSR_SaveList;
 }
@@ -47,7 +46,7 @@ SparcRegisterInfo::getCallPreservedMask(const MachineFunction &MF,
   return CSR_RegMask;
 }
 
-const uint32_t *
+const uint32_t*
 SparcRegisterInfo::getRTCallPreservedMask(CallingConv::ID CC) const {
   return RTCSR_RegMask;
 }
@@ -102,7 +101,7 @@ BitVector SparcRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   return Reserved;
 }
 
-const TargetRegisterClass *
+const TargetRegisterClass*
 SparcRegisterInfo::getPointerRegClass(const MachineFunction &MF,
                                       unsigned Kind) const {
   const SparcSubtarget &Subtarget = MF.getSubtarget<SparcSubtarget>();
@@ -131,12 +130,12 @@ static void replaceFI(MachineFunction &MF, MachineBasicBlock::iterator II,
     // add %g1, %fp, %g1
     // Insert G1+%lo(offset) into the user.
     BuildMI(*MI.getParent(), II, dl, TII.get(SP::SETHIi), SP::G1)
-        .addImm(HI22(Offset));
+      .addImm(HI22(Offset));
+
 
     // Emit G1 = G1 + I6
-    BuildMI(*MI.getParent(), II, dl, TII.get(SP::ADDrr), SP::G1)
-        .addReg(SP::G1)
-        .addReg(FramePtr);
+    BuildMI(*MI.getParent(), II, dl, TII.get(SP::ADDrr), SP::G1).addReg(SP::G1)
+      .addReg(FramePtr);
     // Insert: G1+%lo(offset) into the user.
     MI.getOperand(FIOperandNum).ChangeToRegister(SP::G1, false);
     MI.getOperand(FIOperandNum + 1).ChangeToImmediate(LO10(Offset));
@@ -149,22 +148,22 @@ static void replaceFI(MachineFunction &MF, MachineBasicBlock::iterator II,
   // add %g1, %fp, %g1
   // Insert: G1 + 0 into the user.
   BuildMI(*MI.getParent(), II, dl, TII.get(SP::SETHIi), SP::G1)
-      .addImm(HIX22(Offset));
+    .addImm(HIX22(Offset));
   BuildMI(*MI.getParent(), II, dl, TII.get(SP::XORri), SP::G1)
-      .addReg(SP::G1)
-      .addImm(LOX10(Offset));
+    .addReg(SP::G1).addImm(LOX10(Offset));
 
-  BuildMI(*MI.getParent(), II, dl, TII.get(SP::ADDrr), SP::G1)
-      .addReg(SP::G1)
-      .addReg(FramePtr);
+  BuildMI(*MI.getParent(), II, dl, TII.get(SP::ADDrr), SP::G1).addReg(SP::G1)
+    .addReg(FramePtr);
   // Insert: G1+%lo(offset) into the user.
   MI.getOperand(FIOperandNum).ChangeToRegister(SP::G1, false);
   MI.getOperand(FIOperandNum + 1).ChangeToImmediate(0);
 }
 
-void SparcRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
-                                            int SPAdj, unsigned FIOperandNum,
-                                            RegScavenger *RS) const {
+
+void
+SparcRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
+                                       int SPAdj, unsigned FIOperandNum,
+                                       RegScavenger *RS) const {
   assert(SPAdj == 0 && "Unexpected");
 
   MachineInstr &MI = *II;
@@ -186,10 +185,9 @@ void SparcRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
       Register SrcReg = MI.getOperand(2).getReg();
       Register SrcEvenReg = getSubReg(SrcReg, SP::sub_even64);
       Register SrcOddReg = getSubReg(SrcReg, SP::sub_odd64);
-      MachineInstr *StMI = BuildMI(*MI.getParent(), II, dl, TII.get(SP::STDFri))
-                               .addReg(FrameReg)
-                               .addImm(0)
-                               .addReg(SrcEvenReg);
+      MachineInstr *StMI =
+        BuildMI(*MI.getParent(), II, dl, TII.get(SP::STDFri))
+        .addReg(FrameReg).addImm(0).addReg(SrcEvenReg);
       replaceFI(MF, *StMI, *StMI, dl, 0, Offset, FrameReg);
       MI.setDesc(TII.get(SP::STDFri));
       MI.getOperand(2).setReg(SrcOddReg);
@@ -200,9 +198,8 @@ void SparcRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
       Register DestEvenReg = getSubReg(DestReg, SP::sub_even64);
       Register DestOddReg = getSubReg(DestReg, SP::sub_odd64);
       MachineInstr *LdMI =
-          BuildMI(*MI.getParent(), II, dl, TII.get(SP::LDDFri), DestEvenReg)
-              .addReg(FrameReg)
-              .addImm(0);
+        BuildMI(*MI.getParent(), II, dl, TII.get(SP::LDDFri), DestEvenReg)
+        .addReg(FrameReg).addImm(0);
       replaceFI(MF, *LdMI, *LdMI, dl, 1, Offset, FrameReg);
 
       MI.setDesc(TII.get(SP::LDDFri));
@@ -212,6 +209,7 @@ void SparcRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   }
 
   replaceFI(MF, II, MI, dl, FIOperandNum, Offset, FrameReg);
+
 }
 
 Register SparcRegisterInfo::getFrameRegister(const MachineFunction &MF) const {

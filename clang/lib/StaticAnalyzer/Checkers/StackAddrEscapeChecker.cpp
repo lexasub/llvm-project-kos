@@ -11,9 +11,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/ExprCXX.h"
 #include "clang/Basic/SourceManager.h"
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -125,8 +125,7 @@ bool StackAddrEscapeChecker::isNotInCurrentFrame(const MemRegion *R,
 
 bool StackAddrEscapeChecker::isSemaphoreCaptured(const BlockDecl &B) const {
   if (!dispatch_semaphore_tII)
-    dispatch_semaphore_tII =
-        &B.getASTContext().Idents.get("dispatch_semaphore_t");
+    dispatch_semaphore_tII = &B.getASTContext().Idents.get("dispatch_semaphore_t");
   for (const auto &C : B.captures()) {
     const auto *T = C.getVariable()->getType()->getAs<TypedefType>();
     if (T && T->getDecl()->getIdentifier() == dispatch_semaphore_tII)

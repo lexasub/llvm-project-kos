@@ -21,7 +21,7 @@
 
 using std::experimental::propagate_const;
 
-constexpr bool operator<=(const X& lhs, const X& rhs) {
+constexpr bool operator<=(const X &lhs, const X &rhs) {
   return lhs.i_ <= rhs.i_;
 }
 
@@ -51,6 +51,7 @@ int main(int, char**) {
   static_assert(x1_1 <= p2_1, "");
   static_assert(x1_1 <= p3_2, "");
   static_assert(!(x3_2 <= p1_1), "");
+
 
   return 0;
 }

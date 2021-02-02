@@ -183,9 +183,9 @@ static const u64 kSystemZ_ShadowOffset64 = 1ULL << 52;
 static const u64 kSPARC64_ShadowOffset64 = 1ULL << 43;  // 0x80000000000
 static const u64 kFreeBSD_ShadowOffset32 = 1ULL << 30;  // 0x40000000
 static const u64 kFreeBSD_ShadowOffset64 = 1ULL << 46;  // 0x400000000000
-static const u64 kNetBSD_ShadowOffset32 = 1ULL << 30;   // 0x40000000
-static const u64 kNetBSD_ShadowOffset64 = 1ULL << 46;   // 0x400000000000
-static const u64 kWindowsShadowOffset32 = 3ULL << 28;   // 0x30000000
+static const u64 kNetBSD_ShadowOffset32 = 1ULL << 30;  // 0x40000000
+static const u64 kNetBSD_ShadowOffset64 = 1ULL << 46;  // 0x400000000000
+static const u64 kWindowsShadowOffset32 = 3ULL << 28;  // 0x30000000
 
 static const u64 kMyriadMemoryOffset32 = 0x80000000ULL;
 static const u64 kMyriadMemorySize32 = 0x20000000ULL;
@@ -199,59 +199,59 @@ static const u64 kMyriadCacheBitMask32 = 0x40000000ULL;
 #define SHADOW_SCALE kDefaultShadowScale
 
 #if SANITIZER_FUCHSIA
-#define SHADOW_OFFSET (0)
+#  define SHADOW_OFFSET (0)
 #elif SANITIZER_WORDSIZE == 32
-#if SANITIZER_ANDROID
-#define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
-#elif defined(__mips__)
-#define SHADOW_OFFSET kMIPS32_ShadowOffset32
-#elif SANITIZER_FREEBSD
-#define SHADOW_OFFSET kFreeBSD_ShadowOffset32
-#elif SANITIZER_NETBSD
-#define SHADOW_OFFSET kNetBSD_ShadowOffset32
-#elif SANITIZER_WINDOWS
-#define SHADOW_OFFSET kWindowsShadowOffset32
-#elif SANITIZER_IOS
-#define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
-#elif SANITIZER_MYRIAD2
-#define SHADOW_OFFSET kMyriadShadowOffset32
+#  if SANITIZER_ANDROID
+#    define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
+#  elif defined(__mips__)
+#    define SHADOW_OFFSET kMIPS32_ShadowOffset32
+#  elif SANITIZER_FREEBSD
+#    define SHADOW_OFFSET kFreeBSD_ShadowOffset32
+#  elif SANITIZER_NETBSD
+#    define SHADOW_OFFSET kNetBSD_ShadowOffset32
+#  elif SANITIZER_WINDOWS
+#    define SHADOW_OFFSET kWindowsShadowOffset32
+#  elif SANITIZER_IOS
+#    define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
+#  elif SANITIZER_MYRIAD2
+#    define SHADOW_OFFSET kMyriadShadowOffset32
+#  else
+#    define SHADOW_OFFSET kDefaultShadowOffset32
+#  endif
 #else
-#define SHADOW_OFFSET kDefaultShadowOffset32
-#endif
-#else
-#if SANITIZER_IOS
-#define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
-#elif SANITIZER_MAC && defined(__aarch64__)
-#define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
+#  if SANITIZER_IOS
+#    define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
+#  elif SANITIZER_MAC && defined(__aarch64__)
+#    define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
 #elif SANITIZER_RISCV64
 #define SHADOW_OFFSET kRiscv64_ShadowOffset64
-#elif defined(__aarch64__)
-#define SHADOW_OFFSET kAArch64_ShadowOffset64
-#elif defined(__powerpc64__)
-#define SHADOW_OFFSET kPPC64_ShadowOffset64
-#elif defined(__s390x__)
-#define SHADOW_OFFSET kSystemZ_ShadowOffset64
-#elif SANITIZER_FREEBSD
-#define SHADOW_OFFSET kFreeBSD_ShadowOffset64
-#elif SANITIZER_NETBSD
-#define SHADOW_OFFSET kNetBSD_ShadowOffset64
-#elif SANITIZER_MAC
-#define SHADOW_OFFSET kDefaultShadowOffset64
-#elif defined(__mips64)
-#define SHADOW_OFFSET kMIPS64_ShadowOffset64
+#  elif defined(__aarch64__)
+#    define SHADOW_OFFSET kAArch64_ShadowOffset64
+#  elif defined(__powerpc64__)
+#    define SHADOW_OFFSET kPPC64_ShadowOffset64
+#  elif defined(__s390x__)
+#    define SHADOW_OFFSET kSystemZ_ShadowOffset64
+#  elif SANITIZER_FREEBSD
+#    define SHADOW_OFFSET kFreeBSD_ShadowOffset64
+#  elif SANITIZER_NETBSD
+#    define SHADOW_OFFSET kNetBSD_ShadowOffset64
+#  elif SANITIZER_MAC
+#   define SHADOW_OFFSET kDefaultShadowOffset64
+#  elif defined(__mips64)
+#   define SHADOW_OFFSET kMIPS64_ShadowOffset64
 #elif defined(__sparc__)
 #define SHADOW_OFFSET kSPARC64_ShadowOffset64
-#elif SANITIZER_WINDOWS64
-#define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
-#else
-#define SHADOW_OFFSET kDefaultShort64bitShadowOffset
-#endif
+#  elif SANITIZER_WINDOWS64
+#   define SHADOW_OFFSET __asan_shadow_memory_dynamic_address
+#  else
+#   define SHADOW_OFFSET kDefaultShort64bitShadowOffset
+#  endif
 #endif
 
 #if SANITIZER_ANDROID && defined(__arm__)
-#define ASAN_PREMAP_SHADOW 1
+# define ASAN_PREMAP_SHADOW 1
 #else
-#define ASAN_PREMAP_SHADOW 0
+# define ASAN_PREMAP_SHADOW 0
 #endif
 
 #define SHADOW_GRANULARITY (1ULL << SHADOW_SCALE)
@@ -259,9 +259,9 @@ static const u64 kMyriadCacheBitMask32 = 0x40000000ULL;
 #define DO_ASAN_MAPPING_PROFILE 0  // Set to 1 to profile the functions below.
 
 #if DO_ASAN_MAPPING_PROFILE
-#define PROFILE_ASAN_MAPPING() AsanMappingProfile[__LINE__]++;
+# define PROFILE_ASAN_MAPPING() AsanMappingProfile[__LINE__]++;
 #else
-#define PROFILE_ASAN_MAPPING()
+# define PROFILE_ASAN_MAPPING()
 #endif
 
 // If 1, all shadow boundaries are constants.
@@ -277,8 +277,8 @@ extern uptr AsanMappingProfile[];
 // with non-fixed mapping. As of r175253 (Feb 2013) the performance
 // difference between fixed and non-fixed mapping is below the noise level.
 static uptr kHighMemEnd = 0x7fffffffffffULL;
-static uptr kMidMemBeg = 0x3000000000ULL;
-static uptr kMidMemEnd = 0x4fffffffffULL;
+static uptr kMidMemBeg =    0x3000000000ULL;
+static uptr kMidMemEnd =    0x4fffffffffULL;
 #else
 extern uptr kHighMemEnd, kMidMemBeg, kMidMemEnd;  // Initialized in __asan_init.
 #endif
@@ -292,27 +292,28 @@ extern uptr kHighMemEnd, kMidMemBeg, kMidMemEnd;  // Initialized in __asan_init.
 #else
 #define MEM_TO_SHADOW(mem) (((mem) >> SHADOW_SCALE) + (SHADOW_OFFSET))
 
-#define kLowMemBeg 0
-#define kLowMemEnd (SHADOW_OFFSET ? SHADOW_OFFSET - 1 : 0)
+#define kLowMemBeg      0
+#define kLowMemEnd      (SHADOW_OFFSET ? SHADOW_OFFSET - 1 : 0)
 
-#define kLowShadowBeg SHADOW_OFFSET
-#define kLowShadowEnd MEM_TO_SHADOW(kLowMemEnd)
+#define kLowShadowBeg   SHADOW_OFFSET
+#define kLowShadowEnd   MEM_TO_SHADOW(kLowMemEnd)
 
-#define kHighMemBeg (MEM_TO_SHADOW(kHighMemEnd) + 1)
+#define kHighMemBeg     (MEM_TO_SHADOW(kHighMemEnd) + 1)
 
-#define kHighShadowBeg MEM_TO_SHADOW(kHighMemBeg)
-#define kHighShadowEnd MEM_TO_SHADOW(kHighMemEnd)
+#define kHighShadowBeg  MEM_TO_SHADOW(kHighMemBeg)
+#define kHighShadowEnd  MEM_TO_SHADOW(kHighMemEnd)
 
-#define kMidShadowBeg MEM_TO_SHADOW(kMidMemBeg)
-#define kMidShadowEnd MEM_TO_SHADOW(kMidMemEnd)
+# define kMidShadowBeg MEM_TO_SHADOW(kMidMemBeg)
+# define kMidShadowEnd MEM_TO_SHADOW(kMidMemEnd)
 
 // With the zero shadow base we can not actually map pages starting from 0.
 // This constant is somewhat arbitrary.
 #define kZeroBaseShadowStart 0
 #define kZeroBaseMaxShadowStart (1 << 18)
 
-#define kShadowGapBeg (kLowShadowEnd ? kLowShadowEnd + 1 : kZeroBaseShadowStart)
-#define kShadowGapEnd ((kMidMemBeg ? kMidShadowBeg : kHighShadowBeg) - 1)
+#define kShadowGapBeg   (kLowShadowEnd ? kLowShadowEnd + 1 \
+                                       : kZeroBaseShadowStart)
+#define kShadowGapEnd   ((kMidMemBeg ? kMidShadowBeg : kHighShadowBeg) - 1)
 
 #define kShadowGap2Beg (kMidMemBeg ? kMidShadowEnd + 1 : 0)
 #define kShadowGap2End (kMidMemBeg ? kMidMemBeg - 1 : 0)
@@ -378,7 +379,7 @@ static inline uptr MemToShadowSize(uptr size) { return size >> SHADOW_SCALE; }
 static inline bool AddrIsInMem(uptr a) {
   PROFILE_ASAN_MAPPING();
   return AddrIsInLowMem(a) || AddrIsInMidMem(a) || AddrIsInHighMem(a) ||
-         (flags()->protect_shadow_gap == 0 && AddrIsInShadowGap(a));
+      (flags()->protect_shadow_gap == 0 && AddrIsInShadowGap(a));
 }
 
 static inline uptr MemToShadow(uptr p) {
@@ -402,10 +403,11 @@ static inline bool AddressIsPoisoned(uptr a) {
   if (SANITIZER_MYRIAD2 && !AddrIsInMem(a) && !AddrIsInShadow(a))
     return false;
   const uptr kAccessSize = 1;
-  u8 *shadow_address = (u8 *)MEM_TO_SHADOW(a);
+  u8 *shadow_address = (u8*)MEM_TO_SHADOW(a);
   s8 shadow_value = *shadow_address;
   if (shadow_value) {
-    u8 last_accessed_byte = (a & (SHADOW_GRANULARITY - 1)) + kAccessSize - 1;
+    u8 last_accessed_byte = (a & (SHADOW_GRANULARITY - 1))
+                                 + kAccessSize - 1;
     return (last_accessed_byte >= shadow_value);
   }
   return false;

@@ -8,7 +8,7 @@
 
 void test1() {
   SHA1_CTX ctx;
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
   uint8_t digest[SHA1_DIGEST_LENGTH];
 
   SHA1Init(&ctx);
@@ -21,29 +21,30 @@ void test1() {
   printf("'\n");
 }
 
-void local_SHA1Update(SHA1_CTX *context, const uint8_t *data, unsigned int len) {
-  unsigned int a, b;
+void local_SHA1Update(SHA1_CTX *context, const uint8_t *data, unsigned int len)
+{
+    unsigned int a, b;
 
-  b = context->count[0];
-  context->count[0] += len << 3;
-  if (context->count[0] < b)
-    context->count[1] += (len >> 29) + 1;
-  b = (b >> 3) & 63;
-  if ((b + len) > 63) {
-    memcpy(&context->buffer[b], data, (a = 64 - b));
-    SHA1Transform(context->state, context->buffer);
-    for (; a + 63 < len; a += 64)
-      SHA1Transform(context->state, &data[a]);
-    b = 0;
-  } else {
-    a = 0;
-  }
-  memcpy(&context->buffer[b], &data[a], len - a);
+    b = context->count[0];
+    context->count[0] += len << 3;
+    if (context->count[0] < b)
+        context->count[1] += (len >> 29) + 1;
+    b = (b >> 3) & 63;
+    if ((b + len) > 63) {
+        memcpy(&context->buffer[b], data, (a = 64 - b));
+        SHA1Transform(context->state, context->buffer);
+        for ( ; a + 63 < len; a += 64)
+            SHA1Transform(context->state, &data[a]);
+        b = 0;
+    } else {
+        a = 0;
+    }
+    memcpy(&context->buffer[b], &data[a], len - a);
 }
 
 void test2() {
   SHA1_CTX ctx;
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
   uint8_t digest[SHA1_DIGEST_LENGTH];
 
   SHA1Init(&ctx);
@@ -58,7 +59,7 @@ void test2() {
 
 void test3() {
   SHA1_CTX ctx;
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
   char digest[SHA1_DIGEST_STRING_LENGTH];
 
   SHA1Init(&ctx);
@@ -71,7 +72,7 @@ void test3() {
 
 void test4() {
   SHA1_CTX ctx;
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
 
   SHA1Init(&ctx);
   SHA1Update(&ctx, entropy, __arraycount(entropy));
@@ -120,7 +121,7 @@ void test8() {
 }
 
 void test9() {
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
   char digest[SHA1_DIGEST_STRING_LENGTH];
 
   char *p = SHA1Data(entropy, __arraycount(entropy), digest);
@@ -130,7 +131,7 @@ void test9() {
 }
 
 void test10() {
-  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
+  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
 
   char *p = SHA1Data(entropy, __arraycount(entropy), NULL);
   assert(strlen(p) == SHA1_DIGEST_STRING_LENGTH - 1);

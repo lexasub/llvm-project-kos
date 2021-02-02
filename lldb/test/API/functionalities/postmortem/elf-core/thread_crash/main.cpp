@@ -1,13 +1,15 @@
 // This test verifies the correct handling of child thread exits.
 
 #include "pseudo_barrier.h"
-#include <csignal>
 #include <thread>
+#include <csignal>
 
 pseudo_barrier_t g_barrier1;
 pseudo_barrier_t g_barrier2;
 
-void *thread1() {
+void *
+thread1 ()
+{
   // Synchronize with the main thread.
   pseudo_barrier_wait(g_barrier1);
 
@@ -18,7 +20,9 @@ void *thread1() {
   return NULL; // Should not reach here. (thread2 should raise SIGILL)
 }
 
-void *thread2() {
+void *
+thread2 ()
+{
   raise(SIGILL); // Raise SIGILL
 
   // Synchronize with thread1 and the main thread.
@@ -28,7 +32,8 @@ void *thread2() {
   return NULL;
 }
 
-int main() {
+int main ()
+{
   pseudo_barrier_init(g_barrier1, 2);
   pseudo_barrier_init(g_barrier2, 3);
 

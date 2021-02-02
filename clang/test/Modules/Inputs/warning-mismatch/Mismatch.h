@@ -1,3 +1,1 @@
-struct Mismatch {
-  int i;
-};
+struct Mismatch { int i; };

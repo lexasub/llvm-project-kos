@@ -3,10 +3,10 @@
 // RUN: %clangxx_msan -O3 %s -o %t && not %run %t >%t.out 2>&1
 // RUN: FileCheck %s < %t.out
 
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 volatile int z;
 
@@ -14,8 +14,7 @@ int main(void) {
   struct addrinfo *ai;
   struct addrinfo hint;
   int res = getaddrinfo("localhost", NULL, NULL, &ai);
-  if (ai)
-    z = 1; // OK
+  if (ai) z = 1; // OK
   res = getaddrinfo("localhost", NULL, &hint, &ai);
   // CHECK: Uninitialized bytes in __interceptor_getaddrinfo at offset 0 inside [0x{{.*}}, 48)
   // CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value

@@ -24,9 +24,7 @@ using namespace llvm;
 
 #define DEBUG_TYPE "nvvm-intr-range"
 
-namespace llvm {
-void initializeNVVMIntrRangePass(PassRegistry &);
-}
+namespace llvm { void initializeNVVMIntrRangePass(PassRegistry &); }
 
 // Add !range metadata based on limits of given SM variant.
 static cl::opt<unsigned> NVVMIntrRangeSM("nvvm-intr-range-sm", cl::init(20),
@@ -34,21 +32,21 @@ static cl::opt<unsigned> NVVMIntrRangeSM("nvvm-intr-range-sm", cl::init(20),
 
 namespace {
 class NVVMIntrRange : public FunctionPass {
-private:
-  unsigned SmVersion;
+ private:
+   unsigned SmVersion;
 
-public:
-  static char ID;
-  NVVMIntrRange() : NVVMIntrRange(NVVMIntrRangeSM) {}
-  NVVMIntrRange(unsigned int SmVersion)
-      : FunctionPass(ID), SmVersion(SmVersion) {
+ public:
+   static char ID;
+   NVVMIntrRange() : NVVMIntrRange(NVVMIntrRangeSM) {}
+   NVVMIntrRange(unsigned int SmVersion)
+       : FunctionPass(ID), SmVersion(SmVersion) {
 
-    initializeNVVMIntrRangePass(*PassRegistry::getPassRegistry());
-  }
+     initializeNVVMIntrRangePass(*PassRegistry::getPassRegistry());
+   }
 
-  bool runOnFunction(Function &) override;
+   bool runOnFunction(Function &) override;
 };
-} // namespace
+}
 
 FunctionPass *llvm::createNVVMIntrRangePass(unsigned int SmVersion) {
   return new NVVMIntrRange(SmVersion);
@@ -108,13 +106,13 @@ static bool runNVVMIntrRange(Function &F, unsigned SmVersion) {
 
       // Block size
       case Intrinsic::nvvm_read_ptx_sreg_ntid_x:
-        Changed |= addRangeMetadata(1, MaxBlockSize.x + 1, Call);
+        Changed |= addRangeMetadata(1, MaxBlockSize.x+1, Call);
         break;
       case Intrinsic::nvvm_read_ptx_sreg_ntid_y:
-        Changed |= addRangeMetadata(1, MaxBlockSize.y + 1, Call);
+        Changed |= addRangeMetadata(1, MaxBlockSize.y+1, Call);
         break;
       case Intrinsic::nvvm_read_ptx_sreg_ntid_z:
-        Changed |= addRangeMetadata(1, MaxBlockSize.z + 1, Call);
+        Changed |= addRangeMetadata(1, MaxBlockSize.z+1, Call);
         break;
 
       // Index within grid
@@ -130,18 +128,18 @@ static bool runNVVMIntrRange(Function &F, unsigned SmVersion) {
 
       // Grid size
       case Intrinsic::nvvm_read_ptx_sreg_nctaid_x:
-        Changed |= addRangeMetadata(1, MaxGridSize.x + 1, Call);
+        Changed |= addRangeMetadata(1, MaxGridSize.x+1, Call);
         break;
       case Intrinsic::nvvm_read_ptx_sreg_nctaid_y:
-        Changed |= addRangeMetadata(1, MaxGridSize.y + 1, Call);
+        Changed |= addRangeMetadata(1, MaxGridSize.y+1, Call);
         break;
       case Intrinsic::nvvm_read_ptx_sreg_nctaid_z:
-        Changed |= addRangeMetadata(1, MaxGridSize.z + 1, Call);
+        Changed |= addRangeMetadata(1, MaxGridSize.z+1, Call);
         break;
 
       // warp size is constant 32.
       case Intrinsic::nvvm_read_ptx_sreg_warpsize:
-        Changed |= addRangeMetadata(32, 32 + 1, Call);
+        Changed |= addRangeMetadata(32, 32+1, Call);
         break;
 
       // Lane ID is [0..warpsize)

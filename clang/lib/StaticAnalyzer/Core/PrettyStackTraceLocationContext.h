@@ -27,7 +27,6 @@ namespace ento {
 /// \endcode
 class PrettyStackTraceLocationContext : public llvm::PrettyStackTraceEntry {
   const LocationContext *LCtx;
-
 public:
   PrettyStackTraceLocationContext(const LocationContext *LC) : LCtx(LC) {
     assert(LCtx);
@@ -39,7 +38,7 @@ public:
   }
 };
 
-} // namespace ento
-} // namespace clang
+} // end ento namespace
+} // end clang namespace
 
 #endif

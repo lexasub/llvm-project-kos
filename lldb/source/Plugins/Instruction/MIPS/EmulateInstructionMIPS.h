@@ -18,10 +18,10 @@ class MCAsmInfo;
 class MCContext;
 class MCInstrInfo;
 class MCInst;
-} // namespace llvm
+}
 
 namespace lldb_private {
-class OptionValueDictionary;
+  class OptionValueDictionary;
 }
 
 #include "lldb/Core/EmulateInstruction.h"

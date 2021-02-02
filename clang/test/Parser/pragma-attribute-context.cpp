@@ -22,11 +22,11 @@ namespace nested {
 BEGIN_PRAGMA
 int h(); // expected-note{{'h' has been marked as being introduced in macOS 1000 here}}
 END_PRAGMA
-} // namespace nested
-} // namespace my_ns
+}
+}
 
-int a = f();                // expected-warning{{'f' is only available on macOS 1000 or newer}} expected-note{{annotate 'a'}}
-int b = my_ns::g();         // expected-warning{{'g' is only available on macOS 1000 or newer}} expected-note{{annotate 'b'}}
+int a = f(); // expected-warning{{'f' is only available on macOS 1000 or newer}} expected-note{{annotate 'a'}}
+int b = my_ns::g(); // expected-warning{{'g' is only available on macOS 1000 or newer}} expected-note{{annotate 'b'}}
 int c = my_ns::nested::h(); // expected-warning{{'h' is only available on macOS 1000 or newer}} expected-note{{annotate 'c'}}
 
 struct InStruct {

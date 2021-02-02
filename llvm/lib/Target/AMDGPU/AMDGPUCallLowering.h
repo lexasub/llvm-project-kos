@@ -29,8 +29,7 @@ class AMDGPUCallLowering final : public CallLowering {
                       Align Alignment, Register DstReg) const;
 
   /// A function of this type is used to perform value split action.
-  using SplitArgTy =
-      std::function<void(ArrayRef<Register>, Register, LLT, LLT, int)>;
+  using SplitArgTy = std::function<void(ArrayRef<Register>, Register, LLT, LLT, int)>;
 
   void splitToValueTypes(MachineIRBuilder &B, const ArgInfo &OrigArgInfo,
                          SmallVectorImpl<ArgInfo> &SplitArgs,
@@ -40,7 +39,8 @@ class AMDGPUCallLowering final : public CallLowering {
                         const SmallVectorImpl<ArgInfo> &SplitArg,
                         SmallVectorImpl<ArgInfo> &SplitArgs,
                         const DataLayout &DL, CallingConv::ID CallConv,
-                        bool IsOutgoing, SplitArgTy PerformArgSplit) const;
+                        bool IsOutgoing,
+                        SplitArgTy PerformArgSplit) const;
 
   bool canLowerReturn(MachineFunction &MF, CallingConv::ID CallConv,
                       SmallVectorImpl<BaseArgInfo> &Outs,
@@ -63,10 +63,10 @@ public:
                             ArrayRef<ArrayRef<Register>> VRegs,
                             FunctionLoweringInfo &FLI) const override;
 
-  bool
-  passSpecialInputs(MachineIRBuilder &MIRBuilder, CCState &CCInfo,
-                    SmallVectorImpl<std::pair<MCRegister, Register>> &ArgRegs,
-                    CallLoweringInfo &Info) const;
+  bool passSpecialInputs(MachineIRBuilder &MIRBuilder,
+                         CCState &CCInfo,
+                         SmallVectorImpl<std::pair<MCRegister, Register>> &ArgRegs,
+                         CallLoweringInfo &Info) const;
 
   bool lowerCall(MachineIRBuilder &MIRBuilder,
                  CallLoweringInfo &Info) const override;
@@ -74,5 +74,5 @@ public:
   static CCAssignFn *CCAssignFnForCall(CallingConv::ID CC, bool IsVarArg);
   static CCAssignFn *CCAssignFnForReturn(CallingConv::ID CC, bool IsVarArg);
 };
-} // namespace llvm
+} // End of namespace llvm;
 #endif

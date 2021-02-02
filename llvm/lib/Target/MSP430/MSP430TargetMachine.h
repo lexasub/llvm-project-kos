@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+
 #ifndef LLVM_LIB_TARGET_MSP430_MSP430TARGETMACHINE_H
 #define LLVM_LIB_TARGET_MSP430_MSP430TARGETMACHINE_H
 
@@ -23,7 +24,7 @@ class StringRef;
 ///
 class MSP430TargetMachine : public LLVMTargetMachine {
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
-  MSP430Subtarget Subtarget;
+  MSP430Subtarget        Subtarget;
 
 public:
   MSP430TargetMachine(const Target &T, const Triple &TT, StringRef CPU,

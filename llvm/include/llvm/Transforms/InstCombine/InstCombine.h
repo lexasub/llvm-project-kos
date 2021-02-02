@@ -67,6 +67,6 @@ public:
 //
 FunctionPass *createInstructionCombiningPass();
 FunctionPass *createInstructionCombiningPass(unsigned MaxIterations);
-} // namespace llvm
+}
 
 #endif

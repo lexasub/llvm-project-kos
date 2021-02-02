@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 
+
 #ifdef cl_khr_fp64
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-_CLC_DECL double __clc_exp_helper(double x, double x_min, double x_max,
-                                  double r, int n);
+_CLC_DECL double __clc_exp_helper(double x, double x_min, double x_max, double r, int n);
 
 #endif

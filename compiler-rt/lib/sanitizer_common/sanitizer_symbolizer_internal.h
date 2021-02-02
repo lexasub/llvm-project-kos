@@ -13,8 +13,8 @@
 #ifndef SANITIZER_SYMBOLIZER_INTERNAL_H
 #define SANITIZER_SYMBOLIZER_INTERNAL_H
 
-#include "sanitizer_file.h"
 #include "sanitizer_symbolizer.h"
+#include "sanitizer_file.h"
 #include "sanitizer_vector.h"
 
 namespace __sanitizer {
@@ -41,7 +41,7 @@ class SymbolizerTool {
   // the next tool in the chain will be tried.
   SymbolizerTool *next;
 
-  SymbolizerTool() : next(nullptr) {}
+  SymbolizerTool() : next(nullptr) { }
 
   // Can't declare pure virtual functions in sanitizer runtimes:
   // __cxa_pure_virtual might be unavailable.
@@ -55,14 +55,20 @@ class SymbolizerTool {
 
   // The |info| parameter is inout. It is pre-filled with the module base
   // and module offset values.
-  virtual bool SymbolizeData(uptr addr, DataInfo *info) { UNIMPLEMENTED(); }
+  virtual bool SymbolizeData(uptr addr, DataInfo *info) {
+    UNIMPLEMENTED();
+  }
 
-  virtual bool SymbolizeFrame(uptr addr, FrameInfo *info) { return false; }
+  virtual bool SymbolizeFrame(uptr addr, FrameInfo *info) {
+    return false;
+  }
 
   virtual void Flush() {}
 
   // Return nullptr to fallback to the default platform-specific demangler.
-  virtual const char *Demangle(const char *name) { return nullptr; }
+  virtual const char *Demangle(const char *name) {
+    return nullptr;
+  }
 
   // Called during the LateInitialize phase of Sanitizer initialization.
   // Usually this is a safe place to call code that might need to use user

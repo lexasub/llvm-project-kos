@@ -10,7 +10,7 @@ struct A {
 };
 
 struct B {
-  virtual void g(); // Collides with A::g if both are bases of some class.
+  virtual void g();  // Collides with A::g if both are bases of some class.
 };
 
 // Overrides methods of two bases at the same time, thus needing thunks.
@@ -36,7 +36,7 @@ struct X : A, B {
 } x;
 
 void build_vftable(X *obj) { obj->g(); }
-} // namespace test1
+}
 
 namespace test2 {
 struct A {
@@ -79,7 +79,7 @@ struct X : A, B, C {
 } x;
 
 void build_vftable(X *obj) { obj->g(); }
-} // namespace test2
+}
 
 namespace test3 {
 struct A {
@@ -91,19 +91,19 @@ struct B {
   virtual void h();
 };
 
-struct C : A, B {
+struct C: A, B {
   // Overrides only the left child's method (A::f), needs no thunks.
   virtual void f();
 };
 
-struct D : A, B {
+struct D: A, B {
   // Overrides only the right child's method (B::g),
   // needs this adjustment but not thunks.
   virtual void g();
 };
 
 // Overrides methods of two bases at the same time, thus needing thunks.
-struct X : C, D {
+struct X: C, D {
   // CHECK-LABEL: VFTable for 'test3::A' in 'test3::C' in 'test3::X' (1 entry).
   // CHECK-NEXT:   0 | void test3::X::f()
 
@@ -137,7 +137,7 @@ struct X : C, D {
 } x;
 
 void build_vftable(X *obj) { obj->g(); }
-} // namespace test3
+}
 
 namespace test4 {
 struct A {
@@ -170,19 +170,15 @@ void fop(C &c) {
   -c;
 }
 
-} // namespace test4
+}
 
 namespace pr30293 {
 struct NonTrivial {
   ~NonTrivial();
   int x;
 };
-struct A {
-  virtual void f();
-};
-struct B {
-  virtual void __cdecl g(NonTrivial);
-};
+struct A { virtual void f(); };
+struct B { virtual void __cdecl g(NonTrivial); };
 struct C final : A, B {
   void f() override;
   void __cdecl g(NonTrivial) override;
@@ -201,4 +197,4 @@ void C::g(NonTrivial o) {
 // BITCODE: %[[this3:[^ ]*]] = getelementptr inbounds i8, i8* %[[this2]], i32 -4
 // BITCODE: %[[this4:[^ ]*]] = bitcast i8* %[[this3]] to %"struct.pr30293::C"*
 // BITCODE: store %"struct.pr30293::C"* %[[this4]], %"struct.pr30293::C"** @"?whatsthis@pr30293@@3PAUC@1@A", align 4
-} // namespace pr30293
+}

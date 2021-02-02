@@ -6,56 +6,38 @@ extern "C" void *memcpy(void *s1, const void *s2, unsigned n);
 extern "C" int memcmp(void *s1, const void *s2, unsigned n);
 extern "C" int bcmp(void *s1, const void *s2, unsigned n);
 
+
 // Redeclare without the extern "C" to test that we still figure out that this
 // is the "real" memset.
 void *memset(void *, int, unsigned);
 
 // Several types that should not warn.
-struct S1 {
-} s1;
-struct S2 {
-  int x;
-} s2;
-struct S3 {
-  float x, y;
-  S1 s[4];
-  void (*f)(S1 **);
-} s3;
+struct S1 {} s1;
+struct S2 { int x; } s2;
+struct S3 { float x, y; S1 s[4]; void (*f)(S1**); } s3;
 
 class C1 {
   int x, y, z;
-
 public:
   void foo() {}
 } c1;
 
-struct X1 {
-  virtual void f();
-} x1, x1arr[2];
-struct X2 : virtual S1 {
-} x2;
+struct X1 { virtual void f(); } x1, x1arr[2];
+struct X2 : virtual S1 {} x2;
 
-struct ContainsDynamic {
-  X1 dynamic;
-} contains_dynamic;
-struct DeepContainsDynamic {
-  ContainsDynamic m;
-} deep_contains_dynamic;
-struct ContainsArrayDynamic {
-  X1 dynamic[1];
-} contains_array_dynamic;
-struct ContainsPointerDynamic {
-  X1 *dynamic;
-} contains_pointer_dynamic;
+struct ContainsDynamic { X1 dynamic; } contains_dynamic;
+struct DeepContainsDynamic { ContainsDynamic m; } deep_contains_dynamic;
+struct ContainsArrayDynamic { X1 dynamic[1]; } contains_array_dynamic;
+struct ContainsPointerDynamic { X1 *dynamic; } contains_pointer_dynamic;
 
 void test_warn() {
-  memset(&x1, 0, sizeof x1);      // \
+  memset(&x1, 0, sizeof x1); // \
       // expected-warning {{destination for this 'memset' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
   memset(x1arr, 0, sizeof x1arr); // \
       // expected-warning {{destination for this 'memset' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  memset((void *)x1arr, 0, sizeof x1arr);
+  memset((void*)x1arr, 0, sizeof x1arr);
   memset(&x2, 0, sizeof x2); // \
       // expected-warning {{destination for this 'memset' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
@@ -66,22 +48,22 @@ void test_warn() {
   memmove(0, &x1, sizeof x1); // \
       // expected-warning{{source of this 'memmove' call is a pointer to dynamic class 'X1'; vtable pointer will be moved}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  memcpy(&x1, 0, sizeof x1);  // \
+  memcpy(&x1, 0, sizeof x1); // \
       // expected-warning{{destination for this 'memcpy' call is a pointer to dynamic class 'X1'; vtable pointer will be overwritten}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  memcpy(0, &x1, sizeof x1);  // \
+  memcpy(0, &x1, sizeof x1); // \
       // expected-warning{{source of this 'memcpy' call is a pointer to dynamic class 'X1'; vtable pointer will be copied}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  memcmp(&x1, 0, sizeof x1);  // \
+  memcmp(&x1, 0, sizeof x1); // \
       // expected-warning{{first operand of this 'memcmp' call is a pointer to dynamic class 'X1'; vtable pointer will be compared}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  memcmp(0, &x1, sizeof x1);  // \
+  memcmp(0, &x1, sizeof x1); // \
       // expected-warning{{second operand of this 'memcmp' call is a pointer to dynamic class 'X1'; vtable pointer will be compared}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  bcmp(&x1, 0, sizeof x1);    // \
+  bcmp(&x1, 0, sizeof x1); // \
       // expected-warning{{first operand of this 'bcmp' call is a pointer to dynamic class 'X1'; vtable pointer will be compared}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  bcmp(0, &x1, sizeof x1);    // \
+  bcmp(0, &x1, sizeof x1); // \
       // expected-warning{{second operand of this 'bcmp' call is a pointer to dynamic class 'X1'; vtable pointer will be compared}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
 
@@ -98,10 +80,10 @@ void test_warn() {
   __builtin_memmove(0, &x1, sizeof x1); // \
       // expected-warning{{source of this '__builtin_memmove' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  __builtin_memcpy(&x1, 0, sizeof x1);  // \
+  __builtin_memcpy(&x1, 0, sizeof x1); // \
       // expected-warning{{destination for this '__builtin_memcpy' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  __builtin_memcpy(0, &x1, sizeof x1);  // \
+  __builtin_memcpy(0, &x1, sizeof x1); // \
       // expected-warning{{source of this '__builtin_memcpy' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
 
@@ -118,10 +100,10 @@ void test_warn() {
   __builtin___memmove_chk(0, &x1, sizeof x1, sizeof x1); //                   \
       // expected-warning{{source of this '__builtin___memmove_chk' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  __builtin___memcpy_chk(&x1, 0, sizeof x1, sizeof x1);  //                    \
+  __builtin___memcpy_chk(&x1, 0, sizeof x1, sizeof x1); //                    \
       // expected-warning{{destination for this '__builtin___memcpy_chk' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
-  __builtin___memcpy_chk(0, &x1, sizeof x1, sizeof x1);  //                    \
+  __builtin___memcpy_chk(0, &x1, sizeof x1, sizeof x1); //                    \
       // expected-warning{{source of this '__builtin___memcpy_chk' call is a pointer to dynamic class}} \
       // expected-note {{explicitly cast the pointer to silence this warning}}
 
@@ -157,16 +139,15 @@ void test_nowarn(void *void_ptr) {
   (void)sizeof memset(&x1, 0, sizeof x1);
 
   // Dead code shouldn't warn.
-  if (false)
-    memset(&x1, 0, sizeof x1);
+  if (false) memset(&x1, 0, sizeof x1);
 }
 
 namespace N {
-void *memset(void *, int, unsigned);
-void test_nowarn() {
-  N::memset(&x1, 0, sizeof x1);
+  void *memset(void *, int, unsigned);
+  void test_nowarn() {
+    N::memset(&x1, 0, sizeof x1);
+  }
 }
-} // namespace N
 
 namespace recursive_class {
 struct S {
@@ -179,4 +160,4 @@ int main() {
   __builtin_memset(&a, 0, sizeof a);
   return 0;
 }
-} // namespace recursive_class
+}

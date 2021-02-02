@@ -16,9 +16,13 @@
 
 #include <system_error>
 
-bool test_func(void) {
-  const std::error_code ec(0, std::generic_category());
-  return ec; // conversion to bool is explicit; should fail.
+bool test_func(void)
+{
+    const std::error_code ec(0, std::generic_category());
+    return ec;   // conversion to bool is explicit; should fail.
 }
 
-int main(int, char**) { return 0; }
+int main(int, char**)
+{
+    return 0;
+}

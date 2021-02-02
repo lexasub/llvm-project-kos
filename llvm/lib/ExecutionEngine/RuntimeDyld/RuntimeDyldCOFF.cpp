@@ -41,7 +41,7 @@ public:
     return OwningBinary<ObjectFile>();
   }
 };
-} // namespace
+}
 
 namespace llvm {
 
@@ -50,8 +50,7 @@ llvm::RuntimeDyldCOFF::create(Triple::ArchType Arch,
                               RuntimeDyld::MemoryManager &MemMgr,
                               JITSymbolResolver &Resolver) {
   switch (Arch) {
-  default:
-    llvm_unreachable("Unsupported target for RuntimeDyldCOFF.");
+  default: llvm_unreachable("Unsupported target for RuntimeDyldCOFF.");
   case Triple::x86:
     return std::make_unique<RuntimeDyldCOFFI386>(MemMgr, Resolver);
   case Triple::thumb:

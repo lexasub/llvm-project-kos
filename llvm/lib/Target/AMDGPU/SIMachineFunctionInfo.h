@@ -48,9 +48,13 @@ public:
     return false;
   }
 
-  bool isAliased(const MachineFrameInfo *) const override { return true; }
+  bool isAliased(const MachineFrameInfo *) const override {
+    return true;
+  }
 
-  bool mayAlias(const MachineFrameInfo *) const override { return true; }
+  bool mayAlias(const MachineFrameInfo *) const override {
+    return true;
+  }
 };
 
 class AMDGPUBufferPseudoSourceValue final : public AMDGPUPseudoSourceValue {
@@ -78,8 +82,7 @@ public:
   void printCustom(raw_ostream &OS) const override { OS << "ImageResource"; }
 };
 
-class AMDGPUGWSResourcePseudoSourceValue final
-    : public AMDGPUPseudoSourceValue {
+class AMDGPUGWSResourcePseudoSourceValue final : public AMDGPUPseudoSourceValue {
 public:
   explicit AMDGPUGWSResourcePseudoSourceValue(const TargetInstrInfo &TII)
       : AMDGPUPseudoSourceValue(GWSResource, TII) {}
@@ -89,12 +92,18 @@ public:
   }
 
   // These are inaccessible memory from IR.
-  bool isAliased(const MachineFrameInfo *) const override { return false; }
+  bool isAliased(const MachineFrameInfo *) const override {
+    return false;
+  }
 
   // These are inaccessible memory from IR.
-  bool mayAlias(const MachineFrameInfo *) const override { return false; }
+  bool mayAlias(const MachineFrameInfo *) const override {
+    return false;
+  }
 
-  void printCustom(raw_ostream &OS) const override { OS << "GWSResource"; }
+  void printCustom(raw_ostream &OS) const override {
+    OS << "GWSResource";
+  }
 };
 
 namespace yaml {
@@ -236,8 +245,9 @@ struct SIMode {
     FP64FP16OutputDenormals = Mode.FP64FP16OutputDenormals;
   }
 
-  bool operator==(const SIMode Other) const {
-    return IEEE == Other.IEEE && DX10Clamp == Other.DX10Clamp &&
+  bool operator ==(const SIMode Other) const {
+    return IEEE == Other.IEEE &&
+           DX10Clamp == Other.DX10Clamp &&
            FP32InputDenormals == Other.FP32InputDenormals &&
            FP32OutputDenormals == Other.FP32OutputDenormals &&
            FP64FP16InputDenormals == Other.FP64FP16InputDenormals &&
@@ -251,10 +261,8 @@ template <> struct MappingTraits<SIMode> {
     YamlIO.mapOptional("dx10-clamp", Mode.DX10Clamp, true);
     YamlIO.mapOptional("fp32-input-denormals", Mode.FP32InputDenormals, true);
     YamlIO.mapOptional("fp32-output-denormals", Mode.FP32OutputDenormals, true);
-    YamlIO.mapOptional("fp64-fp16-input-denormals", Mode.FP64FP16InputDenormals,
-                       true);
-    YamlIO.mapOptional("fp64-fp16-output-denormals",
-                       Mode.FP64FP16OutputDenormals, true);
+    YamlIO.mapOptional("fp64-fp16-input-denormals", Mode.FP64FP16InputDenormals, true);
+    YamlIO.mapOptional("fp64-fp16-output-denormals", Mode.FP64FP16OutputDenormals, true);
   }
 };
 
@@ -310,8 +318,8 @@ template <> struct MappingTraits<SIMachineFunctionInfo> {
                        StringValue("$sp_reg"));
     YamlIO.mapOptional("argumentInfo", MFI.ArgInfo);
     YamlIO.mapOptional("mode", MFI.Mode, SIMode());
-    YamlIO.mapOptional("highBitsOf32BitAddress", MFI.HighBitsOf32BitAddress,
-                       0u);
+    YamlIO.mapOptional("highBitsOf32BitAddress",
+                       MFI.HighBitsOf32BitAddress, 0u);
     YamlIO.mapOptional("occupancy", MFI.Occupancy, 0);
   }
 };
@@ -431,10 +439,10 @@ public:
     int Lane = -1;
 
     SpilledReg() = default;
-    SpilledReg(Register R, int L) : VGPR(R), Lane(L) {}
+    SpilledReg(Register R, int L) : VGPR (R), Lane (L) {}
 
-    bool hasLane() { return Lane != -1; }
-    bool hasReg() { return VGPR != 0; }
+    bool hasLane() { return Lane != -1;}
+    bool hasReg() { return VGPR != 0;}
   };
 
   struct SGPRSpillVGPRCSR {
@@ -493,11 +501,13 @@ public:
 
   ArrayRef<SpilledReg> getSGPRToVGPRSpills(int FrameIndex) const {
     auto I = SGPRToVGPRSpills.find(FrameIndex);
-    return (I == SGPRToVGPRSpills.end()) ? ArrayRef<SpilledReg>()
-                                         : makeArrayRef(I->second);
+    return (I == SGPRToVGPRSpills.end()) ?
+      ArrayRef<SpilledReg>() : makeArrayRef(I->second);
   }
 
-  ArrayRef<SGPRSpillVGPRCSR> getSGPRSpillVGPRs() const { return SpillVGPRs; }
+  ArrayRef<SGPRSpillVGPRCSR> getSGPRSpillVGPRs() const {
+    return SpillVGPRs;
+  }
 
   void setSGPRSpillVGPRs(Register NewVGPR, Optional<int> newFI, int Index) {
     SpillVGPRs[Index].VGPR = NewVGPR;
@@ -507,9 +517,13 @@ public:
 
   bool removeVGPRForSGPRSpill(Register ReservedVGPR, MachineFunction &MF);
 
-  ArrayRef<MCPhysReg> getAGPRSpillVGPRs() const { return SpillAGPR; }
+  ArrayRef<MCPhysReg> getAGPRSpillVGPRs() const {
+    return SpillAGPR;
+  }
 
-  ArrayRef<MCPhysReg> getVGPRSpillAGPRs() const { return SpillVGPR; }
+  ArrayRef<MCPhysReg> getVGPRSpillAGPRs() const {
+    return SpillVGPR;
+  }
 
   MCPhysReg getVGPRToAGPRSpill(int FrameIndex, unsigned Lane) const {
     auto I = VGPRToAGPRSpills.find(FrameIndex);
@@ -528,9 +542,13 @@ public:
   Register getTIDReg() const { return TIDReg; };
   void setTIDReg(Register Reg) { TIDReg = Reg; }
 
-  unsigned getBytesInStackArgArea() const { return BytesInStackArgArea; }
+  unsigned getBytesInStackArgArea() const {
+    return BytesInStackArgArea;
+  }
 
-  void setBytesInStackArgArea(unsigned Bytes) { BytesInStackArgArea = Bytes; }
+  void setBytesInStackArgArea(unsigned Bytes) {
+    BytesInStackArgArea = Bytes;
+  }
 
   // Add user SGPRs.
   Register addPrivateSegmentBuffer(const SIRegisterInfo &TRI);
@@ -567,15 +585,21 @@ public:
   }
 
   // Add special VGPR inputs
-  void setWorkItemIDX(ArgDescriptor Arg) { ArgInfo.WorkItemIDX = Arg; }
+  void setWorkItemIDX(ArgDescriptor Arg) {
+    ArgInfo.WorkItemIDX = Arg;
+  }
 
-  void setWorkItemIDY(ArgDescriptor Arg) { ArgInfo.WorkItemIDY = Arg; }
+  void setWorkItemIDY(ArgDescriptor Arg) {
+    ArgInfo.WorkItemIDY = Arg;
+  }
 
-  void setWorkItemIDZ(ArgDescriptor Arg) { ArgInfo.WorkItemIDZ = Arg; }
+  void setWorkItemIDZ(ArgDescriptor Arg) {
+    ArgInfo.WorkItemIDZ = Arg;
+  }
 
   Register addPrivateSegmentWaveByteOffset() {
-    ArgInfo.PrivateSegmentWaveByteOffset =
-        ArgDescriptor::createRegister(getNextSystemSGPR());
+    ArgInfo.PrivateSegmentWaveByteOffset
+      = ArgDescriptor::createRegister(getNextSystemSGPR());
     NumSystemSGPRs += 1;
     return ArgInfo.PrivateSegmentWaveByteOffset.getRegister();
   }
@@ -584,64 +608,105 @@ public:
     ArgInfo.PrivateSegmentWaveByteOffset = ArgDescriptor::createRegister(Reg);
   }
 
-  bool hasPrivateSegmentBuffer() const { return PrivateSegmentBuffer; }
+  bool hasPrivateSegmentBuffer() const {
+    return PrivateSegmentBuffer;
+  }
 
-  bool hasDispatchPtr() const { return DispatchPtr; }
+  bool hasDispatchPtr() const {
+    return DispatchPtr;
+  }
 
-  bool hasQueuePtr() const { return QueuePtr; }
+  bool hasQueuePtr() const {
+    return QueuePtr;
+  }
 
-  bool hasKernargSegmentPtr() const { return KernargSegmentPtr; }
+  bool hasKernargSegmentPtr() const {
+    return KernargSegmentPtr;
+  }
 
-  bool hasDispatchID() const { return DispatchID; }
+  bool hasDispatchID() const {
+    return DispatchID;
+  }
 
-  bool hasFlatScratchInit() const { return FlatScratchInit; }
+  bool hasFlatScratchInit() const {
+    return FlatScratchInit;
+  }
 
-  bool hasWorkGroupIDX() const { return WorkGroupIDX; }
+  bool hasWorkGroupIDX() const {
+    return WorkGroupIDX;
+  }
 
-  bool hasWorkGroupIDY() const { return WorkGroupIDY; }
+  bool hasWorkGroupIDY() const {
+    return WorkGroupIDY;
+  }
 
-  bool hasWorkGroupIDZ() const { return WorkGroupIDZ; }
+  bool hasWorkGroupIDZ() const {
+    return WorkGroupIDZ;
+  }
 
-  bool hasWorkGroupInfo() const { return WorkGroupInfo; }
+  bool hasWorkGroupInfo() const {
+    return WorkGroupInfo;
+  }
 
   bool hasPrivateSegmentWaveByteOffset() const {
     return PrivateSegmentWaveByteOffset;
   }
 
-  bool hasWorkItemIDX() const { return WorkItemIDX; }
+  bool hasWorkItemIDX() const {
+    return WorkItemIDX;
+  }
 
-  bool hasWorkItemIDY() const { return WorkItemIDY; }
+  bool hasWorkItemIDY() const {
+    return WorkItemIDY;
+  }
 
-  bool hasWorkItemIDZ() const { return WorkItemIDZ; }
+  bool hasWorkItemIDZ() const {
+    return WorkItemIDZ;
+  }
 
-  bool hasImplicitArgPtr() const { return ImplicitArgPtr; }
+  bool hasImplicitArgPtr() const {
+    return ImplicitArgPtr;
+  }
 
-  bool hasImplicitBufferPtr() const { return ImplicitBufferPtr; }
+  bool hasImplicitBufferPtr() const {
+    return ImplicitBufferPtr;
+  }
 
-  AMDGPUFunctionArgInfo &getArgInfo() { return ArgInfo; }
+  AMDGPUFunctionArgInfo &getArgInfo() {
+    return ArgInfo;
+  }
 
-  const AMDGPUFunctionArgInfo &getArgInfo() const { return ArgInfo; }
+  const AMDGPUFunctionArgInfo &getArgInfo() const {
+    return ArgInfo;
+  }
 
   std::tuple<const ArgDescriptor *, const TargetRegisterClass *, LLT>
   getPreloadedValue(AMDGPUFunctionArgInfo::PreloadedValue Value) const {
     return ArgInfo.getPreloadedValue(Value);
   }
 
-  MCRegister
-  getPreloadedReg(AMDGPUFunctionArgInfo::PreloadedValue Value) const {
+  MCRegister getPreloadedReg(AMDGPUFunctionArgInfo::PreloadedValue Value) const {
     auto Arg = std::get<0>(ArgInfo.getPreloadedValue(Value));
     return Arg ? Arg->getRegister() : MCRegister();
   }
 
-  unsigned getGITPtrHigh() const { return GITPtrHigh; }
+  unsigned getGITPtrHigh() const {
+    return GITPtrHigh;
+  }
 
   Register getGITPtrLoReg(const MachineFunction &MF) const;
 
-  uint32_t get32BitAddressHighBits() const { return HighBitsOf32BitAddress; }
+  uint32_t get32BitAddressHighBits() const {
+    return HighBitsOf32BitAddress;
+  }
 
-  unsigned getGDSSize() const { return GDSSize; }
+  unsigned getGDSSize() const {
+    return GDSSize;
+  }
 
-  unsigned getNumUserSGPRs() const { return NumUserSGPRs; }
+  unsigned getNumUserSGPRs() const {
+    return NumUserSGPRs;
+  }
 
   unsigned getNumPreloadedSGPRs() const {
     return NumUserSGPRs + NumSystemSGPRs;
@@ -653,14 +718,18 @@ public:
 
   /// Returns the physical register reserved for use as the resource
   /// descriptor for scratch accesses.
-  Register getScratchRSrcReg() const { return ScratchRSrcReg; }
+  Register getScratchRSrcReg() const {
+    return ScratchRSrcReg;
+  }
 
   void setScratchRSrcReg(Register Reg) {
     assert(Reg != 0 && "Should never be unset");
     ScratchRSrcReg = Reg;
   }
 
-  Register getFrameOffsetReg() const { return FrameOffsetReg; }
+  Register getFrameOffsetReg() const {
+    return FrameOffsetReg;
+  }
 
   void setFrameOffsetReg(Register Reg) {
     assert(Reg != 0 && "Should never be unset");
@@ -676,7 +745,9 @@ public:
   // NoRegister. This is mostly a workaround for MIR tests where state that
   // can't be directly computed from the function is not preserved in serialized
   // MIR.
-  Register getStackPtrOffsetReg() const { return StackPtrOffsetReg; }
+  Register getStackPtrOffsetReg() const {
+    return StackPtrOffsetReg;
+  }
 
   Register getQueuePtrUserSGPR() const {
     return ArgInfo.QueuePtr.getRegister();
@@ -686,49 +757,81 @@ public:
     return ArgInfo.ImplicitBufferPtr.getRegister();
   }
 
-  bool hasSpilledSGPRs() const { return HasSpilledSGPRs; }
+  bool hasSpilledSGPRs() const {
+    return HasSpilledSGPRs;
+  }
 
-  void setHasSpilledSGPRs(bool Spill = true) { HasSpilledSGPRs = Spill; }
+  void setHasSpilledSGPRs(bool Spill = true) {
+    HasSpilledSGPRs = Spill;
+  }
 
-  bool hasSpilledVGPRs() const { return HasSpilledVGPRs; }
+  bool hasSpilledVGPRs() const {
+    return HasSpilledVGPRs;
+  }
 
-  void setHasSpilledVGPRs(bool Spill = true) { HasSpilledVGPRs = Spill; }
+  void setHasSpilledVGPRs(bool Spill = true) {
+    HasSpilledVGPRs = Spill;
+  }
 
-  bool hasNonSpillStackObjects() const { return HasNonSpillStackObjects; }
+  bool hasNonSpillStackObjects() const {
+    return HasNonSpillStackObjects;
+  }
 
   void setHasNonSpillStackObjects(bool StackObject = true) {
     HasNonSpillStackObjects = StackObject;
   }
 
-  bool isStackRealigned() const { return IsStackRealigned; }
+  bool isStackRealigned() const {
+    return IsStackRealigned;
+  }
 
   void setIsStackRealigned(bool Realigned = true) {
     IsStackRealigned = Realigned;
   }
 
-  unsigned getNumSpilledSGPRs() const { return NumSpilledSGPRs; }
+  unsigned getNumSpilledSGPRs() const {
+    return NumSpilledSGPRs;
+  }
 
-  unsigned getNumSpilledVGPRs() const { return NumSpilledVGPRs; }
+  unsigned getNumSpilledVGPRs() const {
+    return NumSpilledVGPRs;
+  }
 
-  void addToSpilledSGPRs(unsigned num) { NumSpilledSGPRs += num; }
+  void addToSpilledSGPRs(unsigned num) {
+    NumSpilledSGPRs += num;
+  }
 
-  void addToSpilledVGPRs(unsigned num) { NumSpilledVGPRs += num; }
+  void addToSpilledVGPRs(unsigned num) {
+    NumSpilledVGPRs += num;
+  }
 
-  unsigned getPSInputAddr() const { return PSInputAddr; }
+  unsigned getPSInputAddr() const {
+    return PSInputAddr;
+  }
 
-  unsigned getPSInputEnable() const { return PSInputEnable; }
+  unsigned getPSInputEnable() const {
+    return PSInputEnable;
+  }
 
   bool isPSInputAllocated(unsigned Index) const {
     return PSInputAddr & (1 << Index);
   }
 
-  void markPSInputAllocated(unsigned Index) { PSInputAddr |= 1 << Index; }
+  void markPSInputAllocated(unsigned Index) {
+    PSInputAddr |= 1 << Index;
+  }
 
-  void markPSInputEnabled(unsigned Index) { PSInputEnable |= 1 << Index; }
+  void markPSInputEnabled(unsigned Index) {
+    PSInputEnable |= 1 << Index;
+  }
 
-  bool returnsVoid() const { return ReturnsVoid; }
+  bool returnsVoid() const {
+    return ReturnsVoid;
+  }
 
-  void setIfReturnsVoid(bool Value) { ReturnsVoid = Value; }
+  void setIfReturnsVoid(bool Value) {
+    ReturnsVoid = Value;
+  }
 
   /// \returns A pair of default/requested minimum/maximum flat work group sizes
   /// for this function.
@@ -737,20 +840,30 @@ public:
   }
 
   /// \returns Default/requested minimum flat work group size for this function.
-  unsigned getMinFlatWorkGroupSize() const { return FlatWorkGroupSizes.first; }
+  unsigned getMinFlatWorkGroupSize() const {
+    return FlatWorkGroupSizes.first;
+  }
 
   /// \returns Default/requested maximum flat work group size for this function.
-  unsigned getMaxFlatWorkGroupSize() const { return FlatWorkGroupSizes.second; }
+  unsigned getMaxFlatWorkGroupSize() const {
+    return FlatWorkGroupSizes.second;
+  }
 
   /// \returns A pair of default/requested minimum/maximum number of waves per
   /// execution unit.
-  std::pair<unsigned, unsigned> getWavesPerEU() const { return WavesPerEU; }
+  std::pair<unsigned, unsigned> getWavesPerEU() const {
+    return WavesPerEU;
+  }
 
   /// \returns Default/requested minimum number of waves per execution unit.
-  unsigned getMinWavesPerEU() const { return WavesPerEU.first; }
+  unsigned getMinWavesPerEU() const {
+    return WavesPerEU.first;
+  }
 
   /// \returns Default/requested maximum number of waves per execution unit.
-  unsigned getMaxWavesPerEU() const { return WavesPerEU.second; }
+  unsigned getMaxWavesPerEU() const {
+    return WavesPerEU.second;
+  }
 
   /// \returns SGPR used for \p Dim's work group ID.
   Register getWorkGroupIDSGPR(unsigned Dim) const {
@@ -768,7 +881,9 @@ public:
     llvm_unreachable("unexpected dimension");
   }
 
-  unsigned getLDSWaveSpillSize() const { return LDSWaveSpillSize; }
+  unsigned getLDSWaveSpillSize() const {
+    return LDSWaveSpillSize;
+  }
 
   const AMDGPUBufferPseudoSourceValue *getBufferPSV(const SIInstrInfo &TII) {
     if (!BufferPSV)
@@ -793,7 +908,9 @@ public:
     return GWSResourcePSV.get();
   }
 
-  unsigned getOccupancy() const { return Occupancy; }
+  unsigned getOccupancy() const {
+    return Occupancy;
+  }
 
   unsigned getMinAllowedOccupancy() const {
     if (!isMemoryBound() && !needsWaveLimiter())

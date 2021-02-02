@@ -225,17 +225,17 @@ llvm::Optional<int> getOptionalIntLoopAttribute(Loop *TheLoop, StringRef Name);
 /// "llvm.loop.vectorize.scalable.enable") for a loop and use it to construct a
 /// ElementCount. If the metadata "llvm.loop.vectorize.width" cannot be found
 /// then None is returned.
-Optional<ElementCount> getOptionalElementCountLoopAttribute(Loop *TheLoop);
+Optional<ElementCount>
+getOptionalElementCountLoopAttribute(Loop *TheLoop);
 
 /// Create a new loop identifier for a loop created from a loop transformation.
 ///
 /// @param OrigLoopID The loop ID of the loop before the transformation.
 /// @param FollowupAttrs List of attribute names that contain attributes to be
 ///                      added to the new loop ID.
-/// @param InheritOptionsAttrsPrefix Selects which attributes should be
-/// inherited
-///                                  from the original loop. The following
-///                                  values are considered:
+/// @param InheritOptionsAttrsPrefix Selects which attributes should be inherited
+///                                  from the original loop. The following values
+///                                  are considered:
 ///        nullptr   : Inherit all attributes from @p OrigLoopID.
 ///        ""        : Do not inherit any attribute from @p OrigLoopID; only use
 ///                    those specified by a followup attribute.
@@ -260,8 +260,7 @@ makeFollowupLoopID(MDNode *OrigLoopID, ArrayRef<StringRef> FollowupAttrs,
 /// Look for the loop attribute that disables all transformation heuristic.
 bool hasDisableAllTransformsHint(const Loop *L);
 
-/// Look for the loop attribute that disables the LICM transformation
-/// heuristics.
+/// Look for the loop attribute that disables the LICM transformation heuristics.
 bool hasDisableLICMTransformsHint(const Loop *L);
 
 /// Look for the loop attribute that requires progress within the loop.
@@ -470,8 +469,8 @@ void appendLoopsToWorklist(LoopInfo &, SmallPriorityWorklist<Loop *, 4> &);
 
 /// Recursively clone the specified loop and all of its children,
 /// mapping the blocks with the specified map.
-Loop *cloneLoop(Loop *L, Loop *PL, ValueToValueMapTy &VM, LoopInfo *LI,
-                LPPassManager *LPM);
+Loop *cloneLoop(Loop *L, Loop *PL, ValueToValueMapTy &VM,
+                LoopInfo *LI, LPPassManager *LPM);
 
 /// Add code that checks at runtime if the accessed arrays in \p PointerChecks
 /// overlap.

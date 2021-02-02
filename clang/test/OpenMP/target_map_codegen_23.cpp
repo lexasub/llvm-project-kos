@@ -37,19 +37,19 @@
 // CK24-DAG: [[SB]] = type { i32, [[SA:%.+]], [10 x [[SA:%.+]]], [10 x [[SA:%.+]]*], [[SA:%.+]]* }
 // CK24-DAG: [[SA]] = type { i32, [[SA]]*, [10 x i32] }
 
-struct SA {
+struct SA{
   int a;
   struct SA *p;
   int b[10];
 };
-struct SB {
+struct SB{
   int a;
   struct SA s;
   struct SA sa[10];
   struct SA *sp[10];
   struct SA *p;
 };
-struct SC {
+struct SC{
   int a;
   struct SB s;
   struct SB *p;
@@ -101,7 +101,7 @@ struct SC {
 // CK24: [[MTYPE24:@.+]] = private {{.*}}constant [4 x i64] [i64 32, i64 281474976710672, i64 16, i64 19]
 
 // CK24-LABEL: explicit_maps_struct_fields
-int explicit_maps_struct_fields(int a) {
+int explicit_maps_struct_fields(int a){
   SC s;
   SC *p;
 

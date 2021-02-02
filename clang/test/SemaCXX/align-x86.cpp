@@ -45,9 +45,9 @@ typedef ALIGNED(2) struct {
   char a[3];
 } aligned_before_struct;
 
-static_assert(sizeof(aligned_before_struct) == 3, "");
-static_assert(sizeof(aligned_before_struct[1]) == 4, "");
-static_assert(sizeof(aligned_before_struct[2]) == 6, "");
+static_assert(sizeof(aligned_before_struct)       == 3, "");
+static_assert(sizeof(aligned_before_struct[1])    == 4, "");
+static_assert(sizeof(aligned_before_struct[2])    == 6, "");
 static_assert(sizeof(aligned_before_struct[2][1]) == 8, "");
 static_assert(sizeof(aligned_before_struct[1][2]) == 6, "");
 
@@ -55,8 +55,8 @@ typedef struct ALIGNED(2) {
   char a[3];
 } aligned_after_struct;
 
-static_assert(sizeof(aligned_after_struct) == 4, "");
-static_assert(sizeof(aligned_after_struct[1]) == 4, "");
-static_assert(sizeof(aligned_after_struct[2]) == 8, "");
+static_assert(sizeof(aligned_after_struct)       == 4, "");
+static_assert(sizeof(aligned_after_struct[1])    == 4, "");
+static_assert(sizeof(aligned_after_struct[2])    == 8, "");
 static_assert(sizeof(aligned_after_struct[2][1]) == 8, "");
 static_assert(sizeof(aligned_after_struct[1][2]) == 8, "");

@@ -186,8 +186,9 @@ CudaVersion MaxVersionForCudaArch(CudaArch A) {
 }
 
 CudaVersion ToCudaVersion(llvm::VersionTuple Version) {
-  int IVer = Version.getMajor() * 10 + Version.getMinor().getValueOr(0);
-  switch (IVer) {
+  int IVer =
+      Version.getMajor() * 10 + Version.getMinor().getValueOr(0);
+  switch(IVer) {
   case 70:
     return CudaVersion::CUDA_70;
   case 75:
@@ -213,7 +214,7 @@ CudaVersion ToCudaVersion(llvm::VersionTuple Version) {
   }
 }
 
-bool CudaFeatureEnabled(llvm::VersionTuple Version, CudaFeature Feature) {
+bool CudaFeatureEnabled(llvm::VersionTuple  Version, CudaFeature Feature) {
   return CudaFeatureEnabled(ToCudaVersion(Version), Feature);
 }
 

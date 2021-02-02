@@ -35,37 +35,38 @@
 extern "C" {
 #endif
 
-typedef unsigned char mp_sign;
-typedef unsigned int mp_size;
-typedef int mp_result;
-typedef long mp_small;           /* must be a signed type */
-typedef unsigned long mp_usmall; /* must be an unsigned type */
+typedef unsigned char  mp_sign;
+typedef unsigned int   mp_size;
+typedef int            mp_result;
+typedef long           mp_small;  /* must be a signed type */
+typedef unsigned long  mp_usmall; /* must be an unsigned type */
+
 
 /* Build with words as uint64_t by default. */
 #ifdef USE_32BIT_WORDS
-typedef uint16_t mp_digit;
-typedef uint32_t mp_word;
-#define MP_DIGIT_MAX (UINT16_MAX * 1UL)
-#define MP_WORD_MAX (UINT32_MAX * 1UL)
+typedef uint16_t        mp_digit;
+typedef uint32_t        mp_word;
+#  define MP_DIGIT_MAX  (UINT16_MAX * 1UL)
+#  define MP_WORD_MAX   (UINT32_MAX * 1UL)
 #else
-typedef uint32_t mp_digit;
-typedef uint64_t mp_word;
-#define MP_DIGIT_MAX (UINT32_MAX * UINT64_C(1))
-#define MP_WORD_MAX (UINT64_MAX)
+typedef uint32_t        mp_digit;
+typedef uint64_t        mp_word;
+#  define MP_DIGIT_MAX  (UINT32_MAX * UINT64_C(1))
+#  define MP_WORD_MAX   (UINT64_MAX)
 #endif
 
 typedef struct {
-  mp_digit single;
-  mp_digit *digits;
-  mp_size alloc;
-  mp_size used;
-  mp_sign sign;
+  mp_digit  single;
+  mp_digit* digits;
+  mp_size   alloc;
+  mp_size   used;
+  mp_sign   sign;
 } mpz_t, *mp_int;
 
-static inline mp_digit *MP_DIGITS(mp_int Z) { return Z->digits; }
-static inline mp_size MP_ALLOC(mp_int Z) { return Z->alloc; }
-static inline mp_size MP_USED(mp_int Z) { return Z->used; }
-static inline mp_sign MP_SIGN(mp_int Z) { return Z->sign; }
+static inline mp_digit* MP_DIGITS(mp_int Z) { return Z->digits; }
+static inline mp_size   MP_ALLOC(mp_int Z)  { return Z->alloc; }
+static inline mp_size   MP_USED(mp_int Z)   { return Z->used; }
+static inline mp_sign   MP_SIGN(mp_int Z)   { return Z->sign; }
 
 extern const mp_result MP_OK;
 extern const mp_result MP_FALSE;
@@ -77,14 +78,14 @@ extern const mp_result MP_TRUNC;
 extern const mp_result MP_BADARG;
 extern const mp_result MP_MINERR;
 
-#define MP_DIGIT_BIT (sizeof(mp_digit) * CHAR_BIT)
-#define MP_WORD_BIT (sizeof(mp_word) * CHAR_BIT)
-#define MP_SMALL_MIN LONG_MIN
-#define MP_SMALL_MAX LONG_MAX
-#define MP_USMALL_MAX ULONG_MAX
+#define MP_DIGIT_BIT   (sizeof(mp_digit) * CHAR_BIT)
+#define MP_WORD_BIT    (sizeof(mp_word) * CHAR_BIT)
+#define MP_SMALL_MIN   LONG_MIN
+#define MP_SMALL_MAX   LONG_MAX
+#define MP_USMALL_MAX  ULONG_MAX
 
-#define MP_MIN_RADIX 2
-#define MP_MAX_RADIX 36
+#define MP_MIN_RADIX   2
+#define MP_MAX_RADIX   36
 
 /** Sets the default number of digits allocated to an `mp_int` constructed by
     `mp_int_init_size()` with `prec == 0`. Allocations are rounded up to
@@ -222,8 +223,8 @@ mp_result mp_int_expt_full(mp_int a, mp_int b, mp_int c);
 
 /** Sets `*r` to the remainder of `a / value`.
     The remainder is pinned to `0 <= r < value`. */
-static inline mp_result mp_int_mod_value(mp_int a, mp_small value,
-                                         mp_small *r) {
+static inline
+mp_result mp_int_mod_value(mp_int a, mp_small value, mp_small* r) {
   return mp_int_div_value(a, value, 0, r);
 }
 
@@ -267,8 +268,7 @@ mp_result mp_int_exptmod_bvalue(mp_small value, mp_int b, mp_int m, mp_int c);
     reduction algorithm.
 
     It returns `MP_RANGE` if `b < 0` or `MP_UNDEF` if `m == 0`. */
-mp_result mp_int_exptmod_known(mp_int a, mp_int b, mp_int m, mp_int mu,
-                               mp_int c);
+mp_result mp_int_exptmod_known(mp_int a, mp_int b, mp_int m, mp_int mu, mp_int c);
 
 /** Sets `c` to the reduction constant for Barrett reduction by modulus `m`.
     Requires that `c` and `m` point to distinct locations. */
@@ -307,9 +307,8 @@ mp_result mp_int_root(mp_int a, mp_small b, mp_int c);
 
 /** Sets `c` to the greatest integer not less than the square root of `a`.
     This is a special case of `mp_int_root()`. */
-static inline mp_result mp_int_sqrt(mp_int a, mp_int c) {
-  return mp_int_root(a, 2, c);
-}
+static inline
+mp_result mp_int_sqrt(mp_int a, mp_int c) { return mp_int_root(a, 2, c); }
 
 /** Returns `MP_OK` if `z` is representable as `mp_small`, else `MP_RANGE`.
     If `out` is not NULL, `*out` is set to the value of `z` when `MP_OK`. */
@@ -363,8 +362,7 @@ mp_result mp_int_read_string(mp_int z, mp_size radix, const char *str);
     `strtol()` function.
 
     Requires `MP_MIN_RADIX <= radix <= MP_MAX_RADIX`. */
-mp_result mp_int_read_cstring(mp_int z, mp_size radix, const char *str,
-                              char **end);
+mp_result mp_int_read_cstring(mp_int z, mp_size radix, const char *str, char **end);
 
 /** Returns the number of significant bits in `z`. */
 mp_result mp_int_count_bits(mp_int z);

@@ -23,23 +23,23 @@ using namespace llvm;
 //===----------------------------------------------------------------------===//
 
 namespace {
-class DomInfoPrinter : public FunctionPass {
-public:
-  static char ID; // Pass identification, replacement for typeid
-  DomInfoPrinter() : FunctionPass(ID) {}
+  class DomInfoPrinter : public FunctionPass {
+  public:
+    static char ID; // Pass identification, replacement for typeid
+    DomInfoPrinter() : FunctionPass(ID) {}
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesAll();
-    AU.addRequired<DominatorTreeWrapperPass>();
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesAll();
+      AU.addRequired<DominatorTreeWrapperPass>();
+    }
 
-  bool runOnFunction(Function &F) override {
-    getAnalysis<DominatorTreeWrapperPass>().print(dbgs());
-    return false;
-  }
-};
-} // namespace
+    bool runOnFunction(Function &F) override {
+      getAnalysis<DominatorTreeWrapperPass>().print(dbgs());
+      return false;
+    }
+  };
+}
 
 char DomInfoPrinter::ID = 0;
-static RegisterPass<DomInfoPrinter> DIP("print-dom-info",
-                                        "Dominator Info Printer", true, true);
+static RegisterPass<DomInfoPrinter>
+DIP("print-dom-info", "Dominator Info Printer", true, true);

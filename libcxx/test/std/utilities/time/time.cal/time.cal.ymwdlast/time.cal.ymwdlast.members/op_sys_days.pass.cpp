@@ -20,55 +20,50 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using year = std::chrono::year;
-  using month = std::chrono::month;
-  using year_month_weekday_last = std::chrono::year_month_weekday_last;
-  using sys_days = std::chrono::sys_days;
-  using days = std::chrono::days;
-  using weekday = std::chrono::weekday;
-  using weekday_last = std::chrono::weekday_last;
 
-  ASSERT_NOEXCEPT(
-      static_cast<sys_days>(std::declval<const year_month_weekday_last>()));
-  ASSERT_SAME_TYPE(sys_days,
-                   decltype(static_cast<sys_days>(
-                       std::declval<const year_month_weekday_last>())));
+int main(int, char**)
+{
+    using year                    = std::chrono::year;
+    using month                   = std::chrono::month;
+    using year_month_weekday_last = std::chrono::year_month_weekday_last;
+    using sys_days                = std::chrono::sys_days;
+    using days                    = std::chrono::days;
+    using weekday                 = std::chrono::weekday;
+    using weekday_last            = std::chrono::weekday_last;
 
-  constexpr month January = std::chrono::January;
-  constexpr weekday Tuesday = std::chrono::Tuesday;
+    ASSERT_NOEXCEPT(                    static_cast<sys_days>(std::declval<const year_month_weekday_last>()));
+    ASSERT_SAME_TYPE(sys_days, decltype(static_cast<sys_days>(std::declval<const year_month_weekday_last>())));
 
-  { // Last Tuesday in Jan 1970 was the 27th
-    constexpr year_month_weekday_last ymwdl{year{1970}, January,
-                                            weekday_last{Tuesday}};
+    constexpr month   January = std::chrono::January;
+    constexpr weekday Tuesday = std::chrono::Tuesday;
+
+    { // Last Tuesday in Jan 1970 was the 27th
+    constexpr year_month_weekday_last ymwdl{year{1970}, January, weekday_last{Tuesday}};
     constexpr sys_days sd{ymwdl};
 
     static_assert(sd.time_since_epoch() == days{26}, "");
-  }
+    }
 
-  { // Last Tuesday in Jan 2000 was the 25th
-    constexpr year_month_weekday_last ymwdl{year{2000}, January,
-                                            weekday_last{Tuesday}};
+    { // Last Tuesday in Jan 2000 was the 25th
+    constexpr year_month_weekday_last ymwdl{year{2000}, January, weekday_last{Tuesday}};
     constexpr sys_days sd{ymwdl};
 
-    static_assert(sd.time_since_epoch() == days{10957 + 24}, "");
-  }
+    static_assert(sd.time_since_epoch() == days{10957+24}, "");
+    }
 
-  { // Last Tuesday in Jan 1940 was the 30th
-    constexpr year_month_weekday_last ymwdl{year{1940}, January,
-                                            weekday_last{Tuesday}};
+    { // Last Tuesday in Jan 1940 was the 30th
+    constexpr year_month_weekday_last ymwdl{year{1940}, January, weekday_last{Tuesday}};
     constexpr sys_days sd{ymwdl};
 
-    static_assert(sd.time_since_epoch() == days{-10958 + 29}, "");
-  }
+    static_assert(sd.time_since_epoch() == days{-10958+29}, "");
+    }
 
-  { // Last Tuesday in Nov 1939 was the 28th
-    year_month_weekday_last ymdl{year{1939}, std::chrono::November,
-                                 weekday_last{Tuesday}};
+    { // Last Tuesday in Nov 1939 was the 28th
+    year_month_weekday_last ymdl{year{1939}, std::chrono::November, weekday_last{Tuesday}};
     sys_days sd{ymdl};
 
-    assert(sd.time_since_epoch() == days{-(10957 + 35)});
-  }
+    assert(sd.time_since_epoch() == days{-(10957+35)});
+    }
 
   return 0;
 }

@@ -79,7 +79,7 @@ private:
   friend class LoopInfoBase<MachineBasicBlock, MachineLoop>;
 
   explicit MachineLoop(MachineBasicBlock *MBB)
-      : LoopBase<MachineBasicBlock, MachineLoop>(MBB) {}
+    : LoopBase<MachineBasicBlock, MachineLoop>(MBB) {}
 
   MachineLoop() = default;
 };
@@ -103,7 +103,7 @@ public:
   MachineLoopInfo(const MachineLoopInfo &) = delete;
   MachineLoopInfo &operator=(const MachineLoopInfo &) = delete;
 
-  LoopInfoBase<MachineBasicBlock, MachineLoop> &getBase() { return LI; }
+  LoopInfoBase<MachineBasicBlock, MachineLoop>& getBase() { return LI; }
 
   /// Find the block that either is the loop preheader, or could
   /// speculatively be used as the preheader. This is e.g. useful to place
@@ -166,16 +166,20 @@ public:
   }
 
   /// This adds the specified loop to the collection of top-level loops.
-  inline void addTopLevelLoop(MachineLoop *New) { LI.addTopLevelLoop(New); }
+  inline void addTopLevelLoop(MachineLoop *New) {
+    LI.addTopLevelLoop(New);
+  }
 
   /// This method completely removes BB from all data structures, including all
   /// of the Loop objects it is nested in and our mapping from
   /// MachineBasicBlocks to loops.
-  void removeBlock(MachineBasicBlock *BB) { LI.removeBlock(BB); }
+  void removeBlock(MachineBasicBlock *BB) {
+    LI.removeBlock(BB);
+  }
 };
 
 // Allow clients to walk the list of nested loops...
-template <> struct GraphTraits<const MachineLoop *> {
+template <> struct GraphTraits<const MachineLoop*> {
   using NodeRef = const MachineLoop *;
   using ChildIteratorType = MachineLoopInfo::iterator;
 
@@ -184,7 +188,7 @@ template <> struct GraphTraits<const MachineLoop *> {
   static ChildIteratorType child_end(NodeRef N) { return N->end(); }
 };
 
-template <> struct GraphTraits<MachineLoop *> {
+template <> struct GraphTraits<MachineLoop*> {
   using NodeRef = MachineLoop *;
   using ChildIteratorType = MachineLoopInfo::iterator;
 

@@ -29,13 +29,11 @@ void do_test() {
   static_assert(std::is_nothrow_constructible<bool, C>::value, "");
   static_assert(!std::is_convertible<C, bool>::value, "");
   {
-    constexpr C c;
-    ((void)c);
+    constexpr C c; ((void)c);
     static_assert(bool(c) == false, "");
   }
   { // null case
-    const C c = {};
-    ((void)c);
+    const C c = {}; ((void)c);
     ASSERT_NOEXCEPT(bool(c));
     if (c)
       assert(false);
@@ -52,9 +50,10 @@ void do_test() {
   }
 }
 
-int main(int, char**) {
-  do_test<coro::coroutine_handle<> >();
-  do_test<coro::coroutine_handle<int> >();
+int main(int, char**)
+{
+  do_test<coro::coroutine_handle<>>();
+  do_test<coro::coroutine_handle<int>>();
 
   return 0;
 }

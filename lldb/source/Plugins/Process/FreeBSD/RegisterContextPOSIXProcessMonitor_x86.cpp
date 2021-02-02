@@ -594,8 +594,8 @@ bool RegisterContextPOSIXProcessMonitor_x86_64::SetHardwareWatchpointWithIndex(
     if (ReadRegister(m_reg_info.first_dr + 7, current_dr7_bits)) {
       uint64_t new_dr7_bits =
           current_dr7_bits.GetAsUInt64() |
-          (1 << (2 * hw_index) | size_and_rw_bits(size, read, write)
-                                     << (16 + 4 * hw_index));
+          (1 << (2 * hw_index) |
+           size_and_rw_bits(size, read, write) << (16 + 4 * hw_index));
 
       if (WriteRegister(m_reg_info.first_dr + hw_index, RegisterValue(addr)) &&
           WriteRegister(m_reg_info.first_dr + 7, RegisterValue(new_dr7_bits)))

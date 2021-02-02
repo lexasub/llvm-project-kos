@@ -51,8 +51,8 @@
 // CHECK: define {{.*}} void @[[OUTLINE_PRIVATE]]({{.*}} %.global_tid., {{.*}} %.bound_tid.)
 void mapWithPrivate() {
   int x, y;
-#pragma omp target teams private(x) map(x, y) private(y)
-  ;
+  #pragma omp target teams private(x) map(x,y) private(y)
+    ;
 }
 
 // HOST: define {{.*}}mapWithFirstprivate
@@ -64,8 +64,8 @@ void mapWithPrivate() {
 // CHECK: define {{.*}} void @[[OUTLINE_FIRSTPRIVATE]]({{.*}} %.global_tid., {{.*}} %.bound_tid., i{{[0-9]*}} %x, i{{[0-9]*}} %y)
 void mapWithFirstprivate() {
   int x, y;
-#pragma omp target teams firstprivate(x) map(x, y) firstprivate(y)
-  ;
+  #pragma omp target teams firstprivate(x) map(x,y) firstprivate(y)
+    ;
 }
 
 // HOST: define {{.*}}mapWithReduction
@@ -78,10 +78,8 @@ void mapWithFirstprivate() {
 // CHECK: %.omp.reduction.red_list = alloca [2 x i8*]
 void mapWithReduction() {
   int x, y;
-#pragma omp target teams reduction(+                          \
-                                   : x) map(x, y) reduction(+ \
-                                                            : y)
-  ;
+  #pragma omp target teams reduction(+:x) map(x,y) reduction(+:y)
+    ;
 }
 
 // HOST: define {{.*}}mapFrom
@@ -93,9 +91,8 @@ void mapWithReduction() {
 // CHECK: define {{.*}} void @[[OUTLINE_FROM]]({{.*}} %.global_tid., {{.*}} %.bound_tid., i{{[0-9]*}} %x)
 void mapFrom() {
   int x;
-#pragma omp target teams firstprivate(x) map(from \
-                                             : x)
-  ;
+  #pragma omp target teams firstprivate(x) map(from:x)
+    ;
 }
 
 // HOST: define {{.*}}mapTo
@@ -107,9 +104,8 @@ void mapFrom() {
 // CHECK: define {{.*}} void @[[OUTLINE_TO]]({{.*}} %.global_tid., {{.*}} %.bound_tid., i{{[0-9]*}} %x)
 void mapTo() {
   int x;
-#pragma omp target teams firstprivate(x) map(to \
-                                             : x)
-  ;
+  #pragma omp target teams firstprivate(x) map(to:x)
+    ;
 }
 
 // HOST: define {{.*}}mapAlloc
@@ -121,9 +117,8 @@ void mapTo() {
 // CHECK: define {{.*}} void @[[OUTLINE_ALLOC]]({{.*}} %.global_tid., {{.*}} %.bound_tid., i{{[0-9]*}} %x)
 void mapAlloc() {
   int x;
-#pragma omp target teams firstprivate(x) map(alloc \
-                                             : x)
-  ;
+  #pragma omp target teams firstprivate(x) map(alloc:x)
+    ;
 }
 
 // HOST: define {{.*}}mapArray
@@ -143,16 +138,13 @@ void mapAlloc() {
 // CHECK: %.omp.reduction.red_list = alloca [1 x i8*]
 void mapArray() {
   int x[77], y[88], z[99];
-#pragma omp target teams private(x) firstprivate(y) reduction(+ \
-                                                              : z) map(x, y, z)
-  ;
-#pragma omp target teams private(x) firstprivate(y) reduction(+           \
-                                                              : z) map(to \
-                                                                       : x, y, z)
-  ;
+  #pragma omp target teams private(x) firstprivate(y) reduction(+:z) map(x,y,z)
+    ;
+  #pragma omp target teams private(x) firstprivate(y) reduction(+:z) map(to:x,y,z)
+    ;
 }
 
-#if HAS_INT128
+# if HAS_INT128
 // HOST-INT128: define {{.*}}mapInt128
 // HOST-INT128: call {{.*}} @.[[OFFLOAD_INT128_R0]].region_id{{.*}} @[[MAPTYPES_INT128_R0]]
 // HOST-INT128: call {{.*}} @.[[OFFLOAD_INT128_R1]].region_id{{.*}} @[[MAPTYPES_INT128_R1]]
@@ -170,13 +162,10 @@ void mapArray() {
 // INT128: %.omp.reduction.red_list = alloca [1 x i8*]
 void mapInt128() {
   __int128 x, y, z;
-#pragma omp target teams private(x) firstprivate(y) reduction(+ \
-                                                              : z) map(x, y, z)
-  ;
-#pragma omp target teams private(x) firstprivate(y) reduction(+             \
-                                                              : z) map(from \
-                                                                       : x, y, z)
-  ;
+  #pragma omp target teams private(x) firstprivate(y) reduction(+:z) map(x,y,z)
+    ;
+  #pragma omp target teams private(x) firstprivate(y) reduction(+:z) map(from:x,y,z)
+    ;
 }
-#endif
+# endif
 #endif

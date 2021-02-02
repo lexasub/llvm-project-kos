@@ -8,4 +8,6 @@
 
 // Make sure the test passes pass if it succeeds at runtime.
 
-int main(int, char**) { return 0; }
+int main(int, char**) {
+    return 0;
+}

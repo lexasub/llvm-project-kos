@@ -40,7 +40,7 @@ struct BitFields {
 struct BitFields_packed {
   int : 32;
   int a : 31;
-} __attribute__((__packed__)) bfx_packed;
+} __attribute__ ((__packed__)) bfx_packed;
 
 struct BitFields2 {
   int : 31;
@@ -50,7 +50,7 @@ struct BitFields2 {
 struct BitFields2_packed {
   int : 31;
   int a : 1;
-} __attribute__((__packed__)) bfx2_packed;
+} __attribute__ ((__packed__)) bfx2_packed;
 
 struct BitFields3 {
   int : 11;
@@ -60,19 +60,19 @@ struct BitFields3 {
 struct BitFields3_packed {
   int : 11;
   int a : 14;
-} __attribute__((__packed__)) bfx3_packed;
+} __attribute__ ((__packed__)) bfx3_packed;
 
 struct BitFields4 {
   short : 16;
-  int a : 1;
+  int a: 1;
   long b : 7;
 } bfx4;
 
 struct BitFields4_packed {
   short : 16;
-  int a : 1;
+  int a: 1;
   long b : 7;
-} __attribute__((__packed__)) bfx4_packed;
+} __attribute__ ((__packed__)) bfx4_packed;
 
 typedef float float2 __attribute__((ext_vector_type(2)));
 float2 float2x;
@@ -140,10 +140,7 @@ int main() {
 // CHECK: [[PREV:%.+]] = atomicrmw sub i32* @{{.+}}, i32 [[EXPR]] monotonic
 // CHECK: store i32 [[PREV]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    iv = uix;
-    uix -= uiv;
-  }
+  {iv = uix; uix -= uiv;}
 // CHECK: [[EXPR:%.+]] = load i32, i32* @{{.+}},
 // CHECK: [[X:%.+]] = load atomic i32, i32* [[X_ADDR:@.+]] monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -159,10 +156,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[DESIRED_CALC]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    ix <<= iv;
-    uiv = ix;
-  }
+  {ix <<= iv; uiv = ix;}
 // CHECK: [[EXPR:%.+]] = load i32, i32* @{{.+}},
 // CHECK: [[X:%.+]] = load atomic i32, i32* [[X_ADDR:@.+]] monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -194,19 +188,13 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i64 [[EXPECTED]], i64* @{{.+}},
 #pragma omp atomic capture
-  {
-    ulv = lx;
-    lx /= lv;
-  }
+  {ulv = lx; lx /= lv;}
 // CHECK: [[EXPR:%.+]] = load i64, i64* @{{.+}},
 // CHECK: [[OLD:%.+]] = atomicrmw and i64* @{{.+}}, i64 [[EXPR]] monotonic
 // CHECK: [[DESIRED:%.+]] = and i64 [[OLD]], [[EXPR]]
 // CHECK:  store i64 [[DESIRED]], i64* @{{.+}},
 #pragma omp atomic capture
-  {
-    ulx &= ulv;
-    lv = ulx;
-  }
+  {ulx &= ulv; lv = ulx;}
 // CHECK: [[EXPR:%.+]] = load i64, i64* @{{.+}},
 // CHECK: [[OLD:%.+]] = atomicrmw xor i64* @{{.+}}, i64 [[EXPR]] monotonic
 // CHECK: [[DESIRED:%.+]] = xor i64 [[OLD]], [[EXPR]]
@@ -256,10 +244,7 @@ int main() {
 // CHECK: [[CAST:%.+]] = fptrunc double [[OLD]] to float
 // CHECK: store float [[CAST]], float* @{{.+}},
 #pragma omp atomic capture
-  {
-    fv = dx;
-    dx = dv - dx;
-  }
+  {fv = dx; dx = dv - dx;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}},
 // CHECK: [[X:%.+]] = load atomic i128, i128*  bitcast (x86_fp80* [[X_ADDR:@.+]] to i128*) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -281,10 +266,7 @@ int main() {
 // CHECK: [[CAST:%.+]] = fptrunc x86_fp80 [[MUL]] to double
 // CHECK: store double [[CAST]], double* @{{.+}},
 #pragma omp atomic capture
-  {
-    ldx = ldx * ldv;
-    dv = ldx;
-  }
+  {ldx = ldx * ldv; dv = ldx;}
 // CHECK: [[EXPR_RE:%.+]] = load i32, i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 0)
 // CHECK: [[EXPR_IM:%.+]] = load i32, i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 1)
 // CHECK: [[BITCAST:%.+]] = bitcast { i32, i32 }* [[EXPECTED_ADDR:%.+]] to i8*
@@ -336,10 +318,7 @@ int main() {
 // CHECK: store i32 [[RE_CAST]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 0),
 // CHECK: store i32 [[IM_CAST]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 1),
 #pragma omp atomic capture
-  {
-    civ = cfx;
-    cfx = cfv + cfx;
-  }
+  {civ = cfx; cfx = cfv + cfx;}
 // CHECK: [[EXPR_RE:%.+]] = load double, double* getelementptr inbounds ({ double, double }, { double, double }* @{{.+}}, i32 0, i32 0)
 // CHECK: [[EXPR_IM:%.+]] = load double, double* getelementptr inbounds ({ double, double }, { double, double }* @{{.+}}, i32 0, i32 1)
 // CHECK: [[BITCAST:%.+]] = bitcast { double, double }* [[EXPECTED_ADDR:%.+]] to i8*
@@ -366,10 +345,7 @@ int main() {
 // CHECK: store float [[IM_CAST]], float* getelementptr inbounds ({ float, float }, { float, float }* @{{.+}}, i32 0, i32 1),
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic capture seq_cst
-  {
-    cdx = cdx - cdv;
-    cfv = cdx;
-  }
+  {cdx = cdx - cdv; cfv = cdx;}
 // CHECK: [[BV:%.+]] = load i8, i8* @{{.+}}
 // CHECK: [[BOOL:%.+]] = trunc i8 [[BV]] to i1
 // CHECK: [[EXPR:%.+]] = zext i1 [[BOOL]] to i64
@@ -399,10 +375,7 @@ int main() {
 // CHECK: [[OLD_I8:%.+]] = zext i1 [[OLD_BOOL]] to i8
 // CHECK: store i8 [[OLD_I8]], i8* @{{.+}},
 #pragma omp atomic capture
-  {
-    bv = bx;
-    bx = cv & bx;
-  }
+  {bv = bx; bx = cv & bx;}
 // CHECK: [[UCV:%.+]]  = load i8, i8* @{{.+}},
 // CHECK: [[EXPR:%.+]] = zext i8 [[UCV]] to i32
 // CHECK: [[X:%.+]] = load atomic i8, i8* [[CX_ADDR:@.+]] seq_cst
@@ -422,10 +395,7 @@ int main() {
 // CHECK: store i8 [[NEW]], i8* @{{.+}},
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic capture, seq_cst
-  {
-    cx = cx >> ucv;
-    cv = cx;
-  }
+  {cx = cx >> ucv; cv = cx;}
 // CHECK: [[SV:%.+]]  = load i16, i16* @{{.+}},
 // CHECK: [[EXPR:%.+]] = sext i16 [[SV]] to i32
 // CHECK: [[X:%.+]] = load atomic i64, i64* [[ULX_ADDR:@.+]] monotonic
@@ -461,20 +431,14 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i64 [[EXPECTED]], i64* @{{.+}},
 #pragma omp atomic capture
-  {
-    lv = lx;
-    lx = lx % usv;
-  }
+  {lv = lx; lx = lx % usv;}
 // CHECK: [[EXPR:%.+]] = load i32, i32* @{{.+}}
 // CHECK: [[OLD:%.+]] = atomicrmw or i32* @{{.+}}, i32 [[EXPR]] seq_cst
 // CHECK: [[DESIRED:%.+]] = or i32 [[EXPR]], [[OLD]]
 // CHECK: store i32 [[DESIRED]], i32* @{{.+}},
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic seq_cst, capture
-  {
-    uix = iv | uix;
-    uiv = uix;
-  }
+  {uix = iv | uix; uiv = uix;}
 // CHECK: [[EXPR:%.+]] = load i32, i32* @{{.+}}
 // CHECK: [[OLD:%.+]] = atomicrmw and i32* @{{.+}}, i32 [[EXPR]] monotonic
 // CHECK: [[DESIRED:%.+]] = and i32 [[OLD]], [[EXPR]]
@@ -503,10 +467,7 @@ int main() {
 // CHECK: store i32 [[OLD_RE]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 0),
 // CHECK: store i32 [[OLD_IM]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 1),
 #pragma omp atomic capture
-  {
-    civ = cix;
-    cix = lv + cix;
-  }
+  {civ = cix; cix = lv + cix;}
 // CHECK: [[ULV:%.+]] = load i64, i64* @{{.+}},
 // CHECK: [[EXPR:%.+]] = uitofp i64 [[ULV]] to float
 // CHECK: [[X:%.+]] = load atomic i32, i32*  bitcast (float* [[X_ADDR:@.+]] to i32*) monotonic
@@ -525,10 +486,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store float [[MUL]], float* @{{.+}},
 #pragma omp atomic capture
-  {
-    fx = fx * ulv;
-    fv = fx;
-  }
+  {fx = fx * ulv; fv = fx;}
 // CHECK: [[LLV:%.+]] = load i64, i64* @{{.+}},
 // CHECK: [[EXPR:%.+]] = sitofp i64 [[LLV]] to double
 // CHECK: [[X:%.+]] = load atomic i64, i64*  bitcast (double* [[X_ADDR:@.+]] to i64*) monotonic
@@ -569,10 +527,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store x86_fp80 [[OLD]], x86_fp80* @{{.+}},
 #pragma omp atomic capture
-  {
-    ldv = ldx;
-    ldx -= ullv;
-  }
+  {ldv = ldx; ldx -= ullv;}
 // CHECK: [[EXPR:%.+]] = load float, float* @{{.+}},
 // CHECK: [[BITCAST:%.+]] = bitcast { i32, i32 }* [[EXPECTED_ADDR:%.+]] to i8*
 // CHECK: call void @__atomic_load(i64 8, i8* bitcast ({ i32, i32 }* [[X_ADDR:@.+]] to i8*), i8* [[BITCAST]], i32 0)
@@ -595,10 +550,7 @@ int main() {
 // CHECK: store i32 [[NEW_RE]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 0),
 // CHECK: store i32 [[NEW_IM]], i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* @{{.+}}, i32 0, i32 1),
 #pragma omp atomic capture
-  {
-    cix = fv / cix;
-    civ = cix;
-  }
+  {cix = fv / cix; civ = cix;}
 // CHECK: [[EXPR:%.+]] = load double, double* @{{.+}},
 // CHECK: [[X:%.+]] = load atomic i16, i16* [[X_ADDR:@.+]] monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -639,10 +591,7 @@ int main() {
 // CHECK: [[EXPECTED_I8:%.+]] = zext i1 [[BOOL_EXPECTED]] to i8
 // CHECK: store i8 [[EXPECTED_I8]], i8* @{{.+}},
 #pragma omp atomic capture
-  {
-    bv = bx;
-    bx = ldv * bx;
-  }
+  {bv = bx; bx = ldv * bx;}
 // CHECK: [[EXPR_RE:%.+]] = load i32, i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* [[CIV_ADDR:@.+]], i32 0, i32 0),
 // CHECK: [[EXPR_IM:%.+]] = load i32, i32* getelementptr inbounds ({ i32, i32 }, { i32, i32 }* [[CIV_ADDR]], i32 0, i32 1),
 // CHECK: [[XI8:%.+]] = load atomic i8, i8* [[X_ADDR:@.+]] monotonic
@@ -667,10 +616,7 @@ int main() {
 // CHECK: [[DESIRED_I8:%.+]] = zext i1 [[BOOL_DESIRED]] to i8
 // CHECK: store i8 [[DESIRED_I8]], i8* @{{.+}},
 #pragma omp atomic capture
-  {
-    bx = civ - bx;
-    bv = bx;
-  }
+  {bx = civ - bx; bv = bx;}
 // CHECK: [[IDX:%.+]] = load i16, i16* @{{.+}}
 // CHECK: load i8, i8*
 // CHECK: [[VEC_ITEM_VAL:%.+]] = zext i1 %{{.+}} to i32
@@ -696,10 +642,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[OR]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    int4x[sv] |= bv;
-    iv = int4x[sv];
-  }
+  {int4x[sv] |= bv; iv = int4x[sv];}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i32, i32* bitcast (i8* getelementptr (i8, i8* bitcast (%struct.BitFields* @{{.+}} to i8*), i64 4) to i32*) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -754,10 +697,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[A_ASHR]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    iv = bfx_packed.a;
-    bfx_packed.a *= ldv;
-  }
+  {iv = bfx_packed.a; bfx_packed.a *= ldv;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i32, i32* getelementptr inbounds (%struct.BitFields2, %struct.BitFields2* @{{.+}}, i32 0, i32 0) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -784,10 +724,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[CONV]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    bfx2.a -= ldv;
-    iv = bfx2.a;
-  }
+  {bfx2.a -= ldv; iv = bfx2.a;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i8, i8* getelementptr (i8, i8* bitcast (%struct.BitFields2_packed* @{{.+}} to i8*), i64 3) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -846,10 +783,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[A_ASHR]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    iv = bfx3.a;
-    bfx3.a /= ldv;
-  }
+  {iv = bfx3.a; bfx3.a /= ldv;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[LDTEMP:%.+]] = bitcast i32* %{{.+}} to i24*
 // CHECK: [[BITCAST:%.+]] = bitcast i24* [[LDTEMP]] to i8*
@@ -881,10 +815,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[NEW_VAL]], i32* @{{.+}},
 #pragma omp atomic capture
-  {
-    bfx3_packed.a += ldv;
-    iv = bfx3_packed.a;
-  }
+  {bfx3_packed.a += ldv; iv = bfx3_packed.a;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i64, i64* bitcast (%struct.BitFields4* @{{.+}} to i64*) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -945,10 +876,7 @@ int main() {
 // CHECK: [[EXIT]]
 // CHECK: store i32 [[CAST]], i32* @{{.+}},
 #pragma omp atomic capture relaxed
-  {
-    iv = bfx4_packed.a;
-    bfx4_packed.a -= ldv;
-  }
+  {iv = bfx4_packed.a; bfx4_packed.a -= ldv;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i64, i64* bitcast (%struct.BitFields4* @{{.+}} to i64*) monotonic
 // CHECK: br label %[[CONT:.+]]
@@ -978,10 +906,7 @@ int main() {
 // CHECK: store i32 [[NEW_VAL]], i32* @{{.+}},
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic capture release
-  {
-    bfx4.b /= ldv;
-    iv = bfx4.b;
-  }
+  {bfx4.b /= ldv; iv = bfx4.b;}
 // CHECK: [[EXPR:%.+]] = load x86_fp80, x86_fp80* @{{.+}}
 // CHECK: [[PREV_VALUE:%.+]] = load atomic i8, i8* getelementptr inbounds (%struct.BitFields4_packed, %struct.BitFields4_packed* @{{.+}}, i32 0, i32 0, i64 2) acquire
 // CHECK: br label %[[CONT:.+]]
@@ -1040,10 +965,7 @@ int main() {
 // CHECK: store float [[X]], float* @{{.+}},
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic capture acq_rel
-  {
-    fv = float2x.x;
-    float2x.x = ulv - float2x.x;
-  }
+  {fv = float2x.x; float2x.x = ulv - float2x.x;}
 // CHECK: [[EXPR:%.+]] = load double, double* @{{.+}},
 // CHECK: [[OLD_VAL:%.+]] = call i32 @llvm.read_register.i32([[REG:metadata ![0-9]+]])
 // CHECK: [[X_RVAL:%.+]] = sitofp i32 [[OLD_VAL]] to double
@@ -1053,17 +975,11 @@ int main() {
 // CHECK: store i32 [[NEW_VAL]], i32* @{{.+}},
 // CHECK: call{{.*}} @__kmpc_flush(
 #pragma omp atomic capture seq_cst
-  {
-    rix = dv / rix;
-    iv = rix;
-  }
+  {rix = dv / rix; iv = rix;}
 // CHECK: [[OLD_VAL:%.+]] = atomicrmw xchg i32* @{{.+}}, i32 5 monotonic
 // CHECK: call void @llvm.write_register.i32([[REG]], i32 [[OLD_VAL]])
 #pragma omp atomic capture
-  {
-    rix = ix;
-    ix = 5;
-  }
+  {rix = ix; ix = 5;}
   return 0;
 }
 #endif

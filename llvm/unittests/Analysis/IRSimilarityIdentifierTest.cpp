@@ -1686,13 +1686,13 @@ TEST(IRSimilarityCandidate, PredicateIsomorphism) {
   std::vector<IRInstructionData *>::iterator Start, End;
   Start = InstrList.begin();
   End = InstrList.begin();
-
+  
   std::advance(End, 1);
   IRSimilarityCandidate Cand1(0, 2, *Start, *End);
 
   Start = InstrList.begin();
   End = InstrList.begin();
-
+  
   std::advance(Start, 3);
   std::advance(End, 4);
   IRSimilarityCandidate Cand2(3, 2, *Start, *End);

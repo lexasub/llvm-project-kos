@@ -8,7 +8,7 @@ namespace benchmark {
 namespace internal {
 
 class ThreadTimer {
-public:
+ public:
   ThreadTimer() = default;
 
   // Called by each thread
@@ -51,10 +51,10 @@ public:
     return manual_time_used_;
   }
 
-private:
-  bool running_ = false;       // Is the timer running
-  double start_real_time_ = 0; // If running_
-  double start_cpu_time_ = 0;  // If running_
+ private:
+  bool running_ = false;        // Is the timer running
+  double start_real_time_ = 0;  // If running_
+  double start_cpu_time_ = 0;   // If running_
 
   // Accumulated time so far (does not contain current slice if running_)
   double real_time_used_ = 0;
@@ -63,7 +63,7 @@ private:
   double manual_time_used_ = 0;
 };
 
-} // namespace internal
-} // namespace benchmark
+}  // namespace internal
+}  // namespace benchmark
 
-#endif // BENCHMARK_THREAD_TIMER_H
+#endif  // BENCHMARK_THREAD_TIMER_H

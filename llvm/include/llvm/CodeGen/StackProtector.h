@@ -37,8 +37,8 @@ class Type;
 class StackProtector : public FunctionPass {
 private:
   /// A mapping of AllocaInsts to their required SSP layout.
-  using SSPLayoutMap =
-      DenseMap<const AllocaInst *, MachineFrameInfo::SSPLayoutKind>;
+  using SSPLayoutMap = DenseMap<const AllocaInst *,
+                                MachineFrameInfo::SSPLayoutKind>;
 
   const TargetMachine *TM = nullptr;
 

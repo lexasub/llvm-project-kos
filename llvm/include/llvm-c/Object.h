@@ -38,21 +38,21 @@ typedef struct LLVMOpaqueSymbolIterator *LLVMSymbolIteratorRef;
 typedef struct LLVMOpaqueRelocationIterator *LLVMRelocationIteratorRef;
 
 typedef enum {
-  LLVMBinaryTypeArchive,              /**< Archive file. */
-  LLVMBinaryTypeMachOUniversalBinary, /**< Mach-O Universal Binary file. */
-  LLVMBinaryTypeCOFFImportFile,       /**< COFF Import file. */
-  LLVMBinaryTypeIR,                   /**< LLVM IR. */
-  LLVMBinaryTypeWinRes,               /**< Windows resource (.res) file. */
-  LLVMBinaryTypeCOFF,                 /**< COFF Object file. */
-  LLVMBinaryTypeELF32L,               /**< ELF 32-bit, little endian. */
-  LLVMBinaryTypeELF32B,               /**< ELF 32-bit, big endian. */
-  LLVMBinaryTypeELF64L,               /**< ELF 64-bit, little endian. */
-  LLVMBinaryTypeELF64B,               /**< ELF 64-bit, big endian. */
-  LLVMBinaryTypeMachO32L,             /**< MachO 32-bit, little endian. */
-  LLVMBinaryTypeMachO32B,             /**< MachO 32-bit, big endian. */
-  LLVMBinaryTypeMachO64L,             /**< MachO 64-bit, little endian. */
-  LLVMBinaryTypeMachO64B,             /**< MachO 64-bit, big endian. */
-  LLVMBinaryTypeWasm,                 /**< Web Assembly. */
+  LLVMBinaryTypeArchive,                /**< Archive file. */
+  LLVMBinaryTypeMachOUniversalBinary,   /**< Mach-O Universal Binary file. */
+  LLVMBinaryTypeCOFFImportFile,         /**< COFF Import file. */
+  LLVMBinaryTypeIR,                     /**< LLVM IR. */
+  LLVMBinaryTypeWinRes,                 /**< Windows resource (.res) file. */
+  LLVMBinaryTypeCOFF,                   /**< COFF Object file. */
+  LLVMBinaryTypeELF32L,                 /**< ELF 32-bit, little endian. */
+  LLVMBinaryTypeELF32B,                 /**< ELF 32-bit, big endian. */
+  LLVMBinaryTypeELF64L,                 /**< ELF 64-bit, little endian. */
+  LLVMBinaryTypeELF64B,                 /**< ELF 64-bit, big endian. */
+  LLVMBinaryTypeMachO32L,               /**< MachO 32-bit, little endian. */
+  LLVMBinaryTypeMachO32B,               /**< MachO 32-bit, big endian. */
+  LLVMBinaryTypeMachO64L,               /**< MachO 64-bit, little endian. */
+  LLVMBinaryTypeMachO64B,               /**< MachO 64-bit, big endian. */
+  LLVMBinaryTypeWasm,                   /**< Web Assembly. */
 } LLVMBinaryType;
 
 /**
@@ -72,7 +72,8 @@ typedef enum {
  * @see llvm::object::createBinary
  */
 LLVMBinaryRef LLVMCreateBinary(LLVMMemoryBufferRef MemBuf,
-                               LLVMContextRef Context, char **ErrorMessage);
+                               LLVMContextRef Context,
+                               char **ErrorMessage);
 
 /**
  * Dispose of a binary file.
@@ -174,7 +175,7 @@ uint64_t LLVMGetSectionSize(LLVMSectionIteratorRef SI);
 const char *LLVMGetSectionContents(LLVMSectionIteratorRef SI);
 uint64_t LLVMGetSectionAddress(LLVMSectionIteratorRef SI);
 LLVMBool LLVMGetSectionContainsSymbol(LLVMSectionIteratorRef SI,
-                                      LLVMSymbolIteratorRef Sym);
+                                 LLVMSymbolIteratorRef Sym);
 
 // Section Relocation iterators
 LLVMRelocationIteratorRef LLVMGetRelocations(LLVMSectionIteratorRef Section);
@@ -182,6 +183,7 @@ void LLVMDisposeRelocationIterator(LLVMRelocationIteratorRef RI);
 LLVMBool LLVMIsRelocationIteratorAtEnd(LLVMSectionIteratorRef Section,
                                        LLVMRelocationIteratorRef RI);
 void LLVMMoveToNextRelocation(LLVMRelocationIteratorRef RI);
+
 
 // SymbolRef accessors
 const char *LLVMGetSymbolName(LLVMSymbolIteratorRef SI);

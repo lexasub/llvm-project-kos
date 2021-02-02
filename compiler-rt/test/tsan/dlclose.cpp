@@ -8,17 +8,18 @@
 
 #include <stdio.h>
 
-extern "C" void sofunc() {
+extern "C"
+void sofunc() {
   fprintf(stderr, "HELLO FROM SO\n");
 }
 
-#else // BUILD_SO
+#else  // BUILD_SO
 
 #include <dlfcn.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <string>
+#include <stddef.h>
 #include <unistd.h>
+#include <string>
 
 void *lib;
 void *lib2;
@@ -33,7 +34,7 @@ static Closer c;
 
 int main(int argc, char *argv[]) {
   lib = dlopen((std::string(argv[0]) + std::string("-so.so")).c_str(),
-               RTLD_NOW | RTLD_NODELETE);
+      RTLD_NOW|RTLD_NODELETE);
   if (lib == 0) {
     printf("error in dlopen: %s\n", dlerror());
     return 1;
@@ -43,12 +44,13 @@ int main(int argc, char *argv[]) {
     printf("error in dlsym: %s\n", dlerror());
     return 1;
   }
-  ((void (*)())f)();
+  ((void(*)())f)();
   return 0;
 }
 
-#endif // BUILD_SO
+#endif  // BUILD_SO
 
 // CHECK: HELLO FROM SO
 // CHECK-NOT: Inconsistency detected by ld.so
 // CHECK: CLOSED SO
+

@@ -13,7 +13,7 @@
 void foo() {}
 
 struct S {
-  S() : a(0) {}
+  S(): a(0) {}
   S(int v) : a(v) {}
   int a;
   typedef int type;
@@ -24,7 +24,7 @@ class S7 : public T {
 protected:
   T a;
   T &b;
-  typename T::type c : 12;
+  typename T::type c:12;
   typename T::type &d;
   S7() : a(0), b(a), c(0), d(a.a) {}
 
@@ -68,14 +68,14 @@ class S8 : public S7<S> {
   S8() {}
 
 public:
-  S8(int v) : S7<S>(v) {
-#pragma omp for private(a) private(this->a) private(S7 <S>::a)
+  S8(int v) : S7<S>(v){
+#pragma omp for private(a) private(this->a) private(S7<S>::a)
     for (int k = 0; k < a.a; ++k)
       ++this->a.a;
-#pragma omp for lastprivate(a) lastprivate(this->a) lastprivate(S7 <S>::a)
+#pragma omp for lastprivate(a) lastprivate(this->a) lastprivate(S7<S>::a)
     for (int k = 0; k < a.a; ++k)
       ++this->a.a;
-#pragma omp for linear(ref(S7 <S>::d))
+#pragma omp for linear(ref(S7<S>::d))
     for (int k = 0; k < a.a; ++k)
       ++this->a.a;
   }
@@ -112,71 +112,61 @@ T tmain(T argc) {
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(nonmonotonic \
-                         : dynamic)
+#pragma omp for schedule(nonmonotonic: dynamic)
   // CHECK-NEXT: #pragma omp for schedule(nonmonotonic: dynamic)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(monotonic \
-                         : dynamic)
+#pragma omp for schedule(monotonic : dynamic)
   // CHECK-NEXT: #pragma omp for schedule(monotonic: dynamic)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(nonmonotonic \
-                         : guided)
+#pragma omp for schedule(nonmonotonic : guided)
   // CHECK-NEXT: #pragma omp for schedule(nonmonotonic: guided)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(monotonic \
-                         : guided)
+#pragma omp for schedule(monotonic : guided)
   // CHECK-NEXT: #pragma omp for schedule(monotonic: guided)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(nonmonotonic \
-                         : static)
+#pragma omp for schedule(nonmonotonic : static)
   // CHECK-NEXT: #pragma omp for schedule(nonmonotonic: static)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(monotonic \
-                         : static)
+#pragma omp for schedule(monotonic :static)
   // CHECK-NEXT: #pragma omp for schedule(monotonic: static)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(nonmonotonic \
-                         : auto)
+#pragma omp for schedule(nonmonotonic : auto)
   // CHECK-NEXT: #pragma omp for schedule(nonmonotonic: auto)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(monotonic \
-                         : auto)
+#pragma omp for schedule(monotonic : auto)
   // CHECK-NEXT: #pragma omp for schedule(monotonic: auto)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(nonmonotonic \
-                         : runtime)
+#pragma omp for schedule(nonmonotonic : runtime)
   // CHECK-NEXT: #pragma omp for schedule(nonmonotonic: runtime)
   for (int i = 0; i < 2; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
-#pragma omp for schedule(monotonic \
-                         : runtime)
+#pragma omp for schedule(monotonic : runtime)
   // CHECK-NEXT: #pragma omp for schedule(monotonic: runtime)
   for (int i = 0; i < 2; ++i)
     a = 2;
@@ -226,22 +216,19 @@ T tmain(T argc) {
 }
 
 int main(int argc, char **argv) {
-  // CHECK: int main(int argc, char **argv) {
+// CHECK: int main(int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   float arr[20];
   static int a;
 // CHECK: static int a;
-#pragma omp for schedule(guided, argc) reduction(+ \
-                                                 : argv[0][:1]) order(concurrent)
+#pragma omp for schedule(guided, argc) reduction(+:argv[0][:1]) order(concurrent)
   // CHECK-NEXT: #pragma omp for schedule(guided, argc) reduction(+: argv[0][:1]) order(concurrent)
   for (int i = argc; i < c; ++i)
     a = 2;
 // CHECK-NEXT: for (int i = argc; i < c; ++i)
 // CHECK-NEXT: a = 2;
 #pragma omp parallel
-#pragma omp for private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(3) schedule(auto) ordered nowait linear(g                       \
-                                                                                                                            : -1) reduction(task, + \
-                                                                                                                                            : e)
+#pragma omp for private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(3) schedule(auto) ordered nowait linear(g:-1) reduction(task, +:e)
   for (int i = 0; i < 10; ++i)
     for (int j = 0; j < 10; ++j)
       for (auto x : arr)

@@ -11,17 +11,17 @@ module __usr_include {
 // expected-no-diagnostics
 
 #pragma clang module begin __usr_include.stddef
-#define NULL 0
+  #define NULL 0
 #pragma clang module end
 
 #pragma clang module begin __usr_include.stdlib
-#ifdef IMPORT
-#pragma clang module import __usr_include.stddef
-#else
-#pragma clang module begin __usr_include.stddef
-#define NULL 0
-#pragma clang module end
-#endif
+  #ifdef IMPORT
+    #pragma clang module import __usr_include.stddef
+  #else
+    #pragma clang module begin __usr_include.stddef
+      #define NULL 0
+    #pragma clang module end
+  #endif
 
-void *f() { return NULL; } // ok, NULL is visible here
+  void *f() { return NULL; } // ok, NULL is visible here
 #pragma clang module end

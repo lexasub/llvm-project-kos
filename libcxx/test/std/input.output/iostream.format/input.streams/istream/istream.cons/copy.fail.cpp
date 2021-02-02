@@ -20,28 +20,37 @@
 #include <type_traits>
 #include <cassert>
 
-struct test_istream : public std::basic_istream<char> {
-  typedef std::basic_istream<char> base;
+struct test_istream
+    : public std::basic_istream<char>
+{
+    typedef std::basic_istream<char> base;
 
-  test_istream(test_istream&& s)
-      : base(std::move(s)) // OK
-  {}
+    test_istream(test_istream&& s)
+        : base(std::move(s)) // OK
+    {
+    }
 
-  test_istream& operator=(test_istream&& s) {
-    base::operator=(std::move(s)); // OK
-    return *this;
-  }
+    test_istream& operator=(test_istream&& s) {
+      base::operator=(std::move(s)); // OK
+      return *this;
+    }
 
-  test_istream(test_istream const& s)
-      : base(
-            s) // expected-error {{call to deleted constructor of 'std::basic_istream<char>'}}
-  {}
+    test_istream(test_istream const& s)
+        : base(s) // expected-error {{call to deleted constructor of 'std::basic_istream<char>'}}
+    {
+    }
 
-  test_istream& operator=(test_istream const& s) {
-    base::operator=(
-        s); // expected-error {{call to deleted member function 'operator='}}
-    return *this;
-  }
+    test_istream& operator=(test_istream const& s) {
+      base::operator=(s); // expected-error {{call to deleted member function 'operator='}}
+      return *this;
+    }
+
 };
 
-int main(int, char**) { return 0; }
+
+int main(int, char**)
+{
+
+
+  return 0;
+}

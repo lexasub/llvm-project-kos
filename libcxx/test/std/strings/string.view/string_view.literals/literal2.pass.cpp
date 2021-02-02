@@ -16,11 +16,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using namespace std::literals::string_view_literals;
+int main(int, char**)
+{
+    using namespace std::literals::string_view_literals;
 
-  std::string_view foo = "" sv;
-  assert(foo.length() == 0);
+    std::string_view foo  =   ""sv;
+    assert(foo.length() == 0);
 
   return 0;
 }

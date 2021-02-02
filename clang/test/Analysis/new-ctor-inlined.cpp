@@ -30,7 +30,7 @@ void checkNewAndConstructorInlining() {
 
 struct Sp {
   Sp *p;
-  Sp(Sp *p) : p(p) {}
+  Sp(Sp *p): p(p) {}
   ~Sp() {}
 };
 
@@ -50,6 +50,6 @@ void checkNewPOD() {
 
 void checkTrivialCopy() {
   S s;
-  S *t = new S(s);                // no-crash
+  S *t = new S(s); // no-crash
   clang_analyzer_eval(t->x == 1); // expected-warning{{TRUE}}
 }

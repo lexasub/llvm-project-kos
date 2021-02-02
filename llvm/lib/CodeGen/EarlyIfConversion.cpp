@@ -45,16 +45,16 @@ using namespace llvm;
 
 // Absolute maximum number of instructions allowed per speculated block.
 // This bypasses all other heuristics, so it should be set fairly high.
-static cl::opt<unsigned> BlockInstrLimit(
-    "early-ifcvt-limit", cl::init(30), cl::Hidden,
-    cl::desc("Maximum number of instructions per speculated block."));
+static cl::opt<unsigned>
+BlockInstrLimit("early-ifcvt-limit", cl::init(30), cl::Hidden,
+  cl::desc("Maximum number of instructions per speculated block."));
 
 // Stress testing mode - disable heuristics.
 static cl::opt<bool> Stress("stress-early-ifcvt", cl::Hidden,
-                            cl::desc("Turn all knobs to 11"));
+  cl::desc("Turn all knobs to 11"));
 
-STATISTIC(NumDiamondsSeen, "Number of diamonds");
-STATISTIC(NumDiamondsConv, "Number of diamonds converted");
+STATISTIC(NumDiamondsSeen,  "Number of diamonds");
+STATISTIC(NumDiamondsConv,  "Number of diamonds converted");
 STATISTIC(NumTrianglesSeen, "Number of triangles");
 STATISTIC(NumTrianglesConv, "Number of triangles converted");
 
@@ -116,7 +116,7 @@ public:
     int CondCycles, TCycles, FCycles;
 
     PHIInfo(MachineInstr *phi)
-        : PHI(phi), TReg(0), FReg(0), CondCycles(0), TCycles(0), FCycles(0) {}
+      : PHI(phi), TReg(0), FReg(0), CondCycles(0), TCycles(0), FCycles(0) {}
   };
 
   SmallVector<PHIInfo, 8> PHIs;
@@ -127,7 +127,7 @@ private:
 
   /// Instructions in Head that define values used by the conditional blocks.
   /// The hoisted instructions must be inserted after these instructions.
-  SmallPtrSet<MachineInstr *, 8> InsertAfter;
+  SmallPtrSet<MachineInstr*, 8> InsertAfter;
 
   /// Register units clobbered by the conditional blocks.
   BitVector ClobberedRegUnits;
@@ -189,6 +189,7 @@ public:
 };
 } // end anonymous namespace
 
+
 /// canSpeculateInstrs - Returns true if all the instructions in MBB can safely
 /// be speculated. The terminators are not considered.
 ///
@@ -210,8 +211,7 @@ bool SSAIfConv::canSpeculateInstrs(MachineBasicBlock *MBB) {
   // Check all instructions, except the terminators. It is assumed that
   // terminators never have side effects or define any used register values.
   for (MachineBasicBlock::iterator I = MBB->begin(),
-                                   E = MBB->getFirstTerminator();
-       I != E; ++I) {
+       E = MBB->getFirstTerminator(); I != E; ++I) {
     if (I->isDebugInstr())
       continue;
 
@@ -410,9 +410,8 @@ bool SSAIfConv::findInsertionPoint() {
     if (!LiveRegUnits.empty()) {
       LLVM_DEBUG({
         dbgs() << "Would clobber";
-        for (SparseSet<unsigned>::const_iterator i = LiveRegUnits.begin(),
-                                                 e = LiveRegUnits.end();
-             i != e; ++i)
+        for (SparseSet<unsigned>::const_iterator
+             i = LiveRegUnits.begin(), e = LiveRegUnits.end(); i != e; ++i)
           dbgs() << ' ' << printRegUnit(*i, TRI);
         dbgs() << " live before " << *I;
       });
@@ -427,6 +426,8 @@ bool SSAIfConv::findInsertionPoint() {
   LLVM_DEBUG(dbgs() << "No legal insertion point found.\n");
   return false;
 }
+
+
 
 /// canConvertIf - analyze the sub-cfg rooted in MBB, and return true if it is
 /// a potential candidate for if-conversion. Fill out the internal state.
@@ -513,9 +514,9 @@ bool SSAIfConv::canConvertIf(MachineBasicBlock *MBB, bool Predicate) {
     PHIInfo &PI = PHIs.back();
     // Find PHI operands corresponding to TPred and FPred.
     for (unsigned i = 1; i != PI.PHI->getNumOperands(); i += 2) {
-      if (PI.PHI->getOperand(i + 1).getMBB() == TPred)
+      if (PI.PHI->getOperand(i+1).getMBB() == TPred)
         PI.TReg = PI.PHI->getOperand(i).getReg();
-      if (PI.PHI->getOperand(i + 1).getMBB() == FPred)
+      if (PI.PHI->getOperand(i+1).getMBB() == FPred)
         PI.FReg = PI.PHI->getOperand(i).getReg();
     }
     assert(Register::isVirtualRegister(PI.TReg) && "Bad PHI");
@@ -599,20 +600,20 @@ void SSAIfConv::rewritePHIOperands() {
     } else {
       Register PHIDst = PI.PHI->getOperand(0).getReg();
       DstReg = MRI->createVirtualRegister(MRI->getRegClass(PHIDst));
-      TII->insertSelect(*Head, FirstTerm, HeadDL, DstReg, Cond, PI.TReg,
-                        PI.FReg);
+      TII->insertSelect(*Head, FirstTerm, HeadDL,
+                         DstReg, Cond, PI.TReg, PI.FReg);
       LLVM_DEBUG(dbgs() << "          --> " << *std::prev(FirstTerm));
     }
 
     // Rewrite PHI operands TPred -> (DstReg, Head), remove FPred.
     for (unsigned i = PI.PHI->getNumOperands(); i != 1; i -= 2) {
-      MachineBasicBlock *MBB = PI.PHI->getOperand(i - 1).getMBB();
+      MachineBasicBlock *MBB = PI.PHI->getOperand(i-1).getMBB();
       if (MBB == getTPred()) {
-        PI.PHI->getOperand(i - 1).setMBB(Head);
-        PI.PHI->getOperand(i - 2).setReg(DstReg);
+        PI.PHI->getOperand(i-1).setMBB(Head);
+        PI.PHI->getOperand(i-2).setReg(DstReg);
       } else if (MBB == getFPred()) {
-        PI.PHI->RemoveOperand(i - 1);
-        PI.PHI->RemoveOperand(i - 2);
+        PI.PHI->RemoveOperand(i-1);
+        PI.PHI->RemoveOperand(i-2);
       }
     }
     LLVM_DEBUG(dbgs() << "          --> " << *PI.PHI);
@@ -681,7 +682,8 @@ void SSAIfConv::convertIf(SmallVectorImpl<MachineBasicBlock *> &RemovedBlocks,
     // Splice Tail onto the end of Head.
     LLVM_DEBUG(dbgs() << "Joining tail " << printMBBReference(*Tail)
                       << " into head " << printMBBReference(*Head) << '\n');
-    Head->splice(Head->end(), Tail, Tail->begin(), Tail->end());
+    Head->splice(Head->end(), Tail,
+                     Tail->begin(), Tail->end());
     Head->transferSuccessorsAndUpdatePHIs(Tail);
     RemovedBlocks.push_back(Tail);
     Tail->eraseFromParent();
@@ -719,7 +721,7 @@ public:
   StringRef getPassName() const override { return "Early If-Conversion"; }
 
 private:
-  bool tryConvertIf(MachineBasicBlock *);
+  bool tryConvertIf(MachineBasicBlock*);
   void invalidateTraces();
   bool shouldConvertIf();
 };
@@ -728,13 +730,13 @@ private:
 char EarlyIfConverter::ID = 0;
 char &llvm::EarlyIfConverterID = EarlyIfConverter::ID;
 
-INITIALIZE_PASS_BEGIN(EarlyIfConverter, DEBUG_TYPE, "Early If Converter", false,
-                      false)
+INITIALIZE_PASS_BEGIN(EarlyIfConverter, DEBUG_TYPE,
+                      "Early If Converter", false, false)
 INITIALIZE_PASS_DEPENDENCY(MachineBranchProbabilityInfo)
 INITIALIZE_PASS_DEPENDENCY(MachineDominatorTree)
 INITIALIZE_PASS_DEPENDENCY(MachineTraceMetrics)
-INITIALIZE_PASS_END(EarlyIfConverter, DEBUG_TYPE, "Early If Converter", false,
-                    false)
+INITIALIZE_PASS_END(EarlyIfConverter, DEBUG_TYPE,
+                    "Early If Converter", false, false)
 
 void EarlyIfConverter::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<MachineBranchProbabilityInfo>();
@@ -820,11 +822,11 @@ bool EarlyIfConverter::shouldConvertIf() {
   MachineTraceMetrics::Trace TBBTrace = MinInstr->getTrace(IfConv.getTPred());
   MachineTraceMetrics::Trace FBBTrace = MinInstr->getTrace(IfConv.getFPred());
   LLVM_DEBUG(dbgs() << "TBB: " << TBBTrace << "FBB: " << FBBTrace);
-  unsigned MinCrit =
-      std::min(TBBTrace.getCriticalPath(), FBBTrace.getCriticalPath());
+  unsigned MinCrit = std::min(TBBTrace.getCriticalPath(),
+                              FBBTrace.getCriticalPath());
 
   // Set a somewhat arbitrary limit on the critical path extension we accept.
-  unsigned CritLimit = SchedModel.MispredictPenalty / 2;
+  unsigned CritLimit = SchedModel.MispredictPenalty/2;
 
   MachineBasicBlock &MBB = *IfConv.Head;
   MachineOptimizationRemarkEmitter MORE(*MBB.getParent(), nullptr);
@@ -832,7 +834,7 @@ bool EarlyIfConverter::shouldConvertIf() {
   // If-conversion only makes sense when there is unexploited ILP. Compute the
   // maximum-ILP resource length of the trace after if-conversion. Compare it
   // to the shortest critical path.
-  SmallVector<const MachineBasicBlock *, 1> ExtraBlocks;
+  SmallVector<const MachineBasicBlock*, 1> ExtraBlocks;
   if (IfConv.TBB != IfConv.Tail)
     ExtraBlocks.push_back(IfConv.TBB);
   unsigned ResLength = FBBTrace.getResourceLength(ExtraBlocks);
@@ -976,7 +978,7 @@ bool EarlyIfConverter::tryConvertIf(MachineBasicBlock *MBB) {
   while (IfConv.canConvertIf(MBB) && shouldConvertIf()) {
     // If-convert MBB and update analyses.
     invalidateTraces();
-    SmallVector<MachineBasicBlock *, 4> RemovedBlocks;
+    SmallVector<MachineBasicBlock*, 4> RemovedBlocks;
     IfConv.convertIf(RemovedBlocks);
     Changed = true;
     updateDomTree(DomTree, IfConv, RemovedBlocks);

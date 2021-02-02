@@ -17,19 +17,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::locale l = std::locale::classic();
-  {
-    typedef std::ctype<char> F;
-    const F& f = std::use_facet<F>(l);
+int main(int, char**)
+{
+    std::locale l = std::locale::classic();
+    {
+        typedef std::ctype<char> F;
+        const F& f = std::use_facet<F>(l);
 
-    assert(f.toupper(' ') == ' ');
-    assert(f.toupper('A') == 'A');
-    assert(f.toupper('\x07') == '\x07');
-    assert(f.toupper('.') == '.');
-    assert(f.toupper('a') == 'A');
-    assert(f.toupper('1') == '1');
-  }
+        assert(f.toupper(' ') == ' ');
+        assert(f.toupper('A') == 'A');
+        assert(f.toupper('\x07') == '\x07');
+        assert(f.toupper('.') == '.');
+        assert(f.toupper('a') == 'A');
+        assert(f.toupper('1') == '1');
+    }
 
   return 0;
 }

@@ -25,13 +25,15 @@
 
 using namespace std;
 
-struct my_hash {
-  size_t operator()(const tuple<int, int>&) const { return 0; }
+struct my_hash
+{
+    size_t operator()(const tuple<int,int>&) const {return 0;}
 };
 
-int main(int, char**) {
-  unordered_map<tuple<int, int>, size_t, my_hash> m;
-  m[make_tuple(2, 3)] = 7;
+int main(int, char**)
+{
+    unordered_map<tuple<int,int>, size_t, my_hash> m;
+    m[make_tuple(2,3)]=7;
 
   return 0;
 }

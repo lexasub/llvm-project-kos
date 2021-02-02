@@ -703,8 +703,8 @@ private:
         // Emit a load instruction and replace the use of the output value
         // with it.
         for (Instruction *UsrI : OutsideUsers) {
-          LoadInst *LoadI = new LoadInst(
-              I.getType(), AllocaI, I.getName() + ".seq.output.load", UsrI);
+          LoadInst *LoadI = new LoadInst(I.getType(), AllocaI,
+                                         I.getName() + ".seq.output.load", UsrI);
           UsrI->replaceUsesOfWith(&I, LoadI);
         }
       }

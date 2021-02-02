@@ -9,8 +9,8 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "gtest/gtest.h"
 #include "tsan_test_util.h"
+#include "gtest/gtest.h"
 
 TEST(ThreadSanitizer, ThreadSync) {
   MainThread t0;

@@ -46,7 +46,6 @@ public:
     uint64_t getAlignment() const { return Alignment; }
     size_t getContentSize() const { return ContentSize; }
     uint64_t getZeroFillSize() const { return ZeroFillSize; }
-
   private:
     uint64_t Alignment = 0;
     size_t ContentSize = 0;

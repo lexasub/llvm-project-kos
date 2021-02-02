@@ -12,13 +12,13 @@
 
 #include "ubsan_platform.h"
 #if CAN_SANITIZE_UB
+#include "ubsan_diag.h"
+#include "ubsan_init.h"
+#include "ubsan_flags.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_mutex.h"
 #include "sanitizer_common/sanitizer_symbolizer.h"
-#include "ubsan_diag.h"
-#include "ubsan_flags.h"
-#include "ubsan_init.h"
 
 using namespace __ubsan;
 
@@ -29,7 +29,9 @@ const char *__ubsan::GetSanititizerToolName() {
 static bool ubsan_initialized;
 static StaticSpinMutex ubsan_init_mu;
 
-static void CommonInit() { InitializeSuppressions(); }
+static void CommonInit() {
+  InitializeSuppressions();
+}
 
 static void CommonStandaloneInit() {
   SanitizerToolName = GetSanititizerToolName();
@@ -61,4 +63,4 @@ void __ubsan::InitAsPlugin() {
   }
 }
 
-#endif // CAN_SANITIZE_UB
+#endif  // CAN_SANITIZE_UB

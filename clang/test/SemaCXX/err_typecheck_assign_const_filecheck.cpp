@@ -52,7 +52,7 @@ struct A {
   static const B &getSCB();
 };
 
-A &getA();
+A& getA();
 
 // Valid assignment
 void test1(A a, const A Ca) {

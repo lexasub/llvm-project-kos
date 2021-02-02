@@ -14,9 +14,9 @@
 
 #include "ubsan_platform.h"
 #if CAN_SANITIZE_UB
-#include "ubsan_diag.h"
 #include "ubsan_handlers.h"
 #include "ubsan_handlers_cxx.h"
+#include "ubsan_diag.h"
 #include "ubsan_type_hash.h"
 
 #include "sanitizer_common/sanitizer_common.h"
@@ -26,19 +26,19 @@ using namespace __sanitizer;
 using namespace __ubsan;
 
 namespace __ubsan {
-extern const char *TypeCheckKinds[];
+  extern const char *TypeCheckKinds[];
 }
 
 // Returns true if UBSan has printed an error report.
-static bool HandleDynamicTypeCacheMiss(DynamicTypeCacheMissData *Data,
-                                       ValueHandle Pointer, ValueHandle Hash,
-                                       ReportOptions Opts) {
-  if (checkDynamicType((void *)Pointer, Data->TypeInfo, Hash))
+static bool HandleDynamicTypeCacheMiss(
+    DynamicTypeCacheMissData *Data, ValueHandle Pointer, ValueHandle Hash,
+    ReportOptions Opts) {
+  if (checkDynamicType((void*)Pointer, Data->TypeInfo, Hash))
     // Just a cache miss. The type matches after all.
     return false;
 
   // Check if error report should be suppressed.
-  DynamicTypeInfo DTI = getDynamicTypeInfoFromObject((void *)Pointer);
+  DynamicTypeInfo DTI = getDynamicTypeInfoFromObject((void*)Pointer);
   if (DTI.isValid() && IsVptrCheckSuppressed(DTI.getMostDerivedTypeName()))
     return false;
 
@@ -51,12 +51,11 @@ static bool HandleDynamicTypeCacheMiss(DynamicTypeCacheMissData *Data,
 
   Diag(Loc, DL_Error, ET,
        "%0 address %1 which does not point to an object of type %2")
-      << TypeCheckKinds[Data->TypeCheckKind] << (void *)Pointer << Data->Type;
+    << TypeCheckKinds[Data->TypeCheckKind] << (void*)Pointer << Data->Type;
 
   // If possible, say what type it actually points to.
   if (!DTI.isValid()) {
-    if (DTI.getOffset() < -VptrMaxOffsetToTop ||
-        DTI.getOffset() > VptrMaxOffsetToTop) {
+    if (DTI.getOffset() < -VptrMaxOffsetToTop || DTI.getOffset() > VptrMaxOffsetToTop) {
       Diag(Pointer, DL_Note, ET,
            "object has a possibly invalid vptr: abs(offset to top) too big")
           << TypeName(DTI.getMostDerivedTypeName())
@@ -201,6 +200,6 @@ void __ubsan_handle_function_type_mismatch_v1_abort(
   if (handleFunctionTypeMismatch(Data, Function, calleeRTTI, fnRTTI, Opts))
     Die();
 }
-} // namespace __ubsan
+}  // namespace __ubsan
 
 #endif // CAN_SANITIZE_UB

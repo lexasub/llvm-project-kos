@@ -1,16 +1,16 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
 struct add_pointer {
-  template <typename T>
+  template<typename T>
   struct apply {
-    typedef T *type;
+    typedef T* type;
   };
 };
 
 struct add_reference {
-  template <typename T>
+  template<typename T>
   struct apply {
-    typedef T &type; // expected-error{{cannot form a reference to 'void'}}
+    typedef T& type; // expected-error{{cannot form a reference to 'void'}}
   };
 };
 
@@ -20,7 +20,7 @@ struct bogus {
   };
 };
 
-template <typename MetaFun, typename T>
+template<typename MetaFun, typename T>
 struct apply1 {
   typedef typename MetaFun::template apply<T>::type type; // expected-note{{in instantiation of template class 'add_reference::apply<void>' requested here}} \
   // expected-error{{'apply' following the 'template' keyword does not refer to a template}}
@@ -36,3 +36,5 @@ void test() {
 
   apply1<bogus, int>::type t2; // expected-note{{in instantiation of template class 'apply1<bogus, int>' requested here}}
 }
+
+

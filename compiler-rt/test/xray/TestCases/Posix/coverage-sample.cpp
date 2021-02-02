@@ -9,17 +9,16 @@
 
 #include "xray/xray_interface.h"
 
-#include <cassert>
-#include <cstdio>
 #include <set>
+#include <cstdio>
+#include <cassert>
 
 std::set<int32_t> function_ids;
 
 [[clang::xray_never_instrument]] void coverage_handler(int32_t fid,
                                                        XRayEntryType) {
   thread_local bool patching = false;
-  if (patching)
-    return;
+  if (patching) return;
   patching = true;
   function_ids.insert(fid);
   __xray_unpatch_function(fid);

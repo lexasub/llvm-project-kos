@@ -10,10 +10,10 @@ void main() {
   foo();
 }
 // CHECK: define {{.*}} @_ZN6pr88523fooEv
-} // namespace pr8852
+}
 
 namespace pr9518 {
-template <typename T>
+template<typename T>
 struct provide {
   friend T f() { return T(); }
 };
@@ -24,4 +24,4 @@ void g() {
   f();
 }
 // CHECK: define {{.*}} @_ZN6pr95181fEv
-} // namespace pr9518
+}

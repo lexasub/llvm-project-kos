@@ -34,6 +34,6 @@ public:
 // fewer, simple instructions. This pass does not modify the CFG.
 //
 FunctionPass *createAggressiveInstCombinerPass();
-} // namespace llvm
+}
 
 #endif

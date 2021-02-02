@@ -29,36 +29,37 @@ void test() {
 }
 #endif
 
-int main(int, char**) {
-  {
-    std::istringstream ss;
-    assert(ss.rdbuf() != 0);
-    assert(ss.good());
-    assert(ss.str() == "");
-  }
-  {
-    std::istringstream ss(std::ios_base::in);
-    assert(ss.rdbuf() != 0);
-    assert(ss.good());
-    assert(ss.str() == "");
-  }
-  {
-    std::wistringstream ss;
-    assert(ss.rdbuf() != 0);
-    assert(ss.good());
-    assert(ss.str() == L"");
-  }
-  {
-    std::wistringstream ss(std::ios_base::in);
-    assert(ss.rdbuf() != 0);
-    assert(ss.good());
-    assert(ss.str() == L"");
-  }
+int main(int, char**)
+{
+    {
+        std::istringstream ss;
+        assert(ss.rdbuf() != 0);
+        assert(ss.good());
+        assert(ss.str() == "");
+    }
+    {
+        std::istringstream ss(std::ios_base::in);
+        assert(ss.rdbuf() != 0);
+        assert(ss.good());
+        assert(ss.str() == "");
+    }
+    {
+        std::wistringstream ss;
+        assert(ss.rdbuf() != 0);
+        assert(ss.good());
+        assert(ss.str() == L"");
+    }
+    {
+        std::wistringstream ss(std::ios_base::in);
+        assert(ss.rdbuf() != 0);
+        assert(ss.good());
+        assert(ss.str() == L"");
+    }
 
 #if TEST_STD_VER >= 11
-  test<std::istringstream>();
-  test<std::wistringstream>();
+    test<std::istringstream>();
+    test<std::wistringstream>();
 #endif
 
-  return 0;
+    return 0;
 }

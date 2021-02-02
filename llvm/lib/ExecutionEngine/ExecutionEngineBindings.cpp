@@ -29,8 +29,10 @@ using namespace llvm;
 // Wrapping the C bindings types.
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(GenericValue, LLVMGenericValueRef)
 
+
 static LLVMTargetMachineRef wrap(const TargetMachine *P) {
-  return reinterpret_cast<LLVMTargetMachineRef>(const_cast<TargetMachine *>(P));
+  return
+  reinterpret_cast<LLVMTargetMachineRef>(const_cast<TargetMachine*>(P));
 }
 
 /*===-- Operations on generic values --------------------------------------===*/
@@ -99,11 +101,13 @@ void LLVMDisposeGenericValue(LLVMGenericValueRef GenVal) {
 /*===-- Operations on execution engines -----------------------------------===*/
 
 LLVMBool LLVMCreateExecutionEngineForModule(LLVMExecutionEngineRef *OutEE,
-                                            LLVMModuleRef M, char **OutError) {
+                                            LLVMModuleRef M,
+                                            char **OutError) {
   std::string Error;
   EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
-  builder.setEngineKind(EngineKind::Either).setErrorStr(&Error);
-  if (ExecutionEngine *EE = builder.create()) {
+  builder.setEngineKind(EngineKind::Either)
+         .setErrorStr(&Error);
+  if (ExecutionEngine *EE = builder.create()){
     *OutEE = wrap(EE);
     return 0;
   }
@@ -112,10 +116,12 @@ LLVMBool LLVMCreateExecutionEngineForModule(LLVMExecutionEngineRef *OutEE,
 }
 
 LLVMBool LLVMCreateInterpreterForModule(LLVMExecutionEngineRef *OutInterp,
-                                        LLVMModuleRef M, char **OutError) {
+                                        LLVMModuleRef M,
+                                        char **OutError) {
   std::string Error;
   EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
-  builder.setEngineKind(EngineKind::Interpreter).setErrorStr(&Error);
+  builder.setEngineKind(EngineKind::Interpreter)
+         .setErrorStr(&Error);
   if (ExecutionEngine *Interp = builder.create()) {
     *OutInterp = wrap(Interp);
     return 0;
@@ -125,13 +131,14 @@ LLVMBool LLVMCreateInterpreterForModule(LLVMExecutionEngineRef *OutInterp,
 }
 
 LLVMBool LLVMCreateJITCompilerForModule(LLVMExecutionEngineRef *OutJIT,
-                                        LLVMModuleRef M, unsigned OptLevel,
+                                        LLVMModuleRef M,
+                                        unsigned OptLevel,
                                         char **OutError) {
   std::string Error;
   EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
   builder.setEngineKind(EngineKind::JIT)
-      .setErrorStr(&Error)
-      .setOptLevel((CodeGenOpt::Level)OptLevel);
+         .setErrorStr(&Error)
+         .setOptLevel((CodeGenOpt::Level)OptLevel);
   if (ExecutionEngine *JIT = builder.create()) {
     *OutJIT = wrap(JIT);
     return 0;
@@ -150,18 +157,17 @@ void LLVMInitializeMCJITCompilerOptions(LLVMMCJITCompilerOptions *PassedOptions,
          std::min(sizeof(options), SizeOfPassedOptions));
 }
 
-LLVMBool
-LLVMCreateMCJITCompilerForModule(LLVMExecutionEngineRef *OutJIT,
-                                 LLVMModuleRef M,
-                                 LLVMMCJITCompilerOptions *PassedOptions,
-                                 size_t SizeOfPassedOptions, char **OutError) {
+LLVMBool LLVMCreateMCJITCompilerForModule(
+    LLVMExecutionEngineRef *OutJIT, LLVMModuleRef M,
+    LLVMMCJITCompilerOptions *PassedOptions, size_t SizeOfPassedOptions,
+    char **OutError) {
   LLVMMCJITCompilerOptions options;
   // If the user passed a larger sized options struct, then they were compiled
   // against a newer LLVM. Tell them that something is wrong.
   if (SizeOfPassedOptions > sizeof(options)) {
     *OutError = strdup(
-        "Refusing to use options struct that is larger than my own; assuming "
-        "LLVM library mismatch.");
+      "Refusing to use options struct that is larger than my own; assuming "
+      "LLVM library mismatch.");
     return 1;
   }
 
@@ -190,15 +196,15 @@ LLVMCreateMCJITCompilerForModule(LLVMExecutionEngineRef *OutJIT,
   std::string Error;
   EngineBuilder builder(std::move(Mod));
   builder.setEngineKind(EngineKind::JIT)
-      .setErrorStr(&Error)
-      .setOptLevel((CodeGenOpt::Level)options.OptLevel)
-      .setTargetOptions(targetOptions);
+         .setErrorStr(&Error)
+         .setOptLevel((CodeGenOpt::Level)options.OptLevel)
+         .setTargetOptions(targetOptions);
   bool JIT;
   if (Optional<CodeModel::Model> CM = unwrap(options.CodeModel, JIT))
     builder.setCodeModel(*CM);
   if (options.MCJMM)
     builder.setMCJITMemoryManager(
-        std::unique_ptr<RTDyldMemoryManager>(unwrap(options.MCJMM)));
+      std::unique_ptr<RTDyldMemoryManager>(unwrap(options.MCJMM)));
   if (ExecutionEngine *JIT = builder.create()) {
     *OutJIT = wrap(JIT);
     return 0;
@@ -222,8 +228,8 @@ void LLVMRunStaticDestructors(LLVMExecutionEngineRef EE) {
 }
 
 int LLVMRunFunctionAsMain(LLVMExecutionEngineRef EE, LLVMValueRef F,
-                          unsigned ArgC, const char *const *ArgV,
-                          const char *const *EnvP) {
+                          unsigned ArgC, const char * const *ArgV,
+                          const char * const *EnvP) {
   unwrap(EE)->finalizeObject();
 
   std::vector<std::string> ArgVec(ArgV, ArgV + ArgC);
@@ -248,7 +254,7 @@ LLVMGenericValueRef LLVMRunFunction(LLVMExecutionEngineRef EE, LLVMValueRef F,
 void LLVMFreeMachineCodeForFunction(LLVMExecutionEngineRef EE, LLVMValueRef F) {
 }
 
-void LLVMAddModule(LLVMExecutionEngineRef EE, LLVMModuleRef M) {
+void LLVMAddModule(LLVMExecutionEngineRef EE, LLVMModuleRef M){
   unwrap(EE)->addModule(std::unique_ptr<Module>(unwrap(M)));
 }
 
@@ -284,7 +290,7 @@ LLVMGetExecutionEngineTargetMachine(LLVMExecutionEngineRef EE) {
 }
 
 void LLVMAddGlobalMapping(LLVMExecutionEngineRef EE, LLVMValueRef Global,
-                          void *Addr) {
+                          void* Addr) {
   unwrap(EE)->addGlobalMapping(unwrap<GlobalValue>(Global), Addr);
 }
 
@@ -294,8 +300,7 @@ void *LLVMGetPointerToGlobal(LLVMExecutionEngineRef EE, LLVMValueRef Global) {
   return unwrap(EE)->getPointerToGlobal(unwrap<GlobalValue>(Global));
 }
 
-uint64_t LLVMGetGlobalValueAddress(LLVMExecutionEngineRef EE,
-                                   const char *Name) {
+uint64_t LLVMGetGlobalValueAddress(LLVMExecutionEngineRef EE, const char *Name) {
   return unwrap(EE)->getGlobalValueAddress(Name);
 }
 
@@ -328,7 +333,7 @@ struct SimpleBindingMMFunctions {
 
 class SimpleBindingMemoryManager : public RTDyldMemoryManager {
 public:
-  SimpleBindingMemoryManager(const SimpleBindingMMFunctions &Functions,
+  SimpleBindingMemoryManager(const SimpleBindingMMFunctions& Functions,
                              void *Opaque);
   ~SimpleBindingMemoryManager() override;
 
@@ -348,14 +353,17 @@ private:
 };
 
 SimpleBindingMemoryManager::SimpleBindingMemoryManager(
-    const SimpleBindingMMFunctions &Functions, void *Opaque)
-    : Functions(Functions), Opaque(Opaque) {
+  const SimpleBindingMMFunctions& Functions,
+  void *Opaque)
+  : Functions(Functions), Opaque(Opaque) {
   assert(Functions.AllocateCodeSection &&
          "No AllocateCodeSection function provided!");
   assert(Functions.AllocateDataSection &&
          "No AllocateDataSection function provided!");
-  assert(Functions.FinalizeMemory && "No FinalizeMemory function provided!");
-  assert(Functions.Destroy && "No Destroy function provided!");
+  assert(Functions.FinalizeMemory &&
+         "No FinalizeMemory function provided!");
+  assert(Functions.Destroy &&
+         "No Destroy function provided!");
 }
 
 SimpleBindingMemoryManager::~SimpleBindingMemoryManager() {
@@ -363,19 +371,18 @@ SimpleBindingMemoryManager::~SimpleBindingMemoryManager() {
 }
 
 uint8_t *SimpleBindingMemoryManager::allocateCodeSection(
-    uintptr_t Size, unsigned Alignment, unsigned SectionID,
-    StringRef SectionName) {
+  uintptr_t Size, unsigned Alignment, unsigned SectionID,
+  StringRef SectionName) {
   return Functions.AllocateCodeSection(Opaque, Size, Alignment, SectionID,
                                        SectionName.str().c_str());
 }
 
-uint8_t *SimpleBindingMemoryManager::allocateDataSection(uintptr_t Size,
-                                                         unsigned Alignment,
-                                                         unsigned SectionID,
-                                                         StringRef SectionName,
-                                                         bool isReadOnly) {
+uint8_t *SimpleBindingMemoryManager::allocateDataSection(
+  uintptr_t Size, unsigned Alignment, unsigned SectionID,
+  StringRef SectionName, bool isReadOnly) {
   return Functions.AllocateDataSection(Opaque, Size, Alignment, SectionID,
-                                       SectionName.str().c_str(), isReadOnly);
+                                       SectionName.str().c_str(),
+                                       isReadOnly);
 }
 
 bool SimpleBindingMemoryManager::finalizeMemory(std::string *ErrMsg) {
@@ -394,11 +401,11 @@ bool SimpleBindingMemoryManager::finalizeMemory(std::string *ErrMsg) {
 } // anonymous namespace
 
 LLVMMCJITMemoryManagerRef LLVMCreateSimpleMCJITMemoryManager(
-    void *Opaque,
-    LLVMMemoryManagerAllocateCodeSectionCallback AllocateCodeSection,
-    LLVMMemoryManagerAllocateDataSectionCallback AllocateDataSection,
-    LLVMMemoryManagerFinalizeMemoryCallback FinalizeMemory,
-    LLVMMemoryManagerDestroyCallback Destroy) {
+  void *Opaque,
+  LLVMMemoryManagerAllocateCodeSectionCallback AllocateCodeSection,
+  LLVMMemoryManagerAllocateDataSectionCallback AllocateDataSection,
+  LLVMMemoryManagerFinalizeMemoryCallback FinalizeMemory,
+  LLVMMemoryManagerDestroyCallback Destroy) {
 
   if (!AllocateCodeSection || !AllocateDataSection || !FinalizeMemory ||
       !Destroy)
@@ -418,18 +425,24 @@ void LLVMDisposeMCJITMemoryManager(LLVMMCJITMemoryManagerRef MM) {
 
 /*===-- JIT Event Listener functions -------------------------------------===*/
 
+
 #if !LLVM_USE_INTEL_JITEVENTS
-LLVMJITEventListenerRef LLVMCreateIntelJITEventListener(void) {
+LLVMJITEventListenerRef LLVMCreateIntelJITEventListener(void)
+{
   return nullptr;
 }
 #endif
 
 #if !LLVM_USE_OPROFILE
-LLVMJITEventListenerRef LLVMCreateOProfileJITEventListener(void) {
+LLVMJITEventListenerRef LLVMCreateOProfileJITEventListener(void)
+{
   return nullptr;
 }
 #endif
 
 #if !LLVM_USE_PERF
-LLVMJITEventListenerRef LLVMCreatePerfJITEventListener(void) { return nullptr; }
+LLVMJITEventListenerRef LLVMCreatePerfJITEventListener(void)
+{
+  return nullptr;
+}
 #endif

@@ -31,12 +31,13 @@ TEST(BufferSourceTest, EmitCXXGlobalInitFunc) {
   // Emitting constructors for global objects involves looking
   // at the source file name. This makes sure that we don't crash
   // if the source file is a memory buffer.
-  const char TestProgram[] = "class EmitCXXGlobalInitFunc    "
-                             "{                              "
-                             "public:                        "
-                             "   EmitCXXGlobalInitFunc() {}  "
-                             "};                             "
-                             "EmitCXXGlobalInitFunc test;    ";
+  const char TestProgram[] =
+    "class EmitCXXGlobalInitFunc    "
+    "{                              "
+    "public:                        "
+    "   EmitCXXGlobalInitFunc() {}  "
+    "};                             "
+    "EmitCXXGlobalInitFunc test;    ";
 
   clang::LangOptions LO;
   LO.CPlusPlus = 1;

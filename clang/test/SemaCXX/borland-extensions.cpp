@@ -11,27 +11,26 @@ int dummy_function() { return 0; }
 int _pascal f2();
 
 // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
-float __pascal gi2(int, int);
+float __pascal gi2(int, int); 
 // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
-template <typename T> T g2(T(__pascal *const)(int, int)) { return 0; }
+template<typename T> T g2(T (__pascal * const )(int, int)) { return 0; }
 
 struct M {
-  // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
-  int __pascal addP();
-  // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
-  float __pascal subtractP();
+    // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
+    int __pascal addP();
+    // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
+    float __pascal subtractP(); 
 };
 // expected-warning@+1 {{'__pascal' calling convention is not supported for this target}}
-template <typename T> int h2(T (__pascal M::*const)()) { return 0; }
+template<typename T> int h2(T (__pascal M::* const )()) { return 0; }
 void m2() {
-  int i;
-  float f;
-  i = f2();
-  f = gi2(2, i);
-  f = g2(gi2);
-  i = h2<int>(&M::addP);
-  f = h2(&M::subtractP);
-}
+    int i; float f;
+    i = f2();
+    f = gi2(2, i);
+    f = g2(gi2);
+    i = h2<int>(&M::addP);
+    f = h2(&M::subtractP);
+} 
 
 // 3. test other calling conventions
 int _cdecl fa3();
@@ -42,21 +41,22 @@ int _stdcall fd3();
 
 // 4. test __uuidof()
 typedef struct _GUID {
-  unsigned long Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char Data4[8];
+     unsigned long  Data1;
+     unsigned short Data2;
+     unsigned short Data3;
+     unsigned char  Data4[ 8 ];
 } GUID;
 
 struct __declspec(uuid("{12345678-1234-1234-1234-123456789abc}")) Foo;
 struct Data {
-  GUID const *Guid;
+     GUID const* Guid;
 };
 
 void t4() {
-  unsigned long data;
+    unsigned long  data;
 
-  const GUID guid_inl = __uuidof(Foo);
-  Data ata1 = {&guid_inl};
-  data = ata1.Guid->Data1;
+    const GUID guid_inl = __uuidof(Foo);
+    Data ata1 = { &guid_inl};
+    data = ata1.Guid->Data1;
 }
+

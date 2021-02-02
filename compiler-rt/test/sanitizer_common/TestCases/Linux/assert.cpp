@@ -6,8 +6,8 @@
 // RUN: %env_tool_opts=handle_abort=1 not         %run %t 2>&1 | FileCheck --check-prefix=CHECK1 %s
 
 #include <assert.h>
-#include <sanitizer/asan_interface.h>
 #include <stdio.h>
+#include <sanitizer/asan_interface.h>
 
 void death() {
   fprintf(stderr, "DEATH CALLBACK\n");

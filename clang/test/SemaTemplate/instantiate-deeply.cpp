@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -fsyntax-only -Wall -verify %s
 // expected-no-diagnostics
-template <typename a> struct A {
+template<typename a> struct A {
   template <typename b> struct B {
     template <typename c> struct C {
       template <typename d> struct D {
@@ -26,11 +26,11 @@ template <typename T>
 class Foo {
 public:
   Foo() {}
-
+  
   struct Bar {
     T value;
   };
-
+  
   Bar u;
 };
 

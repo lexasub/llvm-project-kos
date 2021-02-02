@@ -12,7 +12,7 @@
 #include <thread>
 #include <vector>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int thread_count = 2;
   if (argc > 1) {
     thread_count = std::stoi(argv[1], nullptr, 10);
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   *p = 'a';
 
   delay.store(false);
-  for (std::thread &t : threads) {
+  for (std::thread& t : threads) {
     t.join();
   }
 

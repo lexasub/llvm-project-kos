@@ -12,16 +12,18 @@
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_bitvector.h"
 
-#include <algorithm>
-#include <random>
-#include <set>
-#include <vector>
+#include "sanitizer_test_utils.h"
 
 #include "gtest/gtest.h"
-#include "sanitizer_test_utils.h"
+
+#include <algorithm>
+#include <vector>
+#include <random>
+#include <set>
 
 using namespace __sanitizer;
 using namespace std;
+
 
 // Check the 'bv' == 's' and that the indexes go in increasing order.
 // Also check the BV::Iterator
@@ -109,7 +111,7 @@ void TestBitVector(uptr expected_size) {
     EXPECT_EQ(bv.getBit(bit), s.count(bit) == 1);
   }
 
-  vector<uptr> bits(bv.size());
+  vector<uptr>bits(bv.size());
   // Test setUnion, setIntersection, setDifference,
   // intersectsWith, and getAndClearFirstOne.
   for (uptr it = 0; it < 30; it++) {
@@ -155,7 +157,7 @@ void TestBitVector(uptr expected_size) {
     // setDifference
     vec.clear();
     set_difference(s.begin(), s.end(), s1.begin(), s1.end(),
-                   back_insert_iterator<vector<uptr> >(vec));
+                     back_insert_iterator<vector<uptr> >(vec));
     t_s = set<uptr>(vec.begin(), vec.end());
     t_bv.copyFrom(bv);
     EXPECT_EQ(t_bv.setDifference(bv1), s.size() != t_s.size());

@@ -5,7 +5,7 @@
 //
 // Not all platforms support aliases - test for Linux only.
 
-int global;         // generate ctor for at least 1 global
+int global; // generate ctor for at least 1 global
 int aliased_global; // KASAN ignored
 extern int __attribute__((alias("aliased_global"))) __global_alias;
 
@@ -19,7 +19,7 @@ struct input_device_id {
   unsigned long keybit[24];
   unsigned long driver_info;
 };
-struct input_device_id joydev_ids[] = {{{1}, 1234}}; // KASAN ignored
+struct input_device_id joydev_ids[] = { { {1}, 1234 } }; // KASAN ignored
 extern struct input_device_id __attribute__((alias("joydev_ids"))) __mod_joydev_ids_device_table;
 
 // ASAN: @aliased_global{{.*}} global { i32, [60 x i8] }{{.*}}, align 32

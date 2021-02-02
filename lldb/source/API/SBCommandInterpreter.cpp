@@ -68,8 +68,8 @@ protected:
     SBCommandReturnObject sb_return(result);
     SBCommandInterpreter sb_interpreter(&m_interpreter);
     SBDebugger debugger_sb(m_interpreter.GetDebugger().shared_from_this());
-    bool ret = m_backend->DoExecute(debugger_sb, command.GetArgumentVector(),
-                                    sb_return);
+    bool ret = m_backend->DoExecute(
+        debugger_sb, command.GetArgumentVector(), sb_return);
     return ret;
   }
   std::shared_ptr<lldb::SBCommandPluginInterface> m_backend;
@@ -80,6 +80,7 @@ SBCommandInterpreter::SBCommandInterpreter(CommandInterpreter *interpreter)
     : m_opaque_ptr(interpreter) {
   LLDB_RECORD_CONSTRUCTOR(SBCommandInterpreter,
                           (lldb_private::CommandInterpreter *), interpreter);
+
 }
 
 SBCommandInterpreter::SBCommandInterpreter(const SBCommandInterpreter &rhs)
@@ -90,11 +91,12 @@ SBCommandInterpreter::SBCommandInterpreter(const SBCommandInterpreter &rhs)
 
 SBCommandInterpreter::~SBCommandInterpreter() = default;
 
-const SBCommandInterpreter &
-SBCommandInterpreter::operator=(const SBCommandInterpreter &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBCommandInterpreter &,
-                     SBCommandInterpreter, operator=,
-                     (const lldb::SBCommandInterpreter &), rhs);
+const SBCommandInterpreter &SBCommandInterpreter::
+operator=(const SBCommandInterpreter &rhs) {
+  LLDB_RECORD_METHOD(
+      const lldb::SBCommandInterpreter &,
+      SBCommandInterpreter, operator=,(const lldb::SBCommandInterpreter &),
+      rhs);
 
   m_opaque_ptr = rhs.m_opaque_ptr;
   return LLDB_RECORD_RESULT(*this);
@@ -142,10 +144,11 @@ const char *SBCommandInterpreter::GetIOHandlerControlSequence(char ch) {
   LLDB_RECORD_METHOD(const char *, SBCommandInterpreter,
                      GetIOHandlerControlSequence, (char), ch);
 
-  return (IsValid() ? m_opaque_ptr->GetDebugger()
-                          .GetTopIOHandlerControlSequence(ch)
-                          .GetCString()
-                    : nullptr);
+  return (IsValid()
+              ? m_opaque_ptr->GetDebugger()
+                    .GetTopIOHandlerControlSequence(ch)
+                    .GetCString()
+              : nullptr);
 }
 
 lldb::ReturnStatus
@@ -168,6 +171,7 @@ lldb::ReturnStatus SBCommandInterpreter::HandleCommand(
                       lldb::SBCommandReturnObject &, bool),
                      command_line, override_context, result, add_to_history);
 
+
   ExecutionContext ctx, *ctx_ptr;
   if (override_context.get()) {
     ctx = override_context.get()->Lock(true);
@@ -186,6 +190,7 @@ lldb::ReturnStatus SBCommandInterpreter::HandleCommand(
         "SBCommandInterpreter or the command line is not valid");
     result->SetStatus(eReturnStatusFailed);
   }
+
 
   return result.GetStatus();
 }
@@ -514,7 +519,9 @@ SBBroadcaster SBCommandInterpreter::GetBroadcaster() {
   LLDB_RECORD_METHOD_NO_ARGS(lldb::SBBroadcaster, SBCommandInterpreter,
                              GetBroadcaster);
 
+
   SBBroadcaster broadcaster(m_opaque_ptr, false);
+
 
   return LLDB_RECORD_RESULT(broadcaster);
 }
@@ -648,8 +655,7 @@ SBCommand::operator bool() const {
 const char *SBCommand::GetName() {
   LLDB_RECORD_METHOD_NO_ARGS(const char *, SBCommand, GetName);
 
-  return (IsValid() ? ConstString(m_opaque_sp->GetCommandName()).AsCString()
-                    : nullptr);
+  return (IsValid() ? ConstString(m_opaque_sp->GetCommandName()).AsCString() : nullptr);
 }
 
 const char *SBCommand::GetHelp() {
@@ -763,21 +769,24 @@ template <> void RegisterMethods<SBCommandInterpreter>(Registry &R) {
                             (lldb_private::CommandInterpreter *));
   LLDB_REGISTER_CONSTRUCTOR(SBCommandInterpreter,
                             (const lldb::SBCommandInterpreter &));
-  LLDB_REGISTER_METHOD(const lldb::SBCommandInterpreter &,
-                       SBCommandInterpreter, operator=,
-                       (const lldb::SBCommandInterpreter &));
+  LLDB_REGISTER_METHOD(
+      const lldb::SBCommandInterpreter &,
+      SBCommandInterpreter, operator=,(const lldb::SBCommandInterpreter &));
   LLDB_REGISTER_METHOD_CONST(bool, SBCommandInterpreter, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBCommandInterpreter, operator bool, ());
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, CommandExists,
                        (const char *));
-  LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, AliasExists, (const char *));
+  LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, AliasExists,
+                       (const char *));
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, IsActive, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBCommandInterpreter, WasInterrupted, ());
   LLDB_REGISTER_METHOD(const char *, SBCommandInterpreter,
                        GetIOHandlerControlSequence, (char));
-  LLDB_REGISTER_METHOD(lldb::ReturnStatus, SBCommandInterpreter, HandleCommand,
+  LLDB_REGISTER_METHOD(lldb::ReturnStatus, SBCommandInterpreter,
+                       HandleCommand,
                        (const char *, lldb::SBCommandReturnObject &, bool));
-  LLDB_REGISTER_METHOD(lldb::ReturnStatus, SBCommandInterpreter, HandleCommand,
+  LLDB_REGISTER_METHOD(lldb::ReturnStatus, SBCommandInterpreter,
+                       HandleCommand,
                        (const char *, lldb::SBExecutionContext &,
                         lldb::SBCommandReturnObject &, bool));
   LLDB_REGISTER_METHOD(void, SBCommandInterpreter, HandleCommandsFromFile,
@@ -793,8 +802,8 @@ template <> void RegisterMethods<SBCommandInterpreter>(Registry &R) {
                         lldb::SBStringList &, lldb::SBStringList &));
   LLDB_REGISTER_METHOD(int, SBCommandInterpreter,
                        HandleCompletionWithDescriptions,
-                       (const char *, uint32_t, int, int, lldb::SBStringList &,
-                        lldb::SBStringList &));
+                       (const char *, uint32_t, int, int,
+                        lldb::SBStringList &, lldb::SBStringList &));
   LLDB_REGISTER_METHOD(
       int, SBCommandInterpreter, HandleCompletion,
       (const char *, uint32_t, int, int, lldb::SBStringList &));
@@ -802,10 +811,12 @@ template <> void RegisterMethods<SBCommandInterpreter>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, HasAliases, ());
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, HasAliasOptions, ());
   LLDB_REGISTER_METHOD(lldb::SBProcess, SBCommandInterpreter, GetProcess, ());
-  LLDB_REGISTER_METHOD(lldb::SBDebugger, SBCommandInterpreter, GetDebugger, ());
+  LLDB_REGISTER_METHOD(lldb::SBDebugger, SBCommandInterpreter, GetDebugger,
+                       ());
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, GetPromptOnQuit, ());
   LLDB_REGISTER_METHOD(void, SBCommandInterpreter, SetPromptOnQuit, (bool));
-  LLDB_REGISTER_METHOD(void, SBCommandInterpreter, AllowExitCodeOnQuit, (bool));
+  LLDB_REGISTER_METHOD(void, SBCommandInterpreter, AllowExitCodeOnQuit,
+                       (bool));
   LLDB_REGISTER_METHOD(bool, SBCommandInterpreter, HasCustomQuitExitCode, ());
   LLDB_REGISTER_METHOD(int, SBCommandInterpreter, GetQuitStatus, ());
   LLDB_REGISTER_METHOD(void, SBCommandInterpreter, ResolveCommand,
@@ -865,5 +876,5 @@ template <> void RegisterMethods<SBCommandInterpreter>(Registry &R) {
   LLDB_REGISTER_METHOD(uint32_t, SBCommand, GetFlags, ());
   LLDB_REGISTER_METHOD(void, SBCommand, SetFlags, (uint32_t));
 }
-} // namespace repro
-} // namespace lldb_private
+}
+}

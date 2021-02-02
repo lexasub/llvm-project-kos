@@ -188,20 +188,22 @@ public:
   virtual bool writeNopData(raw_ostream &OS, uint64_t Count) const = 0;
 
   /// Give backend an opportunity to finish layout after relaxation
-  virtual void finishLayout(MCAssembler const &Asm, MCAsmLayout &Layout) const {
-  }
+  virtual void finishLayout(MCAssembler const &Asm,
+                            MCAsmLayout &Layout) const {}
 
   /// Handle any target-specific assembler flags. By default, do nothing.
   virtual void handleAssemblerFlag(MCAssemblerFlag Flag) {}
 
   /// Generate the compact unwind encoding for the CFI instructions.
   virtual uint32_t
-  generateCompactUnwindEncoding(ArrayRef<MCCFIInstruction>) const {
+      generateCompactUnwindEncoding(ArrayRef<MCCFIInstruction>) const {
     return 0;
   }
 
   /// Check whether a given symbol has been flagged with MICROMIPS flag.
-  virtual bool isMicroMips(const MCSymbol *Sym) const { return false; }
+  virtual bool isMicroMips(const MCSymbol *Sym) const {
+    return false;
+  }
 };
 
 } // end namespace llvm

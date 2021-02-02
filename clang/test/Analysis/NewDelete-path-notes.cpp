@@ -19,21 +19,22 @@ void test() {
   // expected-note@-1 {{Memory is allocated}}
   if (p) // expected-note {{Taking true branch}}
     delete p;
-  // expected-note@-1 {{Memory is released}}
+    // expected-note@-1 {{Memory is released}}
 
   delete p; // expected-warning {{Attempt to free released memory}}
   // expected-note@-1 {{Attempt to free released memory}}
 }
 
 struct Odd {
-  void kill() {
-    delete this; // expected-note {{Memory is released}}
-  }
+	void kill() {
+		delete this; // expected-note {{Memory is released}}
+	}
 };
 
 void test(Odd *odd) {
-  odd->kill(); // expected-note{{Calling 'Odd::kill'}}
+	odd->kill(); // expected-note{{Calling 'Odd::kill'}}
                // expected-note@-1 {{Returning; memory was released}}
-  delete odd;  // expected-warning {{Attempt to free released memory}}
-               // expected-note@-1 {{Attempt to free released memory}}
+	delete odd; // expected-warning {{Attempt to free released memory}}
+              // expected-note@-1 {{Attempt to free released memory}}
 }
+

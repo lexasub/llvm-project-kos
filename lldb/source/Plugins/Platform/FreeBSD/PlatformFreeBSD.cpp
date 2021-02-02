@@ -43,6 +43,7 @@ LLDB_PLUGIN_DEFINE(PlatformFreeBSD)
 
 static uint32_t g_initialize_count = 0;
 
+
 PlatformSP PlatformFreeBSD::CreateInstance(bool force, const ArchSpec *arch) {
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
   LLDB_LOG(log, "force = {0}, arch=({1}, {2})", force,
@@ -252,14 +253,14 @@ bool PlatformFreeBSD::CanDebugProcess() {
     bool use_legacy_plugin;
 
     switch (host_triple.getArch()) {
-    case llvm::Triple::aarch64:
-    case llvm::Triple::arm:
-    case llvm::Triple::x86:
-    case llvm::Triple::x86_64:
-      use_legacy_plugin = !!getenv("FREEBSD_LEGACY_PLUGIN");
-      break;
-    default:
-      use_legacy_plugin = true;
+      case llvm::Triple::aarch64:
+      case llvm::Triple::arm:
+      case llvm::Triple::x86:
+      case llvm::Triple::x86_64:
+        use_legacy_plugin = !!getenv("FREEBSD_LEGACY_PLUGIN");
+        break;
+      default:
+        use_legacy_plugin = true;
     }
 
     return !use_legacy_plugin;

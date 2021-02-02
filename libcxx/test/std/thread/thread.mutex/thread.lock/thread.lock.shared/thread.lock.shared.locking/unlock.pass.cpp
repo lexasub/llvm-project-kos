@@ -22,34 +22,42 @@
 
 bool unlock_called = false;
 
-struct mutex {
-  void lock_shared() {}
-  void unlock_shared() { unlock_called = true; }
+struct mutex
+{
+    void lock_shared() {}
+    void unlock_shared() {unlock_called = true;}
 };
 
 mutex m;
 
-int main(int, char**) {
-  std::shared_lock<mutex> lk(m);
-  lk.unlock();
-  assert(unlock_called == true);
-  assert(lk.owns_lock() == false);
-#ifndef TEST_HAS_NO_EXCEPTIONS
-  try {
+int main(int, char**)
+{
+    std::shared_lock<mutex> lk(m);
     lk.unlock();
-    assert(false);
-  } catch (std::system_error& e) {
-    assert(e.code().value() == EPERM);
-  }
+    assert(unlock_called == true);
+    assert(lk.owns_lock() == false);
+#ifndef TEST_HAS_NO_EXCEPTIONS
+    try
+    {
+        lk.unlock();
+        assert(false);
+    }
+    catch (std::system_error& e)
+    {
+        assert(e.code().value() == EPERM);
+    }
 #endif
-  lk.release();
+    lk.release();
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  try {
-    lk.unlock();
-    assert(false);
-  } catch (std::system_error& e) {
-    assert(e.code().value() == EPERM);
-  }
+    try
+    {
+        lk.unlock();
+        assert(false);
+    }
+    catch (std::system_error& e)
+    {
+        assert(e.code().value() == EPERM);
+    }
 #endif
 
   return 0;

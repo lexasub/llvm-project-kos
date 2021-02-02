@@ -3,41 +3,41 @@
 namespace ns {
 
 struct Wrapper {
-  class Inner {
-    Inner();
-    Inner(int);
-    ~Inner();
+class Inner {
+  Inner();
+  Inner(int);
+  ~Inner();
 
-    void operator+=(int);
+  void operator += (int);
 
-    template <typename T>
-    void member();
+  template<typename T>
+  void member();
 
-    static void staticMember();
+  static void staticMember();
 
-    operator int();
+  operator int();
 
-    operator ns::Wrapper();
-    // CHECK: operator ns::Wrapper()
-  };
+  operator ns::Wrapper();
+  // CHECK: operator ns::Wrapper()
+};
 };
 
-Wrapper::Inner::Inner() {}
+Wrapper::Inner::Inner() { }
 // CHECK: Wrapper::Inner::Inner()
 
-void Wrapper::Inner::operator+=(int) {}
+void Wrapper::Inner::operator +=(int) { }
 // CHECK: void Wrapper::Inner::operator+=(int)
 
-} // namespace ns
+}
 
-ns::Wrapper::Inner::Inner(int) {}
+ns::Wrapper::Inner::Inner(int) { }
 // CHECK: ns::Wrapper::Inner::Inner(int)
 
-ns::Wrapper::Inner::~Inner() {}
+ns::Wrapper::Inner::~Inner() { }
 // CHECK: ns::Wrapper::Inner::~Inner()
 
-template <typename T>
-void ::ns::Wrapper::Inner::member() {}
+template<typename T>
+void ::ns::Wrapper::Inner::member() { }
 // CHECK: template <typename T> void ::ns::Wrapper::Inner::member()
 
 ns::Wrapper::Inner::operator int() { return 0; }
@@ -48,48 +48,48 @@ ns::Wrapper::Inner::operator ::ns::Wrapper() { return ns::Wrapper(); }
 
 namespace ns {
 
-void Wrapper::Inner::staticMember() {}
+void Wrapper::Inner::staticMember() { }
 // CHECK: void Wrapper::Inner::staticMember()
 
-} // namespace ns
+}
 
-template <int x, typename T>
+template<int x, typename T>
 class TemplateRecord {
   void function();
-  template <typename U> void functionTemplate(T, U);
+  template<typename U> void functionTemplate(T, U);
 };
 
-template <int x, typename T>
-void TemplateRecord<x, T>::function() {}
+template<int x, typename T>
+void TemplateRecord<x, T>::function() { }
 // CHECK: template <int x, typename T> void TemplateRecord<x, T>::function()
 
-template <int x, typename T>
-template <typename U>
-void TemplateRecord<x, T>::functionTemplate(T, U) {}
+template<int x, typename T>
+template<typename U>
+void TemplateRecord<x, T>::functionTemplate(T, U) { }
 // CHECK: template <int x, typename T> template <typename U> void TemplateRecord<x, T>::functionTemplate(T, U)
 
-template <>
+template<>
 class TemplateRecord<0, int> {
   void function();
-  template <typename U> void functionTemplate(int, U);
+  template<typename U> void functionTemplate(int, U);
 };
 
-void TemplateRecord<0, int>::function() {}
+void TemplateRecord<0, int>::function() { }
 // CHECK: void TemplateRecord<0, int>::function()
 
-template <typename U>
-void TemplateRecord<0, int>::functionTemplate(int, U) {}
+template<typename U>
+void TemplateRecord<0, int>::functionTemplate(int, U) { }
 // CHECK: template <typename U> void TemplateRecord<0, int>::functionTemplate(int, U)
 
-template <typename T>
+template<typename T>
 struct OuterTemplateRecord {
-  template <typename U>
+  template<typename U>
   struct Inner {
     void function();
   };
 };
 
-template <typename T>
-template <typename U>
-void OuterTemplateRecord<T>::Inner<U>::function() {}
+template<typename T>
+template<typename U>
+void OuterTemplateRecord<T>::Inner<U>::function() { }
 // CHECK: template <typename T> template <typename U> void OuterTemplateRecord<T>::Inner<U>::function()

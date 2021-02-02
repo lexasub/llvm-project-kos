@@ -35,36 +35,31 @@ extern "C" {
 /* 8.4 Hints */
 
 #if !__has_builtin(__wfi)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__wfi(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfi(void) {
   __builtin_arm_wfi();
 }
 #endif
 
 #if !__has_builtin(__wfe)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__wfe(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __wfe(void) {
   __builtin_arm_wfe();
 }
 #endif
 
 #if !__has_builtin(__sev)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__sev(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __sev(void) {
   __builtin_arm_sev();
 }
 #endif
 
 #if !__has_builtin(__sevl)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__sevl(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __sevl(void) {
   __builtin_arm_sevl();
 }
 #endif
 
 #if !__has_builtin(__yield)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__yield(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __yield(void) {
   __builtin_arm_yield();
 }
 #endif
@@ -88,10 +83,10 @@ __swp(uint32_t __x, volatile uint32_t *__p) {
 #define __pld(addr) __pldx(0, 0, 0, addr)
 
 #if __ARM_32BIT_STATE
-#define __pldx(access_kind, cache_level, retention_policy, addr)               \
+#define __pldx(access_kind, cache_level, retention_policy, addr) \
   __builtin_arm_prefetch(addr, access_kind, 1)
 #else
-#define __pldx(access_kind, cache_level, retention_policy, addr)               \
+#define __pldx(access_kind, cache_level, retention_policy, addr) \
   __builtin_arm_prefetch(addr, access_kind, cache_level, retention_policy, 1)
 #endif
 
@@ -99,17 +94,16 @@ __swp(uint32_t __x, volatile uint32_t *__p) {
 #define __pli(addr) __plix(0, 0, addr)
 
 #if __ARM_32BIT_STATE
-#define __plix(cache_level, retention_policy, addr)                            \
+#define __plix(cache_level, retention_policy, addr) \
   __builtin_arm_prefetch(addr, 0, 0)
 #else
-#define __plix(cache_level, retention_policy, addr)                            \
+#define __plix(cache_level, retention_policy, addr) \
   __builtin_arm_prefetch(addr, 0, cache_level, retention_policy, 0)
 #endif
 
 /* 8.7 NOP */
 #if !defined(_MSC_VER) || !defined(__aarch64__)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-__nop(void) {
+static __inline__ void __attribute__((__always_inline__, __nodebug__)) __nop(void) {
   __builtin_arm_nop();
 }
 #endif
@@ -141,6 +135,7 @@ __rorl(unsigned long __x, uint32_t __y) {
   return __rorll(__x, __y);
 #endif
 }
+
 
 /* CLZ */
 static __inline__ uint32_t __attribute__((__always_inline__, __nodebug__))
@@ -212,9 +207,9 @@ __rev16ll(uint64_t __t) {
 static __inline__ unsigned long __attribute__((__always_inline__, __nodebug__))
 __rev16l(unsigned long __t) {
 #if __SIZEOF_LONG__ == 4
-  return __rev16(__t);
+    return __rev16(__t);
 #else
-  return __rev16ll(__t);
+    return __rev16ll(__t);
 #endif
 }
 
@@ -253,27 +248,27 @@ __rbitl(unsigned long __t) {
  * 9.3 16-bit multiplications
  */
 #if __ARM_FEATURE_DSP
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smulbb(int32_t __a, int32_t __b) {
   return __builtin_arm_smulbb(__a, __b);
 }
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smulbt(int32_t __a, int32_t __b) {
   return __builtin_arm_smulbt(__a, __b);
 }
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smultb(int32_t __a, int32_t __b) {
   return __builtin_arm_smultb(__a, __b);
 }
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smultt(int32_t __a, int32_t __b) {
   return __builtin_arm_smultt(__a, __b);
 }
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smulwb(int32_t __a, int32_t __b) {
   return __builtin_arm_smulwb(__a, __b);
 }
-static __inline__ int32_t __attribute__((__always_inline__, __nodebug__))
+static __inline__ int32_t __attribute__((__always_inline__,__nodebug__))
 __smulwt(int32_t __a, int32_t __b) {
   return __builtin_arm_smulwt(__a, __b);
 }
@@ -336,6 +331,7 @@ __smlawt(int32_t __a, int32_t __b, int32_t __c) {
   return __builtin_arm_smlawt(__a, __b, __c);
 }
 #endif
+
 
 /* 9.5.4 Parallel 16-bit saturation */
 #if __ARM_FEATURE_SIMD32
@@ -646,26 +642,26 @@ __jcvt(double __a) {
 /* Armv8.7-A load/store 64-byte intrinsics */
 #if __ARM_64BIT_STATE && defined(__ARM_FEATURE_LS64)
 typedef struct {
-  uint64_t val[8];
+    uint64_t val[8];
 } data512_t;
 
 static __inline__ data512_t __attribute__((__always_inline__, __nodebug__))
 __arm_ld64b(const void *__addr) {
-  data512_t __value;
-  __builtin_arm_ld64b(__addr, __value.val);
-  return __value;
+    data512_t __value;
+    __builtin_arm_ld64b(__addr, __value.val);
+    return __value;
 }
 static __inline__ void __attribute__((__always_inline__, __nodebug__))
 __arm_st64b(void *__addr, data512_t __value) {
-  __builtin_arm_st64b(__addr, __value.val);
+    __builtin_arm_st64b(__addr, __value.val);
 }
 static __inline__ uint64_t __attribute__((__always_inline__, __nodebug__))
 __arm_st64bv(void *__addr, data512_t __value) {
-  return __builtin_arm_st64bv(__addr, __value.val);
+    return __builtin_arm_st64bv(__addr, __value.val);
 }
 static __inline__ uint64_t __attribute__((__always_inline__, __nodebug__))
 __arm_st64bv0(void *__addr, data512_t __value) {
-  return __builtin_arm_st64bv0(__addr, __value.val);
+    return __builtin_arm_st64bv0(__addr, __value.val);
 }
 #endif
 
@@ -679,17 +675,13 @@ __arm_st64bv0(void *__addr, data512_t __value) {
 #define __arm_wsr64(sysreg, v) __builtin_arm_wsr64(sysreg, v)
 #define __arm_wsrp(sysreg, v) __builtin_arm_wsrp(sysreg, v)
 #define __arm_wsrf(sysreg, v) __arm_wsr(sysreg, __builtin_bit_cast(uint32_t, v))
-#define __arm_wsrf64(sysreg, v)                                                \
-  __arm_wsr64(sysreg, __builtin_bit_cast(uint64_t, v))
+#define __arm_wsrf64(sysreg, v) __arm_wsr64(sysreg, __builtin_bit_cast(uint64_t, v))
 
 /* Memory Tagging Extensions (MTE) Intrinsics */
 #if __ARM_FEATURE_MEMORY_TAGGING
-#define __arm_mte_create_random_tag(__ptr, __mask)                             \
-  __builtin_arm_irg(__ptr, __mask)
-#define __arm_mte_increment_tag(__ptr, __tag_offset)                           \
-  __builtin_arm_addg(__ptr, __tag_offset)
-#define __arm_mte_exclude_tag(__ptr, __excluded)                               \
-  __builtin_arm_gmi(__ptr, __excluded)
+#define __arm_mte_create_random_tag(__ptr, __mask)  __builtin_arm_irg(__ptr, __mask)
+#define __arm_mte_increment_tag(__ptr, __tag_offset)  __builtin_arm_addg(__ptr, __tag_offset)
+#define __arm_mte_exclude_tag(__ptr, __excluded)  __builtin_arm_gmi(__ptr, __excluded)
 #define __arm_mte_get_tag(__ptr) __builtin_arm_ldg(__ptr)
 #define __arm_mte_set_tag(__ptr) __builtin_arm_stg(__ptr)
 #define __arm_mte_ptrdiff(__ptra, __ptrb) __builtin_arm_subp(__ptra, __ptrb)
@@ -698,22 +690,22 @@ __arm_st64bv0(void *__addr, data512_t __value) {
 /* Transactional Memory Extension (TME) Intrinsics */
 #if __ARM_FEATURE_TME
 
-#define _TMFAILURE_REASON 0x00007fffu
-#define _TMFAILURE_RTRY 0x00008000u
-#define _TMFAILURE_CNCL 0x00010000u
-#define _TMFAILURE_MEM 0x00020000u
-#define _TMFAILURE_IMP 0x00040000u
-#define _TMFAILURE_ERR 0x00080000u
-#define _TMFAILURE_SIZE 0x00100000u
-#define _TMFAILURE_NEST 0x00200000u
-#define _TMFAILURE_DBG 0x00400000u
-#define _TMFAILURE_INT 0x00800000u
+#define _TMFAILURE_REASON  0x00007fffu
+#define _TMFAILURE_RTRY    0x00008000u
+#define _TMFAILURE_CNCL    0x00010000u
+#define _TMFAILURE_MEM     0x00020000u
+#define _TMFAILURE_IMP     0x00040000u
+#define _TMFAILURE_ERR     0x00080000u
+#define _TMFAILURE_SIZE    0x00100000u
+#define _TMFAILURE_NEST    0x00200000u
+#define _TMFAILURE_DBG     0x00400000u
+#define _TMFAILURE_INT     0x00800000u
 #define _TMFAILURE_TRIVIAL 0x01000000u
 
-#define __tstart() __builtin_arm_tstart()
-#define __tcommit() __builtin_arm_tcommit()
-#define __tcancel(__arg) __builtin_arm_tcancel(__arg)
-#define __ttest() __builtin_arm_ttest()
+#define __tstart()        __builtin_arm_tstart()
+#define __tcommit()       __builtin_arm_tcommit()
+#define __tcancel(__arg)  __builtin_arm_tcancel(__arg)
+#define __ttest()         __builtin_arm_ttest()
 
 #endif /* __ARM_FEATURE_TME */
 

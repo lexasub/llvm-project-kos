@@ -13,7 +13,7 @@ struct A {
 };
 
 template <typename T1, typename T2>
-T1 fff(T2 *t) {
+T1 fff(T2* t) {
   return T1(t, t);
 }
 

@@ -75,8 +75,9 @@ SearchFilter::SearchFilter(const TargetSP &target_sp, unsigned char filterType)
 SearchFilter::~SearchFilter() = default;
 
 SearchFilterSP SearchFilter::CreateFromStructuredData(
-    const lldb::TargetSP &target_sp,
-    const StructuredData::Dictionary &filter_dict, Status &error) {
+    const lldb::TargetSP& target_sp,
+    const StructuredData::Dictionary &filter_dict,
+    Status &error) {
   SearchFilterSP result_sp;
   if (!filter_dict.IsValid()) {
     error.SetErrorString("Can't deserialize from an invalid data object.");
@@ -144,12 +145,13 @@ bool SearchFilter::CompUnitPasses(FileSpec &fileSpec) { return true; }
 bool SearchFilter::CompUnitPasses(CompileUnit &compUnit) { return true; }
 
 bool SearchFilter::FunctionPasses(Function &function) {
-  // This is a slightly cheesy job, but since we don't have finer grained
+  // This is a slightly cheesy job, but since we don't have finer grained 
   // filters yet, just checking that the start address passes is probably
   // good enough for the base class behavior.
   Address addr = function.GetAddressRange().GetBaseAddress();
   return AddressPasses(addr);
 }
+
 
 uint32_t SearchFilter::GetFilterRequiredItems() {
   return (lldb::SymbolContextItem)0;
@@ -159,7 +161,7 @@ void SearchFilter::GetDescription(Stream *s) {}
 
 void SearchFilter::Dump(Stream *s) const {}
 
-lldb::SearchFilterSP SearchFilter::CreateCopy(lldb::TargetSP &target_sp) {
+lldb::SearchFilterSP SearchFilter::CreateCopy(lldb::TargetSP& target_sp) {
   SearchFilterSP ret_sp = DoCreateCopy();
   ret_sp->SetTarget(target_sp);
   return ret_sp;
@@ -351,8 +353,9 @@ Searcher::CallbackReturn SearchFilter::DoFunctionIteration(
 //  Selects a shared library matching a given file spec, consulting the targets
 //  "black list".
 SearchFilterSP SearchFilterForUnconstrainedSearches::CreateFromStructuredData(
-    const lldb::TargetSP &target_sp,
-    const StructuredData::Dictionary &data_dict, Status &error) {
+    const lldb::TargetSP& target_sp,
+    const StructuredData::Dictionary &data_dict,
+    Status &error) {
   // No options for an unconstrained search.
   return std::make_shared<SearchFilterForUnconstrainedSearches>(target_sp);
 }
@@ -450,8 +453,9 @@ SearchFilterSP SearchFilterByModule::DoCreateCopy() {
 }
 
 SearchFilterSP SearchFilterByModule::CreateFromStructuredData(
-    const lldb::TargetSP &target_sp,
-    const StructuredData::Dictionary &data_dict, Status &error) {
+    const lldb::TargetSP& target_sp,
+    const StructuredData::Dictionary &data_dict,
+    Status &error) {
   StructuredData::Array *modules_array;
   bool success = data_dict.GetValueForKeyAsArray(GetKey(OptionNames::ModList),
                                                  modules_array);
@@ -579,8 +583,9 @@ lldb::SearchFilterSP SearchFilterByModuleList::DoCreateCopy() {
 }
 
 SearchFilterSP SearchFilterByModuleList::CreateFromStructuredData(
-    const lldb::TargetSP &target_sp,
-    const StructuredData::Dictionary &data_dict, Status &error) {
+    const lldb::TargetSP& target_sp,
+    const StructuredData::Dictionary &data_dict,
+    Status &error) {
   StructuredData::Array *modules_array;
   bool success = data_dict.GetValueForKeyAsArray(GetKey(OptionNames::ModList),
                                                  modules_array);
@@ -628,8 +633,9 @@ SearchFilterByModuleListAndCU::SearchFilterByModuleListAndCU(
 SearchFilterByModuleListAndCU::~SearchFilterByModuleListAndCU() = default;
 
 lldb::SearchFilterSP SearchFilterByModuleListAndCU::CreateFromStructuredData(
-    const lldb::TargetSP &target_sp,
-    const StructuredData::Dictionary &data_dict, Status &error) {
+    const lldb::TargetSP& target_sp,
+    const StructuredData::Dictionary &data_dict,
+    Status &error) {
   StructuredData::Array *modules_array = nullptr;
   SearchFilterSP result_sp;
   bool success = data_dict.GetValueForKeyAsArray(GetKey(OptionNames::ModList),
@@ -670,8 +676,8 @@ lldb::SearchFilterSP SearchFilterByModuleListAndCU::CreateFromStructuredData(
     cus.EmplaceBack(cu);
   }
 
-  return std::make_shared<SearchFilterByModuleListAndCU>(target_sp, modules,
-                                                         cus);
+  return std::make_shared<SearchFilterByModuleListAndCU>(
+      target_sp, modules, cus);
 }
 
 StructuredData::ObjectSP
@@ -694,7 +700,7 @@ bool SearchFilterByModuleListAndCU::AddressPasses(Address &address) {
     cu_spec = sym_ctx.comp_unit->GetPrimaryFile();
   if (m_cu_spec_list.FindFileIndex(0, cu_spec, false) == UINT32_MAX)
     return false; // Fails the file check
-  return SearchFilterByModuleList::ModulePasses(sym_ctx.module_sp);
+  return SearchFilterByModuleList::ModulePasses(sym_ctx.module_sp); 
 }
 
 bool SearchFilterByModuleListAndCU::CompUnitPasses(FileSpec &fileSpec) {

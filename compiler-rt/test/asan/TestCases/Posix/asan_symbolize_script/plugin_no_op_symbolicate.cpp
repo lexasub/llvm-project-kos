@@ -10,12 +10,12 @@
 // CHECK: destroy() called on NoOpPlugin
 
 #include <cstdlib>
-extern "C" void foo(int *a) {
+extern "C" void foo(int* a) {
   *a = 5;
 }
 
 int main() {
-  int *a = (int *)malloc(sizeof(int));
+  int* a = (int*) malloc(sizeof(int));
   if (!a)
     return 0;
   free(a);

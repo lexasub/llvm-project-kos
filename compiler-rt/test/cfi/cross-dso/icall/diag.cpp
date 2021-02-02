@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
     // CAST-DIAG: runtime error: control flow integrity check for type 'A' failed during cast to unrelated type
     // CAST-DIAG-NEXT: note: vtable is of type '{{(struct )?}}B'
     // CAST-NODIAG-NOT: runtime error: control flow integrity check {{.*}} during cast to unrelated type
-    a = (A *)p;
+    a = (A*)p;
   } else {
     // Invisible to CFI.
     memcpy(&a, &p, sizeof(a));
@@ -154,5 +154,6 @@ int main(int argc, char *argv[]) {
   // VCALL-FATAL-NOT: =3=
   // ALL-RECOVER: =3=
   fprintf(stderr, "=3=\n");
+
 }
 #endif

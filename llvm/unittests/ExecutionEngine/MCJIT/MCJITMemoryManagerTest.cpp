@@ -21,10 +21,10 @@ TEST(MCJITMemoryManagerTest, BasicAllocations) {
   uint8_t *code2 = MemMgr->allocateCodeSection(256, 0, 3, "");
   uint8_t *data2 = MemMgr->allocateDataSection(256, 0, 4, "", false);
 
-  EXPECT_NE((uint8_t *)nullptr, code1);
-  EXPECT_NE((uint8_t *)nullptr, code2);
-  EXPECT_NE((uint8_t *)nullptr, data1);
-  EXPECT_NE((uint8_t *)nullptr, data2);
+  EXPECT_NE((uint8_t*)nullptr, code1);
+  EXPECT_NE((uint8_t*)nullptr, code2);
+  EXPECT_NE((uint8_t*)nullptr, data1);
+  EXPECT_NE((uint8_t*)nullptr, data2);
 
   // Initialize the data
   for (unsigned i = 0; i < 256; ++i) {
@@ -54,10 +54,10 @@ TEST(MCJITMemoryManagerTest, LargeAllocations) {
   uint8_t *code2 = MemMgr->allocateCodeSection(0x100000, 0, 3, "");
   uint8_t *data2 = MemMgr->allocateDataSection(0x100000, 0, 4, "", false);
 
-  EXPECT_NE((uint8_t *)nullptr, code1);
-  EXPECT_NE((uint8_t *)nullptr, code2);
-  EXPECT_NE((uint8_t *)nullptr, data1);
-  EXPECT_NE((uint8_t *)nullptr, data2);
+  EXPECT_NE((uint8_t*)nullptr, code1);
+  EXPECT_NE((uint8_t*)nullptr, code2);
+  EXPECT_NE((uint8_t*)nullptr, data1);
+  EXPECT_NE((uint8_t*)nullptr, data2);
 
   // Initialize the data
   for (unsigned i = 0; i < 0x100000; ++i) {
@@ -82,8 +82,8 @@ TEST(MCJITMemoryManagerTest, LargeAllocations) {
 TEST(MCJITMemoryManagerTest, ManyAllocations) {
   std::unique_ptr<SectionMemoryManager> MemMgr(new SectionMemoryManager());
 
-  uint8_t *code[10000];
-  uint8_t *data[10000];
+  uint8_t* code[10000];
+  uint8_t* data[10000];
 
   for (unsigned i = 0; i < 10000; ++i) {
     const bool isReadOnly = i % 2 == 0;
@@ -102,7 +102,7 @@ TEST(MCJITMemoryManagerTest, ManyAllocations) {
 
   // Verify the data (this is checking for overlaps in the addresses)
   for (unsigned i = 0; i < 10000; ++i) {
-    for (unsigned j = 0; j < 32; j++) {
+    for (unsigned j = 0; j < 32;j++ ) {
       uint8_t ExpectedCode = 1 + (i % 254);
       uint8_t ExpectedData = 2 + (i % 254);
       EXPECT_EQ(ExpectedCode, code[i][j]);
@@ -117,8 +117,8 @@ TEST(MCJITMemoryManagerTest, ManyAllocations) {
 TEST(MCJITMemoryManagerTest, ManyVariedAllocations) {
   std::unique_ptr<SectionMemoryManager> MemMgr(new SectionMemoryManager());
 
-  uint8_t *code[10000];
-  uint8_t *data[10000];
+  uint8_t* code[10000];
+  uint8_t* data[10000];
 
   for (unsigned i = 0; i < 10000; ++i) {
     uintptr_t CodeSize = i % 16 + 1;
@@ -128,8 +128,8 @@ TEST(MCJITMemoryManagerTest, ManyVariedAllocations) {
     unsigned Align = 8 << (i % 4);
 
     code[i] = MemMgr->allocateCodeSection(CodeSize, Align, i, "");
-    data[i] =
-        MemMgr->allocateDataSection(DataSize, Align, i + 10000, "", isReadOnly);
+    data[i] = MemMgr->allocateDataSection(DataSize, Align, i + 10000, "",
+                                          isReadOnly);
 
     for (unsigned j = 0; j < CodeSize; j++) {
       code[i][j] = 1 + (i % 254);
@@ -160,9 +160,10 @@ TEST(MCJITMemoryManagerTest, ManyVariedAllocations) {
 
     for (unsigned j = 0; j < DataSize; j++) {
       uint8_t ExpectedData = 2 + (i % 254);
-      EXPECT_EQ(ExpectedData, data[i][j]);
+      EXPECT_EQ(ExpectedData, data[i][j]); 
     }
   }
 }
 
 } // Namespace
+

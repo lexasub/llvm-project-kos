@@ -36,9 +36,9 @@ using namespace llvm;
 #define DEBUG_TYPE "arm-mve-vpt-opts"
 
 static cl::opt<bool>
-    MergeEndDec("arm-enable-merge-loopenddec", cl::Hidden,
-                cl::desc("Enable merging Loop End and Dec instructions."),
-                cl::init(true));
+MergeEndDec("arm-enable-merge-loopenddec", cl::Hidden,
+    cl::desc("Enable merging Loop End and Dec instructions."),
+    cl::init(true));
 
 namespace {
 class MVEVPTOptimisations : public MachineFunctionPass {

@@ -59,3 +59,4 @@ Foo<&x<int>, &x<int>> Zoo;
 template <typename T> T unaligned_x;
 extern auto test_unaligned() { return unaligned_x<int __unaligned *>; }
 // CHECK-DAG: "??$unaligned_x@PFAH@@3PFAHA"
+

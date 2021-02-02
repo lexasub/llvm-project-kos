@@ -13,7 +13,7 @@
 
 using namespace llvm;
 
-void XCoreFunctionInfo::anchor() {}
+void XCoreFunctionInfo::anchor() { }
 
 bool XCoreFunctionInfo::isLargeFrame(const MachineFunction &MF) const {
   if (CachedEStackSize == -1) {
@@ -38,7 +38,7 @@ int XCoreFunctionInfo::createLRSpillSlot(MachineFunction &MF) {
   const TargetRegisterClass &RC = XCore::GRRegsRegClass;
   const TargetRegisterInfo &TRI = *MF.getSubtarget().getRegisterInfo();
   MachineFrameInfo &MFI = MF.getFrameInfo();
-  if (!MF.getFunction().isVarArg()) {
+  if (! MF.getFunction().isVarArg()) {
     // A fixed offset of 0 allows us to save / restore LR using entsp / retsp.
     LRSpillSlot = MFI.CreateFixedObject(TRI.getSpillSize(RC), 0, true);
   } else {
@@ -62,7 +62,7 @@ int XCoreFunctionInfo::createFPSpillSlot(MachineFunction &MF) {
   return FPSpillSlot;
 }
 
-const int *XCoreFunctionInfo::createEHSpillSlot(MachineFunction &MF) {
+const int* XCoreFunctionInfo::createEHSpillSlot(MachineFunction &MF) {
   if (EHSpillSlotSet) {
     return EHSpillSlot;
   }
@@ -76,3 +76,4 @@ const int *XCoreFunctionInfo::createEHSpillSlot(MachineFunction &MF) {
   EHSpillSlotSet = true;
   return EHSpillSlot;
 }
+

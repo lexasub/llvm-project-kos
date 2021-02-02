@@ -11,20 +11,20 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_allocator.h"
+#include "sanitizer_common/sanitizer_allocator_internal.h"
+#include "sanitizer_common/sanitizer_common.h"
+
+#include "sanitizer_test_utils.h"
+#include "sanitizer_pthread_wrappers.h"
+
+#include "gtest/gtest.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <algorithm>
+#include <vector>
 #include <random>
 #include <set>
-#include <vector>
-
-#include "gtest/gtest.h"
-#include "sanitizer_common/sanitizer_allocator_internal.h"
-#include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_pthread_wrappers.h"
-#include "sanitizer_test_utils.h"
 
 using namespace __sanitizer;
 
@@ -45,17 +45,17 @@ using namespace __sanitizer;
 // space that is always available. Thus, a dynamically allocated address space
 // is used instead (i.e. ~(uptr)0).
 static const uptr kAllocatorSpace = ~(uptr)0;
-static const uptr kAllocatorSize = 0x8000000000ULL;  // 500G
+static const uptr kAllocatorSize  =  0x8000000000ULL;  // 500G
 static const u64 kAddressSpaceSize = 1ULL << 47;
 typedef DefaultSizeClassMap SizeClassMap;
 #elif SANITIZER_ANDROID && defined(__aarch64__)
 static const uptr kAllocatorSpace = 0x3000000000ULL;
-static const uptr kAllocatorSize = 0x2000000000ULL;
+static const uptr kAllocatorSize  = 0x2000000000ULL;
 static const u64 kAddressSpaceSize = 1ULL << 39;
 typedef VeryCompactSizeClassMap SizeClassMap;
 #else
 static const uptr kAllocatorSpace = 0x700000000000ULL;
-static const uptr kAllocatorSize = 0x010000000000ULL;  // 1T.
+static const uptr kAllocatorSize  = 0x010000000000ULL;  // 1T.
 static const u64 kAddressSpaceSize = 1ULL << 47;
 typedef DefaultSizeClassMap SizeClassMap;
 #endif
@@ -203,9 +203,10 @@ void TestSizeClassAllocator() {
   memset(&cache, 0, sizeof(cache));
   cache.Init(0);
 
-  static const uptr sizes[] = {1,      16,     30,     40,      100,
-                               1000,   10000,  50000,  60000,   100000,
-                               120000, 300000, 500000, 1000000, 2000000};
+  static const uptr sizes[] = {
+    1, 16,  30, 40, 100, 1000, 10000,
+    50000, 60000, 100000, 120000, 300000, 500000, 1000000, 2000000
+  };
 
   std::vector<void *> allocated;
 
@@ -214,14 +215,13 @@ void TestSizeClassAllocator() {
     // Allocate a bunch of chunks.
     for (uptr s = 0; s < ARRAY_SIZE(sizes); s++) {
       uptr size = sizes[s];
-      if (!a->CanAllocate(size, 1))
-        continue;
+      if (!a->CanAllocate(size, 1)) continue;
       // printf("s = %ld\n", size);
       uptr n_iter = std::max((uptr)6, 4000000 / size);
       // fprintf(stderr, "size: %ld iter: %ld\n", size, n_iter);
       for (uptr i = 0; i < n_iter; i++) {
         uptr class_id0 = Allocator::SizeClassMapT::ClassID(size);
-        char *x = (char *)cache.Allocate(a, class_id0);
+        char *x = (char*)cache.Allocate(a, class_id0);
         x[0] = 0;
         x[size - 1] = 0;
         x[size / 2] = 0;
@@ -234,7 +234,7 @@ void TestSizeClassAllocator() {
         CHECK_GE(a->GetActuallyAllocatedSize(x), size);
         uptr class_id = a->GetSizeClass(x);
         CHECK_EQ(class_id, Allocator::SizeClassMapT::ClassID(size));
-        uptr *metadata = reinterpret_cast<uptr *>(a->GetMetaData(x));
+        uptr *metadata = reinterpret_cast<uptr*>(a->GetMetaData(x));
         metadata[0] = reinterpret_cast<uptr>(x) + 1;
         metadata[1] = 0xABCD;
       }
@@ -242,7 +242,7 @@ void TestSizeClassAllocator() {
     // Deallocate all.
     for (uptr i = 0; i < allocated.size(); i++) {
       void *x = allocated[i];
-      uptr *metadata = reinterpret_cast<uptr *>(a->GetMetaData(x));
+      uptr *metadata = reinterpret_cast<uptr*>(a->GetMetaData(x));
       CHECK_EQ(metadata[0], reinterpret_cast<uptr>(x) + 1);
       CHECK_EQ(metadata[1], 0xABCD);
       cache.Deallocate(a, a->GetSizeClass(x), x);
@@ -277,7 +277,7 @@ TEST(SanitizerCommon, SizeClassAllocator64Dynamic) {
 }
 
 #if !SANITIZER_ANDROID
-// FIXME(kostyak): find values so that those work on Android as well.
+//FIXME(kostyak): find values so that those work on Android as well.
 TEST(SanitizerCommon, SizeClassAllocator64Compact) {
   TestSizeClassAllocator<Allocator64Compact>();
 }
@@ -573,7 +573,7 @@ TEST(SanitizerCommon, LargeMmapAllocator) {
   for (int i = 0; i < kNumAllocs; i++) {
     char *x = (char *)a.Allocate(&stats, size, 1);
     CHECK_GE(a.GetActuallyAllocatedSize(x), size);
-    uptr *meta = reinterpret_cast<uptr *>(a.GetMetaData(x));
+    uptr *meta = reinterpret_cast<uptr*>(a.GetMetaData(x));
     *meta = i;
     allocated[i] = x;
   }
@@ -587,7 +587,7 @@ TEST(SanitizerCommon, LargeMmapAllocator) {
   for (int i = 0; i < kNumAllocs; i++) {
     int idx = kNumAllocs - i - 1;
     char *p = allocated[idx];
-    uptr *meta = reinterpret_cast<uptr *>(a.GetMetaData(p));
+    uptr *meta = reinterpret_cast<uptr*>(a.GetMetaData(p));
     CHECK_EQ(*meta, idx);
     CHECK(a.PointerIsMine(p));
     a.Deallocate(&stats, p);
@@ -634,23 +634,23 @@ void TestCombinedAllocator() {
   memset(&cache, 0, sizeof(cache));
   a->InitCache(&cache);
 
-  EXPECT_EQ(a->Allocate(&cache, -1, 1), (void *)0);
-  EXPECT_EQ(a->Allocate(&cache, -1, 1024), (void *)0);
-  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1024, 1), (void *)0);
-  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1024, 1024), (void *)0);
-  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1023, 1024), (void *)0);
-  EXPECT_EQ(a->Allocate(&cache, -1, 1), (void *)0);
+  EXPECT_EQ(a->Allocate(&cache, -1, 1), (void*)0);
+  EXPECT_EQ(a->Allocate(&cache, -1, 1024), (void*)0);
+  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1024, 1), (void*)0);
+  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1024, 1024), (void*)0);
+  EXPECT_EQ(a->Allocate(&cache, (uptr)-1 - 1023, 1024), (void*)0);
+  EXPECT_EQ(a->Allocate(&cache, -1, 1), (void*)0);
 
   const uptr kNumAllocs = 100000;
   const uptr kNumIter = 10;
   for (uptr iter = 0; iter < kNumIter; iter++) {
-    std::vector<void *> allocated;
+    std::vector<void*> allocated;
     for (uptr i = 0; i < kNumAllocs; i++) {
       uptr size = (i % (1 << 14)) + 1;
       if ((i % 1024) == 0)
         size = 1 << (10 + (i % 14));
       void *x = a->Allocate(&cache, size, 1);
-      uptr *meta = reinterpret_cast<uptr *>(a->GetMetaData(x));
+      uptr *meta = reinterpret_cast<uptr*>(a->GetMetaData(x));
       CHECK_EQ(*meta, 0);
       *meta = size;
       allocated.push_back(x);
@@ -676,7 +676,7 @@ void TestCombinedAllocator() {
 
     for (uptr i = 0; i < kNumAllocs; i++) {
       void *x = allocated[i];
-      uptr *meta = reinterpret_cast<uptr *>(a->GetMetaData(x));
+      uptr *meta = reinterpret_cast<uptr*>(a->GetMetaData(x));
       CHECK_NE(*meta, 0);
       CHECK(a->PointerIsMine(x));
       *meta = 0;
@@ -780,7 +780,7 @@ static AllocatorCache static_allocator_cache;
 
 void *AllocatorLeakTestWorker(void *arg) {
   typedef AllocatorCache::Allocator Allocator;
-  Allocator *a = (Allocator *)(arg);
+  Allocator *a = (Allocator*)(arg);
   static_allocator_cache.Allocate(a, 10);
   static_allocator_cache.Drain(a);
   return 0;
@@ -813,7 +813,7 @@ struct NewThreadParams {
 
 // Called in a new thread.  Just frees its argument.
 static void *DeallocNewThreadWorker(void *arg) {
-  NewThreadParams *params = reinterpret_cast<NewThreadParams *>(arg);
+  NewThreadParams *params = reinterpret_cast<NewThreadParams*>(arg);
   params->thread_cache->Deallocate(params->allocator, params->class_id, params);
   return NULL;
 }
@@ -829,7 +829,7 @@ TEST(Allocator, AllocatorCacheDeallocNewThread) {
   memset(&child_cache, 0, sizeof(child_cache));
 
   uptr class_id = DefaultSizeClassMap::ClassID(sizeof(NewThreadParams));
-  NewThreadParams *params = reinterpret_cast<NewThreadParams *>(
+  NewThreadParams *params = reinterpret_cast<NewThreadParams*>(
       main_cache.Allocate(&allocator, class_id));
   params->thread_cache = &child_cache;
   params->allocator = &allocator;
@@ -843,10 +843,10 @@ TEST(Allocator, AllocatorCacheDeallocNewThread) {
 #endif
 
 TEST(Allocator, Basic) {
-  char *p = (char *)InternalAlloc(10);
-  EXPECT_NE(p, (char *)0);
-  char *p2 = (char *)InternalAlloc(20);
-  EXPECT_NE(p2, (char *)0);
+  char *p = (char*)InternalAlloc(10);
+  EXPECT_NE(p, (char*)0);
+  char *p2 = (char*)InternalAlloc(20);
+  EXPECT_NE(p2, (char*)0);
   EXPECT_NE(p2, p);
   InternalFree(p);
   InternalFree(p2);
@@ -858,8 +858,8 @@ TEST(Allocator, Stress) {
   unsigned rnd = 42;
   for (int i = 0; i < kCount; i++) {
     uptr sz = my_rand_r(&rnd) % 1000;
-    char *p = (char *)InternalAlloc(sz);
-    EXPECT_NE(p, (char *)0);
+    char *p = (char*)InternalAlloc(sz);
+    EXPECT_NE(p, (char*)0);
     ptrs[i] = p;
   }
   for (int i = 0; i < kCount; i++) {
@@ -898,17 +898,15 @@ void TestSizeClassAllocatorIteration() {
   memset(&cache, 0, sizeof(cache));
   cache.Init(0);
 
-  static const uptr sizes[] = {1,      16,     30,     40,      100,
-                               1000,   10000,  50000,  60000,   100000,
-                               120000, 300000, 500000, 1000000, 2000000};
+  static const uptr sizes[] = {1, 16, 30, 40, 100, 1000, 10000,
+    50000, 60000, 100000, 120000, 300000, 500000, 1000000, 2000000};
 
   std::vector<void *> allocated;
 
   // Allocate a bunch of chunks.
   for (uptr s = 0; s < ARRAY_SIZE(sizes); s++) {
     uptr size = sizes[s];
-    if (!a->CanAllocate(size, 1))
-      continue;
+    if (!a->CanAllocate(size, 1)) continue;
     // printf("s = %ld\n", size);
     uptr n_iter = std::max((uptr)6, 80000 / size);
     // fprintf(stderr, "size: %ld iter: %ld\n", size, n_iter);
@@ -974,7 +972,8 @@ TEST(SanitizerCommon, LargeMmapAllocatorIteration) {
     ASSERT_NE(reported_chunks.find(reinterpret_cast<uptr>(allocated[i])),
               reported_chunks.end());
   }
-  for (uptr i = 0; i < kNumAllocs; i++) a.Deallocate(&stats, allocated[i]);
+  for (uptr i = 0; i < kNumAllocs; i++)
+    a.Deallocate(&stats, allocated[i]);
 }
 
 TEST(SanitizerCommon, LargeMmapAllocatorBlockBegin) {
@@ -993,7 +992,7 @@ TEST(SanitizerCommon, LargeMmapAllocatorBlockBegin) {
   }
 
   a.ForceLock();
-  for (uptr i = 0; i < kNumAllocs * kNumAllocs; i++) {
+  for (uptr i = 0; i < kNumAllocs  * kNumAllocs; i++) {
     // if ((i & (i - 1)) == 0) fprintf(stderr, "[%zd]\n", i);
     char *p1 = allocated[i % kNumAllocs];
     EXPECT_EQ(p1, a.GetBlockBeginFastLocked(p1));
@@ -1010,8 +1009,10 @@ TEST(SanitizerCommon, LargeMmapAllocatorBlockBegin) {
   }
   a.ForceUnlock();
 
-  for (uptr i = 0; i < kNumAllocs; i++) a.Deallocate(&stats, allocated[i]);
+  for (uptr i = 0; i < kNumAllocs; i++)
+    a.Deallocate(&stats, allocated[i]);
 }
+
 
 // Don't test OOM conditions on Win64 because it causes other tests on the same
 // machine to OOM.
@@ -1056,12 +1057,11 @@ TEST(SanitizerCommon, SizeClassAllocator64PopulateFreeListOOM) {
   ASSERT_EQ(Size2 * 8, kRegionSize);
   char *p[7];
   for (int i = 0; i < 7; i++) {
-    p[i] = (char *)cache.Allocate(a, Class2);
+    p[i] = (char*)cache.Allocate(a, Class2);
     EXPECT_NE(p[i], nullptr);
-    fprintf(stderr, "p[%d] %p s = %lx\n", i, (void *)p[i], Size2);
+    fprintf(stderr, "p[%d] %p s = %lx\n", i, (void*)p[i], Size2);
     p[i][Size2 - 1] = 42;
-    if (i)
-      ASSERT_LT(p[i - 1], p[i]);
+    if (i) ASSERT_LT(p[i - 1], p[i]);
   }
   EXPECT_EQ(cache.Allocate(a, Class2), nullptr);
   cache.Deallocate(a, Class2, p[0]);
@@ -1096,12 +1096,14 @@ class RedZoneMemoryMapper {
     MprotectNoAccess(reinterpret_cast<uptr>(buffer), page_size);
     MprotectNoAccess(reinterpret_cast<uptr>(buffer) + page_size * 2, page_size);
   }
-  ~RedZoneMemoryMapper() { UnmapOrDie(buffer, 3 * GetPageSize()); }
+  ~RedZoneMemoryMapper() {
+    UnmapOrDie(buffer, 3 * GetPageSize());
+  }
 
   uptr MapPackedCounterArrayBuffer(uptr buffer_size) {
     const auto page_size = GetPageSize();
     CHECK_EQ(buffer_size, page_size);
-    memset(reinterpret_cast<void *>(reinterpret_cast<uptr>(buffer) + page_size),
+    memset(reinterpret_cast<void*>(reinterpret_cast<uptr>(buffer) + page_size),
            0, page_size);
     return reinterpret_cast<uptr>(buffer) + page_size;
   }
@@ -1139,7 +1141,8 @@ TEST(SanitizerCommon, SizeClassAllocator64PackedCounterArray) {
   for (int i = 0; i < 7; i++) {
     // Make sure counters request one memory page for the buffer.
     const u64 kNumCounters = (GetPageSize() / 8) * (64 >> i);
-    RedZonePackedCounterArray counters(kNumCounters, 1ULL << ((1 << i) - 1),
+    RedZonePackedCounterArray counters(kNumCounters,
+                                       1ULL << ((1 << i) - 1),
                                        &memory_mapper);
     counters.Inc(0);
     for (u64 c = 1; c < kNumCounters - 1; c++) {
@@ -1152,7 +1155,8 @@ TEST(SanitizerCommon, SizeClassAllocator64PackedCounterArray) {
 
     if (i > 0) {
       counters.IncRange(0, kNumCounters - 1);
-      for (u64 c = 0; c < kNumCounters; c++) ASSERT_EQ(2ULL, counters.Get(c));
+      for (u64 c = 0; c < kNumCounters; c++)
+        ASSERT_EQ(2ULL, counters.Get(c));
     }
   }
 }
@@ -1176,7 +1180,6 @@ class RangeRecorder {
     reported_pages.append(to - from, 'x');
     last_page_reported = to;
   }
-
  private:
   const uptr page_size_scaled_log;
   u32 last_page_reported;
@@ -1186,7 +1189,7 @@ TEST(SanitizerCommon, SizeClassAllocator64FreePagesRangeTracker) {
   typedef Allocator64::FreePagesRangeTracker<RangeRecorder> RangeTracker;
 
   // 'x' denotes a page to be released, '.' denotes a page to be kept around.
-  const char *test_cases[] = {
+  const char* test_cases[] = {
       "",
       ".",
       "x",
@@ -1212,9 +1215,10 @@ TEST(SanitizerCommon, SizeClassAllocator64FreePagesRangeTracker) {
     tracker.Done();
     // Strip trailing '.'-pages before comparing the results as they are not
     // going to be reported to range_recorder anyway.
-    const char *last_x = strrchr(test_case, 'x');
-    std::string expected(test_case,
-                         last_x == nullptr ? 0 : (last_x - test_case + 1));
+    const char* last_x = strrchr(test_case, 'x');
+    std::string expected(
+        test_case,
+        last_x == nullptr ? 0 : (last_x - test_case + 1));
     EXPECT_STREQ(expected.c_str(), range_recorder.reported_pages.c_str());
   }
 }
@@ -1228,13 +1232,14 @@ class ReleasedPagesTrackingMemoryMapper {
     return reinterpret_cast<uptr>(calloc(1, buffer_size));
   }
   void UnmapPackedCounterArrayBuffer(uptr buffer, uptr buffer_size) {
-    free(reinterpret_cast<void *>(buffer));
+    free(reinterpret_cast<void*>(buffer));
   }
 
   void ReleasePageRangeToOS(u32 from, u32 to) {
     uptr page_size_scaled =
         GetPageSizeCached() >> Allocator64::kCompactPtrScale;
-    for (u32 i = from; i < to; i += page_size_scaled) reported_pages.insert(i);
+    for (u32 i = from; i < to; i += page_size_scaled)
+      reported_pages.insert(i);
   }
 };
 
@@ -1248,7 +1253,7 @@ void TestReleaseFreeMemoryToOS() {
   uint32_t rnd_state = 42;
 
   for (uptr class_id = 1; class_id <= Allocator::SizeClassMapT::kLargestClassID;
-       class_id++) {
+      class_id++) {
     const uptr chunk_size = Allocator::SizeClassMapT::Size(class_id);
     const uptr chunk_size_scaled = chunk_size >> Allocator::kCompactPtrScale;
     const uptr max_chunks =
@@ -1296,8 +1301,8 @@ void TestReleaseFreeMemoryToOS() {
       } else {
         // Verify that this used chunk does not touch any released page.
         for (uptr i_page = current_chunk / page_size_scaled;
-             i_page <=
-             (current_chunk + chunk_size_scaled - 1) / page_size_scaled;
+             i_page <= (current_chunk + chunk_size_scaled - 1) /
+                       page_size_scaled;
              i_page++) {
           bool page_released =
               memory_mapper.reported_pages.find(i_page * page_size_scaled) !=
@@ -1311,8 +1316,9 @@ void TestReleaseFreeMemoryToOS() {
           // chunks were released.
           u32 page = RoundUpTo(current_free_range_start, page_size_scaled);
           while (page + page_size_scaled <= current_chunk) {
-            bool page_released = memory_mapper.reported_pages.find(page) !=
-                                 memory_mapper.reported_pages.end();
+            bool page_released =
+                memory_mapper.reported_pages.find(page) !=
+                memory_mapper.reported_pages.end();
             ASSERT_EQ(true, page_released);
             verified_released_pages++;
             page += page_size_scaled;
@@ -1373,7 +1379,7 @@ struct TestByteMapParam {
 };
 
 void *TwoLevelByteMapUserThread(void *param) {
-  TestByteMapParam *p = (TestByteMapParam *)param;
+  TestByteMapParam *p = (TestByteMapParam*)param;
   for (size_t i = p->shard; i < p->m->size(); i += p->num_shards) {
     size_t val = (i % 100) + 1;
     p->m->set(i, val);

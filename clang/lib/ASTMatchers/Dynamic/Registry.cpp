@@ -70,20 +70,21 @@ void RegistryMaps::registerMatcher(
 
 #define REGISTER_MATCHER_OVERLOAD(name)                                        \
   registerMatcher(#name,                                                       \
-                  std::make_unique<internal::OverloadedMatcherDescriptor>(     \
-                      name##Callbacks))
+      std::make_unique<internal::OverloadedMatcherDescriptor>(name##Callbacks))
 
 #define SPECIFIC_MATCHER_OVERLOAD(name, Id)                                    \
   static_cast<::clang::ast_matchers::name##_Type##Id>(                         \
       ::clang::ast_matchers::name)
 
 #define MATCHER_OVERLOAD_ENTRY(name, Id)                                       \
-  internal::makeMatcherAutoMarshall(SPECIFIC_MATCHER_OVERLOAD(name, Id), #name)
+        internal::makeMatcherAutoMarshall(SPECIFIC_MATCHER_OVERLOAD(name, Id), \
+                                          #name)
 
 #define REGISTER_OVERLOADED_2(name)                                            \
   do {                                                                         \
     std::unique_ptr<MatcherDescriptor> name##Callbacks[] = {                   \
-        MATCHER_OVERLOAD_ENTRY(name, 0), MATCHER_OVERLOAD_ENTRY(name, 1)};     \
+        MATCHER_OVERLOAD_ENTRY(name, 0),                                       \
+        MATCHER_OVERLOAD_ENTRY(name, 1)};                                      \
     REGISTER_MATCHER_OVERLOAD(name);                                           \
   } while (false)
 
@@ -617,7 +618,7 @@ Registry::getMatcherCompletions(ArrayRef<ArgKind> AcceptedTypes) {
 
   // Search the registry for acceptable matchers.
   for (const auto &M : RegistryData->constructors()) {
-    const MatcherDescriptor &Matcher = *M.getValue();
+    const MatcherDescriptor& Matcher = *M.getValue();
     StringRef Name = M.getKey();
 
     std::set<ASTNodeKind> RetKinds;
@@ -625,7 +626,7 @@ Registry::getMatcherCompletions(ArrayRef<ArgKind> AcceptedTypes) {
     bool IsPolymorphic = Matcher.isPolymorphic();
     std::vector<std::vector<ArgKind>> ArgsKinds(NumArgs);
     unsigned MaxSpecificity = 0;
-    for (const ArgKind &Kind : AcceptedTypes) {
+    for (const ArgKind& Kind : AcceptedTypes) {
       if (Kind.getArgKind() != Kind.AK_Matcher)
         continue;
       unsigned Specificity;
@@ -661,15 +662,13 @@ Registry::getMatcherCompletions(ArrayRef<ArgKind> AcceptedTypes) {
             if (AK.getArgKind() == ArgKind::AK_Matcher) {
               MatcherKinds.insert(AK.getMatcherKind());
             } else {
-              if (!FirstArgKind)
-                OS << "|";
+              if (!FirstArgKind) OS << "|";
               FirstArgKind = false;
               OS << AK.asString();
             }
           }
           if (!MatcherKinds.empty()) {
-            if (!FirstArgKind)
-              OS << "|";
+            if (!FirstArgKind) OS << "|";
             OS << "Matcher<" << MatcherKinds << ">";
           }
         }
@@ -705,8 +704,7 @@ VariantMatcher Registry::constructBoundMatcher(MatcherCtor Ctor,
                                                ArrayRef<ParserValue> Args,
                                                Diagnostics *Error) {
   VariantMatcher Out = constructMatcher(Ctor, NameRange, Args, Error);
-  if (Out.isNull())
-    return Out;
+  if (Out.isNull()) return Out;
 
   llvm::Optional<DynTypedMatcher> Result = Out.getSingleMatcher();
   if (Result.hasValue()) {

@@ -12,10 +12,9 @@
 #if !defined(_WIN32)  // There are no /proc/maps on Windows.
 
 #include "sanitizer_common/sanitizer_procmaps.h"
+#include "gtest/gtest.h"
 
 #include <stdlib.h>
-
-#include "gtest/gtest.h"
 
 static void noop() {}
 extern const char *argv0;

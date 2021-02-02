@@ -1,11 +1,11 @@
 // RUN: %clang -emit-llvm -g -S %s -o - | FileCheck %s
 
-template <typename T>
+template<typename T>
 struct XF {
   T member;
 };
 
-template <typename T>
+template<typename T>
 T fx(XF<T> xi) {
   return xi.member;
 }

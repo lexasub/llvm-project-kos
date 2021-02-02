@@ -14,4 +14,4 @@ istream &operator>>(istream &is, char &c) {
 }
 
 extern istream cin;
-}; // namespace std
+};

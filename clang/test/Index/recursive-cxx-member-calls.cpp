@@ -1,246 +1,188 @@
 typedef long unsigned int __darwin_size_t;
 typedef __darwin_size_t size_t;
 namespace std {
-template <class _T1, class _T2> struct pair { _T2 second; };
-} // namespace std
-extern "C" {
-int memcmp(const void *, const void *, size_t);
-size_t strlen(const char *);
+  template < class _T1, class _T2 > struct pair { _T2 second; };
 }
-namespace clang {
-class IdentifierInfo;
-class AttributeList {
-  enum Kind {
-    AT_IBAction,
-    AT_IBOutlet,
-    AT_IBOutletCollection,
-    AT_address_space,
-    AT_alias,
-    AT_aligned,
-    AT_always_inline,
-    AT_analyzer_noreturn,
-    AT_annotate,
-    AT_base_check,
-    AT_blocks,
-    AT_carries_dependency,
-    AT_cdecl,
-    AT_cleanup,
-    AT_const,
-    AT_constructor,
-    AT_deprecated,
-    AT_destructor,
-    AT_dllexport,
-    AT_dllimport,
-    AT_ext_vector_type,
-    AT_fastcall,
-    AT_final,
-    AT_format,
-    AT_format_arg,
-    AT_gnu_inline,
-    AT_hiding,
-    AT_malloc,
-    AT_mode,
-    AT_naked,
-    AT_nodebug,
-    AT_noinline,
-    AT_no_instrument_function,
-    AT_nonnull,
-    AT_noreturn,
-    AT_nothrow,
-    AT_nsobject,
-    AT_objc_exception,
-    AT_override,
-    AT_cf_returns_not_retained,
-    AT_cf_returns_retained,
-    AT_ns_returns_not_retained,
-    AT_ns_returns_retained,
-    AT_objc_gc,
-    AT_overloadable,
-    AT_ownership_holds,
-    AT_ownership_returns,
-    AT_ownership_takes,
-    AT_packed,
-    AT_pascal,
-    AT_pure,
-    AT_regparm,
-    AT_section,
-    AT_sentinel,
-    AT_stdcall,
-    AT_thiscall,
-    AT_transparent_union,
-    AT_unavailable,
-    AT_unused,
-    AT_used,
-    AT_vecreturn,
-    AT_vector_size,
-    AT_visibility,
-    AT_warn_unused_result,
-    AT_weak,
-    AT_weakref,
-    AT_weak_import,
-    AT_reqd_wg_size,
-    AT_init_priority,
-    AT_returns_twice,
-    IgnoredAttribute,
-    UnknownAttribute
+extern "C" {
+  int memcmp(const void *, const void *, size_t);
+  size_t strlen(const char *);
+}
+namespace       clang {
+  class IdentifierInfo;
+  class AttributeList {
+    enum Kind {
+      AT_IBAction, AT_IBOutlet, AT_IBOutletCollection,
+      AT_address_space, AT_alias, AT_aligned, AT_always_inline,
+      AT_analyzer_noreturn, AT_annotate, AT_base_check, AT_blocks,
+      AT_carries_dependency, AT_cdecl, AT_cleanup, AT_const, AT_constructor,
+      AT_deprecated, AT_destructor, AT_dllexport, AT_dllimport,
+      AT_ext_vector_type, AT_fastcall, AT_final, AT_format, AT_format_arg,
+      AT_gnu_inline, AT_hiding, AT_malloc, AT_mode, AT_naked, AT_nodebug,
+      AT_noinline, AT_no_instrument_function, AT_nonnull, AT_noreturn,
+      AT_nothrow, AT_nsobject, AT_objc_exception, AT_override,
+      AT_cf_returns_not_retained, AT_cf_returns_retained,
+      AT_ns_returns_not_retained, AT_ns_returns_retained, AT_objc_gc, 
+      AT_overloadable, AT_ownership_holds, AT_ownership_returns,
+      AT_ownership_takes, AT_packed, AT_pascal, AT_pure, AT_regparm,
+      AT_section, AT_sentinel, AT_stdcall, AT_thiscall, AT_transparent_union,
+      AT_unavailable, AT_unused, AT_used, AT_vecreturn, AT_vector_size,
+      AT_visibility, AT_warn_unused_result, AT_weak, AT_weakref,
+      AT_weak_import, AT_reqd_wg_size, AT_init_priority,
+      AT_returns_twice, IgnoredAttribute, UnknownAttribute
+    };
+    static Kind getKind(const IdentifierInfo * Name);
   };
-  static Kind getKind(const IdentifierInfo *Name);
-};
-} // namespace clang
+}
 size_t magic_length(const char *s);
 namespace llvm {
 class StringRef {
 public:
   typedef const char *iterator;
   static const size_t npos = ~size_t(0);
-
 private:
   const char *Data;
   size_t Length;
   static size_t min(size_t a, size_t b) { return a < b ? a : b; }
-
 public:
-  StringRef() : Data(0), Length(0) {}
+  StringRef(): Data(0), Length(0) {}
   StringRef(const char *Str) : Data(Str), Length(magic_length(Str)) {}
   StringRef(const char *data, size_t length) : Data(data), Length(length) {}
   iterator end() const { return Data; }
   size_t size() const { return Length; }
   bool startswith(StringRef Prefix) const {
     return Length >= Prefix.Length &&
-           memcmp(Data, Prefix.Data, Prefix.Length) == 0;
+          memcmp(Data, Prefix.Data, Prefix.Length) == 0;
   }
   bool endswith(StringRef Suffix) const {
     return Length >= Suffix.Length &&
-           memcmp(end() - Suffix.Length, Suffix.Data, Suffix.Length) == 0;
+      memcmp(end() - Suffix.Length, Suffix.Data, Suffix.Length) == 0;
   }
   StringRef substr(size_t Start, size_t N = npos) const {
     return StringRef(Data + Start, min(N, Length - Start));
   }
 };
-} // namespace llvm
+}
 namespace clang {
 class IdentifierInfo {
-public:
-  IdentifierInfo();
+public:IdentifierInfo();
   const char *getNameStart() const {
-    typedef std::pair<IdentifierInfo, const char *> actualtype;
-    return ((const actualtype *)this)->second;
+    typedef std::pair < IdentifierInfo, const char *>actualtype;
+    return ((const actualtype *) this)->second;
   }
   unsigned getLength() const {
-    typedef std::pair<IdentifierInfo, const char *> actualtype;
-    const char *p = ((const actualtype *)this)->second - 2;
-    return (((unsigned)p[0]) | (((unsigned)p[1]) << 8)) - 1;
+    typedef std::pair < IdentifierInfo, const char *>actualtype;
+    const char *p = ((const actualtype *) this)->second - 2;
+    return (((unsigned) p[0]) | (((unsigned) p[1]) << 8)) - 1;
   }
   llvm::StringRef getName() const {
     return llvm::StringRef(getNameStart(), getLength());
   }
 };
-} // namespace clang
+}
 namespace llvm {
-template <typename T, typename R = T> class StringSwitch {
+template < typename T, typename R = T > class StringSwitch {
   StringRef Str;
   const T *Result;
-
 public:
   explicit StringSwitch(StringRef Str) : Str(Str), Result(0) {}
-  template <unsigned N> StringSwitch &Case(const char (&S)[N],
-                                           const T &Value) {
+  template < unsigned N > StringSwitch & Case(const char (&S)[N],
+                                              const T & Value) {
     return *this;
   }
-  R Default(const T &Value) const {
+  R Default(const T & Value) const {
     return Value;
   }
 };
-} // namespace llvm
+}
 
 using namespace clang;
 
-AttributeList::Kind AttributeList::getKind(const IdentifierInfo *Name) {
+AttributeList::Kind AttributeList::getKind(const IdentifierInfo * Name) {
   llvm::StringRef AttrName = Name->getName();
   if (AttrName.startswith("__") && AttrName.endswith("__"))
     AttrName = AttrName.substr(2, AttrName.size() - 4);
 
-  return llvm::StringSwitch<AttributeList::Kind>(AttrName)
-      .Case("weak", AT_weak)
-      .Case("weakref", AT_weakref)
-      .Case("pure", AT_pure)
-      .Case("mode", AT_mode)
-      .Case("used", AT_used)
-      .Case("alias", AT_alias)
-      .Case("align", AT_aligned)
-      .Case("final", AT_final)
-      .Case("cdecl", AT_cdecl)
-      .Case("const", AT_const)
-      .Case("__const", AT_const)
-      .Case("blocks", AT_blocks)
-      .Case("format", AT_format)
-      .Case("hiding", AT_hiding)
-      .Case("malloc", AT_malloc)
-      .Case("packed", AT_packed)
-      .Case("unused", AT_unused)
-      .Case("aligned", AT_aligned)
-      .Case("cleanup", AT_cleanup)
-      .Case("naked", AT_naked)
-      .Case("nodebug", AT_nodebug)
-      .Case("nonnull", AT_nonnull)
-      .Case("nothrow", AT_nothrow)
-      .Case("objc_gc", AT_objc_gc)
-      .Case("regparm", AT_regparm)
-      .Case("section", AT_section)
-      .Case("stdcall", AT_stdcall)
-      .Case("annotate", AT_annotate)
-      .Case("fastcall", AT_fastcall)
-      .Case("ibaction", AT_IBAction)
-      .Case("iboutlet", AT_IBOutlet)
-      .Case("iboutletcollection", AT_IBOutletCollection)
-      .Case("noreturn", AT_noreturn)
-      .Case("noinline", AT_noinline)
-      .Case("override", AT_override)
-      .Case("sentinel", AT_sentinel)
-      .Case("NSObject", AT_nsobject)
-      .Case("dllimport", AT_dllimport)
-      .Case("dllexport", AT_dllexport)
-      .Case("may_alias", IgnoredAttribute)
-      .Case("base_check", AT_base_check)
-      .Case("deprecated", AT_deprecated)
-      .Case("visibility", AT_visibility)
-      .Case("destructor", AT_destructor)
-      .Case("format_arg", AT_format_arg)
-      .Case("gnu_inline", AT_gnu_inline)
-      .Case("weak_import", AT_weak_import)
-      .Case("vecreturn", AT_vecreturn)
-      .Case("vector_size", AT_vector_size)
-      .Case("constructor", AT_constructor)
-      .Case("unavailable", AT_unavailable)
-      .Case("overloadable", AT_overloadable)
-      .Case("address_space", AT_address_space)
-      .Case("always_inline", AT_always_inline)
-      .Case("returns_twice", AT_returns_twice)
-      .Case("vec_type_hint", IgnoredAttribute)
-      .Case("objc_exception", AT_objc_exception)
-      .Case("ext_vector_type", AT_ext_vector_type)
-      .Case("transparent_union", AT_transparent_union)
-      .Case("analyzer_noreturn", AT_analyzer_noreturn)
-      .Case("warn_unused_result", AT_warn_unused_result)
-      .Case("carries_dependency", AT_carries_dependency)
-      .Case("ns_returns_not_retained", AT_ns_returns_not_retained)
-      .Case("ns_returns_retained", AT_ns_returns_retained)
-      .Case("cf_returns_not_retained", AT_cf_returns_not_retained)
-      .Case("cf_returns_retained", AT_cf_returns_retained)
-      .Case("ownership_returns", AT_ownership_returns)
-      .Case("ownership_holds", AT_ownership_holds)
-      .Case("ownership_takes", AT_ownership_takes)
-      .Case("reqd_work_group_size", AT_reqd_wg_size)
-      .Case("init_priority", AT_init_priority)
-      .Case("no_instrument_function", AT_no_instrument_function)
-      .Case("thiscall", AT_thiscall)
-      .Case("pascal", AT_pascal)
-      .Case("__cdecl", AT_cdecl)
-      .Case("__stdcall", AT_stdcall)
-      .Case("__fastcall", AT_fastcall)
-      .Case("__thiscall", AT_thiscall)
-      .Case("__pascal", AT_pascal)
-      .Default(UnknownAttribute);
+  return llvm::StringSwitch < AttributeList::Kind > (AttrName)
+    .Case("weak", AT_weak)
+    .Case("weakref", AT_weakref)
+    .Case("pure", AT_pure)
+    .Case("mode", AT_mode)
+    .Case("used", AT_used)
+    .Case("alias", AT_alias)
+    .Case("align", AT_aligned)
+    .Case("final", AT_final)
+    .Case("cdecl", AT_cdecl)
+    .Case("const", AT_const)
+    .Case("__const", AT_const)
+    .Case("blocks", AT_blocks)
+    .Case("format", AT_format)
+    .Case("hiding", AT_hiding)
+    .Case("malloc", AT_malloc)
+    .Case("packed", AT_packed)
+    .Case("unused", AT_unused)
+    .Case("aligned", AT_aligned)
+    .Case("cleanup", AT_cleanup)
+    .Case("naked", AT_naked)
+    .Case("nodebug", AT_nodebug)
+    .Case("nonnull", AT_nonnull)
+    .Case("nothrow", AT_nothrow)
+    .Case("objc_gc", AT_objc_gc)
+    .Case("regparm", AT_regparm)
+    .Case("section", AT_section)
+    .Case("stdcall", AT_stdcall)
+    .Case("annotate", AT_annotate)
+    .Case("fastcall", AT_fastcall)
+    .Case("ibaction", AT_IBAction)
+    .Case("iboutlet", AT_IBOutlet)
+    .Case("iboutletcollection", AT_IBOutletCollection)
+    .Case("noreturn", AT_noreturn)
+    .Case("noinline", AT_noinline)
+    .Case("override", AT_override)
+    .Case("sentinel", AT_sentinel)
+    .Case("NSObject", AT_nsobject)
+    .Case("dllimport", AT_dllimport)
+    .Case("dllexport", AT_dllexport)
+    .Case("may_alias", IgnoredAttribute)
+    .Case("base_check", AT_base_check)
+    .Case("deprecated", AT_deprecated)
+    .Case("visibility", AT_visibility)
+    .Case("destructor", AT_destructor)
+    .Case("format_arg", AT_format_arg)
+    .Case("gnu_inline", AT_gnu_inline)
+    .Case("weak_import", AT_weak_import)
+    .Case("vecreturn", AT_vecreturn)
+    .Case("vector_size", AT_vector_size)
+    .Case("constructor", AT_constructor)
+    .Case("unavailable", AT_unavailable)
+    .Case("overloadable", AT_overloadable)
+    .Case("address_space", AT_address_space)
+    .Case("always_inline", AT_always_inline)
+    .Case("returns_twice", AT_returns_twice)
+    .Case("vec_type_hint", IgnoredAttribute)
+    .Case("objc_exception", AT_objc_exception)
+    .Case("ext_vector_type", AT_ext_vector_type)
+    .Case("transparent_union", AT_transparent_union)
+    .Case("analyzer_noreturn", AT_analyzer_noreturn)
+    .Case("warn_unused_result", AT_warn_unused_result)
+    .Case("carries_dependency", AT_carries_dependency)
+    .Case("ns_returns_not_retained", AT_ns_returns_not_retained)
+    .Case("ns_returns_retained", AT_ns_returns_retained)
+    .Case("cf_returns_not_retained", AT_cf_returns_not_retained)
+    .Case("cf_returns_retained", AT_cf_returns_retained)
+    .Case("ownership_returns", AT_ownership_returns)
+    .Case("ownership_holds", AT_ownership_holds)
+    .Case("ownership_takes", AT_ownership_takes)
+    .Case("reqd_work_group_size", AT_reqd_wg_size)
+    .Case("init_priority", AT_init_priority)
+    .Case("no_instrument_function", AT_no_instrument_function)
+    .Case("thiscall", AT_thiscall)
+    .Case("pascal", AT_pascal)
+    .Case("__cdecl", AT_cdecl)
+    .Case("__stdcall", AT_stdcall)
+    .Case("__fastcall", AT_fastcall)
+    .Case("__thiscall", AT_thiscall)
+    .Case("__pascal", AT_pascal)
+    .Default(UnknownAttribute);
 }
 
 // RUN: c-index-test -test-annotate-tokens=%s:1:1:186:1 -target x86_64-unknown-unknown %s 2>&1 | FileCheck -check-prefix=CHECK-tokens %s

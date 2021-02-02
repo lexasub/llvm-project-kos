@@ -11,7 +11,7 @@ struct A {
 struct B : A {
   B();
   B(const B &);
-  // SRCLOC-DAG: @{{.+}} = private unnamed_addr global {{.+}} @.src, i32 [[@LINE+1]], i32 12 }
+// SRCLOC-DAG: @{{.+}} = private unnamed_addr global {{.+}} @.src, i32 [[@LINE+1]], i32 12 }
   using A::A;
   void f() const;
 };
@@ -21,8 +21,6 @@ B::B() : A(1) {}
 
 void foo() {
   B b(2);
-  // SRCLOC-DAG: @{{.+}} = private unnamed_addr global {{.+}} @.src, i32 [[@LINE+1]], i32 5 }
-  ^{
-    b.f();
-  }();
+// SRCLOC-DAG: @{{.+}} = private unnamed_addr global {{.+}} @.src, i32 [[@LINE+1]], i32 5 }
+  ^{b.f();}();
 }

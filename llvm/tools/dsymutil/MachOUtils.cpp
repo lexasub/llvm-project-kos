@@ -407,7 +407,7 @@ bool generateDsymCompanion(llvm::IntrusiveRefCntPtr<llvm::vfs::FileSystem> VFS,
       ++NumLoadCommands;
       LoadCommandSize += sizeof(UUIDCmd);
       break;
-    case MachO::LC_BUILD_VERSION: {
+   case MachO::LC_BUILD_VERSION: {
       MachO::build_version_command Cmd;
       memset(&Cmd, 0, sizeof(Cmd));
       Cmd = InputBinary.getBuildVersionLoadCommand(LCI);

@@ -287,7 +287,9 @@ void el_end(EditLine *el) {
 
 void el_reset(EditLine *) { llvm_unreachable("Not implemented!"); }
 
-int el_getc(EditLine *, char *) { llvm_unreachable("Not implemented!"); }
+int el_getc(EditLine *, char *) {
+  llvm_unreachable("Not implemented!");
+}
 
 void el_push(EditLine *, const char *) {}
 

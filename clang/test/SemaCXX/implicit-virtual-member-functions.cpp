@@ -24,7 +24,7 @@ struct B : A {
 #endif
   virtual void f();
 
-  void operator delete(void *, int);
+  void operator delete (void *, int);
 #if __cplusplus <= 199711L
 // expected-note@-2 {{'operator delete' declared here}}
 #endif
@@ -61,7 +61,7 @@ struct C : A {
 #endif
 };
 
-C::C() {}
+C::C() { }
 #if __cplusplus <= 199711L
 // expected-note@-2 {{implicit destructor for 'C' first required here}}
 #endif
@@ -77,7 +77,7 @@ struct D : A {
 #if __cplusplus <= 199711L
 // expected-note@-2 {{'operator delete' declared here}}
 #endif
-};
+}; 
 
 void f() {
   new D;

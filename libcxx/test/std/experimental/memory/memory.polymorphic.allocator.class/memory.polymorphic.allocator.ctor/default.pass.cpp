@@ -24,26 +24,28 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**) {
-  {
-    static_assert(std::is_nothrow_default_constructible<
-                      ex::polymorphic_allocator<void> >::value,
-                  "Must me nothrow default constructible");
-  }
-  {
-    // test that the allocator gets its resource from get_default_resource
-    TestResource R1(42);
-    ex::set_default_resource(&R1);
+int main(int, char**)
+{
+    {
+        static_assert(
+            std::is_nothrow_default_constructible<ex::polymorphic_allocator<void>>::value
+          , "Must me nothrow default constructible"
+          );
+    }
+    {
+        // test that the allocator gets its resource from get_default_resource
+        TestResource R1(42);
+        ex::set_default_resource(&R1);
 
-    typedef ex::polymorphic_allocator<void> A;
-    A const a;
-    assert(a.resource() == &R1);
+        typedef ex::polymorphic_allocator<void> A;
+        A const a;
+        assert(a.resource() == &R1);
 
-    ex::set_default_resource(nullptr);
-    A const a2;
-    assert(a.resource() == &R1);
-    assert(a2.resource() == ex::new_delete_resource());
-  }
+        ex::set_default_resource(nullptr);
+        A const a2;
+        assert(a.resource() == &R1);
+        assert(a2.resource() == ex::new_delete_resource());
+    }
 
   return 0;
 }

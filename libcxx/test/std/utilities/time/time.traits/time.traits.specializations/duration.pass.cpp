@@ -19,24 +19,27 @@
 #include "test_macros.h"
 
 template <class D1, class D2, class De>
-void test() {
-  typedef typename std::common_type<D1, D2>::type Dc;
-  static_assert((std::is_same<Dc, De>::value), "");
+void
+test()
+{
+    typedef typename std::common_type<D1, D2>::type Dc;
+    static_assert((std::is_same<Dc, De>::value), "");
 }
 
-int main(int, char**) {
-  test<std::chrono::duration<int, std::ratio<1, 100> >,
-       std::chrono::duration<long, std::ratio<1, 1000> >,
-       std::chrono::duration<long, std::ratio<1, 1000> > >();
-  test<std::chrono::duration<long, std::ratio<1, 100> >,
-       std::chrono::duration<int, std::ratio<1, 1000> >,
-       std::chrono::duration<long, std::ratio<1, 1000> > >();
-  test<std::chrono::duration<char, std::ratio<1, 30> >,
-       std::chrono::duration<short, std::ratio<1, 1000> >,
-       std::chrono::duration<int, std::ratio<1, 3000> > >();
-  test<std::chrono::duration<double, std::ratio<21, 1> >,
-       std::chrono::duration<short, std::ratio<15, 1> >,
-       std::chrono::duration<double, std::ratio<3, 1> > >();
+int main(int, char**)
+{
+    test<std::chrono::duration<int, std::ratio<1, 100> >,
+         std::chrono::duration<long, std::ratio<1, 1000> >,
+         std::chrono::duration<long, std::ratio<1, 1000> > >();
+    test<std::chrono::duration<long, std::ratio<1, 100> >,
+         std::chrono::duration<int, std::ratio<1, 1000> >,
+         std::chrono::duration<long, std::ratio<1, 1000> > >();
+    test<std::chrono::duration<char, std::ratio<1, 30> >,
+         std::chrono::duration<short, std::ratio<1, 1000> >,
+         std::chrono::duration<int, std::ratio<1, 3000> > >();
+    test<std::chrono::duration<double, std::ratio<21, 1> >,
+         std::chrono::duration<short, std::ratio<15, 1> >,
+         std::chrono::duration<double, std::ratio<3, 1> > >();
 
   return 0;
 }

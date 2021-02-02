@@ -12,6 +12,7 @@
 
 // class strong_equality
 
+
 #include <compare>
 #include <type_traits>
 #include <cassert>
@@ -35,10 +36,10 @@ void test_signatures() {
   ASSERT_NOEXCEPT(Eq != 0);
   ASSERT_NOEXCEPT(0 != Eq);
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  ASSERT_NOEXCEPT(0 <= > Eq);
-  ASSERT_NOEXCEPT(Eq <= > 0);
-  ASSERT_SAME_TYPE(decltype(Eq <= > 0), std::strong_equality);
-  ASSERT_SAME_TYPE(decltype(0 <= > Eq), std::strong_equality);
+  ASSERT_NOEXCEPT(0 <=> Eq);
+  ASSERT_NOEXCEPT(Eq <=> 0);
+  ASSERT_SAME_TYPE(decltype(Eq <=> 0), std::strong_equality);
+  ASSERT_SAME_TYPE(decltype(0 <=> Eq), std::strong_equality);
 #endif
 }
 
@@ -46,8 +47,7 @@ void test_conversion() {
   constexpr std::weak_equality res = std::strong_equality::equivalent;
   static_assert(res == 0, "");
   static_assert(std::is_convertible<const std::strong_equality&,
-                                    std::weak_equality>::value,
-                "");
+      std::weak_equality>::value, "");
   static_assert(res == 0, "expected equal");
 
   constexpr std::weak_equality neq_res = std::strong_equality::nonequivalent;
@@ -78,9 +78,9 @@ constexpr bool test_constexpr() {
   assert((0 != NEquiv) == true);
 
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  std::strong_equality res = (Eq <= > 0);
+  std::strong_equality res = (Eq <=> 0);
   ((void)res);
-  res = (0 <= > Eq);
+  res = (0 <=> Eq);
   ((void)res);
 #endif
 

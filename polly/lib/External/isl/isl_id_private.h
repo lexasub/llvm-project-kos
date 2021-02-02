@@ -19,14 +19,14 @@
  * the last instance of the isl_id is freed.
  */
 struct isl_id {
-  int ref;
-  isl_ctx *ctx;
+	int ref;
+	isl_ctx *ctx;
 
-  const char *name;
-  void *user;
-  uint32_t hash;
+	const char *name;
+	void *user;
+	uint32_t hash;
 
-  __isl_give void (*free_user)(void *user);
+	__isl_give void (*free_user)(void *user);
 };
 
 #undef EL

@@ -10,11 +10,11 @@
 #include "lldb/Utility/DataBufferHeap.h"
 #include "lldb/Utility/RegisterValue.h"
 
-#include "Plugins/Process/Utility/RegisterContextPOSIX_arm.h"
-#include "Plugins/Process/Utility/lldb-arm-register-enums.h"
 #include "ProcessFreeBSD.h"
 #include "ProcessMonitor.h"
 #include "RegisterContextPOSIXProcessMonitor_arm.h"
+#include "Plugins/Process/Utility/RegisterContextPOSIX_arm.h"
+#include "Plugins/Process/Utility/lldb-arm-register-enums.h"
 
 using namespace lldb_private;
 using namespace lldb;

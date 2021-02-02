@@ -30,17 +30,18 @@
 
 #include "test_macros.h"
 
-int g(int) { return 0; }
+int g(int) {return 0;}
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     std::function<int(int)> f;
     assert(f == nullptr);
     assert(nullptr == f);
     f = g;
     assert(f != nullptr);
     assert(nullptr != f);
-  }
+    }
 
   return 0;
 }

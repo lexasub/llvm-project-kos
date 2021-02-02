@@ -24,10 +24,8 @@ SDValue AArch64SelectionDAGInfo::EmitTargetCodeForMemset(
   ConstantSDNode *SizeValue = dyn_cast<ConstantSDNode>(Size);
   const AArch64Subtarget &STI =
       DAG.getMachineFunction().getSubtarget<AArch64Subtarget>();
-  const char *bzeroName =
-      (V && V->isNullValue())
-          ? DAG.getTargetLoweringInfo().getLibcallName(RTLIB::BZERO)
-          : nullptr;
+  const char *bzeroName = (V && V->isNullValue())
+      ? DAG.getTargetLoweringInfo().getLibcallName(RTLIB::BZERO) : nullptr;
   // For small size (< 256), it is not beneficial to use bzero
   // instead of memset.
   if (bzeroName && (!SizeValue || SizeValue->getZExtValue() > 256)) {
@@ -46,7 +44,8 @@ SDValue AArch64SelectionDAGInfo::EmitTargetCodeForMemset(
     CLI.setDebugLoc(dl)
         .setChain(Chain)
         .setLibCallee(CallingConv::C, Type::getVoidTy(*DAG.getContext()),
-                      DAG.getExternalSymbol(bzeroName, IntPtr), std::move(Args))
+                      DAG.getExternalSymbol(bzeroName, IntPtr),
+                      std::move(Args))
         .setDiscardResult();
     std::pair<SDValue, SDValue> CallResult = TLI.LowerCallTo(CLI);
     return CallResult.second;
@@ -86,7 +85,8 @@ static SDValue EmitUnrolledSetTag(SelectionDAG &DAG, const SDLoc &dl,
       SDValue AddrNode =
           DAG.getMemBasePlusOffset(Ptr, TypeSize::Fixed(OffsetScaled * 16), dl);
       SDValue St = DAG.getMemIntrinsicNode(
-          OpCode2, dl, DAG.getVTList(MVT::Other), {Chain, TagSrc, AddrNode},
+          OpCode2, dl, DAG.getVTList(MVT::Other),
+          {Chain, TagSrc, AddrNode},
           MVT::v4i64,
           MF.getMachineMemOperand(BaseMemOperand, OffsetScaled * 16, 16 * 2));
       OffsetScaled += 2;
@@ -98,7 +98,8 @@ static SDValue EmitUnrolledSetTag(SelectionDAG &DAG, const SDLoc &dl,
       SDValue AddrNode =
           DAG.getMemBasePlusOffset(Ptr, TypeSize::Fixed(OffsetScaled * 16), dl);
       SDValue St = DAG.getMemIntrinsicNode(
-          OpCode1, dl, DAG.getVTList(MVT::Other), {Chain, TagSrc, AddrNode},
+          OpCode1, dl, DAG.getVTList(MVT::Other),
+          {Chain, TagSrc, AddrNode},
           MVT::v2i64,
           MF.getMachineMemOperand(BaseMemOperand, OffsetScaled * 16, 16));
       OffsetScaled += 1;

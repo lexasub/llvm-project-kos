@@ -18,7 +18,7 @@ void X86() {
   __m256 d0;
 
   _mm_add_epi32(i0, i1);
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: '_mm_add_epi32' can be replaced by operator+ on std::experimental::simd objects [portability-simd-intrinsics]
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: '_mm_add_epi32' can be replaced by operator+ on std::experimental::simd objects [portability-simd-intrinsics]
   d0 = _mm256_load_pd(0);
   _mm256_store_pd(0, d0);
 

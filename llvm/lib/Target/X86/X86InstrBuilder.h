@@ -40,7 +40,10 @@ namespace llvm {
 /// with BP or SP and Disp being offsetted accordingly.  The displacement may
 /// also include the offset of a global value.
 struct X86AddressMode {
-  enum { RegBase, FrameIndexBase } BaseType;
+  enum {
+    RegBase,
+    FrameIndexBase
+  } BaseType;
 
   union {
     unsigned Reg;
@@ -54,8 +57,8 @@ struct X86AddressMode {
   unsigned GVOpFlags;
 
   X86AddressMode()
-      : BaseType(RegBase), Scale(1), IndexReg(0), Disp(0), GV(nullptr),
-        GVOpFlags(0) {
+    : BaseType(RegBase), Scale(1), IndexReg(0), Disp(0), GV(nullptr),
+      GVOpFlags(0) {
     Base.Reg = 0;
   }
 
@@ -142,7 +145,7 @@ addOffset(const MachineInstrBuilder &MIB, int Offset) {
 }
 
 static inline const MachineInstrBuilder &
-addOffset(const MachineInstrBuilder &MIB, const MachineOperand &Offset) {
+addOffset(const MachineInstrBuilder &MIB, const MachineOperand& Offset) {
   return MIB.addImm(1).addReg(0).add(Offset).addReg(0);
 }
 
@@ -151,25 +154,23 @@ addOffset(const MachineInstrBuilder &MIB, const MachineOperand &Offset) {
 /// displacement. An example is: DWORD PTR [EAX + 4].
 ///
 static inline const MachineInstrBuilder &
-addRegOffset(const MachineInstrBuilder &MIB, unsigned Reg, bool isKill,
-             int Offset) {
+addRegOffset(const MachineInstrBuilder &MIB,
+             unsigned Reg, bool isKill, int Offset) {
   return addOffset(MIB.addReg(Reg, getKillRegState(isKill)), Offset);
 }
 
 /// addRegReg - This function is used to add a memory reference of the form:
 /// [Reg + Reg].
-static inline const MachineInstrBuilder &
-addRegReg(const MachineInstrBuilder &MIB, unsigned Reg1, bool isKill1,
-          unsigned Reg2, bool isKill2) {
-  return MIB.addReg(Reg1, getKillRegState(isKill1))
-      .addImm(1)
-      .addReg(Reg2, getKillRegState(isKill2))
-      .addImm(0)
-      .addReg(0);
+static inline const MachineInstrBuilder &addRegReg(const MachineInstrBuilder &MIB,
+                                            unsigned Reg1, bool isKill1,
+                                            unsigned Reg2, bool isKill2) {
+  return MIB.addReg(Reg1, getKillRegState(isKill1)).addImm(1)
+    .addReg(Reg2, getKillRegState(isKill2)).addImm(0).addReg(0);
 }
 
 static inline const MachineInstrBuilder &
-addFullAddress(const MachineInstrBuilder &MIB, const X86AddressMode &AM) {
+addFullAddress(const MachineInstrBuilder &MIB,
+               const X86AddressMode &AM) {
   assert(AM.Scale == 1 || AM.Scale == 2 || AM.Scale == 4 || AM.Scale == 8);
 
   if (AM.BaseType == X86AddressMode::RegBase)
@@ -207,7 +208,8 @@ addFrameReference(const MachineInstrBuilder &MIB, int FI, int Offset = 0) {
   MachineMemOperand *MMO = MF.getMachineMemOperand(
       MachinePointerInfo::getFixedStack(MF, FI, Offset), Flags,
       MFI.getObjectSize(FI), MFI.getObjectAlign(FI));
-  return addOffset(MIB.addFrameIndex(FI), Offset).addMemOperand(MMO);
+  return addOffset(MIB.addFrameIndex(FI), Offset)
+            .addMemOperand(MMO);
 }
 
 /// addConstantPoolReference - This function is used to add a reference to the
@@ -220,12 +222,9 @@ addFrameReference(const MachineInstrBuilder &MIB, int FI, int Offset = 0) {
 static inline const MachineInstrBuilder &
 addConstantPoolReference(const MachineInstrBuilder &MIB, unsigned CPI,
                          unsigned GlobalBaseReg, unsigned char OpFlags) {
-  // FIXME: factor this
-  return MIB.addReg(GlobalBaseReg)
-      .addImm(1)
-      .addReg(0)
-      .addConstantPoolIndex(CPI, 0, OpFlags)
-      .addReg(0);
+  //FIXME: factor this
+  return MIB.addReg(GlobalBaseReg).addImm(1).addReg(0)
+    .addConstantPoolIndex(CPI, 0, OpFlags).addReg(0);
 }
 
 } // end namespace llvm

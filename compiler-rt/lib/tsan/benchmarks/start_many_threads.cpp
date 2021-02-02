@@ -16,7 +16,7 @@
 
 pthread_barrier_t all_threads_ready;
 
-void *Thread(void *unused) {
+void* Thread(void *unused) {
   pthread_barrier_wait(&all_threads_ready);
   return 0;
 }
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 
   pthread_t *t = new pthread_t[n_threads];
   for (int i = 0; i < n_threads; i++) {
-    int status = pthread_create(&t[i], 0, Thread, (void *)i);
+    int status = pthread_create(&t[i], 0, Thread, (void*)i);
     assert(status == 0);
   }
   // sleep(5);  // FIXME: simplify measuring the memory usage.
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     pthread_join(t[i], 0);
   }
   // sleep(5);  // FIXME: simplify measuring the memory usage.
-  delete[] t;
+  delete [] t;
 
   return 0;
 }

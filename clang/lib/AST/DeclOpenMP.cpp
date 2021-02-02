@@ -11,10 +11,10 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclBase.h"
+#include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/Expr.h"
 
 using namespace clang;
@@ -52,7 +52,7 @@ void OMPThreadPrivateDecl::setVars(ArrayRef<Expr *> VL) {
 // OMPAllocateDecl Implementation.
 //===----------------------------------------------------------------------===//
 
-void OMPAllocateDecl::anchor() {}
+void OMPAllocateDecl::anchor() { }
 
 OMPAllocateDecl *OMPAllocateDecl::Create(ASTContext &C, DeclContext *DC,
                                          SourceLocation L, ArrayRef<Expr *> VL,

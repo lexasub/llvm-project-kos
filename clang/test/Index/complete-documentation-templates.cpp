@@ -2,25 +2,26 @@
 // matter in this test.
 
 /// This is T1.
-template <typename T>
-void T1(T t) {}
+template<typename T>
+void T1(T t) { }
 
 /// This is T2.
-template <typename T>
-void T2(T t) {}
+template<typename T>
+void T2(T t) { }
 
 /// This is T2<int>.
-template <>
-void T2(int t) {}
+template<>
+void T2(int t) { }
 
 void test_CC1() {
+
 }
 
 // Check that implicit instantiations of class templates and members pick up
 // comments from class templates and specializations.
 
 /// This is T3.
-template <typename T>
+template<typename T>
 class T3 {
 public:
   /// This is T4.
@@ -45,7 +46,7 @@ public:
   };
 
   /// This is T11.
-  template <typename U>
+  template<typename U>
   void T11(U t) {}
 
   typedef T3<double> T12;
@@ -59,12 +60,12 @@ void test_CC2_CC3_CC4() {
 }
 
 /// This is T100.
-template <typename T, typename U>
+template<typename T, typename U>
 class T100 {
 };
 
 /// This is T100<int, T>.
-template <typename T>
+template<typename T>
 class T100<int, T> {
 public:
   /// This is T101.
@@ -89,7 +90,7 @@ public:
   };
 
   /// This is T108.
-  template <typename U>
+  template<typename U>
   void T108(U t) {}
 
   typedef T100<double, T> T109;
@@ -147,3 +148,4 @@ void test_CC5_CC6_CC7() {
 // CHECK-CC7: TypedefDecl:{TypedText T110}
 // CHECK-CC7-SHOULD-BE: TypedefDecl:{TypedText T109}{{.*}}(brief comment: This is T100.)
 // CHECK-CC7-SHOULD-BE: TypedefDecl:{TypedText T110}{{.*}}(brief comment: This is T100.)
+

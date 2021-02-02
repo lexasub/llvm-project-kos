@@ -1,8 +1,6 @@
 // RUN: %clang_cc1 -emit-llvm -triple=i386-pc-win32 -fms-extensions %s -o - | FileCheck %s
 
-enum Enum { zero,
-            one,
-            two };
+enum Enum { zero, one, two };
 
 struct __declspec(dllexport) S {
   // In MS compatibility mode, this counts as a definition.

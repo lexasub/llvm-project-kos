@@ -21,7 +21,9 @@
 #include "test_macros.h"
 #include "filesystem_test_helper.h"
 
-int main(int, char**) {
+
+int main(int, char**)
+{
   using namespace fs;
   const char* const value = "hello world";
   std::string value_str(value);

@@ -17,13 +17,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    const char buf[] = "123 4.5 dog";
-    const std::istrstream in(buf);
-    std::strstreambuf* sb = in.rdbuf();
-    assert(sb->sgetc() == '1');
-  }
+int main(int, char**)
+{
+    {
+        const char buf[] = "123 4.5 dog";
+        const std::istrstream in(buf);
+        std::strstreambuf* sb = in.rdbuf();
+        assert(sb->sgetc() == '1');
+    }
 
   return 0;
 }

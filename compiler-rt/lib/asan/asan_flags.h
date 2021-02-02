@@ -14,8 +14,8 @@
 #ifndef ASAN_FLAGS_H
 #define ASAN_FLAGS_H
 
-#include "sanitizer_common/sanitizer_flag_parser.h"
 #include "sanitizer_common/sanitizer_internal_defs.h"
+#include "sanitizer_common/sanitizer_flag_parser.h"
 
 // ASan flag values can be defined in four ways:
 // 1) initialized with default values at startup.
@@ -37,7 +37,9 @@ struct Flags {
 };
 
 extern Flags asan_flags_dont_use_directly;
-inline Flags *flags() { return &asan_flags_dont_use_directly; }
+inline Flags *flags() {
+  return &asan_flags_dont_use_directly;
+}
 
 void InitializeFlags();
 

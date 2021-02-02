@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -verify -fopenmp-simd -ferror-limit 100 %s -Wuninitialized
 
 int main(int argc, char **argv) {
-#pragma omp cancellation // expected-error {{expected an OpenMP directive}}
+#pragma omp cancellation       // expected-error {{expected an OpenMP directive}}
 #pragma omp cancel // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
   ;
 #pragma omp parallel
@@ -11,15 +11,15 @@ int main(int argc, char **argv) {
 #pragma omp cancel // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
   }
 #pragma omp cancel parallel untied // expected-error {{unexpected OpenMP clause 'untied' in directive '#pragma omp cancel'}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-#pragma omp cancel unknown // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
+#pragma omp cancel unknown         // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
 #pragma omp parallel
   {
-#pragma omp cancel unknown // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
+#pragma omp cancel unknown         // expected-error {{one of 'for', 'parallel', 'sections' or 'taskgroup' is expected}}
   }
-#pragma omp cancel sections( // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-#pragma omp cancel for, ) // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-#pragma omp cancel taskgroup() // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-#pragma omp cancel parallel, if // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
+#pragma omp cancel sections(       // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
+#pragma omp cancel for, )          // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
+#pragma omp cancel taskgroup()     // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
+#pragma omp cancel parallel, if    // expected-warning {{extra tokens at the end of '#pragma omp cancel' are ignored}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
   if (argc)
 #pragma omp cancel for // expected-error {{'#pragma omp cancel' cannot be an immediate substatement}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
     if (argc) {
@@ -64,19 +64,19 @@ int main(int argc, char **argv) {
     switch (argc)
     case 1:
 #pragma omp cancel sections // expected-error {{'#pragma omp cancel' cannot be an immediate substatement}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-      switch (argc)
-      case 1: {
+  switch (argc)
+  case 1: {
 #pragma omp cancel for // expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-      }
-        switch (argc) {
+  }
+  switch (argc) {
 #pragma omp cancel taskgroup // expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-        case 1:
+  case 1:
 #pragma omp cancel parallel // expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-          break;
-        default: {
+    break;
+  default: {
 #pragma omp cancel sections // expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
-        } break;
-        }
+  } break;
+  }
   for (;;)
 #pragma omp cancel for // expected-error {{'#pragma omp cancel' cannot be an immediate substatement}} expected-error {{orphaned 'omp cancel' directives are prohibited; perhaps you forget to enclose the directive into a region?}}
     for (;;) {
@@ -90,3 +90,4 @@ label1 : {
 
   return 0;
 }
+

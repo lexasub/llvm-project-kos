@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     foo();
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for unknown() // expected-warning {{extra tokens at the end of '#pragma omp distribute parallel for' are ignored}}
+#pragma omp distribute parallel for unknown()   // expected-warning {{extra tokens at the end of '#pragma omp distribute parallel for' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
 L1:
@@ -115,7 +115,7 @@ L1:
 #pragma omp distribute parallel for
   for (int i = 0; i < argc; ++i)
   L2:
-    foo();
+  foo();
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for
@@ -139,7 +139,7 @@ void test_ordered() {
 #pragma omp distribute parallel for collapse(2) collapse(3) // expected-error {{directive '#pragma omp distribute parallel for' cannot contain more than one 'collapse' clause}}
   for (int i = 0; i < 16; ++i)
     for (int j = 0; j < 16; ++j)
-      ;
+    ;
 }
 
 void test_cancel() {
@@ -149,6 +149,7 @@ void test_cancel() {
   for (int i = 0; i < 16; ++i)
     for (int j = 0; j < 16; ++j) {
 #pragma omp cancel for
-      ;
+    ;
     }
 }
+

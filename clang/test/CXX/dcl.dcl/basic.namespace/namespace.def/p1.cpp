@@ -2,8 +2,8 @@
 
 // Intentionally compiled as C++03 to test the extension warning.
 
-namespace a {}        // namespace a
-namespace a {}        // namespace a
-inline namespace b {} // namespace b
-inline namespace b {} // namespace b
-inline namespace {}   // namespace
+namespace a {} // original
+namespace a {} // ext
+inline namespace b {} // inline original expected-warning {{inline namespaces are}}
+inline namespace b {} // inline ext expected-warning {{inline namespaces are}}
+inline namespace {} // inline unnamed expected-warning {{inline namespaces are}}

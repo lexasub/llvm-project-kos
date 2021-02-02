@@ -18,7 +18,7 @@
 #include "llvm/ADT/SmallVector.h"
 
 namespace clang {
-class FieldDecl;
+  class FieldDecl;
 
 /// CXXFieldCollector - Used to keep track of CXXFieldDecls during parsing of
 /// C++ classes.
@@ -26,7 +26,7 @@ class CXXFieldCollector {
   /// Fields - Contains all FieldDecls collected during parsing of a C++
   /// class. When a nested class is entered, its fields are appended to the
   /// fields of its parent class, when it is exited its fields are removed.
-  SmallVector<FieldDecl *, 32> Fields;
+  SmallVector<FieldDecl*, 32> Fields;
 
   /// FieldCount - Each entry represents the number of fields collected during
   /// the parsing of a C++ class. When a nested class is entered, a new field

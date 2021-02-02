@@ -37,13 +37,15 @@ struct TestFn {
   }
 };
 
-struct A {
-  char _[4];
+struct A
+{
+    char _[4];
 };
 
-int main(int, char**) {
-  TestFn<A>()();
-  TestEachAtomicType<TestFn>()();
+int main(int, char**)
+{
+    TestFn<A>()();
+    TestEachAtomicType<TestFn>()();
 
   return 0;
 }

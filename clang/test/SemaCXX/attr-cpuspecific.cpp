@@ -4,7 +4,7 @@
 void __attribute__((cpu_dispatch(atom, invalid))) invalid_cpu();
 
 void __attribute__((cpu_specific(atom))) no_default(void);
-void __attribute__((cpu_specific(sandybridge))) no_default(void);
+void __attribute__((cpu_specific(sandybridge)))  no_default(void);
 
 struct MVReference {
   int __attribute__((cpu_specific(sandybridge))) bar(void);
@@ -12,7 +12,7 @@ struct MVReference {
   int __attribute__((cpu_specific(sandybridge))) foo(void);
 };
 
-void use1(void) {
+void use1(void){
   // OK, will fail in the linker, unless another TU provides the cpu_dispatch.
   no_default();
 
@@ -39,7 +39,7 @@ int __attribute__((cpu_dispatch(ivybridge))) bar(void) {}
 
 inline int __attribute__((cpu_specific(sandybridge))) baz(void);
 //expected-error@+1 {{multiversioned function declaration has a different inline specification}}
-int __attribute__((cpu_specific(ivybridge))) baz(void) { return 1; }
+int __attribute__((cpu_specific(ivybridge))) baz(void) {return 1;}
 
 void __attribute__((cpu_specific(atom))) diff_return(void);
 //expected-error@+1 {{multiversioned function declaration has a different return type}}
@@ -52,19 +52,19 @@ int __attribute__((cpu_specific(sandybridge))) diff_noexcept(void) noexcept(fals
 
 // FIXME: Add support for templates and virtual functions!
 // expected-error@+2 {{multiversioned functions do not yet support function templates}}
-template <typename T>
+template<typename T>
 int __attribute__((cpu_specific(atom))) foo(T) { return 0; }
 // expected-error@+2 {{multiversioned functions do not yet support function templates}}
-template <typename T>
+template<typename T>
 int __attribute__((cpu_specific(sandybridge))) foo2(T);
 
 struct S {
   // expected-error@+2 {{multiversioned functions do not yet support function templates}}
-  template <typename T>
+  template<typename T>
   int __attribute__((cpu_specific(atom))) foo(T) { return 0; }
 
   // expected-error@+2 {{multiversioned functions do not yet support function templates}}
-  template <typename T>
+  template<typename T>
   int __attribute__((cpu_dispatch(ivybridge))) foo2(T) {}
 
   // expected-error@+1 {{multiversioned functions do not yet support virtual functions}}
@@ -93,9 +93,9 @@ struct SpecialFuncs {
   __attribute__((cpu_specific(atom))) ~SpecialFuncs();
 
   // expected-error@+1 {{multiversioned functions do not yet support defaulted functions}}
-  SpecialFuncs &__attribute__((cpu_specific(atom))) operator=(const SpecialFuncs &) = default;
+  SpecialFuncs& __attribute__((cpu_specific(atom))) operator=(const SpecialFuncs&) = default;
   // expected-error@+1 {{multiversioned functions do not yet support deleted functions}}
-  SpecialFuncs &__attribute__((cpu_specific(atom))) operator=(SpecialFuncs &&) = delete;
+  SpecialFuncs& __attribute__((cpu_specific(atom))) operator=(SpecialFuncs&&) = delete;
 };
 
 struct BadOutOfLine {
@@ -108,7 +108,7 @@ int __attribute__((cpu_specific(atom, ivybridge))) BadOutOfLine::foo(int) { retu
 int __attribute__((cpu_specific(sandybridge))) BadOutOfLine::foo(int) { return 1; }
 
 // Ensure Cpp Spelling works.
-[[clang::cpu_specific(ivybridge, atom)]] int CppSpelling() {}
+[[clang::cpu_specific(ivybridge,atom)]] int CppSpelling(){}
 
 // expected-error@+1 {{lambda cannot be declared 'cpu_dispatch'}}
-auto x = []() __attribute__((cpu_dispatch(atom))){};
+auto x = []() __attribute__((cpu_dispatch(atom))) {};

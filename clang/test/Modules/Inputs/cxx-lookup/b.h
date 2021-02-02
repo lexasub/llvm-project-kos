@@ -1,5 +1,3 @@
 // b
-namespace llvm {
-class GlobalValue;
-}
+namespace llvm { class GlobalValue; }
 #include "y.h"

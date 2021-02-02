@@ -702,9 +702,8 @@ ProcessMonitor::ProcessMonitor(
     const FileSpec &working_dir,
     const lldb_private::ProcessLaunchInfo & /* launch_info */,
     lldb_private::Status &error)
-    : m_process(static_cast<ProcessFreeBSD *>(process)), m_operation_thread(),
-      m_monitor_thread(), m_pid(LLDB_INVALID_PROCESS_ID), m_terminal_fd(-1),
-      m_operation(0) {
+    : m_process(static_cast<ProcessFreeBSD *>(process)),
+      m_operation_thread(), m_monitor_thread(), m_pid(LLDB_INVALID_PROCESS_ID), m_terminal_fd(-1), m_operation(0) {
   using namespace std::placeholders;
 
   std::unique_ptr<LaunchArgs> args(
@@ -732,9 +731,9 @@ ProcessMonitor::ProcessMonitor(
 
   // Finally, start monitoring the child process for change in state.
   llvm::Expected<lldb_private::HostThread> monitor_thread =
-      Host::StartMonitoringChildProcess(
-          std::bind(&ProcessMonitor::MonitorCallback, this, _1, _2, _3, _4),
-          GetPID(), true);
+    Host::StartMonitoringChildProcess(
+      std::bind(&ProcessMonitor::MonitorCallback, this, _1, _2, _3, _4),
+      GetPID(), true);
   if (!monitor_thread || !monitor_thread->IsJoinable()) {
     error.SetErrorToGenericError();
     error.SetErrorString("Process launch failed.");
@@ -745,8 +744,8 @@ ProcessMonitor::ProcessMonitor(
 
 ProcessMonitor::ProcessMonitor(ProcessFreeBSD *process, lldb::pid_t pid,
                                lldb_private::Status &error)
-    : m_process(static_cast<ProcessFreeBSD *>(process)), m_operation_thread(),
-      m_monitor_thread(), m_pid(pid), m_terminal_fd(-1), m_operation(0) {
+    : m_process(static_cast<ProcessFreeBSD *>(process)),
+      m_operation_thread(), m_monitor_thread(), m_pid(pid), m_terminal_fd(-1), m_operation(0) {
   using namespace std::placeholders;
 
   sem_init(&m_operation_pending, 0, 0);
@@ -772,9 +771,9 @@ ProcessMonitor::ProcessMonitor(ProcessFreeBSD *process, lldb::pid_t pid,
 
   // Finally, start monitoring the child process for change in state.
   llvm::Expected<lldb_private::HostThread> monitor_thread =
-      Host::StartMonitoringChildProcess(
-          std::bind(&ProcessMonitor::MonitorCallback, this, _1, _2, _3, _4),
-          GetPID(), true);
+    Host::StartMonitoringChildProcess(
+      std::bind(&ProcessMonitor::MonitorCallback, this, _1, _2, _3, _4),
+      GetPID(), true);
   if (!monitor_thread || !monitor_thread->IsJoinable()) {
     error.SetErrorToGenericError();
     error.SetErrorString("Process attach failed.");
@@ -793,7 +792,7 @@ void ProcessMonitor::StartLaunchOpThread(LaunchArgs *args, Status &error) {
     return;
 
   llvm::Expected<lldb_private::HostThread> operation_thread =
-      ThreadLauncher::LaunchThread(g_thread_name, LaunchOpThread, args);
+    ThreadLauncher::LaunchThread(g_thread_name, LaunchOpThread, args);
   if (operation_thread)
     m_operation_thread = *operation_thread;
   else
@@ -960,7 +959,7 @@ void ProcessMonitor::StartAttachOpThread(AttachArgs *args,
     return;
 
   llvm::Expected<lldb_private::HostThread> operation_thread =
-      ThreadLauncher::LaunchThread(g_thread_name, AttachOpThread, args);
+    ThreadLauncher::LaunchThread(g_thread_name, AttachOpThread, args);
   if (operation_thread)
     m_operation_thread = *operation_thread;
   else
@@ -1366,8 +1365,8 @@ lldb_private::Status ProcessMonitor::Detach(lldb::tid_t tid) {
 
 bool ProcessMonitor::DupDescriptor(const FileSpec &file_spec, int fd,
                                    int flags) {
-  int target_fd = llvm::sys::RetryAfterSignal(-1, open, file_spec.GetCString(),
-                                              flags, 0666);
+  int target_fd = llvm::sys::RetryAfterSignal(-1, open,
+      file_spec.GetCString(), flags, 0666);
 
   if (target_fd == -1)
     return false;

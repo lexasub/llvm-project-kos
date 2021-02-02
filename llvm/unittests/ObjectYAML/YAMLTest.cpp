@@ -18,7 +18,8 @@ struct BinaryHolder {
 
 namespace llvm {
 namespace yaml {
-template <> struct MappingTraits<BinaryHolder> {
+template <>
+struct MappingTraits<BinaryHolder> {
   static void mapping(IO &IO, BinaryHolder &BH) {
     IO.mapRequired("Binary", BH.Binary);
   }

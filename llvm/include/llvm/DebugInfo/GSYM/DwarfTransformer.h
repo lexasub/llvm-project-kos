@@ -31,6 +31,7 @@ class GsymCreator;
 /// allows this class to be unit tested.
 class DwarfTransformer {
 public:
+
   /// Create a DWARF transformer.
   ///
   /// \param D The DWARF to use when converting to GSYM.
@@ -39,8 +40,8 @@ public:
   ///
   /// \param G The GSYM creator to populate with the function information
   /// from the debug info.
-  DwarfTransformer(DWARFContext &D, raw_ostream &OS, GsymCreator &G)
-      : DICtx(D), Log(OS), Gsym(G) {}
+  DwarfTransformer(DWARFContext &D, raw_ostream &OS, GsymCreator &G) :
+      DICtx(D), Log(OS), Gsym(G) {}
 
   /// Extract the DWARF from the supplied object file and convert it into the
   /// Gsym format in the GsymCreator object that is passed in. Returns an
@@ -52,7 +53,9 @@ public:
 
   llvm::Error verify(StringRef GsymPath);
 
+
 private:
+
   /// Parse the DWARF in the object file and convert it into the GsymCreator.
   Error parse();
 

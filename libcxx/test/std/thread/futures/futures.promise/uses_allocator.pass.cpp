@@ -20,16 +20,11 @@
 #include "test_macros.h"
 #include "test_allocator.h"
 
-int main(int, char**) {
-  static_assert(
-      (std::uses_allocator<std::promise<int>, test_allocator<int> >::value),
-      "");
-  static_assert(
-      (std::uses_allocator<std::promise<int&>, test_allocator<int> >::value),
-      "");
-  static_assert(
-      (std::uses_allocator<std::promise<void>, test_allocator<void> >::value),
-      "");
+int main(int, char**)
+{
+    static_assert((std::uses_allocator<std::promise<int>, test_allocator<int> >::value), "");
+    static_assert((std::uses_allocator<std::promise<int&>, test_allocator<int> >::value), "");
+    static_assert((std::uses_allocator<std::promise<void>, test_allocator<void> >::value), "");
 
   return 0;
 }

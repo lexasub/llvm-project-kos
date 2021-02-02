@@ -229,7 +229,8 @@ handleTlsRelocation(RelType type, Symbol &sym, InputSectionBase &c,
   // being suitable for being dynamically loaded via dlopen. GOT[e0] is the
   // module index, with a special value of 0 for the current module. GOT[e1] is
   // unused. There only needs to be one module index entry.
-  if (oneof<R_TLSLD_GOT, R_TLSLD_GOTPLT, R_TLSLD_PC, R_TLSLD_HINT>(expr)) {
+  if (oneof<R_TLSLD_GOT, R_TLSLD_GOTPLT, R_TLSLD_PC, R_TLSLD_HINT>(
+          expr)) {
     // Local-Dynamic relocs can be relaxed to Local-Exec.
     if (toExecRelax) {
       c.relocations.push_back(
@@ -245,7 +246,7 @@ handleTlsRelocation(RelType type, Symbol &sym, InputSectionBase &c,
             {R_ADDEND, target->symbolicRel, in.got->getTlsIndexOff(), 1, &sym});
       else
         mainPart->relaDyn->addReloc(target->tlsModuleIndexRel, in.got,
-                                    in.got->getTlsIndexOff(), nullptr);
+                                in.got->getTlsIndexOff(), nullptr);
     }
     c.relocations.push_back({expr, type, offset, addend, &sym});
     return 1;
@@ -282,15 +283,14 @@ handleTlsRelocation(RelType type, Symbol &sym, InputSectionBase &c,
           in.got->relocations.push_back(
               {R_ADDEND, target->symbolicRel, off, 1, &sym});
         else
-          mainPart->relaDyn->addReloc(target->tlsModuleIndexRel, in.got, off,
-                                      &sym);
+          mainPart->relaDyn->addReloc(target->tlsModuleIndexRel, in.got, off, &sym);
 
         // If the symbol is preemptible we need the dynamic linker to write
         // the offset too.
         uint64_t offsetOff = off + config->wordsize;
         if (sym.isPreemptible)
           mainPart->relaDyn->addReloc(target->tlsOffsetRel, in.got, offsetOff,
-                                      &sym);
+                                  &sym);
         else
           in.got->relocations.push_back(
               {R_ABS, target->tlsOffsetRel, offsetOff, 0, &sym});
@@ -307,8 +307,8 @@ handleTlsRelocation(RelType type, Symbol &sym, InputSectionBase &c,
            addend, &sym});
       if (!sym.isInGot()) {
         in.got->addEntry(sym);
-        mainPart->relaDyn->addReloc(target->tlsGotRel, in.got,
-                                    sym.getGotOffset(), &sym);
+        mainPart->relaDyn->addReloc(target->tlsGotRel, in.got, sym.getGotOffset(),
+                                &sym);
       }
     } else {
       c.relocations.push_back(
@@ -412,7 +412,8 @@ static bool isStaticLinkTimeConstant(RelExpr e, RelType type, const Symbol &sym,
             R_PLT_PC, R_TLSGD_GOT, R_TLSGD_GOTPLT, R_TLSGD_PC, R_PPC32_PLTREL,
             R_PPC64_CALL_PLT, R_PPC64_RELAX_TOC, R_RISCV_ADD, R_TLSDESC_CALL,
             R_TLSDESC_PC, R_AARCH64_TLSDESC_PAGE, R_TLSLD_HINT, R_TLSIE_HINT,
-            R_AARCH64_GOT_PAGE>(e))
+            R_AARCH64_GOT_PAGE>(
+          e))
     return true;
 
   // These never do, except if the entire file is position dependent or if
@@ -453,7 +454,7 @@ static bool isStaticLinkTimeConstant(RelExpr e, RelType type, const Symbol &sym,
   // We set the final symbols values for linker script defined symbols later.
   // They always can be computed as a link time constant.
   if (sym.scriptDefined)
-    return true;
+      return true;
 
   error("relocation " + toString(type) + " cannot refer to absolute symbol: " +
         toString(sym) + getLocation(s, sym, relOff));
@@ -682,7 +683,8 @@ static int64_t computeAddend(const RelTy &rel, const RelTy *end,
 }
 
 // Custom error message if Sym is defined in a discarded section.
-template <class ELFT> static std::string maybeReportDiscarded(Undefined &sym) {
+template <class ELFT>
+static std::string maybeReportDiscarded(Undefined &sym) {
   auto *file = dyn_cast_or_null<ObjFile<ELFT>>(sym.file);
   if (!file || !sym.discardedSecIdx ||
       file->getSections()[sym.discardedSecIdx] != &InputSection::discarded)
@@ -988,8 +990,7 @@ static bool maybeReportUndefined(Symbol &sym, InputSectionBase &sec,
 // packs all relocations into the single relocation record. Here we emulate
 // this for the N32 ABI. Iterate over relocation with the same offset and put
 // theirs types into the single bit-set.
-template <class RelTy>
-static RelType getMipsN32RelType(RelTy *&rel, RelTy *end) {
+template <class RelTy> static RelType getMipsN32RelType(RelTy *&rel, RelTy *end) {
   RelType type = 0;
   uint64_t offset = rel->r_offset;
 
@@ -1380,10 +1381,10 @@ static void scanReloc(InputSectionBase &sec, OffsetGetter &getOffset, RelTy *&i,
       // R_HEX_GD_PLT_B22_PCREL (call a@GDPLT) is transformed into
       // call __tls_get_addr even if the symbol is non-preemptible.
       if (!(config->emachine == EM_HEXAGON &&
-            (type == R_HEX_GD_PLT_B22_PCREL ||
-             type == R_HEX_GD_PLT_B22_PCREL_X ||
-             type == R_HEX_GD_PLT_B32_PCREL_X)))
-        expr = fromPlt(expr);
+           (type == R_HEX_GD_PLT_B22_PCREL ||
+            type == R_HEX_GD_PLT_B22_PCREL_X ||
+            type == R_HEX_GD_PLT_B32_PCREL_X)))
+      expr = fromPlt(expr);
     } else if (!isAbsoluteValue(sym)) {
       expr = target->adjustGotPcExpr(type, addend, relocatedAddr);
     }
@@ -1419,8 +1420,7 @@ static void scanReloc(InputSectionBase &sec, OffsetGetter &getOffset, RelTy *&i,
   // direct relocation on through.
   if (sym.isGnuIFunc() && config->zIfuncNoplt) {
     sym.exportDynamic = true;
-    mainPart->relaDyn->addReloc(type, &sec, offset, &sym, addend, R_ADDEND,
-                                type);
+    mainPart->relaDyn->addReloc(type, &sec, offset, &sym, addend, R_ADDEND, type);
     return;
   }
 
@@ -1773,8 +1773,7 @@ void ThunkCreator::mergeThunks(ArrayRef<OutputSection *> outputSections) {
 // Find or create a ThunkSection within the InputSectionDescription (ISD) that
 // is in range of Src. An ISD maps to a range of InputSections described by a
 // linker script section pattern such as { .text .text.* }.
-ThunkSection *ThunkCreator::getISDThunkSec(OutputSection *os,
-                                           InputSection *isec,
+ThunkSection *ThunkCreator::getISDThunkSec(OutputSection *os, InputSection *isec,
                                            InputSectionDescription *isd,
                                            uint32_t type, uint64_t src) {
   for (std::pair<ThunkSection *, uint32_t> tp : isd->thunkSections) {

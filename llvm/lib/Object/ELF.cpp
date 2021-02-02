@@ -333,12 +333,12 @@ ELFFile<ELFT>::decode_relrs(Elf_Relr_Range relrs) const {
 
   // Number of bits used for the relocation offsets bitmap.
   // These many relative relocations can be encoded in a single entry.
-  const size_t NBits = 8 * WordSize - 1;
+  const size_t NBits = 8*WordSize - 1;
 
   Word Base = 0;
   for (const Elf_Relr &R : relrs) {
     Word Entry = R;
-    if ((Entry & 1) == 0) {
+    if ((Entry&1) == 0) {
       // Even entry: encodes the offset for next relocation.
       Rel.r_offset = Entry;
       Relocs.push_back(Rel);
@@ -351,7 +351,7 @@ ELFFile<ELFT>::decode_relrs(Elf_Relr_Range relrs) const {
     Word Offset = Base;
     while (Entry != 0) {
       Entry >>= 1;
-      if ((Entry & 1) != 0) {
+      if ((Entry&1) != 0) {
         Rel.r_offset = Offset;
         Relocs.push_back(Rel);
       }
@@ -399,8 +399,7 @@ ELFFile<ELFT>::android_relas(const Elf_Shdr &Sec) const {
 
     uint64_t GroupFlags = Data.getSLEB128(Cur);
     bool GroupedByInfo = GroupFlags & ELF::RELOCATION_GROUPED_BY_INFO_FLAG;
-    bool GroupedByOffsetDelta =
-        GroupFlags & ELF::RELOCATION_GROUPED_BY_OFFSET_DELTA_FLAG;
+    bool GroupedByOffsetDelta = GroupFlags & ELF::RELOCATION_GROUPED_BY_OFFSET_DELTA_FLAG;
     bool GroupedByAddend = GroupFlags & ELF::RELOCATION_GROUPED_BY_ADDEND_FLAG;
     bool GroupHasAddend = GroupFlags & ELF::RELOCATION_GROUP_HAS_ADDEND_FLAG;
 
@@ -485,9 +484,7 @@ std::string ELFFile<ELFT>::getDynamicTagAsString(unsigned Arch,
 #define PPC64_DYNAMIC_TAG(name, value)
 // Also ignore marker tags such as DT_HIOS (maps to DT_VERNEEDNUM), etc.
 #define DYNAMIC_TAG_MARKER(name, value)
-#define DYNAMIC_TAG(name, value)                                               \
-  case value:                                                                  \
-    return #name;
+#define DYNAMIC_TAG(name, value) case value: return #name;
 #include "llvm/BinaryFormat/DynamicTags.def"
 #undef DYNAMIC_TAG
 #undef AARCH64_DYNAMIC_TAG

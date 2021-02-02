@@ -16,22 +16,24 @@ struct test_data {
 };
 
 constexpr test_data filler = {
-    .eax = 0xffffffff,
-    .ebx = 0xffffffff,
-    .st0 = {{0x1f, 0x2f, 0x3f, 0x4f, 0x5f, 0x6f, 0x7f, 0x8f, 0x80, 0x40}},
+  .eax = 0xffffffff,
+  .ebx = 0xffffffff,
+  .st0 = {{0x1f, 0x2f, 0x3f, 0x4f, 0x5f, 0x6f, 0x7f, 0x8f, 0x80, 0x40}},
 };
 
 void t_func(std::mutex &t_mutex) {
   std::lock_guard<std::mutex> t_lock(t_mutex);
   test_data out = filler;
 
-  asm volatile("finit\t\n"
-               "fldt %2\t\n"
-               "int3\n\t"
-               "fstpt %2\t\n"
-               : "+a"(out.eax), "+b"(out.ebx)
-               : "m"(out.st0)
-               : "memory", "st");
+  asm volatile(
+    "finit\t\n"
+    "fldt %2\t\n"
+    "int3\n\t"
+    "fstpt %2\t\n"
+    : "+a"(out.eax), "+b"(out.ebx)
+    : "m"(out.st0)
+    : "memory", "st"
+  );
 
   printf("eax = 0x%08" PRIx32 "\n", out.eax);
   printf("ebx = 0x%08" PRIx32 "\n", out.ebx);

@@ -19,7 +19,9 @@ LinkingContext::LinkingContext() = default;
 
 LinkingContext::~LinkingContext() = default;
 
-bool LinkingContext::validate() { return validateImpl(); }
+bool LinkingContext::validate() {
+  return validateImpl();
+}
 
 llvm::Error LinkingContext::writeFile(const File &linkedFile) const {
   return this->writer().writeFile(linkedFile, _outputPath);
@@ -33,8 +35,8 @@ std::unique_ptr<File>
 LinkingContext::createEntrySymbolFile(StringRef filename) const {
   if (entrySymbolName().empty())
     return nullptr;
-  std::unique_ptr<SimpleFile> entryFile(
-      new SimpleFile(filename, File::kindEntryObject));
+  std::unique_ptr<SimpleFile> entryFile(new SimpleFile(filename,
+                                                       File::kindEntryObject));
   entryFile->addAtom(
       *(new (_allocator) SimpleUndefinedAtom(*entryFile, entrySymbolName())));
   return std::move(entryFile);
@@ -49,10 +51,10 @@ LinkingContext::createUndefinedSymbolFile(StringRef filename) const {
   if (_initialUndefinedSymbols.empty())
     return nullptr;
   std::unique_ptr<SimpleFile> undefinedSymFile(
-      new SimpleFile(filename, File::kindUndefinedSymsObject));
+    new SimpleFile(filename, File::kindUndefinedSymsObject));
   for (StringRef undefSym : _initialUndefinedSymbols)
-    undefinedSymFile->addAtom(
-        *(new (_allocator) SimpleUndefinedAtom(*undefinedSymFile, undefSym)));
+    undefinedSymFile->addAtom(*(new (_allocator) SimpleUndefinedAtom(
+                                   *undefinedSymFile, undefSym)));
   return std::move(undefinedSymFile);
 }
 

@@ -2,7 +2,7 @@
 
 static_assert(__is_literal(int), "fail");
 static_assert(__is_literal_type(int), "fail"); // alternate spelling for GCC
-static_assert(__is_literal(void *), "fail");
+static_assert(__is_literal(void*), "fail");
 enum E { E1 };
 static_assert(__is_literal(E), "fail");
 static_assert(__is_literal(decltype(E1)), "fail");
@@ -35,20 +35,12 @@ struct LiteralType {
   Empty empty;
   int method();
 };
-struct HasDtor {
-  ~HasDtor();
-};
+struct HasDtor { ~HasDtor(); };
 
-class NonAggregate {
-  int x;
-};
-struct NonLiteral {
-  NonLiteral();
-};
+class NonAggregate { int x; };
+struct NonLiteral { NonLiteral(); };
 struct HasNonLiteralBase : NonLiteral {};
-struct HasNonLiteralMember {
-  HasDtor x;
-};
+struct HasNonLiteralMember { HasDtor x; };
 
 static_assert(__is_literal(Empty), "fail");
 static_assert(__is_literal(LiteralType), "fail");
@@ -61,21 +53,19 @@ static_assert(!__is_literal(HasNonLiteralMember), "fail");
 // DR1361 removes the brace-or-equal-initializer bullet so that we can allow:
 extern int f(); // expected-note {{here}}
 struct HasNonConstExprMemInit {
-  int x = f();                                      // expected-note {{non-constexpr function}}
-  constexpr HasNonConstExprMemInit() {}             // expected-error {{never produces a constant expression}}
+  int x = f(); // expected-note {{non-constexpr function}}
+  constexpr HasNonConstExprMemInit() {} // expected-error {{never produces a constant expression}}
   constexpr HasNonConstExprMemInit(int y) : x(y) {} // ok
 };
 static_assert(__is_literal(HasNonConstExprMemInit), "fail");
 
 class HasConstExprCtor {
   int x;
-
 public:
   constexpr HasConstExprCtor(int x) : x(x) {}
 };
 template <typename T> class HasConstExprCtorTemplate {
   T x;
-
 public:
   template <typename U> constexpr HasConstExprCtorTemplate(U y) : x(y) {}
 };

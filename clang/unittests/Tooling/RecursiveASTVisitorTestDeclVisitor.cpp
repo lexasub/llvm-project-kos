@@ -14,22 +14,23 @@ namespace {
 
 class VarDeclVisitor : public ExpectedLocationVisitor<VarDeclVisitor> {
 public:
-  bool VisitVarDecl(VarDecl *Variable) {
-    Match(Variable->getNameAsString(), Variable->getBeginLoc());
-    return true;
-  }
+ bool VisitVarDecl(VarDecl *Variable) {
+   Match(Variable->getNameAsString(), Variable->getBeginLoc());
+   return true;
+ }
 };
 
 TEST(RecursiveASTVisitor, VisitsCXXForRangeStmtLoopVariable) {
   VarDeclVisitor Visitor;
   Visitor.ExpectMatch("i", 2, 17);
-  EXPECT_TRUE(Visitor.runOver("int x[5];\n"
-                              "void f() { for (int i : x) {} }",
-                              VarDeclVisitor::Lang_CXX11));
+  EXPECT_TRUE(Visitor.runOver(
+    "int x[5];\n"
+    "void f() { for (int i : x) {} }",
+    VarDeclVisitor::Lang_CXX11));
 }
 
-class ParmVarDeclVisitorForImplicitCode
-    : public ExpectedLocationVisitor<ParmVarDeclVisitorForImplicitCode> {
+class ParmVarDeclVisitorForImplicitCode :
+  public ExpectedLocationVisitor<ParmVarDeclVisitorForImplicitCode> {
 public:
   bool shouldVisitImplicitCode() const { return true; }
 
@@ -50,18 +51,21 @@ TEST(RecursiveASTVisitor, VisitsParmVarDeclForImplicitCode) {
   // with the class' source location.
   Visitor.ExpectMatch("", 1, 7);
   Visitor.ExpectMatch("", 3, 7);
-  EXPECT_TRUE(Visitor.runOver("class X {};\n"
-                              "void foo(X a, X b) {a = b;}\n"
-                              "class Y {};\n"
-                              "void bar(Y a) {Y b = a;}"));
+  EXPECT_TRUE(Visitor.runOver(
+    "class X {};\n"
+    "void foo(X a, X b) {a = b;}\n"
+    "class Y {};\n"
+    "void bar(Y a) {Y b = a;}"));
 }
 
-class NamedDeclVisitor : public ExpectedLocationVisitor<NamedDeclVisitor> {
+class NamedDeclVisitor
+  : public ExpectedLocationVisitor<NamedDeclVisitor> {
 public:
   bool VisitNamedDecl(NamedDecl *Decl) {
     std::string NameWithTemplateArgs;
     llvm::raw_string_ostream OS(NameWithTemplateArgs);
-    Decl->getNameForDiagnostic(OS, Decl->getASTContext().getPrintingPolicy(),
+    Decl->getNameForDiagnostic(OS,
+                               Decl->getASTContext().getPrintingPolicy(),
                                true);
     Match(OS.str(), Decl->getLocation());
     return true;
@@ -77,42 +81,47 @@ TEST(RecursiveASTVisitor, VisitsPartialTemplateSpecialization) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("A<bool>", 1, 26);
   Visitor.ExpectMatch("A<char *>", 2, 26);
-  EXPECT_TRUE(Visitor.runOver("template <class T> class A {};\n"
-                              "template <class T> class A<T*> {};\n"
-                              "A<bool> ab;\n"
-                              "A<char*> acp;\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template <class T> class A {};\n"
+    "template <class T> class A<T*> {};\n"
+    "A<bool> ab;\n"
+    "A<char*> acp;\n"));
 }
 
 TEST(RecursiveASTVisitor, VisitsUndefinedClassTemplateSpecialization) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("A<int>", 1, 29);
-  EXPECT_TRUE(Visitor.runOver("template<typename T> struct A;\n"
-                              "A<int> *p;\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template<typename T> struct A;\n"
+    "A<int> *p;\n"));
 }
 
 TEST(RecursiveASTVisitor, VisitsNestedUndefinedClassTemplateSpecialization) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("A<int>::B<char>", 2, 31);
-  EXPECT_TRUE(Visitor.runOver("template<typename T> struct A {\n"
-                              "  template<typename U> struct B;\n"
-                              "};\n"
-                              "A<int>::B<char> *p;\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template<typename T> struct A {\n"
+    "  template<typename U> struct B;\n"
+    "};\n"
+    "A<int>::B<char> *p;\n"));
 }
 
 TEST(RecursiveASTVisitor, VisitsUndefinedFunctionTemplateSpecialization) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("A<int>", 1, 26);
-  EXPECT_TRUE(Visitor.runOver("template<typename T> int A();\n"
-                              "int k = A<int>();\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template<typename T> int A();\n"
+    "int k = A<int>();\n"));
 }
 
 TEST(RecursiveASTVisitor, VisitsNestedUndefinedFunctionTemplateSpecialization) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("A<int>::B<char>", 2, 35);
-  EXPECT_TRUE(Visitor.runOver("template<typename T> struct A {\n"
-                              "  template<typename U> static int B();\n"
-                              "};\n"
-                              "int k = A<int>::B<char>();\n"));
+  EXPECT_TRUE(Visitor.runOver(
+    "template<typename T> struct A {\n"
+    "  template<typename U> static int B();\n"
+    "};\n"
+    "int k = A<int>::B<char>();\n"));
 }
 
 TEST(RecursiveASTVisitor, NoRecursionInSelfFriend) {
@@ -120,11 +129,11 @@ TEST(RecursiveASTVisitor, NoRecursionInSelfFriend) {
   NamedDeclVisitor Visitor;
   Visitor.ExpectMatch("vector_iterator<int>", 2, 7);
   EXPECT_TRUE(Visitor.runOver(
-      "template<typename Container>\n"
-      "class vector_iterator {\n"
-      "    template <typename C> friend class vector_iterator;\n"
-      "};\n"
-      "vector_iterator<int> it_int;\n"));
+    "template<typename Container>\n"
+    "class vector_iterator {\n"
+    "    template <typename C> friend class vector_iterator;\n"
+    "};\n"
+    "vector_iterator<int> it_int;\n"));
 }
 
 } // end anonymous namespace

@@ -69,11 +69,9 @@ ConstantInt *CrossDSOCFI::extractNumericTypeId(MDNode *MD) {
   if (!TM)
     return nullptr;
   auto C = dyn_cast_or_null<ConstantInt>(TM->getValue());
-  if (!C)
-    return nullptr;
+  if (!C) return nullptr;
   // We are looking for i64 constants.
-  if (C->getBitWidth() != 64)
-    return nullptr;
+  if (C->getBitWidth() != 64) return nullptr;
 
   return C;
 }
@@ -146,8 +144,7 @@ void CrossDSOCFI::buildCFICheck(Module &M) {
     ConstantInt *CaseTypeId = ConstantInt::get(Type::getInt64Ty(Ctx), TypeId);
     BasicBlock *TestBB = BasicBlock::Create(Ctx, "test", F);
     IRBuilder<> IRBTest(TestBB);
-    Function *BitsetTestFn =
-        Intrinsic::getDeclaration(&M, Intrinsic::type_test);
+    Function *BitsetTestFn = Intrinsic::getDeclaration(&M, Intrinsic::type_test);
 
     Value *Test = IRBTest.CreateCall(
         BitsetTestFn, {&Addr, MetadataAsValue::get(
@@ -162,7 +159,7 @@ void CrossDSOCFI::buildCFICheck(Module &M) {
 
 bool CrossDSOCFI::runOnModule(Module &M) {
   VeryLikelyWeights =
-      MDBuilder(M.getContext()).createBranchWeights((1U << 20) - 1, 1);
+    MDBuilder(M.getContext()).createBranchWeights((1U << 20) - 1, 1);
   if (M.getModuleFlag("Cross-DSO CFI") == nullptr)
     return false;
   buildCFICheck(M);

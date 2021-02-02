@@ -1,16 +1,16 @@
-template <typename T /* Test 1 */> // CHECK: template <typename U /* Test 1 */>
+template <typename T /* Test 1 */>              // CHECK: template <typename U /* Test 1 */>
 class Foo {
-  T foo(T arg, T &ref, T * /* Test 2 */ ptr) { // CHECK: U foo(U arg, U& ref, U* /* Test 2 */ ptr) {
-    T value;                                   // CHECK: U value;
-    int number = 42;
-    value = (T)number;                           // CHECK: value = (U)number;
-    value = static_cast<T /* Test 3 */>(number); // CHECK: value = static_cast<U /* Test 3 */>(number);
-    return value;
-  }
+T foo(T arg, T& ref, T* /* Test 2 */ ptr) {     // CHECK: U foo(U arg, U& ref, U* /* Test 2 */ ptr) {
+  T value;                                      // CHECK: U value;
+  int number = 42;
+  value = (T)number;                            // CHECK: value = (U)number;
+  value = static_cast<T /* Test 3 */>(number);  // CHECK: value = static_cast<U /* Test 3 */>(number);
+  return value;
+}
 
-  static void foo(T value) {} // CHECK: static void foo(U value) {}
+static void foo(T value) {}                     // CHECK: static void foo(U value) {}
 
-  T member; // CHECK: U member;
+T member;                                       // CHECK: U member;
 };
 
 // Test 1.

@@ -79,7 +79,8 @@ namespace lldb_private {
 
 ProcessSP ProcessWindows::CreateInstance(lldb::TargetSP target_sp,
                                          lldb::ListenerSP listener_sp,
-                                         const FileSpec *, bool can_connect) {
+                                         const FileSpec *,
+                                         bool can_connect) {
   return ProcessSP(new ProcessWindows(target_sp, listener_sp));
 }
 
@@ -96,8 +97,9 @@ void ProcessWindows::Initialize() {
     static llvm::once_flag g_once_flag;
 
     llvm::call_once(g_once_flag, []() {
-      PluginManager::RegisterPlugin(
-          GetPluginNameStatic(), GetPluginDescriptionStatic(), CreateInstance);
+      PluginManager::RegisterPlugin(GetPluginNameStatic(),
+                                    GetPluginDescriptionStatic(),
+                                    CreateInstance);
     });
   }
 }
@@ -118,8 +120,9 @@ const char *ProcessWindows::GetPluginDescriptionStatic() {
 ProcessWindows::ProcessWindows(lldb::TargetSP target_sp,
                                lldb::ListenerSP listener_sp)
     : lldb_private::Process(target_sp, listener_sp),
-      m_watchpoint_ids(RegisterContextWindows::GetNumHardwareBreakpointSlots(),
-                       LLDB_INVALID_BREAK_ID) {}
+      m_watchpoint_ids(
+          RegisterContextWindows::GetNumHardwareBreakpointSlots(),
+          LLDB_INVALID_BREAK_ID) {}
 
 ProcessWindows::~ProcessWindows() {}
 

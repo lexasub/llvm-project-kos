@@ -50,10 +50,9 @@ TEST(AsmWriterTest, DebugPrintDetachedArgument) {
 TEST(AsmWriterTest, DumpDIExpression) {
   LLVMContext Ctx;
   uint64_t Ops[] = {
-      dwarf::DW_OP_constu,
-      4,
-      dwarf::DW_OP_minus,
-      dwarf::DW_OP_deref,
+    dwarf::DW_OP_constu, 4,
+    dwarf::DW_OP_minus,
+    dwarf::DW_OP_deref,
   };
   DIExpression *Expr = DIExpression::get(Ctx, Ops);
   std::string S;
@@ -63,4 +62,4 @@ TEST(AsmWriterTest, DumpDIExpression) {
             OS.str());
 }
 
-} // namespace
+}

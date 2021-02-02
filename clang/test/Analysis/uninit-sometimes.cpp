@@ -14,21 +14,21 @@ int test_if_false(bool b) {
 // CHECK: fix-it:"{{.*}}":{8:3-10:5}:""
 // CHECK: fix-it:"{{.*}}":{7:8-7:8}:" = 0"
 
+
 int test_if_true(bool b) {
   int x; // expected-note {{variable}}
-  if (b) {
-  } // expected-warning {{whenever 'if' condition is true}} \
+  if (b) {} // expected-warning {{whenever 'if' condition is true}} \
             // expected-note {{remove the 'if' if its condition is always false}}
-  else
-    x = 1;
+  else x = 1;
   return x; // expected-note {{uninitialized use}}
 }
 
 // CHECK: fix-it:"{{.*}}":{20:3-22:8}:""
 // CHECK: fix-it:"{{.*}}":{19:8-19:8}:" = 0"
 
+
 int test_while_false(bool b) {
-  int x;      // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   while (b) { // expected-warning {{whenever 'while' loop exits because its condition is false}} \
               // expected-note {{remove the condition if it is always true}}
     if (maybe()) {
@@ -42,11 +42,12 @@ int test_while_false(bool b) {
 // CHECK: fix-it:"{{.*}}":{32:10-32:11}:"true"
 // CHECK: fix-it:"{{.*}}":{31:8-31:8}:" = 0"
 
+
 int test_while_true(bool b) {
-  int x;      // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   while (b) { // expected-warning {{whenever 'while' loop is entered}} \
               // expected-note {{remove the condition if it is always false}}
-  label:
+label:
     return x; // expected-note {{uninitialized use}}
   }
   x = 0;
@@ -55,6 +56,7 @@ int test_while_true(bool b) {
 
 // CHECK: fix-it:"{{.*}}":{48:10-48:11}:"false"
 // CHECK: fix-it:"{{.*}}":{47:8-47:8}:" = 0"
+
 
 int test_do_while_false(bool b) {
   int x; // expected-note {{variable}}
@@ -65,19 +67,20 @@ int test_do_while_false(bool b) {
     }
   } while (b); // expected-warning {{whenever 'do' loop exits because its condition is false}} \
                // expected-note {{remove the condition if it is always true}}
-  return x;    // expected-note {{uninitialized use}}
+  return x; // expected-note {{uninitialized use}}
 }
 
 // CHECK: fix-it:"{{.*}}":{68:12-68:13}:"true"
 // CHECK: fix-it:"{{.*}}":{62:8-62:8}:" = 0"
 
+
 int test_do_while_true(bool b) {
   int x; // expected-note {{variable}}
-  goto label2;
+goto label2;
   do {
-  label1:
+label1:
     return x; // expected-note {{uninitialized use}}
-  label2:;
+label2: ;
   } while (b); // expected-warning {{whenever 'do' loop condition is true}} \
                // expected-note {{remove the condition if it is always false}}
   x = 0;
@@ -86,6 +89,7 @@ int test_do_while_true(bool b) {
 
 // CHECK: fix-it:"{{.*}}":{84:12-84:13}:"false"
 // CHECK: fix-it:"{{.*}}":{78:8-78:8}:" = 0"
+
 
 int test_for_false(int k) {
   int x; // expected-note {{variable}}
@@ -104,6 +108,7 @@ int test_for_false(int k) {
 // CHECK: fix-it:"{{.*}}":{97:8-97:13}:""
 // CHECK: fix-it:"{{.*}}":{95:8-95:8}:" = 0"
 
+
 int test_for_true(int k) {
   int x; // expected-note {{variable}}
   int n = 0;
@@ -111,7 +116,7 @@ int test_for_true(int k) {
        n < k; // expected-warning {{whenever 'for' loop is entered}} \
               // expected-note {{remove the condition if it is always false}}
        ++n) {
-  label:
+label:
     return x; // expected-note {{uninitialized use}}
   }
   x = 1;
@@ -121,8 +126,9 @@ int test_for_true(int k) {
 // CHECK: fix-it:"{{.*}}":{116:8-116:13}:"false"
 // CHECK: fix-it:"{{.*}}":{113:8-113:8}:" = 0"
 
+
 int test_for_range_false(int k) {
-  int arr[3] = {1, 2, 3};
+  int arr[3] = { 1, 2, 3 };
   int x;
   for (int &a : arr) { // no-warning, condition was not explicitly specified
     if (a == k) {
@@ -133,9 +139,13 @@ int test_for_range_false(int k) {
   return x;
 }
 
+
+
+
+
 int test_for_range_true(int k) {
-  int arr[3] = {1, 2, 3};
-  int x;               // expected-note {{variable}}
+  int arr[3] = { 1, 2, 3 };
+  int x; // expected-note {{variable}}
   for (int &a : arr) { // expected-warning {{variable 'x' is used uninitialized whenever 'for' loop is entered}}
     goto label;
   }
@@ -144,12 +154,16 @@ label:
   return x; // expected-note {{uninitialized use}}
 }
 
+
+
+
+
 int test_conditional_false(int k) {
-  int x;         // expected-note {{variable}}
-  (void)(maybe() // expected-warning {{whenever '?:' condition is false}} \
+  int x; // expected-note {{variable}}
+  (void)(
+      maybe() // expected-warning {{whenever '?:' condition is false}} \
               // expected-note {{remove the '?:' if its condition is always true}}
-             ? x = 1
-             : 0);
+      ? x = 1 : 0);
   return x; // expected-note {{uninitialized use}}
 }
 
@@ -158,19 +172,20 @@ int test_conditional_false(int k) {
 // CHECK: fix-it:"{{.*}}":{162:8-162:8}:" = 0"
 
 int test_conditional_true(int k) {
-  int x;         // expected-note {{variable}}
-  (void)(maybe() // expected-warning {{whenever '?:' condition is true}} \
+  int x; // expected-note {{variable}}
+  (void)(
+      maybe() // expected-warning {{whenever '?:' condition is true}} \
               // expected-note {{remove the '?:' if its condition is always false}}
-             ? 0
-             : x = 1);
+      ? 0 : x = 1);
   return x; // expected-note {{uninitialized use}}
 }
 
 // CHECK: fix-it:"{{.*}}":{177:7-179:13}:""
 // CHECK: fix-it:"{{.*}}":{175:8-175:8}:" = 0"
 
+
 int test_logical_and_false(int k) {
-  int x;  // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   maybe() // expected-warning {{whenever '&&' condition is false}} \
           // expected-note {{remove the '&&' if its condition is always true}}
       && (x = 1);
@@ -180,8 +195,9 @@ int test_logical_and_false(int k) {
 // CHECK: fix-it:"{{.*}}":{189:3-191:10}:""
 // CHECK: fix-it:"{{.*}}":{188:8-188:8}:" = 0"
 
+
 int test_logical_and_true(int k) {
-  int x;  // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   maybe() // expected-warning {{whenever '&&' condition is true}} \
           // expected-note {{remove the '&&' if its condition is always false}}
       && ({ goto skip_init; 0; });
@@ -193,8 +209,9 @@ skip_init:
 // CHECK: fix-it:"{{.*}}":{201:3-203:34}:"false"
 // CHECK: fix-it:"{{.*}}":{200:8-200:8}:" = 0"
 
+
 int test_logical_or_false(int k) {
-  int x;  // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   maybe() // expected-warning {{whenever '||' condition is false}} \
           // expected-note {{remove the '||' if its condition is always true}}
       || ({ goto skip_init; 0; });
@@ -206,8 +223,9 @@ skip_init:
 // CHECK: fix-it:"{{.*}}":{215:3-217:34}:"true"
 // CHECK: fix-it:"{{.*}}":{214:8-214:8}:" = 0"
 
+
 int test_logical_or_true(int k) {
-  int x;  // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   maybe() // expected-warning {{whenever '||' condition is true}} \
           // expected-note {{remove the '||' if its condition is always false}}
       || (x = 1);
@@ -216,6 +234,7 @@ int test_logical_or_true(int k) {
 
 // CHECK: fix-it:"{{.*}}":{229:3-231:10}:""
 // CHECK: fix-it:"{{.*}}":{228:8-228:8}:" = 0"
+
 
 int test_switch_case(int k) {
   int x; // expected-note {{variable}}
@@ -230,6 +249,8 @@ int test_switch_case(int k) {
 }
 
 // CHECK: fix-it:"{{.*}}":{240:8-240:8}:" = 0"
+
+
 
 int test_switch_default(int k) {
   int x; // expected-note {{variable}}
@@ -248,6 +269,8 @@ int test_switch_default(int k) {
 
 // CHECK: fix-it:"{{.*}}":{256:8-256:8}:" = 0"
 
+
+
 int test_switch_suppress_1(int k) {
   int x;
   switch (k) {
@@ -260,6 +283,10 @@ int test_switch_suppress_1(int k) {
   }
   return x; // no-warning
 }
+
+
+
+
 
 int test_switch_suppress_2(int k) {
   int x;
@@ -278,6 +305,10 @@ int test_switch_suppress_2(int k) {
   }
   return x; // no-warning
 }
+
+
+
+
 
 int test_multiple_notes(int k) {
   int x; // expected-note {{variable}}
@@ -310,6 +341,10 @@ int test_no_false_positive_1(int k) {
   return x;
 }
 
+
+
+
+
 int test_no_false_positive_2() {
   int x;
   bool b = false;
@@ -320,18 +355,24 @@ int test_no_false_positive_2() {
   return b ? x : 0;
 }
 
+
+
+
+
 void test_null_pred_succ() {
   int x; // expected-note {{variable}} expected-warning {{used uninitialized whenever function 'test_null_pred_succ' is called}}
   if (0)
-  foo:
-    x = 0;
+    foo: x = 0;
   if (x) // expected-note {{use}}
     goto foo;
 }
 
+
+
+
 void foo();
 int PR13360(bool b) {
-  int x;   // expected-note {{variable}}
+  int x; // expected-note {{variable}}
   if (b) { // expected-warning {{variable 'x' is used uninitialized whenever 'if' condition is true}} expected-note {{remove}}
     do {
       foo();
@@ -346,15 +387,14 @@ int PR13360(bool b) {
 // CHECK: fix-it:"{{.*}}":{375:8-375:8}:" = 0"
 
 void test_jump_init() {
-  goto later;
+goto later;
   int x; // expected-note {{variable}} expected-warning {{used uninitialized whenever function 'test_jump_init'}}
 later:
-  while (x)
-    x = 0; // expected-note {{use}}
+  while (x) x = 0; // expected-note {{use}}
 }
 
 void PR16054() {
-  int x;           // expected-note {{variable}} expected-warning {{used uninitialized whenever function 'PR16054}}
+  int x; // expected-note {{variable}} expected-warning {{used uninitialized whenever function 'PR16054}}
   while (x != 0) { // expected-note {{use}}
     (void)&x;
   }

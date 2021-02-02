@@ -18,8 +18,7 @@ T tmain(T argc) {
   static T a;
 // CHECK: static T a;
 #pragma omp parallel
-#pragma omp sections private(argc, b), firstprivate(c, d), lastprivate(d, f) reduction(task, - \
-                                                                                       : g) nowait allocate(d)
+#pragma omp sections private(argc, b), firstprivate(c, d), lastprivate(d, f) reduction(task, - : g) nowait allocate(d)
   {
     foo();
   }
@@ -32,13 +31,12 @@ T tmain(T argc) {
 }
 
 int main(int argc, char **argv) {
-  // CHECK: int main(int argc, char **argv) {
+// CHECK: int main(int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   static int a;
 // CHECK: static int a;
 #pragma omp parallel
-#pragma omp sections allocate(c) private(argc, b), firstprivate(argv, c), lastprivate(d, f) reduction(+ \
-                                                                                                      : g) nowait
+#pragma omp sections allocate(c) private(argc, b), firstprivate(argv, c), lastprivate(d, f) reduction(+ : g) nowait
   {
 #pragma omp section
     foo();

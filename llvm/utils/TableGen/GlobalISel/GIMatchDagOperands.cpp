@@ -17,7 +17,7 @@ void GIMatchDagOperand::Profile(FoldingSetNodeID &ID) const {
 }
 
 void GIMatchDagOperand::Profile(FoldingSetNodeID &ID, size_t Idx,
-                                StringRef Name, bool IsDef) {
+                                       StringRef Name, bool IsDef) {
   ID.AddInteger(Idx);
   ID.AddString(Name);
   ID.AddBoolean(IsDef);
@@ -49,8 +49,8 @@ void GIMatchDagOperandList::print(raw_ostream &OS) const {
   }
 }
 
-const GIMatchDagOperandList::value_type &
-GIMatchDagOperandList::operator[](StringRef K) const {
+const GIMatchDagOperandList::value_type &GIMatchDagOperandList::
+operator[](StringRef K) const {
   const auto &I = OperandsByName.find(K);
   assert(I != OperandsByName.end() && "Operand not found by name");
   return Operands[I->second];
@@ -115,6 +115,7 @@ GIMatchDagOperandListContext::makeMIPredicateOperandList() {
   OperandListsOwner.push_back(std::move(NewValue));
   return *OperandListsOwner.back().get();
 }
+
 
 const GIMatchDagOperandList &
 GIMatchDagOperandListContext::makeTwoMOPredicateOperandList() {

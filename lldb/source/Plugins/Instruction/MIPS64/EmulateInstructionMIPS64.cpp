@@ -75,7 +75,7 @@ EmulateInstructionMIPS64::EmulateInstructionMIPS64(
  * MCDisassembler
  * to decode the instructions so that the decoding complexity stays with LLVM.
  * Initialize the MIPS targets and disassemblers.
- */
+*/
 #ifdef __mips__
   if (!target) {
     LLVMInitializeMipsTargetInfo();
@@ -792,11 +792,9 @@ EmulateInstructionMIPS64::GetOpcodeForInstruction(const char *op_name) {
 
       // Branch instructions
       {"BEQ", &EmulateInstructionMIPS64::Emulate_BXX_3ops, "BEQ rs,rt,offset"},
-      {"BEQ64", &EmulateInstructionMIPS64::Emulate_BXX_3ops,
-       "BEQ rs,rt,offset"},
+      {"BEQ64", &EmulateInstructionMIPS64::Emulate_BXX_3ops, "BEQ rs,rt,offset"},
       {"BNE", &EmulateInstructionMIPS64::Emulate_BXX_3ops, "BNE rs,rt,offset"},
-      {"BNE64", &EmulateInstructionMIPS64::Emulate_BXX_3ops,
-       "BNE rs,rt,offset"},
+      {"BNE64", &EmulateInstructionMIPS64::Emulate_BXX_3ops, "BNE rs,rt,offset"},
       {"BEQL", &EmulateInstructionMIPS64::Emulate_BXX_3ops,
        "BEQL rs,rt,offset"},
       {"BNEL", &EmulateInstructionMIPS64::Emulate_BXX_3ops,
@@ -978,7 +976,7 @@ bool EmulateInstructionMIPS64::EvaluateInstruction(uint32_t evaluate_options) {
   /*
    * mc_insn.getOpcode() returns decoded opcode. However to make use
    * of llvm::Mips::<insn> we would need "MipsGenInstrInfo.inc".
-   */
+  */
   const char *op_name = m_insn_info->getName(mc_insn.getOpcode()).data();
 
   if (op_name == nullptr)
@@ -987,7 +985,7 @@ bool EmulateInstructionMIPS64::EvaluateInstruction(uint32_t evaluate_options) {
   /*
    * Decoding has been done already. Just get the call-back function
    * and emulate the instruction.
-   */
+  */
   MipsOpcode *opcode_data = GetOpcodeForInstruction(op_name);
 
   if (opcode_data == nullptr)
@@ -1367,14 +1365,14 @@ bool EmulateInstructionMIPS64::Emulate_BXX_3ops(llvm::MCInst &insn) {
   if (!success)
     return false;
 
-  if (!strcasecmp(op_name, "BEQ") || !strcasecmp(op_name, "BEQL") ||
-      !strcasecmp(op_name, "BEQ64")) {
+  if (!strcasecmp(op_name, "BEQ") || !strcasecmp(op_name, "BEQL")
+       || !strcasecmp(op_name, "BEQ64") ) {
     if (rs_val == rt_val)
       target = pc + offset;
     else
       target = pc + 8;
-  } else if (!strcasecmp(op_name, "BNE") || !strcasecmp(op_name, "BNEL") ||
-             !strcasecmp(op_name, "BNE64")) {
+  } else if (!strcasecmp(op_name, "BNE") || !strcasecmp(op_name, "BNEL")
+              || !strcasecmp(op_name, "BNE64")) {
     if (rs_val != rt_val)
       target = pc + offset;
     else
@@ -1448,7 +1446,7 @@ bool EmulateInstructionMIPS64::Emulate_BAL(llvm::MCInst &insn) {
    *      offset = sign_ext (offset << 2)
    *      RA = PC + 8
    *      PC = PC + offset
-   */
+  */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips64, 0, &success);
@@ -1479,7 +1477,7 @@ bool EmulateInstructionMIPS64::Emulate_BALC(llvm::MCInst &insn) {
    *      offset = sign_ext (offset << 2)
    *      RA = PC + 4
    *      PC = PC + 4 + offset
-   */
+  */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips64, 0, &success);
@@ -1591,26 +1589,26 @@ bool EmulateInstructionMIPS64::Emulate_BXX_2ops(llvm::MCInst &insn) {
   if (!success)
     return false;
 
-  if (!strcasecmp(op_name, "BLTZL") || !strcasecmp(op_name, "BLTZ") ||
-      !strcasecmp(op_name, "BLTZ64")) {
+  if (!strcasecmp(op_name, "BLTZL") || !strcasecmp(op_name, "BLTZ")
+       || !strcasecmp(op_name, "BLTZ64")) {
     if (rs_val < 0)
       target = pc + offset;
     else
       target = pc + 8;
-  } else if (!strcasecmp(op_name, "BGEZL") || !strcasecmp(op_name, "BGEZ") ||
-             !strcasecmp(op_name, "BGEZ64")) {
+  } else if (!strcasecmp(op_name, "BGEZL") || !strcasecmp(op_name, "BGEZ")
+              || !strcasecmp(op_name, "BGEZ64")) {
     if (rs_val >= 0)
       target = pc + offset;
     else
       target = pc + 8;
-  } else if (!strcasecmp(op_name, "BGTZL") || !strcasecmp(op_name, "BGTZ") ||
-             !strcasecmp(op_name, "BGTZ64")) {
+  } else if (!strcasecmp(op_name, "BGTZL") || !strcasecmp(op_name, "BGTZ")
+              || !strcasecmp(op_name, "BGTZ64")) {
     if (rs_val > 0)
       target = pc + offset;
     else
       target = pc + 8;
-  } else if (!strcasecmp(op_name, "BLEZL") || !strcasecmp(op_name, "BLEZ") ||
-             !strcasecmp(op_name, "BLEZ64")) {
+  } else if (!strcasecmp(op_name, "BLEZL") || !strcasecmp(op_name, "BLEZ")
+              || !strcasecmp(op_name, "BLEZ64")) {
     if (rs_val <= 0)
       target = pc + offset;
     else
@@ -1633,7 +1631,7 @@ bool EmulateInstructionMIPS64::Emulate_BC(llvm::MCInst &insn) {
    * BC offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC + 4 + offset
-   */
+  */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips64, 0, &success);
@@ -1805,7 +1803,7 @@ bool EmulateInstructionMIPS64::Emulate_J(llvm::MCInst &insn) {
    * J offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC[63-28] | offset
-   */
+  */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips64, 0, &success);
@@ -1829,7 +1827,7 @@ bool EmulateInstructionMIPS64::Emulate_JAL(llvm::MCInst &insn) {
    * JAL offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC[63-28] | offset
-   */
+  */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips64, 0, &success);
@@ -1861,7 +1859,7 @@ bool EmulateInstructionMIPS64::Emulate_JALR(llvm::MCInst &insn) {
    * JALR rt, rs
    *      GPR[rt] = PC + 8
    *      PC = GPR[rs]
-   */
+  */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   rs = m_reg_info->getEncodingValue(insn.getOperand(1).getReg());
 
@@ -1897,7 +1895,7 @@ bool EmulateInstructionMIPS64::Emulate_JIALC(llvm::MCInst &insn) {
    *      offset = sign_ext (offset)
    *      PC = GPR[rt] + offset
    *      RA = PC + 4
-   */
+  */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -1934,7 +1932,7 @@ bool EmulateInstructionMIPS64::Emulate_JIC(llvm::MCInst &insn) {
    * JIC rt, offset
    *      offset = sign_ext (offset)
    *      PC = GPR[rt] + offset
-   */
+  */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -1959,7 +1957,7 @@ bool EmulateInstructionMIPS64::Emulate_JR(llvm::MCInst &insn) {
   /*
    * JR rs
    *      PC = GPR[rs]
-   */
+  */
   rs = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
 
   rs_val = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_zero_mips64 + rs, 0,
@@ -1990,7 +1988,7 @@ bool EmulateInstructionMIPS64::Emulate_FP_branch(llvm::MCInst &insn) {
    *      if condition then
    *          offset = sign_ext (offset)
    *          PC = PC + offset
-   */
+  */
   cc = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -2036,7 +2034,7 @@ bool EmulateInstructionMIPS64::Emulate_BC1EQZ(llvm::MCInst &insn) {
    *      if condition then
    *          offset = sign_ext (offset)
    *          PC = PC + 4 + offset
-   */
+  */
   ft = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -2072,7 +2070,7 @@ bool EmulateInstructionMIPS64::Emulate_BC1NEZ(llvm::MCInst &insn) {
    *      if condition then
    *          offset = sign_ext (offset)
    *          PC = PC + 4 + offset
-   */
+  */
   ft = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 

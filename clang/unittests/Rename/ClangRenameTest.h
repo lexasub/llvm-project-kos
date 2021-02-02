@@ -111,6 +111,6 @@ protected:
 
 } // namespace test
 } // namespace clang_rename
-} // namespace clang
+} // namesdpace clang
 
 #endif

@@ -45,27 +45,21 @@
 
 // CHECK: ![[POD]] = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "POD"
 
-struct POD {
-  int pod;
-};
+struct POD { int pod; };
 
-struct DynamicNoVFPtr : virtual POD {};
+struct DynamicNoVFPtr : virtual POD { };
 
 DynamicNoVFPtr dynamic_no_vfptr;
 
-struct HasVirtualMethod {
-  virtual void f();
-};
+struct HasVirtualMethod { virtual void f(); };
 
-struct NoPrimaryBase : virtual HasVirtualMethod {};
+struct NoPrimaryBase : virtual HasVirtualMethod { };
 
 NoPrimaryBase no_primary_base;
 
-struct SecondaryVTable {
-  virtual void g();
-};
+struct SecondaryVTable { virtual void g(); };
 
-struct HasPrimaryBase : virtual SecondaryVTable, HasVirtualMethod {};
+struct HasPrimaryBase : virtual SecondaryVTable, HasVirtualMethod { };
 
 HasPrimaryBase has_primary_base;
 

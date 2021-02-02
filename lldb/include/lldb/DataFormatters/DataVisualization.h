@@ -62,7 +62,8 @@ public:
     static bool GetSummaryFormat(ConstString type,
                                  lldb::TypeSummaryImplSP &entry);
 
-    static void Add(ConstString type, const lldb::TypeSummaryImplSP &entry);
+    static void Add(ConstString type,
+                    const lldb::TypeSummaryImplSP &entry);
 
     static bool Delete(ConstString type);
 

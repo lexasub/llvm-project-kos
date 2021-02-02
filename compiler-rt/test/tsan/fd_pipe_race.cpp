@@ -33,3 +33,5 @@ int main() {
 // CHECK:   Previous read of size 8
 // CHECK:     #0 write
 // CHECK:     #1 Thread1
+
+

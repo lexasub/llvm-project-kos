@@ -27,31 +27,43 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  assert(ATOMIC_BOOL_LOCK_FREE == 0 || ATOMIC_BOOL_LOCK_FREE == 1 ||
-         ATOMIC_BOOL_LOCK_FREE == 2);
-  assert(ATOMIC_CHAR_LOCK_FREE == 0 || ATOMIC_CHAR_LOCK_FREE == 1 ||
-         ATOMIC_CHAR_LOCK_FREE == 2);
+int main(int, char**)
+{
+    assert(ATOMIC_BOOL_LOCK_FREE == 0 ||
+           ATOMIC_BOOL_LOCK_FREE == 1 ||
+           ATOMIC_BOOL_LOCK_FREE == 2);
+    assert(ATOMIC_CHAR_LOCK_FREE == 0 ||
+           ATOMIC_CHAR_LOCK_FREE == 1 ||
+           ATOMIC_CHAR_LOCK_FREE == 2);
 #if TEST_STD_VER > 17 && defined(__cpp_char8_t)
-  assert(ATOMIC_CHAR8_T_LOCK_FREE == 0 || ATOMIC_CHAR8_T_LOCK_FREE == 1 ||
-         ATOMIC_CHAR8_T_LOCK_FREE == 2);
+    assert(ATOMIC_CHAR8_T_LOCK_FREE == 0 ||
+           ATOMIC_CHAR8_T_LOCK_FREE == 1 ||
+           ATOMIC_CHAR8_T_LOCK_FREE == 2);
 #endif
-  assert(ATOMIC_CHAR16_T_LOCK_FREE == 0 || ATOMIC_CHAR16_T_LOCK_FREE == 1 ||
-         ATOMIC_CHAR16_T_LOCK_FREE == 2);
-  assert(ATOMIC_CHAR32_T_LOCK_FREE == 0 || ATOMIC_CHAR32_T_LOCK_FREE == 1 ||
-         ATOMIC_CHAR32_T_LOCK_FREE == 2);
-  assert(ATOMIC_WCHAR_T_LOCK_FREE == 0 || ATOMIC_WCHAR_T_LOCK_FREE == 1 ||
-         ATOMIC_WCHAR_T_LOCK_FREE == 2);
-  assert(ATOMIC_SHORT_LOCK_FREE == 0 || ATOMIC_SHORT_LOCK_FREE == 1 ||
-         ATOMIC_SHORT_LOCK_FREE == 2);
-  assert(ATOMIC_INT_LOCK_FREE == 0 || ATOMIC_INT_LOCK_FREE == 1 ||
-         ATOMIC_INT_LOCK_FREE == 2);
-  assert(ATOMIC_LONG_LOCK_FREE == 0 || ATOMIC_LONG_LOCK_FREE == 1 ||
-         ATOMIC_LONG_LOCK_FREE == 2);
-  assert(ATOMIC_LLONG_LOCK_FREE == 0 || ATOMIC_LLONG_LOCK_FREE == 1 ||
-         ATOMIC_LLONG_LOCK_FREE == 2);
-  assert(ATOMIC_POINTER_LOCK_FREE == 0 || ATOMIC_POINTER_LOCK_FREE == 1 ||
-         ATOMIC_POINTER_LOCK_FREE == 2);
+    assert(ATOMIC_CHAR16_T_LOCK_FREE == 0 ||
+           ATOMIC_CHAR16_T_LOCK_FREE == 1 ||
+           ATOMIC_CHAR16_T_LOCK_FREE == 2);
+    assert(ATOMIC_CHAR32_T_LOCK_FREE == 0 ||
+           ATOMIC_CHAR32_T_LOCK_FREE == 1 ||
+           ATOMIC_CHAR32_T_LOCK_FREE == 2);
+    assert(ATOMIC_WCHAR_T_LOCK_FREE == 0 ||
+           ATOMIC_WCHAR_T_LOCK_FREE == 1 ||
+           ATOMIC_WCHAR_T_LOCK_FREE == 2);
+    assert(ATOMIC_SHORT_LOCK_FREE == 0 ||
+           ATOMIC_SHORT_LOCK_FREE == 1 ||
+           ATOMIC_SHORT_LOCK_FREE == 2);
+    assert(ATOMIC_INT_LOCK_FREE == 0 ||
+           ATOMIC_INT_LOCK_FREE == 1 ||
+           ATOMIC_INT_LOCK_FREE == 2);
+    assert(ATOMIC_LONG_LOCK_FREE == 0 ||
+           ATOMIC_LONG_LOCK_FREE == 1 ||
+           ATOMIC_LONG_LOCK_FREE == 2);
+    assert(ATOMIC_LLONG_LOCK_FREE == 0 ||
+           ATOMIC_LLONG_LOCK_FREE == 1 ||
+           ATOMIC_LLONG_LOCK_FREE == 2);
+    assert(ATOMIC_POINTER_LOCK_FREE == 0 ||
+           ATOMIC_POINTER_LOCK_FREE == 1 ||
+           ATOMIC_POINTER_LOCK_FREE == 2);
 
   return 0;
 }

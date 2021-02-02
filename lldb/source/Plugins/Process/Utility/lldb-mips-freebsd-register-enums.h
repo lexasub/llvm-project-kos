@@ -61,5 +61,5 @@ enum {
 
   k_num_gpr_registers_mips64 = k_last_gpr_mips64 - k_first_gpr_mips64 + 1
 };
-} // namespace lldb_private
+}
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_LLDB_MIPS_FREEBSD_REGISTER_ENUMS_H

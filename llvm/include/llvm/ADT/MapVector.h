@@ -31,9 +31,9 @@ namespace llvm {
 /// This class implements a map that also provides access to all stored values
 /// in a deterministic order. The values are kept in a std::vector and the
 /// mapping is done with DenseMap from Keys to indexes in that vector.
-template <typename KeyT, typename ValueT,
-          typename MapType = DenseMap<KeyT, unsigned>,
-          typename VectorType = std::vector<std::pair<KeyT, ValueT>>>
+template<typename KeyT, typename ValueT,
+         typename MapType = DenseMap<KeyT, unsigned>,
+         typename VectorType = std::vector<std::pair<KeyT, ValueT>>>
 class MapVector {
   MapType Map;
   VectorType Vector;
@@ -76,12 +76,14 @@ public:
   reverse_iterator rend() { return Vector.rend(); }
   const_reverse_iterator rend() const { return Vector.rend(); }
 
-  bool empty() const { return Vector.empty(); }
+  bool empty() const {
+    return Vector.empty();
+  }
 
-  std::pair<KeyT, ValueT> &front() { return Vector.front(); }
+  std::pair<KeyT, ValueT>       &front()       { return Vector.front(); }
   const std::pair<KeyT, ValueT> &front() const { return Vector.front(); }
-  std::pair<KeyT, ValueT> &back() { return Vector.back(); }
-  const std::pair<KeyT, ValueT> &back() const { return Vector.back(); }
+  std::pair<KeyT, ValueT>       &back()        { return Vector.back(); }
+  const std::pair<KeyT, ValueT> &back()  const { return Vector.back(); }
 
   void clear() {
     Map.clear();
@@ -94,8 +96,7 @@ public:
   }
 
   ValueT &operator[](const KeyT &Key) {
-    std::pair<KeyT, typename MapType::mapped_type> Pair =
-        std::make_pair(Key, 0);
+    std::pair<KeyT, typename MapType::mapped_type> Pair = std::make_pair(Key, 0);
     std::pair<typename MapType::iterator, bool> Result = Map.insert(Pair);
     auto &I = Result.first->second;
     if (Result.second) {
@@ -110,12 +111,11 @@ public:
     static_assert(std::is_copy_constructible<ValueT>::value,
                   "Cannot call lookup() if ValueT is not copyable.");
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end() ? ValueT() : Vector[Pos->second].second;
+    return Pos == Map.end()? ValueT() : Vector[Pos->second].second;
   }
 
   std::pair<iterator, bool> insert(const std::pair<KeyT, ValueT> &KV) {
-    std::pair<KeyT, typename MapType::mapped_type> Pair =
-        std::make_pair(KV.first, 0);
+    std::pair<KeyT, typename MapType::mapped_type> Pair = std::make_pair(KV.first, 0);
     std::pair<typename MapType::iterator, bool> Result = Map.insert(Pair);
     auto &I = Result.first->second;
     if (Result.second) {
@@ -128,8 +128,7 @@ public:
 
   std::pair<iterator, bool> insert(std::pair<KeyT, ValueT> &&KV) {
     // Copy KV.first into the map, then move it into the vector.
-    std::pair<KeyT, typename MapType::mapped_type> Pair =
-        std::make_pair(KV.first, 0);
+    std::pair<KeyT, typename MapType::mapped_type> Pair = std::make_pair(KV.first, 0);
     std::pair<typename MapType::iterator, bool> Result = Map.insert(Pair);
     auto &I = Result.first->second;
     if (Result.second) {
@@ -142,17 +141,19 @@ public:
 
   size_type count(const KeyT &Key) const {
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end() ? 0 : 1;
+    return Pos == Map.end()? 0 : 1;
   }
 
   iterator find(const KeyT &Key) {
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end() ? Vector.end() : (Vector.begin() + Pos->second);
+    return Pos == Map.end()? Vector.end() :
+                            (Vector.begin() + Pos->second);
   }
 
   const_iterator find(const KeyT &Key) const {
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end() ? Vector.end() : (Vector.begin() + Pos->second);
+    return Pos == Map.end()? Vector.end() :
+                            (Vector.begin() + Pos->second);
   }
 
   /// Remove the last element from the vector.
@@ -230,7 +231,8 @@ void MapVector<KeyT, ValueT, MapType, VectorType>::remove_if(Function Pred) {
 template <typename KeyT, typename ValueT, unsigned N>
 struct SmallMapVector
     : MapVector<KeyT, ValueT, SmallDenseMap<KeyT, unsigned, N>,
-                SmallVector<std::pair<KeyT, ValueT>, N>> {};
+                SmallVector<std::pair<KeyT, ValueT>, N>> {
+};
 
 } // end namespace llvm
 

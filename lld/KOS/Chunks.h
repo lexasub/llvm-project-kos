@@ -25,10 +25,10 @@ namespace lld {
 namespace kos {
 
 using llvm::COFF::ImportDirectoryTableEntry;
-using llvm::object::coff_relocation;
-using llvm::object::coff_section;
 using llvm::object::COFFSymbolRef;
 using llvm::object::SectionRef;
+using llvm::object::coff_relocation;
+using llvm::object::coff_section;
 
 class Baserel;
 class Defined;
@@ -236,14 +236,12 @@ public:
   // True if this is a codeview debug info chunk. These will not be laid out in
   // the image. Instead they will end up in the PDB, if one is requested.
   bool isCodeView() const {
-    return getSectionName() == ".debug" ||
-           getSectionName().startswith(".debug$");
+    return getSectionName() == ".debug" || getSectionName().startswith(".debug$");
   }
 
   // True if this is a DWARF debug info or exception handling chunk.
   bool isDWARF() const {
-    return getSectionName().startswith(".debug_") ||
-           getSectionName() == ".eh_frame";
+    return getSectionName().startswith(".debug_") || getSectionName() == ".eh_frame";
   }
 
   // Allow iteration over the bodies of this chunk's relocated symbols.
@@ -684,6 +682,6 @@ namespace llvm {
 template <>
 struct DenseMapInfo<lld::kos::ChunkAndOffset>
     : lld::kos::ChunkAndOffset::DenseMapInfo {};
-} // namespace llvm
+}
 
 #endif

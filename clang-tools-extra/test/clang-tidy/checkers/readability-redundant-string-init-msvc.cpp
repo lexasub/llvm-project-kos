@@ -8,7 +8,7 @@ class char_traits {};
 template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
 struct basic_string {
   basic_string();
-  basic_string(const basic_string &);
+  basic_string(const basic_string&);
   // MSVC headers define two constructors instead of using optional arguments.
   basic_string(const C *);
   basic_string(const C *, const A &);
@@ -16,7 +16,7 @@ struct basic_string {
 };
 typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
-} // namespace std
+}
 
 void f() {
   std::string a = "";

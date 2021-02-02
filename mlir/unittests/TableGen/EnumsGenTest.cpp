@@ -14,8 +14,8 @@
 #include <type_traits>
 
 /// Pull in generated enum utility declarations and definitions.
-#include "EnumsGenTest.cpp.inc"
 #include "EnumsGenTest.h.inc"
+#include "EnumsGenTest.cpp.inc"
 
 /// Test namespaces and enum class/utility names.
 using Outer::Inner::ConvertToEnum;

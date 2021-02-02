@@ -76,8 +76,8 @@ struct GCOVOptions {
   std::string Exclude;
 };
 
-ModulePass *
-createGCOVProfilerPass(const GCOVOptions &Options = GCOVOptions::getDefault());
+ModulePass *createGCOVProfilerPass(const GCOVOptions &Options =
+                                   GCOVOptions::getDefault());
 
 // PGO Instrumention. Parameter IsCS indicates if this is the context senstive
 // instrumentation.

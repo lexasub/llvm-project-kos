@@ -143,10 +143,9 @@ public:
   };
 
   // Saving & restoring breakpoints:
-  static lldb::BreakpointSP
-  CreateFromStructuredData(lldb::TargetSP target_sp,
-                           StructuredData::ObjectSP &data_object_sp,
-                           Status &error);
+  static lldb::BreakpointSP CreateFromStructuredData(
+      lldb::TargetSP target_sp, StructuredData::ObjectSP &data_object_sp,
+      Status &error);
 
   static bool
   SerializedBreakpointMatchesNames(StructuredData::ObjectSP &bkpt_object_sp,
@@ -555,20 +554,27 @@ public:
 
   // Produces the OR'ed values for all the names assigned to this breakpoint.
   const BreakpointName::Permissions &GetPermissions() const {
-    return m_permissions;
+      return m_permissions;
   }
 
-  BreakpointName::Permissions &GetPermissions() { return m_permissions; }
+  BreakpointName::Permissions &GetPermissions() {
+      return m_permissions;
+  }
 
-  bool AllowList() const { return GetPermissions().GetAllowList(); }
-  bool AllowDisable() const { return GetPermissions().GetAllowDisable(); }
-  bool AllowDelete() const { return GetPermissions().GetAllowDelete(); }
+  bool AllowList() const {
+    return GetPermissions().GetAllowList();
+  }
+  bool AllowDisable() const {
+    return GetPermissions().GetAllowDisable();
+  }
+  bool AllowDelete() const {
+    return GetPermissions().GetAllowDelete();
+  }
 
   // This one should only be used by Target to copy breakpoints from target to
   // target - primarily from the dummy target to prime new targets.
-  static lldb::BreakpointSP
-  CopyFromBreakpoint(lldb::TargetSP new_target,
-                     const Breakpoint &bp_to_copy_from);
+  static lldb::BreakpointSP CopyFromBreakpoint(lldb::TargetSP new_target,
+      const Breakpoint &bp_to_copy_from);
 
 protected:
   friend class Target;

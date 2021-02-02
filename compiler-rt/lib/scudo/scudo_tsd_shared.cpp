@@ -26,7 +26,8 @@ static u32 CoPrimes[SCUDO_SHARED_TSD_POOL_SIZE];
 static u32 NumberOfCoPrimes = 0;
 
 #if SANITIZER_LINUX && !SANITIZER_ANDROID
-__attribute__((tls_model("initial-exec"))) THREADLOCAL ScudoTSD *CurrentTSD;
+__attribute__((tls_model("initial-exec")))
+THREADLOCAL ScudoTSD *CurrentTSD;
 #endif
 
 static void initOnce() {
@@ -40,11 +41,7 @@ static void initOnce() {
     TSDs[I].init();
     u32 A = I + 1;
     u32 B = NumberOfTSDs;
-    while (B != 0) {
-      const u32 T = A;
-      A = B;
-      B = T % B;
-    }
+    while (B != 0) { const u32 T = A; A = B; B = T % B; }
     if (A == 1)
       CoPrimes[NumberOfCoPrimes++] = I + 1;
   }
@@ -57,7 +54,7 @@ ALWAYS_INLINE void setCurrentTSD(ScudoTSD *TSD) {
   CurrentTSD = TSD;
 #else
   CHECK_EQ(pthread_setspecific(PThreadKey, reinterpret_cast<void *>(TSD)), 0);
-#endif // SANITIZER_ANDROID
+#endif  // SANITIZER_ANDROID
 }
 
 void initThread(bool MinimalInit) {
@@ -105,6 +102,6 @@ ScudoTSD *getTSDAndLockSlow(ScudoTSD *TSD) {
   return TSD;
 }
 
-} // namespace __scudo
+}  // namespace __scudo
 
-#endif // !SCUDO_TSD_EXCLUSIVE
+#endif  // !SCUDO_TSD_EXCLUSIVE

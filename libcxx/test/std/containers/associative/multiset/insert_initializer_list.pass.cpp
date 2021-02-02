@@ -21,8 +21,9 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::multiset<int> C;
     typedef C::value_type V;
     C m = {10, 8};
@@ -38,9 +39,9 @@ int main(int, char**) {
     assert(*++i == V(6));
     assert(*++i == V(8));
     assert(*++i == V(10));
-  }
-  {
-    typedef std::multiset<int, std::less<int>, min_allocator<int> > C;
+    }
+    {
+    typedef std::multiset<int, std::less<int>, min_allocator<int>> C;
     typedef C::value_type V;
     C m = {10, 8};
     m.insert({1, 2, 3, 4, 5, 6});
@@ -55,7 +56,7 @@ int main(int, char**) {
     assert(*++i == V(6));
     assert(*++i == V(8));
     assert(*++i == V(10));
-  }
+    }
 
   return 0;
 }

@@ -58,23 +58,23 @@
 
 using namespace llvm;
 
-static cl::opt<bool>
-    AnyAddressSpace("amdgpu-any-address-space-out-arguments",
-                    cl::desc("Replace pointer out arguments with "
-                             "struct returns for non-private address space"),
-                    cl::Hidden, cl::init(false));
+static cl::opt<bool> AnyAddressSpace(
+  "amdgpu-any-address-space-out-arguments",
+  cl::desc("Replace pointer out arguments with "
+           "struct returns for non-private address space"),
+  cl::Hidden,
+  cl::init(false));
 
-static cl::opt<unsigned>
-    MaxNumRetRegs("amdgpu-max-return-arg-num-regs",
-                  cl::desc("Approximately limit number of return registers for "
-                           "replacing out arguments"),
-                  cl::Hidden, cl::init(16));
+static cl::opt<unsigned> MaxNumRetRegs(
+  "amdgpu-max-return-arg-num-regs",
+  cl::desc("Approximately limit number of return registers for replacing out arguments"),
+  cl::Hidden,
+  cl::init(16));
 
 STATISTIC(NumOutArgumentsReplaced,
           "Number out arguments moved to struct return values");
-STATISTIC(
-    NumOutArgumentFunctionsReplaced,
-    "Number of functions with out arguments moved to struct return values");
+STATISTIC(NumOutArgumentFunctionsReplaced,
+          "Number of functions with out arguments moved to struct return values");
 
 namespace {
 
@@ -87,7 +87,7 @@ private:
   bool isOutArgumentCandidate(Argument &Arg) const;
 
 #ifndef NDEBUG
-  bool isVec3ToVec4Shuffle(Type *Ty0, Type *Ty1) const;
+  bool isVec3ToVec4Shuffle(Type *Ty0, Type* Ty1) const;
 #endif
 
 public:
@@ -172,12 +172,10 @@ bool AMDGPURewriteOutArguments::isOutArgumentCandidate(Argument &Arg) const {
   PointerType *ArgTy = dyn_cast<PointerType>(Arg.getType());
 
   // TODO: It might be useful for any out arguments, not just privates.
-  if (!ArgTy ||
-      (ArgTy->getAddressSpace() != DL->getAllocaAddrSpace() &&
-       !AnyAddressSpace) ||
+  if (!ArgTy || (ArgTy->getAddressSpace() != DL->getAllocaAddrSpace() &&
+                 !AnyAddressSpace) ||
       Arg.hasByValAttr() || Arg.hasStructRetAttr() ||
-      DL->getTypeStoreSize(ArgTy->getPointerElementType()) >
-          MaxOutArgSizeBytes) {
+      DL->getTypeStoreSize(ArgTy->getPointerElementType()) > MaxOutArgSizeBytes) {
     return false;
   }
 
@@ -190,14 +188,14 @@ bool AMDGPURewriteOutArguments::doInitialization(Module &M) {
 }
 
 #ifndef NDEBUG
-bool AMDGPURewriteOutArguments::isVec3ToVec4Shuffle(Type *Ty0,
-                                                    Type *Ty1) const {
+bool AMDGPURewriteOutArguments::isVec3ToVec4Shuffle(Type *Ty0, Type* Ty1) const {
   auto *VT0 = dyn_cast<FixedVectorType>(Ty0);
   auto *VT1 = dyn_cast<FixedVectorType>(Ty1);
   if (!VT0 || !VT1)
     return false;
 
-  if (VT0->getNumElements() != 3 || VT1->getNumElements() != 4)
+  if (VT0->getNumElements() != 3 ||
+      VT1->getNumElements() != 4)
     return false;
 
   return DL->getTypeSizeInBits(VT0->getElementType()) ==
@@ -339,8 +337,9 @@ bool AMDGPURewriteOutArguments::runOnFunction(Function &F) {
   LLVMContext &Ctx = F.getParent()->getContext();
   StructType *NewRetTy = StructType::create(Ctx, ReturnTypes, F.getName());
 
-  FunctionType *NewFuncTy =
-      FunctionType::get(NewRetTy, F.getFunctionType()->params(), F.isVarArg());
+  FunctionType *NewFuncTy = FunctionType::get(NewRetTy,
+                                              F.getFunctionType()->params(),
+                                              F.isVarArg());
 
   LLVM_DEBUG(dbgs() << "Computed new return type: " << *NewRetTy << '\n');
 

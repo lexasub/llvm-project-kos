@@ -277,10 +277,10 @@ private:
   DeclarationName(detail::CXXSpecialNameExtra *Name,
                   StoredNameKind StoredKind) {
     assert((StoredKind == StoredCXXConstructorName ||
-            StoredKind == StoredCXXDestructorName ||
-            StoredKind == StoredCXXConversionFunctionName) &&
-           "Invalid StoredNameKind when constructing a DeclarationName"
-           " from a CXXSpecialNameExtra!");
+           StoredKind == StoredCXXDestructorName ||
+           StoredKind == StoredCXXConversionFunctionName) &&
+               "Invalid StoredNameKind when constructing a DeclarationName"
+               " from a CXXSpecialNameExtra!");
     setPtrAndKind(Name, StoredKind);
   }
 
@@ -308,9 +308,9 @@ private:
   /// and return it.
   detail::CXXSpecialNameExtra *castAsCXXSpecialNameExtra() const {
     assert((getStoredNameKind() == StoredCXXConstructorName ||
-            getStoredNameKind() == StoredCXXDestructorName ||
-            getStoredNameKind() == StoredCXXConversionFunctionName) &&
-           "DeclarationName does not store a CXXSpecialNameExtra!");
+           getStoredNameKind() == StoredCXXDestructorName ||
+           getStoredNameKind() == StoredCXXConversionFunctionName) &&
+               "DeclarationName does not store a CXXSpecialNameExtra!");
     return static_cast<detail::CXXSpecialNameExtra *>(getPtr());
   }
 
@@ -693,7 +693,7 @@ class DeclarationNameLoc {
 public:
   DeclarationNameLoc(DeclarationName Name);
   // FIXME: this should go away once all DNLocs are properly initialized.
-  DeclarationNameLoc() { memset((void *)this, 0, sizeof(*this)); }
+  DeclarationNameLoc() { memset((void*) this, 0, sizeof(*this)); }
 
   /// Returns the source type info. Assumes that the object stores location
   /// information of a constructor, destructor or conversion operator.
@@ -890,7 +890,8 @@ namespace llvm {
 
 /// Define DenseMapInfo so that DeclarationNames can be used as keys
 /// in DenseMap and DenseSets.
-template <> struct DenseMapInfo<clang::DeclarationName> {
+template<>
+struct DenseMapInfo<clang::DeclarationName> {
   static inline clang::DeclarationName getEmptyKey() {
     return clang::DeclarationName::getEmptyMarker();
   }
@@ -900,11 +901,11 @@ template <> struct DenseMapInfo<clang::DeclarationName> {
   }
 
   static unsigned getHashValue(clang::DeclarationName Name) {
-    return DenseMapInfo<void *>::getHashValue(Name.getAsOpaquePtr());
+    return DenseMapInfo<void*>::getHashValue(Name.getAsOpaquePtr());
   }
 
-  static inline bool isEqual(clang::DeclarationName LHS,
-                             clang::DeclarationName RHS) {
+  static inline bool
+  isEqual(clang::DeclarationName LHS, clang::DeclarationName RHS) {
     return LHS == RHS;
   }
 };

@@ -137,8 +137,10 @@ static bool areEquivalentExpr(const Expr *Left, const Expr *Right) {
     return cast<BinaryOperator>(Left)->getOpcode() ==
            cast<BinaryOperator>(Right)->getOpcode();
   case Stmt::UnaryExprOrTypeTraitExprClass:
-    const auto *LeftUnaryExpr = cast<UnaryExprOrTypeTraitExpr>(Left);
-    const auto *RightUnaryExpr = cast<UnaryExprOrTypeTraitExpr>(Right);
+    const auto *LeftUnaryExpr =
+        cast<UnaryExprOrTypeTraitExpr>(Left);
+    const auto *RightUnaryExpr =
+        cast<UnaryExprOrTypeTraitExpr>(Right);
     if (LeftUnaryExpr->isArgumentType() && RightUnaryExpr->isArgumentType())
       return LeftUnaryExpr->getArgumentType() ==
              RightUnaryExpr->getArgumentType();
@@ -679,8 +681,7 @@ static bool retrieveRelationalIntegerConstantExpr(
     }
     Symbol = OverloadedOperatorExpr->getArg(0);
     OperandExpr = OverloadedOperatorExpr;
-    Opcode = BinaryOperator::getOverloadedOpcode(
-        OverloadedOperatorExpr->getOperator());
+    Opcode = BinaryOperator::getOverloadedOpcode(OverloadedOperatorExpr->getOperator());
 
     return BinaryOperator::isComparisonOp(Opcode);
   } else {
@@ -698,8 +699,7 @@ static bool retrieveRelationalIntegerConstantExpr(
 }
 
 // Checks for expressions like (X == 4) && (Y != 9)
-static bool areSidesBinaryConstExpressions(const BinaryOperator *&BinOp,
-                                           const ASTContext *AstCtx) {
+static bool areSidesBinaryConstExpressions(const BinaryOperator *&BinOp, const ASTContext *AstCtx) {
   const auto *LhsBinOp = dyn_cast<BinaryOperator>(BinOp->getLHS());
   const auto *RhsBinOp = dyn_cast<BinaryOperator>(BinOp->getRHS());
 
@@ -756,7 +756,7 @@ static bool retrieveConstExprFromBothSides(const BinaryOperator *&BinOp,
 }
 
 static bool isSameRawIdentifierToken(const Token &T1, const Token &T2,
-                                     const SourceManager &SM) {
+                        const SourceManager &SM) {
   if (T1.getKind() != T2.getKind())
     return false;
   if (T1.isNot(tok::raw_identifier))
@@ -1053,6 +1053,7 @@ static bool exprEvaluatesToSymbolic(BinaryOperatorKind Opcode, APSInt Value) {
          ((Opcode == BO_And || Opcode == BO_AndAssign) && ~Value == 0);
 }
 
+
 void RedundantExpressionCheck::checkBitwiseExpr(
     const MatchFinder::MatchResult &Result) {
   if (const auto *ComparisonOperator = Result.Nodes.getNodeAs<BinaryOperator>(
@@ -1097,8 +1098,8 @@ void RedundantExpressionCheck::checkBitwiseExpr(
                                      ConstExpr))
       return;
 
-    if ((Value != 0 && ~Value != 0) || Sym->getExprLoc().isMacroID())
-      return;
+    if((Value != 0 && ~Value != 0) || Sym->getExprLoc().isMacroID())
+        return;
 
     SourceLocation Loc = IneffectiveOperator->getOperatorLoc();
 

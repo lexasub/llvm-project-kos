@@ -13,14 +13,12 @@
 //
 // (1) As a reference for how to use the scc_iterator.
 // (2) To print out the SCCs for a CFG or a CallGraph:
-//       analyze -print-cfg-sccs            to print the SCCs in each CFG of a
-//       module. analyze -print-cfg-sccs -stats     to print the #SCCs and the
-//       maximum SCC size. analyze -print-cfg-sccs -debug > /dev/null to watch
-//       the algorithm in action.
+//       analyze -print-cfg-sccs            to print the SCCs in each CFG of a module.
+//       analyze -print-cfg-sccs -stats     to print the #SCCs and the maximum SCC size.
+//       analyze -print-cfg-sccs -debug > /dev/null to watch the algorithm in action.
 //
 //     and similarly:
-//       analyze -print-callgraph-sccs [-stats] [-debug] to print SCCs in the
-//       CallGraph
+//       analyze -print-callgraph-sccs [-stats] [-debug] to print SCCs in the CallGraph
 //
 // (3) To test the scc_iterator.
 //
@@ -35,47 +33,47 @@
 using namespace llvm;
 
 namespace {
-struct CFGSCC : public FunctionPass {
-  static char ID; // Pass identification, replacement for typeid
-  CFGSCC() : FunctionPass(ID) {}
-  bool runOnFunction(Function &func) override;
+  struct CFGSCC : public FunctionPass {
+    static char ID;  // Pass identification, replacement for typeid
+    CFGSCC() : FunctionPass(ID) {}
+    bool runOnFunction(Function& func) override;
 
-  void print(raw_ostream &O, const Module * = nullptr) const override {}
+    void print(raw_ostream &O, const Module* = nullptr) const override { }
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesAll();
-  }
-};
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesAll();
+    }
+  };
 
-struct CallGraphSCC : public ModulePass {
-  static char ID; // Pass identification, replacement for typeid
-  CallGraphSCC() : ModulePass(ID) {}
+  struct CallGraphSCC : public ModulePass {
+    static char ID;  // Pass identification, replacement for typeid
+    CallGraphSCC() : ModulePass(ID) {}
 
-  // run - Print out SCCs in the call graph for the specified module.
-  bool runOnModule(Module &M) override;
+    // run - Print out SCCs in the call graph for the specified module.
+    bool runOnModule(Module &M) override;
 
-  void print(raw_ostream &O, const Module * = nullptr) const override {}
+    void print(raw_ostream &O, const Module* = nullptr) const override { }
 
-  // getAnalysisUsage - This pass requires the CallGraph.
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesAll();
-    AU.addRequired<CallGraphWrapperPass>();
-  }
-};
-} // namespace
+    // getAnalysisUsage - This pass requires the CallGraph.
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesAll();
+      AU.addRequired<CallGraphWrapperPass>();
+    }
+  };
+}
 
 char CFGSCC::ID = 0;
-static RegisterPass<CFGSCC> Y("print-cfg-sccs",
-                              "Print SCCs of each function CFG");
+static RegisterPass<CFGSCC>
+Y("print-cfg-sccs", "Print SCCs of each function CFG");
 
 char CallGraphSCC::ID = 0;
-static RegisterPass<CallGraphSCC> Z("print-callgraph-sccs",
-                                    "Print SCCs of the Call Graph");
+static RegisterPass<CallGraphSCC>
+Z("print-callgraph-sccs", "Print SCCs of the Call Graph");
 
 bool CFGSCC::runOnFunction(Function &F) {
   unsigned sccNum = 0;
   errs() << "SCCs for Function " << F.getName() << " in PostOrder:";
-  for (scc_iterator<Function *> SCCI = scc_begin(&F); !SCCI.isAtEnd(); ++SCCI) {
+  for (scc_iterator<Function*> SCCI = scc_begin(&F); !SCCI.isAtEnd(); ++SCCI) {
     const std::vector<BasicBlock *> &nextSCC = *SCCI;
     errs() << "\nSCC #" << ++sccNum << " : ";
     for (BasicBlock *BB : nextSCC) {
@@ -90,21 +88,20 @@ bool CFGSCC::runOnFunction(Function &F) {
   return true;
 }
 
+
 // run - Print out SCCs in the call graph for the specified module.
 bool CallGraphSCC::runOnModule(Module &M) {
   CallGraph &CG = getAnalysis<CallGraphWrapperPass>().getCallGraph();
   unsigned sccNum = 0;
   errs() << "SCCs for the program in PostOrder:";
-  for (scc_iterator<CallGraph *> SCCI = scc_begin(&CG); !SCCI.isAtEnd();
+  for (scc_iterator<CallGraph*> SCCI = scc_begin(&CG); !SCCI.isAtEnd();
        ++SCCI) {
-    const std::vector<CallGraphNode *> &nextSCC = *SCCI;
+    const std::vector<CallGraphNode*> &nextSCC = *SCCI;
     errs() << "\nSCC #" << ++sccNum << " : ";
-    for (std::vector<CallGraphNode *>::const_iterator I = nextSCC.begin(),
-                                                      E = nextSCC.end();
-         I != E; ++I)
+    for (std::vector<CallGraphNode*>::const_iterator I = nextSCC.begin(),
+           E = nextSCC.end(); I != E; ++I)
       errs() << ((*I)->getFunction() ? (*I)->getFunction()->getName()
-                                     : "external node")
-             << ", ";
+                                     : "external node") << ", ";
     if (nextSCC.size() == 1 && SCCI.hasCycle())
       errs() << " (Has self-loop).";
   }

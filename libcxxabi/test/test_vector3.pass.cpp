@@ -19,45 +19,47 @@
 
 // Disable warning about throw always calling terminate.
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wterminate"
+# pragma GCC diagnostic ignored "-Wterminate"
 #endif
 
 // use dtors instead of try/catch
 namespace test1 {
-struct B {
-  ~B() {
-    printf("should not be run\n");
-    exit(10);
-  }
+    struct B {
+         ~B() {
+            printf("should not be run\n");
+            exit(10);
+            }
 };
 
 struct A {
-  ~A()
+ ~A()
 #if __has_feature(cxx_noexcept)
-      noexcept(false)
+    noexcept(false)
 #endif
-  {
-    B b;
-    throw 0;
-  }
+ {
+   B b;
+   throw 0;
+ }
 };
-} // namespace test1
+}  // test1
 
 void my_terminate() { exit(0); }
 
 template <class T>
-void destroy(void* v) {
+void destroy(void* v)
+{
   T* t = static_cast<T*>(v);
   t->~T();
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::set_terminate(my_terminate);
   {
-    typedef test1::A Array[10];
-    Array a[10]; // calls _cxa_vec_dtor
-    __cxxabiv1::__cxa_vec_dtor(a, 10, sizeof(test1::A), destroy<test1::A>);
-    assert(false);
+  typedef test1::A Array[10];
+  Array a[10]; // calls _cxa_vec_dtor
+  __cxxabiv1::__cxa_vec_dtor(a, 10, sizeof(test1::A), destroy<test1::A>);
+  assert(false);
   }
 
   return 0;

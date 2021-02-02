@@ -24,6 +24,6 @@ bool HaveStackTraceBasedSuppressions();
 bool IsStackTraceSuppressed(const StackTrace *stack);
 bool IsODRViolationSuppressed(const char *global_var_name);
 
-}  // namespace __asan
+} // namespace __asan
 
-#endif  // ASAN_SUPPRESSIONS_H
+#endif // ASAN_SUPPRESSIONS_H

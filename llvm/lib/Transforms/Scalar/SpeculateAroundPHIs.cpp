@@ -70,8 +70,7 @@ isSafeToSpeculatePHIUsers(PHINode &PN, DominatorTree &DT,
     if (const auto *CS = dyn_cast<CallBase>(UI)) {
       if (CS->isConvergent() || CS->cannotDuplicate()) {
         LLVM_DEBUG(dbgs() << "  Unsafe: convergent "
-                             "callsite cannot de duplicated: "
-                          << *UI << '\n');
+                   "callsite cannot de duplicated: " << *UI << '\n');
         return false;
       }
     }
@@ -285,13 +284,15 @@ static bool isSafeAndProfitableToSpeculateAroundPHI(
       int MatCost = IncomingConstantAndCostsAndCount.second.MatCost;
       int &FoldedCost = IncomingConstantAndCostsAndCount.second.FoldedCost;
       if (IID)
-        FoldedCost += TTI.getIntImmCostIntrin(
-            IID, Idx, IncomingC->getValue(), IncomingC->getType(),
-            TargetTransformInfo::TCK_SizeAndLatency);
+        FoldedCost +=
+          TTI.getIntImmCostIntrin(IID, Idx, IncomingC->getValue(),
+                                  IncomingC->getType(),
+                                  TargetTransformInfo::TCK_SizeAndLatency);
       else
-        FoldedCost += TTI.getIntImmCostInst(
-            UserI->getOpcode(), Idx, IncomingC->getValue(),
-            IncomingC->getType(), TargetTransformInfo::TCK_SizeAndLatency);
+        FoldedCost +=
+            TTI.getIntImmCostInst(UserI->getOpcode(), Idx,
+                                  IncomingC->getValue(), IncomingC->getType(),
+                                  TargetTransformInfo::TCK_SizeAndLatency);
 
       // If we accumulate more folded cost for this incoming constant than
       // materialized cost, then we'll regress any edge with this constant so
@@ -592,22 +593,22 @@ static void speculatePHIs(ArrayRef<PHINode *> SpecPNs,
 
   SmallPtrSet<Instruction *, 16> SpecSet;
   SmallVector<Instruction *, 16> SpecList;
-  visitPHIUsersAndDepsInPostOrder(
-      SpecPNs,
-      /*IsVisited*/
-      [&](Instruction *I) {
-        // This is visited if we don't need to
-        // speculate it or we already have
-        // speculated it.
-        return !PotentialSpecSet.count(I) || SpecSet.count(I);
-      },
-      /*Visit*/
-      [&](Instruction *I) {
-        // All operands scheduled, schedule this
-        // node.
-        SpecSet.insert(I);
-        SpecList.push_back(I);
-      });
+  visitPHIUsersAndDepsInPostOrder(SpecPNs,
+                                  /*IsVisited*/
+                                  [&](Instruction *I) {
+                                    // This is visited if we don't need to
+                                    // speculate it or we already have
+                                    // speculated it.
+                                    return !PotentialSpecSet.count(I) ||
+                                           SpecSet.count(I);
+                                  },
+                                  /*Visit*/
+                                  [&](Instruction *I) {
+                                    // All operands scheduled, schedule this
+                                    // node.
+                                    SpecSet.insert(I);
+                                    SpecList.push_back(I);
+                                  });
 
   int NumSpecInsts = SpecList.size() * SpecPreds.size();
   int NumRedundantInsts = NumSpecInsts - SpecList.size();
@@ -778,7 +779,8 @@ static bool tryToSpeculatePHIs(SmallVectorImpl<PHINode *> &PNs,
     // fundamental and we should probably be splitting critical edges
     // differently.
     const auto *TermInst = PredBB->getTerminator();
-    if (isa<IndirectBrInst>(TermInst) || isa<InvokeInst>(TermInst) ||
+    if (isa<IndirectBrInst>(TermInst) ||
+        isa<InvokeInst>(TermInst) ||
         isa<CallBrInst>(TermInst)) {
       LLVM_DEBUG(dbgs() << "  Invalid: predecessor terminator: "
                         << PredBB->getName() << "\n");

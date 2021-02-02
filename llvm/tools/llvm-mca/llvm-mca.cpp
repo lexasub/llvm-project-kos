@@ -91,13 +91,15 @@ static cl::opt<std::string>
          cl::desc("Target a specific cpu type (-mcpu=help for details)"),
          cl::value_desc("cpu-name"), cl::cat(ToolOptions), cl::init("native"));
 
-static cl::opt<std::string> MATTR("mattr",
-                                  cl::desc("Additional target features."),
-                                  cl::cat(ToolOptions));
+static cl::opt<std::string>
+    MATTR("mattr",
+          cl::desc("Additional target features."),
+          cl::cat(ToolOptions));
 
-static cl::opt<bool> PrintJson("json",
-                               cl::desc("Print the output in json format"),
-                               cl::cat(ToolOptions), cl::init(false));
+static cl::opt<bool>
+    PrintJson("json",
+          cl::desc("Print the output in json format"),
+          cl::cat(ToolOptions), cl::init(false));
 
 static cl::opt<int>
     OutputAsmVariant("output-asm-variant",

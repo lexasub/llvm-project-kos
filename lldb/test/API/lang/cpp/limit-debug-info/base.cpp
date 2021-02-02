@@ -1,3 +1,6 @@
 #include "base.h"
 
-void FooNS::bar() { x = 54321; }
+void FooNS::bar() {
+    x = 54321;
+}
+

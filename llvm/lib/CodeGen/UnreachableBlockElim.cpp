@@ -58,7 +58,7 @@ public:
     AU.addPreserved<DominatorTreeWrapperPass>();
   }
 };
-} // namespace
+}
 char UnreachableBlockElimLegacyPass::ID = 0;
 INITIALIZE_PASS(UnreachableBlockElimLegacyPass, "unreachableblockelim",
                 "Remove unreachable blocks from the CFG", false, false)
@@ -78,19 +78,19 @@ PreservedAnalyses UnreachableBlockElimPass::run(Function &F,
 }
 
 namespace {
-class UnreachableMachineBlockElim : public MachineFunctionPass {
-  bool runOnMachineFunction(MachineFunction &F) override;
-  void getAnalysisUsage(AnalysisUsage &AU) const override;
+  class UnreachableMachineBlockElim : public MachineFunctionPass {
+    bool runOnMachineFunction(MachineFunction &F) override;
+    void getAnalysisUsage(AnalysisUsage &AU) const override;
 
-public:
-  static char ID; // Pass identification, replacement for typeid
-  UnreachableMachineBlockElim() : MachineFunctionPass(ID) {}
-};
-} // namespace
+  public:
+    static char ID; // Pass identification, replacement for typeid
+    UnreachableMachineBlockElim() : MachineFunctionPass(ID) {}
+  };
+}
 char UnreachableMachineBlockElim::ID = 0;
 
 INITIALIZE_PASS(UnreachableMachineBlockElim, "unreachable-mbb-elimination",
-                "Remove unreachable machine basic blocks", false, false)
+  "Remove unreachable machine basic blocks", false, false)
 
 char &llvm::UnreachableMachineBlockElimID = UnreachableMachineBlockElim::ID;
 
@@ -101,7 +101,7 @@ void UnreachableMachineBlockElim::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 bool UnreachableMachineBlockElim::runOnMachineFunction(MachineFunction &F) {
-  df_iterator_default_set<MachineBasicBlock *> Reachable;
+  df_iterator_default_set<MachineBasicBlock*> Reachable;
   bool ModifiedPHI = false;
 
   MachineDominatorTree *MDT = getAnalysisIfAvailable<MachineDominatorTree>();
@@ -109,11 +109,11 @@ bool UnreachableMachineBlockElim::runOnMachineFunction(MachineFunction &F) {
 
   // Mark all reachable blocks.
   for (MachineBasicBlock *BB : depth_first_ext(&F, Reachable))
-    (void)BB /* Mark all reachable blocks */;
+    (void)BB/* Mark all reachable blocks */;
 
   // Loop over all dead blocks, remembering them and deleting all instructions
   // in them.
-  std::vector<MachineBasicBlock *> DeadBlocks;
+  std::vector<MachineBasicBlock*> DeadBlocks;
   for (MachineFunction::iterator I = F.begin(), E = F.end(); I != E; ++I) {
     MachineBasicBlock *BB = &*I;
 
@@ -122,21 +122,19 @@ bool UnreachableMachineBlockElim::runOnMachineFunction(MachineFunction &F) {
       DeadBlocks.push_back(BB);
 
       // Update dominator and loop info.
-      if (MLI)
-        MLI->removeBlock(BB);
-      if (MDT && MDT->getNode(BB))
-        MDT->eraseNode(BB);
+      if (MLI) MLI->removeBlock(BB);
+      if (MDT && MDT->getNode(BB)) MDT->eraseNode(BB);
 
       while (BB->succ_begin() != BB->succ_end()) {
-        MachineBasicBlock *succ = *BB->succ_begin();
+        MachineBasicBlock* succ = *BB->succ_begin();
 
         MachineBasicBlock::iterator start = succ->begin();
         while (start != succ->end() && start->isPHI()) {
-          for (unsigned i = start->getNumOperands() - 1; i >= 2; i -= 2)
+          for (unsigned i = start->getNumOperands() - 1; i >= 2; i-=2)
             if (start->getOperand(i).isMBB() &&
                 start->getOperand(i).getMBB() == BB) {
               start->RemoveOperand(i);
-              start->RemoveOperand(i - 1);
+              start->RemoveOperand(i-1);
             }
 
           start++;
@@ -161,13 +159,14 @@ bool UnreachableMachineBlockElim::runOnMachineFunction(MachineFunction &F) {
   for (MachineFunction::iterator I = F.begin(), E = F.end(); I != E; ++I) {
     MachineBasicBlock *BB = &*I;
     // Prune unneeded PHI entries.
-    SmallPtrSet<MachineBasicBlock *, 8> preds(BB->pred_begin(), BB->pred_end());
+    SmallPtrSet<MachineBasicBlock*, 8> preds(BB->pred_begin(),
+                                             BB->pred_end());
     MachineBasicBlock::iterator phi = BB->begin();
     while (phi != BB->end() && phi->isPHI()) {
-      for (unsigned i = phi->getNumOperands() - 1; i >= 2; i -= 2)
+      for (unsigned i = phi->getNumOperands() - 1; i >= 2; i-=2)
         if (!preds.count(phi->getOperand(i).getMBB())) {
           phi->RemoveOperand(i);
-          phi->RemoveOperand(i - 1);
+          phi->RemoveOperand(i-1);
           ModifiedPHI = true;
         }
 

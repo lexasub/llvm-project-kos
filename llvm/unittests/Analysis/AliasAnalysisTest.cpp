@@ -26,9 +26,9 @@ using namespace llvm;
 
 // Set up some test passes.
 namespace llvm {
-void initializeAATestPassPass(PassRegistry &);
-void initializeTestCustomAAWrapperPassPass(PassRegistry &);
-} // namespace llvm
+void initializeAATestPassPass(PassRegistry&);
+void initializeTestCustomAAWrapperPassPass(PassRegistry&);
+}
 
 namespace {
 struct AATestPass : FunctionPass {
@@ -61,7 +61,7 @@ struct AATestPass : FunctionPass {
     return false;
   }
 };
-} // namespace
+}
 
 char AATestPass::ID = 0;
 INITIALIZE_PASS_BEGIN(AATestPass, "aa-test-pas", "Alias Analysis Test Pass",
@@ -92,7 +92,7 @@ struct TestCustomAAResult : AAResultBase<TestCustomAAResult> {
     return MayAlias;
   }
 };
-} // namespace
+}
 
 namespace {
 /// A wrapper pass for the legacy pass manager to use with the above custom AA
@@ -128,14 +128,14 @@ public:
   TestCustomAAResult &getResult() { return *Result; }
   const TestCustomAAResult &getResult() const { return *Result; }
 };
-} // namespace
+}
 
 char TestCustomAAWrapperPass::ID = 0;
 INITIALIZE_PASS_BEGIN(TestCustomAAWrapperPass, "test-custom-aa",
-                      "Test Custom AA Wrapper Pass", false, true)
+                "Test Custom AA Wrapper Pass", false, true)
 INITIALIZE_PASS_DEPENDENCY(TargetLibraryInfoWrapperPass)
 INITIALIZE_PASS_END(TestCustomAAWrapperPass, "test-custom-aa",
-                    "Test Custom AA Wrapper Pass", false, true)
+                "Test Custom AA Wrapper Pass", false, true)
 
 namespace {
 
@@ -232,8 +232,7 @@ TEST_F(AliasAnalysisTest, BatchAAPhiCycles) {
       %s2 = select i1 %c, i8* %a2, i8* %a1
       br label %loop
     }
-  )",
-                                                  Err, C);
+  )", Err, C);
 
   Function *F = M->getFunction("f");
   Instruction *Phi = getInstructionByName(*F, "phi");
@@ -278,8 +277,7 @@ TEST_F(AliasAnalysisTest, BatchAAPhiAssumption) {
       %b.next = getelementptr i8, i8* %b, i64 1
       br label %loop
     }
-  )",
-                                                  Err, C);
+  )", Err, C);
 
   Function *F = M->getFunction("f");
   Instruction *A = getInstructionByName(*F, "a");
@@ -345,4 +343,4 @@ TEST_F(AAPassInfraTest, injectExternalAA) {
   EXPECT_TRUE(IsCustomAAQueried);
 }
 
-} // namespace
+} // end anonymous namspace

@@ -31,10 +31,9 @@ TEST_CASE(signatures) {
   {
     const directory_entry e = {};
     std::error_code ec;
-    static_assert(std::is_same<decltype(e.hard_link_count()), uintmax_t>::value,
+    static_assert(std::is_same<decltype(e.hard_link_count()), uintmax_t>::value, "");
+    static_assert(std::is_same<decltype(e.hard_link_count(ec)), uintmax_t>::value,
                   "");
-    static_assert(
-        std::is_same<decltype(e.hard_link_count(ec)), uintmax_t>::value, "");
     static_assert(noexcept(e.hard_link_count()) == false, "");
     static_assert(noexcept(e.hard_link_count(ec)) == true, "");
   }

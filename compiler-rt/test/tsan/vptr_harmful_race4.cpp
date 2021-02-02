@@ -16,7 +16,7 @@ struct B : A {
 
 void *Thread(void *x) {
   barrier_wait(&barrier);
-  ((A *)x)->F();
+  ((A*)x)->F();
   return 0;
 }
 
@@ -31,3 +31,4 @@ int main() {
 }
 
 // CHECK: WARNING: ThreadSanitizer: heap-use-after-free (virtual call vs free)
+

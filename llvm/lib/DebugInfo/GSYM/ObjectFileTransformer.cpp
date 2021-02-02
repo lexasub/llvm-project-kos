@@ -14,8 +14,8 @@
 #include "llvm/Support/DataExtractor.h"
 #include "llvm/Support/raw_ostream.h"
 
-#include "llvm/DebugInfo/GSYM/GsymCreator.h"
 #include "llvm/DebugInfo/GSYM/ObjectFileTransformer.h"
+#include "llvm/DebugInfo/GSYM/GsymCreator.h"
 
 using namespace llvm;
 using namespace gsym;

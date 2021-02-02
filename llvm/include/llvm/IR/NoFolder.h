@@ -23,10 +23,10 @@
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/IRBuilderFolder.h"
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/IRBuilderFolder.h"
 
 namespace llvm {
 
@@ -41,13 +41,12 @@ public:
   // Binary Operators
   //===--------------------------------------------------------------------===//
 
-  Instruction *CreateAdd(Constant *LHS, Constant *RHS, bool HasNUW = false,
+  Instruction *CreateAdd(Constant *LHS, Constant *RHS,
+                         bool HasNUW = false,
                          bool HasNSW = false) const override {
     BinaryOperator *BO = BinaryOperator::CreateAdd(LHS, RHS);
-    if (HasNUW)
-      BO->setHasNoUnsignedWrap();
-    if (HasNSW)
-      BO->setHasNoSignedWrap();
+    if (HasNUW) BO->setHasNoUnsignedWrap();
+    if (HasNSW) BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -55,13 +54,12 @@ public:
     return BinaryOperator::CreateFAdd(LHS, RHS);
   }
 
-  Instruction *CreateSub(Constant *LHS, Constant *RHS, bool HasNUW = false,
+  Instruction *CreateSub(Constant *LHS, Constant *RHS,
+                         bool HasNUW = false,
                          bool HasNSW = false) const override {
     BinaryOperator *BO = BinaryOperator::CreateSub(LHS, RHS);
-    if (HasNUW)
-      BO->setHasNoUnsignedWrap();
-    if (HasNSW)
-      BO->setHasNoSignedWrap();
+    if (HasNUW) BO->setHasNoUnsignedWrap();
+    if (HasNSW) BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -69,13 +67,12 @@ public:
     return BinaryOperator::CreateFSub(LHS, RHS);
   }
 
-  Instruction *CreateMul(Constant *LHS, Constant *RHS, bool HasNUW = false,
+  Instruction *CreateMul(Constant *LHS, Constant *RHS,
+                         bool HasNUW = false,
                          bool HasNSW = false) const override {
     BinaryOperator *BO = BinaryOperator::CreateMul(LHS, RHS);
-    if (HasNUW)
-      BO->setHasNoUnsignedWrap();
-    if (HasNSW)
-      BO->setHasNoSignedWrap();
+    if (HasNUW) BO->setHasNoUnsignedWrap();
+    if (HasNSW) BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -116,10 +113,8 @@ public:
   Instruction *CreateShl(Constant *LHS, Constant *RHS, bool HasNUW = false,
                          bool HasNSW = false) const override {
     BinaryOperator *BO = BinaryOperator::CreateShl(LHS, RHS);
-    if (HasNUW)
-      BO->setHasNoUnsignedWrap();
-    if (HasNSW)
-      BO->setHasNoSignedWrap();
+    if (HasNUW) BO->setHasNoUnsignedWrap();
+    if (HasNSW) BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -149,8 +144,8 @@ public:
     return BinaryOperator::CreateXor(LHS, RHS);
   }
 
-  Instruction *CreateBinOp(Instruction::BinaryOps Opc, Constant *LHS,
-                           Constant *RHS) const override {
+  Instruction *CreateBinOp(Instruction::BinaryOps Opc,
+                           Constant *LHS, Constant *RHS) const override {
     return BinaryOperator::Create(Opc, LHS, RHS);
   }
 
@@ -158,13 +153,12 @@ public:
   // Unary Operators
   //===--------------------------------------------------------------------===//
 
-  Instruction *CreateNeg(Constant *C, bool HasNUW = false,
+  Instruction *CreateNeg(Constant *C,
+                         bool HasNUW = false,
                          bool HasNSW = false) const override {
     BinaryOperator *BO = BinaryOperator::CreateNeg(C);
-    if (HasNUW)
-      BO->setHasNoUnsignedWrap();
-    if (HasNSW)
-      BO->setHasNoSignedWrap();
+    if (HasNUW) BO->setHasNoUnsignedWrap();
+    if (HasNSW) BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -203,9 +197,8 @@ public:
     return GetElementPtrInst::Create(Ty, C, IdxList);
   }
 
-  Constant *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Constant *> IdxList) const override {
+  Constant *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Constant *> IdxList) const override {
     return ConstantExpr::getInBoundsGetElementPtr(Ty, C, IdxList);
   }
 
@@ -217,9 +210,8 @@ public:
     return ConstantExpr::getInBoundsGetElementPtr(Ty, C, Idx);
   }
 
-  Instruction *
-  CreateInBoundsGetElementPtr(Type *Ty, Constant *C,
-                              ArrayRef<Value *> IdxList) const override {
+  Instruction *CreateInBoundsGetElementPtr(
+      Type *Ty, Constant *C, ArrayRef<Value *> IdxList) const override {
     return GetElementPtrInst::CreateInBounds(Ty, C, IdxList);
   }
 
@@ -236,9 +228,8 @@ public:
     return CastInst::CreatePointerCast(C, DestTy);
   }
 
-  Instruction *
-  CreatePointerBitCastOrAddrSpaceCast(Constant *C,
-                                      Type *DestTy) const override {
+  Instruction *CreatePointerBitCastOrAddrSpaceCast(
+      Constant *C, Type *DestTy) const override {
     return CastInst::CreatePointerBitCastOrAddrSpaceCast(C, DestTy);
   }
 
@@ -279,13 +270,13 @@ public:
   // Compare Instructions
   //===--------------------------------------------------------------------===//
 
-  Instruction *CreateICmp(CmpInst::Predicate P, Constant *LHS,
-                          Constant *RHS) const override {
+  Instruction *CreateICmp(CmpInst::Predicate P,
+                          Constant *LHS, Constant *RHS) const override {
     return new ICmpInst(P, LHS, RHS);
   }
 
-  Instruction *CreateFCmp(CmpInst::Predicate P, Constant *LHS,
-                          Constant *RHS) const override {
+  Instruction *CreateFCmp(CmpInst::Predicate P,
+                          Constant *LHS, Constant *RHS) const override {
     return new FCmpInst(P, LHS, RHS);
   }
 
@@ -293,8 +284,8 @@ public:
   // Other Instructions
   //===--------------------------------------------------------------------===//
 
-  Instruction *CreateSelect(Constant *C, Constant *True,
-                            Constant *False) const override {
+  Instruction *CreateSelect(Constant *C,
+                            Constant *True, Constant *False) const override {
     return SelectInst::Create(C, True, False);
   }
 

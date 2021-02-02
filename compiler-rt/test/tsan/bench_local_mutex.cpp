@@ -17,7 +17,7 @@ void thread(int tid) {
 }
 
 void bench() {
-  mtx = (pthread_mutex_t *)malloc(bench_nthread * kStride * sizeof(*mtx));
+  mtx = (pthread_mutex_t*)malloc(bench_nthread * kStride * sizeof(*mtx));
   for (int i = 0; i < bench_nthread; i++) {
     pthread_mutex_init(&mtx[i * kStride], 0);
     pthread_mutex_lock(&mtx[i * kStride]);
@@ -27,3 +27,4 @@ void bench() {
 }
 
 // CHECK: DONE
+

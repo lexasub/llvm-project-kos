@@ -14,8 +14,8 @@
 #ifndef LLVM_CLANG_LIB_CODEGEN_TARGETINFO_H
 #define LLVM_CLANG_LIB_CODEGEN_TARGETINFO_H
 
-#include "CGValue.h"
 #include "CodeGenModule.h"
+#include "CGValue.h"
 #include "clang/AST/Type.h"
 #include "clang/Basic/LLVM.h"
 #include "clang/Basic/SyncScope.h"
@@ -27,7 +27,7 @@ class Constant;
 class GlobalValue;
 class Type;
 class Value;
-} // namespace llvm
+}
 
 namespace clang {
 class Decl;
@@ -239,8 +239,7 @@ public:
   /// \return ConstantPointerNull with the given type \p T.
   /// Each target can override it to return its own desired constant value.
   virtual llvm::Constant *getNullPointer(const CodeGen::CodeGenModule &CGM,
-                                         llvm::PointerType *T,
-                                         QualType QT) const;
+      llvm::PointerType *T, QualType QT) const;
 
   /// Get target favored AST address space of a global variable for languages
   /// other than OpenCL and CUDA.

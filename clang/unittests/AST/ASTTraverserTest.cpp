@@ -101,7 +101,7 @@ public:
   NodeTreePrinter &doGetNodeDelegate() { return MyNodeRecorder; }
 };
 
-template <typename... NodeType> std::string dumpASTString(NodeType &&...N) {
+template <typename... NodeType> std::string dumpASTString(NodeType &&... N) {
   std::string Buffer;
   llvm::raw_string_ostream OS(Buffer);
 
@@ -115,7 +115,7 @@ template <typename... NodeType> std::string dumpASTString(NodeType &&...N) {
 }
 
 template <typename... NodeType>
-std::string dumpASTString(TraversalKind TK, NodeType &&...N) {
+std::string dumpASTString(TraversalKind TK, NodeType &&... N) {
   std::string Buffer;
   llvm::raw_string_ostream OS(Buffer);
 
@@ -396,8 +396,9 @@ FunctionDecl 'stringConstruct'
   }
 
   {
-    auto FN = ast_matchers::match(
-        functionDecl(hasName("overloadCall")).bind("fn"), AST->getASTContext());
+    auto FN =
+        ast_matchers::match(functionDecl(hasName("overloadCall")).bind("fn"),
+                            AST->getASTContext());
     EXPECT_EQ(FN.size(), 1u);
 
     EXPECT_EQ(dumpASTString(TK_AsIs, FN[0].getNodeAs<Decl>("fn")),

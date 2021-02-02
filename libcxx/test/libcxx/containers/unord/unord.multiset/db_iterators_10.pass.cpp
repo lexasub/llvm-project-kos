@@ -24,14 +24,12 @@
 #include "min_allocator.h"
 
 int main(int, char**) {
-  typedef int T;
-  typedef std::unordered_multiset<T, std::hash<T>, std::equal_to<T>,
-                                  min_allocator<T> >
-      C;
-  C c(1);
-  C::iterator i = c.end();
-  (void)*i;
-  assert(false);
+    typedef int T;
+    typedef std::unordered_multiset<T, std::hash<T>, std::equal_to<T>, min_allocator<T>> C;
+    C c(1);
+    C::iterator i = c.end();
+    (void) *i;
+    assert(false);
 
-  return 0;
+    return 0;
 }

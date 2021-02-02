@@ -78,7 +78,8 @@ public:
 
   ~UniqueDWARFASTTypeMap() {}
 
-  void Insert(lldb_private::ConstString name, const UniqueDWARFASTType &entry) {
+  void Insert(lldb_private::ConstString name,
+              const UniqueDWARFASTType &entry) {
     m_collection[name.GetCString()].Append(entry);
   }
 

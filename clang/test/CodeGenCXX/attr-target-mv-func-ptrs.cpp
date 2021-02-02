@@ -2,21 +2,21 @@
 // RUN: %clang_cc1 -std=c++11 -triple x86_64-windows-pc -emit-llvm %s -o - | FileCheck %s --check-prefix=WINDOWS
 void temp();
 void temp(int);
-using FP = void (*)(int);
+using FP = void(*)(int);
 void b() {
-  FP f = temp;
+  FP f = temp; 
 }
 
 int __attribute__((target("sse4.2"))) foo(int) { return 0; }
 int __attribute__((target("arch=sandybridge"))) foo(int);
-int __attribute__((target("arch=ivybridge"))) foo(int) { return 1; }
+int __attribute__((target("arch=ivybridge"))) foo(int) {return 1;}
 int __attribute__((target("default"))) foo(int) { return 2; }
 
 struct S {
-  int __attribute__((target("sse4.2"))) foo(int) { return 0; }
-  int __attribute__((target("arch=sandybridge"))) foo(int);
-  int __attribute__((target("arch=ivybridge"))) foo(int) { return 1; }
-  int __attribute__((target("default"))) foo(int) { return 2; }
+int __attribute__((target("sse4.2"))) foo(int) { return 0; }
+int __attribute__((target("arch=sandybridge"))) foo(int);
+int __attribute__((target("arch=ivybridge"))) foo(int) {return 1;}
+int __attribute__((target("default"))) foo(int) { return 2; }
 };
 
 using FuncPtr = int (*)(int);

@@ -88,10 +88,10 @@
 // cancel the addrspacecast pair this pass emits.
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "NVPTX.h"
 #include "NVPTXTargetMachine.h"
 #include "NVPTXUtilities.h"
+#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
@@ -135,8 +135,8 @@ private:
 
 char NVPTXLowerArgs::ID = 1;
 
-INITIALIZE_PASS(NVPTXLowerArgs, "nvptx-lower-args", "Lower arguments (NVPTX)",
-                false, false)
+INITIALIZE_PASS(NVPTXLowerArgs, "nvptx-lower-args",
+                "Lower arguments (NVPTX)", false, false)
 
 // =============================================================================
 // If the function had a byval struct ptr arg, say foo(%struct.x* byval %d),
@@ -161,8 +161,7 @@ void NVPTXLowerArgs::handleByValParam(Argument *Arg) {
   Type *StructType = PType->getElementType();
   const DataLayout &DL = Func->getParent()->getDataLayout();
   unsigned AS = DL.getAllocaAddrSpace();
-  AllocaInst *AllocA =
-      new AllocaInst(StructType, AS, Arg->getName(), FirstInst);
+  AllocaInst *AllocA = new AllocaInst(StructType, AS, Arg->getName(), FirstInst);
   // Set the alignment to alignment of the byval parameter. This is because,
   // later load/stores assume that alignment, and we are going to replace
   // the use of the byval parameter with this alloca instruction.
@@ -199,9 +198,8 @@ void NVPTXLowerArgs::markPointerAsGlobal(Value *Ptr) {
   }
 
   Instruction *PtrInGlobal = new AddrSpaceCastInst(
-      Ptr,
-      PointerType::get(Ptr->getType()->getPointerElementType(),
-                       ADDRESS_SPACE_GLOBAL),
+      Ptr, PointerType::get(Ptr->getType()->getPointerElementType(),
+                            ADDRESS_SPACE_GLOBAL),
       Ptr->getName(), &*InsertPt);
   Value *PtrInGeneric = new AddrSpaceCastInst(PtrInGlobal, Ptr->getType(),
                                               Ptr->getName(), &*InsertPt);
@@ -256,6 +254,7 @@ bool NVPTXLowerArgs::runOnFunction(Function &F) {
   return isKernelFunction(F) ? runOnKernelFunction(F) : runOnDeviceFunction(F);
 }
 
-FunctionPass *llvm::createNVPTXLowerArgsPass(const NVPTXTargetMachine *TM) {
+FunctionPass *
+llvm::createNVPTXLowerArgsPass(const NVPTXTargetMachine *TM) {
   return new NVPTXLowerArgs(TM);
 }

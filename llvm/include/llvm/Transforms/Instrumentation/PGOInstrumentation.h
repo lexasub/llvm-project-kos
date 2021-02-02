@@ -70,8 +70,7 @@ private:
 };
 
 /// The indirect function call promotion pass.
-class PGOIndirectCallPromotion
-    : public PassInfoMixin<PGOIndirectCallPromotion> {
+class PGOIndirectCallPromotion : public PassInfoMixin<PGOIndirectCallPromotion> {
 public:
   PGOIndirectCallPromotion(bool IsInLTO = false, bool SamplePGO = false)
       : InLTO(IsInLTO), SamplePGO(SamplePGO) {}

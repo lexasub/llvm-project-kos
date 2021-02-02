@@ -16,7 +16,7 @@ void test_invalid_call(int s) {
   // CHECK-NEXT: `-BinaryOperator {{.*}}
   // CHECK-NEXT:   |-RecoveryExpr {{.*}}
   // CHECK-NEXT:   `-IntegerLiteral {{.*}} <col:28> 'int' 1
-  some_func(undef1, undef2 + 1);
+  some_func(undef1, undef2+1);
 
   // CHECK:      BinaryOperator {{.*}} '<dependent type>' contains-errors '='
   // CHECK-NEXT: |-DeclRefExpr {{.*}} 's'
@@ -115,8 +115,7 @@ int ternary = a ? nullptr : a;
 // CHECK-NEXT:  |-RecoveryExpr {{.*}} contains-errors
 // CHECK-NEXT:  | `-DeclRefExpr {{.*}} 'foo'
 // CHECK-NEXT:  `-DeclRefExpr {{.*}} 'x'
-struct Foo {
-} foo;
+struct Foo {} foo;
 void test(int x) {
   foo.abc;
   foo->func(x);
@@ -159,9 +158,7 @@ int f(double);
 int unknown_type_call = f(0, 0);
 
 void InvalidInitalizer(int x) {
-  struct Bar {
-    Bar();
-  };
+  struct Bar { Bar(); };
   // CHECK:     `-VarDecl {{.*}} a1 'Bar'
   // CHECK-NEXT: `-RecoveryExpr {{.*}} contains-errors
   // CHECK-NEXT:  `-IntegerLiteral {{.*}} 'int' 1
@@ -255,9 +252,9 @@ using Escape = decltype([] { return undef(); }());
 // CHECK-NEXT:     `-DesignatedInitExpr {{.*}} 'void'
 // CHECK-NEXT:       `-CXXNullPtrLiteralExpr {{.*}} 'nullptr_t'
 struct {
-  int &abc;
+  int& abc;
 } NoCrashOnInvalidInitList = {
-    .abc = nullptr,
+  .abc = nullptr,
 };
 
 // Verify the value category of recovery expression.
@@ -277,21 +274,19 @@ void InvalidCondition() {
   // CHECK:      IfStmt {{.*}}
   // CHECK-NEXT: |-RecoveryExpr {{.*}} <col:7, col:15> '<dependent type>' contains-errors
   // CHECK-NEXT: | `-UnresolvedLookupExpr {{.*}} <col:7>
-  if (invalid()) {
-  }
+  if (invalid()) {}
 
   // CHECK:      WhileStmt {{.*}}
   // CHECK-NEXT: |-RecoveryExpr {{.*}} <col:10, col:18> '<dependent type>' contains-errors
   // CHECK-NEXT: | `-UnresolvedLookupExpr {{.*}} <col:10>
-  while (invalid()) {
-  }
+  while (invalid()) {}
 
   // CHECK:      SwitchStmt {{.*}}
   // CHECK-NEXT: |-RecoveryExpr {{.*}} '<dependent type>' contains-errors
   // CHECK-NEXT: | `-UnresolvedLookupExpr {{.*}} <col:10>
-  switch (invalid()) {
-  case 1:
-    break;
+  switch(invalid()) {
+    case 1:
+      break;
   }
   // FIXME: figure out why the type of ConditionalOperator is not int.
   // CHECK:      ConditionalOperator {{.*}} '<dependent type>' contains-errors

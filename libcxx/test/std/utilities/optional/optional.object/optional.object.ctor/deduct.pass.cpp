@@ -13,8 +13,10 @@
 // Clang 5 will generate bad implicit deduction guides
 //  Specifically, for the copy constructor.
 
+
 // template<class T>
 //   optional(T) -> optional<T>;
+
 
 #include <optional>
 #include <cassert>
@@ -23,32 +25,33 @@
 
 struct A {};
 
-int main(int, char**) {
-  //  Test the explicit deduction guides
-  {
-    //  optional(T)
+int main(int, char**)
+{
+//  Test the explicit deduction guides
+    {
+//  optional(T)
     std::optional opt(5);
-    static_assert(std::is_same_v<decltype(opt), std::optional<int> >, "");
+    static_assert(std::is_same_v<decltype(opt), std::optional<int>>, "");
     assert(static_cast<bool>(opt));
     assert(*opt == 5);
-  }
+    }
 
-  {
-    //  optional(T)
+    {
+//  optional(T)
     std::optional opt(A{});
-    static_assert(std::is_same_v<decltype(opt), std::optional<A> >, "");
+    static_assert(std::is_same_v<decltype(opt), std::optional<A>>, "");
     assert(static_cast<bool>(opt));
-  }
+    }
 
-  //  Test the implicit deduction guides
-  {
-    //  optional(optional);
+//  Test the implicit deduction guides
+    {
+//  optional(optional);
     std::optional<char> source('A');
     std::optional opt(source);
-    static_assert(std::is_same_v<decltype(opt), std::optional<char> >, "");
+    static_assert(std::is_same_v<decltype(opt), std::optional<char>>, "");
     assert(static_cast<bool>(opt) == static_cast<bool>(source));
     assert(*opt == *source);
-  }
+    }
 
   return 0;
 }

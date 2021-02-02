@@ -13,15 +13,14 @@
 //===----------------------------------------------------------------------===//
 
 #include "asan_fake_stack.h"
-
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <map>
-
 #include "asan_test_utils.h"
 #include "sanitizer_common/sanitizer_common.h"
+
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <map>
 
 namespace __asan {
 
@@ -72,16 +71,16 @@ TEST(FakeStack, CreateDestroy) {
 
 TEST(FakeStack, ModuloNumberOfFrames) {
   EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, 0), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1 << 15)), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1 << 10)), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1 << 9)), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1 << 8)), 1U << 8);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1 << 15) + 1), 1U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1<<15)), 0U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1<<10)), 0U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1<<9)), 0U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1<<8)), 1U<<8);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 0, (1<<15) + 1), 1U);
 
   EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 0), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1 << 9), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1 << 8), 0U);
-  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1 << 7), 1U << 7);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1<<9), 0U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1<<8), 0U);
+  EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 1, 1<<7), 1U<<7);
 
   EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 5, 0), 0U);
   EXPECT_EQ(FakeStack::ModuloNumberOfFrames(15, 5, 1), 1U);
@@ -97,12 +96,9 @@ TEST(FakeStack, GetFrame) {
   u8 *base = fs->GetFrame(stack_size_log, 0, 0);
   EXPECT_EQ(base, reinterpret_cast<u8 *>(fs) +
                       fs->SizeRequiredForFlags(stack_size_log) + 4096);
-  EXPECT_EQ(base + 0 * stack_size + 64 * 7,
-            fs->GetFrame(stack_size_log, 0, 7U));
-  EXPECT_EQ(base + 1 * stack_size + 128 * 3,
-            fs->GetFrame(stack_size_log, 1, 3U));
-  EXPECT_EQ(base + 2 * stack_size + 256 * 5,
-            fs->GetFrame(stack_size_log, 2, 5U));
+  EXPECT_EQ(base + 0*stack_size + 64 * 7, fs->GetFrame(stack_size_log, 0, 7U));
+  EXPECT_EQ(base + 1*stack_size + 128 * 3, fs->GetFrame(stack_size_log, 1, 3U));
+  EXPECT_EQ(base + 2*stack_size + 256 * 5, fs->GetFrame(stack_size_log, 2, 5U));
   fs->Destroy(0);
 }
 

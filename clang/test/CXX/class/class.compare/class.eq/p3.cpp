@@ -2,7 +2,7 @@
 
 struct A {
   int a, b[3], c;
-  bool operator==(const A &) const = default;
+  bool operator==(const A&) const = default;
 };
 
 static_assert(A{1, 2, 3, 4, 5} == A{1, 2, 3, 4, 5});

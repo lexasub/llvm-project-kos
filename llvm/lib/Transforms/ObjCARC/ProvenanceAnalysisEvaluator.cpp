@@ -30,7 +30,7 @@ public:
   void getAnalysisUsage(AnalysisUsage &AU) const override;
   bool runOnFunction(Function &F) override;
 };
-} // namespace
+}
 
 char PAEval::ID = 0;
 PAEval::PAEval() : FunctionPass(ID) {}
@@ -62,7 +62,7 @@ bool PAEval::runOnFunction(Function &F) {
     insertIfNamed(Values, &*I);
 
     for (auto &Op : I->operands())
-      insertIfNamed(Values, Op);
+    insertIfNamed(Values, Op);
   }
 
   ProvenanceAnalysis PA;

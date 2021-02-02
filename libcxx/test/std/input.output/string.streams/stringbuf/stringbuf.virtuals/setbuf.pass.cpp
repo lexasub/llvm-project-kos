@@ -18,17 +18,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::stringbuf sb("0123456789");
-    assert(sb.pubsetbuf(0, 0) == &sb);
-    assert(sb.str() == "0123456789");
-  }
-  {
-    std::wstringbuf sb(L"0123456789");
-    assert(sb.pubsetbuf(0, 0) == &sb);
-    assert(sb.str() == L"0123456789");
-  }
+int main(int, char**)
+{
+    {
+        std::stringbuf sb("0123456789");
+        assert(sb.pubsetbuf(0, 0) == &sb);
+        assert(sb.str() == "0123456789");
+    }
+    {
+        std::wstringbuf sb(L"0123456789");
+        assert(sb.pubsetbuf(0, 0) == &sb);
+        assert(sb.str() == L"0123456789");
+    }
 
   return 0;
 }

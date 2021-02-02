@@ -3,7 +3,7 @@
 typedef __typeof(sizeof(int)) size_t;
 void *malloc(size_t);
 void free(void *);
-void __attribute((ownership_returns(malloc))) * my_malloc(size_t);
+void __attribute((ownership_returns(malloc))) *my_malloc(size_t);
 void __attribute((ownership_takes(malloc, 1))) my_free(void *);
 
 void f1() {

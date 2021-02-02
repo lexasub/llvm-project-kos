@@ -26,7 +26,8 @@ int test(int a[], int n) {
   int sum = 0;
 
 #pragma unroll 4
-  do {
+  do
+  {
     a[i] = a[i] + 1;
     sum = sum + a[i];
     i++;

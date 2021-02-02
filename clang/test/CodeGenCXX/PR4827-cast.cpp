@@ -2,4 +2,4 @@
 struct A;
 struct B;
 extern A *f();
-void a() { (B *)f(); }
+void a() { (B *) f(); }

@@ -32,8 +32,8 @@ class TestASTFrontendAction : public ASTFrontendAction {
 public:
   TestASTFrontendAction(bool enableIncrementalProcessing = false,
                         bool actOnEndOfTranslationUnit = false)
-      : EnableIncrementalProcessing(enableIncrementalProcessing),
-        ActOnEndOfTranslationUnit(actOnEndOfTranslationUnit) {}
+    : EnableIncrementalProcessing(enableIncrementalProcessing),
+      ActOnEndOfTranslationUnit(actOnEndOfTranslationUnit) { }
 
   bool EnableIncrementalProcessing;
   bool ActOnEndOfTranslationUnit;
@@ -48,16 +48,17 @@ public:
 
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  StringRef InFile) override {
-    return std::make_unique<Visitor>(CI, ActOnEndOfTranslationUnit, decl_names);
+    return std::make_unique<Visitor>(CI, ActOnEndOfTranslationUnit,
+                                      decl_names);
   }
 
 private:
   class Visitor : public ASTConsumer, public RecursiveASTVisitor<Visitor> {
   public:
     Visitor(CompilerInstance &CI, bool ActOnEndOfTranslationUnit,
-            std::vector<std::string> &decl_names)
-        : CI(CI), ActOnEndOfTranslationUnit(ActOnEndOfTranslationUnit),
-          decl_names_(decl_names) {}
+            std::vector<std::string> &decl_names) :
+      CI(CI), ActOnEndOfTranslationUnit(ActOnEndOfTranslationUnit),
+      decl_names_(decl_names) {}
 
     void HandleTranslationUnit(ASTContext &context) override {
       if (ActOnEndOfTranslationUnit) {
@@ -123,14 +124,13 @@ TEST(ASTFrontendAction, LateTemplateIncrementalParsing) {
   invocation->getLangOpts()->CPlusPlus = true;
   invocation->getLangOpts()->DelayedTemplateParsing = true;
   invocation->getPreprocessorOpts().addRemappedFile(
-      "test.cc", MemoryBuffer::getMemBuffer(
-                     "template<typename T> struct A { A(T); T data; };\n"
-                     "template<typename T> struct B: public A<T> {\n"
-                     "  B();\n"
-                     "  B(B const& b): A<T>(b.data) {}\n"
-                     "};\n"
-                     "B<char> c() { return B<char>(); }\n")
-                     .release());
+    "test.cc", MemoryBuffer::getMemBuffer(
+      "template<typename T> struct A { A(T); T data; };\n"
+      "template<typename T> struct B: public A<T> {\n"
+      "  B();\n"
+      "  B(B const& b): A<T>(b.data) {}\n"
+      "};\n"
+      "B<char> c() { return B<char>(); }\n").release());
   invocation->getFrontendOpts().Inputs.push_back(
       FrontendInputFile("test.cc", Language::CXX));
   invocation->getFrontendOpts().ProgramAction = frontend::ParseSyntaxOnly;

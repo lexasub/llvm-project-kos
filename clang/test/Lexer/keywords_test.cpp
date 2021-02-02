@@ -17,26 +17,25 @@
 
 #define IS_KEYWORD(NAME) _Static_assert(!__is_identifier(NAME), #NAME)
 #define NOT_KEYWORD(NAME) _Static_assert(__is_identifier(NAME), #NAME)
-#define IS_TYPE(NAME) \
-  void is_##NAME##_type() { int f(NAME); }
+#define IS_TYPE(NAME) void is_##NAME##_type() { int f(NAME); }
 
 #if defined(CXX2A)
-#define CONCEPTS_KEYWORD(NAME) IS_KEYWORD(NAME)
+#define CONCEPTS_KEYWORD(NAME)  IS_KEYWORD(NAME)
 #else
-#define CONCEPTS_KEYWORD(NAME) NOT_KEYWORD(NAME)
+#define CONCEPTS_KEYWORD(NAME)  NOT_KEYWORD(NAME)
 #endif
 
 #ifdef DECLSPEC
-#define DECLSPEC_KEYWORD(NAME) IS_KEYWORD(NAME)
+#define DECLSPEC_KEYWORD(NAME)  IS_KEYWORD(NAME)
 #else
-#define DECLSPEC_KEYWORD(NAME) NOT_KEYWORD(NAME)
+#define DECLSPEC_KEYWORD(NAME)  NOT_KEYWORD(NAME)
 #endif
 
 #ifdef CXX11
-#define CXX11_KEYWORD(NAME) IS_KEYWORD(NAME)
-#define CXX11_TYPE(NAME) IS_TYPE(NAME)
+#define CXX11_KEYWORD(NAME)  IS_KEYWORD(NAME)
+#define CXX11_TYPE(NAME)     IS_TYPE(NAME)
 #else
-#define CXX11_KEYWORD(NAME) NOT_KEYWORD(NAME)
+#define CXX11_KEYWORD(NAME)  NOT_KEYWORD(NAME)
 #define CXX11_TYPE(NAME)
 #endif
 

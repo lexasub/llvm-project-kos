@@ -59,7 +59,7 @@ struct DefRangeRegisterRelHeader;
 struct DefRangeSubfieldRegisterHeader;
 struct DefRangeRegisterHeader;
 struct DefRangeFramePointerRelHeader;
-} // namespace codeview
+}
 
 using MCSectionSubPair = std::pair<MCSection *, const MCExpr *>;
 
@@ -139,7 +139,8 @@ public:
   virtual void emitPersonality(const MCSymbol *Personality);
   virtual void emitPersonalityIndex(unsigned Index);
   virtual void emitHandlerData();
-  virtual void emitSetFP(unsigned FpReg, unsigned SpReg, int64_t Offset = 0);
+  virtual void emitSetFP(unsigned FpReg, unsigned SpReg,
+                         int64_t Offset = 0);
   virtual void emitMovSP(unsigned Reg, int64_t Offset = 0);
   virtual void emitPad(int64_t Offset);
   virtual void emitRegSave(const SmallVectorImpl<unsigned> &RegList,
@@ -240,7 +241,9 @@ protected:
   virtual void emitCFIStartProcImpl(MCDwarfFrameInfo &Frame);
   virtual void emitCFIEndProcImpl(MCDwarfFrameInfo &CurFrame);
 
-  WinEH::FrameInfo *getCurrentWinFrameInfo() { return CurrentWinFrameInfo; }
+  WinEH::FrameInfo *getCurrentWinFrameInfo() {
+    return CurrentWinFrameInfo;
+  }
 
   virtual void EmitWindowsUnwindTables(WinEH::FrameInfo *Frame);
 
@@ -259,7 +262,9 @@ public:
   void visitUsedExpr(const MCExpr &Expr);
   virtual void visitUsedSymbol(const MCSymbol &Sym);
 
-  void setTargetStreamer(MCTargetStreamer *TS) { TargetStreamer.reset(TS); }
+  void setTargetStreamer(MCTargetStreamer *TS) {
+    TargetStreamer.reset(TS);
+  }
 
   void setStartTokLocPtr(const SMLoc *Loc) { StartTokLocPtr = Loc; }
   SMLoc getStartTokLoc() const {
@@ -277,7 +282,9 @@ public:
   void setUseAssemblerInfoForParsing(bool v) { UseAssemblerInfoForParsing = v; }
   bool getUseAssemblerInfoForParsing() { return UseAssemblerInfoForParsing; }
 
-  MCTargetStreamer *getTargetStreamer() { return TargetStreamer.get(); }
+  MCTargetStreamer *getTargetStreamer() {
+    return TargetStreamer.get();
+  }
 
   void setAllowAutoPadding(bool v) { AllowAutoPadding = v; }
   bool getAllowAutoPadding() const { return AllowAutoPadding; }
@@ -857,8 +864,9 @@ public:
                                   Optional<MD5::MD5Result> Checksum = None,
                                   Optional<StringRef> Source = None,
                                   unsigned CUID = 0) {
-    return cantFail(tryEmitDwarfFileDirective(FileNo, Directory, Filename,
-                                              Checksum, Source, CUID));
+    return cantFail(
+        tryEmitDwarfFileDirective(FileNo, Directory, Filename, Checksum,
+                                  Source, CUID));
   }
 
   /// Associate a filename with a specified logical file number.
@@ -868,8 +876,8 @@ public:
   /// '.file 4 "dir/foo.c" md5 "..." source "..."' assembler directive.
   virtual Expected<unsigned> tryEmitDwarfFileDirective(
       unsigned FileNo, StringRef Directory, StringRef Filename,
-      Optional<MD5::MD5Result> Checksum = None,
-      Optional<StringRef> Source = None, unsigned CUID = 0);
+      Optional<MD5::MD5Result> Checksum = None, Optional<StringRef> Source = None,
+      unsigned CUID = 0);
 
   /// Specify the "root" file of the compilation, using the ".file 0" extension.
   virtual void emitDwarfFile0Directive(StringRef Directory, StringRef Filename,

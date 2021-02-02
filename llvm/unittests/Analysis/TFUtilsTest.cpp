@@ -21,8 +21,7 @@ using namespace llvm;
 
 extern const char *TestMainArgv0;
 
-// NOTE! This test model is currently also used by test/Transforms/Inline/ML
-// tests
+// NOTE! This test model is currently also used by test/Transforms/Inline/ML tests
 //- relevant if updating this model.
 static std::string getModelPath() {
   SmallString<128> InputsDir = unittest::getInputFileDirectory(TestMainArgv0);

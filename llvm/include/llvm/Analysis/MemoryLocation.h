@@ -80,7 +80,7 @@ class LocationSize {
   // public LocationSize ctor goes away.
   enum DirectConstruction { Direct };
 
-  constexpr LocationSize(uint64_t Raw, DirectConstruction) : Value(Raw) {}
+  constexpr LocationSize(uint64_t Raw, DirectConstruction): Value(Raw) {}
 
   static_assert(AfterPointer & ImpreciseBit,
                 "AfterPointer is imprecise by definition.");
@@ -162,7 +162,9 @@ public:
 
   // Returns whether or not this value is precise. Note that if a value is
   // precise, it's guaranteed to not be unknown.
-  bool isPrecise() const { return (Value & ImpreciseBit) == 0; }
+  bool isPrecise() const {
+    return (Value & ImpreciseBit) == 0;
+  }
 
   // Convenience method to check if this LocationSize's value is 0.
   bool isZero() const { return hasValue() && getValue() == 0; }
@@ -174,7 +176,9 @@ public:
     return Value == Other.Value;
   }
 
-  bool operator!=(const LocationSize &Other) const { return !(*this == Other); }
+  bool operator!=(const LocationSize &Other) const {
+    return !(*this == Other);
+  }
 
   // Ordering operators are not provided, since it's unclear if there's only one
   // reasonable way to compare:
@@ -310,7 +314,9 @@ public:
 
 // Specialize DenseMapInfo.
 template <> struct DenseMapInfo<LocationSize> {
-  static inline LocationSize getEmptyKey() { return LocationSize::mapEmpty(); }
+  static inline LocationSize getEmptyKey() {
+    return LocationSize::mapEmpty();
+  }
   static inline LocationSize getTombstoneKey() {
     return LocationSize::mapTombstone();
   }
@@ -340,6 +346,6 @@ template <> struct DenseMapInfo<MemoryLocation> {
     return LHS == RHS;
   }
 };
-} // namespace llvm
+}
 
 #endif

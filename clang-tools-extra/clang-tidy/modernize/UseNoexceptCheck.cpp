@@ -89,10 +89,12 @@ void UseNoexceptCheck::check(const MatchFinder::MatchResult &Result) {
 
   bool IsNoThrow = FnTy->isNothrow();
   StringRef ReplacementStr =
-      IsNoThrow ? NoexceptMacro.empty() ? "noexcept" : NoexceptMacro.c_str()
-      : NoexceptMacro.empty()
-          ? (DtorOrOperatorDel || UseNoexceptFalse) ? "noexcept(false)" : ""
-          : "";
+      IsNoThrow
+          ? NoexceptMacro.empty() ? "noexcept" : NoexceptMacro.c_str()
+          : NoexceptMacro.empty()
+                ? (DtorOrOperatorDel || UseNoexceptFalse) ? "noexcept(false)"
+                                                          : ""
+                : "";
 
   FixItHint FixIt;
   if ((IsNoThrow || NoexceptMacro.empty()) && CRange.isValid())

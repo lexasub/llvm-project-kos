@@ -20,22 +20,25 @@
 #include "test_iterators.h"
 
 template <class It>
-void test() {
-  std::reverse_iterator<It> r;
-  (void)r;
+void
+test()
+{
+    std::reverse_iterator<It> r;
+    (void)r;
 }
 
-int main(int, char**) {
-  test<bidirectional_iterator<const char*> >();
-  test<random_access_iterator<char*> >();
-  test<char*>();
-  test<const char*>();
+int main(int, char**)
+{
+    test<bidirectional_iterator<const char*> >();
+    test<random_access_iterator<char*> >();
+    test<char*>();
+    test<const char*>();
 
 #if TEST_STD_VER > 14
-  {
-    constexpr std::reverse_iterator<const char*> it;
-    (void)it;
-  }
+    {
+        constexpr std::reverse_iterator<const char *> it;
+        (void)it;
+    }
 #endif
 
   return 0;

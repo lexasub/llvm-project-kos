@@ -22,7 +22,10 @@ namespace lld {
 
 const std::error_category &YamlReaderCategory();
 
-enum class YamlReaderError { unknown_keyword, illegal_value };
+enum class YamlReaderError {
+  unknown_keyword,
+  illegal_value
+};
 
 inline std::error_code make_error_code(YamlReaderError e) {
   return std::error_code(static_cast<int>(e), YamlReaderCategory());
@@ -59,6 +62,6 @@ private:
 
 namespace std {
 template <> struct is_error_code_enum<lld::YamlReaderError> : std::true_type {};
-} // namespace std
+}
 
 #endif

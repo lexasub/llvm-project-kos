@@ -17,7 +17,7 @@ void *&pointer() {
   void *&r = S<T>()[nullptr];
   return r;
 }
-} // namespace PR26599
+}
 
 namespace LocalTemporary {
 
@@ -36,7 +36,7 @@ void test() {
   map.value();
 }
 
-typedef int *ptr;
+typedef int* ptr;
 ptr int1(const ptr &p = ptr()) {
   return (p);
 }
@@ -59,13 +59,13 @@ const int *int5(const int &x) {
 }
 
 const int *int6() {
-  const int &x = 11; //expected-note{{binding reference variable 'x' here}}
-  return &x;         //expected-warning{{returning address of local temporary object}}
+  const int &x = 11;  //expected-note{{binding reference variable 'x' here}}
+  return &x;  //expected-warning{{returning address of local temporary object}}
 }
 
 const int *int7(int x) {
-  const int &x2 = x; // expected-note{{binding reference variable 'x2' here}}
-  return &x2;        //  expected-warning{{address of stack memory associated with parameter 'x' returned}}
+  const int &x2 = x;  // expected-note{{binding reference variable 'x2' here}}
+  return &x2;  //  expected-warning{{address of stack memory associated with parameter 'x' returned}}
 }
 
 const int *int8(const int &x = 5) {
@@ -75,7 +75,7 @@ const int *int8(const int &x = 5) {
 
 const int *int9() {
   const int &x = 5;  // expected-note{{binding reference variable 'x' here}}
-  const int &x2 = x; // expected-note{{binding reference variable 'x2' here}}
-  return &x2;        // expected-warning{{returning address of local temporary object}}
+  const int &x2 = x;  // expected-note{{binding reference variable 'x2' here}}
+  return &x2;  // expected-warning{{returning address of local temporary object}}
 }
-} // namespace LocalTemporary
+}

@@ -23,7 +23,8 @@ void my_debug_function(std::__libcpp_debug_info const& info) {
   std::exit(0);
 }
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::__libcpp_set_debug_function(&my_debug_function);
   _LIBCPP_ASSERT(false, "foo");
   return 1;

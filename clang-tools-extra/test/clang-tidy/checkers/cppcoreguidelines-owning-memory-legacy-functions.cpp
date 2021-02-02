@@ -10,7 +10,7 @@ using owner = T;
 } // namespace gsl
 
 extern "C" {
-using size_t = decltype(sizeof(void *));
+using size_t = decltype(sizeof(void*));
 using FILE = int;
 
 void *malloc(size_t ByteCount);

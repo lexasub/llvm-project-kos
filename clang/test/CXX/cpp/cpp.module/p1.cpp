@@ -6,13 +6,13 @@
 import "empty.h" SEMI // CHECK: import attrs.{{.*}};
 
 #define IMPORT import "empty.h"
-    IMPORT; // CHECK: import attrs.{{.*}};
+IMPORT; // CHECK: import attrs.{{.*}};
 
-#define IMPORT_ANGLED import<empty.h>
+#define IMPORT_ANGLED import <empty.h>
 IMPORT_ANGLED; // CHECK: import attrs.{{.*}};
 
 // Ensure that macros only become visible at the semicolon.
 // CHECK: import attrs.{{.*}} ATTRS ;
-import "attrs.h" ATTRS;
+import "attrs.h" ATTRS ;
 // CHECK: {{\[\[}} ]] int n;
 ATTRS int n;

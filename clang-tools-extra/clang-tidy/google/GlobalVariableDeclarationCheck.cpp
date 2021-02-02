@@ -56,7 +56,7 @@ FixItHint generateFixItHint(const VarDecl *Decl, bool IsConst) {
       CharSourceRange::getTokenRange(SourceRange(Decl->getLocation())),
       llvm::StringRef(NewName));
 }
-} // namespace
+}  // namespace
 
 void GlobalVariableDeclarationCheck::registerMatchers(MatchFinder *Finder) {
   // need to add two matchers since we need to bind different ids to distinguish
@@ -98,7 +98,7 @@ void GlobalVariableDeclarationCheck::check(
   }
 }
 
-} // namespace objc
-} // namespace google
-} // namespace tidy
-} // namespace clang
+}  // namespace objc
+}  // namespace google
+}  // namespace tidy
+}  // namespace clang

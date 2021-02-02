@@ -8,7 +8,7 @@ struct ST {
 };
 struct SA {
   const int d = 5;
-  const int da[5] = {0};
+  const int da[5] = { 0 };
   ST e;
   ST g[10];
   int i;
@@ -41,7 +41,7 @@ struct SA {
     {}
 #pragma omp target data map(i) use_device_ptr(g) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
     {}
-#pragma omp target data map(i) use_device_ptr(k, i, j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
+#pragma omp target data map(i) use_device_ptr(k,i,j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
     {}
 #pragma omp target data map(i) use_device_ptr(d) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
     {}
@@ -71,14 +71,14 @@ struct SA {
     {}
 #pragma omp target data map(i) use_device_addr(g) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
     {}
-#pragma omp target data map(i) use_device_addr(k, i, j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
+#pragma omp target data map(i) use_device_addr(k,i,j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
     {}
 #pragma omp target data map(i) use_device_addr(d) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
     {}
 #pragma omp target data map(i) use_device_addr(da) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
     {}
-    return;
-  }
+  return;
+ }
 };
 struct SB {
   unsigned A;
@@ -114,10 +114,9 @@ struct S1;
 extern S1 a;
 class S2 {
   mutable int a;
-
 public:
-  S2() : a(0) {}
-  S2(S2 &s2) : a(s2.a) {}
+  S2():a(0) { }
+  S2(S2 &s2):a(s2.a) { }
   static float S2s;
   static const float S2sc;
 };
@@ -126,10 +125,9 @@ const S2 b;
 const S2 ba[5];
 class S3 {
   int a;
-
 public:
-  S3() : a(0) {}
-  S3(S3 &s3) : a(s3.a) {}
+  S3():a(0) { }
+  S3(S3 &s3):a(s3.a) { }
 };
 const S3 c;
 const S3 ca[5];
@@ -138,17 +136,15 @@ class S4 {
   int a;
   S4();
   S4(const S4 &s4);
-
 public:
-  S4(int v) : a(v) {}
+  S4(int v):a(v) { }
 };
 class S5 {
   int a;
-  S5() : a(0) {}
-  S5(const S5 &s5) : a(s5.a) {}
-
+  S5():a(0) {}
+  S5(const S5 &s5):a(s5.a) { }
 public:
-  S5(int v) : a(v) {}
+  S5(int v):a(v) { }
 };
 
 S3 h;
@@ -159,7 +155,7 @@ typedef int from;
 template <typename T, int I>
 T tmain(T argc) {
   const T d = 5;
-  const T da[5] = {0};
+  const T da[5] = { 0 };
   S4 e(4);
   S5 g(5);
   T i;
@@ -191,7 +187,7 @@ T tmain(T argc) {
   {}
 #pragma omp target data map(i) use_device_ptr(g) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
-#pragma omp target data map(i) use_device_ptr(k, i, j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
+#pragma omp target data map(i) use_device_ptr(k,i,j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
 #pragma omp target data map(i) use_device_ptr(d) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
@@ -221,7 +217,7 @@ T tmain(T argc) {
   {}
 #pragma omp target data map(i) use_device_addr(g) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}
-#pragma omp target data map(i) use_device_addr(k, i, j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
+#pragma omp target data map(i) use_device_addr(k,i,j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}
 #pragma omp target data map(i) use_device_addr(d) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}
@@ -232,7 +228,7 @@ T tmain(T argc) {
 
 int main(int argc, char **argv) {
   const int d = 5;
-  const int da[5] = {0};
+  const int da[5] = { 0 };
   S4 e(4);
   S5 g(5);
   int i;
@@ -264,7 +260,7 @@ int main(int argc, char **argv) {
   {}
 #pragma omp target data map(i) use_device_ptr(g) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
-#pragma omp target data map(i) use_device_ptr(k, i, j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
+#pragma omp target data map(i) use_device_ptr(k,i,j) // expected-error2 {{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
 #pragma omp target data map(i) use_device_ptr(d) // expected-error{{expected pointer or reference to pointer in 'use_device_ptr' clause}}
   {}
@@ -294,7 +290,7 @@ int main(int argc, char **argv) {
   {}
 #pragma omp target data map(i) use_device_addr(g) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}
-#pragma omp target data map(i) use_device_addr(k, i, j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
+#pragma omp target data map(i) use_device_addr(k,i,j) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}
 #pragma omp target data map(i) use_device_addr(d) // omp45-error {{unexpected OpenMP clause 'use_device_addr' in directive '#pragma omp target data'}}
   {}

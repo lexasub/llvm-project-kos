@@ -23,7 +23,7 @@ namespace ex = std::experimental::parallelism_v2;
 
 template <class T, class... Args>
 auto not_supported_load(Args&&... args) -> decltype(
-    std::declval<ex::native_simd<T> >().copy_from(std::forward<Args>(args)...),
+    std::declval<ex::native_simd<T>>().copy_from(std::forward<Args>(args)...),
     void()) = delete;
 
 template <class T>
@@ -31,7 +31,7 @@ void not_supported_load(...) {}
 
 template <class T, class... Args>
 auto supported_load(Args&&... args) -> decltype(
-    std::declval<ex::native_simd<T> >().copy_from(std::forward<Args>(args)...),
+    std::declval<ex::native_simd<T>>().copy_from(std::forward<Args>(args)...),
     void()) {}
 
 template <class T>
@@ -115,10 +115,10 @@ void test_converting_load() {
 int main(int, char**) {
   // TODO: adjust the tests when this assertion fails.
   assert(ex::native_simd<int32_t>::size() >= 4);
-  test_load<ex::native_simd<int32_t> >();
-  test_load<ex::fixed_size_simd<int32_t, 4> >();
-  test_converting_load<ex::native_simd<int32_t> >();
-  test_converting_load<ex::fixed_size_simd<int32_t, 4> >();
+  test_load<ex::native_simd<int32_t>>();
+  test_load<ex::fixed_size_simd<int32_t, 4>>();
+  test_converting_load<ex::native_simd<int32_t>>();
+  test_converting_load<ex::fixed_size_simd<int32_t, 4>>();
 
   return 0;
 }

@@ -2,73 +2,73 @@
 int foo(int);
 
 namespace N {
-void f1() {
-  void foo(int); // okay
-  void bar(int); // expected-note 2{{previous declaration is here}}
-}
+  void f1() {
+    void foo(int); // okay
+    void bar(int); // expected-note 2{{previous declaration is here}}
+  }
 
-void foo(int); // expected-note 3{{previous declaration is here}}
+  void foo(int); // expected-note 3{{previous declaration is here}}
 
-void f2() {
-  int foo(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
-  int bar(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
-  int baz(int); // expected-note {{previous declaration is here}}
+  void f2() {
+    int foo(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+    int bar(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+    int baz(int); // expected-note {{previous declaration is here}}
 
-  {
-    int foo;
-    int bar;
-    int baz;
+    {
+      int foo;
+      int bar;
+      int baz;
+      {
+        float foo(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+        float bar(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+        float baz(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
+      }
+    }
+  }
+
+  void f3() {
+    int foo(float);
     {
       float foo(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
-      float bar(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
-      float baz(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
     }
   }
 }
 
-void f3() {
-  int foo(float);
-  {
-    float foo(int); // expected-error {{functions that differ only in their return type cannot be overloaded}}
-  }
-}
-} // namespace N
-
 class A {
-  void typocorrection(); // expected-note {{'typocorrection' declared here}}
+ void typocorrection(); // expected-note {{'typocorrection' declared here}}
 };
 
 void A::Notypocorrection() { // expected-error {{out-of-line definition of 'Notypocorrection' does not match any declaration in 'A'; did you mean 'typocorrection'}}
 }
 
+
 namespace test0 {
-void dummy() {
-  void Bar(); // expected-note {{'Bar' declared here}}
-  class A {
-    friend void bar(); // expected-error {{no matching function 'bar' found in local scope; did you mean 'Bar'}}
-  };
+  void dummy() {
+    void Bar(); // expected-note {{'Bar' declared here}}
+    class A {
+      friend void bar(); // expected-error {{no matching function 'bar' found in local scope; did you mean 'Bar'}}
+    };
+  }
 }
-} // namespace test0
+
 
 class B {
-  void typocorrection(const int); // expected-note {{'typocorrection' declared here}}
-  void typocorrection(double);
+ void typocorrection(const int); // expected-note {{'typocorrection' declared here}}
+ void typocorrection(double);
 };
 
 void B::Notypocorrection(int) { // expected-error {{out-of-line definition of 'Notypocorrection' does not match any declaration in 'B'; did you mean 'typocorrection'}}
 }
 
-struct X {
-  int f();
-};
+struct X { int f(); };
 struct Y : public X {};
 int Y::f() { return 3; } // expected-error {{out-of-line definition of 'f' does not match any declaration in 'Y'}}
 
 namespace test1 {
 struct Foo {
-  class Inner {};
+  class Inner { };
 };
-} // namespace test1
+}
 
 class Bar {
   void f(test1::Foo::Inner foo) const; // expected-note {{member declaration does not match because it is const qualified}}
@@ -81,7 +81,7 @@ void Bar::f(Foo::Inner foo) { // expected-error {{out-of-line definition of 'f' 
 }
 
 class Crash {
-public:
+ public:
   void GetCart(int count) const;
 };
 // This out-of-line definition was fine...
@@ -90,9 +90,9 @@ void Crash::cart(int count) const {} // expected-error {{out-of-line definition 
 void Crash::chart(int count) const {} // expected-error {{out-of-line definition of 'chart' does not match any declaration in 'Crash'}}
 
 class TestConst {
-public:
+ public:
   int getit() const; // expected-note {{member declaration does not match because it is const qualified}}
-  void setit(int);   // expected-note {{member declaration does not match because it is not const qualified}}
+  void setit(int); // expected-note {{member declaration does not match because it is not const qualified}}
 };
 
 int TestConst::getit() { // expected-error {{out-of-line definition of 'getit' does not match any declaration in 'TestConst'}}
@@ -102,9 +102,7 @@ int TestConst::getit() { // expected-error {{out-of-line definition of 'getit' d
 void TestConst::setit(int) const { // expected-error {{out-of-line definition of 'setit' does not match any declaration in 'TestConst'}}
 }
 
-struct J {
-  int typo() const;
-};
+struct J { int typo() const; };
 int J::typo_() { return 3; } // expected-error {{out-of-line definition of 'typo_' does not match any declaration in 'J'}}
 
 // Ensure we correct the redecl of Foo::isGood to Bar::Foo::isGood and not
@@ -113,20 +111,20 @@ int J::typo_() { return 3; } // expected-error {{out-of-line definition of 'typo
 // since it is a closer match than Bar::Foo::beEvil and neither have a body.
 namespace redecl_typo {
 namespace Foo {
-bool IsGood() { return false; }
-void BeEvil(); // expected-note {{'BeEvil' declared here}}
-} // namespace Foo
+  bool IsGood() { return false; }
+  void BeEvil(); // expected-note {{'BeEvil' declared here}}
+}
 namespace Bar {
-namespace Foo {
-bool isGood(); // expected-note {{'Bar::Foo::isGood' declared here}}
-void beEvil();
-} // namespace Foo
-} // namespace Bar
+  namespace Foo {
+    bool isGood(); // expected-note {{'Bar::Foo::isGood' declared here}}
+    void beEvil();
+  }
+}
 bool Foo::isGood() { // expected-error {{out-of-line definition of 'isGood' does not match any declaration in namespace 'redecl_typo::Foo'; did you mean 'Bar::Foo::isGood'?}}
   return true;
 }
 void Foo::beEvil() {} // expected-error {{out-of-line definition of 'beEvil' does not match any declaration in namespace 'redecl_typo::Foo'; did you mean 'BeEvil'?}}
-} // namespace redecl_typo
+}
 
 struct CVQualFun {
   void func(int a, int &b); // expected-note {{type of 2nd parameter of member declaration does not match definition ('int &' vs 'int')}}

@@ -55,7 +55,7 @@ void checkAdd(uint64_t ptr) {
 
 void checkAccumulate(uint64_t ptr) {
   ASSERT_TRUE(ptr != 0) << "Unable to get pointer to function.";
-  int32_t (*FPtr)(int32_t) = (int32_t(*)(int32_t))(intptr_t)ptr;
+  int32_t (*FPtr)(int32_t) = (int32_t (*)(int32_t))(intptr_t)ptr;
   EXPECT_EQ(0, FPtr(0));
   EXPECT_EQ(1, FPtr(1));
   EXPECT_EQ(3, FPtr(2));
@@ -191,10 +191,11 @@ TEST_F(MCJITMultipleModuleTest, two_module_consecutive_call_case) {
 // Module A { Extern Global GVB, Global Variable GVA, Function FA loads GVB },
 // Module B { Extern Global GVA, Global Variable GVB, Function FB loads GVA },
 
+
 // Module A { Global Variable GVA, Function FA loads GVA },
 // Module B { Global Variable GVB, Internal Global GVC, Function FB loads GVB },
-// execute FB then FA, also check that the global variables are properly
-// accesible through the ExecutionEngine APIs
+// execute FB then FA, also check that the global variables are properly accesible
+// through the ExecutionEngine APIs
 TEST_F(MCJITMultipleModuleTest, two_module_global_variables_case) {
   SKIP_UNSUPPORTED_PLATFORM;
 
@@ -223,21 +224,21 @@ TEST_F(MCJITMultipleModuleTest, two_module_global_variables_case) {
 
   EXPECT_EQ(GVA, TheJIT->FindGlobalVariableNamed("GVA"));
   EXPECT_EQ(GVB, TheJIT->FindGlobalVariableNamed("GVB"));
-  EXPECT_EQ(GVC, TheJIT->FindGlobalVariableNamed("GVC", true));
+  EXPECT_EQ(GVC, TheJIT->FindGlobalVariableNamed("GVC",true));
   EXPECT_EQ(nullptr, TheJIT->FindGlobalVariableNamed("GVC"));
 
   uint64_t FBPtr = TheJIT->getFunctionAddress(FB->getName().str());
   TheJIT->finalizeObject();
   EXPECT_TRUE(0 != FBPtr);
-  int32_t (*FuncPtr)() = (int32_t(*)())FBPtr;
+  int32_t(*FuncPtr)() = (int32_t(*)())FBPtr;
   EXPECT_EQ(initialNum, FuncPtr())
-      << "Invalid value for global returned from JITted function in module B";
+    << "Invalid value for global returned from JITted function in module B";
 
   uint64_t FAPtr = TheJIT->getFunctionAddress(FA->getName().str());
   EXPECT_TRUE(0 != FAPtr);
   FuncPtr = (int32_t(*)())FAPtr;
   EXPECT_EQ(initialNum, FuncPtr())
-      << "Invalid value for global returned from JITted function in module A";
+    << "Invalid value for global returned from JITted function in module A";
 }
 
 // Module A { Function FA },

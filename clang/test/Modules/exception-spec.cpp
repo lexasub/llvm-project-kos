@@ -14,7 +14,7 @@ struct X {
     friend X::~X();
   } c;
 };
-} // namespace PR38627
+}
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -30,10 +30,8 @@ struct Y {
 static_assert(noexcept(X().~X()));
 static_assert(noexcept(Y().~Y()));
 
-struct A {
-  virtual ~A() = default;
-};
+struct A { virtual ~A() = default; };
 struct B : public A, public X {
   virtual ~B() override = default;
 };
-} // namespace PR38627
+} // PR38627

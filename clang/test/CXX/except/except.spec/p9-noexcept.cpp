@@ -2,7 +2,8 @@
 
 void external();
 
-void target() noexcept {
+void target() noexcept
+{
   // CHECK: invoke void @_Z8externalv()
   external();
 }
@@ -12,7 +13,8 @@ void target() noexcept {
 // CHECK-NEXT: call void @__clang_call_terminate(i8* [[T1]]) [[NR_NUW:#[0-9]+]]
 // CHECK-NEXT: unreachable
 
-void reverse() noexcept(false) {
+void reverse() noexcept(false)
+{
   // CHECK: call void @_Z8externalv()
   external();
 }

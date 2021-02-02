@@ -6,10 +6,7 @@ bool foo1(int x) {
   if (x > 0)
     return false;
   else if (x < 0)
-    try {
-      x--;
-    } catch (int i) {
-    }
+    try { x--; } catch (int i) {}
   return true;
 }
 
@@ -18,10 +15,7 @@ bool foo2(int x) {
   if (x > 0)
     return false;
   else if (x < 0)
-    try {
-      x--;
-    } catch (...) {
-    }
+    try { x--; } catch (...) {}
   return true;
 }
 
@@ -30,9 +24,6 @@ bool foo3(int x) {
   if (x > 0)
     return false;
   else if (x < 0)
-    try {
-      x--;
-    } catch (long i) {
-    }
+    try { x--; } catch (long i) {}
   return true;
 }

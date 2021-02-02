@@ -215,8 +215,7 @@ protected:
 class InputSection : public InputChunk {
 public:
   InputSection(const WasmSection &s, ObjFile *f)
-      : InputChunk(f, InputChunk::Section), section(s),
-        tombstoneValue(getTombstoneForSection(s.Name)) {
+      : InputChunk(f, InputChunk::Section), section(s), tombstoneValue(getTombstoneForSection(s.Name)) {
     assert(section.Type == llvm::wasm::WASM_SEC_CUSTOM);
   }
 

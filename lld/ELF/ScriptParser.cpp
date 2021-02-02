@@ -769,10 +769,8 @@ Expr ScriptParser::readAssert() {
 
 // Tries to read the special directive for an output section definition which
 // can be one of following: "(NOLOAD)", "(COPY)", "(INFO)" or "(OVERLAY)".
-// Tok1 and Tok2 are next 2 tokens peeked. See comment for
-// readSectionAddressType below.
-bool ScriptParser::readSectionDirective(OutputSection *cmd, StringRef tok1,
-                                        StringRef tok2) {
+// Tok1 and Tok2 are next 2 tokens peeked. See comment for readSectionAddressType below.
+bool ScriptParser::readSectionDirective(OutputSection *cmd, StringRef tok1, StringRef tok2) {
   if (tok1 != "(")
     return false;
   if (tok2 != "NOLOAD" && tok2 != "COPY" && tok2 != "INFO" && tok2 != "OVERLAY")
@@ -1191,10 +1189,10 @@ static llvm::Optional<uint64_t> parseFlag(StringRef tok) {
 // Example: SHF_EXECINSTR & !SHF_WRITE means with flag SHF_EXECINSTR and
 // without flag SHF_WRITE.
 std::pair<uint64_t, uint64_t> ScriptParser::readInputSectionFlags() {
-  uint64_t withFlags = 0;
-  uint64_t withoutFlags = 0;
-  expect("(");
-  while (!errorCount()) {
+   uint64_t withFlags = 0;
+   uint64_t withoutFlags = 0;
+   expect("(");
+   while (!errorCount()) {
     StringRef tok = unquote(next());
     bool without = tok.consume_front("!");
     if (llvm::Optional<uint64_t> flag = parseFlag(tok)) {

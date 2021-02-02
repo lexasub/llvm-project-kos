@@ -25,6 +25,7 @@
 #include "llvm/Analysis/AssumptionCache.h"
 #include "llvm/Analysis/InstructionSimplify.h"
 #include "llvm/Analysis/IteratedDominanceFrontier.h"
+#include "llvm/Transforms/Utils/Local.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
@@ -44,7 +45,6 @@
 #include "llvm/IR/Type.h"
 #include "llvm/IR/User.h"
 #include "llvm/Support/Casting.h"
-#include "llvm/Transforms/Utils/Local.h"
 #include "llvm/Transforms/Utils/PromoteMemToReg.h"
 #include <algorithm>
 #include <cassert>
@@ -57,9 +57,9 @@ using namespace llvm;
 #define DEBUG_TYPE "mem2reg"
 
 STATISTIC(NumLocalPromoted, "Number of alloca's promoted within one block");
-STATISTIC(NumSingleStore, "Number of alloca's promoted with a single store");
-STATISTIC(NumDeadAlloca, "Number of dead alloca's removed");
-STATISTIC(NumPHIInsert, "Number of PHI nodes inserted");
+STATISTIC(NumSingleStore,   "Number of alloca's promoted with a single store");
+STATISTIC(NumDeadAlloca,    "Number of dead alloca's removed");
+STATISTIC(NumPHIInsert,     "Number of PHI nodes inserted");
 
 bool llvm::isAllocaPromotable(const AllocaInst *AI) {
   // Only allow direct and non-volatile loads and stores...
@@ -183,6 +183,7 @@ class LargeBlockInfo {
   DenseMap<const Instruction *, unsigned> InstNumbers;
 
 public:
+
   /// This code only looks at accesses to allocas.
   static bool isInterestingInstruction(const Instruction *I) {
     return (isa<LoadInst>(I) && isa<AllocaInst>(I->getOperand(0))) ||
@@ -456,8 +457,10 @@ static bool rewriteSingleStoreAlloca(AllocaInst *AI, AllocaInfo &Info,
 ///    *A = 42;
 ///  }
 static bool promoteSingleBlockAlloca(AllocaInst *AI, const AllocaInfo &Info,
-                                     LargeBlockInfo &LBI, const DataLayout &DL,
-                                     DominatorTree &DT, AssumptionCache *AC) {
+                                     LargeBlockInfo &LBI,
+                                     const DataLayout &DL,
+                                     DominatorTree &DT,
+                                     AssumptionCache *AC) {
   // The trickiest case to handle is when we have large blocks. Because of this,
   // this code is optimized assuming that large blocks happen.  This does not
   // significantly pessimize the small block case.  This uses LargeBlockInfo to
@@ -498,9 +501,9 @@ static bool promoteSingleBlockAlloca(AllocaInst *AI, const AllocaInfo &Info,
         // by the following stores - see main comment).
         return false;
     } else {
-      // Otherwise, there was a store before this load, the load takes its
-      // value. Note, if the load was marked as nonnull we don't want to lose
-      // that information when we erase it. So we preserve it with an assume.
+      // Otherwise, there was a store before this load, the load takes its value.
+      // Note, if the load was marked as nonnull we don't want to lose that
+      // information when we erase it. So we preserve it with an assume.
       Value *ReplVal = std::prev(I)->second->getOperand(0);
       if (AC && LI->getMetadata(LLVMContext::MD_nonnull) &&
           !isKnownNonZero(ReplVal, DL, 0, AC, LI, &DT))

@@ -16,11 +16,11 @@
 #include <streambuf>
 #include <cassert>
 
-std::streambuf& get();
+std::streambuf &get();
 
-int main(int, char**) {
-  std::streambuf sb =
-      get(); // expected-error {{calling a protected constructor}}
+int main(int, char**)
+{
+    std::streambuf sb = get(); // expected-error {{calling a protected constructor}}
 
   return 0;
 }

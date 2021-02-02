@@ -576,7 +576,8 @@ bool llvm::tryPromoteCall(CallBase &CB) {
   if (!(VTableGVOffset.getActiveBits() <= 64))
     return false; // Out of range.
   Constant *Ptr = getPointerAtOffset(VTableGVInitializer,
-                                     VTableGVOffset.getZExtValue(), *M);
+                                     VTableGVOffset.getZExtValue(),
+                                     *M);
   if (!Ptr)
     return false; // No constant (function) pointer found.
   Function *DirectCallee = dyn_cast<Function>(Ptr->stripPointerCasts());

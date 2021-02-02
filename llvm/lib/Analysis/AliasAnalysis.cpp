@@ -59,8 +59,8 @@
 
 using namespace llvm;
 
-STATISTIC(NumNoAlias, "Number of NoAlias results");
-STATISTIC(NumMayAlias, "Number of MayAlias results");
+STATISTIC(NumNoAlias,   "Number of NoAlias results");
+STATISTIC(NumMayAlias,  "Number of MayAlias results");
 STATISTIC(NumMustAlias, "Number of MustAlias results");
 
 /// Allow disabling BasicAA from the AA results. This is particularly useful
@@ -506,8 +506,7 @@ ModRefInfo AAResults::getModRefInfo(const StoreInst *S,
   return ModRefInfo::Mod;
 }
 
-ModRefInfo AAResults::getModRefInfo(const FenceInst *S,
-                                    const MemoryLocation &Loc) {
+ModRefInfo AAResults::getModRefInfo(const FenceInst *S, const MemoryLocation &Loc) {
   AAQueryInfo AAQIP;
   return getModRefInfo(S, Loc, AAQIP);
 }
@@ -629,8 +628,7 @@ ModRefInfo AAResults::getModRefInfo(const AtomicRMWInst *RMW,
 ModRefInfo AAResults::getModRefInfo(const AtomicRMWInst *RMW,
                                     const MemoryLocation &Loc,
                                     AAQueryInfo &AAQI) {
-  // Acquire/Release atomicrmw has properties that matter for arbitrary
-  // addresses.
+  // Acquire/Release atomicrmw has properties that matter for arbitrary addresses.
   if (isStrongerThanMonotonic(RMW->getOrdering()))
     return ModRefInfo::ModRef;
 
@@ -769,7 +767,7 @@ bool AAResults::canInstructionRangeModRef(const Instruction &I1,
          "Instructions not in same basic block!");
   BasicBlock::const_iterator I = I1.getIterator();
   BasicBlock::const_iterator E = I2.getIterator();
-  ++E; // Convert from inclusive to exclusive range.
+  ++E;  // Convert from inclusive to exclusive range.
 
   for (; I != E; ++I) // Check every instruction in range
     if (isModOrRefSet(intersectModRef(getModRefInfo(&*I, Loc), Mode)))
@@ -783,7 +781,10 @@ AAResults::Concept::~Concept() = default;
 // Provide a definition for the static object used to identify passes.
 AnalysisKey AAManager::Key;
 
-namespace {} // end anonymous namespace
+namespace {
+
+
+} // end anonymous namespace
 
 ExternalAAWrapperPass::ExternalAAWrapperPass() : ImmutablePass(ID) {
   initializeExternalAAWrapperPassPass(*PassRegistry::getPassRegistry());

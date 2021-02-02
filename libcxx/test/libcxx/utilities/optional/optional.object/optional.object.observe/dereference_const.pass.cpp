@@ -22,10 +22,9 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  const std::optional<int> opt;
-  int x = *opt;
-  (void)x;
-  assert(false);
+    const std::optional<int> opt;
+    int x = *opt; (void)x;
+    assert(false);
 
-  return 0;
+    return 0;
 }

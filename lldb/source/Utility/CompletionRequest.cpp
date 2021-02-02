@@ -36,7 +36,8 @@ CompletionRequest::CompletionRequest(llvm::StringRef command_line,
   // The cursor is after a space but the space is not part of the argument.
   // Let's add an empty fake argument to the end to make sure the completion
   // code. Note: The space could be part of the last argument when it's quoted.
-  if (partial_command.endswith(" ") && !GetCursorArgumentPrefix().endswith(" "))
+  if (partial_command.endswith(" ") &&
+      !GetCursorArgumentPrefix().endswith(" "))
     AppendEmptyArgument();
 }
 

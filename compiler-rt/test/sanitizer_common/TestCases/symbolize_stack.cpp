@@ -8,10 +8,8 @@
 #include <sanitizer/common_interface_defs.h>
 #include <vector>
 
-template <int N>
-struct A {
-  template <class T>
-  void RecursiveTemplateFunction(const T &t);
+template <int N> struct A {
+  template <class T> void RecursiveTemplateFunction(const T &t);
 };
 
 template <int N>

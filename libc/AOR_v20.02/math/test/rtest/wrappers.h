@@ -7,19 +7,19 @@
  */
 
 typedef struct {
-  /* Structure type should be considered opaque outside wrappers.c,
-   * though we have to define it here so its size is known. */
-  int nops;
-  int nresults;
-  mpfr_srcptr mpfr_ops[2];
-  mpfr_ptr mpfr_result;
-  mpc_srcptr mpc_ops[2];
-  mpc_ptr mpc_result;
-  const uint32 *ieee_ops[2];
-  uint32 *ieee_result;
-  int size_ops[2];
-  int size_result;
-  int need_regen;
+    /* Structure type should be considered opaque outside wrappers.c,
+     * though we have to define it here so its size is known. */
+    int nops;
+    int nresults;
+    mpfr_srcptr mpfr_ops[2];
+    mpfr_ptr mpfr_result;
+    mpc_srcptr mpc_ops[2];
+    mpc_ptr mpc_result;
+    const uint32 *ieee_ops[2];
+    uint32 *ieee_result;
+    int size_ops[2];
+    int size_result;
+    int need_regen;
 } wrapperctx;
 
 typedef void (*wrapperfunc)(wrapperctx *ctx);
@@ -49,19 +49,21 @@ typedef void (*wrapperfunc)(wrapperctx *ctx);
 void wrapper_init(wrapperctx *ctx);
 
 /* Real operand. */
-void wrapper_op_real(wrapperctx *ctx, const mpfr_t r, int size,
-                     const uint32 *ieee);
+void wrapper_op_real(wrapperctx *ctx, const mpfr_t r,
+                     int size, const uint32 *ieee);
 
 /* Complex operand. Real part starts at ieee[0], the imag part at ieee[2]. */
-void wrapper_op_complex(wrapperctx *ctx, const mpc_t c, int size,
-                        const uint32 *ieee);
+void wrapper_op_complex(wrapperctx *ctx, const mpc_t c,
+                        int size, const uint32 *ieee);
 
 /* Real result. ieee contains size+1 words, as discussed above. */
-void wrapper_result_real(wrapperctx *ctx, mpfr_t r, int size, uint32 *ieee);
+void wrapper_result_real(wrapperctx *ctx, mpfr_t r,
+                         int size, uint32 *ieee);
 
 /* Complex result. ieee contains size+1 words of real part starting at
  * ieee[0], and another size+1 of imag part starting at ieee[4]. */
-void wrapper_result_complex(wrapperctx *ctx, mpc_t c, int size, uint32 *ieee);
+void wrapper_result_complex(wrapperctx *ctx, mpc_t c,
+                            int size, uint32 *ieee);
 
 int wrapper_run(wrapperctx *ctx, wrapperfunc wrappers[MAXWRAPPERS]);
 

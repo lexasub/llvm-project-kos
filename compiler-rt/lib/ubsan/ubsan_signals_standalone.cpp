@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_platform.h"
 #include "ubsan_platform.h"
+#include "sanitizer_common/sanitizer_platform.h"
 #if CAN_SANITIZE_UB
 #include "interception/interception.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
@@ -30,7 +30,7 @@
 
 namespace __ubsan {
 void InitializeDeadlySignals() {}
-} // namespace __ubsan
+}
 
 #else
 
@@ -38,8 +38,8 @@ void InitializeDeadlySignals() {}
 #include "sanitizer_common/sanitizer_signal_interceptors.inc"
 
 // TODO(yln): Temporary workaround. Will be removed.
-void ubsan_GetStackTrace(BufferedStackTrace *stack, uptr max_depth, uptr pc,
-                         uptr bp, void *context, bool fast);
+void ubsan_GetStackTrace(BufferedStackTrace *stack, uptr max_depth,
+                         uptr pc, uptr bp, void *context, bool fast);
 
 namespace __ubsan {
 

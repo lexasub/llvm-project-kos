@@ -37,7 +37,7 @@ public:
 
 protected:
   template <typename... Indices>
-  bool checkTypeReferences(uint32_t RecordIndex, Indices &&...TIs) const {
+  bool checkTypeReferences(uint32_t RecordIndex, Indices &&... TIs) const {
     EXPECT_EQ(sizeof...(Indices), countRefs(RecordIndex));
 
     // Choose between type or symbol records. The checking code doesn't care
@@ -54,7 +54,7 @@ protected:
                                    std::forward<Indices>(TIs)...);
   }
 
-  template <typename... T> void writeFieldList(T &&...MemberRecords) {
+  template <typename... T> void writeFieldList(T &&... MemberRecords) {
     CRB->begin(ContinuationRecordKind::FieldList);
     writeFieldListImpl(std::forward<T>(MemberRecords)...);
     auto Records = CRB->end(TTB->nextTypeIndex());
@@ -63,13 +63,13 @@ protected:
     discoverAllTypeIndices();
   }
 
-  template <typename... T> void writeTypeRecords(T &&...Records) {
+  template <typename... T> void writeTypeRecords(T &&... Records) {
     writeTypeRecordsImpl(std::forward<T>(Records)...);
     ASSERT_EQ(sizeof...(T), TTB->records().size());
     discoverAllTypeIndices();
   }
 
-  template <typename... T> void writeSymbolRecords(T &&...Records) {
+  template <typename... T> void writeSymbolRecords(T &&... Records) {
     writeSymbolRecordsImpl(std::forward<T>(Records)...);
     ASSERT_EQ(sizeof...(T), Symbols.size());
     discoverTypeIndicesInSymbols();
@@ -112,7 +112,7 @@ private:
   template <typename... Indices>
   bool checkTypeReferencesImpl(uint32_t RecordIndex,
                                ArrayRef<ArrayRef<uint8_t>> CVRecords,
-                               TypeIndex TI, Indices &&...Rest) const {
+                               TypeIndex TI, Indices &&... Rest) const {
     ArrayRef<uint8_t> Record = CVRecords[RecordIndex];
     bool Success = checkOneTypeReference(RecordIndex, Record, TI);
     EXPECT_TRUE(Success);
@@ -139,7 +139,7 @@ private:
   void writeFieldListImpl() {}
 
   template <typename RecType, typename... Rest>
-  void writeFieldListImpl(RecType &&Record, Rest &&...Records) {
+  void writeFieldListImpl(RecType &&Record, Rest &&... Records) {
     CRB->writeMemberType(Record);
     writeFieldListImpl(std::forward<Rest>(Records)...);
   }
@@ -148,7 +148,7 @@ private:
   void writeTypeRecordsImpl() {}
 
   template <typename RecType, typename... Rest>
-  void writeTypeRecordsImpl(RecType &&Record, Rest &&...Records) {
+  void writeTypeRecordsImpl(RecType &&Record, Rest &&... Records) {
     TTB->writeLeafType(Record);
     writeTypeRecordsImpl(std::forward<Rest>(Records)...);
   }
@@ -157,7 +157,7 @@ private:
   void writeSymbolRecordsImpl() {}
 
   template <typename RecType, typename... Rest>
-  void writeSymbolRecordsImpl(RecType &&Record, Rest &&...Records) {
+  void writeSymbolRecordsImpl(RecType &&Record, Rest &&... Records) {
     Symbols.push_back(SymbolSerializer::writeOneSymbol(Record, Storage,
                                                        CodeViewContainer::Pdb));
     writeSymbolRecordsImpl(std::forward<Rest>(Records)...);
@@ -235,7 +235,7 @@ static PointerRecord MemberPointer(
     PointerOptions::Const, 3,
     MemberPointerInfo(TypeIndex(46),
                       PointerToMemberRepresentation::GeneralData));
-} // namespace leafs
+}
 
 namespace members {
 static BaseClassRecord BaseClass(MemberAccess::Public, TypeIndex(47), 0);
@@ -282,7 +282,7 @@ static VirtualBaseClassRecord VirtualBaseClass(TypeRecordKind::VirtualBaseClass,
                                                0);
 static VFPtrRecord VFPtr(TypeIndex(58));
 static ListContinuationRecord Continuation(TypeIndex(59));
-} // namespace members
+}
 
 TEST_F(TypeIndexIteratorTest, FuncId) {
   using namespace leafs;

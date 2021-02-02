@@ -5,19 +5,19 @@ struct S {
   ~S();
 };
 
-struct TestObject {
-  TestObject(const TestObject &inObj, int def = 100, const S &Silly = "silly");
-  TestObject();
-  ~TestObject();
-  TestObject &operator=(const TestObject &inObj);
-  int version() const;
+struct TestObject
+{
+	TestObject(const TestObject& inObj, int def = 100,  const S &Silly = "silly");
+	TestObject();
+	~TestObject();
+	TestObject& operator=(const TestObject& inObj);
+	int version() const;
+
 };
 
 void testRoutine() {
-  TestObject one;
-  int (^V)() = ^{
-    return one.version();
-  };
+    TestObject one;
+    int (^V)() = ^{ return one.version(); };
 }
 
 // CHECK: call void @_ZN10TestObjectC1Ev

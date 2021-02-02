@@ -2,7 +2,7 @@
 
 namespace pr14763 {
 struct foo {
-  foo(const foo &);
+  foo(const foo&);
 };
 
 foo func(bool b, foo f, foo g) {
@@ -10,4 +10,4 @@ foo func(bool b, foo f, foo g) {
     return f;
   return g;
 }
-} // namespace pr14763
+}

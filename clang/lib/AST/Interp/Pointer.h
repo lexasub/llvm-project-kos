@@ -252,7 +252,9 @@ public:
   llvm::Optional<unsigned> getDeclID() const { return Pointee->getDeclID(); }
 
   /// Returns the byte offset from the start.
-  unsigned getByteOffset() const { return Offset; }
+  unsigned getByteOffset() const {
+    return Offset;
+  }
 
   /// Returns the number of elements.
   unsigned getNumElems() const { return getSize() / elemSize(); }

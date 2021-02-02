@@ -2,14 +2,15 @@
 // expected-no-diagnostics
 
 namespace A {
-void g();
+  void g();
 }
 
 namespace X {
-using A::g;
+  using A::g; 
 }
 
-void h() {
+void h()
+{
   A::g();
   X::g();
 }

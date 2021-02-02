@@ -14,8 +14,7 @@ __attribute__((constructor(0), no_sanitize("cfi"))) static void init() {
   cfi_slowpath = (cfi_slowpath_ty)dlsym(RTLD_NEXT, "__cfi_slowpath");
   cfi_slowpath_diag =
       (cfi_slowpath_diag_ty)dlsym(RTLD_NEXT, "__cfi_slowpath_diag");
-  if (!cfi_slowpath || !cfi_slowpath_diag)
-    abort();
+  if (!cfi_slowpath || !cfi_slowpath_diag) abort();
 }
 
 extern "C" {

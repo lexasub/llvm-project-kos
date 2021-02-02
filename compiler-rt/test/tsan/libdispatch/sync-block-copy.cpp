@@ -23,7 +23,7 @@ struct MyClass {
 };
 int MyClass::copyCount = 0;
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[]) {
   dispatch_queue_t q = dispatch_queue_create("my.queue", NULL);
   MyClass obj;
   MyClass::printCopyCount();

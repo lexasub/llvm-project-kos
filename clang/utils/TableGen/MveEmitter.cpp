@@ -272,8 +272,8 @@ public:
     return "Int" + utostr(Bits) + "Ty";
   }
   std::string acleSuffix(std::string overrideLetter) const override {
-    return "_" + (overrideLetter.size() ? overrideLetter : toLetter(Kind)) +
-           utostr(Bits);
+    return "_" + (overrideLetter.size() ? overrideLetter : toLetter(Kind))
+               + utostr(Bits);
   }
   bool isInteger() const { return Kind != ScalarTypeKind::Float; }
   bool requiresFloat() const override { return !isInteger(); }
@@ -536,7 +536,9 @@ public:
   bool varnameUsed() const { return VarNameUsed; }
 
   // Emit code to generate this result as a Value *.
-  virtual std::string asValue() { return varname(); }
+  virtual std::string asValue() {
+    return varname();
+  }
 
   // Code generation happens in multiple passes. This method tracks whether a
   // Result has yet been visited in a given pass, without the need for a
@@ -709,10 +711,12 @@ public:
   AddressResult(Ptr Arg, unsigned Align) : Arg(Arg), Align(Align) {}
   void genCode(raw_ostream &OS,
                CodeGenParamAllocator &ParamAlloc) const override {
-    OS << "Address(" << Arg->varname() << ", CharUnits::fromQuantity(" << Align
-       << "))";
+    OS << "Address(" << Arg->varname() << ", CharUnits::fromQuantity("
+       << Align << "))";
   }
-  std::string typeName() const override { return "Address"; }
+  std::string typeName() const override {
+    return "Address";
+  }
   void morePrerequisites(std::vector<Ptr> &output) const override {
     output.push_back(Arg);
   }
@@ -731,8 +735,8 @@ public:
         Args(Args) {}
   void genCode(raw_ostream &OS,
                CodeGenParamAllocator &ParamAlloc) const override {
-    std::string IntNo =
-        ParamAlloc.allocParam("Intrinsic::ID", "Intrinsic::" + IntrinsicID);
+    std::string IntNo = ParamAlloc.allocParam(
+        "Intrinsic::ID", "Intrinsic::" + IntrinsicID);
     OS << "Builder.CreateCall(CGM.getIntrinsic(" << IntNo;
     if (!ParamTypes.empty()) {
       OS << ", {";
@@ -765,7 +769,9 @@ public:
   void genCode(raw_ostream &OS, CodeGenParamAllocator &) const override {
     OS << T->llvmName();
   }
-  std::string typeName() const override { return "llvm::Type *"; }
+  std::string typeName() const override {
+    return "llvm::Type *";
+  }
 };
 
 // -----------------------------------------------------------------------------
@@ -920,9 +926,8 @@ public:
       // immediate is smaller than the _possible_ range of values for
       // its type.
       unsigned ArgTypeBits = IA.ArgType->sizeInBits();
-      llvm::APInt ArgTypeRange =
-          llvm::APInt::getMaxValue(ArgTypeBits).zext(128);
-      llvm::APInt ActualRange = (hi - lo).trunc(64).sext(128);
+      llvm::APInt ArgTypeRange = llvm::APInt::getMaxValue(ArgTypeBits).zext(128);
+      llvm::APInt ActualRange = (hi-lo).trunc(64).sext(128);
       if (ActualRange.ult(ArgTypeRange))
         SemaChecks.push_back("SemaBuiltinConstantArgRange(TheCall, " + Index +
                              ", " + signedHexLiteral(lo) + ", " +
@@ -1127,8 +1132,7 @@ const Type *EmitterBase::getType(DagInit *D, const Type *Param) {
     const ScalarType *STKind = cast<ScalarType>(getType(D->getArg(1), Param));
     for (const auto &kv : ScalarTypes) {
       const ScalarType *RT = kv.second.get();
-      if (RT->kind() == STKind->kind() &&
-          RT->sizeInBits() == STSize->sizeInBits())
+      if (RT->kind() == STKind->kind() && RT->sizeInBits() == STSize->sizeInBits())
         return RT;
     }
     PrintFatalError("Cannot find a type to satisfy CopyKind");
@@ -1205,7 +1209,7 @@ Result::Ptr EmitterBase::getCodeForDag(DagInit *D, const Result::Scope &Scope,
       PrintFatalError("unsignedflag's argument should be a type");
     if (const auto *ST = dyn_cast<ScalarType>(getType(TypeRec, Param))) {
       return std::make_shared<IntLiteralResult>(
-          getScalarType("u32"), ST->kind() == ScalarTypeKind::UnsignedInt);
+        getScalarType("u32"), ST->kind() == ScalarTypeKind::UnsignedInt);
     } else {
       PrintFatalError("unsignedflag's argument should be a scalar type");
     }
@@ -2047,9 +2051,9 @@ void CdeEmitter::EmitHeader(raw_ostream &OS) {
       if (!Polymorphic && Int.polymorphicOnly())
         continue;
 
-      raw_ostream &OS = parts[Int.requiresFloat() ? MVEFloat
-                              : Int.requiresMVE() ? MVE
-                                                  : None];
+      raw_ostream &OS =
+          parts[Int.requiresFloat() ? MVEFloat
+                                    : Int.requiresMVE() ? MVE : None];
 
       // Make the name of the function in this declaration.
       std::string FunctionName =

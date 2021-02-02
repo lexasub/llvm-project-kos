@@ -31,10 +31,10 @@
 #include "FuzzerDefs.h"
 #include "FuzzerIO.h"
 
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <string>
 
 namespace fuzzer {
 
@@ -42,7 +42,7 @@ int CollectDataFlow(const std::string &DFTBinary, const std::string &DirPath,
                     const Vector<SizedFile> &CorporaFiles);
 
 class BlockCoverage {
-public:
+ public:
   bool AppendCoverage(std::istream &IN);
   bool AppendCoverage(const std::string &S);
 
@@ -50,8 +50,7 @@ public:
 
   uint32_t GetCounter(size_t FunctionId, size_t BasicBlockId) {
     auto It = Functions.find(FunctionId);
-    if (It == Functions.end())
-      return 0;
+    if (It == Functions.end()) return 0;
     const auto &Counters = It->second;
     if (BasicBlockId < Counters.size())
       return Counters[BasicBlockId];
@@ -60,19 +59,17 @@ public:
 
   uint32_t GetNumberOfBlocks(size_t FunctionId) {
     auto It = Functions.find(FunctionId);
-    if (It == Functions.end())
-      return 0;
+    if (It == Functions.end()) return 0;
     const auto &Counters = It->second;
     return Counters.size();
   }
 
   uint32_t GetNumberOfCoveredBlocks(size_t FunctionId) {
     auto It = Functions.find(FunctionId);
-    if (It == Functions.end())
-      return 0;
+    if (It == Functions.end()) return 0;
     const auto &Counters = It->second;
     uint32_t Result = 0;
-    for (auto Cnt : Counters)
+    for (auto Cnt: Counters)
       if (Cnt)
         Result++;
     return Result;
@@ -81,7 +78,8 @@ public:
   Vector<double> FunctionWeights(size_t NumFunctions) const;
   void clear() { Functions.clear(); }
 
-private:
+ private:
+
   typedef Vector<uint32_t> CoverageVector;
 
   uint32_t NumberOfCoveredBlocks(const CoverageVector &Counters) const {
@@ -114,7 +112,7 @@ private:
 };
 
 class DataFlowTrace {
-public:
+ public:
   void ReadCoverage(const std::string &DirPath);
   bool Init(const std::string &DirPath, std::string *FocusFunction,
             Vector<SizedFile> &CorporaFiles, Random &Rand);
@@ -126,12 +124,12 @@ public:
     return nullptr;
   }
 
-private:
+ private:
   // Input's sha1 => DFT for the FocusFunction.
-  std::unordered_map<std::string, Vector<uint8_t>> Traces;
+  std::unordered_map<std::string, Vector<uint8_t> > Traces;
   BlockCoverage Coverage;
   std::unordered_set<std::string> CorporaHashes;
 };
-} // namespace fuzzer
+}  // namespace fuzzer
 
 #endif // LLVM_FUZZER_DATA_FLOW_TRACE

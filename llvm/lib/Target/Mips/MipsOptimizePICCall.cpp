@@ -48,8 +48,9 @@ static cl::opt<bool> LoadTargetFromGOT("mips-load-target-from-got",
                                        cl::desc("Load target address from GOT"),
                                        cl::Hidden);
 
-static cl::opt<bool> EraseGPOpnd("mips-erase-gp-opnd", cl::init(true),
-                                 cl::desc("Erase GP Operand"), cl::Hidden);
+static cl::opt<bool> EraseGPOpnd("mips-erase-gp-opnd",
+                                 cl::init(true), cl::desc("Erase GP Operand"),
+                                 cl::Hidden);
 
 namespace {
 
@@ -57,8 +58,8 @@ using ValueType = PointerUnion<const Value *, const PseudoSourceValue *>;
 using CntRegP = std::pair<unsigned, unsigned>;
 using AllocatorTy = RecyclingAllocator<BumpPtrAllocator,
                                        ScopedHashTableVal<ValueType, CntRegP>>;
-using ScopedHTType =
-    ScopedHashTable<ValueType, CntRegP, DenseMapInfo<ValueType>, AllocatorTy>;
+using ScopedHTType = ScopedHashTable<ValueType, CntRegP,
+                                     DenseMapInfo<ValueType>, AllocatorTy>;
 
 class MBBInfo {
 public:
@@ -96,7 +97,8 @@ private:
   /// Also, return the virtual register containing the target function's address
   /// and the underlying object in Reg and Val respectively, if the function's
   /// address can be resolved lazily.
-  bool isCallViaRegister(MachineInstr &MI, unsigned &Reg, ValueType &Val) const;
+  bool isCallViaRegister(MachineInstr &MI, unsigned &Reg,
+                         ValueType &Val) const;
 
   /// Return the number of instructions that dominate the current
   /// instruction and load the function address from object Entry.
@@ -186,7 +188,9 @@ void MBBInfo::preVisit(ScopedHTType &ScopedHT) {
   HTScope = new ScopedHTType::ScopeTy(ScopedHT);
 }
 
-void MBBInfo::postVisit() { delete HTScope; }
+void MBBInfo::postVisit() {
+  delete HTScope;
+}
 
 // OptimizePICCall methods.
 bool OptimizePICCall::runOnMachineFunction(MachineFunction &F) {

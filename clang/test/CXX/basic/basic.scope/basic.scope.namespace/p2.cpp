@@ -19,7 +19,7 @@ export int exported;
 int not_exported;
 static int internal;
 
-module : private;
+module :private;
 int not_exported_private;
 static int internal_private;
 #else

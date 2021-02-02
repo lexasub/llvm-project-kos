@@ -19,6 +19,7 @@ void foo1() { throw 1; }
 // GNU: call void @__cxa_throw({{.*}})
 // GNU: declare dso_local void @__cxa_throw({{.*}})
 
+
 void bar();
 void foo2() noexcept(true) { bar(); }
 // __std_terminate should not be marked dllimport.
@@ -40,10 +41,9 @@ void foo2() noexcept(true) { bar(); }
 // GNU: declare dso_local i8* @__cxa_begin_catch(i8*)
 // GNU: declare dso_local void @_ZSt9terminatev()
 
+
 struct A {};
-struct B {
-  virtual void f();
-};
+struct B { virtual void f(); };
 struct C : A, virtual B {};
 struct T {};
 T *foo3() { return dynamic_cast<T *>((C *)0); }

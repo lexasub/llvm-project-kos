@@ -6,29 +6,29 @@ typedef unsigned long size_t;
 namespace std {
 template <class T> class tuple_size;
 template <class T>
-constexpr size_t tuple_size_v = tuple_size<T>::value;
+ constexpr size_t tuple_size_v = tuple_size<T>::value;
 template <size_t I, class T> class tuple_element;
 
-template <class T, T v>
+template<class T, T v>
 struct integral_constant {
-  static constexpr T value = v;
-  typedef T value_type;
-  typedef integral_constant type;
-  constexpr operator value_type() const noexcept { return value; }
+    static constexpr T value = v;
+    typedef T value_type;
+    typedef integral_constant type;
+    constexpr operator value_type() const noexcept { return value; }
 };
-} // namespace std
+}
 
 struct S {
   int a;
   double b;
-  S(int a, double b) : a(a), b(b){};
+  S(int a, double b) : a(a), b(b) {};
 };
 
 S GetNumbers();
 
 int used_binding() {
-  const auto [a, b] = GetNumbers(); // no-warning
-  return a + b;
+    const auto [a, b] = GetNumbers(); // no-warning
+    return a + b; 
 }
 
 void no_warning_on_copy(S s) {
@@ -36,22 +36,24 @@ void no_warning_on_copy(S s) {
   const auto [a, b] = s; // no-warning
 }
 
+
 int unused_binding_ignored() {
-  const auto [a, b] = GetNumbers(); // expected-warning{{Value stored to '[a, b]' during its initialization is never read}}
-  return 0;
+    const auto [a, b] = GetNumbers(); // expected-warning{{Value stored to '[a, b]' during its initialization is never read}}
+    return 0;
 }
 
 int unused_binding_liveness_required() {
-  auto [a2, b2] = GetNumbers(); // expected-warning{{Value stored to '[a2, b2]' during its initialization is never read}}
-  a2 = 10;
-  b2 = 20;
-  return a2 + b2;
+    auto [a2, b2] = GetNumbers(); // expected-warning{{Value stored to '[a2, b2]' during its initialization is never read}}
+    a2 = 10;
+    b2 = 20;
+    return a2 + b2;
 }
 
 int kill_one_binding() {
   auto [a, b] = GetNumbers(); // no-warning
   a = 100;
   return a + b;
+
 }
 
 int kill_one_binding2() {
@@ -90,23 +92,21 @@ struct Mytuple {
 
   template <size_t N>
   int get() const {
-    if constexpr (N == 0)
-      return a;
-    else if constexpr (N == 1)
-      return b;
+    if      constexpr (N == 0) return a;
+    else if constexpr (N == 1) return b;
   }
 };
 
 namespace std {
-template <>
-struct tuple_size<Mytuple>
-    : std::integral_constant<size_t, 2> {};
+    template<>
+    struct tuple_size<Mytuple>
+        : std::integral_constant<size_t, 2> {};
 
-template <size_t N>
-struct tuple_element<N, Mytuple> {
-  using type = int;
-};
-} // namespace std
+    template<size_t N>
+    struct tuple_element<N, Mytuple> {
+        using type = int;
+    };
+}
 
 void no_warning_on_tuple_types_copy(Mytuple t) {
   auto [a, b] = t; // no-warning

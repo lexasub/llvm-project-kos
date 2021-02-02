@@ -40,7 +40,8 @@ void StringFindStartswithCheck::registerMatchers(MatchFinder *Finder) {
 
   auto StringFind = cxxMemberCallExpr(
       // .find()-call on a string...
-      callee(cxxMethodDecl(hasName("find"))), on(hasType(StringType)),
+      callee(cxxMethodDecl(hasName("find"))),
+      on(hasType(StringType)),
       // ... with some search expression ...
       hasArgument(0, expr().bind("needle")),
       // ... and either "0" as second argument or the default argument (also 0).

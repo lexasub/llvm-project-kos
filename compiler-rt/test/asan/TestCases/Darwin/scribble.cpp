@@ -20,7 +20,8 @@ struct MyClass {
   void print_my_class_name();
 };
 
-__attribute__((no_sanitize("address"))) void MyClass::print_my_class_name() {
+__attribute__((no_sanitize("address")))
+void MyClass::print_my_class_name() {
   fprintf(stderr, "this = %p\n", this);
   fprintf(stderr, "padding = 0x%lx\n", this->padding);
   fprintf(stderr, "isa = %p\n", this->isa);

@@ -19,20 +19,21 @@
 #include "test_convertible.h"
 #endif
 
-int main(int, char**) {
-  typedef std::vector<int, limited_allocator<int, 10> > Container;
-  typedef std::less<int> Compare;
-  typedef std::priority_queue<int, Container> Q;
-  Q q((Compare()));
-  assert(q.size() == 0);
-  q.push(1);
-  q.push(2);
-  assert(q.size() == 2);
-  assert(q.top() == 2);
+int main(int, char**)
+{
+    typedef std::vector<int, limited_allocator<int, 10> > Container;
+    typedef std::less<int> Compare;
+    typedef std::priority_queue<int, Container> Q;
+    Q q((Compare()));
+    assert(q.size() == 0);
+    q.push(1);
+    q.push(2);
+    assert(q.size() == 2);
+    assert(q.top() == 2);
 
 #if TEST_STD_VER >= 11
-  static_assert(!test_convertible<Q, const Compare&>(), "");
+    static_assert(!test_convertible<Q, const Compare&>(), "");
 #endif
 
-  return 0;
+    return 0;
 }

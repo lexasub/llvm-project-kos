@@ -14,9 +14,8 @@
 bool g();
 
 void f() {
-  if (g())
-    ;
-    // CHECK-WERROR: :[[@LINE-1]]:11: warning: potentially unintended semicolon [bugprone-suspicious-semicolon]
+  if (g());
+  // CHECK-WERROR: :[[@LINE-1]]:11: warning: potentially unintended semicolon [bugprone-suspicious-semicolon]
 #if ERROR
   int a
   // CHECK-ERROR: :[[@LINE-1]]:8: error: expected ';' at end of declaration [clang-diagnostic-error]

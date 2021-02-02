@@ -28,7 +28,7 @@ int main() {
     pthread_join(t, 0);
   }
   pthread_t t;
-  pthread_create(&t, 0, Thread, (void *)1);
+  pthread_create(&t, 0, Thread, (void*)1);
   barrier_wait(&barrier);
   for (int i = 0; i < kSize; i++)
     data[i]++;

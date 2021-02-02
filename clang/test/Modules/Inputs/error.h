@@ -1,8 +1,8 @@
 @import undefined
 
-    @interface Error
+@interface Error
 - (int)method;
 undefined
-    @end
+@end
 
 undefined

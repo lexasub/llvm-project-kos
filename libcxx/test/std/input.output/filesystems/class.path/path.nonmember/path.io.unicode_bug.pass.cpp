@@ -36,9 +36,8 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-MultiStringType InStr = MKSTR("abcdefg/\"hijklmnop\"/qrstuvwxyz/123456789");
-MultiStringType OutStr =
-    MKSTR("\"abcdefg/\\\"hijklmnop\\\"/qrstuvwxyz/123456789\"");
+MultiStringType InStr =  MKSTR("abcdefg/\"hijklmnop\"/qrstuvwxyz/123456789");
+MultiStringType OutStr = MKSTR("\"abcdefg/\\\"hijklmnop\\\"/qrstuvwxyz/123456789\"");
 
 template <class CharT>
 void doIOTest() {
@@ -61,6 +60,7 @@ void doIOTest() {
     assert(&ret == &ss);
   }
 }
+
 
 int main(int, char**) {
   doIOTest<char16_t>();

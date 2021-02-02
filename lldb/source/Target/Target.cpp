@@ -2403,7 +2403,8 @@ ExpressionResults Target::EvaluateExpression(
   // Only check for persistent variables the expression starts with a '$'
   lldb::ExpressionVariableSP persistent_var_sp;
   if (expr[0] == '$') {
-    auto type_system_or_err = GetScratchTypeSystemForLanguage(eLanguageTypeC);
+    auto type_system_or_err =
+            GetScratchTypeSystemForLanguage(eLanguageTypeC);
     if (auto err = type_system_or_err.takeError()) {
       LLDB_LOG_ERROR(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_TARGET),
                      std::move(err), "Unable to get scratch type system");
@@ -3314,8 +3315,7 @@ void Target::StopHookCommandLine::GetSubclassDescription(
 }
 
 // Target::StopHookCommandLine
-void Target::StopHookCommandLine::SetActionFromString(
-    const std::string &string) {
+void Target::StopHookCommandLine::SetActionFromString(const std::string &string) {
   GetCommands().SplitIntoLines(string);
 }
 
@@ -3520,14 +3520,20 @@ static constexpr OptionEnumValueElement g_import_std_module_value_types[] = {
         "false",
         "Never import the 'std' C++ module in the expression parser.",
     },
-    {eImportStdModuleFallback, "fallback",
-     "Retry evaluating expressions with an imported 'std' C++ module if they"
-     " failed to parse without the module. This allows evaluating more "
-     "complex expressions involving C++ standard library types."},
-    {eImportStdModuleTrue, "true",
-     "Always import the 'std' C++ module. This allows evaluating more "
-     "complex expressions involving C++ standard library types. This feature"
-     " is experimental."},
+    {
+        eImportStdModuleFallback,
+        "fallback",
+        "Retry evaluating expressions with an imported 'std' C++ module if they"
+        " failed to parse without the module. This allows evaluating more "
+        "complex expressions involving C++ standard library types."
+    },
+    {
+        eImportStdModuleTrue,
+        "true",
+        "Always import the 'std' C++ module. This allows evaluating more "
+        "complex expressions involving C++ standard library types. This feature"
+        " is experimental."
+    },
 };
 
 static constexpr OptionEnumValueElement g_hex_immediate_style_values[] = {

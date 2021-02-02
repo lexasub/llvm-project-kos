@@ -27,19 +27,17 @@ namespace clang {
 
 namespace declvisitor {
 /// A simple visitor class that helps create declaration visitors.
-template <template <typename> class Ptr, typename ImplClass,
-          typename RetTy = void>
+template<template <typename> class Ptr, typename ImplClass, typename RetTy=void>
 class Base {
 public:
 #define PTR(CLASS) typename Ptr<CLASS>::type
-#define DISPATCH(NAME, CLASS)                                                  \
-  return static_cast<ImplClass *>(this)->Visit##NAME(static_cast<PTR(CLASS)>(D))
+#define DISPATCH(NAME, CLASS) \
+  return static_cast<ImplClass*>(this)->Visit##NAME(static_cast<PTR(CLASS)>(D))
 
   RetTy Visit(PTR(Decl) D) {
     switch (D->getKind()) {
-#define DECL(DERIVED, BASE)                                                    \
-  case Decl::DERIVED:                                                          \
-    DISPATCH(DERIVED##Decl, DERIVED##Decl);
+#define DECL(DERIVED, BASE) \
+      case Decl::DERIVED: DISPATCH(DERIVED##Decl, DERIVED##Decl);
 #define ABSTRACT_DECL(DECL)
 #include "clang/AST/DeclNodes.inc"
     }
@@ -48,7 +46,7 @@ public:
 
   // If the implementation chooses not to implement a certain visit
   // method, fall back to the parent.
-#define DECL(DERIVED, BASE)                                                    \
+#define DECL(DERIVED, BASE) \
   RetTy Visit##DERIVED##Decl(PTR(DERIVED##Decl) D) { DISPATCH(BASE, BASE); }
 #include "clang/AST/DeclNodes.inc"
 

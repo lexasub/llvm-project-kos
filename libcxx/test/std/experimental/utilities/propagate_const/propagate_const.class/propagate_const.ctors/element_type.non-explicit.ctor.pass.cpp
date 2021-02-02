@@ -21,9 +21,10 @@ using std::experimental::propagate_const;
 
 typedef propagate_const<X> P;
 
-void f(const P&) {}
+void f(const P&)
+{
+}
 
-int main(int, char**) {
-  f(2);
+int main(int, char**) { f(2);
   return 0;
 }

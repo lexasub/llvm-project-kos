@@ -20,22 +20,24 @@
 
 #include "test_macros.h"
 
-struct mutex {
-  void lock_shared() {}
-  void unlock_shared() {}
+struct mutex
+{
+    void lock_shared() {}
+    void unlock_shared() {}
 };
 
 mutex m;
 
-int main(int, char**) {
-  std::shared_lock<mutex> lk1(m);
-  std::shared_lock<mutex> lk2;
-  lk1.swap(lk2);
-  assert(lk1.mutex() == nullptr);
-  assert(lk1.owns_lock() == false);
-  assert(lk2.mutex() == &m);
-  assert(lk2.owns_lock() == true);
-  static_assert(noexcept(lk1.swap(lk2)), "member swap must be noexcept");
+int main(int, char**)
+{
+    std::shared_lock<mutex> lk1(m);
+    std::shared_lock<mutex> lk2;
+    lk1.swap(lk2);
+    assert(lk1.mutex() == nullptr);
+    assert(lk1.owns_lock() == false);
+    assert(lk2.mutex() == &m);
+    assert(lk2.owns_lock() == true);
+    static_assert(noexcept(lk1.swap(lk2)), "member swap must be noexcept");
 
   return 0;
 }

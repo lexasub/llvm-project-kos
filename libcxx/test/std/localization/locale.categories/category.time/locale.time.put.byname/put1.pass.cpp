@@ -38,43 +38,46 @@
 
 typedef std::time_put_byname<char, output_iterator<char*> > F;
 
-class my_facet : public F {
+class my_facet
+    : public F
+{
 public:
-  explicit my_facet(const std::string& nm, std::size_t refs = 0)
-      : F(nm, refs) {}
+    explicit my_facet(const std::string& nm, std::size_t refs = 0)
+        : F(nm, refs) {}
 };
 
-int main(int, char**) {
-  char str[200];
-  output_iterator<char*> iter;
-  tm t;
-  t.tm_sec = 6;
-  t.tm_min = 3;
-  t.tm_hour = 13;
-  t.tm_mday = 2;
-  t.tm_mon = 4;
-  t.tm_year = 109;
-  t.tm_wday = 6;
-  t.tm_yday = -1;
-  t.tm_isdst = 1;
-  std::ios ios(0);
-  {
-    const my_facet f(LOCALE_en_US_UTF_8, 1);
-    std::string pat("Today is %A which is abbreviated %a.");
-    iter = f.put(output_iterator<char*>(str), ios, '*', &t, pat.data(),
-                 pat.data() + pat.size());
-    std::string ex(str, iter.base());
-    assert(ex == "Today is Saturday which is abbreviated Sat.");
-  }
-  {
-    const my_facet f(LOCALE_fr_FR_UTF_8, 1);
-    std::string pat("Today is %A which is abbreviated %a.");
-    iter = f.put(output_iterator<char*>(str), ios, '*', &t, pat.data(),
-                 pat.data() + pat.size());
-    std::string ex(str, iter.base());
-    assert((ex == "Today is Samedi which is abbreviated Sam.") ||
-           (ex == "Today is samedi which is abbreviated sam."));
-  }
+int main(int, char**)
+{
+    char str[200];
+    output_iterator<char*> iter;
+    tm t;
+    t.tm_sec = 6;
+    t.tm_min = 3;
+    t.tm_hour = 13;
+    t.tm_mday = 2;
+    t.tm_mon = 4;
+    t.tm_year = 109;
+    t.tm_wday = 6;
+    t.tm_yday = -1;
+    t.tm_isdst = 1;
+    std::ios ios(0);
+    {
+        const my_facet f(LOCALE_en_US_UTF_8, 1);
+        std::string pat("Today is %A which is abbreviated %a.");
+        iter = f.put(output_iterator<char*>(str), ios, '*', &t,
+                     pat.data(), pat.data() + pat.size());
+        std::string ex(str, iter.base());
+        assert(ex == "Today is Saturday which is abbreviated Sat.");
+    }
+    {
+        const my_facet f(LOCALE_fr_FR_UTF_8, 1);
+        std::string pat("Today is %A which is abbreviated %a.");
+        iter = f.put(output_iterator<char*>(str), ios, '*', &t,
+                     pat.data(), pat.data() + pat.size());
+        std::string ex(str, iter.base());
+        assert((ex == "Today is Samedi which is abbreviated Sam.")||
+               (ex == "Today is samedi which is abbreviated sam." ));
+    }
 
   return 0;
 }

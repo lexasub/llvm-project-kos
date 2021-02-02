@@ -4,6 +4,6 @@ struct S {
 
 struct Bar {
   void bar(int _a) {
-    S s = {_a};
+    S s = { _a };
   };
 };

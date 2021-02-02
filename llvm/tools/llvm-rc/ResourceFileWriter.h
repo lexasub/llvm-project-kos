@@ -37,7 +37,7 @@ struct WriterParams {
   std::vector<std::string> Include;   // Additional folders to search for files.
   std::vector<std::string> NoInclude; // Folders to exclude from file search.
   StringRef InputFilePath;            // The full path of the input file.
-  int CodePage = CpAcp; // The codepage for interpreting characters.
+  int CodePage = CpAcp;               // The codepage for interpreting characters.
 };
 
 class ResourceFileWriter : public Visitor {

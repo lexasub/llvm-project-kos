@@ -21,18 +21,19 @@
 
 #include "test_iterators.h"
 
-int main(int, char**) {
-  int a[] = {1, 2, 3};
+int main(int, char**)
+{
+    int a[] = {1, 2, 3};
 
-  bidirectional_iterator<int*> bidi(a + 1);
-  std::advance(bidi, 1);  // should work fine
-  std::advance(bidi, 0);  // should work fine
-  std::advance(bidi, -1); // should work fine
+    bidirectional_iterator<int *> bidi(a+1);
+	std::advance(bidi,  1);  // should work fine
+	std::advance(bidi,  0);  // should work fine
+    std::advance(bidi, -1);  // should work fine
 
-  forward_iterator<int*> it(a + 1);
-  std::advance(it, 1);                // should work fine
-  std::advance(it, 0);                // should work fine
-  EXPECT_DEATH(std::advance(it, -1)); // can't go backwards on a FwdIter
+    forward_iterator<int *> it(a+1);
+	std::advance(it, 1);  // should work fine
+	std::advance(it, 0);  // should work fine
+    EXPECT_DEATH( std::advance(it, -1) ); // can't go backwards on a FwdIter
 
   return 0;
 }

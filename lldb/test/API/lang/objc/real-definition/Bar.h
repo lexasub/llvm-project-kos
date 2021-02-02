@@ -3,8 +3,8 @@
 @class InternalClass;
 
 @interface Bar : NSObject {
-@private
-  InternalClass *storage;
+    @private
+    InternalClass *storage;
 }
 
 - (NSString *)description;

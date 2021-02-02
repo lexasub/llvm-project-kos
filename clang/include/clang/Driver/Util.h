@@ -16,14 +16,14 @@ namespace clang {
 class DiagnosticsEngine;
 
 namespace driver {
-class Action;
-class JobAction;
+  class Action;
+  class JobAction;
 
-/// ArgStringMap - Type used to map a JobAction to its result file.
-typedef llvm::DenseMap<const JobAction *, const char *> ArgStringMap;
+  /// ArgStringMap - Type used to map a JobAction to its result file.
+  typedef llvm::DenseMap<const JobAction*, const char*> ArgStringMap;
 
-/// ActionList - Type used for lists of actions.
-typedef SmallVector<Action *, 3> ActionList;
+  /// ActionList - Type used for lists of actions.
+  typedef SmallVector<Action*, 3> ActionList;
 
 } // end namespace driver
 } // end namespace clang

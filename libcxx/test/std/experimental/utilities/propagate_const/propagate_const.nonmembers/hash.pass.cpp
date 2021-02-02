@@ -20,11 +20,15 @@
 using std::experimental::propagate_const;
 
 namespace std {
-template <>
-struct hash<X> {
+template <> struct hash<X>
+{
   typedef X first_argument_type;
 
-  size_t operator()(const first_argument_type&) const { return 99; }
+  size_t operator()(const first_argument_type&) const
+  {
+    return 99;
+  }
+
 };
 } // namespace std
 
@@ -36,7 +40,7 @@ int main(int, char**) {
 
   auto h = std::hash<P>();
 
-  assert(h(p) == 99);
+  assert(h(p)==99);
 
   return 0;
 }

@@ -61,5 +61,5 @@ public:
   void emitDirectiveOptionNoRelax() override;
 };
 
-} // namespace llvm
+}
 #endif

@@ -66,26 +66,26 @@ unsigned WebAssemblyWasmObjectWriter::getRelocType(const MCValue &Target,
                                                    const MCFixup &Fixup) const {
   const MCSymbolRefExpr *RefA = Target.getSymA();
   assert(RefA);
-  auto &SymA = cast<MCSymbolWasm>(RefA->getSymbol());
+  auto& SymA = cast<MCSymbolWasm>(RefA->getSymbol());
 
   MCSymbolRefExpr::VariantKind Modifier = Target.getAccessVariant();
 
   switch (Modifier) {
-  case MCSymbolRefExpr::VK_GOT:
-    return wasm::R_WASM_GLOBAL_INDEX_LEB;
-  case MCSymbolRefExpr::VK_WASM_TBREL:
-    assert(SymA.isFunction());
-    return wasm::R_WASM_TABLE_INDEX_REL_SLEB;
-  case MCSymbolRefExpr::VK_WASM_TLSREL:
-    return wasm::R_WASM_MEMORY_ADDR_TLS_SLEB;
-  case MCSymbolRefExpr::VK_WASM_MBREL:
-    assert(SymA.isData());
-    return is64Bit() ? wasm::R_WASM_MEMORY_ADDR_REL_SLEB64
-                     : wasm::R_WASM_MEMORY_ADDR_REL_SLEB;
-  case MCSymbolRefExpr::VK_WASM_TYPEINDEX:
-    return wasm::R_WASM_TYPE_INDEX_LEB;
-  default:
-    break;
+    case MCSymbolRefExpr::VK_GOT:
+      return wasm::R_WASM_GLOBAL_INDEX_LEB;
+    case MCSymbolRefExpr::VK_WASM_TBREL:
+      assert(SymA.isFunction());
+      return wasm::R_WASM_TABLE_INDEX_REL_SLEB;
+    case MCSymbolRefExpr::VK_WASM_TLSREL:
+      return wasm::R_WASM_MEMORY_ADDR_TLS_SLEB;
+    case MCSymbolRefExpr::VK_WASM_MBREL:
+      assert(SymA.isData());
+      return is64Bit() ? wasm::R_WASM_MEMORY_ADDR_REL_SLEB64
+                       : wasm::R_WASM_MEMORY_ADDR_REL_SLEB;
+    case MCSymbolRefExpr::VK_WASM_TYPEINDEX:
+      return wasm::R_WASM_TYPE_INDEX_LEB;
+    default:
+      break;
   }
 
   switch (unsigned(Fixup.getKind())) {

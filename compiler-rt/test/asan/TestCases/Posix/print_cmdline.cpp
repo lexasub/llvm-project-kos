@@ -13,5 +13,6 @@ int main() {
   // CHECK-NOT: Command:
   // CHECK-PRINT: {{Command: .*-exe first second/third \[fourth\]}}
   x[ten] = 1; // BOOM
-  return 0;
+  return  0;
 }
+

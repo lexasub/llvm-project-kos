@@ -7,16 +7,13 @@ module sys_types {}
 #pragma clang module contents
 #pragma clang module begin sys_types
 extern "C" {
-typedef union {
-  bool b;
-} pthread_mutex_t;
+  typedef union { bool b; } pthread_mutex_t;
 }
 #pragma clang module end
 #pragma clang module endbuild
 
-typedef union {
-  bool b;
-} pthread_mutex_t;
+typedef union { bool b; } pthread_mutex_t;
 #pragma clang module import sys_types
 
 const pthread_mutex_t *m;
+

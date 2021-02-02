@@ -4,6 +4,6 @@ void funcPCH2(int);
 
 enum E { Cake };
 
-- (void)meth1;
-- (void)meth2;
+-(void)meth1;
+-(void)meth2;
 @end

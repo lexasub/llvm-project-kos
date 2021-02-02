@@ -31,9 +31,11 @@ using namespace llvm;
 typedef std::pair<std::vector<unsigned char>, std::vector<const char *>>
     ByteArrayTy;
 
-static bool PrintInsts(const MCDisassembler &DisAsm, const ByteArrayTy &Bytes,
-                       SourceMgr &SM, raw_ostream &Out, MCStreamer &Streamer,
-                       bool InAtomicBlock, const MCSubtargetInfo &STI) {
+static bool PrintInsts(const MCDisassembler &DisAsm,
+                       const ByteArrayTy &Bytes,
+                       SourceMgr &SM, raw_ostream &Out,
+                       MCStreamer &Streamer, bool InAtomicBlock,
+                       const MCSubtargetInfo &STI) {
   ArrayRef<uint8_t> Data(Bytes.first.data(), Bytes.first.size());
 
   // Disassemble it to strings.
@@ -48,7 +50,8 @@ static bool PrintInsts(const MCDisassembler &DisAsm, const ByteArrayTy &Bytes,
     switch (S) {
     case MCDisassembler::Fail:
       SM.PrintMessage(SMLoc::getFromPointer(Bytes.second[Index]),
-                      SourceMgr::DK_Warning, "invalid instruction encoding");
+                      SourceMgr::DK_Warning,
+                      "invalid instruction encoding");
       // Don't try to resynchronise the stream in a block
       if (InAtomicBlock)
         return true;
@@ -86,14 +89,16 @@ static bool SkipToToken(StringRef &Str) {
 
     // If this is the start of a comment, remove the rest of the line.
     if (Str[0] == '#') {
-      Str = Str.substr(Str.find_first_of('\n'));
+        Str = Str.substr(Str.find_first_of('\n'));
       continue;
     }
     return true;
   }
 }
 
-static bool ByteArrayFromString(ByteArrayTy &ByteArray, StringRef &Str,
+
+static bool ByteArrayFromString(ByteArrayTy &ByteArray,
+                                StringRef &Str,
                                 SourceMgr &SM) {
   while (SkipToToken(Str)) {
     // Handled by higher level
@@ -144,7 +149,7 @@ int Disassembler::disassemble(const Target &T, const std::string &Triple,
   }
 
   std::unique_ptr<const MCDisassembler> DisAsm(
-      T.createMCDisassembler(STI, Ctx));
+    T.createMCDisassembler(STI, Ctx));
   if (!DisAsm) {
     errs() << "error: no disassembler for target " << Triple << "\n";
     return -1;
@@ -188,8 +193,8 @@ int Disassembler::disassemble(const Target &T, const std::string &Triple,
     ErrorOccurred |= ByteArrayFromString(ByteArray, Str, SM);
 
     if (!ByteArray.first.empty())
-      ErrorOccurred |=
-          PrintInsts(*DisAsm, ByteArray, SM, Out, Streamer, InAtomicBlock, STI);
+      ErrorOccurred |= PrintInsts(*DisAsm, ByteArray, SM, Out, Streamer,
+                                  InAtomicBlock, STI);
   }
 
   if (InAtomicBlock) {

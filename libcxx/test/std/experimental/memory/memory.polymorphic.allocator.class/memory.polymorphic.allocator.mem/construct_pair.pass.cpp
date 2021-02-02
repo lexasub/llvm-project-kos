@@ -29,25 +29,27 @@ namespace ex = std::experimental::pmr;
 
 int constructed = 0;
 
-struct default_constructible {
-  default_constructible() : x(42) { ++constructed; }
-  int x{0};
+struct default_constructible
+{
+    default_constructible() : x(42)  { ++constructed; }
+    int x{0};
 };
 
-int main(int, char**) {
-  // pair<default_constructible, default_constructible> as T()
-  {
-    typedef default_constructible T;
-    typedef std::pair<T, T> P;
-    typedef ex::polymorphic_allocator<void> A;
-    P* ptr = (P*)std::malloc(sizeof(P));
-    A a;
-    a.construct(ptr);
-    assert(constructed == 2);
-    assert(ptr->first.x == 42);
-    assert(ptr->second.x == 42);
-    std::free(ptr);
-  }
+int main(int, char**)
+{
+    // pair<default_constructible, default_constructible> as T()
+    {
+        typedef default_constructible T;
+        typedef std::pair<T, T> P;
+        typedef ex::polymorphic_allocator<void> A;
+        P * ptr = (P*)std::malloc(sizeof(P));
+        A a;
+        a.construct(ptr);
+        assert(constructed == 2);
+        assert(ptr->first.x == 42);
+        assert(ptr->second.x == 42);
+        std::free(ptr);
+    }
 
   return 0;
 }

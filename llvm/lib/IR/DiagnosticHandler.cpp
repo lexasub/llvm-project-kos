@@ -69,7 +69,7 @@ static cl::opt<PassRemarksOpt, true, cl::parser<std::string>>
             "the given regular expression"),
         cl::Hidden, cl::location(PassRemarksAnalysisOptLoc), cl::ValueRequired,
         cl::ZeroOrMore);
-} // namespace
+}
 
 bool DiagnosticHandler::isAnalysisRemarkEnabled(StringRef PassName) const {
   return (PassRemarksAnalysisOptLoc.Pattern &&

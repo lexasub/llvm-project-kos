@@ -48,8 +48,7 @@ void h(int *hp, int *hp2, int *hq, int *lin) {
 
 class VV {
 public:
-#pragma omp declare simd uniform(this, a) linear(val(b) \
-                                                 : a)
+#pragma omp declare simd uniform(this, a) linear(val(b) : a)
   int add(int a, int b) __attribute__((cold)) { return a + b; }
 
 #pragma omp declare simd aligned(b : 4) aligned(a) linear(ref(b) : 4) linear(this, a)
@@ -69,9 +68,7 @@ public:
 #pragma omp declare simd simdlen(X)
   int tadd(int a, int b) { return a + b; }
 
-#pragma omp declare simd aligned(a                                 \
-                                 : X * 2) aligned(b) linear(ref(b) \
-                                                            : X)
+#pragma omp declare simd aligned(a : X * 2) aligned(b) linear(ref(b) : X)
   float taddpf(float *a, T *&b) { return *a + *b; }
 
 #pragma omp declare simd
@@ -82,9 +79,7 @@ private:
   int x[X];
 };
 
-#pragma omp declare simd simdlen(N) aligned(b                       \
-                                            : N * 2) linear(uval(c) \
-                                                            : N)
+#pragma omp declare simd simdlen(N) aligned(b : N * 2) linear(uval(c) : N)
 template <int N>
 void foo(int (&b)[N], float *&c) {}
 
@@ -112,8 +107,7 @@ float baz(VV v, int a[]) { return 0; }
 #pragma omp declare simd notinbranch aligned(a)
 double bay(VV v, double *&a) { return 0; }
 #pragma omp declare simd
-#pragma omp declare simd inbranch linear(a \
-                                         : b) uniform(v, b)
+#pragma omp declare simd inbranch linear(a : b) uniform(v, b)
 void bax(VV v, double *a, int b) {}
 #pragma omp declare simd uniform(q) aligned(q : 16) linear(k : 1)
 float foo(float *q, float x, int k) { return 0; }

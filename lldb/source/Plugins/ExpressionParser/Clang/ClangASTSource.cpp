@@ -48,7 +48,7 @@ private:
   std::set<const clang::Decl *> &m_active_lexical_decls;
   const clang::Decl *m_decl;
 };
-} // namespace
+}
 
 ClangASTSource::ClangASTSource(
     const lldb::TargetSP &target,
@@ -317,8 +317,7 @@ void ClangASTSource::CompleteType(clang::ObjCInterfaceDecl *interface_decl) {
   LLDB_LOG(log, "      [COID] Before:\n{0}",
            ClangUtil::DumpDecl(interface_decl));
 
-  ClangASTImporter::DeclOrigin original =
-      m_ast_importer_sp->GetDeclOrigin(interface_decl);
+  ClangASTImporter::DeclOrigin original = m_ast_importer_sp->GetDeclOrigin(interface_decl);
 
   if (original.Valid()) {
     if (ObjCInterfaceDecl *original_iface_decl =
@@ -424,8 +423,7 @@ void ClangASTSource::FindExternalLexicalDecls(
                m_ast_context, m_clang_ast_context->getDisplayName());
   }
 
-  ClangASTImporter::DeclOrigin original =
-      m_ast_importer_sp->GetDeclOrigin(context_decl);
+  ClangASTImporter::DeclOrigin original = m_ast_importer_sp->GetDeclOrigin(context_decl);
 
   if (!original.Valid())
     return;
@@ -944,8 +942,7 @@ void ClangASTSource::FindObjCMethodDecls(NameSearchContext &context) {
     return;
 
   do {
-    ClangASTImporter::DeclOrigin original =
-        m_ast_importer_sp->GetDeclOrigin(interface_decl);
+    ClangASTImporter::DeclOrigin original = m_ast_importer_sp->GetDeclOrigin(interface_decl);
 
     if (!original.Valid())
       break;
@@ -1511,7 +1508,8 @@ bool ClangASTSource::layoutRecordType(const RecordDecl *record, uint64_t &size,
            record->getName());
 
   DeclFromParser<const RecordDecl> parser_record(record);
-  DeclFromUser<const RecordDecl> origin_record(parser_record.GetOrigin(*this));
+  DeclFromUser<const RecordDecl> origin_record(
+      parser_record.GetOrigin(*this));
 
   if (origin_record.IsInvalid())
     return false;
@@ -1580,7 +1578,8 @@ bool ClangASTSource::layoutRecordType(const RecordDecl *record, uint64_t &size,
     for (RecordDecl::field_iterator fi = record->field_begin(),
                                     fe = record->field_end();
          fi != fe; ++fi) {
-      LLDB_LOG(log, "LRT     (FieldDecl*){0}, Name = '{1}', Offset = {2} bits",
+      LLDB_LOG(log,
+               "LRT     (FieldDecl*){0}, Name = '{1}', Offset = {2} bits",
                *fi, fi->getName(), field_offsets[*fi]);
     }
     DeclFromParser<const CXXRecordDecl> parser_cxx_record =
@@ -1730,8 +1729,7 @@ clang::Decl *ClangASTSource::CopyDecl(Decl *src_decl) {
   return m_ast_importer_sp->CopyDecl(m_ast_context, src_decl);
 }
 
-ClangASTImporter::DeclOrigin
-ClangASTSource::GetDeclOrigin(const clang::Decl *decl) {
+ClangASTImporter::DeclOrigin ClangASTSource::GetDeclOrigin(const clang::Decl *decl) {
   return m_ast_importer_sp->GetDeclOrigin(decl);
 }
 

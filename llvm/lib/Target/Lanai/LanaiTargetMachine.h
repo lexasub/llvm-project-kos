@@ -47,7 +47,9 @@ public:
     return TLOF.get();
   }
 
-  bool isMachineVerifierClean() const override { return false; }
+  bool isMachineVerifierClean() const override {
+    return false;
+  }
 };
 } // namespace llvm
 

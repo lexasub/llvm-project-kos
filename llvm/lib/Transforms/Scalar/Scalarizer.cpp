@@ -60,9 +60,9 @@ static cl::opt<bool> ScalarizeVariableInsertExtract(
 // This is disabled by default because having separate loads and stores
 // makes it more likely that the -combiner-alias-analysis limits will be
 // reached.
-static cl::opt<bool> ScalarizeLoadStore(
-    "scalarize-load-store", cl::init(false), cl::Hidden,
-    cl::desc("Allow the scalarizer pass to scalarize loads and store"));
+static cl::opt<bool>
+    ScalarizeLoadStore("scalarize-load-store", cl::init(false), cl::Hidden,
+                       cl::desc("Allow the scalarizer pass to scalarize loads and store"));
 
 namespace {
 
@@ -182,7 +182,8 @@ struct VectorLayout {
 class ScalarizerVisitor : public InstVisitor<ScalarizerVisitor, bool> {
 public:
   ScalarizerVisitor(unsigned ParallelLoopAccessMDKind, DominatorTree *DT)
-      : ParallelLoopAccessMDKind(ParallelLoopAccessMDKind), DT(DT) {}
+    : ParallelLoopAccessMDKind(ParallelLoopAccessMDKind), DT(DT) {
+  }
 
   bool visit(Function &F);
 
@@ -214,8 +215,8 @@ private:
                                          const DataLayout &DL);
   bool finish();
 
-  template <typename T> bool splitUnary(Instruction &, const T &);
-  template <typename T> bool splitBinary(Instruction &, const T &);
+  template<typename T> bool splitUnary(Instruction &, const T &);
+  template<typename T> bool splitBinary(Instruction &, const T &);
 
   bool splitCall(CallInst &CI);
 
@@ -239,7 +240,7 @@ public:
 
   bool runOnFunction(Function &F) override;
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
+  void getAnalysisUsage(AnalysisUsage& AU) const override {
     AU.addRequired<DominatorTreeWrapperPass>();
     AU.addPreserved<DominatorTreeWrapperPass>();
   }
@@ -256,7 +257,7 @@ INITIALIZE_PASS_END(ScalarizerLegacyPass, "scalarizer",
 
 Scatterer::Scatterer(BasicBlock *bb, BasicBlock::iterator bbi, Value *v,
                      ValueVector *cachePtr)
-    : BB(bb), BBI(bbi), V(v), CachePtr(cachePtr) {
+  : BB(bb), BBI(bbi), V(v), CachePtr(cachePtr) {
   Type *Ty = V->getType();
   PtrTy = dyn_cast<PointerType>(Ty);
   if (PtrTy)
@@ -372,8 +373,8 @@ Scatterer ScalarizerVisitor::scatter(Instruction *Point, Value *V) {
     // Put the scattered form of an instruction directly after the
     // instruction.
     BasicBlock *BB = VOp->getParent();
-    return Scatterer(BB, std::next(BasicBlock::iterator(VOp)), V,
-                     &Scattered[V]);
+    return Scatterer(BB, std::next(BasicBlock::iterator(VOp)),
+                     V, &Scattered[V]);
   }
   // In the fallback case, just put the scattered before Point and
   // keep the result local to Point.
@@ -410,12 +411,14 @@ void ScalarizerVisitor::gather(Instruction *Op, const ValueVector &CV) {
 // Return true if it is safe to transfer the given metadata tag from
 // vector to scalar instructions.
 bool ScalarizerVisitor::canTransferMetadata(unsigned Tag) {
-  return (Tag == LLVMContext::MD_tbaa || Tag == LLVMContext::MD_fpmath ||
-          Tag == LLVMContext::MD_tbaa_struct ||
-          Tag == LLVMContext::MD_invariant_load ||
-          Tag == LLVMContext::MD_alias_scope ||
-          Tag == LLVMContext::MD_noalias || Tag == ParallelLoopAccessMDKind ||
-          Tag == LLVMContext::MD_access_group);
+  return (Tag == LLVMContext::MD_tbaa
+          || Tag == LLVMContext::MD_fpmath
+          || Tag == LLVMContext::MD_tbaa_struct
+          || Tag == LLVMContext::MD_invariant_load
+          || Tag == LLVMContext::MD_alias_scope
+          || Tag == LLVMContext::MD_noalias
+          || Tag == ParallelLoopAccessMDKind
+          || Tag == LLVMContext::MD_access_group);
 }
 
 // Transfer metadata from Op to the instructions in CV if it is known
@@ -457,7 +460,7 @@ ScalarizerVisitor::getVectorLayout(Type *Ty, Align Alignment,
 
 // Scalarize one-operand instruction I, using Split(Builder, X, Name)
 // to create an instruction like I with operand X and name Name.
-template <typename Splitter>
+template<typename Splitter>
 bool ScalarizerVisitor::splitUnary(Instruction &I, const Splitter &Split) {
   VectorType *VT = dyn_cast<VectorType>(I.getType());
   if (!VT)
@@ -477,7 +480,7 @@ bool ScalarizerVisitor::splitUnary(Instruction &I, const Splitter &Split) {
 
 // Scalarize two-operand instruction I, using Split(Builder, X, Y, Name)
 // to create an instruction like I with operands X and Y and name Name.
-template <typename Splitter>
+template<typename Splitter>
 bool ScalarizerVisitor::splitBinary(Instruction &I, const Splitter &Split) {
   VectorType *VT = dyn_cast<VectorType>(I.getType());
   if (!VT)
@@ -505,9 +508,10 @@ static bool isTriviallyScalariable(Intrinsic::ID ID) {
 }
 
 // All of the current scalarizable intrinsics only have one mangled type.
-static Function *getScalarIntrinsicDeclaration(Module *M, Intrinsic::ID ID,
+static Function *getScalarIntrinsicDeclaration(Module *M,
+                                               Intrinsic::ID ID,
                                                VectorType *Ty) {
-  return Intrinsic::getDeclaration(M, ID, {Ty->getScalarType()});
+  return Intrinsic::getDeclaration(M, ID, { Ty->getScalarType() });
 }
 
 /// If a call to a vector typed intrinsic function, split into a scalar call per
@@ -591,16 +595,16 @@ bool ScalarizerVisitor::visitSelectInst(SelectInst &SI) {
       Value *Op0 = VOp0[I];
       Value *Op1 = VOp1[I];
       Value *Op2 = VOp2[I];
-      Res[I] =
-          Builder.CreateSelect(Op0, Op1, Op2, SI.getName() + ".i" + Twine(I));
+      Res[I] = Builder.CreateSelect(Op0, Op1, Op2,
+                                    SI.getName() + ".i" + Twine(I));
     }
   } else {
     Value *Op0 = SI.getOperand(0);
     for (unsigned I = 0; I < NumElems; ++I) {
       Value *Op1 = VOp1[I];
       Value *Op2 = VOp2[I];
-      Res[I] =
-          Builder.CreateSelect(Op0, Op1, Op2, SI.getName() + ".i" + Twine(I));
+      Res[I] = Builder.CreateSelect(Op0, Op1, Op2,
+                                    SI.getName() + ".i" + Twine(I));
     }
   }
   gather(&SI, Res);
@@ -732,8 +736,8 @@ bool ScalarizerVisitor::visitBitCastInst(BitCastInst &BCI) {
       Value *V = PoisonValue::get(MidTy);
       for (unsigned MidI = 0; MidI < FanIn; ++MidI)
         V = Builder.CreateInsertElement(V, Op0[Op0I++], Builder.getInt32(MidI),
-                                        BCI.getName() + ".i" + Twine(ResI) +
-                                            ".upto" + Twine(MidI));
+                                        BCI.getName() + ".i" + Twine(ResI)
+                                        + ".upto" + Twine(MidI));
       Res[ResI] = Builder.CreateBitCast(V, DstVT->getElementType(),
                                         BCI.getName() + ".i" + Twine(ResI));
     }
@@ -911,7 +915,9 @@ bool ScalarizerVisitor::visitStoreInst(StoreInst &SI) {
   return true;
 }
 
-bool ScalarizerVisitor::visitCallInst(CallInst &CI) { return splitCall(CI); }
+bool ScalarizerVisitor::visitCallInst(CallInst &CI) {
+  return splitCall(CI);
+}
 
 // Delete the instructions that we scalarized.  If a full vector result
 // is still needed, recreate it using InsertElements.
@@ -955,8 +961,7 @@ bool ScalarizerVisitor::finish() {
   return true;
 }
 
-PreservedAnalyses ScalarizerPass::run(Function &F,
-                                      FunctionAnalysisManager &AM) {
+PreservedAnalyses ScalarizerPass::run(Function &F, FunctionAnalysisManager &AM) {
   Module &M = *F.getParent();
   unsigned ParallelLoopAccessMDKind =
       M.getContext().getMDKindID("llvm.mem.parallel_loop_access");

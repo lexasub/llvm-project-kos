@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "AArch64ExpandImm.h"
 #include "AArch64.h"
+#include "AArch64ExpandImm.h"
 #include "MCTargetDesc/AArch64AddressingModes.h"
 
 namespace llvm {
@@ -42,7 +42,7 @@ static bool canUseOrr(uint64_t Chunk, uint64_t &Encoding) {
 /// of the chunks doesn't matter), assuming |A|A|A|A| can be materialized with
 /// an ORR instruction.
 static bool tryToreplicateChunks(uint64_t UImm,
-                                 SmallVectorImpl<ImmInsnModel> &Insn) {
+				 SmallVectorImpl<ImmInsnModel> &Insn) {
   using CountMap = DenseMap<uint64_t, unsigned>;
 
   CountMap Counts;
@@ -66,7 +66,7 @@ static bool tryToreplicateChunks(uint64_t UImm,
 
     const bool CountThree = Count == 3;
 
-    Insn.push_back({AArch64::ORRXri, 0, Encoding});
+    Insn.push_back({ AArch64::ORRXri, 0, Encoding });
 
     unsigned ShiftAmt = 0;
     uint64_t Imm16 = 0;
@@ -79,8 +79,8 @@ static bool tryToreplicateChunks(uint64_t UImm,
     }
 
     // Create the first MOVK instruction.
-    Insn.push_back({AArch64::MOVKXi, Imm16,
-                    AArch64_AM::getShifterImm(AArch64_AM::LSL, ShiftAmt)});
+    Insn.push_back({ AArch64::MOVKXi, Imm16,
+		     AArch64_AM::getShifterImm(AArch64_AM::LSL, ShiftAmt) });
 
     // In case we have three instances the whole constant is now materialized
     // and we can exit.
@@ -94,8 +94,8 @@ static bool tryToreplicateChunks(uint64_t UImm,
       if (Imm16 != ChunkVal)
         break;
     }
-    Insn.push_back({AArch64::MOVKXi, Imm16,
-                    AArch64_AM::getShifterImm(AArch64_AM::LSL, ShiftAmt)});
+    Insn.push_back({ AArch64::MOVKXi, Imm16,
+                     AArch64_AM::getShifterImm(AArch64_AM::LSL, ShiftAmt) });
     return true;
   }
 
@@ -222,21 +222,21 @@ static bool trySequenceOfOnes(uint64_t UImm,
   // Create the ORR-immediate instruction.
   uint64_t Encoding = 0;
   AArch64_AM::processLogicalImmediate(OrrImm, 64, Encoding);
-  Insn.push_back({AArch64::ORRXri, 0, Encoding});
+  Insn.push_back({ AArch64::ORRXri, 0, Encoding });
 
   const bool SingleMovk = SecondMovkIdx == NotSet;
-  Insn.push_back(
-      {AArch64::MOVKXi, getChunk(UImm, FirstMovkIdx),
-       AArch64_AM::getShifterImm(AArch64_AM::LSL, FirstMovkIdx * 16)});
+  Insn.push_back({ AArch64::MOVKXi, getChunk(UImm, FirstMovkIdx),
+                   AArch64_AM::getShifterImm(AArch64_AM::LSL,
+                                             FirstMovkIdx * 16) });
 
   // Early exit in case we only need to emit a single MOVK instruction.
   if (SingleMovk)
     return true;
 
   // Create the second MOVK instruction.
-  Insn.push_back(
-      {AArch64::MOVKXi, getChunk(UImm, SecondMovkIdx),
-       AArch64_AM::getShifterImm(AArch64_AM::LSL, SecondMovkIdx * 16)});
+  Insn.push_back({ AArch64::MOVKXi, getChunk(UImm, SecondMovkIdx),
+	           AArch64_AM::getShifterImm(AArch64_AM::LSL,
+                                             SecondMovkIdx * 16) });
 
   return true;
 }
@@ -244,8 +244,8 @@ static bool trySequenceOfOnes(uint64_t UImm,
 /// \brief Expand a MOVi32imm or MOVi64imm pseudo instruction to a
 /// MOVZ or MOVN of width BitSize followed by up to 3 MOVK instructions.
 static inline void expandMOVImmSimple(uint64_t Imm, unsigned BitSize,
-                                      unsigned OneChunks, unsigned ZeroChunks,
-                                      SmallVectorImpl<ImmInsnModel> &Insn) {
+				      unsigned OneChunks, unsigned ZeroChunks,
+				      SmallVectorImpl<ImmInsnModel> &Insn) {
   const unsigned Mask = 0xFFFF;
 
   // Use a MOVZ or MOVN instruction to set the high bits, followed by one or
@@ -277,8 +277,8 @@ static inline void expandMOVImmSimple(uint64_t Imm, unsigned BitSize,
   }
   unsigned Imm16 = (Imm >> Shift) & Mask;
 
-  Insn.push_back(
-      {FirstOpc, Imm16, AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift)});
+  Insn.push_back({ FirstOpc, Imm16,
+                   AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift) });
 
   if (Shift == LastShift)
     return;
@@ -295,15 +295,15 @@ static inline void expandMOVImmSimple(uint64_t Imm, unsigned BitSize,
     if (Imm16 == (isNeg ? Mask : 0))
       continue; // This 16-bit portion is already set correctly.
 
-    Insn.push_back(
-        {Opc, Imm16, AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift)});
+    Insn.push_back({ Opc, Imm16,
+                     AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift) });
   }
 }
 
 /// Expand a MOVi32imm or MOVi64imm pseudo instruction to one or more
 /// real move-immediate instructions to synthesize the immediate.
 void expandMOVImm(uint64_t Imm, unsigned BitSize,
-                  SmallVectorImpl<ImmInsnModel> &Insn) {
+		  SmallVectorImpl<ImmInsnModel> &Insn) {
   const unsigned Mask = 0xFFFF;
 
   // Scan the immediate and count the number of 16-bit chunks which are either
@@ -329,7 +329,7 @@ void expandMOVImm(uint64_t Imm, unsigned BitSize,
   uint64_t Encoding;
   if (AArch64_AM::processLogicalImmediate(UImm, BitSize, Encoding)) {
     unsigned Opc = (BitSize == 32 ? AArch64::ORRWri : AArch64::ORRXri);
-    Insn.push_back({Opc, 0, Encoding});
+    Insn.push_back({ Opc, 0, Encoding });
     return;
   }
 
@@ -364,12 +364,12 @@ void expandMOVImm(uint64_t Imm, unsigned BitSize,
         AArch64_AM::processLogicalImmediate(ReplicateChunk, BitSize,
                                             Encoding)) {
       // Create the ORR-immediate instruction.
-      Insn.push_back({AArch64::ORRXri, 0, Encoding});
+      Insn.push_back({ AArch64::ORRXri, 0, Encoding });
 
       // Create the MOVK instruction.
       const unsigned Imm16 = getChunk(UImm, Shift / 16);
-      Insn.push_back({AArch64::MOVKXi, Imm16,
-                      AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift)});
+      Insn.push_back({ AArch64::MOVKXi, Imm16,
+		       AArch64_AM::getShifterImm(AArch64_AM::LSL, Shift) });
       return;
     }
   }
@@ -406,6 +406,6 @@ void expandMOVImm(uint64_t Imm, unsigned BitSize,
   expandMOVImmSimple(Imm, BitSize, OneChunks, ZeroChunks, Insn);
 }
 
-} // namespace AArch64_IMM
+} // end namespace AArch64_AM
 
 } // end namespace llvm

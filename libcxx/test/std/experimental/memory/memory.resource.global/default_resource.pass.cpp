@@ -27,6 +27,7 @@
 //     'new_delete_resource()'.
 //  F) 'get_default_resource' and 'set_default_resource' are noexcept.
 
+
 #include <experimental/memory_resource>
 #include <cassert>
 
@@ -37,39 +38,39 @@
 using namespace std::experimental::pmr;
 
 int main(int, char**) {
-  TestResource R;
-  { // Test (A) and (B)
-    memory_resource* p = get_default_resource();
-    assert(p != nullptr);
-    assert(p == new_delete_resource());
-    assert(p == get_default_resource());
-  }
-  { // Test (C) and (D)
-    memory_resource* expect = &R;
-    memory_resource* old = set_default_resource(expect);
-    assert(old != nullptr);
-    assert(old == new_delete_resource());
+    TestResource R;
+    { // Test (A) and (B)
+        memory_resource* p = get_default_resource();
+        assert(p != nullptr);
+        assert(p == new_delete_resource());
+        assert(p == get_default_resource());
+    }
+    { // Test (C) and (D)
+        memory_resource *expect = &R;
+        memory_resource *old = set_default_resource(expect);
+        assert(old != nullptr);
+        assert(old == new_delete_resource());
 
-    memory_resource* p = get_default_resource();
-    assert(p != nullptr);
-    assert(p == expect);
-    assert(p == get_default_resource());
-  }
-  { // Test (E)
-    memory_resource* old = set_default_resource(nullptr);
-    assert(old == &R);
-    memory_resource* p = get_default_resource();
-    assert(p != nullptr);
-    assert(p == new_delete_resource());
-    assert(p == get_default_resource());
-  }
-  { // Test (F)
-    static_assert(noexcept(get_default_resource()),
-                  "get_default_resource() must be noexcept");
+        memory_resource *p = get_default_resource();
+        assert(p != nullptr);
+        assert(p == expect);
+        assert(p == get_default_resource());
+    }
+    { // Test (E)
+        memory_resource* old = set_default_resource(nullptr);
+        assert(old == &R);
+        memory_resource* p = get_default_resource();
+        assert(p != nullptr);
+        assert(p == new_delete_resource());
+        assert(p == get_default_resource());
+    }
+    { // Test (F)
+        static_assert(noexcept(get_default_resource()),
+                      "get_default_resource() must be noexcept");
 
-    static_assert(noexcept(set_default_resource(nullptr)),
-                  "set_default_resource() must be noexcept");
-  }
+        static_assert(noexcept(set_default_resource(nullptr)),
+                      "set_default_resource() must be noexcept");
+    }
 
   return 0;
 }

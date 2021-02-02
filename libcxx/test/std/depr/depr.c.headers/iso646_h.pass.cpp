@@ -12,8 +12,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  // Nothing to test
+int main(int, char**)
+{
+    // Nothing to test
 
   return 0;
 }

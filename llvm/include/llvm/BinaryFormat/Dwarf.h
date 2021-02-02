@@ -20,12 +20,12 @@
 #define LLVM_BINARYFORMAT_DWARF_H
 
 #include "llvm/ADT/Optional.h"
-#include "llvm/ADT/Triple.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/DataTypes.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/FormatVariadicDetails.h"
+#include "llvm/ADT/Triple.h"
 
 #include <limits>
 
@@ -144,7 +144,7 @@ enum DecimalSignEncoding {
 };
 
 enum EndianityEncoding {
-// Endianity attribute values
+  // Endianity attribute values
 #define HANDLE_DW_END(ID, NAME) DW_END_##NAME = ID,
 #include "llvm/BinaryFormat/Dwarf.def"
   DW_END_lo_user = 0x40,

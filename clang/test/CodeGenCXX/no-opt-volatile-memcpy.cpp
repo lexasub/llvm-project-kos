@@ -2,13 +2,13 @@
 // rdar://11861085
 
 struct s {
-  char filler[128];
+  char filler [128];
   volatile int x;
 };
 
 struct s gs;
 
-void foo(void) {
+void foo (void) {
   struct s ls;
   ls = ls;
   gs = gs;
@@ -23,13 +23,14 @@ void foo(void) {
 // CHECK-NEXT:  %[[TWO:.*]] = bitcast %struct.s* %[[LS]] to i8*
 // CHECK-NEXT:  call void @llvm.memcpy.{{.*}}(i8* align 4 %[[TWO]], i8* align 4 getelementptr inbounds (%struct.s, %struct.s* @gs, i32 0, i32 0, i32 0), i64 132, i1 true)
 
+
 struct s1 {
   struct s y;
 };
 
 struct s1 s;
 
-void fee(void) {
+void fee (void) {
   s = s;
   s.y = gs;
 }

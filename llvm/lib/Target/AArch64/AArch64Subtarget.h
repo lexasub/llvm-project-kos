@@ -308,13 +308,17 @@ public:
   const RegisterBankInfo *getRegBankInfo() const override;
   const Triple &getTargetTriple() const { return TargetTriple; }
   bool enableMachineScheduler() const override { return true; }
-  bool enablePostRAScheduler() const override { return UsePostRAScheduler; }
+  bool enablePostRAScheduler() const override {
+    return UsePostRAScheduler;
+  }
 
   /// Returns ARM processor family.
   /// Avoid this function! CPU specifics should be kept local to this class
   /// and preferably modeled with SubtargetFeatures or properties in
   /// initializeProperties().
-  ARMProcFamilyEnum getProcFamily() const { return ARMProcFamily; }
+  ARMProcFamilyEnum getProcFamily() const {
+    return ARMProcFamily;
+  }
 
   bool hasV8_1aOps() const { return HasV8_1aOps; }
   bool hasV8_2aOps() const { return HasV8_2aOps; }
@@ -385,8 +389,8 @@ public:
   /// Return true if the CPU supports any kind of instruction fusion.
   bool hasFusion() const {
     return hasArithmeticBccFusion() || hasArithmeticCbzFusion() ||
-           hasFuseAES() || hasFuseArithmeticLogic() || hasFuseCCSelect() ||
-           hasFuseLiterals();
+           hasFuseAES() || hasFuseArithmeticLogic() ||
+           hasFuseCCSelect() || hasFuseLiterals();
   }
 
   bool hardenSlsRetBr() const { return HardenSlsRetBr; }
@@ -526,13 +530,13 @@ public:
 
   bool useSmallAddressing() const {
     switch (TLInfo.getTargetMachine().getCodeModel()) {
-    case CodeModel::Kernel:
-      // Kernel is currently allowed only for Fuchsia targets,
-      // where it is the same as Small for almost all purposes.
-    case CodeModel::Small:
-      return true;
-    default:
-      return false;
+      case CodeModel::Kernel:
+        // Kernel is currently allowed only for Fuchsia targets,
+        // where it is the same as Small for almost all purposes.
+      case CodeModel::Small:
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -579,6 +583,6 @@ public:
   unsigned getMinSVEVectorSizeInBits() const;
   bool useSVEForFixedLengthVectors() const;
 };
-} // namespace llvm
+} // End llvm namespace
 
 #endif

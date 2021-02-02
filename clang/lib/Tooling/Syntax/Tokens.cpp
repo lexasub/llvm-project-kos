@@ -778,9 +778,8 @@ private:
     // Show the failed-to-map token in context.
     for (unsigned I = (NextExpanded < 10) ? 0 : NextExpanded - 10;
          I < NextExpanded + 5 && I < Result.ExpandedTokens.size(); ++I) {
-      const char *L = (I == NextExpanded)  ? "!! "
-                      : (I < NextExpanded) ? "ok "
-                                           : "   ";
+      const char *L =
+          (I == NextExpanded) ? "!! " : (I < NextExpanded) ? "ok " : "   ";
       llvm::errs() << L << Result.ExpandedTokens[I].dumpForTests(SM) << "\n";
     }
 #endif

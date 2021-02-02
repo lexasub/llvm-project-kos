@@ -5,7 +5,7 @@ class C {};
 void f(C i) {
   auto lambda = [&] { f(i); };
   typedef decltype(lambda) T;
-  T *blah = new T(lambda);
+  T* blah = new T(lambda);
   (*blah)();
   delete blah;
 }

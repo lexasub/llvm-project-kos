@@ -5,7 +5,8 @@ public:
   int a;
 };
 
-int main() {
+int main()
+{
   A a;
   a.a = 3;
   return A::getStaticValue() + a.getMemberValue(); // Break here

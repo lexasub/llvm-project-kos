@@ -3,6 +3,7 @@
 
 // RUN: %clang_cc1 -triple %itanium_abi_triple -std=c++11 -fprofile-instrument=clang -fcoverage-mapping -dump-coverage-mapping -emit-llvm-only -main-file-name branch-logical-mixed.cpp %s | FileCheck %s
 
+
 // CHECK-LABEL: _Z5func1ii:
 bool func1(int a, int b) {
   bool b0 = a <= b;

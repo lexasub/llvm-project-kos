@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 #pragma omp target parallel for simd { // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
-#pragma omp target parallel for simd( // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
+#pragma omp target parallel for simd ( // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
 #pragma omp target parallel for simd[ // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
@@ -76,7 +76,7 @@ L1:
 #pragma omp target parallel for simd
   for (int i = 0; i < argc; ++i)
   L2:
-    foo();
+  foo();
 #pragma omp target parallel for simd
   for (int i = 0; i < argc; ++i) {
     return 1; // expected-error {{cannot return from OpenMP region}}
@@ -88,8 +88,7 @@ L1:
   }
 
 #pragma omp target parallel for simd copyin(pvt) // expected-error {{unexpected OpenMP clause 'copyin' in directive '#pragma omp target parallel for simd'}}
-  for (int n = 0; n < 100; ++n) {
-  }
+  for (int n = 0; n < 100; ++n) {}
 
   return 0;
 }
@@ -99,3 +98,4 @@ void test_ordered() {
   for (int i = 0; i < 16; ++i)
     ;
 }
+

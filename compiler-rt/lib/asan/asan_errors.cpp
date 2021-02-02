@@ -12,7 +12,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "asan_errors.h"
-
 #include "asan_descriptions.h"
 #include "asan_mapping.h"
 #include "asan_report.h"
@@ -47,9 +46,10 @@ void ErrorDeadlySignal::Print() {
 void ErrorDoubleFree::Print() {
   Decorator d;
   Printf("%s", d.Error());
-  Report("ERROR: AddressSanitizer: attempting %s on %p in thread %s:\n",
-         scariness.GetDescription(), addr_description.addr,
-         AsanThreadIdAndName(tid).c_str());
+  Report(
+      "ERROR: AddressSanitizer: attempting %s on %p in thread %s:\n",
+      scariness.GetDescription(), addr_description.addr,
+      AsanThreadIdAndName(tid).c_str());
   Printf("%s", d.Default());
   scariness.Print();
   GET_STACK_TRACE_FATAL(second_free_stack->trace[0],
@@ -62,9 +62,10 @@ void ErrorDoubleFree::Print() {
 void ErrorNewDeleteTypeMismatch::Print() {
   Decorator d;
   Printf("%s", d.Error());
-  Report("ERROR: AddressSanitizer: %s on %p in thread %s:\n",
-         scariness.GetDescription(), addr_description.addr,
-         AsanThreadIdAndName(tid).c_str());
+  Report(
+      "ERROR: AddressSanitizer: %s on %p in thread %s:\n",
+      scariness.GetDescription(), addr_description.addr,
+      AsanThreadIdAndName(tid).c_str());
   Printf("%s  object passed to delete has wrong type:\n", d.Default());
   if (delete_size != 0) {
     Printf(
@@ -221,18 +222,15 @@ void ErrorInvalidAlignedAllocAlignment::Print() {
   Decorator d;
   Printf("%s", d.Error());
 #if SANITIZER_POSIX
-  Report(
-      "ERROR: AddressSanitizer: invalid alignment requested in "
-      "aligned_alloc: %zd, alignment must be a power of two and the "
-      "requested size 0x%zx must be a multiple of alignment "
-      "(thread %s)\n",
-      alignment, size, AsanThreadIdAndName(tid).c_str());
+  Report("ERROR: AddressSanitizer: invalid alignment requested in "
+         "aligned_alloc: %zd, alignment must be a power of two and the "
+         "requested size 0x%zx must be a multiple of alignment "
+         "(thread %s)\n", alignment, size, AsanThreadIdAndName(tid).c_str());
 #else
-  Report(
-      "ERROR: AddressSanitizer: invalid alignment requested in "
-      "aligned_alloc: %zd, the requested size 0x%zx must be a multiple of "
-      "alignment (thread %s)\n",
-      alignment, size, AsanThreadIdAndName(tid).c_str());
+  Report("ERROR: AddressSanitizer: invalid alignment requested in "
+         "aligned_alloc: %zd, the requested size 0x%zx must be a multiple of "
+         "alignment (thread %s)\n", alignment, size,
+         AsanThreadIdAndName(tid).c_str());
 #endif
   Printf("%s", d.Default());
   stack->Print();
@@ -273,8 +271,7 @@ void ErrorRssLimitExceeded::Print() {
   Printf("%s", d.Error());
   Report(
       "ERROR: AddressSanitizer: specified RSS limit exceeded, currently set to "
-      "soft_rss_limit_mb=%zd\n",
-      common_flags()->soft_rss_limit_mb);
+      "soft_rss_limit_mb=%zd\n", common_flags()->soft_rss_limit_mb);
   Printf("%s", d.Default());
   stack->Print();
   PrintHintAllocatorCannotReturnNull();
@@ -286,8 +283,7 @@ void ErrorOutOfMemory::Print() {
   Printf("%s", d.Error());
   Report(
       "ERROR: AddressSanitizer: allocator is out of memory trying to allocate "
-      "0x%zx bytes\n",
-      requested_size);
+      "0x%zx bytes\n", requested_size);
   Printf("%s", d.Default());
   stack->Print();
   PrintHintAllocatorCannotReturnNull();
@@ -413,11 +409,9 @@ ErrorGeneric::ErrorGeneric(u32 tid, uptr pc_, uptr bp_, uptr sp_, uptr addr,
     if (AddrIsInMem(addr)) {
       u8 *shadow_addr = (u8 *)MemToShadow(addr);
       // If we are accessing 16 bytes, look at the second shadow byte.
-      if (*shadow_addr == 0 && access_size > SHADOW_GRANULARITY)
-        shadow_addr++;
+      if (*shadow_addr == 0 && access_size > SHADOW_GRANULARITY) shadow_addr++;
       // If we are in the partial right redzone, look at the next shadow byte.
-      if (*shadow_addr > 0 && *shadow_addr < 128)
-        shadow_addr++;
+      if (*shadow_addr > 0 && *shadow_addr < 128) shadow_addr++;
       bool far_from_bounds = false;
       shadow_val = *shadow_addr;
       int bug_type_score = 0;
@@ -433,8 +427,7 @@ ErrorGeneric::ErrorGeneric(u32 tid, uptr pc_, uptr bp_, uptr sp_, uptr addr,
         case kAsanHeapFreeMagic:
           bug_descr = "heap-use-after-free";
           bug_type_score = 20;
-          if (!is_write)
-            read_after_free_bonus = 18;
+          if (!is_write) read_after_free_bonus = 18;
           break;
         case kAsanStackLeftRedzoneMagic:
           bug_descr = "stack-buffer-underflow";
@@ -454,8 +447,7 @@ ErrorGeneric::ErrorGeneric(u32 tid, uptr pc_, uptr bp_, uptr sp_, uptr addr,
         case kAsanStackAfterReturnMagic:
           bug_descr = "stack-use-after-return";
           bug_type_score = 30;
-          if (!is_write)
-            read_after_free_bonus = 18;
+          if (!is_write) read_after_free_bonus = 18;
           break;
         case kAsanUserPoisonedMemoryMagic:
           bug_descr = "use-after-poison";
@@ -486,24 +478,22 @@ ErrorGeneric::ErrorGeneric(u32 tid, uptr pc_, uptr bp_, uptr sp_, uptr addr,
           break;
       }
       scariness.Scare(bug_type_score + read_after_free_bonus, bug_descr);
-      if (far_from_bounds)
-        scariness.Scare(10, "far-from-bounds");
+      if (far_from_bounds) scariness.Scare(10, "far-from-bounds");
     }
   }
 }
 
 static void PrintContainerOverflowHint() {
-  Printf(
-      "HINT: if you don't care about these errors you may set "
-      "ASAN_OPTIONS=detect_container_overflow=0.\n"
-      "If you suspect a false positive see also: "
-      "https://github.com/google/sanitizers/wiki/"
-      "AddressSanitizerContainerOverflow.\n");
+  Printf("HINT: if you don't care about these errors you may set "
+         "ASAN_OPTIONS=detect_container_overflow=0.\n"
+         "If you suspect a false positive see also: "
+         "https://github.com/google/sanitizers/wiki/"
+         "AddressSanitizerContainerOverflow.\n");
 }
 
 static void PrintShadowByte(InternalScopedString *str, const char *before,
-                            u8 byte, const char *after = "\n") {
-  PrintMemoryByte(str, before, byte, /*in_shadow*/ true, after);
+    u8 byte, const char *after = "\n") {
+  PrintMemoryByte(str, before, byte, /*in_shadow*/true, after);
 }
 
 static void PrintLegend(InternalScopedString *str) {
@@ -515,28 +505,30 @@ static void PrintLegend(InternalScopedString *str) {
   str->append("  Partially addressable: ");
   for (u8 i = 1; i < SHADOW_GRANULARITY; i++) PrintShadowByte(str, "", i, " ");
   str->append("\n");
-  PrintShadowByte(str,
-                  "  Heap left redzone:       ", kAsanHeapLeftRedzoneMagic);
+  PrintShadowByte(str, "  Heap left redzone:       ",
+                  kAsanHeapLeftRedzoneMagic);
   PrintShadowByte(str, "  Freed heap region:       ", kAsanHeapFreeMagic);
-  PrintShadowByte(str,
-                  "  Stack left redzone:      ", kAsanStackLeftRedzoneMagic);
-  PrintShadowByte(str,
-                  "  Stack mid redzone:       ", kAsanStackMidRedzoneMagic);
-  PrintShadowByte(str,
-                  "  Stack right redzone:     ", kAsanStackRightRedzoneMagic);
-  PrintShadowByte(str,
-                  "  Stack after return:      ", kAsanStackAfterReturnMagic);
-  PrintShadowByte(str,
-                  "  Stack use after scope:   ", kAsanStackUseAfterScopeMagic);
+  PrintShadowByte(str, "  Stack left redzone:      ",
+                  kAsanStackLeftRedzoneMagic);
+  PrintShadowByte(str, "  Stack mid redzone:       ",
+                  kAsanStackMidRedzoneMagic);
+  PrintShadowByte(str, "  Stack right redzone:     ",
+                  kAsanStackRightRedzoneMagic);
+  PrintShadowByte(str, "  Stack after return:      ",
+                  kAsanStackAfterReturnMagic);
+  PrintShadowByte(str, "  Stack use after scope:   ",
+                  kAsanStackUseAfterScopeMagic);
   PrintShadowByte(str, "  Global redzone:          ", kAsanGlobalRedzoneMagic);
-  PrintShadowByte(str,
-                  "  Global init order:       ", kAsanInitializationOrderMagic);
-  PrintShadowByte(str,
-                  "  Poisoned by user:        ", kAsanUserPoisonedMemoryMagic);
-  PrintShadowByte(
-      str, "  Container overflow:      ", kAsanContiguousContainerOOBMagic);
-  PrintShadowByte(str, "  Array cookie:            ", kAsanArrayCookieMagic);
-  PrintShadowByte(str, "  Intra object redzone:    ", kAsanIntraObjectRedzone);
+  PrintShadowByte(str, "  Global init order:       ",
+                  kAsanInitializationOrderMagic);
+  PrintShadowByte(str, "  Poisoned by user:        ",
+                  kAsanUserPoisonedMemoryMagic);
+  PrintShadowByte(str, "  Container overflow:      ",
+                  kAsanContiguousContainerOOBMagic);
+  PrintShadowByte(str, "  Array cookie:            ",
+                  kAsanArrayCookieMagic);
+  PrintShadowByte(str, "  Intra object redzone:    ",
+                  kAsanIntraObjectRedzone);
   PrintShadowByte(str, "  ASan internal:           ", kAsanInternalHeapMagic);
   PrintShadowByte(str, "  Left alloca redzone:     ", kAsanAllocaLeftMagic);
   PrintShadowByte(str, "  Right alloca redzone:    ", kAsanAllocaRightMagic);
@@ -546,13 +538,11 @@ static void PrintLegend(InternalScopedString *str) {
 static void PrintShadowBytes(InternalScopedString *str, const char *before,
                              u8 *bytes, u8 *guilty, uptr n) {
   Decorator d;
-  if (before)
-    str->append("%s%p:", before, bytes);
+  if (before) str->append("%s%p:", before, bytes);
   for (uptr i = 0; i < n; i++) {
     u8 *p = bytes + i;
-    const char *before = p == guilty                   ? "["
-                         : (p - 1 == guilty && i != 0) ? ""
-                                                       : " ";
+    const char *before =
+        p == guilty ? "[" : (p - 1 == guilty && i != 0) ? "" : " ";
     const char *after = p == guilty ? "]" : "";
     PrintShadowByte(str, before, *p, after);
   }
@@ -560,8 +550,7 @@ static void PrintShadowBytes(InternalScopedString *str, const char *before,
 }
 
 static void PrintShadowMemoryForAddress(uptr addr) {
-  if (!AddrIsInMem(addr))
-    return;
+  if (!AddrIsInMem(addr)) return;
   uptr shadow_addr = MemToShadow(addr);
   const uptr n_bytes_per_row = 16;
   uptr aligned_shadow = shadow_addr & ~(n_bytes_per_row - 1);
@@ -572,14 +561,12 @@ static void PrintShadowMemoryForAddress(uptr addr) {
     // Skip rows that would be outside the shadow range. This can happen when
     // the user address is near the bottom, top, or shadow gap of the address
     // space.
-    if (!AddrIsInShadow(row_shadow_addr))
-      continue;
+    if (!AddrIsInShadow(row_shadow_addr)) continue;
     const char *prefix = (i == 0) ? "=>" : "  ";
     PrintShadowBytes(&str, prefix, (u8 *)row_shadow_addr, (u8 *)shadow_addr,
                      n_bytes_per_row);
   }
-  if (flags()->print_legend)
-    PrintLegend(&str);
+  if (flags()->print_legend) PrintLegend(&str);
   Printf("%s", str.data());
 }
 

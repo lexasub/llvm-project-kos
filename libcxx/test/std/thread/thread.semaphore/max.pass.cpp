@@ -16,16 +16,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   static_assert(std::counting_semaphore<>::max() > 0, "");
   static_assert(std::counting_semaphore<1>::max() >= 1, "");
-  static_assert(
-      std::counting_semaphore<std::numeric_limits<int>::max()>::max() >= 1, "");
-  static_assert(
-      std::counting_semaphore<std::numeric_limits<ptrdiff_t>::max()>::max() >=
-          1,
-      "");
-  static_assert(
-      std::counting_semaphore<1>::max() == std::binary_semaphore::max(), "");
+  static_assert(std::counting_semaphore<std::numeric_limits<int>::max()>::max() >= 1, "");
+  static_assert(std::counting_semaphore<std::numeric_limits<ptrdiff_t>::max()>::max() >= 1, "");
+  static_assert(std::counting_semaphore<1>::max() == std::binary_semaphore::max(), "");
   return 0;
 }

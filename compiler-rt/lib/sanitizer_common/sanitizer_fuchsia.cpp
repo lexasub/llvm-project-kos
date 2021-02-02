@@ -69,7 +69,9 @@ uptr internal_getpid() {
   return pid;
 }
 
-int internal_dlinfo(void *handle, int request, void *p) { UNIMPLEMENTED(); }
+int internal_dlinfo(void *handle, int request, void *p) {
+  UNIMPLEMENTED();
+}
 
 uptr GetThreadSelf() { return reinterpret_cast<uptr>(thrd_current()); }
 
@@ -216,10 +218,11 @@ uptr ReservedAddressRange::Init(uptr init_size, const char *name,
   DCHECK_EQ(os_handle_, ZX_HANDLE_INVALID);
   uintptr_t base;
   zx_handle_t vmar;
-  zx_status_t status = _zx_vmar_allocate(
-      _zx_vmar_root_self(),
-      ZX_VM_CAN_MAP_READ | ZX_VM_CAN_MAP_WRITE | ZX_VM_CAN_MAP_SPECIFIC, 0,
-      init_size, &vmar, &base);
+  zx_status_t status =
+      _zx_vmar_allocate(
+          _zx_vmar_root_self(),
+          ZX_VM_CAN_MAP_READ | ZX_VM_CAN_MAP_WRITE | ZX_VM_CAN_MAP_SPECIFIC,
+          0, init_size, &vmar, &base);
   if (status != ZX_OK)
     ReportMmapFailureAndDie(init_size, name, "zx_vmar_allocate", status);
   base_ = reinterpret_cast<void *>(base);
@@ -261,18 +264,18 @@ static uptr DoMmapFixedOrDie(zx_handle_t vmar, uptr fixed_addr, uptr map_size,
 
 uptr ReservedAddressRange::Map(uptr fixed_addr, uptr map_size,
                                const char *name) {
-  return DoMmapFixedOrDie(os_handle_, fixed_addr, map_size, base_, name_,
-                          false);
+  return DoMmapFixedOrDie(os_handle_, fixed_addr, map_size, base_,
+                          name_, false);
 }
 
 uptr ReservedAddressRange::MapOrDie(uptr fixed_addr, uptr map_size,
                                     const char *name) {
-  return DoMmapFixedOrDie(os_handle_, fixed_addr, map_size, base_, name_, true);
+  return DoMmapFixedOrDie(os_handle_, fixed_addr, map_size, base_,
+                          name_, true);
 }
 
 void UnmapOrDieVmar(void *addr, uptr size, zx_handle_t target_vmar) {
-  if (!addr || !size)
-    return;
+  if (!addr || !size) return;
   size = RoundUpTo(size, PAGE_SIZE);
 
   zx_status_t status =
@@ -353,8 +356,7 @@ void *MmapAlignedOrDieOnFatalError(uptr size, uptr alignment,
             _zx_vmar_root_self(),
             ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_SPECIFIC_OVERWRITE,
             addr - info.base, vmo, 0, size, &new_addr);
-        if (status == ZX_OK)
-          CHECK_EQ(new_addr, addr);
+        if (status == ZX_OK) CHECK_EQ(new_addr, addr);
       }
     }
     if (status == ZX_OK && addr != map_addr)
@@ -419,8 +421,7 @@ bool ReadFileToBuffer(const char *file_name, char **buff, uptr *buff_size,
     uint64_t vmo_size;
     status = _zx_vmo_get_size(vmo, &vmo_size);
     if (status == ZX_OK) {
-      if (vmo_size < max_len)
-        max_len = vmo_size;
+      if (vmo_size < max_len) max_len = vmo_size;
       size_t map_size = RoundUpTo(max_len, PAGE_SIZE);
       uintptr_t addr;
       status = _zx_vmar_map(_zx_vmar_root_self(), ZX_VM_PERM_READ, 0, vmo, 0,
@@ -433,8 +434,7 @@ bool ReadFileToBuffer(const char *file_name, char **buff, uptr *buff_size,
     }
     _zx_handle_close(vmo);
   }
-  if (status != ZX_OK && errno_p)
-    *errno_p = status;
+  if (status != ZX_OK && errno_p) *errno_p = status;
   return status == ZX_OK;
 }
 
@@ -508,7 +508,9 @@ bool GetRandom(void *buffer, uptr length, bool blocking) {
   return true;
 }
 
-u32 GetNumberOfCPUs() { return zx_system_get_num_cpus(); }
+u32 GetNumberOfCPUs() {
+  return zx_system_get_num_cpus();
+}
 
 uptr GetRSS() { UNIMPLEMENTED(); }
 

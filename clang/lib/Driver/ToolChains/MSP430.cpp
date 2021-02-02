@@ -117,13 +117,13 @@ MSP430ToolChain::MSP430ToolChain(const Driver &D, const llvm::Triple &Triple,
     MultilibSuf = GCCInstallation.getMultilib().gccSuffix();
 
     SmallString<128> GCCBinPath;
-    llvm::sys::path::append(GCCBinPath, GCCInstallation.getParentLibPath(),
-                            "..", "bin");
+    llvm::sys::path::append(GCCBinPath,
+                            GCCInstallation.getParentLibPath(), "..", "bin");
     addPathIfExists(D, GCCBinPath, getProgramPaths());
 
     SmallString<128> GCCRtPath;
-    llvm::sys::path::append(GCCRtPath, GCCInstallation.getInstallPath(),
-                            MultilibSuf);
+    llvm::sys::path::append(GCCRtPath,
+                            GCCInstallation.getInstallPath(), MultilibSuf);
     addPathIfExists(D, GCCRtPath, getFilePaths());
   }
 

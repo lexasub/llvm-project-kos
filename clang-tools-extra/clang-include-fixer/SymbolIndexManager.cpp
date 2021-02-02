@@ -18,8 +18,8 @@
 namespace clang {
 namespace include_fixer {
 
-using find_all_symbols::SymbolAndSignals;
 using find_all_symbols::SymbolInfo;
+using find_all_symbols::SymbolAndSignals;
 
 // Calculate a score based on whether we think the given header is closely
 // related to the given source file.
@@ -69,7 +69,8 @@ static void rank(std::vector<SymbolAndSignals> &Symbols,
 }
 
 std::vector<find_all_symbols::SymbolInfo>
-SymbolIndexManager::search(llvm::StringRef Identifier, bool IsNestedSearch,
+SymbolIndexManager::search(llvm::StringRef Identifier,
+                           bool IsNestedSearch,
                            llvm::StringRef FileName) const {
   // The identifier may be fully qualified, so split it and get all the context
   // names.

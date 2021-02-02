@@ -19,7 +19,7 @@ int *[[gnu::unused]] attr_on_ptr;
 [[gnu::fastcall]] void pr17424_4() [[gnu::stdcall]];
 // expected-warning@-1 {{'fastcall' calling convention is not supported for this target}}
 // expected-warning@-2 {{'stdcall' calling convention is not supported for this target}}
-void pr17424_5 [[gnu::fastcall]] ();
+void pr17424_5 [[gnu::fastcall]]();
 // expected-warning@-1 {{'fastcall' calling convention is not supported for this target}}
 
 // Valid cases.
@@ -33,7 +33,7 @@ extern struct PR22493Ty {
 
 [[gnu::aligned(8)]] int aligned;
 void aligned_fn [[gnu::aligned(32)]] ();
-struct [[gnu::aligned(8)]] aligned_struct{};
+struct [[gnu::aligned(8)]] aligned_struct {};
 
 void always_inline [[gnu::always_inline]] ();
 
@@ -43,14 +43,14 @@ void cleanup(int *p) {
   int n [[gnu::cleanup(cleanup)]];
 }
 
-void deprecated1 [[gnu::deprecated]] ();                  // expected-note {{here}}
+void deprecated1 [[gnu::deprecated]] (); // expected-note {{here}}
 [[gnu::deprecated("custom message")]] void deprecated2(); // expected-note {{here}}
 void deprecated3() {
   deprecated1(); // expected-warning {{deprecated}}
   deprecated2(); // expected-warning {{custom message}}
 }
 
-[[gnu::naked(1, 2, 3)]] void naked(); // expected-error {{takes no arguments}}
+[[gnu::naked(1,2,3)]] void naked(); // expected-error {{takes no arguments}}
 
 void nonnull [[gnu::nonnull]] (); // expected-warning {{applied to function with no pointer arguments}}
 
@@ -66,8 +66,5 @@ int (*noreturn_fn_ptr_2 [[gnu::noreturn]])() = &noreturn_fn_3;
 [[gnu::noreturn]] int (*noreturn_fn_ptr_3)() = &noreturn_fn_1; // expected-error {{cannot initialize}}
 [[gnu::noreturn]] int (*noreturn_fn_ptr_4)() = &noreturn_fn_3;
 
-struct [[gnu::packed]] packed {
-  char c;
-  int n;
-};
+struct [[gnu::packed]] packed { char c; int n; };
 static_assert(sizeof(packed) == sizeof(char) + sizeof(int), "not packed");

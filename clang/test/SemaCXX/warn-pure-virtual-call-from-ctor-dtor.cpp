@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 %s -fsyntax-only -verify -Wcall-to-pure-virtual-from-ctor-dtor
 struct A {
-  A() { f(); }  // expected-warning {{call to pure virtual member function 'f' has undefined behavior; overrides of 'f' in subclasses are not available in the constructor of 'A'}}
+  A() { f(); } // expected-warning {{call to pure virtual member function 'f' has undefined behavior; overrides of 'f' in subclasses are not available in the constructor of 'A'}}
   ~A() { f(); } // expected-warning {{call to pure virtual member function 'f' has undefined behavior; overrides of 'f' in subclasses are not available in the destructor of 'A'}}
 
   virtual void f() = 0; // expected-note 2 {{'f' declared here}}
@@ -15,10 +15,10 @@ struct B {
 
 // Don't warn if the call is fully qualified. (PR23215)
 struct C {
-  virtual void f() = 0;
-  C() {
-    C::f();
-  }
+    virtual void f() = 0;
+    C() {
+        C::f();
+    }
 };
 
 template <typename T> struct TA {
@@ -46,7 +46,7 @@ struct TB : TA<float> { // expected-note {{in instantiation of member function '
 TB tb;
 
 struct TC : TA<int> {}; // ok
-TC tc;                  // ok
+TC tc; // ok
 
 struct TD : TA<long> {
   void f() override;

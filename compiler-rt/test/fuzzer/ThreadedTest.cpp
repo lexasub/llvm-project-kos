@@ -10,8 +10,7 @@
 #include <thread>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  if (Size < 8)
-    return 0;
+  if (Size < 8) return 0;
   assert(Data);
   auto C = [&] {
     size_t Res = 0;
@@ -25,3 +24,4 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     X.join();
   return 0;
 }
+

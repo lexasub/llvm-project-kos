@@ -97,8 +97,8 @@ struct LoopBodyTraits {
 class LoopBlocksDFS {
 public:
   /// Postorder list iterators.
-  typedef std::vector<BasicBlock *>::const_iterator POIterator;
-  typedef std::vector<BasicBlock *>::const_reverse_iterator RPOIterator;
+  typedef std::vector<BasicBlock*>::const_iterator POIterator;
+  typedef std::vector<BasicBlock*>::const_reverse_iterator RPOIterator;
 
   friend class LoopBlocksTraversal;
 
@@ -108,12 +108,12 @@ private:
   /// Map each block to its postorder number. A block is only mapped after it is
   /// preorder visited by DFS. It's postorder number is initially zero and set
   /// to nonzero after it is finished by postorder traversal.
-  DenseMap<BasicBlock *, unsigned> PostNumbers;
-  std::vector<BasicBlock *> PostBlocks;
+  DenseMap<BasicBlock*, unsigned> PostNumbers;
+  std::vector<BasicBlock*> PostBlocks;
 
 public:
-  LoopBlocksDFS(Loop *Container)
-      : L(Container), PostNumbers(NextPowerOf2(Container->getNumBlocks())) {
+  LoopBlocksDFS(Loop *Container) :
+    L(Container), PostNumbers(NextPowerOf2(Container->getNumBlocks())) {
     PostBlocks.reserve(Container->getNumBlocks());
   }
 
@@ -144,13 +144,13 @@ public:
 
   /// Return true if this block has a postorder number.
   bool hasPostorder(BasicBlock *BB) const {
-    DenseMap<BasicBlock *, unsigned>::const_iterator I = PostNumbers.find(BB);
+    DenseMap<BasicBlock*, unsigned>::const_iterator I = PostNumbers.find(BB);
     return I != PostNumbers.end() && I->second;
   }
 
   /// Get a block's postorder number.
   unsigned getPostorder(BasicBlock *BB) const {
-    DenseMap<BasicBlock *, unsigned>::const_iterator I = PostNumbers.find(BB);
+    DenseMap<BasicBlock*, unsigned>::const_iterator I = PostNumbers.find(BB);
     assert(I != PostNumbers.end() && "block not visited by DFS");
     assert(I->second && "block not finished by DFS");
     return I->second;
@@ -177,7 +177,9 @@ public:
   LoopBlocksRPO(Loop *Container) : DFS(Container) {}
 
   /// Traverse the loop blocks and store the DFS result.
-  void perform(LoopInfo *LI) { DFS.perform(LI); }
+  void perform(LoopInfo *LI) {
+    DFS.perform(LI);
+  }
 
   /// Reverse iterate over the cached postorder blocks.
   LoopBlocksDFS::RPOIterator begin() const { return DFS.beginRPO(); }
@@ -185,9 +187,8 @@ public:
 };
 
 /// Specialize po_iterator_storage to record postorder numbers.
-template <> class po_iterator_storage<LoopBlocksTraversal, true> {
+template<> class po_iterator_storage<LoopBlocksTraversal, true> {
   LoopBlocksTraversal &LBT;
-
 public:
   po_iterator_storage(LoopBlocksTraversal &lbs) : LBT(lbs) {}
   // These functions are defined below.
@@ -199,15 +200,15 @@ public:
 class LoopBlocksTraversal {
 public:
   /// Graph traversal iterator.
-  typedef po_iterator<BasicBlock *, LoopBlocksTraversal, true> POTIterator;
+  typedef po_iterator<BasicBlock*, LoopBlocksTraversal, true> POTIterator;
 
 private:
   LoopBlocksDFS &DFS;
   LoopInfo *LI;
 
 public:
-  LoopBlocksTraversal(LoopBlocksDFS &Storage, LoopInfo *LInfo)
-      : DFS(Storage), LI(LInfo) {}
+  LoopBlocksTraversal(LoopBlocksDFS &Storage, LoopInfo *LInfo) :
+    DFS(Storage), LI(LInfo) {}
 
   /// Postorder traversal over the graph. This only needs to be done once.
   /// po_iterator "automatically" calls back to visitPreorder and
@@ -248,8 +249,8 @@ inline bool po_iterator_storage<LoopBlocksTraversal, true>::insertEdge(
   return LBT.visitPreorder(To);
 }
 
-inline void po_iterator_storage<LoopBlocksTraversal, true>::finishPostorder(
-    BasicBlock *BB) {
+inline void po_iterator_storage<LoopBlocksTraversal, true>::
+finishPostorder(BasicBlock *BB) {
   LBT.finishPostorder(BB);
 }
 

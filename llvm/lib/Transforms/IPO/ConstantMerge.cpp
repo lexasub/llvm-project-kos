@@ -44,9 +44,8 @@ STATISTIC(NumIdenticalMerged, "Number of identical global constants merged");
 
 /// Find values that are marked as llvm.used.
 static void FindUsedValues(GlobalVariable *LLVMUsed,
-                           SmallPtrSetImpl<const GlobalValue *> &UsedValues) {
-  if (!LLVMUsed)
-    return;
+                           SmallPtrSetImpl<const GlobalValue*> &UsedValues) {
+  if (!LLVMUsed) return;
   ConstantArray *Inits = cast<ConstantArray>(LLVMUsed->getInitializer());
 
   for (unsigned i = 0, e = Inits->getNumOperands(); i != e; ++i) {
@@ -133,7 +132,7 @@ static void replace(Module &M, GlobalVariable *Old, GlobalVariable *New) {
 
 static bool mergeConstants(Module &M) {
   // Find all the globals that are marked "used".  These cannot be merged.
-  SmallPtrSet<const GlobalValue *, 8> UsedGlobals;
+  SmallPtrSet<const GlobalValue*, 8> UsedGlobals;
   FindUsedValues(M.getGlobalVariable("llvm.used"), UsedGlobals);
   FindUsedValues(M.getGlobalVariable("llvm.compiler.used"), UsedGlobals);
 
@@ -153,7 +152,7 @@ static bool mergeConstants(Module &M) {
   while (true) {
     // Find the canonical constants others will be merged with.
     for (Module::global_iterator GVI = M.global_begin(), E = M.global_end();
-         GVI != E;) {
+         GVI != E; ) {
       GlobalVariable *GV = &*GVI++;
 
       // If this GV is dead, remove it.
@@ -199,7 +198,7 @@ static bool mergeConstants(Module &M) {
     // because doing so may cause initializers of other globals to be rewritten,
     // invalidating the Constant* pointers in CMap.
     for (Module::global_iterator GVI = M.global_begin(), E = M.global_end();
-         GVI != E;) {
+         GVI != E; ) {
       GlobalVariable *GV = &*GVI++;
 
       if (isUnmergeableGlobal(GV, UsedGlobals))

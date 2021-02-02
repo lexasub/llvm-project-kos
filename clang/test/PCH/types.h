@@ -10,7 +10,7 @@ typedef _Complex float Cfloat;
 typedef _Atomic(int) AtomicInt;
 
 // TYPE_POINTER
-typedef int *int_ptr;
+typedef int * int_ptr;
 
 // TYPE_BLOCK_POINTER
 typedef int (^Block)(int, float);
@@ -36,7 +36,7 @@ typedef int noproto();
 typedef float proto(float, float, ...);
 
 // TYPE_TYPEDEF
-typedef int_ptr *int_ptr_ptr;
+typedef int_ptr * int_ptr_ptr;
 
 // TYPE_TYPEOF_EXPR
 typedef typeof(17) typeof_17;

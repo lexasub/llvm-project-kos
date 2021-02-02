@@ -71,30 +71,30 @@ void MCSectionCOFF::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
     else
       OS << "\n\t.linkonce\t";
     switch (Selection) {
-    case COFF::IMAGE_COMDAT_SELECT_NODUPLICATES:
-      OS << "one_only";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_ANY:
-      OS << "discard";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_SAME_SIZE:
-      OS << "same_size";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_EXACT_MATCH:
-      OS << "same_contents";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_ASSOCIATIVE:
-      OS << "associative";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_LARGEST:
-      OS << "largest";
-      break;
-    case COFF::IMAGE_COMDAT_SELECT_NEWEST:
-      OS << "newest";
-      break;
-    default:
-      assert(false && "unsupported COFF selection type");
-      break;
+      case COFF::IMAGE_COMDAT_SELECT_NODUPLICATES:
+        OS << "one_only";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_ANY:
+        OS << "discard";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_SAME_SIZE:
+        OS << "same_size";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_EXACT_MATCH:
+        OS << "same_contents";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_ASSOCIATIVE:
+        OS << "associative";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_LARGEST:
+        OS << "largest";
+        break;
+      case COFF::IMAGE_COMDAT_SELECT_NEWEST:
+        OS << "newest";
+        break;
+      default:
+        assert(false && "unsupported COFF selection type");
+        break;
     }
     if (COMDATSymbol) {
       OS << ",";
@@ -104,7 +104,9 @@ void MCSectionCOFF::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
   OS << '\n';
 }
 
-bool MCSectionCOFF::UseCodeAlign() const { return getKind().isText(); }
+bool MCSectionCOFF::UseCodeAlign() const {
+  return getKind().isText();
+}
 
 bool MCSectionCOFF::isVirtualSection() const {
   return getCharacteristics() & COFF::IMAGE_SCN_CNT_UNINITIALIZED_DATA;

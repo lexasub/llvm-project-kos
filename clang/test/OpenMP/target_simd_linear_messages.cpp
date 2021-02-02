@@ -16,8 +16,7 @@ extern const omp_allocator_handle_t omp_thread_mem_alloc;
 
 void xxx(int argc) {
   int i, lin, step; // expected-note {{initialize the variable 'lin' to silence this warning}} expected-note {{initialize the variable 'step' to silence this warning}}
-#pragma omp target simd linear(i, lin \
-                               : step) // expected-warning {{variable 'lin' is uninitialized when used here}} expected-warning {{variable 'step' is uninitialized when used here}}
+#pragma omp target simd linear(i, lin : step) // expected-warning {{variable 'lin' is uninitialized when used here}} expected-warning {{variable 'step' is uninitialized when used here}}
   for (i = 0; i < 10; ++i)
     ;
 }
@@ -38,31 +37,25 @@ const int C1 = 1;
 const int C2 = 2;
 void test_linear_colons() {
   int B = 0;
-#pragma omp target simd linear(B \
-                               : bfoo())
+#pragma omp target simd linear(B : bfoo())
   for (int i = 0; i < 10; ++i)
     ;
 // expected-error@+1 {{unexpected ':' in nested name specifier; did you mean '::'}}
-#pragma omp target simd linear(B::ib:B \
-                               : bfoo())
+#pragma omp target simd linear(B::ib : B : bfoo())
   for (int i = 0; i < 10; ++i)
     ;
 // expected-error@+1 {{use of undeclared identifier 'ib'; did you mean 'B::ib'}}
-#pragma omp target simd linear(B \
-                               : ib)
+#pragma omp target simd linear(B : ib)
   for (int i = 0; i < 10; ++i)
     ;
 // expected-error@+1 {{unexpected ':' in nested name specifier; did you mean '::'?}}
-#pragma omp target simd linear(z:B \
-                               : ib)
+#pragma omp target simd linear(z : B : ib)
   for (int i = 0; i < 10; ++i)
     ;
-#pragma omp target simd linear(B \
-                               : B::bfoo())
+#pragma omp target simd linear(B : B::bfoo())
   for (int i = 0; i < 10; ++i)
     ;
-#pragma omp target simd linear(X::x \
-                               : ::z)
+#pragma omp target simd linear(X::x : ::z)
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp target simd linear(B, ::z, X::x)
@@ -75,8 +68,7 @@ void test_linear_colons() {
 #pragma omp target simd linear(B::bfoo())
   for (int i = 0; i < 10; ++i)
     ;
-#pragma omp target simd linear(B::ib, B \
-                               : C1 + C2)
+#pragma omp target simd linear(B::ib, B : C1 + C2)
   for (int i = 0; i < 10; ++i)
     ;
 }
@@ -87,8 +79,7 @@ T test_template(T *arr, N num) {
   T sum = (T)0;
   T ind2 = -num * L; // expected-note {{'ind2' defined here}}
 // expected-error@+1 {{argument of a linear clause should be of integral or pointer type}}
-#pragma omp target simd linear(ind2 \
-                               : L)
+#pragma omp target simd linear(ind2 : L)
   for (i = 0; i < num; ++i) {
     T cur = arr[(int)ind2];
     ind2 += L;
@@ -101,8 +92,7 @@ template <int LEN>
 int test_warn() {
   int ind2 = 0;
 // expected-warning@+1 {{zero linear step (ind2 should probably be const)}}
-#pragma omp target simd linear(ind2 \
-                               : LEN)
+#pragma omp target simd linear(ind2 : LEN)
   for (int i = 0; i < 100; i++) {
     ind2 += LEN;
   }
@@ -168,10 +158,7 @@ int foomain(I argc, C **argv) {
 #pragma omp target simd linear(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp target simd linear(argc : 5) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                              : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                               : argv),              \
-                                                                                                                                                                allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp target simd linear(argc : 5) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target simd linear(S1) // expected-error {{'S1' does not refer to a value}}
@@ -179,15 +166,13 @@ int foomain(I argc, C **argv) {
     ++k;
 // expected-error@+2 {{linear variable with incomplete type 'S1'}}
 // expected-error@+1 {{argument of a linear clause should be of integral or pointer type, not 'S2'}}
-#pragma omp target simd linear(a, b \
-                               : B::ib)
+#pragma omp target simd linear(a, b : B::ib)
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target simd linear(argv[1]) // expected-error {{expected variable name}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp target simd allocate(omp_thread_mem_alloc \
-                                 : e) linear(e, g) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target simd' directive}}
+#pragma omp target simd allocate(omp_thread_mem_alloc: e) linear(e, g) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target simd' directive}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target simd linear(h) // expected-error {{threadprivate or thread local variable cannot be linear}}
@@ -200,8 +185,7 @@ int foomain(I argc, C **argv) {
   {
     int v = 0;
     int i;
-#pragma omp target simd linear(v \
-                               : i)
+#pragma omp target simd linear(v : i)
     for (int k = 0; k < argc; ++k) {
       i = k;
       v += i;
@@ -211,8 +195,7 @@ int foomain(I argc, C **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
   int v = 0;
-#pragma omp target simd linear(v \
-                               : j)
+#pragma omp target simd linear(v : j)
   for (int k = 0; k < argc; ++k) {
     ++k;
     v += j;
@@ -226,7 +209,7 @@ int foomain(I argc, C **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace C {
 using A::x;
 }
@@ -304,3 +287,4 @@ int main(int argc, char **argv) {
   foomain<int, char>(argc, argv); // expected-note {{in instantiation of function template specialization 'foomain<int, char>' requested here}}
   return 0;
 }
+

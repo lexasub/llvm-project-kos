@@ -15,8 +15,8 @@
 #include "llvm/Support/DataTypes.h"
 
 namespace clang {
-class Decl;
-class LangOptions;
+  class Decl;
+  class LangOptions;
 
 namespace index {
 
@@ -80,16 +80,16 @@ enum class SymbolSubKind : uint8_t {
 typedef uint16_t SymbolPropertySet;
 /// Set of properties that provide additional info about a symbol.
 enum class SymbolProperty : SymbolPropertySet {
-  Generic = 1 << 0,
+  Generic                       = 1 << 0,
   TemplatePartialSpecialization = 1 << 1,
-  TemplateSpecialization = 1 << 2,
-  UnitTest = 1 << 3,
-  IBAnnotated = 1 << 4,
-  IBOutletCollection = 1 << 5,
-  GKInspectable = 1 << 6,
-  Local = 1 << 7,
+  TemplateSpecialization        = 1 << 2,
+  UnitTest                      = 1 << 3,
+  IBAnnotated                   = 1 << 4,
+  IBOutletCollection            = 1 << 5,
+  GKInspectable                 = 1 << 6,
+  Local                         = 1 << 7,
   /// Symbol is part of a protocol interface.
-  ProtocolInterface = 1 << 8,
+  ProtocolInterface             = 1 << 8,
 };
 static const unsigned SymbolPropertyBitNum = 9;
 
@@ -135,7 +135,7 @@ struct SymbolRelation {
   const Decl *RelatedSymbol;
 
   SymbolRelation(SymbolRoleSet Roles, const Decl *Sym)
-      : Roles(Roles), RelatedSymbol(Sym) {}
+    : Roles(Roles), RelatedSymbol(Sym) {}
 };
 
 struct SymbolInfo {
@@ -153,8 +153,8 @@ bool isFunctionLocalSymbol(const Decl *D);
 
 void applyForEachSymbolRole(SymbolRoleSet Roles,
                             llvm::function_ref<void(SymbolRole)> Fn);
-bool applyForEachSymbolRoleInterruptible(
-    SymbolRoleSet Roles, llvm::function_ref<bool(SymbolRole)> Fn);
+bool applyForEachSymbolRoleInterruptible(SymbolRoleSet Roles,
+                            llvm::function_ref<bool(SymbolRole)> Fn);
 void printSymbolRoles(SymbolRoleSet Roles, raw_ostream &OS);
 
 /// \returns true if no name was printed, false otherwise.
@@ -165,7 +165,7 @@ StringRef getSymbolSubKindString(SymbolSubKind K);
 StringRef getSymbolLanguageString(SymbolLanguage K);
 
 void applyForEachSymbolProperty(SymbolPropertySet Props,
-                                llvm::function_ref<void(SymbolProperty)> Fn);
+                            llvm::function_ref<void(SymbolProperty)> Fn);
 void printSymbolProperties(SymbolPropertySet Props, raw_ostream &OS);
 
 } // namespace index

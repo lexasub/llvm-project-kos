@@ -30,21 +30,20 @@ class raw_ostream;
 class SDDbgValue {
 public:
   enum DbgValueKind {
-    SDNODE = 0,  ///< Value is the result of an expression.
-    CONST = 1,   ///< Value is a constant.
-    FRAMEIX = 2, ///< Value is contents of a stack location.
-    VREG = 3     ///< Value is a virtual register.
+    SDNODE = 0,             ///< Value is the result of an expression.
+    CONST = 1,              ///< Value is a constant.
+    FRAMEIX = 2,            ///< Value is contents of a stack location.
+    VREG = 3                ///< Value is a virtual register.
   };
-
 private:
   union {
     struct {
-      SDNode *Node;   ///< Valid for expressions.
-      unsigned ResNo; ///< Valid for expressions.
+      SDNode *Node;         ///< Valid for expressions.
+      unsigned ResNo;       ///< Valid for expressions.
     } s;
-    const Value *Const; ///< Valid for constants.
-    unsigned FrameIx;   ///< Valid for stack objects.
-    unsigned VReg;      ///< Valid for registers.
+    const Value *Const;     ///< Valid for constants.
+    unsigned FrameIx;       ///< Valid for stack objects.
+    unsigned VReg;          ///< Valid for registers.
   } u;
   DIVariable *Var;
   DIExpression *Expr;
@@ -97,34 +96,19 @@ public:
   DIExpression *getExpression() const { return Expr; }
 
   /// Returns the SDNode* for a register ref
-  SDNode *getSDNode() const {
-    assert(kind == SDNODE);
-    return u.s.Node;
-  }
+  SDNode *getSDNode() const { assert (kind==SDNODE); return u.s.Node; }
 
   /// Returns the ResNo for a register ref
-  unsigned getResNo() const {
-    assert(kind == SDNODE);
-    return u.s.ResNo;
-  }
+  unsigned getResNo() const { assert (kind==SDNODE); return u.s.ResNo; }
 
   /// Returns the Value* for a constant
-  const Value *getConst() const {
-    assert(kind == CONST);
-    return u.Const;
-  }
+  const Value *getConst() const { assert (kind==CONST); return u.Const; }
 
   /// Returns the FrameIx for a stack object
-  unsigned getFrameIx() const {
-    assert(kind == FRAMEIX);
-    return u.FrameIx;
-  }
+  unsigned getFrameIx() const { assert (kind==FRAMEIX); return u.FrameIx; }
 
   /// Returns the Virtual Register for a VReg
-  unsigned getVReg() const {
-    assert(kind == VREG);
-    return u.VReg;
-  }
+  unsigned getVReg() const { assert (kind==VREG); return u.VReg; }
 
   /// Returns whether this is an indirect value.
   bool isIndirect() const { return IsIndirect; }
@@ -177,6 +161,6 @@ public:
   unsigned getOrder() const { return Order; }
 };
 
-} // namespace llvm
+} // end llvm namespace
 
 #endif

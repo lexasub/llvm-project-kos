@@ -23,8 +23,9 @@
 
 #include "test_macros.h"
 
+
 int main(int, char**) {
-  using namespace fs;
+ using namespace fs;
   // Default ctor
   {
     static_assert(std::is_nothrow_default_constructible<file_status>::value,
@@ -32,7 +33,7 @@ int main(int, char**) {
     static_assert(test_convertible<file_status>(),
                   "The default constructor must not be explicit");
     const file_status f;
-    assert(f.type() == file_type::none);
+    assert(f.type()  == file_type::none);
     assert(f.permissions() == perms::unknown);
   }
 
@@ -41,21 +42,20 @@ int main(int, char**) {
     static_assert(std::is_nothrow_constructible<file_status, file_type>::value,
                   "This constructor must be noexcept");
     static_assert(!test_convertible<file_status, file_type>(),
-                  "This constructor must be explicit");
+                 "This constructor must be explicit");
 
     const file_status f(file_type::not_found);
-    assert(f.type() == file_type::not_found);
+    assert(f.type()  == file_type::not_found);
     assert(f.permissions() == perms::unknown);
   }
   // Binary ctor
   {
-    static_assert(
-        std::is_nothrow_constructible<file_status, file_type, perms>::value,
-        "This constructor must be noexcept");
+    static_assert(std::is_nothrow_constructible<file_status, file_type, perms>::value,
+                  "This constructor must be noexcept");
     static_assert(!test_convertible<file_status, file_type, perms>(),
                   "This constructor must b explicit");
     const file_status f(file_type::regular, perms::owner_read);
-    assert(f.type() == file_type::regular);
+    assert(f.type()  == file_type::regular);
     assert(f.permissions() == perms::owner_read);
   }
 

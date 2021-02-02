@@ -20,13 +20,14 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**) {
-  testbuf sb;
-  std::ios ios(&sb);
-  std::showpoint(ios);
-  std::ios_base& r = std::noshowpoint(ios);
-  assert(&r == &ios);
-  assert(!(ios.flags() & std::ios::showpoint));
+int main(int, char**)
+{
+    testbuf sb;
+    std::ios ios(&sb);
+    std::showpoint(ios);
+    std::ios_base& r = std::noshowpoint(ios);
+    assert(&r == &ios);
+    assert(!(ios.flags() & std::ios::showpoint));
 
   return 0;
 }

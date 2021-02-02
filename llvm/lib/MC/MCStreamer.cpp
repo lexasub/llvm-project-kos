@@ -224,10 +224,12 @@ void llvm::MCStreamer::emitNops(int64_t NumBytes, int64_t ControlledNopLen,
 /// The implementation in this class just redirects to emitFill.
 void MCStreamer::emitZeros(uint64_t NumBytes) { emitFill(NumBytes, 0); }
 
-Expected<unsigned> MCStreamer::tryEmitDwarfFileDirective(
-    unsigned FileNo, StringRef Directory, StringRef Filename,
-    Optional<MD5::MD5Result> Checksum, Optional<StringRef> Source,
-    unsigned CUID) {
+Expected<unsigned>
+MCStreamer::tryEmitDwarfFileDirective(unsigned FileNo, StringRef Directory,
+                                      StringRef Filename,
+                                      Optional<MD5::MD5Result> Checksum,
+                                      Optional<StringRef> Source,
+                                      unsigned CUID) {
   return getContext().getDwarfFile(Directory, Filename, FileNo, Checksum,
                                    Source, CUID);
 }
@@ -393,7 +395,8 @@ void MCStreamer::emitCVDefRangeDirective(
 }
 
 void MCStreamer::emitEHSymAttributes(const MCSymbol *Symbol,
-                                     MCSymbol *EHSymbol) {}
+                                     MCSymbol *EHSymbol) {
+}
 
 void MCStreamer::InitSections(bool NoExecStack) {
   SwitchSection(getContext().getObjectFileInfo()->getTextSection());
@@ -426,7 +429,9 @@ void MCStreamer::emitLabel(MCSymbol *Symbol, SMLoc Loc) {
     TS->emitLabel(Symbol);
 }
 
-void MCStreamer::emitCFISections(bool EH, bool Debug) { assert(EH || Debug); }
+void MCStreamer::emitCFISections(bool EH, bool Debug) {
+  assert(EH || Debug);
+}
 
 void MCStreamer::emitCFIStartProc(bool IsSimple, SMLoc Loc) {
   if (hasUnfinishedDwarfFrameInfo())
@@ -437,9 +442,9 @@ void MCStreamer::emitCFIStartProc(bool IsSimple, SMLoc Loc) {
   Frame.IsSimple = IsSimple;
   emitCFIStartProcImpl(Frame);
 
-  const MCAsmInfo *MAI = Context.getAsmInfo();
+  const MCAsmInfo* MAI = Context.getAsmInfo();
   if (MAI) {
-    for (const MCCFIInstruction &Inst : MAI->getInitialFrameState()) {
+    for (const MCCFIInstruction& Inst : MAI->getInitialFrameState()) {
       if (Inst.getOperation() == MCCFIInstruction::OpDefCfa ||
           Inst.getOperation() == MCCFIInstruction::OpDefCfaRegister) {
         Frame.CurrentCfaRegister = Inst.getRegister();
@@ -450,7 +455,8 @@ void MCStreamer::emitCFIStartProc(bool IsSimple, SMLoc Loc) {
   DwarfFrameInfos.push_back(Frame);
 }
 
-void MCStreamer::emitCFIStartProcImpl(MCDwarfFrameInfo &Frame) {}
+void MCStreamer::emitCFIStartProcImpl(MCDwarfFrameInfo &Frame) {
+}
 
 void MCStreamer::emitCFIEndProc() {
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
@@ -495,7 +501,7 @@ void MCStreamer::emitCFIDefCfaOffset(int64_t Offset) {
 void MCStreamer::emitCFIAdjustCfaOffset(int64_t Adjustment) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createAdjustCfaOffset(Label, Adjustment);
+    MCCFIInstruction::createAdjustCfaOffset(Label, Adjustment);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -505,7 +511,7 @@ void MCStreamer::emitCFIAdjustCfaOffset(int64_t Adjustment) {
 void MCStreamer::emitCFIDefCfaRegister(int64_t Register) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createDefCfaRegister(Label, Register);
+    MCCFIInstruction::createDefCfaRegister(Label, Register);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -516,7 +522,7 @@ void MCStreamer::emitCFIDefCfaRegister(int64_t Register) {
 void MCStreamer::emitCFIOffset(int64_t Register, int64_t Offset) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createOffset(Label, Register, Offset);
+    MCCFIInstruction::createOffset(Label, Register, Offset);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -526,14 +532,15 @@ void MCStreamer::emitCFIOffset(int64_t Register, int64_t Offset) {
 void MCStreamer::emitCFIRelOffset(int64_t Register, int64_t Offset) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createRelOffset(Label, Register, Offset);
+    MCCFIInstruction::createRelOffset(Label, Register, Offset);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
   CurFrame->Instructions.push_back(Instruction);
 }
 
-void MCStreamer::emitCFIPersonality(const MCSymbol *Sym, unsigned Encoding) {
+void MCStreamer::emitCFIPersonality(const MCSymbol *Sym,
+                                    unsigned Encoding) {
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -571,7 +578,7 @@ void MCStreamer::emitCFIRestoreState() {
 void MCStreamer::emitCFISameValue(int64_t Register) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createSameValue(Label, Register);
+    MCCFIInstruction::createSameValue(Label, Register);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -581,7 +588,7 @@ void MCStreamer::emitCFISameValue(int64_t Register) {
 void MCStreamer::emitCFIRestore(int64_t Register) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createRestore(Label, Register);
+    MCCFIInstruction::createRestore(Label, Register);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -600,7 +607,7 @@ void MCStreamer::emitCFIEscape(StringRef Values) {
 void MCStreamer::emitCFIGnuArgsSize(int64_t Size) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createGnuArgsSize(Label, Size);
+    MCCFIInstruction::createGnuArgsSize(Label, Size);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -617,7 +624,7 @@ void MCStreamer::emitCFISignalFrame() {
 void MCStreamer::emitCFIUndefined(int64_t Register) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createUndefined(Label, Register);
+    MCCFIInstruction::createUndefined(Label, Register);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -627,7 +634,7 @@ void MCStreamer::emitCFIUndefined(int64_t Register) {
 void MCStreamer::emitCFIRegister(int64_t Register1, int64_t Register2) {
   MCSymbol *Label = emitCFILabel();
   MCCFIInstruction Instruction =
-      MCCFIInstruction::createRegister(Label, Register1, Register2);
+    MCCFIInstruction::createRegister(Label, Register1, Register2);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -636,7 +643,8 @@ void MCStreamer::emitCFIRegister(int64_t Register1, int64_t Register2) {
 
 void MCStreamer::emitCFIWindowSave() {
   MCSymbol *Label = emitCFILabel();
-  MCCFIInstruction Instruction = MCCFIInstruction::createWindowSave(Label);
+  MCCFIInstruction Instruction =
+    MCCFIInstruction::createWindowSave(Label);
   MCDwarfFrameInfo *CurFrame = getCurrentDwarfFrameInfo();
   if (!CurFrame)
     return;
@@ -963,9 +971,11 @@ void MCStreamer::emitRawText(const Twine &T) {
   emitRawTextImpl(T.toStringRef(Str));
 }
 
-void MCStreamer::EmitWindowsUnwindTables() {}
+void MCStreamer::EmitWindowsUnwindTables() {
+}
 
-void MCStreamer::EmitWindowsUnwindTables(WinEH::FrameInfo *Frame) {}
+void MCStreamer::EmitWindowsUnwindTables(WinEH::FrameInfo *Frame) {
+}
 
 void MCStreamer::Finish(SMLoc EndLoc) {
   if ((!DwarfFrameInfos.empty() && !DwarfFrameInfos.back().End) ||
@@ -997,7 +1007,8 @@ void MCTargetStreamer::prettyPrintAsm(MCInstPrinter &InstPrinter,
   InstPrinter.printInst(&Inst, Address, "", STI, OS);
 }
 
-void MCStreamer::visitUsedSymbol(const MCSymbol &Sym) {}
+void MCStreamer::visitUsedSymbol(const MCSymbol &Sym) {
+}
 
 void MCStreamer::visitUsedExpr(const MCExpr &Expr) {
   switch (Expr.getKind()) {

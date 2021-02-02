@@ -18,8 +18,8 @@
 #include "clang-c/Index.h"
 
 namespace clang {
-class ASTUnit;
-class CIndexer;
+  class ASTUnit;
+  class CIndexer;
 namespace index {
 class CommentToXMLConverter;
 } // namespace index
@@ -56,18 +56,22 @@ static inline ASTUnit *getASTUnit(CXTranslationUnit TU) {
 /// corrupted.
 bool isASTReadError(ASTUnit *AU);
 
-static inline bool isNotUsableTU(CXTranslationUnit TU) { return !TU; }
+static inline bool isNotUsableTU(CXTranslationUnit TU) {
+  return !TU;
+}
 
-#define LOG_BAD_TU(TU)                                                         \
-  do {                                                                         \
-    LOG_FUNC_SECTION { *Log << "called with a bad TU: " << TU; }               \
-  } while (false)
+#define LOG_BAD_TU(TU)                                  \
+    do {                                                \
+      LOG_FUNC_SECTION {                                \
+        *Log << "called with a bad TU: " << TU;         \
+      }                                                 \
+    } while(false)
 
 class CXTUOwner {
   CXTranslationUnitImpl *TU;
-
+  
 public:
-  CXTUOwner(CXTranslationUnitImpl *tu) : TU(tu) {}
+  CXTUOwner(CXTranslationUnitImpl *tu) : TU(tu) { }
   ~CXTUOwner();
 
   CXTranslationUnitImpl *getTU() const { return TU; }
@@ -79,7 +83,7 @@ public:
   }
 };
 
-} // namespace cxtu
-} // namespace clang
+
+}} // end namespace clang::cxtu
 
 #endif

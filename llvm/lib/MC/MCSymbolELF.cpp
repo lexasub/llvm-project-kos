@@ -194,4 +194,4 @@ void MCSymbolELF::setIsBindingSet() const {
 bool MCSymbolELF::isBindingSet() const {
   return getFlags() & (0x1 << ELF_BindingSet_Shift);
 }
-} // namespace llvm
+}

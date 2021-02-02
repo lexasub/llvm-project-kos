@@ -20,7 +20,10 @@
 using namespace std::filesystem;
 
 int main(int, char**) {
-  static_assert(std::is_same<path, std::filesystem::path>::value, "");
+  static_assert(std::is_same<
+          path,
+          std::filesystem::path
+      >::value, "");
 
   return 0;
 }

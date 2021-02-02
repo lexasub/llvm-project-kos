@@ -7,11 +7,11 @@
 
 // rdar://15522601
 class MyClass {
-  static void meth();
+ static void meth();
 };
-void MyClass::meth() {} // expected-note {{previous}}
+void MyClass::meth() { } // expected-note {{previous}}
 extern "C" {
-void _ZN7MyClass4methEv() {} // expected-error {{definition with same mangled name '_ZN7MyClass4methEv' as another definition}}
+  void _ZN7MyClass4methEv() { } // expected-error {{definition with same mangled name '_ZN7MyClass4methEv' as another definition}}
 }
 
 #elif TEST2
@@ -28,25 +28,25 @@ struct T {
 // We expect no warnings here, as there is only declaration of _ZN2nm3abcE
 // global, no definitions.
 extern "C" {
-int _ZN2nm3abcE;
+  int _ZN2nm3abcE;
 }
 
 namespace nm {
-float abc = 2;
+  float abc = 2;
 }
 // CHECK: @_ZN2nm3abcE = {{(dso_local )?}}global float
 
 float foo() {
   _ZN1TD1Ev();
-  // CHECK: call void bitcast ({{.*}} (%struct.T*)* @_ZN1TD1Ev to void ()*)()
+// CHECK: call void bitcast ({{.*}} (%struct.T*)* @_ZN1TD1Ev to void ()*)()
   T t;
-  // CHECK: call {{.*}} @_ZN1TD1Ev(%struct.T* {{[^,]*}} %t)
+// CHECK: call {{.*}} @_ZN1TD1Ev(%struct.T* {{[^,]*}} %t)
   return _ZN2nm3abcE + nm::abc;
 }
 
 #elif TEST3
 
-extern "C" void _ZN2T2D2Ev(){}; // expected-note {{previous definition is here}}
+extern "C" void _ZN2T2D2Ev() {}; // expected-note {{previous definition is here}}
 
 struct T2 {
   ~T2() {} // expected-error {{definition with same mangled name '_ZN2T2D2Ev' as another definition}}
@@ -60,11 +60,11 @@ void foo() {
 #elif TEST4
 
 extern "C" {
-int _ZN2nm3abcE = 1; // expected-note {{previous definition is here}}
+  int _ZN2nm3abcE = 1; // expected-note {{previous definition is here}}
 }
 
 namespace nm {
-float abc = 2; // expected-error {{definition with same mangled name '_ZN2nm3abcE' as another definition}}
+  float abc = 2; // expected-error {{definition with same mangled name '_ZN2nm3abcE' as another definition}}
 }
 
 float foo() {
@@ -76,3 +76,4 @@ float foo() {
 #error Unknown test
 
 #endif
+

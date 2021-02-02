@@ -9,5 +9,5 @@ struct Operator {
 };
 
 Operator opTab[] = {
-    {&Gfx::opMoveSetShowText},
+  {&Gfx::opMoveSetShowText},
 };

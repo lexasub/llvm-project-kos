@@ -31,6 +31,7 @@
 // RUN: %clang_cl /c -### /Zc:strictStrings- -- %s 2>&1 | FileCheck -check-prefix=STRICTSTRINGS-OFF %s
 // STRICTSTRINGS-OFF: argument unused during compilation
 
+
 // RUN: %clang_cl /c -### /Zc:foobar -- %s 2>&1 | FileCheck -check-prefix=FOOBAR-ON %s
 // FOOBAR-ON: argument unused during compilation
 // RUN: %clang_cl /c -### /Zc:foobar- -- %s 2>&1 | FileCheck -check-prefix=FOOBAR-ON %s
@@ -62,6 +63,7 @@
 // TERNARY-ON-NOT: argument unused during compilation
 // RUN: %clang_cl /c -### /Zc:ternary- -- %s 2>&1 | FileCheck -check-prefix=TERNARY-OFF %s
 // TERNARY-OFF: argument unused during compilation
+
 
 // These never warn, but don't have an effect yet.
 

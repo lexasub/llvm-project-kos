@@ -23,3 +23,4 @@ class DefinesEverything {
   DefinesEverything &operator=(const DefinesEverything &);
   ~DefinesEverything();
 };
+

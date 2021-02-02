@@ -161,7 +161,7 @@ void InfiniteLoopCheck::check(const MatchFinder::MatchResult &Result) {
     diag(LoopStmt->getBeginLoc(),
          "this loop is infinite; none of its condition variables (%0)"
          " are updated in the loop body")
-        << CondVarNames;
+      << CondVarNames;
   }
 }
 

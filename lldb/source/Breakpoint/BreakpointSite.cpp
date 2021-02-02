@@ -181,7 +181,8 @@ bool BreakpointSite::IntersectsRange(lldb::addr_t addr, size_t size,
       if (intersect_addr)
         *intersect_addr = addr;
       if (intersect_size)
-        *intersect_size = std::min<lldb::addr_t>(bp_end_addr, end_addr) - addr;
+        *intersect_size =
+            std::min<lldb::addr_t>(bp_end_addr, end_addr) - addr;
       if (opcode_offset)
         *opcode_offset = addr - m_addr;
     } else {

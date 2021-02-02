@@ -10,18 +10,11 @@ struct A {
   ~A();
 };
 
-struct B {
-  B();
-  ~B();
-};
+struct B { B(); ~B(); };
 
-struct C {
-  void *field;
-};
+struct C { void *field; };
 
-struct D {
-  ~D();
-};
+struct D { ~D(); };
 
 // CHECK: @__dso_handle = external hidden global i8
 // CHECK: @c ={{.*}} global %struct.C zeroinitializer, align 8
@@ -48,175 +41,151 @@ D d;
 
 // <rdar://problem/7458115>
 namespace test1 {
-int f();
-const int x = f();   // This has side-effects and gets emitted immediately.
-const int y = x - 1; // This gets deferred.
-const int z = ~y;    // This also gets deferred, but gets "undeferred" before y.
-int test() { return z; }
+  int f();
+  const int x = f();   // This has side-effects and gets emitted immediately.
+  const int y = x - 1; // This gets deferred.
+  const int z = ~y;    // This also gets deferred, but gets "undeferred" before y.
+  int test() { return z; }
 // CHECK-LABEL:      define{{.*}} i32 @_ZN5test14testEv()
 
-// All of these initializers end up delayed, so we check them later.
-} // namespace test1
+  // All of these initializers end up delayed, so we check them later.
+}
 
 // <rdar://problem/8246444>
 namespace test2 {
-struct allocator {
-  allocator();
-  ~allocator();
-};
-struct A {
-  A(const allocator &a = allocator());
-  ~A();
-};
+  struct allocator { allocator(); ~allocator(); };
+  struct A { A(const allocator &a = allocator()); ~A(); };
 
-A a;
+  A a;
 // CHECK: call void @_ZN5test29allocatorC1Ev(
 // CHECK: invoke void @_ZN5test21AC1ERKNS_9allocatorE(
 // CHECK: call void @_ZN5test29allocatorD1Ev(
 // CHECK: call i32 @__cxa_atexit({{.*}} @_ZN5test21AD1Ev {{.*}} @_ZN5test21aE
-} // namespace test2
+}
 
 namespace test3 {
-// Tested at the beginning of the file.
-const char *const var = "string";
-extern const char *const var;
+  // Tested at the beginning of the file.
+  const char * const var = "string";
+  extern const char * const var;
 
-const char *test() { return var; }
-} // namespace test3
+  const char *test() { return var; }
+}
 
 namespace test4 {
-struct A {
-  A();
-};
-extern int foo();
+  struct A {
+    A();
+  };
+  extern int foo();
 
-// This needs an initialization function and guard variables.
-// CHECK: load i8, i8* bitcast (i64* @_ZGVN5test41xE
-// CHECK: [[CALL:%.*]] = call i32 @_ZN5test43fooEv
-// CHECK-NEXT: store i32 [[CALL]], i32* @_ZN5test41xE
-// CHECK-NEXT: store i64 1, i64* @_ZGVN5test41xE
-__attribute__((weak)) int x = foo();
-} // namespace test4
+  // This needs an initialization function and guard variables.
+  // CHECK: load i8, i8* bitcast (i64* @_ZGVN5test41xE
+  // CHECK: [[CALL:%.*]] = call i32 @_ZN5test43fooEv
+  // CHECK-NEXT: store i32 [[CALL]], i32* @_ZN5test41xE
+  // CHECK-NEXT: store i64 1, i64* @_ZGVN5test41xE
+  __attribute__((weak)) int x = foo();
+}
 
 namespace PR5974 {
-struct A {
-  int a;
-};
-struct B {
-  int b;
-};
-struct C : A, B {
-  int c;
-};
+  struct A { int a; };
+  struct B { int b; };
+  struct C : A, B { int c; };
 
-extern C c;
+  extern C c;
 
-// These should not require global initializers.
-A *a = &c;
-B *b = &c;
-} // namespace PR5974
+  // These should not require global initializers.
+  A* a = &c;
+  B* b = &c;
+}
 
 // PR9570: the indirect field shouldn't crash IR gen.
 namespace test5 {
-static union {
-  unsigned bar[4096] __attribute__((aligned(128)));
-};
-} // namespace test5
-
-namespace std {
-struct type_info;
+  static union {
+    unsigned bar[4096] __attribute__((aligned(128)));
+  };
 }
 
+namespace std { struct type_info; }
+
 namespace test6 {
-struct A {
-  virtual ~A();
-};
-struct B : A {};
-extern A *p;
+  struct A { virtual ~A(); };
+  struct B : A {};
+  extern A *p;
 
-// We must emit a dynamic initializer for 'q', because it could throw.
-B *const q = &dynamic_cast<B &>(*p);
-// CHECK: call void @__cxa_bad_cast()
-// CHECK: store {{.*}} @_ZN5test6L1qE
+  // We must emit a dynamic initializer for 'q', because it could throw.
+  B *const q = &dynamic_cast<B&>(*p);
+  // CHECK: call void @__cxa_bad_cast()
+  // CHECK: store {{.*}} @_ZN5test6L1qE
 
-// We don't need to emit 'r' at all, because it has internal linkage, is
-// unused, and its initialization has no side-effects.
-B *const r = dynamic_cast<B *>(p);
-// CHECK-NOT: call void @__cxa_bad_cast()
-// CHECK-NOT: store {{.*}} @_ZN5test6L1rE
+  // We don't need to emit 'r' at all, because it has internal linkage, is
+  // unused, and its initialization has no side-effects.
+  B *const r = dynamic_cast<B*>(p);
+  // CHECK-NOT: call void @__cxa_bad_cast()
+  // CHECK-NOT: store {{.*}} @_ZN5test6L1rE
 
-// This can throw, so we need to emit it.
-const std::type_info *const s = &typeid(*p);
-// CHECK: store {{.*}} @_ZN5test6L1sE
+  // This can throw, so we need to emit it.
+  const std::type_info *const s = &typeid(*p);
+  // CHECK: store {{.*}} @_ZN5test6L1sE
 
-// This can't throw, so we don't.
-const std::type_info *const t = &typeid(p);
-// CHECK-NOT: @_ZN5test6L1tE
+  // This can't throw, so we don't.
+  const std::type_info *const t = &typeid(p);
+  // CHECK-NOT: @_ZN5test6L1tE
 
-extern B *volatile v;
-// CHECK: store {{.*}} @_ZN5test6L1wE
-B *const w = dynamic_cast<B *>(v);
+  extern B *volatile v;
+  // CHECK: store {{.*}} @_ZN5test6L1wE
+  B *const w = dynamic_cast<B*>(v);
 
-// CHECK: load volatile
-// CHECK: store {{.*}} @_ZN5test6L1xE
-const int x = *(volatile int *)0x1234;
+  // CHECK: load volatile
+  // CHECK: store {{.*}} @_ZN5test6L1xE
+  const int x = *(volatile int*)0x1234;
 
-namespace {
-int a = int();
-volatile int b = int();
-int c = a;
-int d = b;
-// CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1aE
-// CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1bE
-// CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1cE
-// CHECK: load volatile {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1bE
-// CHECK: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1dE
-} // namespace
-} // namespace test6
+  namespace {
+    int a = int();
+    volatile int b = int();
+    int c = a;
+    int d = b;
+    // CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1aE
+    // CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1bE
+    // CHECK-NOT: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1cE
+    // CHECK: load volatile {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1bE
+    // CHECK: store {{.*}} @_ZN5test6{{[A-Za-z0-9_]*}}1dE
+  }
+}
 
 namespace test7 {
-struct A {
-  A();
-};
-struct B {
-  ~B();
-  int n;
-};
-struct C {
-  C() = default;
-  C(const C &);
-  int n;
-};
-struct D {};
+  struct A { A(); };
+  struct B { ~B(); int n; };
+  struct C { C() = default; C(const C&); int n; };
+  struct D {};
 
-// CHECK: call void @_ZN5test71AC1Ev({{.*}}@_ZN5test7L1aE)
-const A a = A();
+  // CHECK: call void @_ZN5test71AC1Ev({{.*}}@_ZN5test7L1aE)
+  const A a = A();
 
-// CHECK: call i32 @__cxa_atexit({{.*}} @_ZN5test71BD1Ev{{.*}} @_ZN5test7L2b1E
-// CHECK: call i32 @__cxa_atexit({{.*}} @_ZN5test71BD1Ev{{.*}} @_ZGRN5test72b2E
-// CHECK: call void @_ZN5test71BD1Ev(
-// CHECK: store {{.*}} @_ZN5test7L2b3E
-const B b1 = B();
-const B &b2 = B();
-const int b3 = B().n;
+  // CHECK: call i32 @__cxa_atexit({{.*}} @_ZN5test71BD1Ev{{.*}} @_ZN5test7L2b1E
+  // CHECK: call i32 @__cxa_atexit({{.*}} @_ZN5test71BD1Ev{{.*}} @_ZGRN5test72b2E
+  // CHECK: call void @_ZN5test71BD1Ev(
+  // CHECK: store {{.*}} @_ZN5test7L2b3E
+  const B b1 = B();
+  const B &b2 = B();
+  const int b3 = B().n;
 
-// CHECK-NOT: @_ZN5test7L2c1E
-// CHECK: call void @llvm.memset{{.*}} @_ZN5test7L2c1E
-// CHECK-NOT: @_ZN5test7L2c1E
-// CHECK: @_ZN5test7L2c2E
-// CHECK-NOT: @_ZN5test7L2c3E
-// CHECK: @_ZN5test7L2c4E
-const C c1 = C();
-const C c2 = static_cast<const C &>(C());
-const int c3 = C().n;
-const int c4 = C(C()).n;
+  // CHECK-NOT: @_ZN5test7L2c1E
+  // CHECK: call void @llvm.memset{{.*}} @_ZN5test7L2c1E
+  // CHECK-NOT: @_ZN5test7L2c1E
+  // CHECK: @_ZN5test7L2c2E
+  // CHECK-NOT: @_ZN5test7L2c3E
+  // CHECK: @_ZN5test7L2c4E
+  const C c1 = C();
+  const C c2 = static_cast<const C&>(C());
+  const int c3 = C().n;
+  const int c4 = C(C()).n;
 
-// CHECK-NOT: @_ZN5test7L1dE
-const D d = D();
+  // CHECK-NOT: @_ZN5test7L1dE
+  const D d = D();
 
-// CHECK: store {{.*}} @_ZN5test71eE
-int f(), e = f();
-} // namespace test7
+  // CHECK: store {{.*}} @_ZN5test71eE
+  int f(), e = f();
+}
+
 
 // At the end of the file, we check that y is initialized before z.
 

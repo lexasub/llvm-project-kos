@@ -6,20 +6,17 @@
 typedef signed char BOOL;
 typedef struct objc_class *Class;
 typedef struct objc_object {
-  Class isa;
-} * id;
-@protocol NSObject
-- (BOOL)isEqual:(id)object;
-@end
-@interface NSObject <NSObject> {
-}
-+ (id)alloc;
-+ (id)new;
-- (id)init;
-- (id)autorelease;
-- (id)copy;
+    Class isa;
+} *id;
+@protocol NSObject  - (BOOL)isEqual:(id)object; @end
+@interface NSObject <NSObject> {}
++(id)alloc;
++(id)new;
+-(id)init;
+-(id)autorelease;
+-(id)copy;
 - (Class)class;
-- (id)retain;
+-(id)retain;
 @end
 
 @interface PublicClass : NSObject {
@@ -27,9 +24,9 @@ typedef struct objc_object {
 }
 - (int)getZeroPublic;
 
-- (int)value2;
+- (int) value2;
 
-@property(readonly) int value1;
+@property (readonly) int value1;
 
 @property int value3;
 - (int)value3;
@@ -44,5 +41,6 @@ typedef struct objc_object {
 @end
 
 @interface PublicSubClass2 : PublicParent
-- (int)getZeroOverridden;
+- (int) getZeroOverridden;
 @end
+

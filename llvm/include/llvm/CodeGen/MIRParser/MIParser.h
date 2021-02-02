@@ -33,7 +33,9 @@ class TargetRegisterClass;
 class TargetSubtargetInfo;
 
 struct VRegInfo {
-  enum uint8_t { UNKNOWN, NORMAL, GENERIC, REGBANK } Kind = UNKNOWN;
+  enum uint8_t {
+    UNKNOWN, NORMAL, GENERIC, REGBANK
+  } Kind = UNKNOWN;
   bool Explicit = false; ///< VReg was explicitly specified in the .mir file.
   union {
     const TargetRegisterClass *RC;
@@ -144,7 +146,8 @@ public:
   /// Return null if the name isn't a register bank.
   const RegisterBank *getRegBank(StringRef Name);
 
-  PerTargetMIParsingState(const TargetSubtargetInfo &STI) : Subtarget(STI) {
+  PerTargetMIParsingState(const TargetSubtargetInfo &STI)
+    : Subtarget(STI) {
     initNames2RegClasses();
     initNames2RegBanks();
   }
@@ -209,11 +212,13 @@ bool parseMachineBasicBlockDefinitions(PerFunctionMIParsingState &PFS,
 bool parseMachineInstructions(PerFunctionMIParsingState &PFS, StringRef Src,
                               SMDiagnostic &Error);
 
-bool parseMBBReference(PerFunctionMIParsingState &PFS, MachineBasicBlock *&MBB,
-                       StringRef Src, SMDiagnostic &Error);
+bool parseMBBReference(PerFunctionMIParsingState &PFS,
+                       MachineBasicBlock *&MBB, StringRef Src,
+                       SMDiagnostic &Error);
 
-bool parseRegisterReference(PerFunctionMIParsingState &PFS, Register &Reg,
-                            StringRef Src, SMDiagnostic &Error);
+bool parseRegisterReference(PerFunctionMIParsingState &PFS,
+                            Register &Reg, StringRef Src,
+                            SMDiagnostic &Error);
 
 bool parseNamedRegisterReference(PerFunctionMIParsingState &PFS, Register &Reg,
                                  StringRef Src, SMDiagnostic &Error);

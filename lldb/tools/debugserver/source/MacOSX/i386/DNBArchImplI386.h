@@ -57,8 +57,9 @@ public:
                                     bool also_set_on_task) override;
   bool DisableHardwareBreakpoint(uint32_t hw_index,
                                  bool also_set_on_task) override;
-  uint32_t EnableHardwareWatchpoint(nub_addr_t addr, nub_size_t size, bool read,
-                                    bool write, bool also_set_on_task) override;
+  uint32_t EnableHardwareWatchpoint(nub_addr_t addr, nub_size_t size,
+                                    bool read, bool write,
+                                    bool also_set_on_task) override;
   bool DisableHardwareWatchpoint(uint32_t hw_break_index,
                                  bool also_set_on_task) override;
   uint32_t GetHardwareWatchpointHit(nub_addr_t &addr) override;

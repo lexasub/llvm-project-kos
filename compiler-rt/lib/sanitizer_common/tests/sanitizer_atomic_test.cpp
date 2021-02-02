@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_atomic.h"
-
 #include "gtest/gtest.h"
 
 #ifndef __has_extension
@@ -27,7 +26,7 @@
 
 namespace __sanitizer {
 
-template <typename T>
+template<typename T>
 struct ValAndMagic {
   typename T::Type magic0;
   T a;
@@ -36,10 +35,10 @@ struct ValAndMagic {
   static ValAndMagic<T> *sink;
 };
 
-template <typename T>
+template<typename T>
 ValAndMagic<T> *ValAndMagic<T>::sink;
 
-template <typename T, memory_order load_mo, memory_order store_mo>
+template<typename T, memory_order load_mo, memory_order store_mo>
 void CheckStoreLoad() {
   typedef typename T::Type Type;
   ValAndMagic<T> val;
@@ -92,31 +91,31 @@ TEST(SanitizerCommon, AtomicStoreLoad) {
   CheckStoreLoad<atomic_uint64_t, memory_order_seq_cst, memory_order_seq_cst>();
 #endif
 
-  CheckStoreLoad<atomic_uintptr_t, memory_order_relaxed,
-                 memory_order_relaxed>();
-  CheckStoreLoad<atomic_uintptr_t, memory_order_consume,
-                 memory_order_relaxed>();
-  CheckStoreLoad<atomic_uintptr_t, memory_order_acquire,
-                 memory_order_relaxed>();
-  CheckStoreLoad<atomic_uintptr_t, memory_order_relaxed,
-                 memory_order_release>();
-  CheckStoreLoad<atomic_uintptr_t, memory_order_seq_cst,
-                 memory_order_seq_cst>();
+  CheckStoreLoad<atomic_uintptr_t, memory_order_relaxed, memory_order_relaxed>
+      ();
+  CheckStoreLoad<atomic_uintptr_t, memory_order_consume, memory_order_relaxed>
+      ();
+  CheckStoreLoad<atomic_uintptr_t, memory_order_acquire, memory_order_relaxed>
+      ();
+  CheckStoreLoad<atomic_uintptr_t, memory_order_relaxed, memory_order_release>
+      ();
+  CheckStoreLoad<atomic_uintptr_t, memory_order_seq_cst, memory_order_seq_cst>
+      ();
 }
 
 // Clang crashes while compiling this test for Android:
 // http://llvm.org/bugs/show_bug.cgi?id=15587
 #if !SANITIZER_ANDROID
-template <typename T>
+template<typename T>
 void CheckAtomicCompareExchange() {
   typedef typename T::Type Type;
   {
     Type old_val = 42;
     Type new_val = 24;
     Type var = old_val;
-    EXPECT_TRUE(atomic_compare_exchange_strong((T *)&var, &old_val, new_val,
+    EXPECT_TRUE(atomic_compare_exchange_strong((T*)&var, &old_val, new_val,
                                                memory_order_relaxed));
-    EXPECT_FALSE(atomic_compare_exchange_strong((T *)&var, &old_val, new_val,
+    EXPECT_FALSE(atomic_compare_exchange_strong((T*)&var, &old_val, new_val,
                                                 memory_order_relaxed));
     EXPECT_EQ(new_val, old_val);
   }
@@ -124,9 +123,9 @@ void CheckAtomicCompareExchange() {
     Type old_val = 42;
     Type new_val = 24;
     Type var = old_val;
-    EXPECT_TRUE(atomic_compare_exchange_weak((T *)&var, &old_val, new_val,
+    EXPECT_TRUE(atomic_compare_exchange_weak((T*)&var, &old_val, new_val,
                                              memory_order_relaxed));
-    EXPECT_FALSE(atomic_compare_exchange_weak((T *)&var, &old_val, new_val,
+    EXPECT_FALSE(atomic_compare_exchange_weak((T*)&var, &old_val, new_val,
                                               memory_order_relaxed));
     EXPECT_EQ(new_val, old_val);
   }
@@ -141,6 +140,6 @@ TEST(SanitizerCommon, AtomicCompareExchangeTest) {
 #endif
   CheckAtomicCompareExchange<atomic_uintptr_t>();
 }
-#endif  //! SANITIZER_ANDROID
+#endif  //!SANITIZER_ANDROID
 
 }  // namespace __sanitizer

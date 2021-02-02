@@ -1,16 +1,17 @@
 // RUN: %clang_cc1 -fsyntax-only -ast-print %s | FileCheck %s
 namespace N {
-template <typename T, typename U> void f(U);
-template <int> void f();
-} // namespace N
+  template<typename T, typename U> void f(U);
+  template<int> void f();
+}
 
 void g() {
   // CHECK: N::f<int>(3.14
   N::f<int>(3.14);
-
+  
   // CHECK: N::f<double>
   void (*fp)(int) = N::f<double>;
 }
+
 
 // (NNS qualified) DeclRefExpr.
 namespace DRE {
@@ -31,6 +32,7 @@ void test() {
 
 } // namespace DRE
 
+
 // MemberExpr.
 namespace ME {
 
@@ -49,6 +51,7 @@ void test() {
 
 } // namespace ME
 
+
 // UnresolvedLookupExpr.
 namespace ULE {
 
@@ -64,6 +67,7 @@ void test() {
 }
 
 } // namespace ULE
+
 
 // UnresolvedMemberExpr.
 namespace UME {
@@ -84,6 +88,7 @@ void test() {
 
 } // namespace UME
 
+
 // DependentScopeDeclRefExpr.
 namespace DSDRE {
 
@@ -103,6 +108,7 @@ void test() {
 }
 
 } // namespace DSDRE
+
 
 // DependentScopeMemberExpr.
 namespace DSME {

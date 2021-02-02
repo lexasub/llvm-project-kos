@@ -77,7 +77,9 @@ Multilib &Multilib::includeSuffix(StringRef S) {
   return *this;
 }
 
-LLVM_DUMP_METHOD void Multilib::dump() const { print(llvm::errs()); }
+LLVM_DUMP_METHOD void Multilib::dump() const {
+  print(llvm::errs());
+}
 
 void Multilib::print(raw_ostream &OS) const {
   assert(GCCSuffix.empty() || (StringRef(GCCSuffix).front() == '/'));
@@ -247,18 +249,15 @@ bool MultilibSet::select(const Multilib::flags_list &Flags, Multilib &M) const {
   for (StringRef Flag : Flags)
     FlagSet[Flag.substr(1)] = isFlagEnabled(Flag);
 
-  multilib_list Filtered = filterCopy(
-      [&FlagSet](const Multilib &M) {
-        for (StringRef Flag : M.flags()) {
-          llvm::StringMap<bool>::const_iterator SI =
-              FlagSet.find(Flag.substr(1));
-          if (SI != FlagSet.end())
-            if (SI->getValue() != isFlagEnabled(Flag))
-              return true;
-        }
-        return false;
-      },
-      Multilibs);
+  multilib_list Filtered = filterCopy([&FlagSet](const Multilib &M) {
+    for (StringRef Flag : M.flags()) {
+      llvm::StringMap<bool>::const_iterator SI = FlagSet.find(Flag.substr(1));
+      if (SI != FlagSet.end())
+        if (SI->getValue() != isFlagEnabled(Flag))
+          return true;
+    }
+    return false;
+  }, Multilibs);
 
   if (Filtered.empty())
     return false;
@@ -283,7 +282,9 @@ bool MultilibSet::select(const Multilib::flags_list &Flags, Multilib &M) const {
   return false;
 }
 
-LLVM_DUMP_METHOD void MultilibSet::dump() const { print(llvm::errs()); }
+LLVM_DUMP_METHOD void MultilibSet::dump() const {
+  print(llvm::errs());
+}
 
 void MultilibSet::print(raw_ostream &OS) const {
   for (const auto &M : *this)

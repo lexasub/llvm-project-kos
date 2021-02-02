@@ -3,14 +3,16 @@
 
 class Foo {
 public:
-  A a;
+    A a;
 };
 
-class MyA : public A {};
+class MyA : public A {
+};
 
-int main() {
-  Foo f;
-  MyA a;
+int main()
+{
+    Foo f;
+    MyA a;
 
-  return length(a); // break here
+    return length(a); // break here
 }

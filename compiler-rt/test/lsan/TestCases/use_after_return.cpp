@@ -9,9 +9,9 @@
 // Investigate why it does not fail with use_stack=0
 // UNSUPPORTED: arm-linux || armhf-linux
 
-#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "sanitizer_common/print_address.h"
 
 int main() {
   void *stack_var = malloc(1337);

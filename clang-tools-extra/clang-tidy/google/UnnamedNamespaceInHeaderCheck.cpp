@@ -38,8 +38,8 @@ void UnnamedNamespaceInHeaderCheck::storeOptions(
 
 void UnnamedNamespaceInHeaderCheck::registerMatchers(
     ast_matchers::MatchFinder *Finder) {
-  Finder->addMatcher(namespaceDecl(isAnonymous()).bind("anonymousNamespace"),
-                     this);
+    Finder->addMatcher(namespaceDecl(isAnonymous()).bind("anonymousNamespace"),
+                       this);
 }
 
 void UnnamedNamespaceInHeaderCheck::check(

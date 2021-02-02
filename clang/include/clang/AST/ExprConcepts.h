@@ -14,19 +14,19 @@
 #ifndef LLVM_CLANG_AST_EXPRCONCEPTS_H
 #define LLVM_CLANG_AST_EXPRCONCEPTS_H
 
-#include "clang/AST/ASTConcept.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/ASTConcept.h"
 #include "clang/AST/Decl.h"
-#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/DeclarationName.h"
+#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Expr.h"
 #include "clang/AST/NestedNameSpecifier.h"
 #include "clang/AST/TemplateBase.h"
 #include "clang/AST/Type.h"
 #include "clang/Basic/SourceLocation.h"
 #include "llvm/Support/TrailingObjects.h"
-#include <string>
 #include <utility>
+#include <string>
 
 namespace clang {
 class ASTStmtReader;
@@ -37,14 +37,11 @@ class ASTStmtWriter;
 ///
 /// According to C++2a [expr.prim.id]p3 an id-expression that denotes the
 /// specialization of a concept results in a prvalue of type bool.
-class ConceptSpecializationExpr final
-    : public Expr,
-      public ConceptReference,
+class ConceptSpecializationExpr final : public Expr, public ConceptReference,
       private llvm::TrailingObjects<ConceptSpecializationExpr,
                                     TemplateArgument> {
   friend class ASTStmtReader;
   friend TrailingObjects;
-
 public:
   using SubstitutionDiagnostic = std::pair<SourceLocation, std::string>;
 
@@ -75,6 +72,7 @@ protected:
   ConceptSpecializationExpr(EmptyShell Empty, unsigned NumTemplateArgs);
 
 public:
+
   static ConceptSpecializationExpr *
   Create(const ASTContext &C, NestedNameSpecifierLoc NNS,
          SourceLocation TemplateKWLoc, DeclarationNameInfo ConceptNameInfo,
@@ -86,11 +84,12 @@ public:
   static ConceptSpecializationExpr *
   Create(const ASTContext &C, ConceptDecl *NamedConcept,
          ArrayRef<TemplateArgument> ConvertedArgs,
-         const ConstraintSatisfaction *Satisfaction, bool Dependent,
+         const ConstraintSatisfaction *Satisfaction,
+         bool Dependent,
          bool ContainsUnexpandedParameterPack);
 
-  static ConceptSpecializationExpr *Create(ASTContext &C, EmptyShell Empty,
-                                           unsigned NumTemplateArgs);
+  static ConceptSpecializationExpr *
+  Create(ASTContext &C, EmptyShell Empty, unsigned NumTemplateArgs);
 
   ArrayRef<TemplateArgument> getTemplateArguments() const {
     return ArrayRef<TemplateArgument>(getTrailingObjects<TemplateArgument>(),
@@ -104,8 +103,8 @@ public:
   /// when the expression was created.
   /// The expression must not be dependent.
   bool isSatisfied() const {
-    assert(!isValueDependent() &&
-           "isSatisfied called on a dependent ConceptSpecializationExpr");
+    assert(!isValueDependent()
+           && "isSatisfied called on a dependent ConceptSpecializationExpr");
     return Satisfaction->IsSatisfied;
   }
 
@@ -113,8 +112,8 @@ public:
   /// satisfaction of the named concept.
   /// The expression must not be dependent.
   const ASTConstraintSatisfaction &getSatisfaction() const {
-    assert(!isValueDependent() &&
-           "getSatisfaction called on dependent ConceptSpecializationExpr");
+    assert(!isValueDependent()
+           && "getSatisfaction called on dependent ConceptSpecializationExpr");
     return *Satisfaction;
   }
 
@@ -152,14 +151,12 @@ public:
   // Note - simple and compound requirements are both represented by the same
   // class (ExprRequirement).
   enum RequirementKind { RK_Type, RK_Simple, RK_Compound, RK_Nested };
-
 private:
   const RequirementKind Kind;
   // FIXME: use RequirementDependence to model dependence?
   bool Dependent : 1;
   bool ContainsUnexpandedParameterPack : 1;
   bool Satisfied : 1;
-
 public:
   struct SubstitutionDiagnostic {
     StringRef SubstitutedEntity;
@@ -171,10 +168,10 @@ public:
   };
 
   Requirement(RequirementKind Kind, bool IsDependent,
-              bool ContainsUnexpandedParameterPack, bool IsSatisfied = true)
-      : Kind(Kind), Dependent(IsDependent),
-        ContainsUnexpandedParameterPack(ContainsUnexpandedParameterPack),
-        Satisfied(IsSatisfied) {}
+              bool ContainsUnexpandedParameterPack, bool IsSatisfied = true) :
+      Kind(Kind), Dependent(IsDependent),
+      ContainsUnexpandedParameterPack(ContainsUnexpandedParameterPack),
+      Satisfied(IsSatisfied) {}
 
   RequirementKind getKind() const { return Kind; }
 
@@ -206,15 +203,13 @@ public:
 class TypeRequirement : public Requirement {
 public:
   enum SatisfactionStatus {
-    SS_Dependent,
-    SS_SubstitutionFailure,
-    SS_Satisfied
+      SS_Dependent,
+      SS_SubstitutionFailure,
+      SS_Satisfied
   };
-
 private:
   llvm::PointerUnion<SubstitutionDiagnostic *, TypeSourceInfo *> Value;
   SatisfactionStatus Status;
-
 public:
   friend ASTStmtReader;
   friend ASTStmtWriter;
@@ -227,9 +222,9 @@ public:
 
   /// \brief Construct a type requirement when the nested name specifier is
   /// invalid due to a bad substitution. The requirement is unsatisfied.
-  TypeRequirement(SubstitutionDiagnostic *Diagnostic)
-      : Requirement(RK_Type, false, false, false), Value(Diagnostic),
-        Status(SS_SubstitutionFailure) {}
+  TypeRequirement(SubstitutionDiagnostic *Diagnostic) :
+      Requirement(RK_Type, false, false, false), Value(Diagnostic),
+      Status(SS_SubstitutionFailure) {}
 
   SatisfactionStatus getSatisfactionStatus() const { return Status; }
   void setSatisfactionStatus(SatisfactionStatus Status) {
@@ -253,7 +248,9 @@ public:
     return Value.get<TypeSourceInfo *>();
   }
 
-  static bool classof(const Requirement *R) { return R->getKind() == RK_Type; }
+  static bool classof(const Requirement *R) {
+    return R->getKind() == RK_Type;
+  }
 };
 
 /// \brief A requires-expression requirement which queries the validity and
@@ -261,80 +258,81 @@ public:
 class ExprRequirement : public Requirement {
 public:
   enum SatisfactionStatus {
-    SS_Dependent,
-    SS_ExprSubstitutionFailure,
-    SS_NoexceptNotMet,
-    SS_TypeRequirementSubstitutionFailure,
-    SS_ConstraintsNotSatisfied,
-    SS_Satisfied
+      SS_Dependent,
+      SS_ExprSubstitutionFailure,
+      SS_NoexceptNotMet,
+      SS_TypeRequirementSubstitutionFailure,
+      SS_ConstraintsNotSatisfied,
+      SS_Satisfied
   };
   class ReturnTypeRequirement {
-    llvm::PointerIntPair<
-        llvm::PointerUnion<TemplateParameterList *, SubstitutionDiagnostic *>,
-        1, bool>
-        TypeConstraintInfo;
-
+      llvm::PointerIntPair<
+          llvm::PointerUnion<TemplateParameterList *, SubstitutionDiagnostic *>,
+          1, bool>
+          TypeConstraintInfo;
   public:
-    friend ASTStmtReader;
-    friend ASTStmtWriter;
+      friend ASTStmtReader;
+      friend ASTStmtWriter;
 
-    /// \brief No return type requirement was specified.
-    ReturnTypeRequirement() : TypeConstraintInfo(nullptr, 0) {}
+      /// \brief No return type requirement was specified.
+      ReturnTypeRequirement() : TypeConstraintInfo(nullptr, 0) {}
 
-    /// \brief A return type requirement was specified but it was a
-    /// substitution failure.
-    ReturnTypeRequirement(SubstitutionDiagnostic *SubstDiag)
-        : TypeConstraintInfo(SubstDiag, 0) {}
+      /// \brief A return type requirement was specified but it was a
+      /// substitution failure.
+      ReturnTypeRequirement(SubstitutionDiagnostic *SubstDiag) :
+          TypeConstraintInfo(SubstDiag, 0) {}
 
-    /// \brief A 'type constraint' style return type requirement.
-    /// \param TPL an invented template parameter list containing a single
-    /// type parameter with a type-constraint.
-    // TODO: Can we maybe not save the whole template parameter list and just
-    //  the type constraint? Saving the whole TPL makes it easier to handle in
-    //  serialization but is less elegant.
-    ReturnTypeRequirement(TemplateParameterList *TPL);
+      /// \brief A 'type constraint' style return type requirement.
+      /// \param TPL an invented template parameter list containing a single
+      /// type parameter with a type-constraint.
+      // TODO: Can we maybe not save the whole template parameter list and just
+      //  the type constraint? Saving the whole TPL makes it easier to handle in
+      //  serialization but is less elegant.
+      ReturnTypeRequirement(TemplateParameterList *TPL);
 
-    bool isDependent() const { return TypeConstraintInfo.getInt(); }
+      bool isDependent() const {
+        return TypeConstraintInfo.getInt();
+      }
 
-    bool containsUnexpandedParameterPack() const {
-      if (!isTypeConstraint())
-        return false;
-      return getTypeConstraintTemplateParameterList()
-          ->containsUnexpandedParameterPack();
-    }
+      bool containsUnexpandedParameterPack() const {
+        if (!isTypeConstraint())
+          return false;
+        return getTypeConstraintTemplateParameterList()
+                ->containsUnexpandedParameterPack();
+      }
 
-    bool isEmpty() const { return TypeConstraintInfo.getPointer().isNull(); }
+      bool isEmpty() const {
+        return TypeConstraintInfo.getPointer().isNull();
+      }
 
-    bool isSubstitutionFailure() const {
-      return !isEmpty() &&
-             TypeConstraintInfo.getPointer().is<SubstitutionDiagnostic *>();
-    }
+      bool isSubstitutionFailure() const {
+        return !isEmpty() &&
+            TypeConstraintInfo.getPointer().is<SubstitutionDiagnostic *>();
+      }
 
-    bool isTypeConstraint() const {
-      return !isEmpty() &&
-             TypeConstraintInfo.getPointer().is<TemplateParameterList *>();
-    }
+      bool isTypeConstraint() const {
+        return !isEmpty() &&
+            TypeConstraintInfo.getPointer().is<TemplateParameterList *>();
+      }
 
-    SubstitutionDiagnostic *getSubstitutionDiagnostic() const {
-      assert(isSubstitutionFailure());
-      return TypeConstraintInfo.getPointer().get<SubstitutionDiagnostic *>();
-    }
+      SubstitutionDiagnostic *getSubstitutionDiagnostic() const {
+        assert(isSubstitutionFailure());
+        return TypeConstraintInfo.getPointer().get<SubstitutionDiagnostic *>();
+      }
 
-    const TypeConstraint *getTypeConstraint() const;
+      const TypeConstraint *getTypeConstraint() const;
 
-    TemplateParameterList *getTypeConstraintTemplateParameterList() const {
-      assert(isTypeConstraint());
-      return TypeConstraintInfo.getPointer().get<TemplateParameterList *>();
-    }
+      TemplateParameterList *getTypeConstraintTemplateParameterList() const {
+        assert(isTypeConstraint());
+        return TypeConstraintInfo.getPointer().get<TemplateParameterList *>();
+      }
   };
-
 private:
   llvm::PointerUnion<Expr *, SubstitutionDiagnostic *> Value;
   SourceLocation NoexceptLoc; // May be empty if noexcept wasn't specified.
   ReturnTypeRequirement TypeReq;
   ConceptSpecializationExpr *SubstitutedConstraintExpr;
   SatisfactionStatus Status;
-
 public:
   friend ASTStmtReader;
   friend ASTStmtWriter;
@@ -414,28 +412,27 @@ public:
   friend ASTStmtReader;
   friend ASTStmtWriter;
 
-  NestedRequirement(SubstitutionDiagnostic *SubstDiag)
-      : Requirement(RK_Nested, /*Dependent=*/false,
-                    /*ContainsUnexpandedParameterPack*/ false,
-                    /*Satisfied=*/false),
-        Value(SubstDiag) {}
+  NestedRequirement(SubstitutionDiagnostic *SubstDiag) :
+      Requirement(RK_Nested, /*Dependent=*/false,
+                  /*ContainsUnexpandedParameterPack*/false,
+                  /*Satisfied=*/false), Value(SubstDiag) {}
 
-  NestedRequirement(Expr *Constraint)
-      : Requirement(RK_Nested, /*Dependent=*/true,
-                    Constraint->containsUnexpandedParameterPack()),
-        Value(Constraint) {
+  NestedRequirement(Expr *Constraint) :
+      Requirement(RK_Nested, /*Dependent=*/true,
+                  Constraint->containsUnexpandedParameterPack()),
+      Value(Constraint) {
     assert(Constraint->isInstantiationDependent() &&
            "Nested requirement with non-dependent constraint must be "
            "constructed with a ConstraintSatisfaction object");
   }
 
   NestedRequirement(ASTContext &C, Expr *Constraint,
-                    const ConstraintSatisfaction &Satisfaction)
-      : Requirement(RK_Nested, Constraint->isInstantiationDependent(),
-                    Constraint->containsUnexpandedParameterPack(),
-                    Satisfaction.IsSatisfied),
-        Value(Constraint),
-        Satisfaction(ASTConstraintSatisfaction::Create(C, Satisfaction)) {}
+                    const ConstraintSatisfaction &Satisfaction) :
+      Requirement(RK_Nested, Constraint->isInstantiationDependent(),
+                  Constraint->containsUnexpandedParameterPack(),
+                  Satisfaction.IsSatisfied),
+      Value(Constraint),
+      Satisfaction(ASTConstraintSatisfaction::Create(C, Satisfaction)) {}
 
   bool isSubstitutionFailure() const {
     return Value.is<SubstitutionDiagnostic *>();
@@ -476,8 +473,8 @@ public:
 ///     [...]
 ///     A requires-expression is a prvalue of type bool [...]
 class RequiresExpr final : public Expr,
-                           llvm::TrailingObjects<RequiresExpr, ParmVarDecl *,
-                                                 concepts::Requirement *> {
+    llvm::TrailingObjects<RequiresExpr, ParmVarDecl *,
+                          concepts::Requirement *> {
   friend TrailingObjects;
   friend class ASTStmtReader;
 
@@ -503,14 +500,14 @@ class RequiresExpr final : public Expr,
                unsigned NumRequirements);
 
 public:
-  static RequiresExpr *Create(ASTContext &C, SourceLocation RequiresKWLoc,
-                              RequiresExprBodyDecl *Body,
-                              ArrayRef<ParmVarDecl *> LocalParameters,
-                              ArrayRef<concepts::Requirement *> Requirements,
-                              SourceLocation RBraceLoc);
-  static RequiresExpr *Create(ASTContext &C, EmptyShell Empty,
-                              unsigned NumLocalParameters,
-                              unsigned NumRequirements);
+  static RequiresExpr *
+  Create(ASTContext &C, SourceLocation RequiresKWLoc,
+         RequiresExprBodyDecl *Body, ArrayRef<ParmVarDecl *> LocalParameters,
+         ArrayRef<concepts::Requirement *> Requirements,
+         SourceLocation RBraceLoc);
+  static RequiresExpr *
+  Create(ASTContext &C, EmptyShell Empty, unsigned NumLocalParameters,
+         unsigned NumRequirements);
 
   ArrayRef<ParmVarDecl *> getLocalParameters() const {
     return {getTrailingObjects<ParmVarDecl *>(), NumLocalParameters};
@@ -525,8 +522,8 @@ public:
   /// \brief Whether or not the requires clause is satisfied.
   /// The expression must not be dependent.
   bool isSatisfied() const {
-    assert(!isValueDependent() &&
-           "isSatisfied called on a dependent RequiresExpr");
+    assert(!isValueDependent()
+           && "isSatisfied called on a dependent RequiresExpr");
     return RequiresExprBits.IsSatisfied;
   }
 
@@ -543,7 +540,9 @@ public:
   SourceLocation getBeginLoc() const LLVM_READONLY {
     return RequiresExprBits.RequiresKWLoc;
   }
-  SourceLocation getEndLoc() const LLVM_READONLY { return RBraceLoc; }
+  SourceLocation getEndLoc() const LLVM_READONLY {
+    return RBraceLoc;
+  }
 
   // Iterators
   child_range children() {

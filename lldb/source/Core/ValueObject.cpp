@@ -462,9 +462,8 @@ ValueObject::GetChildAtIndexPath(llvm::ArrayRef<size_t> idxs,
   return root;
 }
 
-lldb::ValueObjectSP
-ValueObject::GetChildAtIndexPath(llvm::ArrayRef<std::pair<size_t, bool>> idxs,
-                                 size_t *index_of_error) {
+lldb::ValueObjectSP ValueObject::GetChildAtIndexPath(
+  llvm::ArrayRef<std::pair<size_t, bool>> idxs, size_t *index_of_error) {
   if (idxs.size() == 0)
     return GetSP();
   ValueObjectSP root(GetSP());
@@ -1236,10 +1235,9 @@ bool ValueObject::DumpPrintableRepresentation(
       {
         Status error;
         lldb::DataBufferSP buffer_sp;
-        std::pair<size_t, bool> read_string =
-            ReadPointedString(buffer_sp, error, 0,
-                              (custom_format == eFormatVectorOfChar) ||
-                                  (custom_format == eFormatCharArray));
+        std::pair<size_t, bool> read_string = ReadPointedString(
+            buffer_sp, error, 0, (custom_format == eFormatVectorOfChar) ||
+                                     (custom_format == eFormatCharArray));
         lldb_private::formatters::StringPrinter::
             ReadBufferAndDumpToStreamOptions options(*this);
         options.SetData(DataExtractor(
@@ -1610,7 +1608,8 @@ LanguageType ValueObject::GetObjectRuntimeLanguage() {
   return GetCompilerType().GetMinimumLanguage();
 }
 
-void ValueObject::AddSyntheticChild(ConstString key, ValueObject *valobj) {
+void ValueObject::AddSyntheticChild(ConstString key,
+                                    ValueObject *valobj) {
   m_synthetic_children[key] = valobj;
 }
 
@@ -3254,15 +3253,14 @@ void ValueObject::SetLanguageFlags(uint64_t flags) { m_language_flags = flags; }
 
 ValueObjectManager::ValueObjectManager(lldb::ValueObjectSP in_valobj_sp,
                                        lldb::DynamicValueType use_dynamic,
-                                       bool use_synthetic)
-    : m_root_valobj_sp(), m_user_valobj_sp(), m_use_dynamic(use_dynamic),
-      m_stop_id(UINT32_MAX), m_use_synthetic(use_synthetic) {
+                                       bool use_synthetic) : m_root_valobj_sp(),
+    m_user_valobj_sp(), m_use_dynamic(use_dynamic), m_stop_id(UINT32_MAX),
+    m_use_synthetic(use_synthetic) {
   if (!in_valobj_sp)
     return;
   // If the user passes in a value object that is dynamic or synthetic, then
   // water it down to the static type.
-  m_root_valobj_sp = in_valobj_sp->GetQualifiedRepresentationIfAvailable(
-      lldb::eNoDynamicValues, false);
+  m_root_valobj_sp = in_valobj_sp->GetQualifiedRepresentationIfAvailable(lldb::eNoDynamicValues, false);
 }
 
 bool ValueObjectManager::IsValid() const {
@@ -3293,8 +3291,7 @@ lldb::ValueObjectSP ValueObjectManager::GetSP() {
   m_user_valobj_sp = m_root_valobj_sp;
 
   if (m_use_dynamic != lldb::eNoDynamicValues) {
-    lldb::ValueObjectSP dynamic_sp =
-        m_user_valobj_sp->GetDynamicValue(m_use_dynamic);
+    lldb::ValueObjectSP dynamic_sp = m_user_valobj_sp->GetDynamicValue(m_use_dynamic);
     if (dynamic_sp)
       m_user_valobj_sp = dynamic_sp;
   }

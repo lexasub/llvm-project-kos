@@ -1,6 +1,6 @@
 template <class T>
 struct unique_ptr {
-  typedef T *pointer;
+  typedef T* pointer;
 
   void reset(pointer ptr = pointer());
 };

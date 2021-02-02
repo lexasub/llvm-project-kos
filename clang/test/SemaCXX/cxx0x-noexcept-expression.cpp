@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++2a %s -fexceptions -fcxx-exceptions -Wno-unevaluated-expression
 
-void f();    // expected-note {{possible target for call}}
+void f(); // expected-note {{possible target for call}}
 void f(int); // expected-note {{possible target for call}}
 
 void g() {
@@ -9,7 +9,7 @@ void g() {
 }
 
 struct S {
-  void g();    // expected-note {{possible target for call}}
+  void g(); // expected-note {{possible target for call}}
   void g(int); // expected-note {{possible target for call}}
 
   void h() {
@@ -49,27 +49,19 @@ void stmt_expr() {
   })));
 
   static_assert(!noexcept(({
-    if (false)
-      throw 0;
+    if (false) throw 0;
   })));
 
   static_assert(noexcept(({
-    if constexpr (false)
-      throw 0;
+    if constexpr (false) throw 0;
   })));
 
   static_assert(!noexcept(({
-    if constexpr (false)
-      throw 0;
-    else
-      throw 1;
+    if constexpr (false) throw 0; else throw 1;
   })));
 
   static_assert(noexcept(({
-    if constexpr (true)
-      0;
-    else
-      throw 1;
+    if constexpr (true) 0; else throw 1;
   })));
 }
 

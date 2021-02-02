@@ -7,15 +7,16 @@
 class X {
 public:
   X();
-  X(const X &);
+  X(const X&);
 #if __cplusplus >= 201103L
-  X(X &&);
+  X(X&&);
 #endif
   ~X();
 };
 
 // CHECK-LABEL: define{{.*}} void @_Z4Testv(
-X Test() {
+X Test()
+{
   X x;
 
   // Check that the copy constructor for X is called with result variable as

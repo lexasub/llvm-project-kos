@@ -25,6 +25,6 @@ public:
                         LoopStandardAnalysisResults &AR, LPMUpdater &U);
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

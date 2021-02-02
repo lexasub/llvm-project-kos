@@ -1637,7 +1637,7 @@ void CoverageMappingModuleGen::emitFunctionMappingRecord(
   // Create the function record constant.
 #define COVMAP_FUNC_RECORD(Type, LLVMType, Name, Init) Init,
   llvm::Constant *FunctionRecordVals[] = {
-#include "llvm/ProfileData/InstrProfData.inc"
+      #include "llvm/ProfileData/InstrProfData.inc"
   };
   auto *FuncRecordConstant = llvm::ConstantStruct::get(
       FunctionRecordTy, makeArrayRef(FunctionRecordVals));

@@ -90,8 +90,7 @@ findCompilationDatabaseFromDirectory(StringRef Directory,
 
     if (!HasErrorMessage) {
       ErrorStream << "No compilation database found in " << Directory.str()
-                  << " or any parent directory\n"
-                  << LoadErrorMessage;
+                  << " or any parent directory\n" << LoadErrorMessage;
       HasErrorMessage = true;
     }
 
@@ -112,8 +111,7 @@ CompilationDatabase::autoDetectFromSource(StringRef SourceFile,
 
   if (!DB)
     ErrorMessage = ("Could not auto-detect compilation database for file \"" +
-                    SourceFile + "\"\n" + ErrorMessage)
-                       .str();
+                   SourceFile + "\"\n" + ErrorMessage).str();
   return DB;
 }
 
@@ -126,10 +124,8 @@ CompilationDatabase::autoDetectFromDirectory(StringRef SourceDir,
       findCompilationDatabaseFromDirectory(AbsolutePath, ErrorMessage);
 
   if (!DB)
-    ErrorMessage =
-        ("Could not auto-detect compilation database from directory \"" +
-         SourceDir + "\"\n" + ErrorMessage)
-            .str();
+    ErrorMessage = ("Could not auto-detect compilation database from directory \"" +
+                   SourceDir + "\"\n" + ErrorMessage).str();
   return DB;
 }
 
@@ -151,7 +147,9 @@ namespace {
 struct CompileJobAnalyzer {
   SmallVector<std::string, 2> Inputs;
 
-  void run(const driver::Action *A) { runImpl(A, false); }
+  void run(const driver::Action *A) {
+    runImpl(A, false);
+  }
 
 private:
   void runImpl(const driver::Action *A, bool Collect) {
@@ -205,7 +203,7 @@ public:
 // They are not used for syntax checking, and could confuse targets
 // which don't support these options.
 struct FilterUnusedFlags {
-  bool operator()(StringRef S) {
+  bool operator() (StringRef S) {
     return (S == "-no-integrated-as") || S.startswith("-Wa,");
   }
 };
@@ -249,8 +247,8 @@ static bool stripPositionalArgs(std::vector<const char *> Args,
   TextDiagnosticPrinter DiagnosticPrinter(Output, &*DiagOpts);
   UnusedInputDiagConsumer DiagClient(DiagnosticPrinter);
   DiagnosticsEngine Diagnostics(
-      IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()), &*DiagOpts,
-      &DiagClient, false);
+      IntrusiveRefCntPtr<DiagnosticIDs>(new DiagnosticIDs()),
+      &*DiagOpts, &DiagClient, false);
 
   // The clang executable path isn't required since the jobs the driver builds
   // will not be executed.
@@ -373,10 +371,11 @@ FixedCompilationDatabase::loadFromBuffer(StringRef Directory, StringRef Data,
 FixedCompilationDatabase::FixedCompilationDatabase(
     const Twine &Directory, ArrayRef<std::string> CommandLine) {
   std::vector<std::string> ToolCommandLine(1, GetClangToolCommand());
-  ToolCommandLine.insert(ToolCommandLine.end(), CommandLine.begin(),
-                         CommandLine.end());
+  ToolCommandLine.insert(ToolCommandLine.end(),
+                         CommandLine.begin(), CommandLine.end());
   CompileCommands.emplace_back(Directory, StringRef(),
-                               std::move(ToolCommandLine), StringRef());
+                               std::move(ToolCommandLine),
+                               StringRef());
 }
 
 std::vector<CompileCommand>
@@ -401,7 +400,7 @@ class FixedCompilationDatabasePlugin : public CompilationDatabasePlugin {
 } // namespace
 
 static CompilationDatabasePluginRegistry::Add<FixedCompilationDatabasePlugin>
-    X("fixed-compilation-database", "Reads plain-text flags file");
+X("fixed-compilation-database", "Reads plain-text flags file");
 
 namespace clang {
 namespace tooling {

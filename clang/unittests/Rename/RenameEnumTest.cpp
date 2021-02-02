@@ -186,4 +186,4 @@ TEST_F(RenameEnumTest, RenameScopedEnumDecl) {
 } // anonymous namespace
 } // namespace test
 } // namespace clang_rename
-} // namespace clang
+} // namesdpace clang

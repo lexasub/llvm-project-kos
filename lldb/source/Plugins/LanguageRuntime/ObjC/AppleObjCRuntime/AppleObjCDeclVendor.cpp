@@ -343,7 +343,8 @@ public:
     }
 
     clang::Selector sel = ast_ctx.Selectors.getSelector(
-        is_zero_argument ? 0 : selector_components.size(), identifier_infos);
+        is_zero_argument ? 0 : selector_components.size(),
+        identifier_infos);
 
     clang::QualType ret_type =
         ClangUtil::GetQualType(type_realizer_sp->RealizeType(

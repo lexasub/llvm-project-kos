@@ -9,7 +9,7 @@ struct A {
 A::A() {}
 void A::f() {}
 
-void caller(A *a) {
+void caller(A* a) {
   a->f();
 }
 

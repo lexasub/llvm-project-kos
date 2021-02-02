@@ -18,7 +18,7 @@
 namespace llvm {
 class WritableMemoryBuffer;
 class Twine;
-} // namespace llvm
+}
 
 namespace lldb_private {
 
@@ -41,6 +41,6 @@ private:
 
   std::unique_ptr<llvm::WritableMemoryBuffer> Buffer;
 };
-} // namespace lldb_private
+}
 
 #endif

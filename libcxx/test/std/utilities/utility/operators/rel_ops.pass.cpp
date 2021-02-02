@@ -13,28 +13,40 @@
 
 #include "test_macros.h"
 
-struct A {
-  int data_;
+struct A
+{
+    int data_;
 
-  explicit A(int data = -1) : data_(data) {}
+    explicit A(int data = -1) : data_(data) {}
 };
 
-inline bool operator==(const A& x, const A& y) { return x.data_ == y.data_; }
+inline
+bool
+operator == (const A& x, const A& y)
+{
+    return x.data_ == y.data_;
+}
 
-inline bool operator<(const A& x, const A& y) { return x.data_ < y.data_; }
+inline
+bool
+operator < (const A& x, const A& y)
+{
+    return x.data_ < y.data_;
+}
 
-int main(int, char**) {
-  using namespace std::rel_ops;
-  A a1(1);
-  A a2(2);
-  assert(a1 == a1);
-  assert(a1 != a2);
-  assert(a1 < a2);
-  assert(a2 > a1);
-  assert(a1 <= a1);
-  assert(a1 <= a2);
-  assert(a2 >= a2);
-  assert(a2 >= a1);
+int main(int, char**)
+{
+    using namespace std::rel_ops;
+    A a1(1);
+    A a2(2);
+    assert(a1 == a1);
+    assert(a1 != a2);
+    assert(a1 < a2);
+    assert(a2 > a1);
+    assert(a1 <= a1);
+    assert(a1 <= a2);
+    assert(a2 >= a2);
+    assert(a2 >= a1);
 
   return 0;
 }

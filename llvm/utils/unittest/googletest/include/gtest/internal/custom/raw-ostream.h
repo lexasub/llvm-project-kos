@@ -26,7 +26,7 @@ namespace llvm_gtest {
 // StreamSwitch is a trait that tells us how to stream a T into a std::ostream.
 // By default, we just stream the T directly. We'll specialize this later.
 template <typename T, typename Enable = void> struct StreamSwitch {
-  static const T &printable(const T &V) { return V; }
+  static const T& printable(const T& V) { return V; }
 };
 
 // printable() returns a version of its argument that can be streamed into a
@@ -48,8 +48,9 @@ namespace llvm_gtest {
 
 // The printable() of a raw_ostream-enabled type T is a RawStreamProxy<T>.
 // It uses raw_os_ostream to write the wrapped value to a std::ostream.
-template <typename T> struct RawStreamProxy {
-  const T &V;
+template <typename T>
+struct RawStreamProxy {
+  const T& V;
   friend std::ostream &operator<<(std::ostream &S, const RawStreamProxy<T> &V) {
     llvm::raw_os_ostream OS(S);
     OS << V.V;
@@ -79,6 +80,6 @@ struct StreamSwitch<llvm::Optional<T>,
   }
 };
 } // namespace llvm_gtest
-#endif // !GTEST_NO_LLVM_SUPPORT
+#endif  // !GTEST_NO_LLVM_SUPPORT
 
 #endif // GTEST_INCLUDE_GTEST_INTERNAL_CUSTOM_RAW_OSTREAM_H_

@@ -198,7 +198,9 @@ private:
 
 public:
   // Returns the collection of MCDwarfLineEntry for a given Compile Unit ID.
-  const MCLineDivisionMap &getMCLineEntries() const { return MCLineDivisions; }
+  const MCLineDivisionMap &getMCLineEntries() const {
+    return MCLineDivisions;
+  }
 };
 
 struct MCDwarfLineTableParams {
@@ -222,7 +224,6 @@ struct MCDwarfLineTableHeader {
   std::string CompilationDir;
   MCDwarfFile RootFile;
   bool HasSource = false;
-
 private:
   bool HasAllMD5 = true;
   bool HasAnyMD5 = false;
@@ -233,7 +234,8 @@ public:
   Expected<unsigned> tryGetFile(StringRef &Directory, StringRef &FileName,
                                 Optional<MD5::MD5Result> Checksum,
                                 Optional<StringRef> Source,
-                                uint16_t DwarfVersion, unsigned FileNumber = 0);
+                                uint16_t DwarfVersion,
+                                unsigned FileNumber = 0);
   std::pair<MCSymbol *, MCSymbol *>
   Emit(MCStreamer *MCOS, MCDwarfLineTableParams Params,
        Optional<MCDwarfLineStr> &LineStr) const;
@@ -275,8 +277,7 @@ public:
 
 private:
   void emitV2FileDirTables(MCStreamer *MCOS) const;
-  void emitV5FileDirTables(MCStreamer *MCOS,
-                           Optional<MCDwarfLineStr> &LineStr) const;
+  void emitV5FileDirTables(MCStreamer *MCOS, Optional<MCDwarfLineStr> &LineStr) const;
 };
 
 class MCDwarfDwoLineTable {
@@ -296,8 +297,8 @@ public:
                    Optional<MD5::MD5Result> Checksum, uint16_t DwarfVersion,
                    Optional<StringRef> Source) {
     HasSplitLineTable = true;
-    return cantFail(
-        Header.tryGetFile(Directory, FileName, Checksum, Source, DwarfVersion));
+    return cantFail(Header.tryGetFile(Directory, FileName, Checksum, Source,
+                                      DwarfVersion));
   }
 
   void Emit(MCStreamer &MCOS, MCDwarfLineTableParams Params,
@@ -319,18 +320,17 @@ public:
   Expected<unsigned> tryGetFile(StringRef &Directory, StringRef &FileName,
                                 Optional<MD5::MD5Result> Checksum,
                                 Optional<StringRef> Source,
-                                uint16_t DwarfVersion, unsigned FileNumber = 0);
+                                uint16_t DwarfVersion,
+                                unsigned FileNumber = 0);
   unsigned getFile(StringRef &Directory, StringRef &FileName,
-                   Optional<MD5::MD5Result> Checksum,
-                   Optional<StringRef> Source, uint16_t DwarfVersion,
-                   unsigned FileNumber = 0) {
+                   Optional<MD5::MD5Result> Checksum, Optional<StringRef> Source,
+                   uint16_t DwarfVersion, unsigned FileNumber = 0) {
     return cantFail(tryGetFile(Directory, FileName, Checksum, Source,
                                DwarfVersion, FileNumber));
   }
 
   void setRootFile(StringRef Directory, StringRef FileName,
-                   Optional<MD5::MD5Result> Checksum,
-                   Optional<StringRef> Source) {
+                   Optional<MD5::MD5Result> Checksum, Optional<StringRef> Source) {
     Header.CompilationDir = std::string(Directory);
     Header.RootFile.Name = std::string(FileName);
     Header.RootFile.DirIndex = 0;
@@ -349,15 +349,21 @@ public:
   // Report whether MD5 usage has been consistent (all-or-none).
   bool isMD5UsageConsistent() const { return Header.isMD5UsageConsistent(); }
 
-  MCSymbol *getLabel() const { return Header.Label; }
+  MCSymbol *getLabel() const {
+    return Header.Label;
+  }
 
-  void setLabel(MCSymbol *Label) { Header.Label = Label; }
+  void setLabel(MCSymbol *Label) {
+    Header.Label = Label;
+  }
 
   const SmallVectorImpl<std::string> &getMCDwarfDirs() const {
     return Header.MCDwarfDirs;
   }
 
-  SmallVectorImpl<std::string> &getMCDwarfDirs() { return Header.MCDwarfDirs; }
+  SmallVectorImpl<std::string> &getMCDwarfDirs() {
+    return Header.MCDwarfDirs;
+  }
 
   const SmallVectorImpl<MCDwarfFile> &getMCDwarfFiles() const {
     return Header.MCDwarfFiles;
@@ -367,8 +373,12 @@ public:
     return Header.MCDwarfFiles;
   }
 
-  const MCLineSection &getMCLineSections() const { return MCLineSections; }
-  MCLineSection &getMCLineSections() { return MCLineSections; }
+  const MCLineSection &getMCLineSections() const {
+    return MCLineSections;
+  }
+  MCLineSection &getMCLineSections() {
+    return MCLineSections;
+  }
 };
 
 class MCDwarfLineAddr {
@@ -601,7 +611,9 @@ public:
     return StringRef(&Values[0], Values.size());
   }
 
-  StringRef getComment() const { return Comment; }
+  StringRef getComment() const {
+    return Comment;
+  }
 };
 
 struct MCDwarfFrameInfo {

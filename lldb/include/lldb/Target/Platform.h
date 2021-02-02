@@ -582,9 +582,9 @@ public:
 
   virtual MmapArgList GetMmapArgumentList(const ArchSpec &arch,
                                           lldb::addr_t addr,
-                                          lldb::addr_t length, unsigned prot,
-                                          unsigned flags, lldb::addr_t fd,
-                                          lldb::addr_t offset);
+                                          lldb::addr_t length,
+                                          unsigned prot, unsigned flags,
+                                          lldb::addr_t fd, lldb::addr_t offset);
 
   virtual bool GetSupportsRSync() { return m_supports_rsync; }
 

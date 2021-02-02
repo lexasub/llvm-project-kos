@@ -1,14 +1,14 @@
 namespace std {
-template <typename RandomAccessIterator>
-void sort(RandomAccessIterator first, RandomAccessIterator last);
+  template<typename RandomAccessIterator>
+  void sort(RandomAccessIterator first, RandomAccessIterator last);
 
-template <class X, class Y>
-X *dyn_cast(Y *Val);
-} // namespace std
+  template<class X, class Y>
+  X* dyn_cast(Y *Val);
+}
 
 class Foo {
 public:
-  template <typename T> T &getAs();
+  template<typename T> T &getAs();
 };
 
 template <typename T, typename U, typename V>

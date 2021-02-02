@@ -65,7 +65,7 @@
 #include <system_error>
 using namespace llvm;
 
-const char *LTOCodeGenerator::getVersionString() {
+const char* LTOCodeGenerator::getVersionString() {
 #ifdef LLVM_VERSION_INFO
   return PACKAGE_NAME " version " PACKAGE_VERSION ", " LLVM_VERSION_INFO;
 #else
@@ -113,10 +113,11 @@ cl::opt<std::string> RemarksFormat(
     cl::desc("The format used for serializing remarks (default: YAML)"),
     cl::value_desc("format"), cl::init("yaml"));
 
-cl::opt<std::string>
-    LTOStatsFile("lto-stats-file",
-                 cl::desc("Save statistics to the specified file"), cl::Hidden);
-} // namespace llvm
+cl::opt<std::string> LTOStatsFile(
+    "lto-stats-file",
+    cl::desc("Save statistics to the specified file"),
+    cl::Hidden);
+}
 
 LTOCodeGenerator::LTOCodeGenerator(LLVMContext &Context)
     : Context(Context), MergedModule(new Module("ld-temp.o", Context)),
@@ -277,7 +278,8 @@ bool LTOCodeGenerator::compileOptimizedToFile(const char **Name) {
   return true;
 }
 
-std::unique_ptr<MemoryBuffer> LTOCodeGenerator::compileOptimized() {
+std::unique_ptr<MemoryBuffer>
+LTOCodeGenerator::compileOptimized() {
   const char *name;
   if (!compileOptimizedToFile(&name))
     return nullptr;
@@ -375,12 +377,10 @@ void LTOCodeGenerator::preserveDiscardableGVs(
     if (GV.hasAvailableExternallyLinkage())
       return emitWarning(
           (Twine("Linker asked to preserve available_externally global: '") +
-           GV.getName() + "'")
-              .str());
+           GV.getName() + "'").str());
     if (GV.hasInternalLinkage())
       return emitWarning((Twine("Linker asked to preserve internal global: '") +
-                          GV.getName() + "'")
-                             .str());
+                   GV.getName() + "'").str());
     Used.push_back(&GV);
   };
   for (auto &GV : TheModule)
@@ -545,6 +545,7 @@ bool LTOCodeGenerator::optimize() {
   // Add an appropriate DataLayout instance for this module...
   MergedModule->setDataLayout(TargetMach->createDataLayout());
 
+
   ModuleSummaryIndex CombinedIndex(false);
   TargetMach = createTargetMachine();
   if (!opt(Config, TargetMach.get(), 0, *MergedModule, /*IsThinLTO=*/false,
@@ -607,6 +608,7 @@ void LTOCodeGenerator::parseCodeGenDebugOptions() {
   }
 }
 
+
 void LTOCodeGenerator::DiagnosticHandler(const DiagnosticInfo &DI) {
   // Map the LLVM internal diagnostic severity to the LTO diagnostic severity.
   lto_codegen_diagnostic_severity_t Severity;
@@ -647,10 +649,11 @@ struct LTODiagnosticHandler : public DiagnosticHandler {
     return true;
   }
 };
-} // namespace
+}
 
-void LTOCodeGenerator::setDiagnosticHandler(
-    lto_diagnostic_handler_t DiagHandler, void *Ctxt) {
+void
+LTOCodeGenerator::setDiagnosticHandler(lto_diagnostic_handler_t DiagHandler,
+                                       void *Ctxt) {
   this->DiagHandler = DiagHandler;
   this->DiagContext = Ctxt;
   if (!DiagHandler)
@@ -664,14 +667,12 @@ void LTOCodeGenerator::setDiagnosticHandler(
 namespace {
 class LTODiagnosticInfo : public DiagnosticInfo {
   const Twine &Msg;
-
 public:
-  LTODiagnosticInfo(const Twine &DiagMsg,
-                    DiagnosticSeverity Severity = DS_Error)
+  LTODiagnosticInfo(const Twine &DiagMsg, DiagnosticSeverity Severity=DS_Error)
       : DiagnosticInfo(DK_Linker, Severity), Msg(DiagMsg) {}
   void print(DiagnosticPrinter &DP) const override { DP << Msg; }
 };
-} // namespace
+}
 
 void LTOCodeGenerator::emitError(const std::string &ErrMsg) {
   if (DiagHandler)

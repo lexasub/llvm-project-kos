@@ -188,7 +188,8 @@ const char *SBCommunication::GetBroadcasterClass() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBCommunication>(Registry &R) {
+template <>
+void RegisterMethods<SBCommunication>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBCommunication, ());
   LLDB_REGISTER_CONSTRUCTOR(SBCommunication, (const char *));
   LLDB_REGISTER_METHOD_CONST(bool, SBCommunication, IsValid, ());
@@ -199,7 +200,8 @@ template <> void RegisterMethods<SBCommunication>(Registry &R) {
                        (const char *));
   LLDB_REGISTER_METHOD(lldb::ConnectionStatus, SBCommunication,
                        AdoptFileDesriptor, (int, bool));
-  LLDB_REGISTER_METHOD(lldb::ConnectionStatus, SBCommunication, Disconnect, ());
+  LLDB_REGISTER_METHOD(lldb::ConnectionStatus, SBCommunication, Disconnect,
+                       ());
   LLDB_REGISTER_METHOD_CONST(bool, SBCommunication, IsConnected, ());
   LLDB_REGISTER_METHOD(bool, SBCommunication, ReadThreadStart, ());
   LLDB_REGISTER_METHOD(bool, SBCommunication, ReadThreadStop, ());
@@ -210,5 +212,5 @@ template <> void RegisterMethods<SBCommunication>(Registry &R) {
                               GetBroadcasterClass, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

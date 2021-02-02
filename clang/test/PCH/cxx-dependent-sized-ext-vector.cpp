@@ -8,13 +8,13 @@
 
 #define HEADER_INCLUDED
 
-template <typename T, int N>
+template<typename T, int N>
 using vec = T __attribute__((ext_vector_type(N)));
 
 #else
 
 void test() {
-  vec<float, 2> a; // expected-error@-5 {{zero vector size}}
+  vec<float, 2> a;  // expected-error@-5 {{zero vector size}}
   vec<float, 0> b; // expected-note {{in instantiation of template type alias 'vec' requested here}}
 }
 

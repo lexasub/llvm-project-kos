@@ -13,7 +13,7 @@ template <typename T> void X<T>::baz() {}
 
 template <> void X<char>::foo() {}
 template <> void X<char>::bar() {}
-} // namespace test0
+}
 
 namespace test1 {
 template <typename T> struct X {
@@ -28,4 +28,4 @@ template <typename T> void X<T>::baz() {}
 
 template <> void X<char>::bar() {}
 template <> void X<char>::foo() {}
-} // namespace test1
+}

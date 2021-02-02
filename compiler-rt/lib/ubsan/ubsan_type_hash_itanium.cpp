@@ -23,13 +23,13 @@
 // those definitions, since existing ABI implementations aren't.
 
 namespace std {
-class type_info {
-public:
-  virtual ~type_info();
+  class type_info {
+  public:
+    virtual ~type_info();
 
-  const char *__type_name;
-};
-} // namespace std
+    const char *__type_name;
+  };
+}
 
 namespace __cxxabiv1 {
 
@@ -69,7 +69,7 @@ public:
   __base_class_type_info base_info[1];
 };
 
-} // namespace __cxxabiv1
+}
 
 namespace abi = __cxxabiv1;
 
@@ -122,11 +122,11 @@ static bool isDerivedFromAtOffset(const abi::__class_type_info *Derived,
     return Offset == 0;
 
   if (const abi::__si_class_type_info *SI =
-          dynamic_cast<const abi::__si_class_type_info *>(Derived))
+        dynamic_cast<const abi::__si_class_type_info*>(Derived))
     return isDerivedFromAtOffset(SI->__base_type, Base, Offset);
 
   const abi::__vmi_class_type_info *VTI =
-      dynamic_cast<const abi::__vmi_class_type_info *>(Derived);
+    dynamic_cast<const abi::__vmi_class_type_info*>(Derived);
   if (!VTI)
     // No base class subobjects.
     return false;
@@ -138,13 +138,13 @@ static bool isDerivedFromAtOffset(const abi::__class_type_info *Derived,
     sptr OffsetHere = VTI->base_info[base].__offset_flags >>
                       abi::__base_class_type_info::__offset_shift;
     if (VTI->base_info[base].__offset_flags &
-        abi::__base_class_type_info::__virtual_mask)
+          abi::__base_class_type_info::__virtual_mask)
       // For now, just punt on virtual bases and say 'yes'.
       // FIXME: OffsetHere is the offset in the vtable of the virtual base
       //        offset. Read the vbase offset out of the vtable and use it.
       return true;
-    if (isDerivedFromAtOffset(VTI->base_info[base].__base_type, Base,
-                              Offset - OffsetHere))
+    if (isDerivedFromAtOffset(VTI->base_info[base].__base_type,
+                              Base, Offset - OffsetHere))
       return true;
   }
 
@@ -153,17 +153,17 @@ static bool isDerivedFromAtOffset(const abi::__class_type_info *Derived,
 
 /// \brief Find the derived-most dynamic base class of \p Derived at offset
 /// \p Offset.
-static const abi::__class_type_info *
-findBaseAtOffset(const abi::__class_type_info *Derived, sptr Offset) {
+static const abi::__class_type_info *findBaseAtOffset(
+    const abi::__class_type_info *Derived, sptr Offset) {
   if (!Offset)
     return Derived;
 
   if (const abi::__si_class_type_info *SI =
-          dynamic_cast<const abi::__si_class_type_info *>(Derived))
+        dynamic_cast<const abi::__si_class_type_info*>(Derived))
     return findBaseAtOffset(SI->__base_type, Offset);
 
   const abi::__vmi_class_type_info *VTI =
-      dynamic_cast<const abi::__vmi_class_type_info *>(Derived);
+    dynamic_cast<const abi::__vmi_class_type_info*>(Derived);
   if (!VTI)
     // No base class subobjects.
     return nullptr;
@@ -172,11 +172,12 @@ findBaseAtOffset(const abi::__class_type_info *Derived, sptr Offset) {
     sptr OffsetHere = VTI->base_info[base].__offset_flags >>
                       abi::__base_class_type_info::__offset_shift;
     if (VTI->base_info[base].__offset_flags &
-        abi::__base_class_type_info::__virtual_mask)
+          abi::__base_class_type_info::__virtual_mask)
       // FIXME: Can't handle virtual bases yet.
       continue;
-    if (const abi::__class_type_info *Base = findBaseAtOffset(
-            VTI->base_info[base].__base_type, Offset - OffsetHere))
+    if (const abi::__class_type_info *Base =
+          findBaseAtOffset(VTI->base_info[base].__base_type,
+                           Offset - OffsetHere))
       return Base;
   }
 
@@ -195,7 +196,7 @@ struct VtablePrefix {
 };
 VtablePrefix *getVtablePrefix(void *Vtable) {
   Vtable = ptrauth_auth_data(Vtable, ptrauth_key_cxx_vtable_pointer, 0);
-  VtablePrefix *Vptr = reinterpret_cast<VtablePrefix *>(Vtable);
+  VtablePrefix *Vptr = reinterpret_cast<VtablePrefix*>(Vtable);
   VtablePrefix *Prefix = Vptr - 1;
   if (!IsAccessibleMemoryRange((uptr)Prefix, sizeof(VtablePrefix)))
     return nullptr;
@@ -205,7 +206,7 @@ VtablePrefix *getVtablePrefix(void *Vtable) {
   return Prefix;
 }
 
-} // namespace
+}
 
 bool __ubsan::checkDynamicType(void *Object, void *Type, HashValue Hash) {
   // A crash anywhere within this function probably means the vptr is corrupted.
@@ -222,19 +223,18 @@ bool __ubsan::checkDynamicType(void *Object, void *Type, HashValue Hash) {
   VtablePrefix *Vtable = getVtablePrefix(VtablePtr);
   if (!Vtable)
     return false;
-  if (Vtable->Offset < -VptrMaxOffsetToTop ||
-      Vtable->Offset > VptrMaxOffsetToTop) {
+  if (Vtable->Offset < -VptrMaxOffsetToTop || Vtable->Offset > VptrMaxOffsetToTop) {
     // Too large or too small offset are signs of Vtable corruption.
     return false;
   }
 
   // Check that this is actually a type_info object for a class type.
   abi::__class_type_info *Derived =
-      dynamic_cast<abi::__class_type_info *>(Vtable->TypeInfo);
+    dynamic_cast<abi::__class_type_info*>(Vtable->TypeInfo);
   if (!Derived)
     return false;
 
-  abi::__class_type_info *Base = (abi::__class_type_info *)Type;
+  abi::__class_type_info *Base = (abi::__class_type_info*)Type;
   if (!isDerivedFromAtOffset(Derived, Base, -Vtable->Offset))
     return false;
 
@@ -249,12 +249,11 @@ __ubsan::getDynamicTypeInfoFromVtable(void *VtablePtr) {
   VtablePrefix *Vtable = getVtablePrefix(VtablePtr);
   if (!Vtable)
     return DynamicTypeInfo(nullptr, 0, nullptr);
-  if (Vtable->Offset < -VptrMaxOffsetToTop ||
-      Vtable->Offset > VptrMaxOffsetToTop)
+  if (Vtable->Offset < -VptrMaxOffsetToTop || Vtable->Offset > VptrMaxOffsetToTop)
     return DynamicTypeInfo(nullptr, Vtable->Offset, nullptr);
   const abi::__class_type_info *ObjectType = findBaseAtOffset(
-      static_cast<const abi::__class_type_info *>(Vtable->TypeInfo),
-      -Vtable->Offset);
+    static_cast<const abi::__class_type_info*>(Vtable->TypeInfo),
+    -Vtable->Offset);
   return DynamicTypeInfo(Vtable->TypeInfo->__type_name, -Vtable->Offset,
                          ObjectType ? ObjectType->__type_name : "<unknown>");
 }
@@ -268,4 +267,4 @@ bool __ubsan::checkTypeInfoEquality(const void *TypeInfo1,
          !internal_strcmp(TI1->__type_name, TI2->__type_name);
 }
 
-#endif // CAN_SANITIZE_UB && !SANITIZER_WINDOWS
+#endif  // CAN_SANITIZE_UB && !SANITIZER_WINDOWS

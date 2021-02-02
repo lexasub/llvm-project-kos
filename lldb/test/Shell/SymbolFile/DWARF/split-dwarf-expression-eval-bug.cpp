@@ -17,6 +17,7 @@
 // CHECK: (lldb) p bool_in_first_cu
 // CHECK: (bool) $0 = true
 
+
 #if defined(ONE)
 bool bool_in_first_cu = true;
 #elif defined(TWO)
@@ -24,13 +25,13 @@ bool bool_in_second_cu = true;
 
 namespace NS {
 void f() {}
-} // namespace NS
+}
 #elif defined(THREE)
 namespace NS {
 struct S {
   void foo() {}
 };
-} // namespace NS
+}
 
 int main() { NS::S().foo(); }
 #endif

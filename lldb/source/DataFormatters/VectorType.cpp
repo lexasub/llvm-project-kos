@@ -170,7 +170,7 @@ static size_t CalculateNumChildren(
     CompilerType container_type, CompilerType element_type,
     lldb_private::ExecutionContextScope *exe_scope =
         nullptr // does not matter here because all we trade in are basic types
-) {
+    ) {
   llvm::Optional<uint64_t> container_size =
       container_type.GetByteSize(exe_scope);
   llvm::Optional<uint64_t> element_size = element_type.GetByteSize(exe_scope);

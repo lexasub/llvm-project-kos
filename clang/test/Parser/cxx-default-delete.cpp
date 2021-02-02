@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
-int i = delete;  // expected-error{{only functions}}
+int i = delete; // expected-error{{only functions}}
 int j = default; // expected-error{{special member functions}}
 
 int f() = delete, g; // expected-error{{'= delete' is a function definition}}

@@ -80,8 +80,10 @@ private:
   void calculateRealInlines();
   void dfs(InlineGraphNode &GraphNode);
 
-  using NodesMapTy = llvm::StringMap<std::unique_ptr<InlineGraphNode>>;
-  using SortedNodesTy = std::vector<const NodesMapTy::MapEntryTy *>;
+  using NodesMapTy =
+      llvm::StringMap<std::unique_ptr<InlineGraphNode>>;
+  using SortedNodesTy =
+      std::vector<const NodesMapTy::MapEntryTy*>;
   /// Returns vector of elements sorted by
   /// (-NumberOfInlines, -NumberOfRealInlines, FunctionName).
   SortedNodesTy getSortedNodes();
@@ -105,6 +107,6 @@ enum class InlinerFunctionImportStatsOpts {
   Verbose = 2,
 };
 
-} // namespace llvm
+} // llvm
 
 #endif // LLVM_TRANSFORMS_UTILS_IMPORTEDFUNCTIONSINLININGSTATISTICS_H

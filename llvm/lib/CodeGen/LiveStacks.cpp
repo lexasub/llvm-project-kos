@@ -24,11 +24,11 @@ using namespace llvm;
 #define DEBUG_TYPE "livestacks"
 
 char LiveStacks::ID = 0;
-INITIALIZE_PASS_BEGIN(LiveStacks, DEBUG_TYPE, "Live Stack Slot Analysis", false,
-                      false)
+INITIALIZE_PASS_BEGIN(LiveStacks, DEBUG_TYPE,
+                "Live Stack Slot Analysis", false, false)
 INITIALIZE_PASS_DEPENDENCY(SlotIndexes)
-INITIALIZE_PASS_END(LiveStacks, DEBUG_TYPE, "Live Stack Slot Analysis", false,
-                    false)
+INITIALIZE_PASS_END(LiveStacks, DEBUG_TYPE,
+                "Live Stack Slot Analysis", false, false)
 
 char &llvm::LiveStacksID = LiveStacks::ID;
 
@@ -53,8 +53,8 @@ bool LiveStacks::runOnMachineFunction(MachineFunction &MF) {
   return false;
 }
 
-LiveInterval &LiveStacks::getOrCreateInterval(int Slot,
-                                              const TargetRegisterClass *RC) {
+LiveInterval &
+LiveStacks::getOrCreateInterval(int Slot, const TargetRegisterClass *RC) {
   assert(Slot >= 0 && "Spill slot indice must be >= 0");
   SS2IntervalMap::iterator I = S2IMap.find(Slot);
   if (I == S2IMap.end()) {
@@ -73,7 +73,7 @@ LiveInterval &LiveStacks::getOrCreateInterval(int Slot,
 }
 
 /// print - Implement the dump method.
-void LiveStacks::print(raw_ostream &OS, const Module *) const {
+void LiveStacks::print(raw_ostream &OS, const Module*) const {
 
   OS << "********** INTERVALS **********\n";
   for (const_iterator I = begin(), E = end(); I != E; ++I) {

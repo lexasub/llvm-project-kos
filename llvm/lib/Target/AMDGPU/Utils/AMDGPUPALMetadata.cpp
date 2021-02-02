@@ -793,7 +793,9 @@ const char *AMDGPUPALMetadata::getVendor() const {
 // ELF::NT_AMD_AMDGPU_PAL_METADATA (legacy key=val format), or
 // ELF::NT_AMDGPU_METADATA (MsgPack format), or
 // 0 (no PAL metadata).
-unsigned AMDGPUPALMetadata::getType() const { return BlobType; }
+unsigned AMDGPUPALMetadata::getType() const {
+  return BlobType;
+}
 
 // Return whether the blob type is legacy PAL metadata.
 bool AMDGPUPALMetadata::isLegacy() const {

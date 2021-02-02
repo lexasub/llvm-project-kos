@@ -1,5 +1,5 @@
 #ifndef ITERATING
-a : X
+a: X
 #else
-b : X
+b: X
 #endif

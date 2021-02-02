@@ -72,7 +72,7 @@ llvm::Optional<llvm::StringRef> GetURLAddress(llvm::StringRef url,
     return llvm::None;
   return url;
 }
-} // namespace
+}
 
 ConnectionFileDescriptor::ConnectionFileDescriptor(bool child_processes_inherit)
     : Connection(), m_pipe(), m_mutex(), m_shutting_down(false),
@@ -87,8 +87,7 @@ ConnectionFileDescriptor::ConnectionFileDescriptor(bool child_processes_inherit)
 ConnectionFileDescriptor::ConnectionFileDescriptor(int fd, bool owns_fd)
     : Connection(), m_pipe(), m_mutex(), m_shutting_down(false),
       m_waiting_for_accept(false), m_child_processes_inherit(false) {
-  m_write_sp =
-      std::make_shared<NativeFile>(fd, File::eOpenOptionWrite, owns_fd);
+  m_write_sp = std::make_shared<NativeFile>(fd, File::eOpenOptionWrite, owns_fd);
   m_read_sp = std::make_shared<NativeFile>(fd, File::eOpenOptionRead, false);
 
   Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_CONNECTION |
@@ -239,8 +238,7 @@ ConnectionStatus ConnectionFileDescriptor::Connect(llvm::StringRef path,
     } else if ((addr = GetURLAddress(path, FILE_SCHEME))) {
       std::string addr_str = addr->str();
       // file:///PATH
-      int fd =
-          llvm::sys::RetryAfterSignal(-1, ::open, addr_str.c_str(), O_RDWR);
+      int fd = llvm::sys::RetryAfterSignal(-1, ::open, addr_str.c_str(), O_RDWR);
       if (fd == -1) {
         if (error_ptr)
           error_ptr->SetErrorToErrno();
@@ -274,8 +272,7 @@ ConnectionStatus ConnectionFileDescriptor::Connect(llvm::StringRef path,
         }
       }
       m_read_sp = std::make_shared<NativeFile>(fd, File::eOpenOptionRead, true);
-      m_write_sp =
-          std::make_shared<NativeFile>(fd, File::eOpenOptionWrite, false);
+      m_write_sp = std::make_shared<NativeFile>(fd, File::eOpenOptionWrite, false);
       return eConnectionStatusSuccess;
     }
 #endif
@@ -619,8 +616,7 @@ ConnectionFileDescriptor::BytesAvailable(const Timeout<std::micro> &timeout,
           // data from that pipe:
           char c;
 
-          ssize_t bytes_read =
-              llvm::sys::RetryAfterSignal(-1, ::read, pipe_fd, &c, 1);
+          ssize_t bytes_read = llvm::sys::RetryAfterSignal(-1, ::read, pipe_fd, &c, 1);
           assert(bytes_read == 1);
           (void)bytes_read;
           switch (c) {
@@ -713,6 +709,7 @@ ConnectionFileDescriptor::SocketListenAndAccept(llvm::StringRef s,
                      listening_socket.takeError(), "tcp listen failed: {0}");
     return eConnectionStatusError;
   }
+
 
   Socket *accepted_socket;
   Status error = listening_socket.get()->Accept(accepted_socket);

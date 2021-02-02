@@ -34,12 +34,11 @@ class CXXCatchStmt : public Stmt {
 
 public:
   CXXCatchStmt(SourceLocation catchLoc, VarDecl *exDecl, Stmt *handlerBlock)
-      : Stmt(CXXCatchStmtClass), CatchLoc(catchLoc), ExceptionDecl(exDecl),
-        HandlerBlock(handlerBlock) {}
+  : Stmt(CXXCatchStmtClass), CatchLoc(catchLoc), ExceptionDecl(exDecl),
+    HandlerBlock(handlerBlock) {}
 
   CXXCatchStmt(EmptyShell Empty)
-      : Stmt(CXXCatchStmtClass), ExceptionDecl(nullptr), HandlerBlock(nullptr) {
-  }
+  : Stmt(CXXCatchStmtClass), ExceptionDecl(nullptr), HandlerBlock(nullptr) {}
 
   SourceLocation getBeginLoc() const LLVM_READONLY { return CatchLoc; }
   SourceLocation getEndLoc() const LLVM_READONLY {
@@ -55,9 +54,7 @@ public:
     return T->getStmtClass() == CXXCatchStmtClass;
   }
 
-  child_range children() {
-    return child_range(&HandlerBlock, &HandlerBlock + 1);
-  }
+  child_range children() { return child_range(&HandlerBlock, &HandlerBlock+1); }
 
   const_child_range children() const {
     return const_child_range(&HandlerBlock, &HandlerBlock + 1);
@@ -78,16 +75,16 @@ class CXXTryStmt final : public Stmt,
   unsigned NumHandlers;
   size_t numTrailingObjects(OverloadToken<Stmt *>) const { return NumHandlers; }
 
-  CXXTryStmt(SourceLocation tryLoc, Stmt *tryBlock, ArrayRef<Stmt *> handlers);
+  CXXTryStmt(SourceLocation tryLoc, Stmt *tryBlock, ArrayRef<Stmt*> handlers);
   CXXTryStmt(EmptyShell Empty, unsigned numHandlers)
-      : Stmt(CXXTryStmtClass), NumHandlers(numHandlers) {}
+    : Stmt(CXXTryStmtClass), NumHandlers(numHandlers) { }
 
   Stmt *const *getStmts() const { return getTrailingObjects<Stmt *>(); }
   Stmt **getStmts() { return getTrailingObjects<Stmt *>(); }
 
 public:
   static CXXTryStmt *Create(const ASTContext &C, SourceLocation tryLoc,
-                            Stmt *tryBlock, ArrayRef<Stmt *> handlers);
+                            Stmt *tryBlock, ArrayRef<Stmt*> handlers);
 
   static CXXTryStmt *Create(const ASTContext &C, EmptyShell Empty,
                             unsigned numHandlers);
@@ -99,7 +96,9 @@ public:
     return getStmts()[NumHandlers]->getEndLoc();
   }
 
-  CompoundStmt *getTryBlock() { return cast<CompoundStmt>(getStmts()[0]); }
+  CompoundStmt *getTryBlock() {
+    return cast<CompoundStmt>(getStmts()[0]);
+  }
   const CompoundStmt *getTryBlock() const {
     return cast<CompoundStmt>(getStmts()[0]);
   }
@@ -143,13 +142,12 @@ class CXXForRangeStmt : public Stmt {
   SourceLocation RParenLoc;
 
   friend class ASTStmtReader;
-
 public:
   CXXForRangeStmt(Stmt *InitStmt, DeclStmt *Range, DeclStmt *Begin,
                   DeclStmt *End, Expr *Cond, Expr *Inc, DeclStmt *LoopVar,
                   Stmt *Body, SourceLocation FL, SourceLocation CAL,
                   SourceLocation CL, SourceLocation RPL);
-  CXXForRangeStmt(EmptyShell Empty) : Stmt(CXXForRangeStmtClass, Empty) {}
+  CXXForRangeStmt(EmptyShell Empty) : Stmt(CXXForRangeStmtClass, Empty) { }
 
   Stmt *getInit() { return SubExprs[INIT]; }
   VarDecl *getLoopVariable();
@@ -158,6 +156,7 @@ public:
   const Stmt *getInit() const { return SubExprs[INIT]; }
   const VarDecl *getLoopVariable() const;
   const Expr *getRangeInit() const;
+
 
   DeclStmt *getRangeStmt() { return cast<DeclStmt>(SubExprs[RANGE]); }
   DeclStmt *getBeginStmt() {
@@ -178,20 +177,24 @@ public:
   const DeclStmt *getEndStmt() const {
     return cast_or_null<DeclStmt>(SubExprs[ENDSTMT]);
   }
-  const Expr *getCond() const { return cast_or_null<Expr>(SubExprs[COND]); }
-  const Expr *getInc() const { return cast_or_null<Expr>(SubExprs[INC]); }
+  const Expr *getCond() const {
+    return cast_or_null<Expr>(SubExprs[COND]);
+  }
+  const Expr *getInc() const {
+    return cast_or_null<Expr>(SubExprs[INC]);
+  }
   const DeclStmt *getLoopVarStmt() const {
     return cast<DeclStmt>(SubExprs[LOOPVAR]);
   }
   const Stmt *getBody() const { return SubExprs[BODY]; }
 
   void setInit(Stmt *S) { SubExprs[INIT] = S; }
-  void setRangeInit(Expr *E) { SubExprs[RANGE] = reinterpret_cast<Stmt *>(E); }
+  void setRangeInit(Expr *E) { SubExprs[RANGE] = reinterpret_cast<Stmt*>(E); }
   void setRangeStmt(Stmt *S) { SubExprs[RANGE] = S; }
   void setBeginStmt(Stmt *S) { SubExprs[BEGINSTMT] = S; }
   void setEndStmt(Stmt *S) { SubExprs[ENDSTMT] = S; }
-  void setCond(Expr *E) { SubExprs[COND] = reinterpret_cast<Stmt *>(E); }
-  void setInc(Expr *E) { SubExprs[INC] = reinterpret_cast<Stmt *>(E); }
+  void setCond(Expr *E) { SubExprs[COND] = reinterpret_cast<Stmt*>(E); }
+  void setInc(Expr *E) { SubExprs[INC] = reinterpret_cast<Stmt*>(E); }
   void setLoopVarStmt(Stmt *S) { SubExprs[LOOPVAR] = S; }
   void setBody(Stmt *S) { SubExprs[BODY] = S; }
 
@@ -210,7 +213,9 @@ public:
   }
 
   // Iterators
-  child_range children() { return child_range(&SubExprs[0], &SubExprs[END]); }
+  child_range children() {
+    return child_range(&SubExprs[0], &SubExprs[END]);
+  }
 
   const_child_range children() const {
     return const_child_range(&SubExprs[0], &SubExprs[END]);
@@ -257,10 +262,12 @@ class MSDependentExistsStmt : public Stmt {
 public:
   MSDependentExistsStmt(SourceLocation KeywordLoc, bool IsIfExists,
                         NestedNameSpecifierLoc QualifierLoc,
-                        DeclarationNameInfo NameInfo, CompoundStmt *SubStmt)
-      : Stmt(MSDependentExistsStmtClass), KeywordLoc(KeywordLoc),
-        IsIfExists(IsIfExists), QualifierLoc(QualifierLoc), NameInfo(NameInfo),
-        SubStmt(reinterpret_cast<Stmt *>(SubStmt)) {}
+                        DeclarationNameInfo NameInfo,
+                        CompoundStmt *SubStmt)
+  : Stmt(MSDependentExistsStmtClass),
+    KeywordLoc(KeywordLoc), IsIfExists(IsIfExists),
+    QualifierLoc(QualifierLoc), NameInfo(NameInfo),
+    SubStmt(reinterpret_cast<Stmt *>(SubStmt)) { }
 
   /// Retrieve the location of the __if_exists or __if_not_exists
   /// keyword.
@@ -291,7 +298,9 @@ public:
     return SubStmt->getEndLoc();
   }
 
-  child_range children() { return child_range(&SubStmt, &SubStmt + 1); }
+  child_range children() {
+    return child_range(&SubStmt, &SubStmt+1);
+  }
 
   const_child_range children() const {
     return const_child_range(&SubStmt, &SubStmt + 1);
@@ -334,6 +343,7 @@ class CoroutineBodyStmt final
   Stmt *const *getStoredStmts() const { return getTrailingObjects<Stmt *>(); }
 
 public:
+
   struct CtorArgs {
     Stmt *Body = nullptr;
     Stmt *Promise = nullptr;
@@ -351,7 +361,8 @@ public:
   };
 
 private:
-  CoroutineBodyStmt(CtorArgs const &Args);
+
+  CoroutineBodyStmt(CtorArgs const& Args);
 
 public:
   static CoroutineBodyStmt *Create(const ASTContext &C, CtorArgs const &Args);
@@ -364,7 +375,9 @@ public:
 
   /// Retrieve the body of the coroutine as written. This will be either
   /// a CompoundStmt or a TryStmt.
-  Stmt *getBody() const { return getStoredStmts()[SubStmt::Body]; }
+  Stmt *getBody() const {
+    return getStoredStmts()[SubStmt::Body];
+  }
 
   Stmt *getPromiseDeclStmt() const {
     return getStoredStmts()[SubStmt::Promise];
@@ -449,7 +462,6 @@ class CoreturnStmt : public Stmt {
   bool IsImplicit : 1;
 
   friend class ASTStmtReader;
-
 public:
   CoreturnStmt(SourceLocation CoreturnLoc, Stmt *Operand, Stmt *PromiseCall,
                bool IsImplicit = false)
@@ -465,13 +477,13 @@ public:
 
   /// Retrieve the operand of the 'co_return' statement. Will be nullptr
   /// if none was specified.
-  Expr *getOperand() const { return static_cast<Expr *>(SubStmts[Operand]); }
+  Expr *getOperand() const { return static_cast<Expr*>(SubStmts[Operand]); }
 
   /// Retrieve the promise call that results from this 'co_return'
   /// statement. Will be nullptr if either the coroutine has not yet been
   /// finalized or the coroutine has no eventual return type.
   Expr *getPromiseCall() const {
-    return static_cast<Expr *>(SubStmts[PromiseCall]);
+    return static_cast<Expr*>(SubStmts[PromiseCall]);
   }
 
   bool isImplicit() const { return IsImplicit; }
@@ -501,6 +513,6 @@ public:
   }
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

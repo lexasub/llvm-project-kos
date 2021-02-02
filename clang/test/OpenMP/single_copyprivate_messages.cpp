@@ -111,13 +111,13 @@ T tmain(T argc, C **argv) {
 
 void bar(S4 a[2], int n, int b[n]) {
 #pragma omp single copyprivate(a, b)
-  foo();
+    foo();
 }
 
 namespace A {
 double x;
 #pragma omp threadprivate(x)
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -189,7 +189,8 @@ int main(int argc, char **argv) {
 
 extern void abort(void);
 
-void single(int a, int b) {
+void
+single(int a, int b) {
 #pragma omp single copyprivate(a) copyprivate(b)
   {
     a = b = 5;

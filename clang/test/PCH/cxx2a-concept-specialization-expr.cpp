@@ -9,12 +9,12 @@
 #ifndef HEADER
 #define HEADER
 
-template <typename... T>
+template<typename... T>
 concept C = true;
 
 namespace n {
-template <typename... T>
-concept C = true;
+  template<typename... T>
+  concept C = true;
 }
 
 void f() {

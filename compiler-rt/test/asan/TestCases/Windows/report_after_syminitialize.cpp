@@ -1,8 +1,8 @@
 // RUN: %clangxx_asan -O0 %s -o %t
 // RUN: %env_asan_opts=external_symbolizer_path=asdf not %run %t 2>&1 | FileCheck %s
 
-#include <dbghelp.h>
 #include <windows.h>
+#include <dbghelp.h>
 
 #pragma comment(lib, "dbghelp")
 
@@ -14,7 +14,7 @@ int main() {
   if (!SymInitialize(GetCurrentProcess(), 0, FALSE))
     return 42;
 
-  *(volatile int *)0 = 42;
+  *(volatile int*)0 = 42;
   // CHECK: ERROR: AddressSanitizer: access-violation on unknown address
   // CHECK: The signal is caused by a WRITE memory access.
   // CHECK: Hint: address points to the zero page.

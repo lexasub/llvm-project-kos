@@ -39,9 +39,9 @@ using namespace llvm;
 #define GET_REGINFO_TARGET_DESC
 #include "X86GenRegisterInfo.inc"
 
-static cl::opt<bool> EnableBasePointer(
-    "x86-use-base-pointer", cl::Hidden, cl::init(true),
-    cl::desc("Enable use of a base pointer for complex stack frames"));
+static cl::opt<bool>
+EnableBasePointer("x86-use-base-pointer", cl::Hidden, cl::init(true),
+          cl::desc("Enable use of a base pointer for complex stack frames"));
 
 X86RegisterInfo::X86RegisterInfo(const Triple &TT)
     : X86GenRegisterInfo((TT.isArch64Bit() ? X86::RIP : X86::EIP),
@@ -74,7 +74,8 @@ X86RegisterInfo::X86RegisterInfo(const Triple &TT)
   }
 }
 
-int X86RegisterInfo::getSEHRegNum(unsigned i) const {
+int
+X86RegisterInfo::getSEHRegNum(unsigned i) const {
   return getEncodingValue(i);
 }
 
@@ -175,8 +176,7 @@ X86RegisterInfo::getPointerRegClass(const MachineFunction &MF,
                                     unsigned Kind) const {
   const X86Subtarget &Subtarget = MF.getSubtarget<X86Subtarget>();
   switch (Kind) {
-  default:
-    llvm_unreachable("Unexpected Kind in getPointerRegClass!");
+  default: llvm_unreachable("Unexpected Kind in getPointerRegClass!");
   case 0: // Normal GPRs.
     if (Subtarget.isTarget64BitLP64())
       return &X86::GR64RegClass;
@@ -223,8 +223,8 @@ bool X86RegisterInfo::shouldRewriteCopySrc(const TargetRegisterClass *DefRC,
       SrcRC->hasSuperClassEq(&X86::GR64RegClass) && SrcSubReg == X86::sub_32bit)
     return false;
 
-  return TargetRegisterInfo::shouldRewriteCopySrc(DefRC, DefSubReg, SrcRC,
-                                                  SrcSubReg);
+  return TargetRegisterInfo::shouldRewriteCopySrc(DefRC, DefSubReg,
+                                                  SrcRC, SrcSubReg);
 }
 
 const TargetRegisterClass *
@@ -252,8 +252,9 @@ X86RegisterInfo::getCrossCopyRegClass(const TargetRegisterClass *RC) const {
   return RC;
 }
 
-unsigned X86RegisterInfo::getRegPressureLimit(const TargetRegisterClass *RC,
-                                              MachineFunction &MF) const {
+unsigned
+X86RegisterInfo::getRegPressureLimit(const TargetRegisterClass *RC,
+                                     MachineFunction &MF) const {
   const X86FrameLowering *TFI = getFrameLowering(MF);
 
   unsigned FPDiff = TFI->hasFP(MF) ? 1 : 0;
@@ -305,9 +306,8 @@ X86RegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
     return CSR_64_RT_AllRegs_SaveList;
   case CallingConv::CXX_FAST_TLS:
     if (Is64Bit)
-      return MF->getInfo<X86MachineFunctionInfo>()->isSplitCSR()
-                 ? CSR_64_CXX_TLS_Darwin_PE_SaveList
-                 : CSR_64_TLS_Darwin_SaveList;
+      return MF->getInfo<X86MachineFunctionInfo>()->isSplitCSR() ?
+             CSR_64_CXX_TLS_Darwin_PE_SaveList : CSR_64_TLS_Darwin_SaveList;
     break;
   case CallingConv::Intel_OCL_BI: {
     if (HasAVX512 && IsWin64)
@@ -327,14 +327,15 @@ X86RegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   case CallingConv::X86_RegCall:
     if (Is64Bit) {
       if (IsWin64) {
-        return (HasSSE ? CSR_Win64_RegCall_SaveList
-                       : CSR_Win64_RegCall_NoSSE_SaveList);
+        return (HasSSE ? CSR_Win64_RegCall_SaveList :
+                         CSR_Win64_RegCall_NoSSE_SaveList);
       } else {
-        return (HasSSE ? CSR_SysV64_RegCall_SaveList
-                       : CSR_SysV64_RegCall_NoSSE_SaveList);
+        return (HasSSE ? CSR_SysV64_RegCall_SaveList :
+                         CSR_SysV64_RegCall_NoSSE_SaveList);
       }
     } else {
-      return (HasSSE ? CSR_32_RegCall_SaveList : CSR_32_RegCall_NoSSE_SaveList);
+      return (HasSSE ? CSR_32_RegCall_SaveList :
+                       CSR_32_RegCall_NoSSE_SaveList);
     }
   case CallingConv::CFGuard_Check:
     assert(!Is64Bit && "CFGuard check mechanism only used on 32-bit X86");
@@ -391,8 +392,8 @@ X86RegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   return CallsEHReturn ? CSR_32EHRet_SaveList : CSR_32_SaveList;
 }
 
-const MCPhysReg *
-X86RegisterInfo::getCalleeSavedRegsViaCopy(const MachineFunction *MF) const {
+const MCPhysReg *X86RegisterInfo::getCalleeSavedRegsViaCopy(
+    const MachineFunction *MF) const {
   assert(MF && "Invalid MachineFunction pointer.");
   if (MF->getFunction().getCallingConv() == CallingConv::CXX_FAST_TLS &&
       MF->getInfo<X86MachineFunctionInfo>()->isSplitCSR())
@@ -444,14 +445,15 @@ X86RegisterInfo::getCallPreservedMask(const MachineFunction &MF,
   case CallingConv::X86_RegCall:
     if (Is64Bit) {
       if (IsWin64) {
-        return (HasSSE ? CSR_Win64_RegCall_RegMask
-                       : CSR_Win64_RegCall_NoSSE_RegMask);
+        return (HasSSE ? CSR_Win64_RegCall_RegMask :
+                         CSR_Win64_RegCall_NoSSE_RegMask);
       } else {
-        return (HasSSE ? CSR_SysV64_RegCall_RegMask
-                       : CSR_SysV64_RegCall_NoSSE_RegMask);
+        return (HasSSE ? CSR_SysV64_RegCall_RegMask :
+                         CSR_SysV64_RegCall_NoSSE_RegMask);
       }
     } else {
-      return (HasSSE ? CSR_32_RegCall_RegMask : CSR_32_RegCall_NoSSE_RegMask);
+      return (HasSSE ? CSR_32_RegCall_RegMask :
+                       CSR_32_RegCall_NoSSE_RegMask);
     }
   case CallingConv::CFGuard_Check:
     assert(!Is64Bit && "CFGuard check mechanism only used on 32-bit X86");
@@ -501,7 +503,8 @@ X86RegisterInfo::getCallPreservedMask(const MachineFunction &MF,
   return CSR_32_RegMask;
 }
 
-const uint32_t *X86RegisterInfo::getNoPreservedMask() const {
+const uint32_t*
+X86RegisterInfo::getNoPreservedMask() const {
   return CSR_NoRegs_RegMask;
 }
 
@@ -544,9 +547,9 @@ BitVector X86RegisterInfo::getReservedRegs(const MachineFunction &MF) const {
     CallingConv::ID CC = MF.getFunction().getCallingConv();
     const uint32_t *RegMask = getCallPreservedMask(MF, CC);
     if (MachineOperand::clobbersPhysReg(RegMask, getBaseRegister()))
-      report_fatal_error("Stack realignment in presence of dynamic allocas is "
-                         "not supported with"
-                         "this calling convention.");
+      report_fatal_error(
+        "Stack realignment in presence of dynamic allocas is not supported with"
+        "this calling convention.");
 
     Register BasePtr = getX86SubSuperRegister(getBaseRegister(), 64);
     for (const MCPhysReg &SubReg : subregs_inclusive(BasePtr))
@@ -703,15 +706,16 @@ static bool isFuncletReturnInstr(MachineInstr &MI) {
   llvm_unreachable("impossible");
 }
 
-void X86RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
-                                          int SPAdj, unsigned FIOperandNum,
-                                          RegScavenger *RS) const {
+void
+X86RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
+                                     int SPAdj, unsigned FIOperandNum,
+                                     RegScavenger *RS) const {
   MachineInstr &MI = *II;
   MachineBasicBlock &MBB = *MI.getParent();
   MachineFunction &MF = *MBB.getParent();
   MachineBasicBlock::iterator MBBI = MBB.getFirstTerminator();
-  bool IsEHFuncletEpilogue =
-      MBBI == MBB.end() ? false : isFuncletReturnInstr(*MBBI);
+  bool IsEHFuncletEpilogue = MBBI == MBB.end() ? false
+                                               : isFuncletReturnInstr(*MBBI);
   const X86FrameLowering *TFI = getFrameLowering(MF);
   int FrameIndex = MI.getOperand(FIOperandNum).getIndex();
 
@@ -720,7 +724,7 @@ void X86RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   Register BasePtr;
   if (MI.isReturn()) {
     assert((!needsStackRealignment(MF) ||
-            MF.getFrameInfo().isFixedObjectIndex(FrameIndex)) &&
+           MF.getFrameInfo().isFixedObjectIndex(FrameIndex)) &&
            "Return instruction can only reference SP relative frame objects");
     FIOffset =
         TFI->getFrameIndexReferenceSP(MF, FrameIndex, BasePtr, 0).getFixed();
@@ -766,7 +770,7 @@ void X86RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
     return;
   }
 
-  if (MI.getOperand(FIOperandNum + 3).isImm()) {
+  if (MI.getOperand(FIOperandNum+3).isImm()) {
     // Offset is a 32-bit integer.
     int Imm = (int)(MI.getOperand(FIOperandNum + 3).getImm());
     int Offset = FIOffset + Imm;
@@ -776,8 +780,8 @@ void X86RegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
       MI.getOperand(FIOperandNum + 3).ChangeToImmediate(Offset);
   } else {
     // Offset is symbolic. This is extremely rare.
-    uint64_t Offset =
-        FIOffset + (uint64_t)MI.getOperand(FIOperandNum + 3).getOffset();
+    uint64_t Offset = FIOffset +
+      (uint64_t)MI.getOperand(FIOperandNum+3).getOffset();
     MI.getOperand(FIOperandNum + 3).setOffset(Offset);
   }
 }

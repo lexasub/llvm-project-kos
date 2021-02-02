@@ -2,16 +2,18 @@
 
 class Base {
 public:
-  virtual ~Base();
+   virtual ~Base();
 };
 
-Base::~Base() {
+Base::~Base()
+{
 }
 
 class Foo : public Base {
 public:
-  virtual ~Foo();
+   virtual ~Foo();
 };
 
-Foo::~Foo() {
+Foo::~Foo()
+{
 }

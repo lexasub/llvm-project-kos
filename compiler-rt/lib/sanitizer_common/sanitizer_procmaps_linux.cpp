@@ -25,14 +25,14 @@ void ReadProcMaps(ProcSelfMapsBuff *proc_maps) {
   }
 }
 
-static bool IsOneOf(char c, char c1, char c2) { return c == c1 || c == c2; }
+static bool IsOneOf(char c, char c1, char c2) {
+  return c == c1 || c == c2;
+}
 
 bool MemoryMappingLayout::Next(MemoryMappedSegment *segment) {
-  if (Error())
-    return false;  // simulate empty maps
+  if (Error()) return false; // simulate empty maps
   char *last = data_.proc_self_maps.data + data_.proc_self_maps.len;
-  if (data_.current >= last)
-    return false;
+  if (data_.current >= last) return false;
   char *next_line =
       (char *)internal_memchr(data_.current, '\n', last - data_.current);
   if (next_line == 0)
@@ -44,17 +44,13 @@ bool MemoryMappingLayout::Next(MemoryMappedSegment *segment) {
   CHECK_EQ(*data_.current++, ' ');
   CHECK(IsOneOf(*data_.current, '-', 'r'));
   segment->protection = 0;
-  if (*data_.current++ == 'r')
-    segment->protection |= kProtectionRead;
+  if (*data_.current++ == 'r') segment->protection |= kProtectionRead;
   CHECK(IsOneOf(*data_.current, '-', 'w'));
-  if (*data_.current++ == 'w')
-    segment->protection |= kProtectionWrite;
+  if (*data_.current++ == 'w') segment->protection |= kProtectionWrite;
   CHECK(IsOneOf(*data_.current, '-', 'x'));
-  if (*data_.current++ == 'x')
-    segment->protection |= kProtectionExecute;
+  if (*data_.current++ == 'x') segment->protection |= kProtectionExecute;
   CHECK(IsOneOf(*data_.current, 's', 'p'));
-  if (*data_.current++ == 's')
-    segment->protection |= kProtectionShared;
+  if (*data_.current++ == 's') segment->protection |= kProtectionShared;
   CHECK_EQ(*data_.current++, ' ');
   segment->offset = ParseHex(&data_.current);
   CHECK_EQ(*data_.current++, ' ');

@@ -15,8 +15,8 @@
 #define ASAN_THREAD_H
 
 #include "asan_allocator.h"
-#include "asan_fake_stack.h"
 #include "asan_internal.h"
+#include "asan_fake_stack.h"
 #include "asan_stats.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
@@ -28,7 +28,7 @@ struct DTLS;
 
 namespace __asan {
 
-const u32 kInvalidTid = 0xffffff;           // Must fit into 24 bits.
+const u32 kInvalidTid = 0xffffff;  // Must fit into 24 bits.
 const u32 kMaxNumberOfThreads = (1 << 22);  // 4M
 
 class AsanThread;
@@ -38,10 +38,8 @@ class AsanThread;
 class AsanThreadContext final : public ThreadContextBase {
  public:
   explicit AsanThreadContext(int tid)
-      : ThreadContextBase(tid),
-        announced(false),
-        destructor_iterations(GetPthreadDestructorIterations()),
-        stack_id(0),
+      : ThreadContextBase(tid), announced(false),
+        destructor_iterations(GetPthreadDestructorIterations()), stack_id(0),
         thread(nullptr) {}
   bool announced;
   u8 destructor_iterations;
@@ -96,8 +94,7 @@ class AsanThread {
   bool AddrIsInStack(uptr addr);
 
   void DeleteFakeStack(int tid) {
-    if (!fake_stack_)
-      return;
+    if (!fake_stack_) return;
     FakeStack *t = fake_stack_;
     fake_stack_ = nullptr;
     SetTLSFakeStack(nullptr);
@@ -188,6 +185,6 @@ AsanThread *FindThreadByStackAddress(uptr addr);
 
 // Used to handle fork().
 void EnsureMainThreadIDIsCorrect();
-}  // namespace __asan
+} // namespace __asan
 
-#endif  // ASAN_THREAD_H
+#endif // ASAN_THREAD_H

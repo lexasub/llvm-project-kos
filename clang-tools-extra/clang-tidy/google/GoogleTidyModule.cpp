@@ -36,7 +36,7 @@ namespace tidy {
 namespace google {
 
 class GoogleModule : public ClangTidyModule {
-public:
+ public:
   void addCheckFactories(ClangTidyCheckFactories &CheckFactories) override {
     CheckFactories.registerCheck<build::ExplicitMakePairCheck>(
         "google-build-explicit-make-pair");
@@ -97,11 +97,11 @@ public:
 static ClangTidyModuleRegistry::Add<GoogleModule> X("google-module",
                                                     "Adds Google lint checks.");
 
-} // namespace google
+}  // namespace google
 
 // This anchor is used to force the linker to link in the generated object file
 // and thus register the GoogleModule.
 volatile int GoogleModuleAnchorSource = 0;
 
-} // namespace tidy
-} // namespace clang
+}  // namespace tidy
+}  // namespace clang

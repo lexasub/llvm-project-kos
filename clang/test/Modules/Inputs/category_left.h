@@ -1,15 +1,15 @@
 @import category_top;
 
-@interface Foo (Left)
-- (void)left;
+@interface Foo(Left)
+-(void)left;
 @end
 
 @interface LeftFoo
-- (void)left;
+-(void)left;
 @end
 
-@interface Foo (Duplicate)
+@interface Foo(Duplicate)
 @end
 
-@interface Foo (Duplicate)
+@interface Foo(Duplicate)
 @end

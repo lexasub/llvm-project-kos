@@ -48,8 +48,9 @@ using namespace llvm;
 // Temporary option to control early if-conversion for x86 while adding machine
 // models.
 static cl::opt<bool>
-    X86EarlyIfConv("x86-early-ifcvt", cl::Hidden,
-                   cl::desc("Enable early if-conversion on X86"));
+X86EarlyIfConv("x86-early-ifcvt", cl::Hidden,
+               cl::desc("Enable early if-conversion on X86"));
+
 
 /// Classify a blockaddress reference for the current subtarget according to how
 /// we should reference it in a non-pcrel context.
@@ -204,7 +205,7 @@ X86Subtarget::classifyGlobalFunctionReference(const GlobalValue *GV,
     if (((F && F->hasFnAttribute(Attribute::NonLazyBind)) ||
          (!F && M.getRtLibUseGOT())) &&
         is64Bit())
-      return X86II::MO_GOTPCREL;
+       return X86II::MO_GOTPCREL;
     // Reference ExternalSymbol directly in static relocation model.
     if (!is64Bit() && !GV && TM.getRelocationModel() == Reloc::Static)
       return X86II::MO_NO_FLAG;

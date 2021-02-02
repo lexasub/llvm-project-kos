@@ -79,7 +79,7 @@ int LLVMSetDisasmOptions(LLVMDisasmContextRef DC, uint64_t Options);
 #define LLVMDisassembler_Option_AsmPrinterVariant 4
 /* The option to set comment on instructions */
 #define LLVMDisassembler_Option_SetInstrComments 8
-/* The option to print latency information alongside instructions */
+  /* The option to print latency information alongside instructions */
 #define LLVMDisassembler_Option_PrintLatency 16
 
 /**
@@ -98,8 +98,8 @@ void LLVMDisasmDispose(LLVMDisasmContextRef DC);
  * no valid instruction.
  */
 size_t LLVMDisasmInstruction(LLVMDisasmContextRef DC, uint8_t *Bytes,
-                             uint64_t BytesSize, uint64_t PC, char *OutString,
-                             size_t OutStringSize);
+                             uint64_t BytesSize, uint64_t PC,
+                             char *OutString, size_t OutStringSize);
 
 /**
  * @}

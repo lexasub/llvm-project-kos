@@ -101,7 +101,9 @@ public:
                  MachineDominatorTree *MDT = nullptr,
                  const LegalizerInfo *LI = nullptr);
 
-  GISelKnownBits *getKnownBits() const { return KB; }
+  GISelKnownBits *getKnownBits() const {
+    return KB;
+  }
 
   const TargetLowering &getTargetLowering() const;
 
@@ -109,10 +111,8 @@ public:
   /// Query is legal on the target.
   bool isLegalOrBeforeLegalizer(const LegalityQuery &Query) const;
 
-  /// MachineRegisterInfo::replaceRegWith() and inform the observer of the
-  /// changes
-  void replaceRegWith(MachineRegisterInfo &MRI, Register FromReg,
-                      Register ToReg) const;
+  /// MachineRegisterInfo::replaceRegWith() and inform the observer of the changes
+  void replaceRegWith(MachineRegisterInfo &MRI, Register FromReg, Register ToReg) const;
 
   /// Replace a single register operand with a new register and inform the
   /// observer of the changes.
@@ -146,19 +146,15 @@ public:
   /// Combine \p MI into a pre-indexed or post-indexed load/store operation if
   /// legal and the surrounding code makes it useful.
   bool tryCombineIndexedLoadStore(MachineInstr &MI);
-  bool matchCombineIndexedLoadStore(MachineInstr &MI,
-                                    IndexedLoadStoreMatchInfo &MatchInfo);
-  void applyCombineIndexedLoadStore(MachineInstr &MI,
-                                    IndexedLoadStoreMatchInfo &MatchInfo);
+  bool matchCombineIndexedLoadStore(MachineInstr &MI, IndexedLoadStoreMatchInfo &MatchInfo);
+  void applyCombineIndexedLoadStore(MachineInstr &MI, IndexedLoadStoreMatchInfo &MatchInfo);
 
   bool matchSextTruncSextLoad(MachineInstr &MI);
   bool applySextTruncSextLoad(MachineInstr &MI);
 
   /// Match sext_inreg(load p), imm -> sextload p
-  bool matchSextInRegOfLoad(MachineInstr &MI,
-                            std::tuple<Register, unsigned> &MatchInfo);
-  bool applySextInRegOfLoad(MachineInstr &MI,
-                            std::tuple<Register, unsigned> &MatchInfo);
+  bool matchSextInRegOfLoad(MachineInstr &MI, std::tuple<Register, unsigned> &MatchInfo);
+  bool applySextInRegOfLoad(MachineInstr &MI, std::tuple<Register, unsigned> &MatchInfo);
 
   /// If a brcond's true block is not the fallthrough, make it so by inverting
   /// the condition and swapping operands.
@@ -265,7 +261,7 @@ public:
   /// Reduce a shift by a constant to an unmerge and a shift on a half sized
   /// type. This will not produce a shift smaller than \p TargetShiftSize.
   bool matchCombineShiftToUnmerge(MachineInstr &MI, unsigned TargetShiftSize,
-                                  unsigned &ShiftVal);
+                                 unsigned &ShiftVal);
   bool applyCombineShiftToUnmerge(MachineInstr &MI, const unsigned &ShiftVal);
   bool tryCombineShiftToUnmerge(MachineInstr &MI, unsigned TargetShiftAmount);
 
@@ -474,7 +470,7 @@ public:
                                  SmallVectorImpl<Register> &MatchInfo);
 
   bool applyCombineInsertVecElts(MachineInstr &MI,
-                                 SmallVectorImpl<Register> &MatchInfo);
+                             SmallVectorImpl<Register> &MatchInfo);
 
   /// Match expression trees of the form
   ///

@@ -16,7 +16,7 @@ decltype(4.5_baz) operator"" _baz(char);
 const char *operator"" _quux(const char *);
 
 // CHECK: template <char ...> const char *operator""_fritz();
-template <char...> const char *operator"" _fritz();
+template<char...> const char *operator"" _fritz();
 
 // CHECK: const char *p1 = "bar1"_foo;
 const char *p1 = "bar1"_foo;
@@ -56,6 +56,7 @@ struct B : A {
 // CHECK-NOT: ;
 
 void g(int n) {
-  int buffer[n];    // CHECK: int buffer[n];
-  [&buffer]() {}(); // CHECK: [&buffer]
+  int buffer[n];     // CHECK: int buffer[n];
+  [&buffer]() {}();  // CHECK: [&buffer]
 }
+

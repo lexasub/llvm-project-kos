@@ -139,14 +139,12 @@ struct GpuAllReduceRewriter {
 
 private:
   // Shortcut to create an op from rewriter using loc as the first argument.
-  template <typename T, typename... Args>
-  T create(Args... args) {
+  template <typename T, typename... Args> T create(Args... args) {
     return rewriter.create<T>(loc, std::forward<Args>(args)...);
   }
 
   // Creates dimension op of type T, with the result casted to int32.
-  template <typename T>
-  Value getDimOp(StringRef dimension) {
+  template <typename T> Value getDimOp(StringRef dimension) {
     Value dim = create<T>(indexType, rewriter.getStringAttr(dimension));
     return create<IndexCastOp>(int32Type, dim);
   }
@@ -238,8 +236,7 @@ private:
   }
 
   /// Returns an accumulator factory that creates an op of type T.
-  template <typename T>
-  AccumulatorFactory getFactory() {
+  template <typename T> AccumulatorFactory getFactory() {
     return [&](Value lhs, Value rhs) {
       return create<T>(lhs.getType(), lhs, rhs);
     };

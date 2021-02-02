@@ -50,7 +50,7 @@ struct __declspec(empty_bases) X : A, D, B, C {
 // CHECK-NEXT:            |  nvsize=16, nvalign=16]
 
 int _ = sizeof(X);
-} // namespace test1
+}
 
 namespace test2 {
 struct A {
@@ -121,7 +121,7 @@ int _ = sizeof(G);
 // CHECK-NEXT:          8 |       int e
 // CHECK-NEXT:            | [sizeof=12, align=4,
 // CHECK-NEXT:            |  nvsize=12, nvalign=4]
-} // namespace test2
+}
 
 namespace test3 {
 struct A {
@@ -192,7 +192,7 @@ int _ = sizeof(G);
 // CHECK-NEXT:          8 |       int e
 // CHECK-NEXT:            | [sizeof=12, align=4,
 // CHECK-NEXT:            |  nvsize=12, nvalign=4]
-} // namespace test3
+}
 
 namespace test4 {
 struct A {
@@ -263,4 +263,4 @@ int _ = sizeof(G);
 // CHECK-NEXT:          8 |       int e
 // CHECK-NEXT:            | [sizeof=12, align=4,
 // CHECK-NEXT:            |  nvsize=12, nvalign=4]
-} // namespace test4
+}

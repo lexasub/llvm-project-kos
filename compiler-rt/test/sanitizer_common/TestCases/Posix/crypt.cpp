@@ -4,13 +4,15 @@
 // UNSUPPORTED: android, darwin
 
 #include <assert.h>
-#include <cstring>
 #include <unistd.h>
+#include <cstring>
 #if __has_include(<crypt.h>)
 #include <crypt.h>
 #endif
 
-int main(int argc, char **argv) {
+int
+main (int argc, char** argv)
+{
   {
     char *p = crypt("abcdef", "xz");
     volatile size_t z = strlen(p);

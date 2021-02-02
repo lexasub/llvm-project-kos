@@ -25,16 +25,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  static_assert(std::is_trivially_destructible<std::tuple<> >::value, "");
-  static_assert(std::is_trivially_destructible<std::tuple<void*> >::value, "");
-  static_assert(std::is_trivially_destructible<std::tuple<int, float> >::value,
-                "");
-  static_assert(
-      !std::is_trivially_destructible<std::tuple<std::string> >::value, "");
-  static_assert(
-      !std::is_trivially_destructible<std::tuple<int, std::string> >::value,
-      "");
+int main(int, char**)
+{
+  static_assert(std::is_trivially_destructible<
+      std::tuple<> >::value, "");
+  static_assert(std::is_trivially_destructible<
+      std::tuple<void*> >::value, "");
+  static_assert(std::is_trivially_destructible<
+      std::tuple<int, float> >::value, "");
+  static_assert(!std::is_trivially_destructible<
+      std::tuple<std::string> >::value, "");
+  static_assert(!std::is_trivially_destructible<
+      std::tuple<int, std::string> >::value, "");
 
   return 0;
 }

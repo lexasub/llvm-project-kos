@@ -22,30 +22,29 @@ struct A {
 struct B {};
 struct C {};
 
-namespace std {
-namespace experimental {
-template <>
-struct coroutine_traits< ::A, int> {
-  using promise_type = int*;
-};
-template <class... Args>
-struct coroutine_traits< ::B, Args...> {
-  using promise_type = B*;
-};
-template <>
-struct coroutine_traits< ::C> {
-  using promise_type = void;
-};
-} // namespace experimental
-} // namespace std
+namespace std { namespace experimental {
+  template <>
+  struct coroutine_traits<::A, int> {
+    using promise_type = int*;
+  };
+  template <class ...Args>
+  struct coroutine_traits<::B, Args...> {
+    using promise_type = B*;
+  };
+  template <>
+  struct coroutine_traits<::C> {
+    using promise_type = void;
+  };
+}}
 
-template <class Expect, class T, class... Args>
+template <class Expect, class T, class ...Args>
 void check_type() {
-  using P = typename coro::coroutine_traits<T, Args...>::promise_type;
+  using P = typename coro::coroutine_traits<T, Args...>::promise_type ;
   static_assert(std::is_same<P, Expect>::value, "");
 };
 
-int main(int, char**) {
+int main(int, char**)
+{
   check_type<A*, A>();
   check_type<int*, A, int>();
   check_type<B*, B>();

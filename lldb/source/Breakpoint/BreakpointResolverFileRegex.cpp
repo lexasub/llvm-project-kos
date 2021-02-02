@@ -27,8 +27,8 @@ BreakpointResolverFileRegex::BreakpointResolverFileRegex(
       m_function_names(func_names) {}
 
 BreakpointResolver *BreakpointResolverFileRegex::CreateFromStructuredData(
-    const lldb::BreakpointSP &bkpt,
-    const StructuredData::Dictionary &options_dict, Status &error) {
+    const lldb::BreakpointSP &bkpt, const StructuredData::Dictionary &options_dict,
+    Status &error) {
   bool success;
 
   llvm::StringRef regex_string;

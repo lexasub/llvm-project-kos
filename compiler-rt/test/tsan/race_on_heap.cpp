@@ -1,16 +1,16 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
-#include "test.h"
 #include <pthread.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "test.h"
 
 void *Thread1(void *p) {
-  *(int *)p = 42;
+  *(int*)p = 42;
   return 0;
 }
 
 void *Thread2(void *p) {
-  *(int *)p = 44;
+  *(int*)p = 44;
   return 0;
 }
 
@@ -18,7 +18,7 @@ void *alloc() {
   return malloc(99);
 }
 
-void *AllocThread(void *arg) {
+void *AllocThread(void* arg) {
   return alloc();
 }
 
@@ -28,8 +28,8 @@ int main() {
   pthread_create(&t[0], 0, AllocThread, 0);
   pthread_join(t[0], &p);
   print_address("addr=", 1, p);
-  pthread_create(&t[0], 0, Thread1, (char *)p + 16);
-  pthread_create(&t[1], 0, Thread2, (char *)p + 16);
+  pthread_create(&t[0], 0, Thread1, (char*)p + 16);
+  pthread_create(&t[1], 0, Thread2, (char*)p + 16);
   pthread_join(t[0], 0);
   pthread_join(t[1], 0);
   return 0;

@@ -125,5 +125,5 @@ protected:
   const UnixSignals &operator=(const UnixSignals &rhs) = delete;
 };
 
-} // namespace lldb_private
+} // Namespace lldb
 #endif // LLDB_TARGET_UNIXSIGNALS_H

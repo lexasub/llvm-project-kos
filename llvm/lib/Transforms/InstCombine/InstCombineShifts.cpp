@@ -481,17 +481,14 @@ static bool canEvaluateShifted(Value *V, unsigned NumBits, bool IsLeftShift,
     return true;
 
   Instruction *I = dyn_cast<Instruction>(V);
-  if (!I)
-    return false;
+  if (!I) return false;
 
   // We can't mutate something that has multiple uses: doing so would
   // require duplicating the instruction in general, which isn't profitable.
-  if (!I->hasOneUse())
-    return false;
+  if (!I->hasOneUse()) return false;
 
   switch (I->getOpcode()) {
-  default:
-    return false;
+  default: return false;
   case Instruction::And:
   case Instruction::Or:
   case Instruction::Xor:
@@ -602,8 +599,7 @@ static Value *getShiftedValue(Value *V, unsigned NumBits, bool isLeftShift,
   IC.addToWorklist(I);
 
   switch (I->getOpcode()) {
-  default:
-    llvm_unreachable("Inconsistency with CanEvaluateShifted");
+  default: llvm_unreachable("Inconsistency with CanEvaluateShifted");
   case Instruction::And:
   case Instruction::Or:
   case Instruction::Xor:
@@ -732,8 +728,7 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       Value *V1;
       const APInt *CC;
       switch (Op0BO->getOpcode()) {
-      default:
-        break;
+      default: break;
       case Instruction::Add:
       case Instruction::And:
       case Instruction::Or:
@@ -741,9 +736,10 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
         // These operators commute.
         // Turn (Y + (X >> C)) << C  ->  (X + (Y << C)) & (~0 << C)
         if (isLeftShift && Op0BO->getOperand(1)->hasOneUse() &&
-            match(Op0BO->getOperand(1), m_Shr(m_Value(V1), m_Specific(Op1)))) {
-          Value *YS = // (Y << C)
-              Builder.CreateShl(Op0BO->getOperand(0), Op1, Op0BO->getName());
+            match(Op0BO->getOperand(1), m_Shr(m_Value(V1),
+                  m_Specific(Op1)))) {
+          Value *YS =         // (Y << C)
+            Builder.CreateShl(Op0BO->getOperand(0), Op1, Op0BO->getName());
           // (X + (Y << C))
           Value *X = Builder.CreateBinOp(Op0BO->getOpcode(), YS, V1,
                                          Op0BO->getOperand(1)->getName());
@@ -772,9 +768,10 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       case Instruction::Sub: {
         // Turn ((X >> C) + Y) << C  ->  (X + (Y << C)) & (~0 << C)
         if (isLeftShift && Op0BO->getOperand(0)->hasOneUse() &&
-            match(Op0BO->getOperand(0), m_Shr(m_Value(V1), m_Specific(Op1)))) {
-          Value *YS = // (Y << C)
-              Builder.CreateShl(Op0BO->getOperand(1), Op1, Op0BO->getName());
+            match(Op0BO->getOperand(0), m_Shr(m_Value(V1),
+                  m_Specific(Op1)))) {
+          Value *YS =  // (Y << C)
+            Builder.CreateShl(Op0BO->getOperand(1), Op1, Op0BO->getName());
           // (X + (Y << C))
           Value *X = Builder.CreateBinOp(Op0BO->getOpcode(), V1, YS,
                                          Op0BO->getOperand(0)->getName());
@@ -807,14 +804,15 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       const APInt *Op0C;
       if (match(Op0BO->getOperand(1), m_APInt(Op0C))) {
         if (canShiftBinOpWithConstantRHS(I, Op0BO)) {
-          Constant *NewRHS = ConstantExpr::get(
-              I.getOpcode(), cast<Constant>(Op0BO->getOperand(1)), Op1);
+          Constant *NewRHS = ConstantExpr::get(I.getOpcode(),
+                                     cast<Constant>(Op0BO->getOperand(1)), Op1);
 
           Value *NewShift =
-              Builder.CreateBinOp(I.getOpcode(), Op0BO->getOperand(0), Op1);
+            Builder.CreateBinOp(I.getOpcode(), Op0BO->getOperand(0), Op1);
           NewShift->takeName(Op0BO);
 
-          return BinaryOperator::Create(Op0BO->getOpcode(), NewShift, NewRHS);
+          return BinaryOperator::Create(Op0BO->getOpcode(), NewShift,
+                                        NewRHS);
         }
       }
 
@@ -823,8 +821,8 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       // This folds (shl (sub C1, X), C2) -> (sub (C1 << C2), (shl X, C2))
       if (isLeftShift && Op0BO->getOpcode() == Instruction::Sub &&
           match(Op0BO->getOperand(0), m_APInt(Op0C))) {
-        Constant *NewRHS = ConstantExpr::get(
-            I.getOpcode(), cast<Constant>(Op0BO->getOperand(0)), Op1);
+        Constant *NewRHS = ConstantExpr::get(I.getOpcode(),
+                                   cast<Constant>(Op0BO->getOperand(0)), Op1);
 
         Value *NewShift = Builder.CreateShl(Op0BO->getOperand(1), Op1);
         NewShift->takeName(Op0BO);
@@ -850,11 +848,13 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       if (!isa<Constant>(FalseVal) && TBO->getOperand(0) == FalseVal &&
           match(TBO->getOperand(1), m_APInt(C)) &&
           canShiftBinOpWithConstantRHS(I, TBO)) {
-        Constant *NewRHS = ConstantExpr::get(
-            I.getOpcode(), cast<Constant>(TBO->getOperand(1)), Op1);
+        Constant *NewRHS = ConstantExpr::get(I.getOpcode(),
+                                       cast<Constant>(TBO->getOperand(1)), Op1);
 
-        Value *NewShift = Builder.CreateBinOp(I.getOpcode(), FalseVal, Op1);
-        Value *NewOp = Builder.CreateBinOp(TBO->getOpcode(), NewShift, NewRHS);
+        Value *NewShift =
+          Builder.CreateBinOp(I.getOpcode(), FalseVal, Op1);
+        Value *NewOp = Builder.CreateBinOp(TBO->getOpcode(), NewShift,
+                                           NewRHS);
         return SelectInst::Create(Cond, NewOp, NewShift);
       }
     }
@@ -867,11 +867,13 @@ Instruction *InstCombinerImpl::FoldShiftByConstant(Value *Op0, Constant *Op1,
       if (!isa<Constant>(TrueVal) && FBO->getOperand(0) == TrueVal &&
           match(FBO->getOperand(1), m_APInt(C)) &&
           canShiftBinOpWithConstantRHS(I, FBO)) {
-        Constant *NewRHS = ConstantExpr::get(
-            I.getOpcode(), cast<Constant>(FBO->getOperand(1)), Op1);
+        Constant *NewRHS = ConstantExpr::get(I.getOpcode(),
+                                       cast<Constant>(FBO->getOperand(1)), Op1);
 
-        Value *NewShift = Builder.CreateBinOp(I.getOpcode(), TrueVal, Op1);
-        Value *NewOp = Builder.CreateBinOp(FBO->getOpcode(), NewShift, NewRHS);
+        Value *NewShift =
+          Builder.CreateBinOp(I.getOpcode(), TrueVal, Op1);
+        Value *NewOp = Builder.CreateBinOp(FBO->getOpcode(), NewShift,
+                                           NewRHS);
         return SelectInst::Create(Cond, NewShift, NewOp);
       }
     }

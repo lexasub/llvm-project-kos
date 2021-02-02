@@ -2,18 +2,18 @@
 // RUN: FileCheck %s < %t
 // RUN: FileCheck --check-prefix=MANGLING %s < %t.ll
 
-struct Empty {};
+struct Empty { };
 
 struct A {
   virtual void f();
-  virtual void z(); // Useful to check there are no thunks for f() when appropriate.
+  virtual void z();  // Useful to check there are no thunks for f() when appropriate.
 };
 
 struct B {
   virtual void g();
 };
 
-struct C : virtual A {
+struct C: virtual A {
   // CHECK-LABEL: VFTable for 'A' in 'C' (2 entries)
   // CHECK-NEXT: 0 | void C::f()
   // CHECK-NEXT: 1 | void A::z()
@@ -30,7 +30,7 @@ struct C : virtual A {
 C c;
 void use(C *obj) { obj->f(); }
 
-struct D : virtual A {
+struct D: virtual A {
   // CHECK-LABEL: VFTable for 'D' (1 entry).
   // CHECK-NEXT: 0 | void D::h()
 
@@ -56,12 +56,10 @@ void use(D *obj) { obj->h(); }
 
 namespace Test1 {
 
-struct X {
-  int x;
-};
+struct X { int x; };
 
 // X and A get reordered in the layout since X doesn't have a vfptr while A has.
-struct Y : X, A {};
+struct Y : X, A { };
 // MANGLING-DAG: @"??_7Y@Test1@@6B@"
 
 struct Z : virtual Y {
@@ -76,11 +74,11 @@ struct Z : virtual Y {
 };
 
 Z::Z() {}
-} // namespace Test1
+}
 
 namespace Test2 {
 
-struct X : virtual A, virtual B {
+struct X: virtual A, virtual B {
   // CHECK-LABEL: VFTable for 'Test2::X' (1 entry).
   // CHECK-NEXT: 0 | void Test2::X::h()
 
@@ -103,7 +101,7 @@ struct X : virtual A, virtual B {
 
 X x;
 void use(X *obj) { obj->h(); }
-} // namespace Test2
+}
 
 namespace Test3 {
 
@@ -111,7 +109,7 @@ struct X : virtual A {
   // MANGLING-DAG: @"??_7X@Test3@@6B@"
 };
 
-struct Y : virtual X {
+struct Y: virtual X {
   Y();
   // CHECK-LABEL: VFTable for 'A' in 'Test3::X' in 'Test3::Y' (2 entries).
   // CHECK-NEXT: 0 | void A::f()
@@ -123,11 +121,11 @@ struct Y : virtual X {
 };
 
 Y::Y() {}
-} // namespace Test3
+}
 
 namespace Test4 {
 
-struct X : virtual C {
+struct X: virtual C {
   X();
   // This one's interesting. C::f expects (A*) to be passed as 'this' and does
   // ECX-=4 to cast to (C*). In X, C and A vbases are reordered, so the thunk
@@ -151,7 +149,7 @@ struct X : virtual C {
 };
 
 X::X() {}
-} // namespace Test4
+}
 
 namespace Test5 {
 
@@ -181,7 +179,7 @@ struct Y : virtual X {
 
 Y y;
 void use(Y *obj) { obj->h(); }
-} // namespace Test5
+}
 
 namespace Test6 {
 
@@ -197,7 +195,7 @@ struct X : A, virtual Empty {
 };
 
 X::X() {}
-} // namespace Test6
+}
 
 namespace Test7 {
 
@@ -221,7 +219,7 @@ struct Y : virtual X {
 };
 
 Y::Y() {}
-} // namespace Test7
+}
 
 namespace Test8 {
 
@@ -284,11 +282,11 @@ struct T : W, C {
 };
 T t;
 void use(T *obj) { obj->bar(); }
-} // namespace Test8
+}
 
 namespace Test9 {
 
-struct X : A {};
+struct X : A { };
 
 struct Y : virtual X {
   // CHECK-LABEL: VFTable for 'Test9::Y' (1 entry).
@@ -421,7 +419,7 @@ struct T : Z, D, virtual A, virtual B {
 
 T t;
 void use(T *obj) { obj->f(); }
-} // namespace Test9
+}
 
 namespace Test10 {
 struct X : virtual C, virtual A {
@@ -438,13 +436,11 @@ struct X : virtual C, virtual A {
 void X::f() {}
 X x;
 void use(X *obj) { obj->f(); }
-} // namespace Test10
+}
 
 namespace Test11 {
 struct X : virtual A {};
-struct Y {
-  virtual void g();
-};
+struct Y { virtual void g(); };
 
 struct Z : virtual X, Y {
   // MANGLING-DAG: @"??_7Z@Test11@@6BY@1@@"
@@ -457,13 +453,13 @@ struct W : virtual X, A {};
 
 // Used to crash, PR17748.
 W w;
-} // namespace Test11
+}
 
 namespace Test12 {
-struct X : B, A {};
+struct X : B, A { };
 
 struct Y : X {
-  virtual void f(); // Overrides A::f.
+  virtual void f();  // Overrides A::f.
 };
 
 struct Z : virtual Y {
@@ -486,7 +482,7 @@ struct W : Z {
 };
 
 W::W() {}
-} // namespace Test12
+}
 
 namespace vdtors {
 struct X {
@@ -595,7 +591,7 @@ struct R : virtual Q, X {
 
 R r;
 void use(R *obj) { delete obj; }
-} // namespace vdtors
+}
 
 namespace return_adjustment {
 
@@ -608,7 +604,7 @@ struct Y : virtual A, virtual X {
 };
 
 struct Z {
-  virtual A *foo();
+  virtual A* foo();
 };
 
 struct W : Z {
@@ -623,7 +619,7 @@ struct W : Z {
   // CHECK-LABEL: VFTable indices for 'return_adjustment::W' (1 entry).
   // CHECK-NEXT: 1 | return_adjustment::X *return_adjustment::W::foo()
 
-  virtual X *foo();
+  virtual X* foo();
 };
 
 W w;
@@ -644,14 +640,14 @@ struct T : W {
   // CHECK-LABEL: VFTable indices for 'return_adjustment::T' (1 entry).
   // CHECK-NEXT: 2 | return_adjustment::Y *return_adjustment::T::foo()
 
-  virtual Y *foo();
+  virtual Y* foo();
 };
 
 T t;
 void use(T *obj) { obj->foo(); }
 
 struct U : virtual A {
-  virtual void g(); // adds a vfptr
+  virtual void g();  // adds a vfptr
 };
 
 struct V : Z {
@@ -666,12 +662,12 @@ struct V : Z {
   // CHECK-LABEL: VFTable indices for 'return_adjustment::V' (1 entry).
   // CHECK-NEXT: 1 | return_adjustment::U *return_adjustment::V::foo()
 
-  virtual U *foo();
+  virtual U* foo();
 };
 
 V v;
 void use(V *obj) { obj->foo(); }
-} // namespace return_adjustment
+}
 
 namespace pr17748 {
 struct A {
@@ -691,7 +687,7 @@ C c;
 // MANGLING-DAG: @"??_7B@pr17748@@6B@"
 // MANGLING-DAG: @"??_7C@pr17748@@6BA@1@@"
 // MANGLING-DAG: @"??_7C@pr17748@@6BB@1@@"
-} // namespace pr17748
+}
 
 namespace pr19066 {
 struct X : virtual B {};
@@ -706,7 +702,7 @@ struct Y : virtual X, B {
 };
 
 Y::Y() {}
-} // namespace pr19066
+}
 
 namespace pr19240 {
 struct A {
@@ -717,7 +713,7 @@ struct B : virtual A {
   virtual void c();
 };
 
-struct C {};
+struct C { };
 
 struct D : virtual A, virtual C, B {};
 
@@ -729,7 +725,7 @@ D obj;
 // MANGLING-DAG: @"??_7A@pr19240@@6B@"
 // MANGLING-DAG: @"??_7B@pr19240@@6B@"
 
-} // namespace pr19240
+}
 
 namespace pr19408 {
 // This test is a non-vtordisp version of the reproducer for PR19408.
@@ -767,7 +763,7 @@ struct W : B, Y {
 };
 
 W::W() {}
-} // namespace pr19408
+}
 
 namespace Test13 {
 struct A {
@@ -777,19 +773,13 @@ struct __declspec(dllexport) B : virtual A {
   virtual void f() = 0;
   // MANGLING-DAG: @"??_7B@Test13@@6B@" = weak_odr dllexport unnamed_addr constant { [1 x i8*] } { [1 x i8*] [i8* bitcast (void ()* @_purecall to i8*)] }
 };
-} // namespace Test13
+}
 
 namespace pr21031_1 {
 // This ordering of base specifiers regressed in r202425.
-struct A {
-  virtual void f(void);
-};
-struct B : virtual A {
-  virtual void g(void);
-};
-struct C : virtual A, B {
-  C();
-};
+struct A { virtual void f(void); };
+struct B : virtual A { virtual void g(void); };
+struct C : virtual A, B { C(); };
 C::C() {}
 
 // CHECK-LABEL: VFTable for 'pr21031_1::A' in 'pr21031_1::B' in 'pr21031_1::C' (1 entry)
@@ -800,18 +790,12 @@ C::C() {}
 
 // MANGLING-DAG: @"??_7C@pr21031_1@@6BB@1@@" = {{.*}} constant { [1 x i8*] }
 // MANGLING-DAG: @"??_7C@pr21031_1@@6B@" = {{.*}} constant { [1 x i8*] }
-} // namespace pr21031_1
+}
 
 namespace pr21031_2 {
-struct A {
-  virtual void f(void);
-};
-struct B : virtual A {
-  virtual void g(void);
-};
-struct C : B, virtual A {
-  C();
-};
+struct A { virtual void f(void); };
+struct B : virtual A { virtual void g(void); };
+struct C : B, virtual A { C(); };
 C::C() {}
 
 // CHECK-LABEL: VFTable for 'pr21031_2::B' in 'pr21031_2::C' (1 entry)
@@ -822,54 +806,42 @@ C::C() {}
 
 // MANGLING-DAG: @"??_7C@pr21031_2@@6BA@1@@" = {{.*}} constant { [1 x i8*] }
 // MANGLING-DAG: @"??_7C@pr21031_2@@6BB@1@@" = {{.*}} constant { [1 x i8*] }
-} // namespace pr21031_2
+}
 
 namespace pr21062_1 {
-struct A {
-  virtual void f();
-};
+struct A { virtual void f(); };
 struct B {};
 struct C : virtual B {};
-struct D : virtual C, virtual B, virtual A {
-  D();
-};
+struct D : virtual C, virtual B, virtual A { D();};
 D::D() {}
 
 // CHECK-LABEL: VFTable for 'pr21062_1::A' in 'pr21062_1::D' (1 entry)
 // CHECK-NEXT:   0 | void pr21062_1::A::f()
 
 // MANGLING-DAG: @"??_7D@pr21062_1@@6B@" = {{.*}} constant { [1 x i8*] }
-} // namespace pr21062_1
+}
 
 namespace pr21062_2 {
-struct A {
-  virtual void f();
-};
+struct A { virtual void f(); };
 struct B {};
 struct C : virtual B {};
-struct D : C, virtual B, virtual A {
-  D();
-};
+struct D : C, virtual B, virtual A { D(); };
 D::D() {}
 
 // CHECK-LABEL: VFTable for 'pr21062_2::A' in 'pr21062_2::D' (1 entry)
 // CHECK-NEXT:   0 | void pr21062_2::A::f()
 
 // MANGLING-DAG: @"??_7D@pr21062_2@@6B@" = {{.*}} constant { [1 x i8*] }
-} // namespace pr21062_2
+}
 
 namespace pr21064 {
 struct A {};
-struct B {
-  virtual void f();
-};
+struct B { virtual void f(); };
 struct C : virtual A, virtual B {};
-struct D : virtual A, virtual C {
-  D();
-};
+struct D : virtual A, virtual C { D(); };
 D::D() {}
 // CHECK-LABEL: VFTable for 'pr21064::B' in 'pr21064::C' in 'pr21064::D' (1 entry)
 // CHECK-NEXT:   0 | void pr21064::B::f()
 
 // MANGLING-DAG: @"??_7D@pr21064@@6B@" = {{.*}} constant { [1 x i8*] }
-} // namespace pr21064
+}

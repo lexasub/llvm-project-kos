@@ -5,8 +5,8 @@
 
 namespace dr2229 { // dr2229: 7
 struct AnonBitfieldQualifiers {
-  const unsigned : 1;          // expected-error {{anonymous bit-field cannot have qualifiers}}
-  volatile unsigned : 1;       // expected-error {{anonymous bit-field cannot have qualifiers}}
+  const unsigned : 1; // expected-error {{anonymous bit-field cannot have qualifiers}}
+  volatile unsigned : 1; // expected-error {{anonymous bit-field cannot have qualifiers}}
   const volatile unsigned : 1; // expected-error {{anonymous bit-field cannot have qualifiers}}
 
   unsigned : 1;
@@ -14,7 +14,7 @@ struct AnonBitfieldQualifiers {
   volatile unsigned i2 : 1;
   const volatile unsigned i3 : 1;
 };
-} // namespace dr2229
+}
 
 #if __cplusplus >= 201103L
 namespace dr2211 { // dr2211: 8
@@ -24,17 +24,17 @@ void f() {
   // expected-note@-1{{variable 'a' is explicitly captured here}}
   auto g = [=](int a) { (void)a; };
 }
-} // namespace dr2211
+}
 #endif
 
 namespace dr2292 { // dr2292: 9
 #if __cplusplus >= 201103L
-template <typename T> using id = T;
-void test(int *p) {
-  p->template id<int>::~id<int>();
-}
+  template<typename T> using id = T;
+  void test(int *p) {
+    p->template id<int>::~id<int>();
+  }
 #endif
-} // namespace dr2292
+}
 
 namespace dr2233 { // dr2233: 11
 #if __cplusplus >= 201103L
@@ -56,9 +56,11 @@ void j(int i = 0, Ts... ts) {}
 template <>
 void j<int>(int i, int j) {}
 
-template void j(int, int, int);
+template
+void j(int, int, int);
 
-extern template void j(int, int, int, int);
+extern template
+void j(int, int, int, int);
 
 // PR23029
 // Ensure instantiating the templates works.
@@ -80,44 +82,44 @@ void use() {
 }
 
 namespace MultilevelSpecialization {
-template <typename... T> struct A {
-  template <T... V> void f(int i = 0, int (&...arr)[V]);
-};
-template <> template <>
-void A<int, int>::f<1, 1>(int i, int (&arr1a)[1], int (&arr2a)[1]) {}
+  template<typename ...T> struct A {
+    template <T... V> void f(int i = 0, int (&... arr)[V]);
+  };
+  template<> template<>
+    void A<int, int>::f<1, 1>(int i, int (&arr1a)[1], int (&arr2a)[1]) {}
 
-// FIXME: I believe this example is valid, at least up to the first explicit
-// specialization, but Clang can't cope with explicit specializations that
-// expand packs into a sequence of parameters. If we ever start accepting
-// that, we'll need to decide whether it's OK for arr1a to be missing its
-// default argument -- how far back do we look when determining whether a
-// parameter was expanded from a pack?
-//   -- zygoloid 2020-06-02
-template <typename... T> struct B {
-  template <T... V> void f(int i = 0, int (&...arr)[V]);
-};
-template <> template <int a, int b>
-void B<int, int>::f(int i, int (&arr1)[a], int (&arr2)[b]) {} // expected-error {{does not match}}
-template <> template <>
-void B<int, int>::f<1, 1>(int i, int (&arr1a)[1], int (&arr2a)[1]) {}
-} // namespace MultilevelSpecialization
+  // FIXME: I believe this example is valid, at least up to the first explicit
+  // specialization, but Clang can't cope with explicit specializations that
+  // expand packs into a sequence of parameters. If we ever start accepting
+  // that, we'll need to decide whether it's OK for arr1a to be missing its
+  // default argument -- how far back do we look when determining whether a
+  // parameter was expanded from a pack?
+  //   -- zygoloid 2020-06-02
+  template<typename ...T> struct B {
+    template <T... V> void f(int i = 0, int (&... arr)[V]);
+  };
+  template<> template<int a, int b>
+    void B<int, int>::f(int i, int (&arr1)[a], int (&arr2)[b]) {} // expected-error {{does not match}}
+  template<> template<>
+    void B<int, int>::f<1, 1>(int i, int (&arr1a)[1], int (&arr2a)[1]) {}
+}
 
 namespace CheckAfterMerging1 {
-template <typename... T> void f() {
-  void g(int, int = 0);
-  void g(int = 0, T...);
-  g();
+  template <typename... T> void f() {
+    void g(int, int = 0);
+    void g(int = 0, T...);
+    g();
+  }
+  void h() { f<int>(); }
 }
-void h() { f<int>(); }
-} // namespace CheckAfterMerging1
 
 namespace CheckAfterMerging2 {
-template <typename... T> void f() {
-  void g(int = 0, T...);
-  void g(int, int = 0);
-  g();
+  template <typename... T> void f() {
+    void g(int = 0, T...);
+    void g(int, int = 0);
+    g();
+  }
+  void h() { f<int>(); }
 }
-void h() { f<int>(); }
-} // namespace CheckAfterMerging2
 #endif
 } // namespace dr2233

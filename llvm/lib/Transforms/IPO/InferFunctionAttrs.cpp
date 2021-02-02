@@ -71,7 +71,7 @@ struct InferFunctionAttrsLegacyPass : public ModulePass {
     return inferAllPrototypeAttributes(M, GetTLI);
   }
 };
-} // namespace
+}
 
 char InferFunctionAttrsLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(InferFunctionAttrsLegacyPass, "inferattrs",

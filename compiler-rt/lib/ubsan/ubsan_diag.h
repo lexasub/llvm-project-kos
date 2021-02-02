@@ -12,9 +12,9 @@
 #ifndef UBSAN_DIAG_H
 #define UBSAN_DIAG_H
 
+#include "ubsan_value.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
 #include "sanitizer_common/sanitizer_symbolizer.h"
-#include "ubsan_value.h"
 
 namespace __ubsan {
 
@@ -60,15 +60,17 @@ private:
   // FIXME: In C++11, wrap these in an anonymous union.
   SourceLocation SourceLoc;
   MemoryLocation MemoryLoc;
-  const SymbolizedStack *SymbolizedLoc; // Not owned.
+  const SymbolizedStack *SymbolizedLoc;  // Not owned.
 
 public:
   Location() : Kind(LK_Null) {}
-  Location(SourceLocation Loc) : Kind(LK_Source), SourceLoc(Loc) {}
-  Location(MemoryLocation Loc) : Kind(LK_Memory), MemoryLoc(Loc) {}
+  Location(SourceLocation Loc) :
+    Kind(LK_Source), SourceLoc(Loc) {}
+  Location(MemoryLocation Loc) :
+    Kind(LK_Memory), MemoryLoc(Loc) {}
   // SymbolizedStackHolder must outlive Location object.
-  Location(const SymbolizedStackHolder &Stack)
-      : Kind(LK_Symbolized), SymbolizedLoc(Stack.get()) {}
+  Location(const SymbolizedStackHolder &Stack) :
+    Kind(LK_Symbolized), SymbolizedLoc(Stack.get()) {}
 
   LocationKind getKind() const { return Kind; }
 
@@ -104,7 +106,7 @@ class Range {
 public:
   Range() : Start(), End(), Text() {}
   Range(MemoryLocation Start, MemoryLocation End, const char *Text)
-      : Start(Start), End(End), Text(Text) {}
+    : Start(Start), End(End), Text(Text) {}
   Location getStart() const { return Start; }
   Location getEnd() const { return End; }
   const char *getText() const { return Text; }
@@ -113,7 +115,6 @@ public:
 /// \brief A C++ type name. Really just a strong typedef for 'const char*'.
 class TypeName {
   const char *Name;
-
 public:
   TypeName(const char *Name) : Name(Name) {}
   const char *getName() const { return Name; }
@@ -147,12 +148,12 @@ class Diag {
 public:
   /// Kinds of arguments, corresponding to members of \c Arg's union.
   enum ArgKind {
-    AK_String,   ///< A string argument, displayed as-is.
-    AK_TypeName, ///< A C++ type name, possibly demangled before display.
-    AK_UInt,     ///< An unsigned integer argument.
-    AK_SInt,     ///< A signed integer argument.
-    AK_Float,    ///< A floating-point argument.
-    AK_Pointer   ///< A pointer argument, displayed in hexadecimal.
+    AK_String, ///< A string argument, displayed as-is.
+    AK_TypeName,///< A C++ type name, possibly demangled before display.
+    AK_UInt,   ///< An unsigned integer argument.
+    AK_SInt,   ///< A signed integer argument.
+    AK_Float,  ///< A floating-point argument.
+    AK_Pointer ///< A pointer argument, displayed in hexadecimal.
   };
 
   /// An individual diagnostic message argument.
@@ -229,9 +230,9 @@ struct ReportOptions {
 
 bool ignoreReport(SourceLocation SLoc, ReportOptions Opts, ErrorType ET);
 
-#define GET_REPORT_OPTIONS(unrecoverable_handler)                              \
-  GET_CALLER_PC_BP;                                                            \
-  ReportOptions Opts = {unrecoverable_handler, pc, bp}
+#define GET_REPORT_OPTIONS(unrecoverable_handler) \
+    GET_CALLER_PC_BP; \
+    ReportOptions Opts = {unrecoverable_handler, pc, bp}
 
 /// \brief Instantiate this class before printing diagnostics in the error
 /// report. This class ensures that reports from different threads and from

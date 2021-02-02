@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -verify -fopenmp-simd -fopenmp-version=50 %s -Wuninitialized
 
 void xxx(int argc) {
-  int fp, fp1;                      // expected-note {{initialize the variable 'fp' to silence this warning}} expected-note {{initialize the variable 'fp1' to silence this warning}}
+  int fp, fp1; // expected-note {{initialize the variable 'fp' to silence this warning}} expected-note {{initialize the variable 'fp1' to silence this warning}}
 #pragma omp target firstprivate(fp) // expected-warning {{variable 'fp' is uninitialized when used here}}
   for (int i = 0; i < 10; ++i)
     ++fp1; // expected-warning {{variable 'fp1' is uninitialized when used here}}
@@ -110,33 +110,29 @@ int foomain(I argc, C **argv) {
   int i, z;
   int &j = i;
 #pragma omp target firstprivate // expected-error {{expected '(' after 'firstprivate'}}
-  {}
+{}
 #pragma omp target firstprivate( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate() // expected-error {{expected expression}}
-  {}
+{}
 #pragma omp target firstprivate(argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate(argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
-  {}
-#pragma omp target firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                           : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                            : argv),              \
-                                                                                                                                                             allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
-  {}
+{}
+#pragma omp target firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+{}
 #pragma omp target firstprivate(S1) // expected-error {{'S1' does not refer to a value}}
-  {}
+{}
 #pragma omp target firstprivate(a, b) // expected-error {{firstprivate variable with incomplete type 'S1'}}
-  {}
+{}
 #pragma omp target firstprivate(argv[1]) // expected-error {{expected variable name}}
-  {}
-#pragma omp target firstprivate(e, g) allocate(omp_thread_mem_alloc \
-                                               : e) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target' directive}} expected-error {{allocator must be specified in the 'uses_allocators' clause}}
-  {}
+{}
+#pragma omp target firstprivate(e, g) allocate(omp_thread_mem_alloc: e) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target' directive}} expected-error {{allocator must be specified in the 'uses_allocators' clause}}
+{}
 #pragma omp target firstprivate(h) // expected-error {{threadprivate or thread local variable cannot be firstprivate}}
-  {}
+{}
 #pragma omp target shared(i) // expected-error {{unexpected OpenMP clause 'shared' in directive '#pragma omp target'}}
 #pragma omp parallel
   {
@@ -146,7 +142,7 @@ int foomain(I argc, C **argv) {
 #pragma omp parallel shared(i, z)
 #pragma omp parallel firstprivate(i, z)
 #pragma omp target firstprivate(j)
-  {}
+{}
 #pragma omp target firstprivate(i)
   {}
   return 0;
@@ -161,7 +157,7 @@ void bar(S4 a[2]) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -169,36 +165,36 @@ using A::x;
 int main(int argc, char **argv) {
   S4 e(4);
   S5 g(5);
-  S6<float> s6(0.0), s6_0(1.0);
-  S7<S6<float>> s7(0.0), s7_0(1.0);
+  S6<float> s6(0.0) , s6_0(1.0);
+  S7<S6<float> > s7(0.0) , s7_0(1.0);
   int i, z;
   int &j = i;
 #pragma omp target firstprivate // expected-error {{expected '(' after 'firstprivate'}}
-  {}
+{}
 #pragma omp target firstprivate( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate() // expected-error {{expected expression}}
-  {}
+{}
 #pragma omp target firstprivate(argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate(argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-  {}
+{}
 #pragma omp target firstprivate(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
-  {}
+{}
 #pragma omp target firstprivate(argc, z)
-  {}
+{}
 #pragma omp target firstprivate(S1) // expected-error {{'S1' does not refer to a value}}
-  {}
+{}
 #pragma omp target firstprivate(a, b) // expected-error {{firstprivate variable with incomplete type 'S1'}}
-  {}
+{}
 #pragma omp target firstprivate(argv[1]) // expected-error {{expected variable name}}
-  {}
+{}
 #pragma omp target firstprivate(e, g)
-  {}
+{}
 #pragma omp target firstprivate(h) // expected-error {{threadprivate or thread local variable cannot be firstprivate}}
-  {}
+{}
 #pragma omp target firstprivate(B::x) // expected-error {{threadprivate or thread local variable cannot be firstprivate}}
-  {}
+{}
 #pragma omp target shared(i) // expected-error {{unexpected OpenMP clause 'shared' in directive '#pragma omp target'}}
 #pragma omp parallel
   {
@@ -207,7 +203,7 @@ int main(int argc, char **argv) {
 #pragma omp parallel shared(i)
 #pragma omp parallel firstprivate(i)
 #pragma omp target firstprivate(j)
-  {}
+{}
 #pragma omp target firstprivate(i)
   {}
   static int si;
@@ -215,7 +211,8 @@ int main(int argc, char **argv) {
   {}
 #pragma omp target map(i) firstprivate(i) // expected-error {{firstprivate variable cannot be in a map clause in '#pragma omp target' directive}}
   {}
-  s6 = s6_0;                  // expected-note {{in instantiation of member function 'S6<float>::operator=' requested here}}
-  s7 = s7_0;                  // expected-note {{in instantiation of member function 'S7<S6<float>>::operator=' requested here}}
+  s6 = s6_0; // expected-note {{in instantiation of member function 'S6<float>::operator=' requested here}}
+  s7 = s7_0; // expected-note {{in instantiation of member function 'S7<S6<float>>::operator=' requested here}}
   return foomain(argc, argv); // expected-note {{in instantiation of function template specialization 'foomain<int, char>' requested here}}
 }
+

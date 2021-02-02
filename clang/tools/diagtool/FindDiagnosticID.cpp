@@ -19,7 +19,7 @@ using namespace diagtool;
 
 static StringRef getNameFromID(StringRef Name) {
   int DiagID;
-  if (!Name.getAsInteger(0, DiagID)) {
+  if(!Name.getAsInteger(0, DiagID)) {
     const DiagnosticRecord &Diag = getDiagnosticForID(DiagID);
     return Diag.getName();
   }

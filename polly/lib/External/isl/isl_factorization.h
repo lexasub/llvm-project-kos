@@ -15,15 +15,15 @@ extern "C" {
  * If no factorization is possible, then "n_group" is set to 0.
  */
 struct isl_factorizer {
-  isl_basic_set *bset;
-  isl_morph *morph;
-  int n_group;
-  int *len;
+	isl_basic_set	*bset;
+	isl_morph	*morph;
+	int		n_group;
+	int		*len;
 };
 typedef struct isl_factorizer isl_factorizer;
 
-__isl_give isl_factorizer *
-isl_basic_set_factorizer(__isl_keep isl_basic_set *bset);
+__isl_give isl_factorizer *isl_basic_set_factorizer(
+	__isl_keep isl_basic_set *bset);
 
 isl_ctx *isl_factorizer_get_ctx(__isl_keep isl_factorizer *f);
 
@@ -31,8 +31,9 @@ __isl_null isl_factorizer *isl_factorizer_free(__isl_take isl_factorizer *f);
 void isl_factorizer_dump(__isl_take isl_factorizer *f);
 
 __isl_give isl_bool isl_factorizer_every_factor_basic_set(
-    __isl_keep isl_factorizer *f,
-    isl_bool (*test)(__isl_keep isl_basic_set *bset, void *user), void *user);
+	__isl_keep isl_factorizer *f,
+	isl_bool (*test)(__isl_keep isl_basic_set *bset, void *user),
+	void *user);
 
 #if defined(__cplusplus)
 }

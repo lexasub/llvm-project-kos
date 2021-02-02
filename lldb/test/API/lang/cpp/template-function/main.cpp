@@ -1,4 +1,7 @@
-template <typename T> int foo(T t1) { return int(t1); }
+template<typename T>
+int foo(T t1) {
+        return int(t1);
+}
 
 // Some cases to cover ADL, we have two cases:
 //

@@ -15,7 +15,8 @@
 
 #include <type_traits>
 
-int main(int, char**) {
+int main(int, char**)
+{
 #ifdef _LIBCPP_HAS_NO_IS_AGGREGATE
   // This should not compile when _LIBCPP_HAS_NO_IS_AGGREGATE is defined.
   bool b = __is_aggregate(void);

@@ -94,7 +94,7 @@ void f() {
 #undef SECONDS
 }
 
-template <typename T>
+template<typename T>
 void func(absl::Time t, T x) {
   absl::Duration d = absl::Seconds(absl::ToUnixSeconds(t) - x);
   // CHECK-MESSAGES: [[@LINE-1]]:22: warning: perform subtraction in the time domain [abseil-time-subtraction]

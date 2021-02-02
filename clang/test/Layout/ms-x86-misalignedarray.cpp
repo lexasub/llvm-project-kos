@@ -3,14 +3,9 @@
 // RUN: %clang_cc1 -fno-rtti -emit-llvm-only -triple x86_64-pc-win32 -fdump-record-layouts -fsyntax-only %s 2>/dev/null \
 // RUN:            | FileCheck %s -check-prefix CHECK-X64
 
-struct T0 {
-  char c;
-};
-struct T2 : virtual T0 {};
-struct T3 {
-  T2 a[1];
-  char c;
-};
+struct T0 { char c; };
+struct T2 : virtual T0 { };
+struct T3 { T2 a[1]; char c; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout

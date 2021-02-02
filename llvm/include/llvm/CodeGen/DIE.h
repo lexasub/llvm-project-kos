@@ -57,7 +57,8 @@ class DIEAbbrevData {
   int64_t Value = 0;
 
 public:
-  DIEAbbrevData(dwarf::Attribute A, dwarf::Form F) : Attribute(A), Form(F) {}
+  DIEAbbrevData(dwarf::Attribute A, dwarf::Form F)
+      : Attribute(A), Form(F) {}
   DIEAbbrevData(dwarf::Attribute A, int64_t V)
       : Attribute(A), Form(dwarf::DW_FORM_implicit_const), Value(V) {}
 
@@ -238,7 +239,7 @@ class DIEBaseTypeRef {
 
 public:
   explicit DIEBaseTypeRef(const DwarfCompileUnit *TheCU, uint64_t Idx)
-      : CU(TheCU), Index(Idx) {}
+    : CU(TheCU), Index(Idx) {}
 
   /// EmitValue - Emit base type reference.
   void emitValue(const AsmPrinter *AP, dwarf::Form Form) const;
@@ -715,7 +716,7 @@ public:
   }
   template <class T>
   value_iterator addValue(BumpPtrAllocator &Alloc, dwarf::Attribute Attribute,
-                          dwarf::Form Form, T &&Value) {
+                    dwarf::Form Form, T &&Value) {
     return addValue(Alloc, DIEValue(Attribute, Form, std::forward<T>(Value)));
   }
 

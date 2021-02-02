@@ -516,20 +516,11 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
     // Turn into regular MULX by duplicating the destination.
     unsigned NewOpc;
     switch (OutMI.getOpcode()) {
-    default:
-      llvm_unreachable("Invalid opcode");
-    case X86::MULX32Hrr:
-      NewOpc = X86::MULX32rr;
-      break;
-    case X86::MULX32Hrm:
-      NewOpc = X86::MULX32rm;
-      break;
-    case X86::MULX64Hrr:
-      NewOpc = X86::MULX64rr;
-      break;
-    case X86::MULX64Hrm:
-      NewOpc = X86::MULX64rm;
-      break;
+    default: llvm_unreachable("Invalid opcode");
+    case X86::MULX32Hrr: NewOpc = X86::MULX32rr; break;
+    case X86::MULX32Hrm: NewOpc = X86::MULX32rm; break;
+    case X86::MULX64Hrr: NewOpc = X86::MULX64rr; break;
+    case X86::MULX64Hrm: NewOpc = X86::MULX64rm; break;
     }
     OutMI.setOpcode(NewOpc);
     // Duplicate the destination.
@@ -557,47 +548,20 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
         X86II::isX86_64ExtendedReg(OutMI.getOperand(1).getReg())) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::VMOVZPQILo2PQIrr:
-        NewOpc = X86::VMOVPQI2QIrr;
-        break;
-      case X86::VMOVAPDrr:
-        NewOpc = X86::VMOVAPDrr_REV;
-        break;
-      case X86::VMOVAPDYrr:
-        NewOpc = X86::VMOVAPDYrr_REV;
-        break;
-      case X86::VMOVAPSrr:
-        NewOpc = X86::VMOVAPSrr_REV;
-        break;
-      case X86::VMOVAPSYrr:
-        NewOpc = X86::VMOVAPSYrr_REV;
-        break;
-      case X86::VMOVDQArr:
-        NewOpc = X86::VMOVDQArr_REV;
-        break;
-      case X86::VMOVDQAYrr:
-        NewOpc = X86::VMOVDQAYrr_REV;
-        break;
-      case X86::VMOVDQUrr:
-        NewOpc = X86::VMOVDQUrr_REV;
-        break;
-      case X86::VMOVDQUYrr:
-        NewOpc = X86::VMOVDQUYrr_REV;
-        break;
-      case X86::VMOVUPDrr:
-        NewOpc = X86::VMOVUPDrr_REV;
-        break;
-      case X86::VMOVUPDYrr:
-        NewOpc = X86::VMOVUPDYrr_REV;
-        break;
-      case X86::VMOVUPSrr:
-        NewOpc = X86::VMOVUPSrr_REV;
-        break;
-      case X86::VMOVUPSYrr:
-        NewOpc = X86::VMOVUPSYrr_REV;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::VMOVZPQILo2PQIrr: NewOpc = X86::VMOVPQI2QIrr;   break;
+      case X86::VMOVAPDrr:        NewOpc = X86::VMOVAPDrr_REV;  break;
+      case X86::VMOVAPDYrr:       NewOpc = X86::VMOVAPDYrr_REV; break;
+      case X86::VMOVAPSrr:        NewOpc = X86::VMOVAPSrr_REV;  break;
+      case X86::VMOVAPSYrr:       NewOpc = X86::VMOVAPSYrr_REV; break;
+      case X86::VMOVDQArr:        NewOpc = X86::VMOVDQArr_REV;  break;
+      case X86::VMOVDQAYrr:       NewOpc = X86::VMOVDQAYrr_REV; break;
+      case X86::VMOVDQUrr:        NewOpc = X86::VMOVDQUrr_REV;  break;
+      case X86::VMOVDQUYrr:       NewOpc = X86::VMOVDQUYrr_REV; break;
+      case X86::VMOVUPDrr:        NewOpc = X86::VMOVUPDrr_REV;  break;
+      case X86::VMOVUPDYrr:       NewOpc = X86::VMOVUPDYrr_REV; break;
+      case X86::VMOVUPSrr:        NewOpc = X86::VMOVUPSrr_REV;  break;
+      case X86::VMOVUPSYrr:       NewOpc = X86::VMOVUPSYrr_REV; break;
       }
       OutMI.setOpcode(NewOpc);
     }
@@ -609,266 +573,110 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
         X86II::isX86_64ExtendedReg(OutMI.getOperand(2).getReg())) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::VMOVSDrr:
-        NewOpc = X86::VMOVSDrr_REV;
-        break;
-      case X86::VMOVSSrr:
-        NewOpc = X86::VMOVSSrr_REV;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::VMOVSDrr: NewOpc = X86::VMOVSDrr_REV; break;
+      case X86::VMOVSSrr: NewOpc = X86::VMOVSSrr_REV; break;
       }
       OutMI.setOpcode(NewOpc);
     }
     break;
   }
 
-  case X86::VPCMPBZ128rmi:
-  case X86::VPCMPBZ128rmik:
-  case X86::VPCMPBZ128rri:
-  case X86::VPCMPBZ128rrik:
-  case X86::VPCMPBZ256rmi:
-  case X86::VPCMPBZ256rmik:
-  case X86::VPCMPBZ256rri:
-  case X86::VPCMPBZ256rrik:
-  case X86::VPCMPBZrmi:
-  case X86::VPCMPBZrmik:
-  case X86::VPCMPBZrri:
-  case X86::VPCMPBZrrik:
-  case X86::VPCMPDZ128rmi:
-  case X86::VPCMPDZ128rmik:
-  case X86::VPCMPDZ128rmib:
-  case X86::VPCMPDZ128rmibk:
-  case X86::VPCMPDZ128rri:
-  case X86::VPCMPDZ128rrik:
-  case X86::VPCMPDZ256rmi:
-  case X86::VPCMPDZ256rmik:
-  case X86::VPCMPDZ256rmib:
-  case X86::VPCMPDZ256rmibk:
-  case X86::VPCMPDZ256rri:
-  case X86::VPCMPDZ256rrik:
-  case X86::VPCMPDZrmi:
-  case X86::VPCMPDZrmik:
-  case X86::VPCMPDZrmib:
-  case X86::VPCMPDZrmibk:
-  case X86::VPCMPDZrri:
-  case X86::VPCMPDZrrik:
-  case X86::VPCMPQZ128rmi:
-  case X86::VPCMPQZ128rmik:
-  case X86::VPCMPQZ128rmib:
-  case X86::VPCMPQZ128rmibk:
-  case X86::VPCMPQZ128rri:
-  case X86::VPCMPQZ128rrik:
-  case X86::VPCMPQZ256rmi:
-  case X86::VPCMPQZ256rmik:
-  case X86::VPCMPQZ256rmib:
-  case X86::VPCMPQZ256rmibk:
-  case X86::VPCMPQZ256rri:
-  case X86::VPCMPQZ256rrik:
-  case X86::VPCMPQZrmi:
-  case X86::VPCMPQZrmik:
-  case X86::VPCMPQZrmib:
-  case X86::VPCMPQZrmibk:
-  case X86::VPCMPQZrri:
-  case X86::VPCMPQZrrik:
-  case X86::VPCMPWZ128rmi:
-  case X86::VPCMPWZ128rmik:
-  case X86::VPCMPWZ128rri:
-  case X86::VPCMPWZ128rrik:
-  case X86::VPCMPWZ256rmi:
-  case X86::VPCMPWZ256rmik:
-  case X86::VPCMPWZ256rri:
-  case X86::VPCMPWZ256rrik:
-  case X86::VPCMPWZrmi:
-  case X86::VPCMPWZrmik:
-  case X86::VPCMPWZrri:
-  case X86::VPCMPWZrrik: {
+  case X86::VPCMPBZ128rmi:  case X86::VPCMPBZ128rmik:
+  case X86::VPCMPBZ128rri:  case X86::VPCMPBZ128rrik:
+  case X86::VPCMPBZ256rmi:  case X86::VPCMPBZ256rmik:
+  case X86::VPCMPBZ256rri:  case X86::VPCMPBZ256rrik:
+  case X86::VPCMPBZrmi:     case X86::VPCMPBZrmik:
+  case X86::VPCMPBZrri:     case X86::VPCMPBZrrik:
+  case X86::VPCMPDZ128rmi:  case X86::VPCMPDZ128rmik:
+  case X86::VPCMPDZ128rmib: case X86::VPCMPDZ128rmibk:
+  case X86::VPCMPDZ128rri:  case X86::VPCMPDZ128rrik:
+  case X86::VPCMPDZ256rmi:  case X86::VPCMPDZ256rmik:
+  case X86::VPCMPDZ256rmib: case X86::VPCMPDZ256rmibk:
+  case X86::VPCMPDZ256rri:  case X86::VPCMPDZ256rrik:
+  case X86::VPCMPDZrmi:     case X86::VPCMPDZrmik:
+  case X86::VPCMPDZrmib:    case X86::VPCMPDZrmibk:
+  case X86::VPCMPDZrri:     case X86::VPCMPDZrrik:
+  case X86::VPCMPQZ128rmi:  case X86::VPCMPQZ128rmik:
+  case X86::VPCMPQZ128rmib: case X86::VPCMPQZ128rmibk:
+  case X86::VPCMPQZ128rri:  case X86::VPCMPQZ128rrik:
+  case X86::VPCMPQZ256rmi:  case X86::VPCMPQZ256rmik:
+  case X86::VPCMPQZ256rmib: case X86::VPCMPQZ256rmibk:
+  case X86::VPCMPQZ256rri:  case X86::VPCMPQZ256rrik:
+  case X86::VPCMPQZrmi:     case X86::VPCMPQZrmik:
+  case X86::VPCMPQZrmib:    case X86::VPCMPQZrmibk:
+  case X86::VPCMPQZrri:     case X86::VPCMPQZrrik:
+  case X86::VPCMPWZ128rmi:  case X86::VPCMPWZ128rmik:
+  case X86::VPCMPWZ128rri:  case X86::VPCMPWZ128rrik:
+  case X86::VPCMPWZ256rmi:  case X86::VPCMPWZ256rmik:
+  case X86::VPCMPWZ256rri:  case X86::VPCMPWZ256rrik:
+  case X86::VPCMPWZrmi:     case X86::VPCMPWZrmik:
+  case X86::VPCMPWZrri:     case X86::VPCMPWZrrik: {
     // Turn immediate 0 into the VPCMPEQ instruction.
     if (OutMI.getOperand(OutMI.getNumOperands() - 1).getImm() == 0) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::VPCMPBZ128rmi:
-        NewOpc = X86::VPCMPEQBZ128rm;
-        break;
-      case X86::VPCMPBZ128rmik:
-        NewOpc = X86::VPCMPEQBZ128rmk;
-        break;
-      case X86::VPCMPBZ128rri:
-        NewOpc = X86::VPCMPEQBZ128rr;
-        break;
-      case X86::VPCMPBZ128rrik:
-        NewOpc = X86::VPCMPEQBZ128rrk;
-        break;
-      case X86::VPCMPBZ256rmi:
-        NewOpc = X86::VPCMPEQBZ256rm;
-        break;
-      case X86::VPCMPBZ256rmik:
-        NewOpc = X86::VPCMPEQBZ256rmk;
-        break;
-      case X86::VPCMPBZ256rri:
-        NewOpc = X86::VPCMPEQBZ256rr;
-        break;
-      case X86::VPCMPBZ256rrik:
-        NewOpc = X86::VPCMPEQBZ256rrk;
-        break;
-      case X86::VPCMPBZrmi:
-        NewOpc = X86::VPCMPEQBZrm;
-        break;
-      case X86::VPCMPBZrmik:
-        NewOpc = X86::VPCMPEQBZrmk;
-        break;
-      case X86::VPCMPBZrri:
-        NewOpc = X86::VPCMPEQBZrr;
-        break;
-      case X86::VPCMPBZrrik:
-        NewOpc = X86::VPCMPEQBZrrk;
-        break;
-      case X86::VPCMPDZ128rmi:
-        NewOpc = X86::VPCMPEQDZ128rm;
-        break;
-      case X86::VPCMPDZ128rmib:
-        NewOpc = X86::VPCMPEQDZ128rmb;
-        break;
-      case X86::VPCMPDZ128rmibk:
-        NewOpc = X86::VPCMPEQDZ128rmbk;
-        break;
-      case X86::VPCMPDZ128rmik:
-        NewOpc = X86::VPCMPEQDZ128rmk;
-        break;
-      case X86::VPCMPDZ128rri:
-        NewOpc = X86::VPCMPEQDZ128rr;
-        break;
-      case X86::VPCMPDZ128rrik:
-        NewOpc = X86::VPCMPEQDZ128rrk;
-        break;
-      case X86::VPCMPDZ256rmi:
-        NewOpc = X86::VPCMPEQDZ256rm;
-        break;
-      case X86::VPCMPDZ256rmib:
-        NewOpc = X86::VPCMPEQDZ256rmb;
-        break;
-      case X86::VPCMPDZ256rmibk:
-        NewOpc = X86::VPCMPEQDZ256rmbk;
-        break;
-      case X86::VPCMPDZ256rmik:
-        NewOpc = X86::VPCMPEQDZ256rmk;
-        break;
-      case X86::VPCMPDZ256rri:
-        NewOpc = X86::VPCMPEQDZ256rr;
-        break;
-      case X86::VPCMPDZ256rrik:
-        NewOpc = X86::VPCMPEQDZ256rrk;
-        break;
-      case X86::VPCMPDZrmi:
-        NewOpc = X86::VPCMPEQDZrm;
-        break;
-      case X86::VPCMPDZrmib:
-        NewOpc = X86::VPCMPEQDZrmb;
-        break;
-      case X86::VPCMPDZrmibk:
-        NewOpc = X86::VPCMPEQDZrmbk;
-        break;
-      case X86::VPCMPDZrmik:
-        NewOpc = X86::VPCMPEQDZrmk;
-        break;
-      case X86::VPCMPDZrri:
-        NewOpc = X86::VPCMPEQDZrr;
-        break;
-      case X86::VPCMPDZrrik:
-        NewOpc = X86::VPCMPEQDZrrk;
-        break;
-      case X86::VPCMPQZ128rmi:
-        NewOpc = X86::VPCMPEQQZ128rm;
-        break;
-      case X86::VPCMPQZ128rmib:
-        NewOpc = X86::VPCMPEQQZ128rmb;
-        break;
-      case X86::VPCMPQZ128rmibk:
-        NewOpc = X86::VPCMPEQQZ128rmbk;
-        break;
-      case X86::VPCMPQZ128rmik:
-        NewOpc = X86::VPCMPEQQZ128rmk;
-        break;
-      case X86::VPCMPQZ128rri:
-        NewOpc = X86::VPCMPEQQZ128rr;
-        break;
-      case X86::VPCMPQZ128rrik:
-        NewOpc = X86::VPCMPEQQZ128rrk;
-        break;
-      case X86::VPCMPQZ256rmi:
-        NewOpc = X86::VPCMPEQQZ256rm;
-        break;
-      case X86::VPCMPQZ256rmib:
-        NewOpc = X86::VPCMPEQQZ256rmb;
-        break;
-      case X86::VPCMPQZ256rmibk:
-        NewOpc = X86::VPCMPEQQZ256rmbk;
-        break;
-      case X86::VPCMPQZ256rmik:
-        NewOpc = X86::VPCMPEQQZ256rmk;
-        break;
-      case X86::VPCMPQZ256rri:
-        NewOpc = X86::VPCMPEQQZ256rr;
-        break;
-      case X86::VPCMPQZ256rrik:
-        NewOpc = X86::VPCMPEQQZ256rrk;
-        break;
-      case X86::VPCMPQZrmi:
-        NewOpc = X86::VPCMPEQQZrm;
-        break;
-      case X86::VPCMPQZrmib:
-        NewOpc = X86::VPCMPEQQZrmb;
-        break;
-      case X86::VPCMPQZrmibk:
-        NewOpc = X86::VPCMPEQQZrmbk;
-        break;
-      case X86::VPCMPQZrmik:
-        NewOpc = X86::VPCMPEQQZrmk;
-        break;
-      case X86::VPCMPQZrri:
-        NewOpc = X86::VPCMPEQQZrr;
-        break;
-      case X86::VPCMPQZrrik:
-        NewOpc = X86::VPCMPEQQZrrk;
-        break;
-      case X86::VPCMPWZ128rmi:
-        NewOpc = X86::VPCMPEQWZ128rm;
-        break;
-      case X86::VPCMPWZ128rmik:
-        NewOpc = X86::VPCMPEQWZ128rmk;
-        break;
-      case X86::VPCMPWZ128rri:
-        NewOpc = X86::VPCMPEQWZ128rr;
-        break;
-      case X86::VPCMPWZ128rrik:
-        NewOpc = X86::VPCMPEQWZ128rrk;
-        break;
-      case X86::VPCMPWZ256rmi:
-        NewOpc = X86::VPCMPEQWZ256rm;
-        break;
-      case X86::VPCMPWZ256rmik:
-        NewOpc = X86::VPCMPEQWZ256rmk;
-        break;
-      case X86::VPCMPWZ256rri:
-        NewOpc = X86::VPCMPEQWZ256rr;
-        break;
-      case X86::VPCMPWZ256rrik:
-        NewOpc = X86::VPCMPEQWZ256rrk;
-        break;
-      case X86::VPCMPWZrmi:
-        NewOpc = X86::VPCMPEQWZrm;
-        break;
-      case X86::VPCMPWZrmik:
-        NewOpc = X86::VPCMPEQWZrmk;
-        break;
-      case X86::VPCMPWZrri:
-        NewOpc = X86::VPCMPEQWZrr;
-        break;
-      case X86::VPCMPWZrrik:
-        NewOpc = X86::VPCMPEQWZrrk;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::VPCMPBZ128rmi:   NewOpc = X86::VPCMPEQBZ128rm;   break;
+      case X86::VPCMPBZ128rmik:  NewOpc = X86::VPCMPEQBZ128rmk;  break;
+      case X86::VPCMPBZ128rri:   NewOpc = X86::VPCMPEQBZ128rr;   break;
+      case X86::VPCMPBZ128rrik:  NewOpc = X86::VPCMPEQBZ128rrk;  break;
+      case X86::VPCMPBZ256rmi:   NewOpc = X86::VPCMPEQBZ256rm;   break;
+      case X86::VPCMPBZ256rmik:  NewOpc = X86::VPCMPEQBZ256rmk;  break;
+      case X86::VPCMPBZ256rri:   NewOpc = X86::VPCMPEQBZ256rr;   break;
+      case X86::VPCMPBZ256rrik:  NewOpc = X86::VPCMPEQBZ256rrk;  break;
+      case X86::VPCMPBZrmi:      NewOpc = X86::VPCMPEQBZrm;      break;
+      case X86::VPCMPBZrmik:     NewOpc = X86::VPCMPEQBZrmk;     break;
+      case X86::VPCMPBZrri:      NewOpc = X86::VPCMPEQBZrr;      break;
+      case X86::VPCMPBZrrik:     NewOpc = X86::VPCMPEQBZrrk;     break;
+      case X86::VPCMPDZ128rmi:   NewOpc = X86::VPCMPEQDZ128rm;   break;
+      case X86::VPCMPDZ128rmib:  NewOpc = X86::VPCMPEQDZ128rmb;  break;
+      case X86::VPCMPDZ128rmibk: NewOpc = X86::VPCMPEQDZ128rmbk; break;
+      case X86::VPCMPDZ128rmik:  NewOpc = X86::VPCMPEQDZ128rmk;  break;
+      case X86::VPCMPDZ128rri:   NewOpc = X86::VPCMPEQDZ128rr;   break;
+      case X86::VPCMPDZ128rrik:  NewOpc = X86::VPCMPEQDZ128rrk;  break;
+      case X86::VPCMPDZ256rmi:   NewOpc = X86::VPCMPEQDZ256rm;   break;
+      case X86::VPCMPDZ256rmib:  NewOpc = X86::VPCMPEQDZ256rmb;  break;
+      case X86::VPCMPDZ256rmibk: NewOpc = X86::VPCMPEQDZ256rmbk; break;
+      case X86::VPCMPDZ256rmik:  NewOpc = X86::VPCMPEQDZ256rmk;  break;
+      case X86::VPCMPDZ256rri:   NewOpc = X86::VPCMPEQDZ256rr;   break;
+      case X86::VPCMPDZ256rrik:  NewOpc = X86::VPCMPEQDZ256rrk;  break;
+      case X86::VPCMPDZrmi:      NewOpc = X86::VPCMPEQDZrm;      break;
+      case X86::VPCMPDZrmib:     NewOpc = X86::VPCMPEQDZrmb;     break;
+      case X86::VPCMPDZrmibk:    NewOpc = X86::VPCMPEQDZrmbk;    break;
+      case X86::VPCMPDZrmik:     NewOpc = X86::VPCMPEQDZrmk;     break;
+      case X86::VPCMPDZrri:      NewOpc = X86::VPCMPEQDZrr;      break;
+      case X86::VPCMPDZrrik:     NewOpc = X86::VPCMPEQDZrrk;     break;
+      case X86::VPCMPQZ128rmi:   NewOpc = X86::VPCMPEQQZ128rm;   break;
+      case X86::VPCMPQZ128rmib:  NewOpc = X86::VPCMPEQQZ128rmb;  break;
+      case X86::VPCMPQZ128rmibk: NewOpc = X86::VPCMPEQQZ128rmbk; break;
+      case X86::VPCMPQZ128rmik:  NewOpc = X86::VPCMPEQQZ128rmk;  break;
+      case X86::VPCMPQZ128rri:   NewOpc = X86::VPCMPEQQZ128rr;   break;
+      case X86::VPCMPQZ128rrik:  NewOpc = X86::VPCMPEQQZ128rrk;  break;
+      case X86::VPCMPQZ256rmi:   NewOpc = X86::VPCMPEQQZ256rm;   break;
+      case X86::VPCMPQZ256rmib:  NewOpc = X86::VPCMPEQQZ256rmb;  break;
+      case X86::VPCMPQZ256rmibk: NewOpc = X86::VPCMPEQQZ256rmbk; break;
+      case X86::VPCMPQZ256rmik:  NewOpc = X86::VPCMPEQQZ256rmk;  break;
+      case X86::VPCMPQZ256rri:   NewOpc = X86::VPCMPEQQZ256rr;   break;
+      case X86::VPCMPQZ256rrik:  NewOpc = X86::VPCMPEQQZ256rrk;  break;
+      case X86::VPCMPQZrmi:      NewOpc = X86::VPCMPEQQZrm;      break;
+      case X86::VPCMPQZrmib:     NewOpc = X86::VPCMPEQQZrmb;     break;
+      case X86::VPCMPQZrmibk:    NewOpc = X86::VPCMPEQQZrmbk;    break;
+      case X86::VPCMPQZrmik:     NewOpc = X86::VPCMPEQQZrmk;     break;
+      case X86::VPCMPQZrri:      NewOpc = X86::VPCMPEQQZrr;      break;
+      case X86::VPCMPQZrrik:     NewOpc = X86::VPCMPEQQZrrk;     break;
+      case X86::VPCMPWZ128rmi:   NewOpc = X86::VPCMPEQWZ128rm;   break;
+      case X86::VPCMPWZ128rmik:  NewOpc = X86::VPCMPEQWZ128rmk;  break;
+      case X86::VPCMPWZ128rri:   NewOpc = X86::VPCMPEQWZ128rr;   break;
+      case X86::VPCMPWZ128rrik:  NewOpc = X86::VPCMPEQWZ128rrk;  break;
+      case X86::VPCMPWZ256rmi:   NewOpc = X86::VPCMPEQWZ256rm;   break;
+      case X86::VPCMPWZ256rmik:  NewOpc = X86::VPCMPEQWZ256rmk;  break;
+      case X86::VPCMPWZ256rri:   NewOpc = X86::VPCMPEQWZ256rr;   break;
+      case X86::VPCMPWZ256rrik:  NewOpc = X86::VPCMPEQWZ256rrk;  break;
+      case X86::VPCMPWZrmi:      NewOpc = X86::VPCMPEQWZrm;      break;
+      case X86::VPCMPWZrmik:     NewOpc = X86::VPCMPEQWZrmk;     break;
+      case X86::VPCMPWZrri:      NewOpc = X86::VPCMPEQWZrr;      break;
+      case X86::VPCMPWZrrik:     NewOpc = X86::VPCMPEQWZrrk;     break;
       }
 
       OutMI.setOpcode(NewOpc);
@@ -880,188 +688,67 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
     if (OutMI.getOperand(OutMI.getNumOperands() - 1).getImm() == 6) {
       unsigned NewOpc;
       switch (OutMI.getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::VPCMPBZ128rmi:
-        NewOpc = X86::VPCMPGTBZ128rm;
-        break;
-      case X86::VPCMPBZ128rmik:
-        NewOpc = X86::VPCMPGTBZ128rmk;
-        break;
-      case X86::VPCMPBZ128rri:
-        NewOpc = X86::VPCMPGTBZ128rr;
-        break;
-      case X86::VPCMPBZ128rrik:
-        NewOpc = X86::VPCMPGTBZ128rrk;
-        break;
-      case X86::VPCMPBZ256rmi:
-        NewOpc = X86::VPCMPGTBZ256rm;
-        break;
-      case X86::VPCMPBZ256rmik:
-        NewOpc = X86::VPCMPGTBZ256rmk;
-        break;
-      case X86::VPCMPBZ256rri:
-        NewOpc = X86::VPCMPGTBZ256rr;
-        break;
-      case X86::VPCMPBZ256rrik:
-        NewOpc = X86::VPCMPGTBZ256rrk;
-        break;
-      case X86::VPCMPBZrmi:
-        NewOpc = X86::VPCMPGTBZrm;
-        break;
-      case X86::VPCMPBZrmik:
-        NewOpc = X86::VPCMPGTBZrmk;
-        break;
-      case X86::VPCMPBZrri:
-        NewOpc = X86::VPCMPGTBZrr;
-        break;
-      case X86::VPCMPBZrrik:
-        NewOpc = X86::VPCMPGTBZrrk;
-        break;
-      case X86::VPCMPDZ128rmi:
-        NewOpc = X86::VPCMPGTDZ128rm;
-        break;
-      case X86::VPCMPDZ128rmib:
-        NewOpc = X86::VPCMPGTDZ128rmb;
-        break;
-      case X86::VPCMPDZ128rmibk:
-        NewOpc = X86::VPCMPGTDZ128rmbk;
-        break;
-      case X86::VPCMPDZ128rmik:
-        NewOpc = X86::VPCMPGTDZ128rmk;
-        break;
-      case X86::VPCMPDZ128rri:
-        NewOpc = X86::VPCMPGTDZ128rr;
-        break;
-      case X86::VPCMPDZ128rrik:
-        NewOpc = X86::VPCMPGTDZ128rrk;
-        break;
-      case X86::VPCMPDZ256rmi:
-        NewOpc = X86::VPCMPGTDZ256rm;
-        break;
-      case X86::VPCMPDZ256rmib:
-        NewOpc = X86::VPCMPGTDZ256rmb;
-        break;
-      case X86::VPCMPDZ256rmibk:
-        NewOpc = X86::VPCMPGTDZ256rmbk;
-        break;
-      case X86::VPCMPDZ256rmik:
-        NewOpc = X86::VPCMPGTDZ256rmk;
-        break;
-      case X86::VPCMPDZ256rri:
-        NewOpc = X86::VPCMPGTDZ256rr;
-        break;
-      case X86::VPCMPDZ256rrik:
-        NewOpc = X86::VPCMPGTDZ256rrk;
-        break;
-      case X86::VPCMPDZrmi:
-        NewOpc = X86::VPCMPGTDZrm;
-        break;
-      case X86::VPCMPDZrmib:
-        NewOpc = X86::VPCMPGTDZrmb;
-        break;
-      case X86::VPCMPDZrmibk:
-        NewOpc = X86::VPCMPGTDZrmbk;
-        break;
-      case X86::VPCMPDZrmik:
-        NewOpc = X86::VPCMPGTDZrmk;
-        break;
-      case X86::VPCMPDZrri:
-        NewOpc = X86::VPCMPGTDZrr;
-        break;
-      case X86::VPCMPDZrrik:
-        NewOpc = X86::VPCMPGTDZrrk;
-        break;
-      case X86::VPCMPQZ128rmi:
-        NewOpc = X86::VPCMPGTQZ128rm;
-        break;
-      case X86::VPCMPQZ128rmib:
-        NewOpc = X86::VPCMPGTQZ128rmb;
-        break;
-      case X86::VPCMPQZ128rmibk:
-        NewOpc = X86::VPCMPGTQZ128rmbk;
-        break;
-      case X86::VPCMPQZ128rmik:
-        NewOpc = X86::VPCMPGTQZ128rmk;
-        break;
-      case X86::VPCMPQZ128rri:
-        NewOpc = X86::VPCMPGTQZ128rr;
-        break;
-      case X86::VPCMPQZ128rrik:
-        NewOpc = X86::VPCMPGTQZ128rrk;
-        break;
-      case X86::VPCMPQZ256rmi:
-        NewOpc = X86::VPCMPGTQZ256rm;
-        break;
-      case X86::VPCMPQZ256rmib:
-        NewOpc = X86::VPCMPGTQZ256rmb;
-        break;
-      case X86::VPCMPQZ256rmibk:
-        NewOpc = X86::VPCMPGTQZ256rmbk;
-        break;
-      case X86::VPCMPQZ256rmik:
-        NewOpc = X86::VPCMPGTQZ256rmk;
-        break;
-      case X86::VPCMPQZ256rri:
-        NewOpc = X86::VPCMPGTQZ256rr;
-        break;
-      case X86::VPCMPQZ256rrik:
-        NewOpc = X86::VPCMPGTQZ256rrk;
-        break;
-      case X86::VPCMPQZrmi:
-        NewOpc = X86::VPCMPGTQZrm;
-        break;
-      case X86::VPCMPQZrmib:
-        NewOpc = X86::VPCMPGTQZrmb;
-        break;
-      case X86::VPCMPQZrmibk:
-        NewOpc = X86::VPCMPGTQZrmbk;
-        break;
-      case X86::VPCMPQZrmik:
-        NewOpc = X86::VPCMPGTQZrmk;
-        break;
-      case X86::VPCMPQZrri:
-        NewOpc = X86::VPCMPGTQZrr;
-        break;
-      case X86::VPCMPQZrrik:
-        NewOpc = X86::VPCMPGTQZrrk;
-        break;
-      case X86::VPCMPWZ128rmi:
-        NewOpc = X86::VPCMPGTWZ128rm;
-        break;
-      case X86::VPCMPWZ128rmik:
-        NewOpc = X86::VPCMPGTWZ128rmk;
-        break;
-      case X86::VPCMPWZ128rri:
-        NewOpc = X86::VPCMPGTWZ128rr;
-        break;
-      case X86::VPCMPWZ128rrik:
-        NewOpc = X86::VPCMPGTWZ128rrk;
-        break;
-      case X86::VPCMPWZ256rmi:
-        NewOpc = X86::VPCMPGTWZ256rm;
-        break;
-      case X86::VPCMPWZ256rmik:
-        NewOpc = X86::VPCMPGTWZ256rmk;
-        break;
-      case X86::VPCMPWZ256rri:
-        NewOpc = X86::VPCMPGTWZ256rr;
-        break;
-      case X86::VPCMPWZ256rrik:
-        NewOpc = X86::VPCMPGTWZ256rrk;
-        break;
-      case X86::VPCMPWZrmi:
-        NewOpc = X86::VPCMPGTWZrm;
-        break;
-      case X86::VPCMPWZrmik:
-        NewOpc = X86::VPCMPGTWZrmk;
-        break;
-      case X86::VPCMPWZrri:
-        NewOpc = X86::VPCMPGTWZrr;
-        break;
-      case X86::VPCMPWZrrik:
-        NewOpc = X86::VPCMPGTWZrrk;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::VPCMPBZ128rmi:   NewOpc = X86::VPCMPGTBZ128rm;   break;
+      case X86::VPCMPBZ128rmik:  NewOpc = X86::VPCMPGTBZ128rmk;  break;
+      case X86::VPCMPBZ128rri:   NewOpc = X86::VPCMPGTBZ128rr;   break;
+      case X86::VPCMPBZ128rrik:  NewOpc = X86::VPCMPGTBZ128rrk;  break;
+      case X86::VPCMPBZ256rmi:   NewOpc = X86::VPCMPGTBZ256rm;   break;
+      case X86::VPCMPBZ256rmik:  NewOpc = X86::VPCMPGTBZ256rmk;  break;
+      case X86::VPCMPBZ256rri:   NewOpc = X86::VPCMPGTBZ256rr;   break;
+      case X86::VPCMPBZ256rrik:  NewOpc = X86::VPCMPGTBZ256rrk;  break;
+      case X86::VPCMPBZrmi:      NewOpc = X86::VPCMPGTBZrm;      break;
+      case X86::VPCMPBZrmik:     NewOpc = X86::VPCMPGTBZrmk;     break;
+      case X86::VPCMPBZrri:      NewOpc = X86::VPCMPGTBZrr;      break;
+      case X86::VPCMPBZrrik:     NewOpc = X86::VPCMPGTBZrrk;     break;
+      case X86::VPCMPDZ128rmi:   NewOpc = X86::VPCMPGTDZ128rm;   break;
+      case X86::VPCMPDZ128rmib:  NewOpc = X86::VPCMPGTDZ128rmb;  break;
+      case X86::VPCMPDZ128rmibk: NewOpc = X86::VPCMPGTDZ128rmbk; break;
+      case X86::VPCMPDZ128rmik:  NewOpc = X86::VPCMPGTDZ128rmk;  break;
+      case X86::VPCMPDZ128rri:   NewOpc = X86::VPCMPGTDZ128rr;   break;
+      case X86::VPCMPDZ128rrik:  NewOpc = X86::VPCMPGTDZ128rrk;  break;
+      case X86::VPCMPDZ256rmi:   NewOpc = X86::VPCMPGTDZ256rm;   break;
+      case X86::VPCMPDZ256rmib:  NewOpc = X86::VPCMPGTDZ256rmb;  break;
+      case X86::VPCMPDZ256rmibk: NewOpc = X86::VPCMPGTDZ256rmbk; break;
+      case X86::VPCMPDZ256rmik:  NewOpc = X86::VPCMPGTDZ256rmk;  break;
+      case X86::VPCMPDZ256rri:   NewOpc = X86::VPCMPGTDZ256rr;   break;
+      case X86::VPCMPDZ256rrik:  NewOpc = X86::VPCMPGTDZ256rrk;  break;
+      case X86::VPCMPDZrmi:      NewOpc = X86::VPCMPGTDZrm;      break;
+      case X86::VPCMPDZrmib:     NewOpc = X86::VPCMPGTDZrmb;     break;
+      case X86::VPCMPDZrmibk:    NewOpc = X86::VPCMPGTDZrmbk;    break;
+      case X86::VPCMPDZrmik:     NewOpc = X86::VPCMPGTDZrmk;     break;
+      case X86::VPCMPDZrri:      NewOpc = X86::VPCMPGTDZrr;      break;
+      case X86::VPCMPDZrrik:     NewOpc = X86::VPCMPGTDZrrk;     break;
+      case X86::VPCMPQZ128rmi:   NewOpc = X86::VPCMPGTQZ128rm;   break;
+      case X86::VPCMPQZ128rmib:  NewOpc = X86::VPCMPGTQZ128rmb;  break;
+      case X86::VPCMPQZ128rmibk: NewOpc = X86::VPCMPGTQZ128rmbk; break;
+      case X86::VPCMPQZ128rmik:  NewOpc = X86::VPCMPGTQZ128rmk;  break;
+      case X86::VPCMPQZ128rri:   NewOpc = X86::VPCMPGTQZ128rr;   break;
+      case X86::VPCMPQZ128rrik:  NewOpc = X86::VPCMPGTQZ128rrk;  break;
+      case X86::VPCMPQZ256rmi:   NewOpc = X86::VPCMPGTQZ256rm;   break;
+      case X86::VPCMPQZ256rmib:  NewOpc = X86::VPCMPGTQZ256rmb;  break;
+      case X86::VPCMPQZ256rmibk: NewOpc = X86::VPCMPGTQZ256rmbk; break;
+      case X86::VPCMPQZ256rmik:  NewOpc = X86::VPCMPGTQZ256rmk;  break;
+      case X86::VPCMPQZ256rri:   NewOpc = X86::VPCMPGTQZ256rr;   break;
+      case X86::VPCMPQZ256rrik:  NewOpc = X86::VPCMPGTQZ256rrk;  break;
+      case X86::VPCMPQZrmi:      NewOpc = X86::VPCMPGTQZrm;      break;
+      case X86::VPCMPQZrmib:     NewOpc = X86::VPCMPGTQZrmb;     break;
+      case X86::VPCMPQZrmibk:    NewOpc = X86::VPCMPGTQZrmbk;    break;
+      case X86::VPCMPQZrmik:     NewOpc = X86::VPCMPGTQZrmk;     break;
+      case X86::VPCMPQZrri:      NewOpc = X86::VPCMPGTQZrr;      break;
+      case X86::VPCMPQZrrik:     NewOpc = X86::VPCMPGTQZrrk;     break;
+      case X86::VPCMPWZ128rmi:   NewOpc = X86::VPCMPGTWZ128rm;   break;
+      case X86::VPCMPWZ128rmik:  NewOpc = X86::VPCMPGTWZ128rmk;  break;
+      case X86::VPCMPWZ128rri:   NewOpc = X86::VPCMPGTWZ128rr;   break;
+      case X86::VPCMPWZ128rrik:  NewOpc = X86::VPCMPGTWZ128rrk;  break;
+      case X86::VPCMPWZ256rmi:   NewOpc = X86::VPCMPGTWZ256rm;   break;
+      case X86::VPCMPWZ256rmik:  NewOpc = X86::VPCMPGTWZ256rmk;  break;
+      case X86::VPCMPWZ256rri:   NewOpc = X86::VPCMPGTWZ256rr;   break;
+      case X86::VPCMPWZ256rrik:  NewOpc = X86::VPCMPGTWZ256rrk;  break;
+      case X86::VPCMPWZrmi:      NewOpc = X86::VPCMPGTWZrm;      break;
+      case X86::VPCMPWZrmik:     NewOpc = X86::VPCMPGTWZrmk;     break;
+      case X86::VPCMPWZrri:      NewOpc = X86::VPCMPGTWZrr;      break;
+      case X86::VPCMPWZrrik:     NewOpc = X86::VPCMPGTWZrrk;     break;
       }
 
       OutMI.setOpcode(NewOpc);
@@ -1138,20 +825,11 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
     if (!AsmPrinter.getSubtarget().is64Bit()) {
       unsigned Opcode;
       switch (OutMI.getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::DEC16r:
-        Opcode = X86::DEC16r_alt;
-        break;
-      case X86::DEC32r:
-        Opcode = X86::DEC32r_alt;
-        break;
-      case X86::INC16r:
-        Opcode = X86::INC16r_alt;
-        break;
-      case X86::INC32r:
-        Opcode = X86::INC32r_alt;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::DEC16r: Opcode = X86::DEC16r_alt; break;
+      case X86::DEC32r: Opcode = X86::DEC32r_alt; break;
+      case X86::INC16r: Opcode = X86::INC16r_alt; break;
+      case X86::INC32r: Opcode = X86::INC32r_alt; break;
       }
       OutMI.setOpcode(Opcode);
     }
@@ -1174,181 +852,68 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
   case X86::MOV32rm: {
     unsigned NewOpc;
     switch (OutMI.getOpcode()) {
-    default:
-      llvm_unreachable("Invalid opcode");
+    default: llvm_unreachable("Invalid opcode");
     case X86::MOV8mr_NOREX:
-    case X86::MOV8mr:
-      NewOpc = X86::MOV8o32a;
-      break;
+    case X86::MOV8mr:  NewOpc = X86::MOV8o32a; break;
     case X86::MOV8rm_NOREX:
-    case X86::MOV8rm:
-      NewOpc = X86::MOV8ao32;
-      break;
-    case X86::MOV16mr:
-      NewOpc = X86::MOV16o32a;
-      break;
-    case X86::MOV16rm:
-      NewOpc = X86::MOV16ao32;
-      break;
-    case X86::MOV32mr:
-      NewOpc = X86::MOV32o32a;
-      break;
-    case X86::MOV32rm:
-      NewOpc = X86::MOV32ao32;
-      break;
+    case X86::MOV8rm:  NewOpc = X86::MOV8ao32; break;
+    case X86::MOV16mr: NewOpc = X86::MOV16o32a; break;
+    case X86::MOV16rm: NewOpc = X86::MOV16ao32; break;
+    case X86::MOV32mr: NewOpc = X86::MOV32o32a; break;
+    case X86::MOV32rm: NewOpc = X86::MOV32ao32; break;
     }
     SimplifyShortMoveForm(AsmPrinter, OutMI, NewOpc);
     break;
   }
 
-  case X86::ADC8ri:
-  case X86::ADC16ri:
-  case X86::ADC32ri:
-  case X86::ADC64ri32:
-  case X86::ADD8ri:
-  case X86::ADD16ri:
-  case X86::ADD32ri:
-  case X86::ADD64ri32:
-  case X86::AND8ri:
-  case X86::AND16ri:
-  case X86::AND32ri:
-  case X86::AND64ri32:
-  case X86::CMP8ri:
-  case X86::CMP16ri:
-  case X86::CMP32ri:
-  case X86::CMP64ri32:
-  case X86::OR8ri:
-  case X86::OR16ri:
-  case X86::OR32ri:
-  case X86::OR64ri32:
-  case X86::SBB8ri:
-  case X86::SBB16ri:
-  case X86::SBB32ri:
-  case X86::SBB64ri32:
-  case X86::SUB8ri:
-  case X86::SUB16ri:
-  case X86::SUB32ri:
-  case X86::SUB64ri32:
-  case X86::TEST8ri:
-  case X86::TEST16ri:
-  case X86::TEST32ri:
-  case X86::TEST64ri32:
-  case X86::XOR8ri:
-  case X86::XOR16ri:
-  case X86::XOR32ri:
-  case X86::XOR64ri32: {
+  case X86::ADC8ri: case X86::ADC16ri: case X86::ADC32ri: case X86::ADC64ri32:
+  case X86::ADD8ri: case X86::ADD16ri: case X86::ADD32ri: case X86::ADD64ri32:
+  case X86::AND8ri: case X86::AND16ri: case X86::AND32ri: case X86::AND64ri32:
+  case X86::CMP8ri: case X86::CMP16ri: case X86::CMP32ri: case X86::CMP64ri32:
+  case X86::OR8ri:  case X86::OR16ri:  case X86::OR32ri:  case X86::OR64ri32:
+  case X86::SBB8ri: case X86::SBB16ri: case X86::SBB32ri: case X86::SBB64ri32:
+  case X86::SUB8ri: case X86::SUB16ri: case X86::SUB32ri: case X86::SUB64ri32:
+  case X86::TEST8ri:case X86::TEST16ri:case X86::TEST32ri:case X86::TEST64ri32:
+  case X86::XOR8ri: case X86::XOR16ri: case X86::XOR32ri: case X86::XOR64ri32: {
     unsigned NewOpc;
     switch (OutMI.getOpcode()) {
-    default:
-      llvm_unreachable("Invalid opcode");
-    case X86::ADC8ri:
-      NewOpc = X86::ADC8i8;
-      break;
-    case X86::ADC16ri:
-      NewOpc = X86::ADC16i16;
-      break;
-    case X86::ADC32ri:
-      NewOpc = X86::ADC32i32;
-      break;
-    case X86::ADC64ri32:
-      NewOpc = X86::ADC64i32;
-      break;
-    case X86::ADD8ri:
-      NewOpc = X86::ADD8i8;
-      break;
-    case X86::ADD16ri:
-      NewOpc = X86::ADD16i16;
-      break;
-    case X86::ADD32ri:
-      NewOpc = X86::ADD32i32;
-      break;
-    case X86::ADD64ri32:
-      NewOpc = X86::ADD64i32;
-      break;
-    case X86::AND8ri:
-      NewOpc = X86::AND8i8;
-      break;
-    case X86::AND16ri:
-      NewOpc = X86::AND16i16;
-      break;
-    case X86::AND32ri:
-      NewOpc = X86::AND32i32;
-      break;
-    case X86::AND64ri32:
-      NewOpc = X86::AND64i32;
-      break;
-    case X86::CMP8ri:
-      NewOpc = X86::CMP8i8;
-      break;
-    case X86::CMP16ri:
-      NewOpc = X86::CMP16i16;
-      break;
-    case X86::CMP32ri:
-      NewOpc = X86::CMP32i32;
-      break;
-    case X86::CMP64ri32:
-      NewOpc = X86::CMP64i32;
-      break;
-    case X86::OR8ri:
-      NewOpc = X86::OR8i8;
-      break;
-    case X86::OR16ri:
-      NewOpc = X86::OR16i16;
-      break;
-    case X86::OR32ri:
-      NewOpc = X86::OR32i32;
-      break;
-    case X86::OR64ri32:
-      NewOpc = X86::OR64i32;
-      break;
-    case X86::SBB8ri:
-      NewOpc = X86::SBB8i8;
-      break;
-    case X86::SBB16ri:
-      NewOpc = X86::SBB16i16;
-      break;
-    case X86::SBB32ri:
-      NewOpc = X86::SBB32i32;
-      break;
-    case X86::SBB64ri32:
-      NewOpc = X86::SBB64i32;
-      break;
-    case X86::SUB8ri:
-      NewOpc = X86::SUB8i8;
-      break;
-    case X86::SUB16ri:
-      NewOpc = X86::SUB16i16;
-      break;
-    case X86::SUB32ri:
-      NewOpc = X86::SUB32i32;
-      break;
-    case X86::SUB64ri32:
-      NewOpc = X86::SUB64i32;
-      break;
-    case X86::TEST8ri:
-      NewOpc = X86::TEST8i8;
-      break;
-    case X86::TEST16ri:
-      NewOpc = X86::TEST16i16;
-      break;
-    case X86::TEST32ri:
-      NewOpc = X86::TEST32i32;
-      break;
-    case X86::TEST64ri32:
-      NewOpc = X86::TEST64i32;
-      break;
-    case X86::XOR8ri:
-      NewOpc = X86::XOR8i8;
-      break;
-    case X86::XOR16ri:
-      NewOpc = X86::XOR16i16;
-      break;
-    case X86::XOR32ri:
-      NewOpc = X86::XOR32i32;
-      break;
-    case X86::XOR64ri32:
-      NewOpc = X86::XOR64i32;
-      break;
+    default: llvm_unreachable("Invalid opcode");
+    case X86::ADC8ri:     NewOpc = X86::ADC8i8;    break;
+    case X86::ADC16ri:    NewOpc = X86::ADC16i16;  break;
+    case X86::ADC32ri:    NewOpc = X86::ADC32i32;  break;
+    case X86::ADC64ri32:  NewOpc = X86::ADC64i32;  break;
+    case X86::ADD8ri:     NewOpc = X86::ADD8i8;    break;
+    case X86::ADD16ri:    NewOpc = X86::ADD16i16;  break;
+    case X86::ADD32ri:    NewOpc = X86::ADD32i32;  break;
+    case X86::ADD64ri32:  NewOpc = X86::ADD64i32;  break;
+    case X86::AND8ri:     NewOpc = X86::AND8i8;    break;
+    case X86::AND16ri:    NewOpc = X86::AND16i16;  break;
+    case X86::AND32ri:    NewOpc = X86::AND32i32;  break;
+    case X86::AND64ri32:  NewOpc = X86::AND64i32;  break;
+    case X86::CMP8ri:     NewOpc = X86::CMP8i8;    break;
+    case X86::CMP16ri:    NewOpc = X86::CMP16i16;  break;
+    case X86::CMP32ri:    NewOpc = X86::CMP32i32;  break;
+    case X86::CMP64ri32:  NewOpc = X86::CMP64i32;  break;
+    case X86::OR8ri:      NewOpc = X86::OR8i8;     break;
+    case X86::OR16ri:     NewOpc = X86::OR16i16;   break;
+    case X86::OR32ri:     NewOpc = X86::OR32i32;   break;
+    case X86::OR64ri32:   NewOpc = X86::OR64i32;   break;
+    case X86::SBB8ri:     NewOpc = X86::SBB8i8;    break;
+    case X86::SBB16ri:    NewOpc = X86::SBB16i16;  break;
+    case X86::SBB32ri:    NewOpc = X86::SBB32i32;  break;
+    case X86::SBB64ri32:  NewOpc = X86::SBB64i32;  break;
+    case X86::SUB8ri:     NewOpc = X86::SUB8i8;    break;
+    case X86::SUB16ri:    NewOpc = X86::SUB16i16;  break;
+    case X86::SUB32ri:    NewOpc = X86::SUB32i32;  break;
+    case X86::SUB64ri32:  NewOpc = X86::SUB64i32;  break;
+    case X86::TEST8ri:    NewOpc = X86::TEST8i8;   break;
+    case X86::TEST16ri:   NewOpc = X86::TEST16i16; break;
+    case X86::TEST32ri:   NewOpc = X86::TEST32i32; break;
+    case X86::TEST64ri32: NewOpc = X86::TEST64i32; break;
+    case X86::XOR8ri:     NewOpc = X86::XOR8i8;    break;
+    case X86::XOR16ri:    NewOpc = X86::XOR16i16;  break;
+    case X86::XOR32ri:    NewOpc = X86::XOR32i32;  break;
+    case X86::XOR64ri32:  NewOpc = X86::XOR64i32;  break;
     }
     SimplifyShortImmForm(OutMI, NewOpc);
     break;
@@ -1373,8 +938,7 @@ void X86MCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
         X86II::isX86_64ExtendedReg(OutMI.getOperand(2).getReg())) {
       unsigned Imm = MI->getOperand(3).getImm() & 0x7;
       switch (Imm) {
-      default:
-        break;
+      default: break;
       case 0x00: // EQUAL
       case 0x03: // UNORDERED
       case 0x04: // NOT EQUAL
@@ -1538,8 +1102,7 @@ static unsigned emitNop(MCStreamer &OS, unsigned NumBytes,
       MaxNopLength = 11;
     else
       MaxNopLength = 10;
-  }
-  if (Subtarget->is32Bit())
+  } if (Subtarget->is32Bit())
     MaxNopLength = 2;
 
   // Cap a single nop emission at the profitable value for the target
@@ -1615,8 +1178,7 @@ static unsigned emitNop(MCStreamer &OS, unsigned NumBytes,
     OS.emitBytes("\x66");
 
   switch (Opc) {
-  default:
-    llvm_unreachable("Unexpected opcode");
+  default: llvm_unreachable("Unexpected opcode");
   case X86::NOOP:
     OS.emitInstruction(MCInstBuilder(Opc), *Subtarget);
     break;
@@ -2498,8 +2060,7 @@ static void addConstantComments(const MachineInstr *MI,
   case X86::VPERMILPDZrmkz: {
     unsigned ElSize;
     switch (MI->getOpcode()) {
-    default:
-      llvm_unreachable("Invalid opcode");
+    default: llvm_unreachable("Invalid opcode");
     case X86::VPERMILPSrm:
     case X86::VPERMILPSYrm:
     case X86::VPERMILPSZ128rm:
@@ -2566,16 +2127,9 @@ static void addConstantComments(const MachineInstr *MI,
 
     unsigned ElSize;
     switch (MI->getOpcode()) {
-    default:
-      llvm_unreachable("Invalid opcode");
-    case X86::VPERMIL2PSrm:
-    case X86::VPERMIL2PSYrm:
-      ElSize = 32;
-      break;
-    case X86::VPERMIL2PDrm:
-    case X86::VPERMIL2PDYrm:
-      ElSize = 64;
-      break;
+    default: llvm_unreachable("Invalid opcode");
+    case X86::VPERMIL2PSrm: case X86::VPERMIL2PSYrm: ElSize = 32; break;
+    case X86::VPERMIL2PDrm: case X86::VPERMIL2PDYrm: ElSize = 64; break;
     }
 
     const MachineOperand &MaskOp = MI->getOperand(3 + X86::AddrDisp);
@@ -2671,48 +2225,20 @@ static void addConstantComments(const MachineInstr *MI,
       int NumLanes = 1;
       // Override NumLanes for the broadcast instructions.
       switch (MI->getOpcode()) {
-      case X86::VBROADCASTF128:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTI128:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTF32X4Z256rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTF32X4rm:
-        NumLanes = 4;
-        break;
-      case X86::VBROADCASTF32X8rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTF64X2Z128rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTF64X2rm:
-        NumLanes = 4;
-        break;
-      case X86::VBROADCASTF64X4rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTI32X4Z256rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTI32X4rm:
-        NumLanes = 4;
-        break;
-      case X86::VBROADCASTI32X8rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTI64X2Z128rm:
-        NumLanes = 2;
-        break;
-      case X86::VBROADCASTI64X2rm:
-        NumLanes = 4;
-        break;
-      case X86::VBROADCASTI64X4rm:
-        NumLanes = 2;
-        break;
+      case X86::VBROADCASTF128:        NumLanes = 2; break;
+      case X86::VBROADCASTI128:        NumLanes = 2; break;
+      case X86::VBROADCASTF32X4Z256rm: NumLanes = 2; break;
+      case X86::VBROADCASTF32X4rm:     NumLanes = 4; break;
+      case X86::VBROADCASTF32X8rm:     NumLanes = 2; break;
+      case X86::VBROADCASTF64X2Z128rm: NumLanes = 2; break;
+      case X86::VBROADCASTF64X2rm:     NumLanes = 4; break;
+      case X86::VBROADCASTF64X4rm:     NumLanes = 2; break;
+      case X86::VBROADCASTI32X4Z256rm: NumLanes = 2; break;
+      case X86::VBROADCASTI32X4rm:     NumLanes = 4; break;
+      case X86::VBROADCASTI32X8rm:     NumLanes = 2; break;
+      case X86::VBROADCASTI64X2Z128rm: NumLanes = 2; break;
+      case X86::VBROADCASTI64X2rm:     NumLanes = 4; break;
+      case X86::VBROADCASTI64X4rm:     NumLanes = 2; break;
       }
 
       std::string Comment;
@@ -2790,101 +2316,38 @@ static void addConstantComments(const MachineInstr *MI,
     if (auto *C = getConstantFromPool(*MI, MI->getOperand(1 + X86::AddrDisp))) {
       int NumElts;
       switch (MI->getOpcode()) {
-      default:
-        llvm_unreachable("Invalid opcode");
-      case X86::MOVDDUPrm:
-        NumElts = 2;
-        break;
-      case X86::VMOVDDUPrm:
-        NumElts = 2;
-        break;
-      case X86::VMOVDDUPZ128rm:
-        NumElts = 2;
-        break;
-      case X86::VBROADCASTSSrm:
-        NumElts = 4;
-        break;
-      case X86::VBROADCASTSSYrm:
-        NumElts = 8;
-        break;
-      case X86::VBROADCASTSSZ128rm:
-        NumElts = 4;
-        break;
-      case X86::VBROADCASTSSZ256rm:
-        NumElts = 8;
-        break;
-      case X86::VBROADCASTSSZrm:
-        NumElts = 16;
-        break;
-      case X86::VBROADCASTSDYrm:
-        NumElts = 4;
-        break;
-      case X86::VBROADCASTSDZ256rm:
-        NumElts = 4;
-        break;
-      case X86::VBROADCASTSDZrm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTBrm:
-        NumElts = 16;
-        break;
-      case X86::VPBROADCASTBYrm:
-        NumElts = 32;
-        break;
-      case X86::VPBROADCASTBZ128rm:
-        NumElts = 16;
-        break;
-      case X86::VPBROADCASTBZ256rm:
-        NumElts = 32;
-        break;
-      case X86::VPBROADCASTBZrm:
-        NumElts = 64;
-        break;
-      case X86::VPBROADCASTDrm:
-        NumElts = 4;
-        break;
-      case X86::VPBROADCASTDYrm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTDZ128rm:
-        NumElts = 4;
-        break;
-      case X86::VPBROADCASTDZ256rm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTDZrm:
-        NumElts = 16;
-        break;
-      case X86::VPBROADCASTQrm:
-        NumElts = 2;
-        break;
-      case X86::VPBROADCASTQYrm:
-        NumElts = 4;
-        break;
-      case X86::VPBROADCASTQZ128rm:
-        NumElts = 2;
-        break;
-      case X86::VPBROADCASTQZ256rm:
-        NumElts = 4;
-        break;
-      case X86::VPBROADCASTQZrm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTWrm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTWYrm:
-        NumElts = 16;
-        break;
-      case X86::VPBROADCASTWZ128rm:
-        NumElts = 8;
-        break;
-      case X86::VPBROADCASTWZ256rm:
-        NumElts = 16;
-        break;
-      case X86::VPBROADCASTWZrm:
-        NumElts = 32;
-        break;
+      default: llvm_unreachable("Invalid opcode");
+      case X86::MOVDDUPrm:          NumElts = 2;  break;
+      case X86::VMOVDDUPrm:         NumElts = 2;  break;
+      case X86::VMOVDDUPZ128rm:     NumElts = 2;  break;
+      case X86::VBROADCASTSSrm:     NumElts = 4;  break;
+      case X86::VBROADCASTSSYrm:    NumElts = 8;  break;
+      case X86::VBROADCASTSSZ128rm: NumElts = 4;  break;
+      case X86::VBROADCASTSSZ256rm: NumElts = 8;  break;
+      case X86::VBROADCASTSSZrm:    NumElts = 16; break;
+      case X86::VBROADCASTSDYrm:    NumElts = 4;  break;
+      case X86::VBROADCASTSDZ256rm: NumElts = 4;  break;
+      case X86::VBROADCASTSDZrm:    NumElts = 8;  break;
+      case X86::VPBROADCASTBrm:     NumElts = 16; break;
+      case X86::VPBROADCASTBYrm:    NumElts = 32; break;
+      case X86::VPBROADCASTBZ128rm: NumElts = 16; break;
+      case X86::VPBROADCASTBZ256rm: NumElts = 32; break;
+      case X86::VPBROADCASTBZrm:    NumElts = 64; break;
+      case X86::VPBROADCASTDrm:     NumElts = 4;  break;
+      case X86::VPBROADCASTDYrm:    NumElts = 8;  break;
+      case X86::VPBROADCASTDZ128rm: NumElts = 4;  break;
+      case X86::VPBROADCASTDZ256rm: NumElts = 8;  break;
+      case X86::VPBROADCASTDZrm:    NumElts = 16; break;
+      case X86::VPBROADCASTQrm:     NumElts = 2;  break;
+      case X86::VPBROADCASTQYrm:    NumElts = 4;  break;
+      case X86::VPBROADCASTQZ128rm: NumElts = 2;  break;
+      case X86::VPBROADCASTQZ256rm: NumElts = 4;  break;
+      case X86::VPBROADCASTQZrm:    NumElts = 8;  break;
+      case X86::VPBROADCASTWrm:     NumElts = 8;  break;
+      case X86::VPBROADCASTWYrm:    NumElts = 16; break;
+      case X86::VPBROADCASTWZ128rm: NumElts = 8;  break;
+      case X86::VPBROADCASTWZ256rm: NumElts = 16; break;
+      case X86::VPBROADCASTWZrm:    NumElts = 32; break;
       }
 
       std::string Comment;

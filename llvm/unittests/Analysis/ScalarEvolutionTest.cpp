@@ -71,20 +71,17 @@ protected:
 };
 
 TEST_F(ScalarEvolutionsTest, SCEVUnknownRAUW) {
-  FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), std::vector<Type *>(), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
+                                              std::vector<Type *>(), false);
   Function *F = Function::Create(FTy, Function::ExternalLinkage, "f", M);
   BasicBlock *BB = BasicBlock::Create(Context, "entry", F);
   ReturnInst::Create(Context, nullptr, BB);
 
   Type *Ty = Type::getInt1Ty(Context);
   Constant *Init = Constant::getNullValue(Ty);
-  Value *V0 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage,
-                                 Init, "V0");
-  Value *V1 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage,
-                                 Init, "V1");
-  Value *V2 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage,
-                                 Init, "V2");
+  Value *V0 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage, Init, "V0");
+  Value *V1 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage, Init, "V1");
+  Value *V2 = new GlobalVariable(M, Ty, false, GlobalValue::ExternalLinkage, Init, "V2");
 
   ScalarEvolution SE = buildSE(*F);
 
@@ -123,8 +120,8 @@ TEST_F(ScalarEvolutionsTest, SCEVUnknownRAUW) {
 }
 
 TEST_F(ScalarEvolutionsTest, SimplifiedPHI) {
-  FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), std::vector<Type *>(), false);
+  FunctionType *FTy = FunctionType::get(Type::getVoidTy(Context),
+                                              std::vector<Type *>(), false);
   Function *F = Function::Create(FTy, Function::ExternalLinkage, "f", M);
   BasicBlock *EntryBB = BasicBlock::Create(Context, "entry", F);
   BasicBlock *LoopBB = BasicBlock::Create(Context, "loop", F);
@@ -148,6 +145,7 @@ TEST_F(ScalarEvolutionsTest, SimplifiedPHI) {
   EXPECT_EQ(S1, ZeroConst);
   EXPECT_EQ(S1, S2);
 }
+
 
 static Instruction *getInstructionByName(Function &F, StringRef Name) {
   for (auto &I : instructions(F))
@@ -223,7 +221,8 @@ TEST_F(ScalarEvolutionsTest, CommutativeExprOperandOrder) {
       "  %y = call i32 @unknown(i32 %b, i32 %c, i32 %a)"
       "  %z = call i32 @unknown(i32 %c, i32 %a, i32 %b)"
       "  ret void"
-      "} ",
+      "} "
+      ,
       Err, C);
 
   assert(M && "Could not parse module?");
@@ -287,7 +286,7 @@ TEST_F(ScalarEvolutionsTest, CompareSCEVComplexity) {
   BranchInst::Create(LoopBB, EntryBB);
 
   auto *Ty = Type::getInt32Ty(Context);
-  SmallVector<Instruction *, 8> Muls(8), Acc(8), NextAcc(8);
+  SmallVector<Instruction*, 8> Muls(8), Acc(8), NextAcc(8);
 
   Acc[0] = PHINode::Create(Ty, 2, "", LoopBB);
   Acc[1] = PHINode::Create(Ty, 2, "", LoopBB);
@@ -470,7 +469,8 @@ TEST_F(ScalarEvolutionsTest, SCEVNormalization) {
       " "
       "end: "
       "  ret void "
-      "} ",
+      "} "
+      ,
       Err, C);
 
   assert(M && "Could not parse module?");
@@ -500,8 +500,7 @@ TEST_F(ScalarEvolutionsTest, SCEVNormalization) {
     auto *L1 = *std::next(LI.begin());
     auto *L0 = *std::next(LI.begin(), 2);
 
-    auto GetAddRec = [&SE](const Loop *L,
-                           std::initializer_list<const SCEV *> Ops) {
+    auto GetAddRec = [&SE](const Loop *L, std::initializer_list<const SCEV *> Ops) {
       SmallVector<const SCEV *, 4> OpsCopy(Ops);
       return SE.getAddRecExpr(OpsCopy, L, SCEV::FlagAnyWrap);
     };
@@ -1011,7 +1010,7 @@ TEST_F(ScalarEvolutionsTest, SCEVComputeExpressionSize) {
   Type *T_int64 = Type::getInt64Ty(Context);
 
   FunctionType *FTy =
-      FunctionType::get(Type::getVoidTy(Context), {T_int64, T_int64}, false);
+      FunctionType::get(Type::getVoidTy(Context), { T_int64, T_int64 }, false);
   Function *F = Function::Create(FTy, Function::ExternalLinkage, "func", M);
   Argument *A = &*F->arg_begin();
   Argument *B = &*std::next(F->arg_begin());
@@ -1054,8 +1053,7 @@ TEST_F(ScalarEvolutionsTest, SCEVLoopDecIntrinsic) {
       "  ret void "
       "for.body: "
       "  %i.04 = phi i32 [ %inc, %for.body ], [ 100, %entry ] "
-      "  %inc = call i32 @llvm.loop.decrement.reg.i32.i32.i32(i32 %i.04, i32 "
-      "1) "
+      "  %inc = call i32 @llvm.loop.decrement.reg.i32.i32.i32(i32 %i.04, i32 1) "
       "  %exitcond = icmp ne i32 %inc, 0 "
       "  br i1 %exitcond, label %for.cond.cleanup, label %for.body "
       "} "
@@ -1103,8 +1101,7 @@ TEST_F(ScalarEvolutionsTest, SCEVComputeConstantDifference) {
     auto *ScevXA = SE.getSCEV(getInstructionByName(F, "xa")); // {%pp,+,1}
     auto *ScevYY = SE.getSCEV(getInstructionByName(F, "yy")); // {(3 + %pp),+,1}
     auto *ScevXB = SE.getSCEV(getInstructionByName(F, "xb")); // {%pp,+,1}
-    auto *ScevIVNext =
-        SE.getSCEV(getInstructionByName(F, "iv.next")); // {1,+,1}
+    auto *ScevIVNext = SE.getSCEV(getInstructionByName(F, "iv.next")); // {1,+,1}
 
     auto diff = [&SE](const SCEV *LHS, const SCEV *RHS) -> Optional<int> {
       auto ConstantDiffOrNone = computeConstantDifference(SE, LHS, RHS);
@@ -1424,4 +1421,4 @@ TEST_F(ScalarEvolutionsTest, MatchURem) {
   });
 }
 
-} // end namespace llvm
+}  // end namespace llvm

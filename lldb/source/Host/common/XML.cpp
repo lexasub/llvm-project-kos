@@ -349,12 +349,12 @@ XMLNode XMLNode::FindFirstChildElementWithName(const char *name) const {
   XMLNode result_node;
 
 #if LLDB_ENABLE_LIBXML2
-  ForEachChildElementWithName(name,
-                              [&result_node](const XMLNode &node) -> bool {
-                                result_node = node;
-                                // Stop iterating, we found the node we wanted
-                                return false;
-                              });
+  ForEachChildElementWithName(
+      name, [&result_node](const XMLNode &node) -> bool {
+        result_node = node;
+        // Stop iterating, we found the node we wanted
+        return false;
+      });
 #endif
 
   return result_node;
@@ -528,7 +528,7 @@ StructuredData::ObjectSP CreatePlistValue(XMLNode node) {
   }
   return StructuredData::ObjectSP(new StructuredData::Null());
 }
-} // namespace
+}
 #endif
 
 StructuredData::ObjectSP ApplePropertyList::GetStructuredData() {

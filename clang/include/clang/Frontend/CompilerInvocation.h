@@ -20,8 +20,8 @@
 #include "clang/Frontend/MigratorOptions.h"
 #include "clang/Frontend/PreprocessorOutputOptions.h"
 #include "clang/StaticAnalyzer/Core/AnalyzerOptions.h"
-#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/IntrusiveRefCntPtr.h"
+#include "llvm/ADT/ArrayRef.h"
 #include <memory>
 #include <string>
 
@@ -221,7 +221,9 @@ public:
 
   FileSystemOptions &getFileSystemOpts() { return FileSystemOpts; }
 
-  const FileSystemOptions &getFileSystemOpts() const { return FileSystemOpts; }
+  const FileSystemOptions &getFileSystemOpts() const {
+    return FileSystemOpts;
+  }
 
   FrontendOptions &getFrontendOpts() { return FrontendOpts; }
   const FrontendOptions &getFrontendOpts() const { return FrontendOpts; }

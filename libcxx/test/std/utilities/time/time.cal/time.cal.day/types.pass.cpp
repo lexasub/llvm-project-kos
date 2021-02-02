@@ -16,11 +16,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using day = std::chrono::day;
+int main(int, char**)
+{
+    using day = std::chrono::day;
 
-  static_assert(std::is_trivially_copyable_v<day>, "");
-  static_assert(std::is_standard_layout_v<day>, "");
+    static_assert(std::is_trivially_copyable_v<day>, "");
+    static_assert(std::is_standard_layout_v<day>, "");
 
   return 0;
 }

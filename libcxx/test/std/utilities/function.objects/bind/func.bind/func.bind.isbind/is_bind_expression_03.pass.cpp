@@ -21,22 +21,22 @@
 
 template <class T>
 void test() {
-  static_assert(!std::is_bind_expression<T>::value, "");
+    static_assert(!std::is_bind_expression<T>::value, "");
 }
 
 struct C {};
 
 int main(int, char**) {
-  test<int>();
-  test<void>();
-  test<C>();
-  test<C&>();
-  test<C const&>();
-  test<C*>();
-  test<void()>();
-  test<int (*)()>();
-  test<int (C::*)()>();
-  test<decltype(std::placeholders::_2)>();
+    test<int>();
+    test<void>();
+    test<C>();
+    test<C&>();
+    test<C const&>();
+    test<C*>();
+    test<void()>();
+    test<int(*)()>();
+    test<int (C::*)()>();
+    test<decltype(std::placeholders::_2)>();
 
   return 0;
 }

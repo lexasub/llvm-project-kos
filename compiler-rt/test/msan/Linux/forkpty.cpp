@@ -1,13 +1,15 @@
 // RUN: %clangxx_msan -O0 -g %s -lutil -o %t && %run %t
 
 #include <assert.h>
-#include <cstring>
 #include <pty.h>
 #include <unistd.h>
+#include <cstring>
 
 #include <sanitizer/msan_interface.h>
 
-int main(int argc, char **argv) {
+int
+main (int argc, char** argv)
+{
   int parent, worker;
   openpty(&parent, &worker, NULL, NULL, NULL);
   assert(__msan_test_shadow(&parent, sizeof(parent)) == -1);

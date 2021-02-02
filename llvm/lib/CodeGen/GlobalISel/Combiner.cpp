@@ -13,8 +13,8 @@
 #include "llvm/CodeGen/GlobalISel/Combiner.h"
 #include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/CodeGen/GlobalISel/CSEInfo.h"
-#include "llvm/CodeGen/GlobalISel/CSEMIRBuilder.h"
 #include "llvm/CodeGen/GlobalISel/CombinerInfo.h"
+#include "llvm/CodeGen/GlobalISel/CSEMIRBuilder.h"
 #include "llvm/CodeGen/GlobalISel/GISelChangeObserver.h"
 #include "llvm/CodeGen/GlobalISel/GISelWorkList.h"
 #include "llvm/CodeGen/GlobalISel/MachineIRBuilder.h"
@@ -58,7 +58,8 @@ class WorkListMaintainer : public GISelChangeObserver {
 public:
   WorkListMaintainer(WorkListTy &WorkList)
       : GISelChangeObserver(), WorkList(WorkList) {}
-  virtual ~WorkListMaintainer() {}
+  virtual ~WorkListMaintainer() {
+  }
 
   void erasingInstr(MachineInstr &MI) override {
     LLVM_DEBUG(dbgs() << "Erasing: " << MI << "\n");
@@ -87,7 +88,7 @@ public:
     LLVM_DEBUG(CreatedInstrs.clear());
   }
 };
-} // namespace
+}
 
 Combiner::Combiner(CombinerInfo &Info, const TargetPassConfig *TPC)
     : CInfo(Info), TPC(TPC) {
@@ -102,8 +103,8 @@ bool Combiner::combineMachineInstrs(MachineFunction &MF,
           MachineFunctionProperties::Property::FailedISel))
     return false;
 
-  Builder = CSEInfo ? std::make_unique<CSEMIRBuilder>()
-                    : std::make_unique<MachineIRBuilder>();
+  Builder =
+      CSEInfo ? std::make_unique<CSEMIRBuilder>() : std::make_unique<MachineIRBuilder>();
   MRI = &MF.getRegInfo();
   Builder->setMF(MF);
   if (CSEInfo)
@@ -153,7 +154,7 @@ bool Combiner::combineMachineInstrs(MachineFunction &MF,
   } while (Changed);
 
   assert(!CSEInfo || (!errorToBool(CSEInfo->verify()) &&
-                      "CSEInfo is not consistent. Likely missing calls to "
-                      "observer on mutations"));
+                         "CSEInfo is not consistent. Likely missing calls to "
+                         "observer on mutations"));
   return MFChanged;
 }

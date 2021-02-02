@@ -55,15 +55,15 @@ int main(int argc, char *argv[]) {
     printf("error in dlopen(): %s\n", dlerror());
     return 1;
   }
-  fun_t *get = (fun_t *)dlsym(lib, "get_address_of_static_var");
+  fun_t *get = (fun_t*)dlsym(lib, "get_address_of_static_var");
   if (!get) {
     printf("failed dlsym\n");
     return 1;
   }
   int *addr = get();
-  assert(((size_t)addr % 32) == 0); // should be 32-byte aligned.
+  assert(((size_t)addr % 32) == 0);  // should be 32-byte aligned.
   printf("addr: %p\n", addr);
-  addr[0] = 1; // make sure we can write there.
+  addr[0] = 1;  // make sure we can write there.
 
   // Now dlclose the shared library.
   printf("attempting to dlclose\n");
@@ -73,33 +73,36 @@ int main(int argc, char *argv[]) {
   }
   // Now, the page where 'addr' is unmapped. Map it.
   size_t page_beg = ((size_t)addr) & ~(PageSize - 1);
-  void *res = mmap((void *)(page_beg), PageSize,
+  void *res = mmap((void*)(page_beg), PageSize,
                    PROT_READ | PROT_WRITE,
                    MAP_PRIVATE | MAP_ANON | MAP_FIXED | MAP_NORESERVE, -1, 0);
-  if (res == (char *)-1L) {
+  if (res == (char*)-1L) {
     printf("failed to mmap\n");
     return 1;
   }
-  addr[1] = 2; // BOOM (if the bug is not fixed).
+  addr[1] = 2;  // BOOM (if the bug is not fixed).
   printf("PASS\n");
   // CHECK: PASS
   return 0;
 }
-#else // SHARED_LIB
+#else  // SHARED_LIB
 #include <stdio.h>
 
 static int pad1;
 static int static_var;
 static int pad2;
 
-extern "C" int *get_address_of_static_var() {
+extern "C"
+int *get_address_of_static_var() {
   return &static_var;
 }
 
-__attribute__((constructor)) void at_dlopen() {
+__attribute__((constructor))
+void at_dlopen() {
   printf("%s: I am being dlopened\n", __FILE__);
 }
-__attribute__((destructor)) void at_dlclose() {
+__attribute__((destructor))
+void at_dlclose() {
   printf("%s: I am being dlclosed\n", __FILE__);
 }
-#endif // SHARED_LIB
+#endif  // SHARED_LIB

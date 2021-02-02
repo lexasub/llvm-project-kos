@@ -36,28 +36,29 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**) {
-  {
-    typedef std::uniform_real_distribution<> D;
-    D d;
-    assert(d.a() == 0.0);
-    assert(d.b() == 1.0);
-  }
-  {
-    typedef std::uniform_real_distribution<> D;
-    D d(-6.5);
-    assert(d.a() == -6.5);
-    assert(d.b() == 1.0);
-  }
-  {
-    typedef std::uniform_real_distribution<> D;
-    D d(-6.9, 106.1);
-    assert(d.a() == -6.9);
-    assert(d.b() == 106.1);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::uniform_real_distribution<> D;
+        D d;
+        assert(d.a() == 0.0);
+        assert(d.b() == 1.0);
+    }
+    {
+        typedef std::uniform_real_distribution<> D;
+        D d(-6.5);
+        assert(d.a() == -6.5);
+        assert(d.b() == 1.0);
+    }
+    {
+        typedef std::uniform_real_distribution<> D;
+        D d(-6.9, 106.1);
+        assert(d.a() == -6.9);
+        assert(d.b() == 106.1);
+    }
 
-  test_implicit<float>();
-  test_implicit<double>();
+    test_implicit<float>();
+    test_implicit<double>();
 
-  return 0;
+    return 0;
 }

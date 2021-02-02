@@ -137,8 +137,7 @@ Status PlatformAppleSimulator::ConnectRemote(Args &args) {
     const char *arg_cstr = args.GetArgumentAtIndex(0);
     if (arg_cstr) {
       std::string arg_str(arg_cstr);
-      std::string developer_dir =
-          HostInfo::GetXcodeDeveloperDirectory().GetPath();
+      std::string developer_dir = HostInfo::GetXcodeDeveloperDirectory().GetPath();
       CoreSimulatorSupport::DeviceSet devices =
           CoreSimulatorSupport::DeviceSet::GetAvailableDevices(
               developer_dir.c_str());
@@ -254,8 +253,7 @@ void PlatformAppleSimulator::LoadCoreSimulator() {
 CoreSimulatorSupport::Device PlatformAppleSimulator::GetSimulatorDevice() {
   if (!m_device.hasValue()) {
     const CoreSimulatorSupport::DeviceType::ProductFamilyID dev_id = m_kind;
-    std::string developer_dir =
-        HostInfo::GetXcodeDeveloperDirectory().GetPath();
+    std::string developer_dir = HostInfo::GetXcodeDeveloperDirectory().GetPath();
     m_device = CoreSimulatorSupport::DeviceSet::GetAvailableDevices(
                    developer_dir.c_str())
                    .GetFanciest(dev_id);
@@ -323,8 +321,7 @@ PlatformSP PlatformAppleSimulator::CreateInstance(
       }
 
       if (create) {
-        if (std::count(supported_os.begin(), supported_os.end(),
-                       triple.getOS()))
+        if (std::count(supported_os.begin(), supported_os.end(), triple.getOS()))
           create = true;
 #if defined(__APPLE__)
         // Only accept "unknown" for the OS if the host is Apple and it
@@ -603,6 +600,7 @@ struct PlatformAppleTVSimulator {
   }
 };
 
+
 static const char *g_watchos_plugin_name = "watchos-simulator";
 static const char *g_watchos_description =
     "Apple Watch simulator platform plug-in.";
@@ -643,6 +641,7 @@ struct PlatformAppleWatchSimulator {
   }
 };
 
+
 static unsigned g_initialize_count = 0;
 
 // Static Functions
@@ -664,3 +663,4 @@ void PlatformAppleSimulator::Terminate() {
       PlatformDarwin::Terminate();
     }
 }
+

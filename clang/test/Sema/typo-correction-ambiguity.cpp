@@ -4,23 +4,26 @@
 // - no typos are diagnosed when an expression has ambiguous (multiple) corrections
 // - proper iteration through multiple potentially ambiguous corrections
 
-namespace AmbiguousCorrection {
-void method_Bar();
-void method_Foo();
-void method_Zoo();
-}; // namespace AmbiguousCorrection
+namespace AmbiguousCorrection
+{
+  void method_Bar();
+  void method_Foo();
+  void method_Zoo();
+};
 
-void testAmbiguousNoSuggestions() {
+void testAmbiguousNoSuggestions()
+{
   AmbiguousCorrection::method_Ace(); // expected-error {{no member named 'method_Ace' in namespace 'AmbiguousCorrection'}}
 }
 
-namespace MultipleCorrectionsButNotAmbiguous {
-int PrefixType_Name(int value); // expected-note {{'PrefixType_Name' declared here}}
-int PrefixType_MIN();
-int PrefixType_MAX();
-}; // namespace MultipleCorrectionsButNotAmbiguous
+namespace MultipleCorrectionsButNotAmbiguous
+{
+  int PrefixType_Name(int value);  // expected-note {{'PrefixType_Name' declared here}}
+  int PrefixType_MIN();
+  int PrefixType_MAX();
+};
 
 int testMultipleCorrectionsButNotAmbiguous() {
-  int val = MultipleCorrectionsButNotAmbiguous::PrefixType_Enum(0); // expected-error {{no member named 'PrefixType_Enum' in namespace 'MultipleCorrectionsButNotAmbiguous'; did you mean 'PrefixType_Name'?}}
+  int val = MultipleCorrectionsButNotAmbiguous::PrefixType_Enum(0);  // expected-error {{no member named 'PrefixType_Enum' in namespace 'MultipleCorrectionsButNotAmbiguous'; did you mean 'PrefixType_Name'?}}
   return val;
 }

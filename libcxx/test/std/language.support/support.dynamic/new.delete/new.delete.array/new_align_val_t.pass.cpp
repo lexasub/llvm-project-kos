@@ -41,45 +41,54 @@ constexpr auto OverAligned = __STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2;
 
 int new_handler_called = 0;
 
-void my_new_handler() {
-  ++new_handler_called;
-  std::set_new_handler(0);
+void my_new_handler()
+{
+    ++new_handler_called;
+    std::set_new_handler(0);
 }
 
 int A_constructed = 0;
 
-struct alignas(OverAligned) A{A(){++A_constructed;
-}
-~A() { --A_constructed; }
-}
-;
+struct alignas(OverAligned) A
+{
+    A() { ++A_constructed;}
+    ~A() { --A_constructed;}
+};
 
 void test_throw_max_size() {
 #ifndef TEST_HAS_NO_EXCEPTIONS
-  std::set_new_handler(my_new_handler);
-  try {
-    void* vp = operator new[](std::numeric_limits<std::size_t>::max(),
-                              static_cast<std::align_val_t>(32));
-    ((void)vp);
-    assert(false);
-  } catch (std::bad_alloc&) {
-    assert(new_handler_called == 1);
-  } catch (...) {
-    assert(false);
-  }
+    std::set_new_handler(my_new_handler);
+    try
+    {
+        void* vp = operator new[] (std::numeric_limits<std::size_t>::max(),
+                                   static_cast<std::align_val_t>(32));
+        ((void)vp);
+        assert(false);
+    }
+    catch (std::bad_alloc&)
+    {
+        assert(new_handler_called == 1);
+    }
+    catch (...)
+    {
+        assert(false);
+    }
 #endif
 }
 
-int main(int, char**) {
-  {
-    A* ap = new A[2];
-    assert(ap);
-    assert(reinterpret_cast<std::uintptr_t>(ap) % OverAligned == 0);
-    assert(A_constructed == 2);
-    delete[] ap;
-    assert(A_constructed == 0);
-  }
-  { test_throw_max_size(); }
+int main(int, char**)
+{
+    {
+        A* ap = new A[2];
+        assert(ap);
+        assert(reinterpret_cast<std::uintptr_t>(ap) % OverAligned == 0);
+        assert(A_constructed == 2);
+        delete [] ap;
+        assert(A_constructed == 0);
+    }
+    {
+        test_throw_max_size();
+    }
 
   return 0;
 }

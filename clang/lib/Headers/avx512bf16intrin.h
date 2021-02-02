@@ -17,8 +17,8 @@ typedef short __m512bh __attribute__((__vector_size__(64), __aligned__(64)));
 typedef short __m256bh __attribute__((__vector_size__(32), __aligned__(32)));
 typedef unsigned short __bfloat16;
 
-#define __DEFAULT_FN_ATTRS512                                                  \
-  __attribute__((__always_inline__, __nodebug__, __target__("avx512bf16"),     \
+#define __DEFAULT_FN_ATTRS512 \
+  __attribute__((__always_inline__, __nodebug__, __target__("avx512bf16"), \
                  __min_vector_width__(512)))
 #define __DEFAULT_FN_ATTRS                                                     \
   __attribute__((__always_inline__, __nodebug__, __target__("avx512bf16")))
@@ -51,7 +51,8 @@ static __inline__ float __DEFAULT_FN_ATTRS _mm_cvtsbh_ss(__bfloat16 __A) {
 ///    conversion of __B, and higher 256 bits come from conversion of __A.
 static __inline__ __m512bh __DEFAULT_FN_ATTRS512
 _mm512_cvtne2ps_pbh(__m512 __A, __m512 __B) {
-  return (__m512bh)__builtin_ia32_cvtne2ps2bf16_512((__v16sf)__A, (__v16sf)__B);
+  return (__m512bh)__builtin_ia32_cvtne2ps2bf16_512((__v16sf) __A,
+                                                    (__v16sf) __B);
 }
 
 /// Convert Two Packed Single Data to One Packed BF16 Data.
@@ -73,8 +74,9 @@ _mm512_cvtne2ps_pbh(__m512 __A, __m512 __B) {
 ///    conversion of __B, and higher 256 bits come from conversion of __A.
 static __inline__ __m512bh __DEFAULT_FN_ATTRS512
 _mm512_mask_cvtne2ps_pbh(__m512bh __W, __mmask32 __U, __m512 __A, __m512 __B) {
-  return (__m512bh)__builtin_ia32_selectw_512(
-      (__mmask32)__U, (__v32hi)_mm512_cvtne2ps_pbh(__A, __B), (__v32hi)__W);
+  return (__m512bh)__builtin_ia32_selectw_512((__mmask32)__U,
+                                        (__v32hi)_mm512_cvtne2ps_pbh(__A, __B),
+                                        (__v32hi)__W);
 }
 
 /// Convert Two Packed Single Data to One Packed BF16 Data.
@@ -94,9 +96,9 @@ _mm512_mask_cvtne2ps_pbh(__m512bh __W, __mmask32 __U, __m512 __A, __m512 __B) {
 ///    conversion of __B, and higher 256 bits come from conversion of __A.
 static __inline__ __m512bh __DEFAULT_FN_ATTRS512
 _mm512_maskz_cvtne2ps_pbh(__mmask32 __U, __m512 __A, __m512 __B) {
-  return (__m512bh)__builtin_ia32_selectw_512(
-      (__mmask32)__U, (__v32hi)_mm512_cvtne2ps_pbh(__A, __B),
-      (__v32hi)_mm512_setzero_si512());
+  return (__m512bh)__builtin_ia32_selectw_512((__mmask32)__U,
+                                        (__v32hi)_mm512_cvtne2ps_pbh(__A, __B),
+                                        (__v32hi)_mm512_setzero_si512());
 }
 
 /// Convert Packed Single Data to Packed BF16 Data.
@@ -110,8 +112,9 @@ _mm512_maskz_cvtne2ps_pbh(__mmask32 __U, __m512 __A, __m512 __B) {
 /// \returns A 256-bit vector of [16 x bfloat] come from conversion of __A.
 static __inline__ __m256bh __DEFAULT_FN_ATTRS512
 _mm512_cvtneps_pbh(__m512 __A) {
-  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask(
-      (__v16sf)__A, (__v16hi)_mm256_undefined_si256(), (__mmask16)-1);
+  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask((__v16sf)__A,
+                                              (__v16hi)_mm256_undefined_si256(),
+                                              (__mmask16)-1);
 }
 
 /// Convert Packed Single Data to Packed BF16 Data.
@@ -130,8 +133,9 @@ _mm512_cvtneps_pbh(__m512 __A) {
 /// \returns A 256-bit vector of [16 x bfloat] come from conversion of __A.
 static __inline__ __m256bh __DEFAULT_FN_ATTRS512
 _mm512_mask_cvtneps_pbh(__m256bh __W, __mmask16 __U, __m512 __A) {
-  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask(
-      (__v16sf)__A, (__v16hi)__W, (__mmask16)__U);
+  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask((__v16sf)__A,
+                                                        (__v16hi)__W,
+                                                        (__mmask16)__U);
 }
 
 /// Convert Packed Single Data to Packed BF16 Data.
@@ -148,8 +152,9 @@ _mm512_mask_cvtneps_pbh(__m256bh __W, __mmask16 __U, __m512 __A) {
 /// \returns A 256-bit vector of [16 x bfloat] come from conversion of __A.
 static __inline__ __m256bh __DEFAULT_FN_ATTRS512
 _mm512_maskz_cvtneps_pbh(__mmask16 __U, __m512 __A) {
-  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask(
-      (__v16sf)__A, (__v16hi)_mm256_setzero_si256(), (__mmask16)__U);
+  return (__m256bh)__builtin_ia32_cvtneps2bf16_512_mask((__v16sf)__A,
+                                                (__v16hi)_mm256_setzero_si256(),
+                                                (__mmask16)__U);
 }
 
 /// Dot Product of BF16 Pairs Accumulated into Packed Single Precision.
@@ -166,11 +171,11 @@ _mm512_maskz_cvtneps_pbh(__mmask16 __U, __m512 __A) {
 ///    A 512-bit vector of [16 x float].
 /// \returns A 512-bit vector of [16 x float] comes from  Dot Product of
 ///  __A, __B and __D
-static __inline__ __m512 __DEFAULT_FN_ATTRS512 _mm512_dpbf16_ps(__m512 __D,
-                                                                __m512bh __A,
-                                                                __m512bh __B) {
-  return (__m512)__builtin_ia32_dpbf16ps_512((__v16sf)__D, (__v16si)__A,
-                                             (__v16si)__B);
+static __inline__ __m512 __DEFAULT_FN_ATTRS512
+_mm512_dpbf16_ps(__m512 __D, __m512bh __A, __m512bh __B) {
+  return (__m512)__builtin_ia32_dpbf16ps_512((__v16sf) __D,
+                                             (__v16si) __A,
+                                             (__v16si) __B);
 }
 
 /// Dot Product of BF16 Pairs Accumulated into Packed Single Precision.
@@ -192,8 +197,9 @@ static __inline__ __m512 __DEFAULT_FN_ATTRS512 _mm512_dpbf16_ps(__m512 __D,
 ///  __A, __B and __D
 static __inline__ __m512 __DEFAULT_FN_ATTRS512
 _mm512_mask_dpbf16_ps(__m512 __D, __mmask16 __U, __m512bh __A, __m512bh __B) {
-  return (__m512)__builtin_ia32_selectps_512(
-      (__mmask16)__U, (__v16sf)_mm512_dpbf16_ps(__D, __A, __B), (__v16sf)__D);
+  return (__m512)__builtin_ia32_selectps_512((__mmask16)__U,
+                                       (__v16sf)_mm512_dpbf16_ps(__D, __A, __B),
+                                       (__v16sf)__D);
 }
 
 /// Dot Product of BF16 Pairs Accumulated into Packed Single Precision.
@@ -215,9 +221,9 @@ _mm512_mask_dpbf16_ps(__m512 __D, __mmask16 __U, __m512bh __A, __m512bh __B) {
 ///  __A, __B and __D
 static __inline__ __m512 __DEFAULT_FN_ATTRS512
 _mm512_maskz_dpbf16_ps(__mmask16 __U, __m512 __D, __m512bh __A, __m512bh __B) {
-  return (__m512)__builtin_ia32_selectps_512(
-      (__mmask16)__U, (__v16sf)_mm512_dpbf16_ps(__D, __A, __B),
-      (__v16sf)_mm512_setzero_si512());
+  return (__m512)__builtin_ia32_selectps_512((__mmask16)__U,
+                                       (__v16sf)_mm512_dpbf16_ps(__D, __A, __B),
+                                       (__v16sf)_mm512_setzero_si512());
 }
 
 /// Convert Packed BF16 Data to Packed float Data.

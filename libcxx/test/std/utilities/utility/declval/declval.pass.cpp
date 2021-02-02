@@ -15,13 +15,15 @@
 
 #include "test_macros.h"
 
-class A {
-  A(const A&);
-  A& operator=(const A&);
+class A
+{
+    A(const A&);
+    A& operator=(const A&);
 };
 
-int main(int, char**) {
-  static_assert((std::is_same<decltype(std::declval<A>()), A&&>::value), "");
+int main(int, char**)
+{
+    static_assert((std::is_same<decltype(std::declval<A>()), A&&>::value), "");
 
   return 0;
 }

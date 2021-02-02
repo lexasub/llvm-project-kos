@@ -122,13 +122,11 @@ bool DWARFVerifier::verifyUnitHeader(const DWARFDataExtractor DebugInfoData,
   if (Version >= 5) {
     UnitType = DebugInfoData.getU8(Offset);
     AddrSize = DebugInfoData.getU8(Offset);
-    AbbrOffset = isUnitDWARF64 ? DebugInfoData.getU64(Offset)
-                               : DebugInfoData.getU32(Offset);
+    AbbrOffset = isUnitDWARF64 ? DebugInfoData.getU64(Offset) : DebugInfoData.getU32(Offset);
     ValidType = dwarf::isUnitType(UnitType);
   } else {
     UnitType = 0;
-    AbbrOffset = isUnitDWARF64 ? DebugInfoData.getU64(Offset)
-                               : DebugInfoData.getU32(Offset);
+    AbbrOffset = isUnitDWARF64 ? DebugInfoData.getU64(Offset) : DebugInfoData.getU32(Offset);
     AddrSize = DebugInfoData.getU8(Offset);
   }
 
@@ -240,10 +238,11 @@ unsigned DWARFVerifier::verifyDebugInfoCallSite(const DWARFDie &Die) {
     return 1;
   }
 
-  Optional<DWARFFormValue> CallAttr = Curr.find(
-      {DW_AT_call_all_calls, DW_AT_call_all_source_calls,
-       DW_AT_call_all_tail_calls, DW_AT_GNU_all_call_sites,
-       DW_AT_GNU_all_source_call_sites, DW_AT_GNU_all_tail_call_sites});
+  Optional<DWARFFormValue> CallAttr =
+      Curr.find({DW_AT_call_all_calls, DW_AT_call_all_source_calls,
+                 DW_AT_call_all_tail_calls, DW_AT_GNU_all_call_sites,
+                 DW_AT_GNU_all_source_call_sites,
+                 DW_AT_GNU_all_tail_call_sites});
   if (!CallAttr) {
     error() << "Subprogram with call site entry has no DW_AT_call attribute:";
     Curr.dump(OS);
@@ -336,9 +335,7 @@ unsigned DWARFVerifier::verifyUnitSection(const DWARFSection &S,
             CompileUnitVector));
         break;
       }
-      default: {
-        llvm_unreachable("Invalid UnitType.");
-      }
+      default: { llvm_unreachable("Invalid UnitType."); }
       }
       NumDebugInfoErrors += verifyUnitContents(*Unit);
     }
@@ -948,12 +945,12 @@ unsigned DWARFVerifier::verifyAppleAccelTable(const DWARFSection *AccelSection,
           if (!Name)
             Name = "<NULL>";
 
-          error() << format("%s Bucket[%d] Hash[%d] = 0x%08x "
-                            "Str[%u] = 0x%08" PRIx64 " DIE[%d] = 0x%08" PRIx64
-                            " "
-                            "is not a valid DIE offset for \"%s\".\n",
-                            SectionName, BucketIdx, HashIdx, Hash, StringCount,
-                            StrpOffset, HashDataIdx, Offset, Name);
+          error() << format(
+              "%s Bucket[%d] Hash[%d] = 0x%08x "
+              "Str[%u] = 0x%08" PRIx64 " DIE[%d] = 0x%08" PRIx64 " "
+              "is not a valid DIE offset for \"%s\".\n",
+              SectionName, BucketIdx, HashIdx, Hash, StringCount, StrpOffset,
+              HashDataIdx, Offset, Name);
 
           ++NumErrors;
           continue;
@@ -1320,22 +1317,22 @@ unsigned DWARFVerifier::verifyNameIndexEntries(
       ++NumErrors;
     }
   }
-  handleAllErrors(
-      EntryOr.takeError(),
-      [&](const DWARFDebugNames::SentinelError &) {
-        if (NumEntries > 0)
-          return;
-        error() << formatv("Name Index @ {0:x}: Name {1} ({2}) is "
-                           "not associated with any entries.\n",
-                           NI.getUnitOffset(), NTE.getIndex(), Str);
-        ++NumErrors;
-      },
-      [&](const ErrorInfoBase &Info) {
-        error() << formatv("Name Index @ {0:x}: Name {1} ({2}): {3}\n",
-                           NI.getUnitOffset(), NTE.getIndex(), Str,
-                           Info.message());
-        ++NumErrors;
-      });
+  handleAllErrors(EntryOr.takeError(),
+                  [&](const DWARFDebugNames::SentinelError &) {
+                    if (NumEntries > 0)
+                      return;
+                    error() << formatv("Name Index @ {0:x}: Name {1} ({2}) is "
+                                       "not associated with any entries.\n",
+                                       NI.getUnitOffset(), NTE.getIndex(), Str);
+                    ++NumErrors;
+                  },
+                  [&](const ErrorInfoBase &Info) {
+                    error()
+                        << formatv("Name Index @ {0:x}: Name {1} ({2}): {3}\n",
+                                   NI.getUnitOffset(), NTE.getIndex(), Str,
+                                   Info.message());
+                    ++NumErrors;
+                  });
   return NumErrors;
 }
 

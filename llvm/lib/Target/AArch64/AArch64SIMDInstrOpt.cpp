@@ -55,7 +55,8 @@ using namespace llvm;
 
 #define DEBUG_TYPE "aarch64-simdinstr-opt"
 
-STATISTIC(NumModifiedInstr, "Number of SIMD instructions modified");
+STATISTIC(NumModifiedInstr,
+          "Number of SIMD instructions modified");
 
 #define AARCH64_VECTOR_BY_ELEMENT_OPT_NAME                                     \
   "AArch64 SIMD instructions optimization pass"
@@ -77,69 +78,72 @@ struct AArch64SIMDInstrOpt : public MachineFunctionPass {
   // store instructions replacement pass early or not for a particular target.
   std::unordered_map<std::string, bool> InterlEarlyExit;
 
-  typedef enum { VectorElem, Interleave } Subpass;
+  typedef enum {
+    VectorElem,
+    Interleave
+  } Subpass;
 
   // Instruction represented by OrigOpc is replaced by instructions in ReplOpc.
   struct InstReplInfo {
     unsigned OrigOpc;
-    std::vector<unsigned> ReplOpc;
+		std::vector<unsigned> ReplOpc;
     const TargetRegisterClass RC;
   };
 
-#define RuleST2(OpcOrg, OpcR0, OpcR1, OpcR2, RC)                               \
-  { OpcOrg, {OpcR0, OpcR1, OpcR2}, RC }
-#define RuleST4(OpcOrg, OpcR0, OpcR1, OpcR2, OpcR3, OpcR4, OpcR5, OpcR6,       \
-                OpcR7, OpcR8, OpcR9, RC)                                       \
-  {OpcOrg,                                                                     \
-   {OpcR0, OpcR1, OpcR2, OpcR3, OpcR4, OpcR5, OpcR6, OpcR7, OpcR8, OpcR9},     \
-   RC}
+#define RuleST2(OpcOrg, OpcR0, OpcR1, OpcR2, RC) \
+  {OpcOrg, {OpcR0, OpcR1, OpcR2}, RC}
+#define RuleST4(OpcOrg, OpcR0, OpcR1, OpcR2, OpcR3, OpcR4, OpcR5, OpcR6, \
+                OpcR7, OpcR8, OpcR9, RC) \
+  {OpcOrg, \
+   {OpcR0, OpcR1, OpcR2, OpcR3, OpcR4, OpcR5, OpcR6, OpcR7, OpcR8, OpcR9}, RC}
 
   // The Instruction Replacement Table:
   std::vector<InstReplInfo> IRT = {
-      // ST2 instructions
-      RuleST2(AArch64::ST2Twov2d, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
-              AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST2(AArch64::ST2Twov4s, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
-              AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST2(AArch64::ST2Twov2s, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
-              AArch64::STPDi, AArch64::FPR64RegClass),
-      RuleST2(AArch64::ST2Twov8h, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
-              AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST2(AArch64::ST2Twov4h, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
-              AArch64::STPDi, AArch64::FPR64RegClass),
-      RuleST2(AArch64::ST2Twov16b, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
-              AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST2(AArch64::ST2Twov8b, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
-              AArch64::STPDi, AArch64::FPR64RegClass),
-      // ST4 instructions
-      RuleST4(AArch64::ST4Fourv2d, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
-              AArch64::ZIP1v2i64, AArch64::ZIP2v2i64, AArch64::ZIP1v2i64,
-              AArch64::ZIP2v2i64, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
-              AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST4(AArch64::ST4Fourv4s, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
-              AArch64::ZIP1v4i32, AArch64::ZIP2v4i32, AArch64::ZIP1v4i32,
-              AArch64::ZIP2v4i32, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
-              AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST4(AArch64::ST4Fourv2s, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
-              AArch64::ZIP1v2i32, AArch64::ZIP2v2i32, AArch64::ZIP1v2i32,
-              AArch64::ZIP2v2i32, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
-              AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass),
-      RuleST4(AArch64::ST4Fourv8h, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
-              AArch64::ZIP1v8i16, AArch64::ZIP2v8i16, AArch64::ZIP1v8i16,
-              AArch64::ZIP2v8i16, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
-              AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST4(AArch64::ST4Fourv4h, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
-              AArch64::ZIP1v4i16, AArch64::ZIP2v4i16, AArch64::ZIP1v4i16,
-              AArch64::ZIP2v4i16, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
-              AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass),
-      RuleST4(AArch64::ST4Fourv16b, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
-              AArch64::ZIP1v16i8, AArch64::ZIP2v16i8, AArch64::ZIP1v16i8,
-              AArch64::ZIP2v16i8, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
-              AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
-      RuleST4(AArch64::ST4Fourv8b, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
-              AArch64::ZIP1v8i8, AArch64::ZIP2v8i8, AArch64::ZIP1v8i8,
-              AArch64::ZIP2v8i8, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
-              AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass)};
+    // ST2 instructions
+    RuleST2(AArch64::ST2Twov2d, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
+          AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST2(AArch64::ST2Twov4s, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
+          AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST2(AArch64::ST2Twov2s, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
+          AArch64::STPDi, AArch64::FPR64RegClass),
+    RuleST2(AArch64::ST2Twov8h, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
+          AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST2(AArch64::ST2Twov4h, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
+          AArch64::STPDi, AArch64::FPR64RegClass),
+    RuleST2(AArch64::ST2Twov16b, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
+          AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST2(AArch64::ST2Twov8b, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
+          AArch64::STPDi, AArch64::FPR64RegClass),
+    // ST4 instructions
+    RuleST4(AArch64::ST4Fourv2d, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
+          AArch64::ZIP1v2i64, AArch64::ZIP2v2i64, AArch64::ZIP1v2i64,
+          AArch64::ZIP2v2i64, AArch64::ZIP1v2i64, AArch64::ZIP2v2i64,
+          AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST4(AArch64::ST4Fourv4s, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
+          AArch64::ZIP1v4i32, AArch64::ZIP2v4i32, AArch64::ZIP1v4i32,
+          AArch64::ZIP2v4i32, AArch64::ZIP1v4i32, AArch64::ZIP2v4i32,
+          AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST4(AArch64::ST4Fourv2s, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
+          AArch64::ZIP1v2i32, AArch64::ZIP2v2i32, AArch64::ZIP1v2i32,
+          AArch64::ZIP2v2i32, AArch64::ZIP1v2i32, AArch64::ZIP2v2i32,
+          AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass),
+    RuleST4(AArch64::ST4Fourv8h, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
+          AArch64::ZIP1v8i16, AArch64::ZIP2v8i16, AArch64::ZIP1v8i16,
+          AArch64::ZIP2v8i16, AArch64::ZIP1v8i16, AArch64::ZIP2v8i16,
+          AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST4(AArch64::ST4Fourv4h, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
+          AArch64::ZIP1v4i16, AArch64::ZIP2v4i16, AArch64::ZIP1v4i16,
+          AArch64::ZIP2v4i16, AArch64::ZIP1v4i16, AArch64::ZIP2v4i16,
+          AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass),
+    RuleST4(AArch64::ST4Fourv16b, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
+          AArch64::ZIP1v16i8, AArch64::ZIP2v16i8, AArch64::ZIP1v16i8,
+          AArch64::ZIP2v16i8, AArch64::ZIP1v16i8, AArch64::ZIP2v16i8,
+          AArch64::STPQi, AArch64::STPQi, AArch64::FPR128RegClass),
+    RuleST4(AArch64::ST4Fourv8b, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
+          AArch64::ZIP1v8i8, AArch64::ZIP2v8i8, AArch64::ZIP1v8i8,
+          AArch64::ZIP2v8i8, AArch64::ZIP1v8i8, AArch64::ZIP2v8i8,
+          AArch64::STPDi, AArch64::STPDi, AArch64::FPR64RegClass)
+  };
 
   // A costly instruction is replaced in this work by N efficient instructions
   // The maximum of N is curently 10 and it is for ST4 case.
@@ -154,7 +158,7 @@ struct AArch64SIMDInstrOpt : public MachineFunctionPass {
   /// array InstDescRepl.
   /// Return true if replacement is expected to be faster.
   bool shouldReplaceInst(MachineFunction *MF, const MCInstrDesc *InstDesc,
-                         SmallVectorImpl<const MCInstrDesc *> &ReplInstrMCID);
+                         SmallVectorImpl<const MCInstrDesc*> &ReplInstrMCID);
 
   /// Determine if we need to exit the instruction replacement optimization
   /// passes early. This makes sure that no compile time is spent in this pass
@@ -180,8 +184,8 @@ struct AArch64SIMDInstrOpt : public MachineFunctionPass {
   /// Example of such instructions.
   ///    %dest = REG_SEQUENCE %st2_src1, dsub0, %st2_src2, dsub1;
   /// Return true when the instruction is processed successfully.
-  bool processSeqRegInst(MachineInstr *DefiningMI, unsigned *StReg,
-                         unsigned *StRegKill, unsigned NumArg) const;
+  bool processSeqRegInst(MachineInstr *DefiningMI, unsigned* StReg,
+                         unsigned* StRegKill, unsigned NumArg) const;
 
   /// Load/Store Interleaving instructions are not always beneficial.
   /// Replace them by ZIP instructionand classical load/store.
@@ -210,9 +214,9 @@ INITIALIZE_PASS(AArch64SIMDInstrOpt, "aarch64-simdinstr-opt",
 /// to replace the instruction InstDesc by the instructions stored in the
 /// array InstDescRepl.
 /// Return true if replacement is expected to be faster.
-bool AArch64SIMDInstrOpt::shouldReplaceInst(
-    MachineFunction *MF, const MCInstrDesc *InstDesc,
-    SmallVectorImpl<const MCInstrDesc *> &InstDescRepl) {
+bool AArch64SIMDInstrOpt::
+shouldReplaceInst(MachineFunction *MF, const MCInstrDesc *InstDesc,
+                  SmallVectorImpl<const MCInstrDesc*> &InstDescRepl) {
   // Check if replacement decision is already available in the cached table.
   // if so, return it.
   std::string Subtarget = std::string(SchedModel.getSubtargetInfo()->getCPU());
@@ -223,19 +227,22 @@ bool AArch64SIMDInstrOpt::shouldReplaceInst(
 
   unsigned SCIdx = InstDesc->getSchedClass();
   const MCSchedClassDesc *SCDesc =
-      SchedModel.getMCSchedModel()->getSchedClassDesc(SCIdx);
+    SchedModel.getMCSchedModel()->getSchedClassDesc(SCIdx);
 
   // If a target does not define resources for the instructions
   // of interest, then return false for no replacement.
   const MCSchedClassDesc *SCDescRepl;
-  if (!SCDesc->isValid() || SCDesc->isVariant()) {
+  if (!SCDesc->isValid() || SCDesc->isVariant())
+  {
     SIMDInstrTable[InstID] = false;
     return false;
   }
-  for (auto IDesc : InstDescRepl) {
-    SCDescRepl =
-        SchedModel.getMCSchedModel()->getSchedClassDesc(IDesc->getSchedClass());
-    if (!SCDescRepl->isValid() || SCDescRepl->isVariant()) {
+  for (auto IDesc : InstDescRepl)
+  {
+    SCDescRepl = SchedModel.getMCSchedModel()->getSchedClassDesc(
+      IDesc->getSchedClass());
+    if (!SCDescRepl->isValid() || SCDescRepl->isVariant())
+    {
       SIMDInstrTable[InstID] = false;
       return false;
     }
@@ -243,13 +250,16 @@ bool AArch64SIMDInstrOpt::shouldReplaceInst(
 
   // Replacement cost.
   unsigned ReplCost = 0;
-  for (auto IDesc : InstDescRepl)
+  for (auto IDesc :InstDescRepl)
     ReplCost += SchedModel.computeInstrLatency(IDesc->getOpcode());
 
-  if (SchedModel.computeInstrLatency(InstDesc->getOpcode()) > ReplCost) {
+  if (SchedModel.computeInstrLatency(InstDesc->getOpcode()) > ReplCost)
+  {
     SIMDInstrTable[InstID] = true;
     return true;
-  } else {
+  }
+  else
+  {
     SIMDInstrTable[InstID] = false;
     return false;
   }
@@ -262,8 +272,8 @@ bool AArch64SIMDInstrOpt::shouldReplaceInst(
 /// Return true if early exit of this pass for a kind of instruction
 /// replacement is recommended for a target.
 bool AArch64SIMDInstrOpt::shouldExitEarly(MachineFunction *MF, Subpass SP) {
-  const MCInstrDesc *OriginalMCID;
-  SmallVector<const MCInstrDesc *, MaxNumRepl> ReplInstrMCID;
+  const MCInstrDesc* OriginalMCID;
+  SmallVector<const MCInstrDesc*, MaxNumRepl> ReplInstrMCID;
 
   switch (SP) {
   // For this optimization, check by comparing the latency of a representative
@@ -307,8 +317,8 @@ bool AArch64SIMDInstrOpt::shouldExitEarly(MachineFunction *MF, Subpass SP) {
 /// Return true when the DUP instruction already exists. In this case,
 /// DestReg will point to the destination of the already created DUP.
 bool AArch64SIMDInstrOpt::reuseDUP(MachineInstr &MI, unsigned DupOpcode,
-                                   unsigned SrcReg, unsigned LaneNumber,
-                                   unsigned *DestReg) const {
+                                         unsigned SrcReg, unsigned LaneNumber,
+                                         unsigned *DestReg) const {
   for (MachineBasicBlock::iterator MII = MI, MIE = MI.getParent()->begin();
        MII != MIE;) {
     MII--;
@@ -407,7 +417,7 @@ bool AArch64SIMDInstrOpt::optimizeVectElement(MachineInstr &MI) {
     break;
   }
 
-  SmallVector<const MCInstrDesc *, 2> ReplInstrMCID;
+  SmallVector<const MCInstrDesc*, 2> ReplInstrMCID;
   ReplInstrMCID.push_back(DupMCID);
   ReplInstrMCID.push_back(MulMCID);
   if (!shouldReplaceInst(MI.getParent()->getParent(), &TII->get(MI.getOpcode()),
@@ -500,14 +510,14 @@ bool AArch64SIMDInstrOpt::optimizeLdStInterleave(MachineInstr &MI) {
   const DebugLoc &DL = MI.getDebugLoc();
   MachineBasicBlock &MBB = *MI.getParent();
   SmallVector<unsigned, MaxNumRepl> ZipDest;
-  SmallVector<const MCInstrDesc *, MaxNumRepl> ReplInstrMCID;
+  SmallVector<const MCInstrDesc*, MaxNumRepl> ReplInstrMCID;
 
   // If current instruction matches any of the rewriting rules, then
   // gather information about parameters of the new instructions.
   bool Match = false;
   for (auto &I : IRT) {
     if (MI.getOpcode() == I.OrigOpc) {
-      SeqReg = MI.getOperand(0).getReg();
+      SeqReg  = MI.getOperand(0).getReg();
       AddrReg = MI.getOperand(1).getReg();
       DefiningMI = MRI->getUniqueVRegDef(SeqReg);
       unsigned NumReg = determineSrcReg(MI);
@@ -622,20 +632,18 @@ bool AArch64SIMDInstrOpt::optimizeLdStInterleave(MachineInstr &MI) {
 ///    %dest = REG_SEQUENCE %st2_src1, dsub0, %st2_src2, dsub1;
 /// Return true when the instruction is processed successfully.
 bool AArch64SIMDInstrOpt::processSeqRegInst(MachineInstr *DefiningMI,
-                                            unsigned *StReg,
-                                            unsigned *StRegKill,
-                                            unsigned NumArg) const {
-  assert(DefiningMI != NULL);
+     unsigned* StReg, unsigned* StRegKill, unsigned NumArg) const {
+  assert (DefiningMI != NULL);
   if (DefiningMI->getOpcode() != AArch64::REG_SEQUENCE)
     return false;
 
-  for (unsigned i = 0; i < NumArg; i++) {
-    StReg[i] = DefiningMI->getOperand(2 * i + 1).getReg();
-    StRegKill[i] = getKillRegState(DefiningMI->getOperand(2 * i + 1).isKill());
+  for (unsigned i=0; i<NumArg; i++) {
+    StReg[i]     = DefiningMI->getOperand(2*i+1).getReg();
+    StRegKill[i] = getKillRegState(DefiningMI->getOperand(2*i+1).isKill());
 
     // Sanity check for the other arguments.
-    if (DefiningMI->getOperand(2 * i + 2).isImm()) {
-      switch (DefiningMI->getOperand(2 * i + 2).getImm()) {
+    if (DefiningMI->getOperand(2*i+2).isImm()) {
+      switch (DefiningMI->getOperand(2*i+2).getImm()) {
       default:
         return false;
 
@@ -649,7 +657,8 @@ bool AArch64SIMDInstrOpt::processSeqRegInst(MachineInstr *DefiningMI,
       case AArch64::qsub3:
         break;
       }
-    } else
+    }
+    else
       return false;
   }
   return true;
@@ -707,7 +716,7 @@ bool AArch64SIMDInstrOpt::runOnMachineFunction(MachineFunction &MF) {
           MachineInstr &MI = *MII;
           bool InstRewrite;
           if (OptimizationKind == VectorElem)
-            InstRewrite = optimizeVectElement(MI);
+            InstRewrite = optimizeVectElement(MI) ;
           else
             InstRewrite = optimizeLdStInterleave(MI);
           if (InstRewrite) {

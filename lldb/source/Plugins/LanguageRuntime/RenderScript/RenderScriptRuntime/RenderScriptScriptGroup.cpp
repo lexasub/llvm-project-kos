@@ -138,10 +138,10 @@ public:
 class CommandObjectRenderScriptScriptGroup : public CommandObjectMultiword {
 public:
   CommandObjectRenderScriptScriptGroup(CommandInterpreter &interpreter)
-      : CommandObjectMultiword(
-            interpreter, "renderscript scriptgroup",
-            "Command set for interacting with scriptgroups.", nullptr,
-            eCommandRequiresProcess | eCommandProcessMustBeLaunched) {
+      : CommandObjectMultiword(interpreter, "renderscript scriptgroup",
+                               "Command set for interacting with scriptgroups.",
+                               nullptr, eCommandRequiresProcess |
+                                            eCommandProcessMustBeLaunched) {
     LoadSubCommand(
         "breakpoint",
         CommandObjectSP(

@@ -19,16 +19,16 @@ public:
 
 class S {
 public:
-  __declspec(property(get = GetX, put = PutX)) int x[];
-  int GetX(int i, int j) { return i + j; }
+  __declspec(property(get=GetX,put=PutX)) int x[];
+  int GetX(int i, int j) { return i+j; }
   void PutX(int i, int j, int k) { j = i = k; }
 };
 
 template <typename T>
 class St {
 public:
-  __declspec(property(get = GetX, put = PutX)) T x[];
-  T GetX(T i, T j) { return i + j; }
+  __declspec(property(get=GetX,put=PutX)) T x[];
+  T GetX(T i, T j) { return i+j; }
   T PutX(T i, T j, T k) { return j = i = k; }
   ~St() { x[0][0] = x[1][1]; }
 };

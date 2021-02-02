@@ -10,7 +10,7 @@ struct Derived : Base {
 };
 
 struct Base2 {
-  Base2() noexcept {}
+   Base2() noexcept {}
 };
 
 struct Derived2 : Base2 {

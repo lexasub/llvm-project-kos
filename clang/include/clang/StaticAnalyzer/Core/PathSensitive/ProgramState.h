@@ -38,9 +38,9 @@ class AnalysisManager;
 class CallEvent;
 class CallEventManager;
 
-typedef std::unique_ptr<ConstraintManager> (*ConstraintManagerCreator)(
+typedef std::unique_ptr<ConstraintManager>(*ConstraintManagerCreator)(
     ProgramStateManager &, ExprEngine *);
-typedef std::unique_ptr<StoreManager> (*StoreManagerCreator)(
+typedef std::unique_ptr<StoreManager>(*StoreManagerCreator)(
     ProgramStateManager &);
 
 //===----------------------------------------------------------------------===//
@@ -51,9 +51,9 @@ template <typename T> struct ProgramStatePartialTrait;
 
 template <typename T> struct ProgramStateTrait {
   typedef typename T::data_type data_type;
-  static inline void *MakeVoidPtr(data_type D) { return (void *)D; }
-  static inline data_type MakeData(void *const *P) {
-    return P ? (data_type)*P : (data_type)0;
+  static inline void *MakeVoidPtr(data_type D) { return (void*) D; }
+  static inline data_type MakeData(void *const* P) {
+    return P ? (data_type) *P : (data_type) 0;
   }
 };
 
@@ -71,20 +71,20 @@ template <typename T> struct ProgramStateTrait {
 ///  values will never change.
 class ProgramState : public llvm::FoldingSetNode {
 public:
-  typedef llvm::ImmutableSet<llvm::APSInt *> IntSetTy;
-  typedef llvm::ImmutableMap<void *, void *> GenericDataMap;
+  typedef llvm::ImmutableSet<llvm::APSInt*>                IntSetTy;
+  typedef llvm::ImmutableMap<void*, void*>                 GenericDataMap;
 
 private:
-  void operator=(const ProgramState &R) = delete;
+  void operator=(const ProgramState& R) = delete;
 
   friend class ProgramStateManager;
   friend class ExplodedGraph;
   friend class ExplodedNode;
 
   ProgramStateManager *stateMgr;
-  Environment Env;    // Maps a Stmt to its current SVal.
-  Store store;        // Maps a location to its current value.
-  GenericDataMap GDM; // Custom data stored by a client of this class.
+  Environment Env;           // Maps a Stmt to its current SVal.
+  Store store;               // Maps a location to its current value.
+  GenericDataMap   GDM;      // Custom data stored by a client of this class.
   unsigned refCount;
 
   /// makeWithStore - Return a ProgramState with the same values as the current
@@ -95,8 +95,8 @@ private:
 
 public:
   /// This ctor is used when creating the first ProgramState object.
-  ProgramState(ProgramStateManager *mgr, const Environment &env, StoreRef st,
-               GenericDataMap gdm);
+  ProgramState(ProgramStateManager *mgr, const Environment& env,
+          StoreRef st, GenericDataMap gdm);
 
   /// Copy ctor - We must explicitly define this or else the "Next" ptr
   ///  in FoldingSetNode will also get copied.
@@ -107,7 +107,9 @@ public:
   int64_t getID() const;
 
   /// Return the ProgramStateManager associated with this state.
-  ProgramStateManager &getStateManager() const { return *stateMgr; }
+  ProgramStateManager &getStateManager() const {
+    return *stateMgr;
+  }
 
   AnalysisManager &getAnalysisManager() const;
 
@@ -116,11 +118,12 @@ public:
 
   /// getEnvironment - Return the environment associated with this state.
   ///  The environment is the mapping from expressions to values.
-  const Environment &getEnvironment() const { return Env; }
+  const Environment& getEnvironment() const { return Env; }
 
   /// Return the store associated with this state.  The store
   ///  is a mapping from locations to values.
   Store getStore() const { return store; }
+
 
   /// getGDM - Return the generic data map associated with this state.
   GenericDataMap getGDM() const { return GDM; }
@@ -130,7 +133,7 @@ public:
   /// Profile - Profile the contents of a ProgramState object for use in a
   ///  FoldingSet.  Two ProgramState objects are considered equal if they
   ///  have the same Environment, Store, and GenericDataMap.
-  static void Profile(llvm::FoldingSetNodeID &ID, const ProgramState *V) {
+  static void Profile(llvm::FoldingSetNodeID& ID, const ProgramState *V) {
     V->Env.Profile(ID);
     ID.AddPointer(V->store);
     V->GDM.Profile(ID);
@@ -138,7 +141,9 @@ public:
 
   /// Profile - Used to profile the contents of this object for inclusion
   ///  in a FoldingSet.
-  void Profile(llvm::FoldingSetNodeID &ID) const { Profile(ID, this); }
+  void Profile(llvm::FoldingSetNodeID& ID) const {
+    Profile(ID, this);
+  }
 
   BasicValueFactory &getBasicVals() const;
   SymbolManager &getSymbolManager() const;
@@ -147,12 +152,12 @@ public:
   // Constraints on values.
   //==---------------------------------------------------------------------==//
   //
-  // Each ProgramState records constraints on symbolic values.  These
-  // constraints are managed using the ConstraintManager associated with a
-  // ProgramStateManager. As constraints gradually accrue on symbolic values,
-  // added constraints may conflict and indicate that a state is infeasible (as
-  // no real values could satisfy all the constraints).  This is the principal
-  // mechanism for modeling path-sensitivity in ExprEngine/ProgramState.
+  // Each ProgramState records constraints on symbolic values.  These constraints
+  // are managed using the ConstraintManager associated with a ProgramStateManager.
+  // As constraints gradually accrue on symbolic values, added constraints
+  // may conflict and indicate that a state is infeasible (as no real values
+  // could satisfy all the constraints).  This is the principal mechanism
+  // for modeling path-sensitivity in ExprEngine/ProgramState.
   //
   // Various "assume" methods form the interface for adding constraints to
   // symbolic values.  A call to 'assume' indicates an assumption being placed
@@ -165,8 +170,8 @@ public:
   //  (3) A binary value "Assumption" that indicates whether the constraint is
   //      assumed to be true or false.
   //
-  // The output of "assume*" is a new ProgramState object with the added
-  // constraints. If no new state is feasible, NULL is returned.
+  // The output of "assume*" is a new ProgramState object with the added constraints.
+  // If no new state is feasible, NULL is returned.
   //
 
   /// Assumes that the value of \p cond is zero (if \p assumption is "false")
@@ -221,7 +226,7 @@ public:
   ConditionTruthVal areEqual(SVal Lhs, SVal Rhs) const;
 
   /// Utility method for getting regions.
-  const VarRegion *getRegion(const VarDecl *D, const LocationContext *LC) const;
+  const VarRegion* getRegion(const VarDecl *D, const LocationContext *LC) const;
 
   //==---------------------------------------------------------------------==//
   // Binding and retrieving values to/from the environment and symbolic store.
@@ -274,17 +279,19 @@ public:
   ///        the call and should be considered directly invalidated.
   /// \param ITraits information about special handling for a particular
   ///        region/symbol.
-  LLVM_NODISCARD ProgramStateRef invalidateRegions(
-      ArrayRef<const MemRegion *> Regions, const Expr *E, unsigned BlockCount,
-      const LocationContext *LCtx, bool CausesPointerEscape,
-      InvalidatedSymbols *IS = nullptr, const CallEvent *Call = nullptr,
-      RegionAndSymbolInvalidationTraits *ITraits = nullptr) const;
+  LLVM_NODISCARD ProgramStateRef
+  invalidateRegions(ArrayRef<const MemRegion *> Regions, const Expr *E,
+                    unsigned BlockCount, const LocationContext *LCtx,
+                    bool CausesPointerEscape, InvalidatedSymbols *IS = nullptr,
+                    const CallEvent *Call = nullptr,
+                    RegionAndSymbolInvalidationTraits *ITraits = nullptr) const;
 
-  LLVM_NODISCARD ProgramStateRef invalidateRegions(
-      ArrayRef<SVal> Regions, const Expr *E, unsigned BlockCount,
-      const LocationContext *LCtx, bool CausesPointerEscape,
-      InvalidatedSymbols *IS = nullptr, const CallEvent *Call = nullptr,
-      RegionAndSymbolInvalidationTraits *ITraits = nullptr) const;
+  LLVM_NODISCARD ProgramStateRef
+  invalidateRegions(ArrayRef<SVal> Regions, const Expr *E,
+                    unsigned BlockCount, const LocationContext *LCtx,
+                    bool CausesPointerEscape, InvalidatedSymbols *IS = nullptr,
+                    const CallEvent *Call = nullptr,
+                    RegionAndSymbolInvalidationTraits *ITraits = nullptr) const;
 
   /// enterStackFrame - Returns the state for entry to the given stack frame,
   ///  preserving the current state.
@@ -333,11 +340,11 @@ public:
   SVal getSVal(Loc LV, QualType T = QualType()) const;
 
   /// Returns the "raw" SVal bound to LV before any value simplfication.
-  SVal getRawSVal(Loc LV, QualType T = QualType()) const;
+  SVal getRawSVal(Loc LV, QualType T= QualType()) const;
 
   /// Return the value bound to the specified location.
   /// Returns UnknownVal() if none found.
-  SVal getSVal(const MemRegion *R, QualType T = QualType()) const;
+  SVal getSVal(const MemRegion* R, QualType T = QualType()) const;
 
   /// Return the value bound to the specified location, assuming
   /// that the value is a scalar integer or an enumeration or a pointer.
@@ -354,7 +361,7 @@ public:
   /// directly when making multiple scans on the same state with the same
   /// visitor to avoid repeated initialization cost.
   /// \sa ScanReachableSymbols
-  bool scanReachableSymbols(SVal val, SymbolVisitor &visitor) const;
+  bool scanReachableSymbols(SVal val, SymbolVisitor& visitor) const;
 
   /// Visits the symbols reachable from the regions in the given
   /// MemRegions range using the provided SymbolVisitor.
@@ -362,29 +369,29 @@ public:
                             SymbolVisitor &visitor) const;
 
   template <typename CB> CB scanReachableSymbols(SVal val) const;
-  template <typename CB>
-  CB scanReachableSymbols(
-      llvm::iterator_range<region_iterator> Reachable) const;
+  template <typename CB> CB
+  scanReachableSymbols(llvm::iterator_range<region_iterator> Reachable) const;
 
   //==---------------------------------------------------------------------==//
   // Accessing the Generic Data Map (GDM).
   //==---------------------------------------------------------------------==//
 
-  void *const *FindGDM(void *K) const;
+  void *const* FindGDM(void *K) const;
 
   template <typename T>
   LLVM_NODISCARD ProgramStateRef
   add(typename ProgramStateTrait<T>::key_type K) const;
 
-  template <typename T> typename ProgramStateTrait<T>::data_type get() const {
-    return ProgramStateTrait<T>::MakeData(
-        FindGDM(ProgramStateTrait<T>::GDMIndex()));
+  template <typename T>
+  typename ProgramStateTrait<T>::data_type
+  get() const {
+    return ProgramStateTrait<T>::MakeData(FindGDM(ProgramStateTrait<T>::GDMIndex()));
   }
 
-  template <typename T>
+  template<typename T>
   typename ProgramStateTrait<T>::lookup_type
   get(typename ProgramStateTrait<T>::key_type key) const {
-    void *const *d = FindGDM(ProgramStateTrait<T>::GDMIndex());
+    void *const* d = FindGDM(ProgramStateTrait<T>::GDMIndex());
     return ProgramStateTrait<T>::Lookup(ProgramStateTrait<T>::MakeData(d), key);
   }
 
@@ -417,11 +424,10 @@ public:
       typename ProgramStateTrait<T>::value_type E,
       typename ProgramStateTrait<T>::context_type C) const;
 
-  template <typename T>
+  template<typename T>
   bool contains(typename ProgramStateTrait<T>::key_type key) const {
-    void *const *d = FindGDM(ProgramStateTrait<T>::GDMIndex());
-    return ProgramStateTrait<T>::Contains(ProgramStateTrait<T>::MakeData(d),
-                                          key);
+    void *const* d = FindGDM(ProgramStateTrait<T>::GDMIndex());
+    return ProgramStateTrait<T>::Contains(ProgramStateTrait<T>::MakeData(d), key);
   }
 
   // Pretty-printing.
@@ -441,9 +447,11 @@ private:
   /// \sa invalidateValues()
   /// \sa invalidateRegions()
   ProgramStateRef
-  invalidateRegionsImpl(ArrayRef<SVal> Values, const Expr *E,
-                        unsigned BlockCount, const LocationContext *LCtx,
-                        bool ResultsInSymbolEscape, InvalidatedSymbols *IS,
+  invalidateRegionsImpl(ArrayRef<SVal> Values,
+                        const Expr *E, unsigned BlockCount,
+                        const LocationContext *LCtx,
+                        bool ResultsInSymbolEscape,
+                        InvalidatedSymbols *IS,
                         RegionAndSymbolInvalidationTraits *HTraits,
                         const CallEvent *Call) const;
 };
@@ -455,19 +463,17 @@ private:
 class ProgramStateManager {
   friend class ProgramState;
   friend void ProgramStateRelease(const ProgramState *state);
-
 private:
   /// Eng - The ExprEngine that owns this state manager.
   ExprEngine *Eng; /* Can be null. */
 
-  EnvironmentManager EnvMgr;
-  std::unique_ptr<StoreManager> StoreMgr;
-  std::unique_ptr<ConstraintManager> ConstraintMgr;
+  EnvironmentManager                   EnvMgr;
+  std::unique_ptr<StoreManager>        StoreMgr;
+  std::unique_ptr<ConstraintManager>   ConstraintMgr;
 
-  ProgramState::GenericDataMap::Factory GDMFactory;
+  ProgramState::GenericDataMap::Factory     GDMFactory;
 
-  typedef llvm::DenseMap<void *, std::pair<void *, void (*)(void *)>>
-      GDMContextsTy;
+  typedef llvm::DenseMap<void*,std::pair<void*,void (*)(void*)> > GDMContextsTy;
   GDMContextsTy GDMContexts;
 
   /// StateSet - FoldingSet containing all the states created for analyzing
@@ -487,9 +493,11 @@ private:
   std::vector<ProgramState *> freeStates;
 
 public:
-  ProgramStateManager(ASTContext &Ctx, StoreManagerCreator CreateStoreManager,
-                      ConstraintManagerCreator CreateConstraintManager,
-                      llvm::BumpPtrAllocator &alloc, ExprEngine *expreng);
+  ProgramStateManager(ASTContext &Ctx,
+                 StoreManagerCreator CreateStoreManager,
+                 ConstraintManagerCreator CreateConstraintManager,
+                 llvm::BumpPtrAllocator& alloc,
+                 ExprEngine *expreng);
 
   ~ProgramStateManager();
 
@@ -502,18 +510,24 @@ public:
     return svalBuilder->getBasicValueFactory();
   }
 
-  SValBuilder &getSValBuilder() { return *svalBuilder; }
+  SValBuilder &getSValBuilder() {
+    return *svalBuilder;
+  }
 
-  const SValBuilder &getSValBuilder() const { return *svalBuilder; }
+  const SValBuilder &getSValBuilder() const {
+    return *svalBuilder;
+  }
 
-  SymbolManager &getSymbolManager() { return svalBuilder->getSymbolManager(); }
+  SymbolManager &getSymbolManager() {
+    return svalBuilder->getSymbolManager();
+  }
   const SymbolManager &getSymbolManager() const {
     return svalBuilder->getSymbolManager();
   }
 
-  llvm::BumpPtrAllocator &getAllocator() { return Alloc; }
+  llvm::BumpPtrAllocator& getAllocator() { return Alloc; }
 
-  MemRegionManager &getRegionManager() {
+  MemRegionManager& getRegionManager() {
     return svalBuilder->getRegionManager();
   }
   const MemRegionManager &getRegionManager() const {
@@ -532,6 +546,7 @@ public:
                                             SymbolReaper &SymReaper);
 
 public:
+
   SVal ArrayToPointer(Loc Array, QualType ElementTy) {
     return StoreMgr->ArrayToPointer(Array, ElementTy);
   }
@@ -542,13 +557,13 @@ public:
 
   // Methods that query & manipulate the Store.
 
-  void iterBindings(ProgramStateRef state, StoreManager::BindingsHandler &F) {
+  void iterBindings(ProgramStateRef state, StoreManager::BindingsHandler& F) {
     StoreMgr->iterBindings(state->getStore(), F);
   }
 
   ProgramStateRef getPersistentState(ProgramState &Impl);
   ProgramStateRef getPersistentStateWithGDM(ProgramStateRef FromState,
-                                            ProgramStateRef GDMState);
+                                           ProgramStateRef GDMState);
 
   bool haveEqualConstraints(ProgramStateRef S1, ProgramStateRef S2) const {
     return ConstraintMgr->haveEqualConstraints(S1, S2);
@@ -566,15 +581,15 @@ public:
   // Generic Data Map methods.
   //==---------------------------------------------------------------------==//
   //
-  // ProgramStateManager and ProgramState support a "generic data map" that
-  // allows different clients of ProgramState objects to embed arbitrary data
-  // within a ProgramState object.  The generic data map is essentially an
-  // immutable map from a "tag" (that acts as the "key" for a client) and opaque
-  // values. Tags/keys and values are simply void* values.  The typical way that
-  // clients generate unique tags are by taking the address of a static
-  // variable. Clients are responsible for ensuring that data values referred to
-  // by a the data pointer are immutable (and thus are essentially purely
-  // functional data).
+  // ProgramStateManager and ProgramState support a "generic data map" that allows
+  // different clients of ProgramState objects to embed arbitrary data within a
+  // ProgramState object.  The generic data map is essentially an immutable map
+  // from a "tag" (that acts as the "key" for a client) and opaque values.
+  // Tags/keys and values are simply void* values.  The typical way that clients
+  // generate unique tags are by taking the address of a static variable.
+  // Clients are responsible for ensuring that data values referred to by a
+  // the data pointer are immutable (and thus are essentially purely functional
+  // data).
   //
   // The templated methods below use the ProgramStateTrait<T> class
   // to resolve keys into the GDM and to return data values to clients.
@@ -582,49 +597,46 @@ public:
 
   // Trait based GDM dispatch.
   template <typename T>
-  ProgramStateRef set(ProgramStateRef st,
-                      typename ProgramStateTrait<T>::data_type D) {
+  ProgramStateRef set(ProgramStateRef st, typename ProgramStateTrait<T>::data_type D) {
     return addGDM(st, ProgramStateTrait<T>::GDMIndex(),
                   ProgramStateTrait<T>::MakeVoidPtr(D));
   }
 
-  template <typename T>
+  template<typename T>
   ProgramStateRef set(ProgramStateRef st,
-                      typename ProgramStateTrait<T>::key_type K,
-                      typename ProgramStateTrait<T>::value_type V,
-                      typename ProgramStateTrait<T>::context_type C) {
+                     typename ProgramStateTrait<T>::key_type K,
+                     typename ProgramStateTrait<T>::value_type V,
+                     typename ProgramStateTrait<T>::context_type C) {
 
     return addGDM(st, ProgramStateTrait<T>::GDMIndex(),
-                  ProgramStateTrait<T>::MakeVoidPtr(
-                      ProgramStateTrait<T>::Set(st->get<T>(), K, V, C)));
+     ProgramStateTrait<T>::MakeVoidPtr(ProgramStateTrait<T>::Set(st->get<T>(), K, V, C)));
   }
 
   template <typename T>
   ProgramStateRef add(ProgramStateRef st,
-                      typename ProgramStateTrait<T>::key_type K,
-                      typename ProgramStateTrait<T>::context_type C) {
+                     typename ProgramStateTrait<T>::key_type K,
+                     typename ProgramStateTrait<T>::context_type C) {
     return addGDM(st, ProgramStateTrait<T>::GDMIndex(),
-                  ProgramStateTrait<T>::MakeVoidPtr(
-                      ProgramStateTrait<T>::Add(st->get<T>(), K, C)));
+        ProgramStateTrait<T>::MakeVoidPtr(ProgramStateTrait<T>::Add(st->get<T>(), K, C)));
   }
 
   template <typename T>
   ProgramStateRef remove(ProgramStateRef st,
-                         typename ProgramStateTrait<T>::key_type K,
-                         typename ProgramStateTrait<T>::context_type C) {
+                        typename ProgramStateTrait<T>::key_type K,
+                        typename ProgramStateTrait<T>::context_type C) {
 
     return addGDM(st, ProgramStateTrait<T>::GDMIndex(),
-                  ProgramStateTrait<T>::MakeVoidPtr(
-                      ProgramStateTrait<T>::Remove(st->get<T>(), K, C)));
+     ProgramStateTrait<T>::MakeVoidPtr(ProgramStateTrait<T>::Remove(st->get<T>(), K, C)));
   }
 
-  template <typename T> ProgramStateRef remove(ProgramStateRef st) {
+  template <typename T>
+  ProgramStateRef remove(ProgramStateRef st) {
     return removeGDM(st, ProgramStateTrait<T>::GDMIndex());
   }
 
   void *FindGDMContext(void *index,
-                       void *(*CreateContext)(llvm::BumpPtrAllocator &),
-                       void (*DeleteContext)(void *));
+                       void *(*CreateContext)(llvm::BumpPtrAllocator&),
+                       void  (*DeleteContext)(void*));
 
   template <typename T>
   typename ProgramStateTrait<T>::context_type get_context() {
@@ -636,6 +648,7 @@ public:
   }
 };
 
+
 //===----------------------------------------------------------------------===//
 // Out-of-line method definitions for ProgramState.
 //===----------------------------------------------------------------------===//
@@ -644,27 +657,28 @@ inline ConstraintManager &ProgramState::getConstraintManager() const {
   return stateMgr->getConstraintManager();
 }
 
-inline const VarRegion *
-ProgramState::getRegion(const VarDecl *D, const LocationContext *LC) const {
+inline const VarRegion* ProgramState::getRegion(const VarDecl *D,
+                                                const LocationContext *LC) const
+{
   return getStateManager().getRegionManager().getVarRegion(D, LC);
 }
 
 inline ProgramStateRef ProgramState::assume(DefinedOrUnknownSVal Cond,
-                                            bool Assumption) const {
+                                      bool Assumption) const {
   if (Cond.isUnknown())
     return this;
 
-  return getStateManager().ConstraintMgr->assume(
-      this, Cond.castAs<DefinedSVal>(), Assumption);
+  return getStateManager().ConstraintMgr
+      ->assume(this, Cond.castAs<DefinedSVal>(), Assumption);
 }
 
-inline std::pair<ProgramStateRef, ProgramStateRef>
+inline std::pair<ProgramStateRef , ProgramStateRef >
 ProgramState::assume(DefinedOrUnknownSVal Cond) const {
   if (Cond.isUnknown())
     return std::make_pair(this, this);
 
-  return getStateManager().ConstraintMgr->assumeDual(
-      this, Cond.castAs<DefinedSVal>());
+  return getStateManager().ConstraintMgr
+      ->assumeDual(this, Cond.castAs<DefinedSVal>());
 }
 
 inline ProgramStateRef ProgramState::assumeInclusiveRange(
@@ -692,8 +706,7 @@ ProgramState::assumeInclusiveRange(DefinedOrUnknownSVal Val,
       this, Val.castAs<NonLoc>(), From, To);
 }
 
-inline ProgramStateRef
-ProgramState::bindLoc(SVal LV, SVal V, const LocationContext *LCtx) const {
+inline ProgramStateRef ProgramState::bindLoc(SVal LV, SVal V, const LocationContext *LCtx) const {
   if (Optional<Loc> L = LV.getAs<Loc>())
     return bindLoc(*L, V, LCtx);
   return this;
@@ -703,25 +716,25 @@ inline Loc ProgramState::getLValue(const CXXBaseSpecifier &BaseSpec,
                                    const SubRegion *Super) const {
   const auto *Base = BaseSpec.getType()->getAsCXXRecordDecl();
   return loc::MemRegionVal(
-      getStateManager().getRegionManager().getCXXBaseObjectRegion(
-          Base, Super, BaseSpec.isVirtual()));
+           getStateManager().getRegionManager().getCXXBaseObjectRegion(
+                                            Base, Super, BaseSpec.isVirtual()));
 }
 
 inline Loc ProgramState::getLValue(const CXXRecordDecl *BaseClass,
                                    const SubRegion *Super,
                                    bool IsVirtual) const {
   return loc::MemRegionVal(
-      getStateManager().getRegionManager().getCXXBaseObjectRegion(
-          BaseClass, Super, IsVirtual));
+           getStateManager().getRegionManager().getCXXBaseObjectRegion(
+                                                  BaseClass, Super, IsVirtual));
 }
 
 inline Loc ProgramState::getLValue(const VarDecl *VD,
-                                   const LocationContext *LC) const {
+                               const LocationContext *LC) const {
   return getStateManager().StoreMgr->getLValueVar(VD, LC);
 }
 
 inline Loc ProgramState::getLValue(const CompoundLiteralExpr *literal,
-                                   const LocationContext *LC) const {
+                               const LocationContext *LC) const {
   return getStateManager().StoreMgr->getLValueCompoundLiteral(literal, LC);
 }
 
@@ -743,15 +756,14 @@ inline SVal ProgramState::getLValue(const IndirectFieldDecl *D,
   return Base;
 }
 
-inline SVal ProgramState::getLValue(QualType ElementType, SVal Idx,
-                                    SVal Base) const {
+inline SVal ProgramState::getLValue(QualType ElementType, SVal Idx, SVal Base) const{
   if (Optional<NonLoc> N = Idx.getAs<NonLoc>())
     return getStateManager().StoreMgr->getLValueElement(ElementType, *N, Base);
   return UnknownVal();
 }
 
 inline SVal ProgramState::getSVal(const Stmt *Ex,
-                                  const LocationContext *LCtx) const {
+                                  const LocationContext *LCtx) const{
   return Env.getSVal(EnvironmentEntry(Ex, LCtx),
                      *getStateManager().svalBuilder);
 }
@@ -773,9 +785,10 @@ inline SVal ProgramState::getRawSVal(Loc LV, QualType T) const {
   return getStateManager().StoreMgr->getBinding(getStore(), LV, T);
 }
 
-inline SVal ProgramState::getSVal(const MemRegion *R, QualType T) const {
+inline SVal ProgramState::getSVal(const MemRegion* R, QualType T) const {
   return getStateManager().StoreMgr->getBinding(getStore(),
-                                                loc::MemRegionVal(R), T);
+                                                loc::MemRegionVal(R),
+                                                T);
 }
 
 inline BasicValueFactory &ProgramState::getBasicVals() const {
@@ -786,9 +799,8 @@ inline SymbolManager &ProgramState::getSymbolManager() const {
   return getStateManager().getSymbolManager();
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::add(typename ProgramStateTrait<T>::key_type K) const {
+template<typename T>
+ProgramStateRef ProgramState::add(typename ProgramStateTrait<T>::key_type K) const {
   return getStateManager().add<T>(this, K, get_context<T>());
 }
 
@@ -797,45 +809,42 @@ typename ProgramStateTrait<T>::context_type ProgramState::get_context() const {
   return getStateManager().get_context<T>();
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::remove(typename ProgramStateTrait<T>::key_type K) const {
+template<typename T>
+ProgramStateRef ProgramState::remove(typename ProgramStateTrait<T>::key_type K) const {
   return getStateManager().remove<T>(this, K, get_context<T>());
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::remove(typename ProgramStateTrait<T>::key_type K,
-                     typename ProgramStateTrait<T>::context_type C) const {
+template<typename T>
+ProgramStateRef ProgramState::remove(typename ProgramStateTrait<T>::key_type K,
+                               typename ProgramStateTrait<T>::context_type C) const {
   return getStateManager().remove<T>(this, K, C);
 }
 
-template <typename T> ProgramStateRef ProgramState::remove() const {
+template <typename T>
+ProgramStateRef ProgramState::remove() const {
   return getStateManager().remove<T>(this);
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::set(typename ProgramStateTrait<T>::data_type D) const {
+template<typename T>
+ProgramStateRef ProgramState::set(typename ProgramStateTrait<T>::data_type D) const {
   return getStateManager().set<T>(this, D);
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::set(typename ProgramStateTrait<T>::key_type K,
-                  typename ProgramStateTrait<T>::value_type E) const {
+template<typename T>
+ProgramStateRef ProgramState::set(typename ProgramStateTrait<T>::key_type K,
+                            typename ProgramStateTrait<T>::value_type E) const {
   return getStateManager().set<T>(this, K, E, get_context<T>());
 }
 
-template <typename T>
-ProgramStateRef
-ProgramState::set(typename ProgramStateTrait<T>::key_type K,
-                  typename ProgramStateTrait<T>::value_type E,
-                  typename ProgramStateTrait<T>::context_type C) const {
+template<typename T>
+ProgramStateRef ProgramState::set(typename ProgramStateTrait<T>::key_type K,
+                            typename ProgramStateTrait<T>::value_type E,
+                            typename ProgramStateTrait<T>::context_type C) const {
   return getStateManager().set<T>(this, K, E, C);
 }
 
-template <typename CB> CB ProgramState::scanReachableSymbols(SVal val) const {
+template <typename CB>
+CB ProgramState::scanReachableSymbols(SVal val) const {
   CB cb(this);
   scanReachableSymbols(val, cb);
   return cb;
@@ -854,12 +863,11 @@ CB ProgramState::scanReachableSymbols(
 /// SymbolVisitor. Terminates recursive traversal when the visitor function
 /// returns false.
 class ScanReachableSymbols {
-  typedef llvm::DenseSet<const void *> VisitedItems;
+  typedef llvm::DenseSet<const void*> VisitedItems;
 
   VisitedItems visited;
   ProgramStateRef state;
   SymbolVisitor &visitor;
-
 public:
   ScanReachableSymbols(ProgramStateRef st, SymbolVisitor &v)
       : state(std::move(st)), visitor(v) {}
@@ -871,8 +879,8 @@ public:
   bool scan(const SymExpr *sym);
 };
 
-} // namespace ento
+} // end ento namespace
 
-} // namespace clang
+} // end clang namespace
 
 #endif

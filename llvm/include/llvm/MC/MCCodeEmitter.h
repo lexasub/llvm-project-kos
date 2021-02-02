@@ -15,7 +15,7 @@ class MCFixup;
 class MCInst;
 class MCSubtargetInfo;
 class raw_ostream;
-template <typename T> class SmallVectorImpl;
+template<typename T> class SmallVectorImpl;
 
 /// MCCodeEmitter - Generic instruction encoding interface.
 class MCCodeEmitter {

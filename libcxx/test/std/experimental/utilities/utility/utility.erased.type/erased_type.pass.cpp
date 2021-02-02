@@ -12,7 +12,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   std::experimental::erased_type e;
   ((void)e);
 

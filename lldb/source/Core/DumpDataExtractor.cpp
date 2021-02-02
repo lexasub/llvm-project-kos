@@ -755,10 +755,9 @@ lldb::offset_t lldb_private::DumpDataExtractor(
   }
 
   if (item_format == eFormatBytesWithASCII && offset > line_start_offset) {
-    s->Printf(
-        "%*s",
-        static_cast<int>((num_per_line - (offset - line_start_offset)) * 3 + 2),
-        "");
+    s->Printf("%*s", static_cast<int>(
+                         (num_per_line - (offset - line_start_offset)) * 3 + 2),
+              "");
     DumpDataExtractor(DE, s, line_start_offset, eFormatCharPrintable, 1,
                       offset - line_start_offset, SIZE_MAX,
                       LLDB_INVALID_ADDRESS, 0, 0);

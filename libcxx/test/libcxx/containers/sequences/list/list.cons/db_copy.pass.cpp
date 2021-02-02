@@ -21,15 +21,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::list<int> l1;
-  l1.push_back(1);
-  l1.push_back(2);
-  l1.push_back(3);
-  std::list<int>::iterator i = l1.begin();
-  std::list<int> l2 = l1;
-  l2.erase(i);
-  assert(false);
+int main(int, char**)
+{
+    std::list<int> l1;
+    l1.push_back(1); l1.push_back(2); l1.push_back(3);
+    std::list<int>::iterator i = l1.begin();
+    std::list<int> l2 = l1;
+    l2.erase(i);
+    assert(false);
 
   return 0;
 }

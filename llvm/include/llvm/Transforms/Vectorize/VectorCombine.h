@@ -25,5 +25,6 @@ public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &);
 };
 
-} // namespace llvm
+}
 #endif // LLVM_TRANSFORMS_VECTOR_VECTORCOMBINE_H
+

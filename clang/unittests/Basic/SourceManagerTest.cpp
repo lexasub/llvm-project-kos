@@ -32,9 +32,11 @@ namespace {
 class SourceManagerTest : public ::testing::Test {
 protected:
   SourceManagerTest()
-      : FileMgr(FileMgrOpts), DiagID(new DiagnosticIDs()),
-        Diags(DiagID, new DiagnosticOptions, new IgnoringDiagConsumer()),
-        SourceMgr(Diags, FileMgr), TargetOpts(new TargetOptions) {
+    : FileMgr(FileMgrOpts),
+      DiagID(new DiagnosticIDs()),
+      Diags(DiagID, new DiagnosticOptions, new IgnoringDiagConsumer()),
+      SourceMgr(Diags, FileMgr),
+      TargetOpts(new TargetOptions) {
     TargetOpts->Triple = "x86_64-apple-darwin11.1.0";
     Target = TargetInfo::CreateTargetInfo(Diags, TargetOpts);
   }
@@ -50,8 +52,9 @@ protected:
 };
 
 TEST_F(SourceManagerTest, isBeforeInTranslationUnit) {
-  const char *source = "#define M(x) [x]\n"
-                       "M(foo)";
+  const char *source =
+    "#define M(x) [x]\n"
+    "M(foo)";
   std::unique_ptr<llvm::MemoryBuffer> Buf =
       llvm::MemoryBuffer::getMemBuffer(source);
   FileID mainFileID = SourceMgr.createFileID(std::move(Buf));
@@ -81,13 +84,12 @@ TEST_F(SourceManagerTest, isBeforeInTranslationUnit) {
   ASSERT_EQ(tok::l_square, toks[0].getKind());
   ASSERT_EQ(tok::identifier, toks[1].getKind());
   ASSERT_EQ(tok::r_square, toks[2].getKind());
-
+  
   SourceLocation lsqrLoc = toks[0].getLocation();
   SourceLocation idLoc = toks[1].getLocation();
   SourceLocation rsqrLoc = toks[2].getLocation();
-
-  SourceLocation macroExpStartLoc =
-      SourceMgr.translateLineCol(mainFileID, 2, 1);
+  
+  SourceLocation macroExpStartLoc = SourceMgr.translateLineCol(mainFileID, 2, 1);
   SourceLocation macroExpEndLoc = SourceMgr.translateLineCol(mainFileID, 2, 6);
   ASSERT_TRUE(macroExpStartLoc.isFileID());
   ASSERT_TRUE(macroExpEndLoc.isFileID());
@@ -103,8 +105,9 @@ TEST_F(SourceManagerTest, isBeforeInTranslationUnit) {
 }
 
 TEST_F(SourceManagerTest, getColumnNumber) {
-  const char *Source = "int x;\n"
-                       "int y;";
+  const char *Source =
+    "int x;\n"
+    "int y;";
 
   std::unique_ptr<llvm::MemoryBuffer> Buf =
       llvm::MemoryBuffer::getMemBuffer(Source);
@@ -130,12 +133,12 @@ TEST_F(SourceManagerTest, getColumnNumber) {
   EXPECT_TRUE(!Invalid);
 
   Invalid = false;
-  EXPECT_EQ(7U,
-            SourceMgr.getColumnNumber(MainFileID, strlen(Source), &Invalid));
+  EXPECT_EQ(7U, SourceMgr.getColumnNumber(MainFileID, strlen(Source),
+                                         &Invalid));
   EXPECT_TRUE(!Invalid);
 
   Invalid = false;
-  SourceMgr.getColumnNumber(MainFileID, strlen(Source) + 1, &Invalid);
+  SourceMgr.getColumnNumber(MainFileID, strlen(Source)+1, &Invalid);
   EXPECT_TRUE(Invalid);
 
   // Test invalid files
@@ -240,18 +243,21 @@ TEST_F(SourceManagerTest, getInvalidBOM) {
             "UTF-32 (LE)");
 }
 
-// Regression test - there was an out of bound access for buffers not terminated
-// by zero.
+// Regression test - there was an out of bound access for buffers not terminated by zero.
 TEST_F(SourceManagerTest, getLineNumber) {
   const unsigned pageSize = llvm::sys::Process::getPageSizeEstimate();
   std::unique_ptr<char[]> source(new char[pageSize]);
-  for (unsigned i = 0; i < pageSize; ++i) {
+  for(unsigned i = 0; i < pageSize; ++i) {
     source[i] = 'a';
   }
 
-  std::unique_ptr<llvm::MemoryBuffer> Buf = llvm::MemoryBuffer::getMemBuffer(
-      llvm::MemoryBufferRef(llvm::StringRef(source.get(), 3), "whatever"),
-      false);
+  std::unique_ptr<llvm::MemoryBuffer> Buf =
+      llvm::MemoryBuffer::getMemBuffer(
+        llvm::MemoryBufferRef(
+          llvm::StringRef(source.get(), 3), "whatever"
+        ),
+        false
+      );
 
   FileID mainFileID = SourceMgr.createFileID(std::move(Buf));
   SourceMgr.setMainFileID(mainFileID);
@@ -262,15 +268,17 @@ TEST_F(SourceManagerTest, getLineNumber) {
 #if defined(LLVM_ON_UNIX)
 
 TEST_F(SourceManagerTest, getMacroArgExpandedLocation) {
-  const char *header = "#define FM(x,y) x\n";
+  const char *header =
+    "#define FM(x,y) x\n";
 
-  const char *main = "#include \"/test-header.h\"\n"
-                     "#define VAL 0\n"
-                     "FM(VAL,0)\n"
-                     "FM(0,VAL)\n"
-                     "FM(FM(0,VAL),0)\n"
-                     "#define CONCAT(X, Y) X##Y\n"
-                     "CONCAT(1,1)\n";
+  const char *main =
+    "#include \"/test-header.h\"\n"
+    "#define VAL 0\n"
+    "FM(VAL,0)\n"
+    "FM(0,VAL)\n"
+    "FM(FM(0,VAL),0)\n"
+    "#define CONCAT(X, Y) X##Y\n"
+    "CONCAT(1,1)\n";
 
   std::unique_ptr<llvm::MemoryBuffer> HeaderBuf =
       llvm::MemoryBuffer::getMemBuffer(header);
@@ -279,8 +287,8 @@ TEST_F(SourceManagerTest, getMacroArgExpandedLocation) {
   FileID mainFileID = SourceMgr.createFileID(std::move(MainBuf));
   SourceMgr.setMainFileID(mainFileID);
 
-  const FileEntry *headerFile =
-      FileMgr.getVirtualFile("/test-header.h", HeaderBuf->getBufferSize(), 0);
+  const FileEntry *headerFile = FileMgr.getVirtualFile("/test-header.h",
+                                                 HeaderBuf->getBufferSize(), 0);
   SourceMgr.overrideFileContents(headerFile, std::move(HeaderBuf));
 
   TrivialModuleLoader ModLoader;
@@ -338,7 +346,7 @@ TEST_F(SourceManagerTest, getMacroArgExpandedLocation) {
 namespace {
 
 struct MacroAction {
-  enum Kind { kExpansion, kDefinition, kUnDefinition };
+  enum Kind { kExpansion, kDefinition, kUnDefinition};
 
   SourceLocation Loc;
   std::string Name;
@@ -356,7 +364,7 @@ class MacroTracker : public PPCallbacks {
   std::vector<MacroAction> &Macros;
 
 public:
-  explicit MacroTracker(std::vector<MacroAction> &Macros) : Macros(Macros) {}
+  explicit MacroTracker(std::vector<MacroAction> &Macros) : Macros(Macros) { }
 
   void MacroDefined(const Token &MacroNameTok,
                     const MacroDirective *MD) override {
@@ -364,8 +372,9 @@ public:
                                  MacroNameTok.getIdentifierInfo()->getName(),
                                  MacroAction::kDefinition));
   }
-  void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
-                      const MacroDirective *UD) override {
+  void MacroUndefined(const Token &MacroNameTok,
+                      const MacroDefinition &MD,
+                      const MacroDirective  *UD) override {
     Macros.push_back(
         MacroAction(UD ? UD->getLocation() : SourceLocation(),
                     MacroNameTok.getIdentifierInfo()->getName(),
@@ -380,19 +389,21 @@ public:
   }
 };
 
-} // namespace
+}
 
 TEST_F(SourceManagerTest, isBeforeInTranslationUnitWithMacroInInclude) {
-  const char *header = "#define MACRO_IN_INCLUDE 0\n"
-                       "#define MACRO_DEFINED\n"
-                       "#undef MACRO_DEFINED\n"
-                       "#undef MACRO_UNDEFINED\n";
+  const char *header =
+    "#define MACRO_IN_INCLUDE 0\n"
+    "#define MACRO_DEFINED\n"
+    "#undef MACRO_DEFINED\n"
+    "#undef MACRO_UNDEFINED\n";
 
-  const char *main = "#define M(x) x\n"
-                     "#define INC \"/test-header.h\"\n"
-                     "#include M(INC)\n"
-                     "#define INC2 </test-header.h>\n"
-                     "#include M(INC2)\n";
+  const char *main =
+    "#define M(x) x\n"
+    "#define INC \"/test-header.h\"\n"
+    "#include M(INC)\n"
+    "#define INC2 </test-header.h>\n"
+    "#include M(INC2)\n";
 
   std::unique_ptr<llvm::MemoryBuffer> HeaderBuf =
       llvm::MemoryBuffer::getMemBuffer(header);
@@ -400,8 +411,8 @@ TEST_F(SourceManagerTest, isBeforeInTranslationUnitWithMacroInInclude) {
       llvm::MemoryBuffer::getMemBuffer(main);
   SourceMgr.setMainFileID(SourceMgr.createFileID(std::move(MainBuf)));
 
-  const FileEntry *headerFile =
-      FileMgr.getVirtualFile("/test-header.h", HeaderBuf->getBufferSize(), 0);
+  const FileEntry *headerFile = FileMgr.getVirtualFile("/test-header.h",
+                                                 HeaderBuf->getBufferSize(), 0);
   SourceMgr.overrideFileContents(headerFile, std::move(HeaderBuf));
 
   TrivialModuleLoader ModLoader;
@@ -473,13 +484,11 @@ TEST_F(SourceManagerTest, isBeforeInTranslationUnitWithMacroInInclude) {
 
   // The INC expansion in #include M(INC) comes before the first
   // MACRO_IN_INCLUDE definition of the included file.
-  EXPECT_TRUE(
-      SourceMgr.isBeforeInTranslationUnit(Macros[3].Loc, Macros[4].Loc));
+  EXPECT_TRUE(SourceMgr.isBeforeInTranslationUnit(Macros[3].Loc, Macros[4].Loc));
 
   // The INC2 expansion in #include M(INC2) comes before the second
   // MACRO_IN_INCLUDE definition of the included file.
-  EXPECT_TRUE(
-      SourceMgr.isBeforeInTranslationUnit(Macros[10].Loc, Macros[11].Loc));
+  EXPECT_TRUE(SourceMgr.isBeforeInTranslationUnit(Macros[10].Loc, Macros[11].Loc));
 }
 
 TEST_F(SourceManagerTest, isMainFile) {

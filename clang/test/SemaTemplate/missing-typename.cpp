@@ -25,6 +25,7 @@ int main() {
 }
 } // namespace PR8446_1
 
+
 namespace PR8446_2 {
 struct site_symmetry_ops {};
 

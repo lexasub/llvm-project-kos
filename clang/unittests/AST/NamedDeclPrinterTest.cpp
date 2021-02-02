@@ -52,9 +52,13 @@ public:
     Printer(Out, ND);
   }
 
-  StringRef getPrinted() const { return Printed; }
+  StringRef getPrinted() const {
+    return Printed;
+  }
 
-  unsigned getNumFoundDecls() const { return NumFoundDecls; }
+  unsigned getNumFoundDecls() const {
+    return NumFoundDecls;
+  }
 };
 
 ::testing::AssertionResult PrintedDeclMatches(
@@ -70,24 +74,21 @@ public:
 
   if (!runToolOnCodeWithArgs(Factory->create(), Code, Args, FileName))
     return testing::AssertionFailure()
-           << "Parsing error in \"" << Code.str() << "\"";
+        << "Parsing error in \"" << Code.str() << "\"";
 
   if (Printer.getNumFoundDecls() == 0)
     return testing::AssertionFailure()
-           << "Matcher didn't find any named declarations";
+        << "Matcher didn't find any named declarations";
 
   if (Printer.getNumFoundDecls() > 1)
     return testing::AssertionFailure()
-           << "Matcher should match only one named declaration "
-              "(found "
-           << Printer.getNumFoundDecls() << ")";
+        << "Matcher should match only one named declaration "
+           "(found " << Printer.getNumFoundDecls() << ")";
 
   if (Printer.getPrinted() != ExpectedPrinted)
     return ::testing::AssertionFailure()
-           << "Expected \"" << ExpectedPrinted.str()
-           << "\", "
-              "got \""
-           << Printer.getPrinted().str() << "\"";
+        << "Expected \"" << ExpectedPrinted.str() << "\", "
+           "got \"" << Printer.getPrinted().str() << "\"";
 
   return ::testing::AssertionSuccess();
 }
@@ -129,7 +130,7 @@ PrintedWrittenNamedDeclCXX11Matches(StringRef Code, StringRef DeclName,
 
 ::testing::AssertionResult
 PrintedWrittenPropertyDeclObjCMatches(StringRef Code, StringRef DeclName,
-                                      StringRef ExpectedPrinted) {
+                                   StringRef ExpectedPrinted) {
   std::vector<std::string> Args{"-std=c++11", "-xobjective-c++"};
   return PrintedNamedDeclMatches(Code, Args,
                                  /*SuppressUnwrittenScope*/ true,
@@ -151,51 +152,71 @@ PrintedNestedNameSpecifierMatches(StringRef Code, StringRef DeclName,
 } // unnamed namespace
 
 TEST(NamedDeclPrinter, TestNamespace1) {
-  ASSERT_TRUE(PrintedNamedDeclCXX98Matches("namespace { int A; }", "A",
-                                           "(anonymous namespace)::A"));
+  ASSERT_TRUE(PrintedNamedDeclCXX98Matches(
+    "namespace { int A; }",
+    "A",
+    "(anonymous namespace)::A"));
 }
 
 TEST(NamedDeclPrinter, TestNamespace2) {
   ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
-      "inline namespace Z { namespace { int A; } }", "A", "A"));
+    "inline namespace Z { namespace { int A; } }",
+    "A",
+    "A"));
 }
 
 TEST(NamedDeclPrinter, TestUnscopedUnnamedEnum) {
-  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches("enum { A };", "A", "A"));
+  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
+    "enum { A };",
+    "A",
+    "A"));
 }
 
 TEST(NamedDeclPrinter, TestNamedEnum) {
-  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches("enum X { A };", "A", "A"));
+  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
+    "enum X { A };",
+    "A",
+    "A"));
 }
 
 TEST(NamedDeclPrinter, TestScopedNamedEnum) {
-  ASSERT_TRUE(
-      PrintedWrittenNamedDeclCXX11Matches("enum class X { A };", "A", "X::A"));
+  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
+    "enum class X { A };",
+    "A",
+    "X::A"));
 }
 
 TEST(NamedDeclPrinter, TestClassWithUnscopedUnnamedEnum) {
-  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches("class X { enum { A }; };",
-                                                  "A", "X::A"));
+  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
+    "class X { enum { A }; };",
+    "A",
+    "X::A"));
 }
 
 TEST(NamedDeclPrinter, TestClassWithUnscopedNamedEnum) {
-  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches("class X { enum Y { A }; };",
-                                                  "A", "X::A"));
+  ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
+    "class X { enum Y { A }; };",
+    "A",
+    "X::A"));
 }
 
 TEST(NamedDeclPrinter, TestClassWithScopedNamedEnum) {
   ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
-      "class X { enum class Y { A }; };", "A", "X::Y::A"));
+    "class X { enum class Y { A }; };",
+    "A",
+    "X::Y::A"));
 }
 
 TEST(NamedDeclPrinter, TestLinkageInNamespace) {
   ASSERT_TRUE(PrintedWrittenNamedDeclCXX11Matches(
-      "namespace X { extern \"C\" { int A; } }", "A", "X::A"));
+    "namespace X { extern \"C\" { int A; } }",
+    "A",
+    "X::A"));
 }
 
 TEST(NamedDeclPrinter, TestObjCClassExtension) {
   const char *Code =
-      R"(
+R"(
   @interface Obj
   @end
 
@@ -203,13 +224,15 @@ TEST(NamedDeclPrinter, TestObjCClassExtension) {
   @property(nonatomic) int property;
   @end
 )";
-  ASSERT_TRUE(
-      PrintedWrittenPropertyDeclObjCMatches(Code, "property", "Obj::property"));
+  ASSERT_TRUE(PrintedWrittenPropertyDeclObjCMatches(
+    Code,
+    "property",
+    "Obj::property"));
 }
 
 TEST(NamedDeclPrinter, TestInstanceObjCClassExtension) {
   const char *Code =
-      R"(
+R"(
 @interface ObjC
 @end
 @interface ObjC () {
@@ -230,7 +253,7 @@ TEST(NamedDeclPrinter, TestInstanceObjCClassExtension) {
 
 TEST(NamedDeclPrinter, TestObjCClassExtensionWithGetter) {
   const char *Code =
-      R"(
+R"(
   @interface Obj
   @end
 
@@ -238,8 +261,10 @@ TEST(NamedDeclPrinter, TestObjCClassExtensionWithGetter) {
   @property(nonatomic, getter=myPropertyGetter) int property;
   @end
 )";
-  ASSERT_TRUE(
-      PrintedWrittenPropertyDeclObjCMatches(Code, "property", "Obj::property"));
+  ASSERT_TRUE(PrintedWrittenPropertyDeclObjCMatches(
+    Code,
+    "property",
+    "Obj::property"));
 }
 
 TEST(NamedDeclPrinter, NestedNameSpecifierSimple) {

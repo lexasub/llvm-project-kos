@@ -20,18 +20,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::piecewise_constant_distribution<> D;
-    D d;
-    std::vector<double> iv = d.intervals();
-    assert(iv.size() == 2);
-    assert(iv[0] == 0);
-    assert(iv[1] == 1);
-    std::vector<double> dn = d.densities();
-    assert(dn.size() == 1);
-    assert(dn[0] == 1);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::piecewise_constant_distribution<> D;
+        D d;
+        std::vector<double> iv = d.intervals();
+        assert(iv.size() == 2);
+        assert(iv[0] == 0);
+        assert(iv[1] == 1);
+        std::vector<double> dn = d.densities();
+        assert(dn.size() == 1);
+        assert(dn[0] == 1);
+    }
 
   return 0;
 }

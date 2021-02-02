@@ -27,7 +27,8 @@ class LocalRefsCollector : public RecursiveASTVisitor<LocalRefsCollector> {
   SmallVectorImpl<DeclRefExpr *> &Refs;
 
 public:
-  LocalRefsCollector(SmallVectorImpl<DeclRefExpr *> &refs) : Refs(refs) {}
+  LocalRefsCollector(SmallVectorImpl<DeclRefExpr *> &refs)
+    : Refs(refs) { }
 
   bool VisitDeclRefExpr(DeclRefExpr *E) {
     if (ValueDecl *D = E->getDecl())
@@ -40,11 +41,15 @@ public:
 struct CaseInfo {
   SwitchCase *SC;
   SourceRange Range;
-  enum { St_Unchecked, St_CannotFix, St_Fixed } State;
+  enum {
+    St_Unchecked,
+    St_CannotFix,
+    St_Fixed
+  } State;
 
   CaseInfo() : SC(nullptr), State(St_Unchecked) {}
   CaseInfo(SwitchCase *S, SourceRange Range)
-      : SC(S), Range(Range), State(St_Unchecked) {}
+    : SC(S), Range(Range), State(St_Unchecked) {}
 };
 
 class CaseCollector : public RecursiveASTVisitor<CaseCollector> {
@@ -53,7 +58,7 @@ class CaseCollector : public RecursiveASTVisitor<CaseCollector> {
 
 public:
   CaseCollector(ParentMap &PMap, SmallVectorImpl<CaseInfo> &Cases)
-      : PMap(PMap), Cases(Cases) {}
+    : PMap(PMap), Cases(Cases) { }
 
   bool VisitSwitchStmt(SwitchStmt *S) {
     SwitchCase *Curr = S->getSwitchCaseList();
@@ -96,8 +101,8 @@ class ProtectedScopeFixer {
 
 public:
   ProtectedScopeFixer(BodyContext &BodyCtx)
-      : Pass(BodyCtx.getMigrationContext().Pass),
-        SM(Pass.Ctx.getSourceManager()) {
+    : Pass(BodyCtx.getMigrationContext().Pass),
+      SM(Pass.Ctx.getSourceManager()) {
 
     CaseCollector(BodyCtx.getParentMap(), Cases)
         .TraverseStmt(BodyCtx.getTopStmt());
@@ -109,8 +114,8 @@ public:
     // from the diagnostic list.
     SmallVector<StoredDiagnostic, 16> StoredDiags;
     StoredDiags.append(DiagList.begin(), DiagList.end());
-    SmallVectorImpl<StoredDiagnostic>::iterator I = StoredDiags.begin(),
-                                                E = StoredDiags.end();
+    SmallVectorImpl<StoredDiagnostic>::iterator
+        I = StoredDiags.begin(), E = StoredDiags.end();
     while (I != E) {
       if (I->getID() == diag::err_switch_into_protected_scope &&
           isInRange(I->getLocation(), BodyRange)) {
@@ -121,9 +126,9 @@ public:
     }
   }
 
-  void
-  handleProtectedScopeError(SmallVectorImpl<StoredDiagnostic>::iterator &DiagI,
-                            SmallVectorImpl<StoredDiagnostic>::iterator DiagE) {
+  void handleProtectedScopeError(
+                             SmallVectorImpl<StoredDiagnostic>::iterator &DiagI,
+                             SmallVectorImpl<StoredDiagnostic>::iterator DiagE){
     Transaction Trans(Pass.TA);
     assert(DiagI->getID() == diag::err_switch_into_protected_scope);
     SourceLocation ErrLoc = DiagI->getLocation();
@@ -187,7 +192,7 @@ public:
     if (Loc.isInvalid())
       return false;
     return !SM.isBeforeInTranslationUnit(Loc, R.getBegin()) &&
-           SM.isBeforeInTranslationUnit(Loc, R.getEnd());
+            SM.isBeforeInTranslationUnit(Loc, R.getEnd());
   }
 };
 

@@ -491,7 +491,9 @@ public:
   /// \return
   ///     Returns the identifier string if one exists, else an empty
   ///     string.
-  virtual std::string GetIdentifierString() { return std::string(); }
+  virtual std::string GetIdentifierString () {
+      return std::string();
+  }
 
   /// When the ObjectFile is a core file, lldb needs to locate the "binary" in
   /// the core file.  lldb can iterate over the pages looking for a valid
@@ -636,7 +638,8 @@ public:
   // This function will transparently decompress section data if the section if
   // compressed. Note that for compressed section the resulting data size may
   // be larger than what Section::GetFileSize reports.
-  virtual size_t ReadSectionData(Section *section, DataExtractor &section_data);
+  virtual size_t ReadSectionData(Section *section,
+                                 DataExtractor &section_data);
 
   bool IsInMemory() const { return m_memory_addr != LLDB_INVALID_ADDRESS; }
 
@@ -669,10 +672,10 @@ protected:
   Type m_type;
   Strata m_strata;
   lldb::addr_t m_file_offset; ///< The offset in bytes into the file, or the
-                              /// address in memory
+                              ///address in memory
   lldb::addr_t m_length; ///< The length of this object file if it is known (can
-                         /// be zero if length is unknown or can't be
-                         /// determined).
+                         ///be zero if length is unknown or can't be
+                         ///determined).
   DataExtractor
       m_data; ///< The data for this object file so things can be parsed lazily.
   lldb::ProcessWP m_process_wp;

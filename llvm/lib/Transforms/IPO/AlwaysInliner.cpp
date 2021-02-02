@@ -106,8 +106,8 @@ PreservedAnalyses AlwaysInlinerPass::run(Module &M,
   });
 
   // Delete the non-comdat ones from the module and also from our vector.
-  auto NonComdatBegin =
-      partition(InlinedFunctions, [&](Function *F) { return F->hasComdat(); });
+  auto NonComdatBegin = partition(
+      InlinedFunctions, [&](Function *F) { return F->hasComdat(); });
   for (Function *F : make_range(NonComdatBegin, InlinedFunctions.end()))
     M.getFunctionList().erase(F);
   InlinedFunctions.erase(NonComdatBegin, InlinedFunctions.end());
@@ -154,7 +154,7 @@ public:
     return removeDeadFunctions(CG, /*AlwaysInlineOnly=*/true);
   }
 };
-} // namespace
+}
 
 char AlwaysInlinerLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(AlwaysInlinerLegacyPass, "always-inline",

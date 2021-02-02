@@ -27,8 +27,10 @@ public:
 
   void emitEntryFunctionPrologue(MachineFunction &MF,
                                  MachineBasicBlock &MBB) const;
-  void emitPrologue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
-  void emitEpilogue(MachineFunction &MF, MachineBasicBlock &MBB) const override;
+  void emitPrologue(MachineFunction &MF,
+                    MachineBasicBlock &MBB) const override;
+  void emitEpilogue(MachineFunction &MF,
+                    MachineBasicBlock &MBB) const override;
   StackOffset getFrameIndexReference(const MachineFunction &MF, int FI,
                                      Register &FrameReg) const override;
 
@@ -44,10 +46,12 @@ public:
   bool isSupportedStackID(TargetStackID::Value ID) const override;
 
   void processFunctionBeforeFrameFinalized(
-      MachineFunction &MF, RegScavenger *RS = nullptr) const override;
+    MachineFunction &MF,
+    RegScavenger *RS = nullptr) const override;
 
   MachineBasicBlock::iterator
-  eliminateCallFramePseudoInstr(MachineFunction &MF, MachineBasicBlock &MBB,
+  eliminateCallFramePseudoInstr(MachineFunction &MF,
+                                MachineBasicBlock &MBB,
                                 MachineBasicBlock::iterator MI) const override;
 
 private:

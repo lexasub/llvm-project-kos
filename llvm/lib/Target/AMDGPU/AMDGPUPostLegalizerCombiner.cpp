@@ -1,5 +1,4 @@
-//=== lib/CodeGen/GlobalISel/AMDGPUPostLegalizerCombiner.cpp
-//---------------===//
+//=== lib/CodeGen/GlobalISel/AMDGPUPostLegalizerCombiner.cpp ---------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -189,11 +188,11 @@ void AMDGPUPostLegalizerCombinerHelper::applyUCharToFloat(MachineInstr &MI) {
     SrcReg = B.buildAnyExtOrTrunc(S32, SrcReg).getReg(0);
 
   if (Ty == S32) {
-    B.buildInstr(AMDGPU::G_AMDGPU_CVT_F32_UBYTE0, {DstReg}, {SrcReg},
-                 MI.getFlags());
+    B.buildInstr(AMDGPU::G_AMDGPU_CVT_F32_UBYTE0, {DstReg},
+                   {SrcReg}, MI.getFlags());
   } else {
-    auto Cvt0 = B.buildInstr(AMDGPU::G_AMDGPU_CVT_F32_UBYTE0, {S32}, {SrcReg},
-                             MI.getFlags());
+    auto Cvt0 = B.buildInstr(AMDGPU::G_AMDGPU_CVT_F32_UBYTE0, {S32},
+                             {SrcReg}, MI.getFlags());
     B.buildFPTrunc(DstReg, Cvt0, MI.getFlags());
   }
 
@@ -332,7 +331,6 @@ public:
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
-
 private:
   bool IsOptNone;
 };
@@ -352,7 +350,7 @@ void AMDGPUPostLegalizerCombiner::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 AMDGPUPostLegalizerCombiner::AMDGPUPostLegalizerCombiner(bool IsOptNone)
-    : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
+  : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
   initializeAMDGPUPostLegalizerCombinerPass(*PassRegistry::getPassRegistry());
 }
 
@@ -366,8 +364,8 @@ bool AMDGPUPostLegalizerCombiner::runOnMachineFunction(MachineFunction &MF) {
       MF.getTarget().getOptLevel() != CodeGenOpt::None && !skipFunction(F);
 
   const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
-  const AMDGPULegalizerInfo *LI =
-      static_cast<const AMDGPULegalizerInfo *>(ST.getLegalizerInfo());
+  const AMDGPULegalizerInfo *LI
+    = static_cast<const AMDGPULegalizerInfo *>(ST.getLegalizerInfo());
 
   GISelKnownBits *KB = &getAnalysis<GISelKnownBitsAnalysis>().get(MF);
   MachineDominatorTree *MDT =
@@ -380,8 +378,8 @@ bool AMDGPUPostLegalizerCombiner::runOnMachineFunction(MachineFunction &MF) {
 
 char AMDGPUPostLegalizerCombiner::ID = 0;
 INITIALIZE_PASS_BEGIN(AMDGPUPostLegalizerCombiner, DEBUG_TYPE,
-                      "Combine AMDGPU machine instrs after legalization", false,
-                      false)
+                      "Combine AMDGPU machine instrs after legalization",
+                      false, false)
 INITIALIZE_PASS_DEPENDENCY(TargetPassConfig)
 INITIALIZE_PASS_DEPENDENCY(GISelKnownBitsAnalysis)
 INITIALIZE_PASS_END(AMDGPUPostLegalizerCombiner, DEBUG_TYPE,

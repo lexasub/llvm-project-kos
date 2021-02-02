@@ -34,9 +34,13 @@ struct CommonFlags {
 
 // Functions to get/set global CommonFlags shared by all sanitizer runtimes:
 extern CommonFlags common_flags_dont_use;
-inline const CommonFlags *common_flags() { return &common_flags_dont_use; }
+inline const CommonFlags *common_flags() {
+  return &common_flags_dont_use;
+}
 
-inline void SetCommonFlagsDefaults() { common_flags_dont_use.SetDefaults(); }
+inline void SetCommonFlagsDefaults() {
+  common_flags_dont_use.SetDefaults();
+}
 
 // This function can only be used to setup tool-specific overrides for
 // CommonFlags defaults. Generally, it should only be used right after

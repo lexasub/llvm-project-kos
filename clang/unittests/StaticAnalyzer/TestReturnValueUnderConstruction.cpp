@@ -20,7 +20,7 @@ namespace ento {
 namespace {
 
 class TestReturnValueUnderConstructionChecker
-    : public Checker<check::PostCall> {
+  : public Checker<check::PostCall> {
 public:
   void checkPostCall(const CallEvent &Call, CheckerContext &C) const {
     // Only calls with origin expression are checked. These are `returnC()`,
@@ -44,12 +44,12 @@ public:
 
 void addTestReturnValueUnderConstructionChecker(
     AnalysisASTConsumer &AnalysisConsumer, AnalyzerOptions &AnOpts) {
-  AnOpts.CheckersAndPackages = {
-      {"test.TestReturnValueUnderConstruction", true}};
+  AnOpts.CheckersAndPackages =
+    {{"test.TestReturnValueUnderConstruction", true}};
   AnalysisConsumer.AddCheckerRegistrationFn([](CheckerRegistry &Registry) {
-    Registry.addChecker<TestReturnValueUnderConstructionChecker>(
-        "test.TestReturnValueUnderConstruction", "", "");
-  });
+      Registry.addChecker<TestReturnValueUnderConstructionChecker>(
+          "test.TestReturnValueUnderConstruction", "", "");
+    });
 }
 
 TEST(TestReturnValueUnderConstructionChecker,

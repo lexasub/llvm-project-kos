@@ -30,15 +30,21 @@
 
 #include "test_macros.h"
 
-struct gen {
-  std::ptrdiff_t operator()(std::ptrdiff_t n) { return n - 1; }
+struct gen
+{
+    std::ptrdiff_t operator()(std::ptrdiff_t n)
+    {
+        return n-1;
+    }
 };
 
-int main(int, char**) {
-  std::vector<int> v;
-  std::random_shuffle(v.begin(), v.end());
-  gen r;
-  std::random_shuffle(v.begin(), v.end(), r);
+
+int main(int, char**)
+{
+    std::vector<int> v;
+    std::random_shuffle(v.begin(), v.end());
+    gen r;
+    std::random_shuffle(v.begin(), v.end(), r);
 
   return 0;
 }

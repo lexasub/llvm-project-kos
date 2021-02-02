@@ -194,8 +194,7 @@ public:
   static char ID;
 
   LoadStoreVectorizerLegacyPass() : FunctionPass(ID) {
-    initializeLoadStoreVectorizerLegacyPassPass(
-        *PassRegistry::getPassRegistry());
+    initializeLoadStoreVectorizerLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 
   bool runOnFunction(Function &F) override;
@@ -246,8 +245,7 @@ bool LoadStoreVectorizerLegacyPass::runOnFunction(Function &F) {
   return V.run();
 }
 
-PreservedAnalyses LoadStoreVectorizerPass::run(Function &F,
-                                               FunctionAnalysisManager &AM) {
+PreservedAnalyses LoadStoreVectorizerPass::run(Function &F, FunctionAnalysisManager &AM) {
   // Don't vectorize when the attribute NoImplicitFloat is used.
   if (F.hasFnAttribute(Attribute::NoImplicitFloat))
     return PreservedAnalyses::all();
@@ -308,7 +306,8 @@ bool Vectorizer::isConsecutiveAccess(Value *A, Value *B) {
   // Make sure that A and B are different pointers of the same size type.
   Type *PtrATy = PtrA->getType()->getPointerElementType();
   Type *PtrBTy = PtrB->getType()->getPointerElementType();
-  if (PtrA == PtrB || PtrATy->isVectorTy() != PtrBTy->isVectorTy() ||
+  if (PtrA == PtrB ||
+      PtrATy->isVectorTy() != PtrBTy->isVectorTy() ||
       DL.getTypeStoreSize(PtrATy) != DL.getTypeStoreSize(PtrBTy) ||
       DL.getTypeStoreSize(PtrATy->getScalarType()) !=
           DL.getTypeStoreSize(PtrBTy->getScalarType()))
@@ -633,7 +632,7 @@ Vectorizer::splitOddVectorElts(ArrayRef<Instruction *> Chain,
     if ((NumLeft & 1) == 0)
       NumLeft /= 2; // Split even in half
     else
-      --NumLeft; // Split off last element
+      --NumLeft;    // Split off last element
   } else if (NumLeft == 0)
     NumLeft = 1;
   return std::make_pair(Chain.slice(0, NumLeft), Chain.slice(NumLeft));
@@ -824,8 +823,7 @@ Vectorizer::collectInstructions(BasicBlock *BB) {
 
       // No point in looking at these if they're too big to vectorize.
       if (TySize > VecRegSize / 2 ||
-          (VecTy &&
-           TTI.getLoadVectorFactor(VF, TySize, TySize / 8, VecTy) == 0))
+          (VecTy && TTI.getLoadVectorFactor(VF, TySize, TySize / 8, VecTy) == 0))
         continue;
 
       // Make sure all the users of a vector are constant-index extracts.
@@ -872,8 +870,7 @@ Vectorizer::collectInstructions(BasicBlock *BB) {
 
       // No point in looking at these if they're too big to vectorize.
       if (TySize > VecRegSize / 2 ||
-          (VecTy &&
-           TTI.getStoreVectorFactor(VF, TySize, TySize / 8, VecTy) == 0))
+          (VecTy && TTI.getStoreVectorFactor(VF, TySize, TySize / 8, VecTy) == 0))
         continue;
 
       if (isa<VectorType>(Ty) && !llvm::all_of(SI->users(), [](const User *U) {
@@ -1123,9 +1120,9 @@ bool Vectorizer::vectorizeStoreChain(
   }
 
   StoreInst *SI = Builder.CreateAlignedStore(
-      Vec,
-      Builder.CreateBitCast(S0->getPointerOperand(), VecTy->getPointerTo(AS)),
-      Alignment);
+    Vec,
+    Builder.CreateBitCast(S0->getPointerOperand(), VecTy->getPointerTo(AS)),
+    Alignment);
   propagateMetadata(SI, Chain);
 
   eraseInstructions(Chain);

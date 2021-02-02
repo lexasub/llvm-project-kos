@@ -85,6 +85,6 @@ enum {
   k_num_user_registers_s390x =
       k_num_gpr_registers_s390x + k_num_fpr_registers_s390x,
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_LLDB_S390X_REGISTER_ENUMS_H

@@ -101,11 +101,17 @@ public:
     ForceSpecifierReplacement = ForceReplacement;
   }
 
-  bool WillReplaceSpecifier() const { return ForceSpecifierReplacement; }
+  bool WillReplaceSpecifier() const {
+    return ForceSpecifierReplacement;
+  }
 
-  void setQualifierDistance(unsigned ED) { QualifierDistance = ED; }
+  void setQualifierDistance(unsigned ED) {
+    QualifierDistance = ED;
+  }
 
-  void setCallbackDistance(unsigned ED) { CallbackDistance = ED; }
+  void setCallbackDistance(unsigned ED) {
+    CallbackDistance = ED;
+  }
 
   // Convert the given weighted edit distance to a roughly equivalent number of
   // single-character edits (typically for comparison to the length of the
@@ -123,9 +129,10 @@ public:
     if (CharDistance > MaximumDistance || QualifierDistance > MaximumDistance ||
         CallbackDistance > MaximumDistance)
       return InvalidDistance;
-    unsigned ED = CharDistance * CharDistanceWeight +
-                  QualifierDistance * QualifierDistanceWeight +
-                  CallbackDistance * CallbackDistanceWeight;
+    unsigned ED =
+        CharDistance * CharDistanceWeight +
+        QualifierDistance * QualifierDistanceWeight +
+        CallbackDistance * CallbackDistanceWeight;
     if (ED > MaximumDistance)
       return InvalidDistance;
     // Half the CharDistanceWeight is added to ED to simulate rounding since
@@ -145,12 +152,15 @@ public:
     auto *D = getFoundDecl();
     return D ? D->getUnderlyingDecl() : nullptr;
   }
-  template <class DeclClass> DeclClass *getCorrectionDeclAs() const {
+  template <class DeclClass>
+  DeclClass *getCorrectionDeclAs() const {
     return dyn_cast_or_null<DeclClass>(getCorrectionDecl());
   }
 
   /// Clears the list of NamedDecls.
-  void ClearCorrectionDecls() { CorrectionDecls.clear(); }
+  void ClearCorrectionDecls() {
+    CorrectionDecls.clear();
+  }
 
   /// Clears the list of NamedDecls before adding the new one.
   void setCorrectionDecl(NamedDecl *CDecl) {
@@ -159,7 +169,7 @@ public:
   }
 
   /// Clears the list of NamedDecls and adds the given set.
-  void setCorrectionDecls(ArrayRef<NamedDecl *> Decls) {
+  void setCorrectionDecls(ArrayRef<NamedDecl*> Decls) {
     CorrectionDecls.clear();
     CorrectionDecls.insert(CorrectionDecls.begin(), Decls.begin(), Decls.end());
   }
@@ -194,7 +204,7 @@ public:
   }
 
   // Check if this TypoCorrection is the given keyword.
-  template <std::size_t StrLen>
+  template<std::size_t StrLen>
   bool isKeyword(const char (&Str)[StrLen]) const {
     return isKeyword() && getCorrectionAsIdentifierInfo()->isStr(Str);
   }
@@ -202,7 +212,9 @@ public:
   // Returns true if the correction either is a keyword or has a known decl.
   bool isResolved() const { return !CorrectionDecls.empty(); }
 
-  bool isOverloaded() const { return CorrectionDecls.size() > 1; }
+  bool isOverloaded() const {
+    return CorrectionDecls.size() > 1;
+  }
 
   void setCorrectionRange(CXXScopeSpec *SS,
                           const DeclarationNameInfo &TypoName) {
@@ -211,7 +223,9 @@ public:
       CorrectionRange.setBegin(SS->getBeginLoc());
   }
 
-  SourceRange getCorrectionRange() const { return CorrectionRange; }
+  SourceRange getCorrectionRange() const {
+    return CorrectionRange;
+  }
 
   using decl_iterator = SmallVectorImpl<NamedDecl *>::iterator;
 
@@ -365,7 +379,8 @@ public:
 class FunctionCallFilterCCC : public CorrectionCandidateCallback {
 public:
   FunctionCallFilterCCC(Sema &SemaRef, unsigned NumArgs,
-                        bool HasExplicitTemplateArgs, MemberExpr *ME = nullptr);
+                        bool HasExplicitTemplateArgs,
+                        MemberExpr *ME = nullptr);
 
   bool ValidateCandidate(const TypoCorrection &candidate) override;
   std::unique_ptr<CorrectionCandidateCallback> clone() override {

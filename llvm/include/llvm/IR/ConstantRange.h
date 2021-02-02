@@ -48,10 +48,14 @@ class LLVM_NODISCARD ConstantRange {
   APInt Lower, Upper;
 
   /// Create empty constant range with same bitwidth.
-  ConstantRange getEmpty() const { return ConstantRange(getBitWidth(), false); }
+  ConstantRange getEmpty() const {
+    return ConstantRange(getBitWidth(), false);
+  }
 
   /// Create full constant range with same bitwidth.
-  ConstantRange getFull() const { return ConstantRange(getBitWidth(), true); }
+  ConstantRange getFull() const {
+    return ConstantRange(getBitWidth(), true);
+  }
 
 public:
   /// Initialize a full or empty set for the specified bit width.
@@ -253,7 +257,9 @@ public:
   bool operator==(const ConstantRange &CR) const {
     return Lower == CR.Lower && Upper == CR.Upper;
   }
-  bool operator!=(const ConstantRange &CR) const { return !operator==(CR); }
+  bool operator!=(const ConstantRange &CR) const {
+    return !operator==(CR);
+  }
 
   /// Compute the maximal number of active bits needed to represent every value
   /// in this range.
@@ -301,7 +307,8 @@ public:
   /// change bitwidth, it must be the same as the source bitwidth.  For casts
   /// which do change bitwidth, the bitwidth must be consistent with the
   /// requested cast and source bitwidth.
-  ConstantRange castOp(Instruction::CastOps CastOp, uint32_t BitWidth) const;
+  ConstantRange castOp(Instruction::CastOps CastOp,
+                       uint32_t BitWidth) const;
 
   /// Return a new range in the specified integer type, which must
   /// be strictly larger than the current type.  The returned range will

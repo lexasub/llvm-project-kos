@@ -3,7 +3,7 @@
 #include "Inputs/include/report-issues-within-main-file.h"
 
 void mainPlusHeader() {
-  auto_ptr<int> B(new int[5]);
+  auto_ptr<int> B (new int[5]);
 }
 
 void auxInMain() {
@@ -21,7 +21,7 @@ void mainPlusMainPlusHeader() {
 
 void causeDivByZeroInMain(int in) {
   int m = 0;
-  m = in / m;
+  m = in/m;
   m++;
 }
 void mainPlusMain() {
@@ -33,7 +33,7 @@ void mainPlusMain() {
 
 void causeDivByZeroInMain2(int in) {
   int m2 = 0;
-  m2 = in / m2;
+  m2 = in/m2;
   m2++;
 }
 

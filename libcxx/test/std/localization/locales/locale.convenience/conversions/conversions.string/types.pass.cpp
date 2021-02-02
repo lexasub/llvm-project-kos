@@ -24,17 +24,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::wstring_convert<std::codecvt_utf8<wchar_t> > myconv;
-    static_assert((std::is_same<myconv::byte_string, std::string>::value), "");
-    static_assert((std::is_same<myconv::wide_string, std::wstring>::value), "");
-    static_assert((std::is_same<myconv::state_type, std::mbstate_t>::value),
-                  "");
-    static_assert((std::is_same<myconv::int_type,
-                                std::char_traits<wchar_t>::int_type>::value),
-                  "");
-  }
+int main(int, char**)
+{
+    {
+        typedef std::wstring_convert<std::codecvt_utf8<wchar_t> > myconv;
+        static_assert((std::is_same<myconv::byte_string, std::string>::value), "");
+        static_assert((std::is_same<myconv::wide_string, std::wstring>::value), "");
+        static_assert((std::is_same<myconv::state_type, std::mbstate_t>::value), "");
+        static_assert((std::is_same<myconv::int_type, std::char_traits<wchar_t>::int_type>::value), "");
+    }
 
   return 0;
 }

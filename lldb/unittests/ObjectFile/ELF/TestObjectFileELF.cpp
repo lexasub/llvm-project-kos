@@ -137,8 +137,7 @@ Sections:
     Flags:           [ SHF_ALLOC ]
     Address:         0x0000000000400274
     AddressAlign:    0x0000000000000004
-    Content:
-040000001400000003000000474E55001B8A73AC238390E32A7FF4AC8EBE4D6A41ECF5C9
+    Content:         040000001400000003000000474E55001B8A73AC238390E32A7FF4AC8EBE4D6A41ECF5C9
   - Name:            .text
     Type:            SHT_PROGBITS
     Flags:           [ SHF_ALLOC, SHF_EXECINSTR ]
@@ -152,7 +151,7 @@ TEST_F(ObjectFileELFTest, GetModuleSpecifications_EarlySectionHeaders) {
   ModuleSpecList Specs;
   ASSERT_EQ(1u, ObjectFile::GetModuleSpecifications(FileSpec(SO), 0, 0, Specs));
   ModuleSpec Spec;
-  ASSERT_TRUE(Specs.GetModuleSpecAtIndex(0, Spec));
+  ASSERT_TRUE(Specs.GetModuleSpecAtIndex(0, Spec)) ;
   UUID Uuid;
   Uuid.SetFromStringRef("1b8a73ac238390e32a7ff4ac8ebe4d6a41ecf5c9");
   EXPECT_EQ(Spec.GetUUID(), Uuid);

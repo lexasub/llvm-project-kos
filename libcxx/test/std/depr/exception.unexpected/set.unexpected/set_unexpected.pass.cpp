@@ -19,18 +19,22 @@
 void f1() {}
 void f2() {}
 
-void f3() { std::exit(0); }
+void f3()
+{
+    std::exit(0);
+}
 
-int main(int, char**) {
-  std::unexpected_handler old = std::set_unexpected(f1);
-  // verify there is a previous unexpected handler
-  assert(old);
-  // verify f1 was replace with f2
-  assert(std::set_unexpected(f2) == f1);
-  // verify calling original unexpected handler calls terminate
-  std::set_terminate(f3);
-  (*old)();
-  assert(0);
+int main(int, char**)
+{
+    std::unexpected_handler old = std::set_unexpected(f1);
+    // verify there is a previous unexpected handler
+    assert(old);
+    // verify f1 was replace with f2
+    assert(std::set_unexpected(f2) == f1);
+    // verify calling original unexpected handler calls terminate
+    std::set_terminate(f3);
+    (*old)();
+    assert(0);
 
   return 0;
 }

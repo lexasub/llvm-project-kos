@@ -48,9 +48,9 @@ using namespace llvm;
 
 #define DEBUG_TYPE "branch-prob"
 
-static cl::opt<bool>
-    PrintBranchProb("print-bpi", cl::init(false), cl::Hidden,
-                    cl::desc("Print the branch probability info."));
+static cl::opt<bool> PrintBranchProb(
+    "print-bpi", cl::init(false), cl::Hidden,
+    cl::desc("Print the branch probability info."));
 
 cl::opt<std::string> PrintBranchProbFuncName(
     "print-bpi-func-name", cl::Hidden,
@@ -375,7 +375,7 @@ bool BranchProbabilityInfo::calcMetadataWeights(const BasicBlock *BB) {
   // Set the probability.
   SmallVector<BranchProbability, 2> BP;
   for (unsigned I = 0, E = TI->getNumSuccessors(); I != E; ++I)
-    BP.push_back({Weights[I], static_cast<uint32_t>(WeightSum)});
+    BP.push_back({ Weights[I], static_cast<uint32_t>(WeightSum) });
 
   // Examine the metadata against unreachable heuristic.
   // If the unreachable heuristic is more strong then we use it for this edge.
@@ -491,7 +491,7 @@ bool BranchProbabilityInfo::calcPointerHeuristics(const BasicBlock *BB) {
 // UnlikelyBlocks set.
 static void
 computeUnlikelySuccessors(const BasicBlock *BB, Loop *L,
-                          SmallPtrSetImpl<const BasicBlock *> &UnlikelyBlocks) {
+                          SmallPtrSetImpl<const BasicBlock*> &UnlikelyBlocks) {
   // Sometimes in a loop we have a branch whose condition is made false by
   // taking it. This is typically something like
   //  int n = 0;
@@ -545,8 +545,8 @@ computeUnlikelySuccessors(const BasicBlock *BB, Loop *L,
     return;
 
   // Trace the phi node to find all values that come from successors of BB
-  SmallPtrSet<PHINode *, 8> VisitedInsts;
-  SmallVector<PHINode *, 8> WorkList;
+  SmallPtrSet<PHINode*, 8> VisitedInsts;
+  SmallVector<PHINode*, 8> WorkList;
   WorkList.push_back(CmpPHI);
   VisitedInsts.insert(CmpPHI);
   while (!WorkList.empty()) {
@@ -584,8 +584,9 @@ computeUnlikelySuccessors(const BasicBlock *BB, Loop *L,
                                                   CmpLHSConst, CmpConst, true);
       // If the result means we don't branch to the block then that block is
       // unlikely.
-      if (Result && ((Result->isZeroValue() && B == BI->getSuccessor(0)) ||
-                     (Result->isOneValue() && B == BI->getSuccessor(1))))
+      if (Result &&
+          ((Result->isZeroValue() && B == BI->getSuccessor(0)) ||
+           (Result->isOneValue() && B == BI->getSuccessor(1))))
         UnlikelyBlocks.insert(B);
     }
   }
@@ -711,8 +712,8 @@ void BranchProbabilityInfo::propagateEstimatedBlockWeight(
   }
 }
 
-Optional<uint32_t>
-BranchProbabilityInfo::getInitialEstimatedBlockWeight(const BasicBlock *BB) {
+Optional<uint32_t> BranchProbabilityInfo::getInitialEstimatedBlockWeight(
+    const BasicBlock *BB) {
   // Returns true if \p BB has call marked with "NoReturn" attribute.
   auto hasNoReturn = [&](const BasicBlock *BB) {
     for (const auto &I : reverse(*BB))
@@ -951,9 +952,12 @@ bool BranchProbabilityInfo::calcZeroHeuristics(const BasicBlock *BB,
         TLI->getLibFunc(*CalledFn, Func);
 
   bool isProb;
-  if (Func == LibFunc_strcasecmp || Func == LibFunc_strcmp ||
-      Func == LibFunc_strncasecmp || Func == LibFunc_strncmp ||
-      Func == LibFunc_memcmp || Func == LibFunc_bcmp) {
+  if (Func == LibFunc_strcasecmp ||
+      Func == LibFunc_strcmp ||
+      Func == LibFunc_strncasecmp ||
+      Func == LibFunc_strncmp ||
+      Func == LibFunc_memcmp ||
+      Func == LibFunc_bcmp) {
     // strcmp and similar functions return zero, negative, or positive, if the
     // first string is equal, less, or greater than the second. We consider it
     // likely that the strings are not equal, so a comparison with zero is
@@ -1098,8 +1102,8 @@ void BranchProbabilityInfo::print(raw_ostream &OS) const {
   }
 }
 
-bool BranchProbabilityInfo::isEdgeHot(const BasicBlock *Src,
-                                      const BasicBlock *Dst) const {
+bool BranchProbabilityInfo::
+isEdgeHot(const BasicBlock *Src, const BasicBlock *Dst) const {
   // Hot probability is at least 4/5 = 80%
   // FIXME: Compare against a static "hot" BranchProbability.
   return getEdgeProbability(Src, Dst) > BranchProbability(4, 5);
@@ -1212,8 +1216,10 @@ void BranchProbabilityInfo::copyEdgeProbabilities(BasicBlock *Src,
   }
 }
 
-raw_ostream &BranchProbabilityInfo::printEdgeProbability(
-    raw_ostream &OS, const BasicBlock *Src, const BasicBlock *Dst) const {
+raw_ostream &
+BranchProbabilityInfo::printEdgeProbability(raw_ostream &OS,
+                                            const BasicBlock *Src,
+                                            const BasicBlock *Dst) const {
   const BranchProbability Prob = getEdgeProbability(Src, Dst);
   OS << "edge " << Src->getName() << " -> " << Dst->getName()
      << " probability is " << Prob
@@ -1297,8 +1303,9 @@ void BranchProbabilityInfo::calculate(const Function &F, const LoopInfo &LoopI,
   EstimatedBlockWeight.clear();
   SccI.reset();
 
-  if (PrintBranchProb && (PrintBranchProbFuncName.empty() ||
-                          F.getName().equals(PrintBranchProbFuncName))) {
+  if (PrintBranchProb &&
+      (PrintBranchProbFuncName.empty() ||
+       F.getName().equals(PrintBranchProbFuncName))) {
     print(dbgs());
   }
 }

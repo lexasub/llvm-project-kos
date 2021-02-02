@@ -3,5 +3,5 @@
 
 struct A {};
 struct B : A {};
-void a(const A &x = B());
+void a(const A& x = B());
 void b() { a(); }

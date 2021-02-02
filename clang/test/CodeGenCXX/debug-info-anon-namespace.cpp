@@ -1,17 +1,19 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -dwarf-explicit-import -O0 %s -o - | FileCheck --check-prefix=IMPORT %s
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -O0 %s -o - | FileCheck --check-prefix=NOIMPORT %s
 
-namespace {
-int a = 5;
+namespace
+{
+  int a = 5;
 }
 int *b = &a;
 
-namespace {
-namespace {
-int a1 = 5;
+namespace
+{
+  namespace {
+    int a1 = 5;
+  }
+  int a2 = 7;
 }
-int a2 = 7;
-} // namespace
 int *b1 = &a1;
 int *b2 = &a2;
 

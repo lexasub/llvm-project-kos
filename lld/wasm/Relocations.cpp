@@ -31,7 +31,7 @@ static bool requiresGOTAccess(const Symbol *sym) {
   return true;
 }
 
-static bool allowUndefined(const Symbol *sym) {
+static bool allowUndefined(const Symbol* sym) {
   // Undefined functions and globals with explicit import name are allowed to be
   // undefined at link time.
   if (auto *f = dyn_cast<UndefinedFunction>(sym))

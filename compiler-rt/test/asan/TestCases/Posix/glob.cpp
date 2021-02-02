@@ -6,11 +6,12 @@
 // RUN: %clangxx_asan -O3 %s -o %t && %run %t %p 2>&1 | FileCheck %s
 
 #include <assert.h>
-#include <errno.h>
 #include <glob.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <string>
+
 
 int main(int argc, char *argv[]) {
   std::string path = argv[1];

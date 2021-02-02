@@ -26,11 +26,12 @@
 
 namespace coro = std::experimental;
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     using H = coro::coroutine_handle<>;
     // expected-error@experimental/coroutine:* 3 {{coroutine_handle<void>::from_address cannot be called with non-void pointers}}
-    H::from_address((int*)nullptr);        // expected-note {{requested here}}
+    H::from_address((int*)nullptr); // expected-note {{requested here}}
     H::from_address((const void*)nullptr); // expected-note {{requested here}}
     H::from_address((const char*)nullptr); // expected-note {{requested here}}
   }

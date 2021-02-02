@@ -27,7 +27,7 @@ class raw_ostream;
 class Mangler {
   /// We need to give global values the same name every time they are mangled.
   /// This keeps track of the number we give to anonymous ones.
-  mutable DenseMap<const GlobalValue *, unsigned> AnonGlobalIDs;
+  mutable DenseMap<const GlobalValue*, unsigned> AnonGlobalIDs;
 
 public:
   /// Print the appropriate prefix and the specified global variable's name.
@@ -52,6 +52,6 @@ void emitLinkerFlagsForGlobalCOFF(raw_ostream &OS, const GlobalValue *GV,
 void emitLinkerFlagsForUsedCOFF(raw_ostream &OS, const GlobalValue *GV,
                                 const Triple &T, Mangler &M);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

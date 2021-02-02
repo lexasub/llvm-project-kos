@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -std=c++1z -verify %s
 
-template <typename T, typename U> constexpr bool same = false;
-template <typename T> constexpr bool same<T, T> = true;
+template<typename T, typename U> constexpr bool same = false;
+template<typename T> constexpr bool same<T, T> = true;
 
 auto a() {
   if constexpr (false)
@@ -28,10 +28,10 @@ auto c() {
     return 5; // expected-error {{deduced as 'int' here but deduced as 'const char *' in earlier}}
 }
 
-template <int k> auto d() {
-  if constexpr (k == 0)
+template<int k> auto d() {
+  if constexpr(k == 0)
     return 0;
-  if constexpr (k == 1)
+  if constexpr(k == 1)
     return "foo";
   else if constexpr (k == 2)
     return 1.0;
@@ -41,7 +41,7 @@ static_assert(same<decltype(d<1>()), const char *>);
 static_assert(same<decltype(d<2>()), double>);
 static_assert(same<decltype(d<3>()), void>);
 
-auto e = [] { if constexpr (false) return 0; }(); // expected-error {{variable has incomplete type 'void'}}
+auto e = []{ if constexpr (false) return 0; }(); // expected-error {{variable has incomplete type 'void'}}
 
-auto f = [] { if constexpr (true) return 0; }();
+auto f = []{ if constexpr (true) return 0; }();
 static_assert(same<decltype(e), int>);

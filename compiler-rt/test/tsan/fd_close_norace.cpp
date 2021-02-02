@@ -1,8 +1,8 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 #include "test.h"
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 void *Thread1(void *x) {
   int f = open("/dev/random", O_RDONLY);
@@ -29,3 +29,5 @@ int main() {
 }
 
 // CHECK-NOT: WARNING: ThreadSanitizer: data race
+
+

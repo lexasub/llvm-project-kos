@@ -14,13 +14,12 @@
 #include "sanitizer_common/sanitizer_allocator_interface.h"
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_WINDOWS
-#include <stddef.h>
-
 #include "asan_allocator.h"
 #include "asan_interceptors.h"
 #include "asan_internal.h"
 #include "asan_stack.h"
 #include "interception/interception.h"
+#include <stddef.h>
 
 // Intentionally not including windows.h here, to avoid the risk of
 // pulling in conflicting declarations of these functions. (With mingw-w64,
@@ -41,10 +40,11 @@ constexpr unsigned long HEAP_FREE_UNSUPPORTED_FLAGS =
 constexpr unsigned long HEAP_REALLOC_UNSUPPORTED_FLAGS =
     (~HEAP_ALLOCATE_SUPPORTED_FLAGS);
 
+
 extern "C" {
 LPVOID WINAPI HeapAlloc(HANDLE hHeap, DWORD dwFlags, size_t dwBytes);
 LPVOID WINAPI HeapReAlloc(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem,
-                          size_t dwBytes);
+                         size_t dwBytes);
 BOOL WINAPI HeapFree(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem);
 size_t WINAPI HeapSize(HANDLE hHeap, DWORD dwFlags, LPCVOID lpMem);
 
@@ -59,9 +59,9 @@ using namespace __asan;
 // so we have to intercept them before they are called for the first time.
 
 #if ASAN_DYNAMIC
-#define ALLOCATION_FUNCTION_ATTRIBUTE
+# define ALLOCATION_FUNCTION_ATTRIBUTE
 #else
-#define ALLOCATION_FUNCTION_ATTRIBUTE SANITIZER_INTERFACE_ATTRIBUTE
+# define ALLOCATION_FUNCTION_ATTRIBUTE SANITIZER_INTERFACE_ATTRIBUTE
 #endif
 
 extern "C" {
@@ -73,7 +73,9 @@ size_t _msize(void *ptr) {
 }
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-size_t _msize_base(void *ptr) { return _msize(ptr); }
+size_t _msize_base(void *ptr) {
+  return _msize(ptr);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
 void free(void *ptr) {
@@ -82,10 +84,14 @@ void free(void *ptr) {
 }
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void _free_dbg(void *ptr, int) { free(ptr); }
+void _free_dbg(void *ptr, int) {
+  free(ptr);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void _free_base(void *ptr) { free(ptr); }
+void _free_base(void *ptr) {
+  free(ptr);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
 void *malloc(size_t size) {
@@ -94,10 +100,14 @@ void *malloc(size_t size) {
 }
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void *_malloc_base(size_t size) { return malloc(size); }
+void *_malloc_base(size_t size) {
+  return malloc(size);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void *_malloc_dbg(size_t size, int, const char *, int) { return malloc(size); }
+void *_malloc_dbg(size_t size, int, const char *, int) {
+  return malloc(size);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
 void *calloc(size_t nmemb, size_t size) {
@@ -106,7 +116,9 @@ void *calloc(size_t nmemb, size_t size) {
 }
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void *_calloc_base(size_t nmemb, size_t size) { return calloc(nmemb, size); }
+void *_calloc_base(size_t nmemb, size_t size) {
+  return calloc(nmemb, size);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
 void *_calloc_dbg(size_t nmemb, size_t size, int, const char *, int) {
@@ -131,7 +143,9 @@ void *_realloc_dbg(void *ptr, size_t size, int) {
 }
 
 ALLOCATION_FUNCTION_ATTRIBUTE
-void *_realloc_base(void *ptr, size_t size) { return realloc(ptr, size); }
+void *_realloc_base(void *ptr, size_t size) {
+  return realloc(ptr, size);
+}
 
 ALLOCATION_FUNCTION_ATTRIBUTE
 void *_recalloc(void *p, size_t n, size_t elem_size) {
@@ -172,16 +186,19 @@ void *_expand_dbg(void *memblock, size_t size) {
 // TODO(timurrrr): Might want to add support for _aligned_* allocation
 // functions to detect a bit more bugs.  Those functions seem to wrap malloc().
 
-int _CrtDbgReport(int, const char *, int, const char *, const char *, ...) {
+int _CrtDbgReport(int, const char*, int,
+                  const char*, const char*, ...) {
   ShowStatsAndAbort();
 }
 
-int _CrtDbgReportW(int reportType, const wchar_t *, int, const wchar_t *,
-                   const wchar_t *, ...) {
+int _CrtDbgReportW(int reportType, const wchar_t*, int,
+                   const wchar_t*, const wchar_t*, ...) {
   ShowStatsAndAbort();
 }
 
-int _CrtSetReportMode(int, int) { return 0; }
+int _CrtSetReportMode(int, int) {
+  return 0;
+}
 }  // extern "C"
 
 #define OWNED_BY_RTL(heap, memory) \
@@ -322,8 +339,8 @@ void *SharedReAlloc(ReAllocFunction reallocFunc, SizeFunction heapSizeFunc,
       size_t old_usable_size = 0;
       if (replacement_alloc) {
         old_usable_size = asan_malloc_usable_size(lpMem, pc, bp);
-        REAL(memcpy)
-        (replacement_alloc, lpMem, Min<size_t>(dwBytes, old_usable_size));
+        REAL(memcpy)(replacement_alloc, lpMem,
+                     Min<size_t>(dwBytes, old_usable_size));
         asan_free(lpMem, &stack, FROM_MALLOC);
       }
       return replacement_alloc;
@@ -385,21 +402,23 @@ typedef unsigned long LOGICAL;
 
 // This function is documented as part of the Driver Development Kit but *not*
 // the Windows Development Kit.
-LOGICAL RtlFreeHeap(void *HeapHandle, DWORD Flags, void *BaseAddress);
+LOGICAL RtlFreeHeap(void* HeapHandle, DWORD Flags,
+                            void* BaseAddress);
 
 // This function is documented as part of the Driver Development Kit but *not*
 // the Windows Development Kit.
-void *RtlAllocateHeap(void *HeapHandle, DWORD Flags, size_t Size);
+void* RtlAllocateHeap(void* HeapHandle, DWORD Flags, size_t Size);
 
 // This function is completely undocumented.
-void *RtlReAllocateHeap(void *HeapHandle, DWORD Flags, void *BaseAddress,
-                        size_t Size);
+void*
+RtlReAllocateHeap(void* HeapHandle, DWORD Flags, void* BaseAddress,
+                  size_t Size);
 
 // This function is completely undocumented.
-size_t RtlSizeHeap(void *HeapHandle, DWORD Flags, void *BaseAddress);
+size_t RtlSizeHeap(void* HeapHandle, DWORD Flags, void* BaseAddress);
 
 INTERCEPTOR_WINAPI(size_t, RtlSizeHeap, HANDLE HeapHandle, DWORD Flags,
-                   void *BaseAddress) {
+                   void* BaseAddress) {
   if (!flags()->windows_hook_rtl_allocators ||
       UNLIKELY(!asan_inited || OWNED_BY_RTL(HeapHandle, BaseAddress))) {
     return REAL(RtlSizeHeap)(HeapHandle, Flags, BaseAddress);
@@ -410,7 +429,7 @@ INTERCEPTOR_WINAPI(size_t, RtlSizeHeap, HANDLE HeapHandle, DWORD Flags,
 }
 
 INTERCEPTOR_WINAPI(BOOL, RtlFreeHeap, HANDLE HeapHandle, DWORD Flags,
-                   void *BaseAddress) {
+                   void* BaseAddress) {
   // Heap allocations happen before this function is hooked, so we must fall
   // back to the original function if the pointer is not from the ASAN heap, or
   // unsupported flags are provided.
@@ -424,7 +443,7 @@ INTERCEPTOR_WINAPI(BOOL, RtlFreeHeap, HANDLE HeapHandle, DWORD Flags,
   return true;
 }
 
-INTERCEPTOR_WINAPI(void *, RtlAllocateHeap, HANDLE HeapHandle, DWORD Flags,
+INTERCEPTOR_WINAPI(void*, RtlAllocateHeap, HANDLE HeapHandle, DWORD Flags,
                    size_t Size) {
   // If the ASAN runtime is not initialized, or we encounter an unsupported
   // flag, fall back to the original allocator.
@@ -446,8 +465,8 @@ INTERCEPTOR_WINAPI(void *, RtlAllocateHeap, HANDLE HeapHandle, DWORD Flags,
   return p;
 }
 
-INTERCEPTOR_WINAPI(void *, RtlReAllocateHeap, HANDLE HeapHandle, DWORD Flags,
-                   void *BaseAddress, size_t Size) {
+INTERCEPTOR_WINAPI(void*, RtlReAllocateHeap, HANDLE HeapHandle, DWORD Flags,
+                   void* BaseAddress, size_t Size) {
   // If it's actually a heap block which was allocated before the ASAN runtime
   // came up, use the real RtlFreeHeap function.
   if (!flags()->windows_hook_rtl_allocators)

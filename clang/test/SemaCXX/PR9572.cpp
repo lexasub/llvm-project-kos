@@ -28,7 +28,7 @@ struct Foo : public Base {
 };
 
 struct Bar : public Foo {
-  Bar() {}
+  Bar() { }
 #if __cplusplus <= 199711L
   // expected-note@-2 {{implicit destructor for 'Foo' first required here}}
 #else
@@ -38,7 +38,7 @@ struct Bar : public Foo {
 
 struct Baz {
   Foo f;
-  Baz() {}
+  Baz() { }
 #if __cplusplus >= 201103L
   // expected-error@-2 {{attempt to use a deleted function}}
 #endif

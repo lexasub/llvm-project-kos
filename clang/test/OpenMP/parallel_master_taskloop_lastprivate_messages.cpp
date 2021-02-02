@@ -30,9 +30,9 @@ class S2 {
 public:
   S2() : a(0) {}
   S2(S2 &s2) : a(s2.a) {}
-  const S2 &operator=(const S2 &) const;
-  S2 &operator=(const S2 &);
-  static float S2s;        // expected-note {{static data member is predetermined as shared}}
+  const S2 &operator =(const S2&) const;
+  S2 &operator =(const S2&);
+  static float S2s; // expected-note {{static data member is predetermined as shared}}
   static const float S2sc; // expected-note {{'S2sc' declared here}}
 };
 const float S2::S2sc = 0;
@@ -51,7 +51,7 @@ const S3 ca[5];     // expected-note {{'ca' defined here}}
 extern const int f; // expected-note {{'f' declared here}}
 class S4 {
   int a;
-  S4(); // expected-note 3 {{implicitly declared private here}}
+  S4();             // expected-note 3 {{implicitly declared private here}}
   S4(const S4 &s4);
 
 public:
@@ -108,16 +108,11 @@ int foomain(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp parallel master taskloop lastprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                                            : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                                             : argv),              \
-                                                                                                                                                                              allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp parallel master taskloop lastprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp parallel master taskloop lastprivate(conditional                     \
-                                                 : argc) lastprivate(conditional \
-                                                                     : // expected-error 2 {{use of undeclared identifier 'conditional'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel master taskloop lastprivate(conditional: argc) lastprivate(conditional: // expected-error 2 {{use of undeclared identifier 'conditional'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
@@ -144,8 +139,7 @@ int foomain(int argc, char **argv) {
   {
     int v = 0;
     int i;
-#pragma omp parallel master taskloop allocate(omp_thread_mem_alloc \
-                                              : i) lastprivate(i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'parallel master taskloop' directive}}
+#pragma omp parallel master taskloop allocate(omp_thread_mem_alloc: i) lastprivate(i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'parallel master taskloop' directive}}
     for (int k = 0; k < argc; ++k) {
       i = k;
       v += i;
@@ -173,7 +167,7 @@ void bar(S4 a[2]) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -288,8 +282,7 @@ int main(int argc, char **argv) {
 #pragma omp parallel master taskloop lastprivate(xa)
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel reduction(+ \
-                               : xa)
+#pragma omp parallel reduction(+ : xa)
 #pragma omp parallel master taskloop lastprivate(xa)
   for (i = 0; i < argc; ++i)
     foo();

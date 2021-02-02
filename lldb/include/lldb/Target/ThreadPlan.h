@@ -417,7 +417,7 @@ public:
   virtual void WillPop();
 
   // This pushes a plan onto the plan stack of the current plan's thread.
-  // Also sets the plans to private and not master plans.  A plan pushed by
+  // Also sets the plans to private and not master plans.  A plan pushed by 
   // another thread plan is never either of the above.
   void PushPlan(lldb::ThreadPlanSP &thread_plan_sp) {
     GetThread().PushPlan(thread_plan_sp);
@@ -453,7 +453,7 @@ public:
   // original stop reason so that stopping and calling a few functions won't
   // lose the history of the run. This call can be implemented to get you back
   // to the real stop info.
-  virtual lldb::StopInfoSP GetRealStopInfo() {
+  virtual lldb::StopInfoSP GetRealStopInfo() { 
     return GetThread().GetStopInfo();
   }
 

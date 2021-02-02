@@ -20,7 +20,8 @@
 bool test_constructor_explicit(std::type_info const&) { return false; }
 bool test_constructor_explicit(std::string const&) { return true; }
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     const std::type_info& t1 = typeid(int);
     const std::type_info& t2 = typeid(int);

@@ -3,8 +3,6 @@
 
 // expected-no-diagnostics
 
-struct __declspec(dllimport) Foo {
-  int get_a();
-};
-template <int (Foo::*Getter)()> struct HasValue {};
+struct __declspec(dllimport) Foo { int get_a(); };
+template <int (Foo::*Getter)()> struct HasValue { };
 HasValue<&Foo::get_a> hv;

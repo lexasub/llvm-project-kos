@@ -18,8 +18,8 @@
 // C++ includes
 #include <algorithm>
 #include <map>
-#include <utility>
 #include <vector>
+#include <utility>
 
 using namespace lldb_private;
 using namespace minidump;
@@ -581,7 +581,8 @@ CreateRegionsCacheFromMemoryList(MinidumpParser &parser,
 static bool
 CreateRegionsCacheFromMemory64List(MinidumpParser &parser,
                                    std::vector<MemoryRegionInfo> &regions) {
-  llvm::ArrayRef<uint8_t> data = parser.GetStream(StreamType::Memory64List);
+  llvm::ArrayRef<uint8_t> data =
+      parser.GetStream(StreamType::Memory64List);
   if (data.empty())
     return false;
   llvm::ArrayRef<MinidumpMemoryDescriptor64> memory64_list;
@@ -633,7 +634,8 @@ std::pair<MemoryRegionInfos, bool> MinidumpParser::BuildMemoryRegions() {
   case StreamType::ST:                                                         \
     return #ST
 
-llvm::StringRef MinidumpParser::GetStreamTypeAsString(StreamType stream_type) {
+llvm::StringRef
+MinidumpParser::GetStreamTypeAsString(StreamType stream_type) {
   switch (stream_type) {
     ENUM_TO_CSTR(Unused);
     ENUM_TO_CSTR(ThreadList);

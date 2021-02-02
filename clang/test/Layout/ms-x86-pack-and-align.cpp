@@ -7,32 +7,32 @@ extern "C" int printf(const char *fmt, ...);
 char buffer[419430400];
 
 struct A {
-  char a;
-  A() {
-    printf("A   = %d\n", (int)((char *)this - buffer));
-    printf("A.a = %d\n", (int)((char *)&a - buffer));
-  }
+	char a;
+	A() {
+		printf("A   = %d\n", (int)((char*)this - buffer));
+		printf("A.a = %d\n", (int)((char*)&a - buffer));
+	}
 };
 
 struct B {
-  __declspec(align(4)) long long a;
-  B() {
-    printf("B   = %d\n", (int)((char *)this - buffer));
-    printf("B.a = %d\n", (int)((char *)&a - buffer));
-  }
+	__declspec(align(4)) long long a;
+	B() {
+		printf("B   = %d\n", (int)((char*)this - buffer));
+		printf("B.a = %d\n", (int)((char*)&a - buffer));
+	}
 };
 
 #pragma pack(push, 2)
 struct X {
-  B a;
-  char b;
-  int c;
-  X() {
-    printf("X   = %d\n", (int)((char *)this - buffer));
-    printf("X.a = %d\n", (int)((char *)&a - buffer));
-    printf("X.b = %d\n", (int)((char *)&b - buffer));
-    printf("X.c = %d\n", (int)((char *)&c - buffer));
-  }
+	B a;
+	char b;
+	int c;
+	X() {
+		printf("X   = %d\n", (int)((char*)this - buffer));
+		printf("X.a = %d\n", (int)((char*)&a - buffer));
+		printf("X.b = %d\n", (int)((char*)&b - buffer));
+		printf("X.c = %d\n", (int)((char*)&c - buffer));
+	}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -55,13 +55,13 @@ struct X {
 // CHECK-X64-NEXT:      |  nvsize=14, nvalign=4]
 
 struct Y : A, B {
-  char a;
-  int b;
-  Y() {
-    printf("Y   = %d\n", (int)((char *)this - buffer));
-    printf("Y.a = %d\n", (int)((char *)&a - buffer));
-    printf("Y.b = %d\n", (int)((char *)&b - buffer));
-  }
+	char a;
+	int b;
+	Y() {
+		printf("Y   = %d\n", (int)((char*)this - buffer));
+		printf("Y.a = %d\n", (int)((char*)&a - buffer));
+		printf("Y.b = %d\n", (int)((char*)&b - buffer));
+	}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -88,13 +88,13 @@ struct Y : A, B {
 // CHECK-X64-NEXT:      |  nvsize=18, nvalign=4]
 
 struct Z : virtual B {
-  char a;
-  int b;
-  Z() {
-    printf("Z   = %d\n", (int)((char *)this - buffer));
-    printf("Z.a = %d\n", (int)((char *)&a - buffer));
-    printf("Z.b = %d\n", (int)((char *)&b - buffer));
-  }
+	char a;
+	int b;
+	Z() {
+		printf("Z   = %d\n", (int)((char*)this - buffer));
+		printf("Z.a = %d\n", (int)((char*)&a - buffer));
+		printf("Z.b = %d\n", (int)((char*)&b - buffer));
+	}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -118,13 +118,9 @@ struct Z : virtual B {
 
 #pragma pack(pop)
 
-struct A1 {
-  long long a;
-};
+struct A1 { long long a; };
 #pragma pack(push, 1)
-struct B1 : virtual A1 {
-  char a;
-};
+struct B1 : virtual A1 { char a; };
 #pragma pack(pop)
 struct C1 : B1 {};
 
@@ -152,15 +148,15 @@ struct C1 : B1 {};
 // CHECK-X64-NEXT:      |  nvsize=9, nvalign=8]
 
 struct CA0 {
-  CA0() {}
+	CA0() {}
 };
 struct CA1 : virtual CA0 {
-  CA1() {}
+	CA1() {}
 };
 #pragma pack(push, 1)
 struct CA2 : public CA1, public CA0 {
-  virtual void CA2Method() {}
-  CA2() {}
+	virtual void CA2Method() {}
+	CA2() {}
 };
 #pragma pack(pop)
 
@@ -189,7 +185,7 @@ struct CA2 : public CA1, public CA0 {
 
 #pragma pack(16)
 struct YA {
-  __declspec(align(32)) char : 1;
+	__declspec(align(32)) char : 1;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YA
@@ -204,8 +200,8 @@ struct YA {
 
 #pragma pack(1)
 struct YB {
-  char a;
-  YA b;
+	char a;
+	YA b;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YB
@@ -224,7 +220,7 @@ struct YB {
 
 #pragma pack(8)
 struct YC {
-  __declspec(align(32)) char : 1;
+	__declspec(align(32)) char : 1;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YC
@@ -239,8 +235,8 @@ struct YC {
 
 #pragma pack(1)
 struct YD {
-  char a;
-  YC b;
+	char a;
+	YC b;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YD
@@ -259,7 +255,7 @@ struct YD {
 
 #pragma pack(4)
 struct YE {
-  __declspec(align(32)) char : 1;
+	__declspec(align(32)) char : 1;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YE
@@ -274,8 +270,8 @@ struct YE {
 
 #pragma pack(1)
 struct YF {
-  char a;
-  YE b;
+	char a;
+	YE b;
 };
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct YF
@@ -293,17 +289,11 @@ struct YF {
 // CHECK-X64-NEXT:      |  nvsize=5, nvalign=1]
 
 #pragma pack(16)
-struct __declspec(align(16)) D0 {
-  char a;
-};
+struct __declspec(align(16)) D0 { char a; };
 #pragma pack(1)
-struct D1 : public D0 {
-  char a;
-};
+struct D1 : public D0 { char a; };
 #pragma pack(16)
-struct D2 : D1 {
-  char a;
-};
+struct D2 : D1 { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -329,15 +319,11 @@ struct D2 : D1 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=16]
 
 #pragma pack()
-struct JA {
-  char a;
-};
+struct JA { char a; };
 #pragma pack(1)
-struct JB {
-  __declspec(align(4)) char a;
-};
+struct JB { __declspec(align(4)) char a; };
 #pragma pack()
-struct JC : JB, JA {};
+struct JC : JB, JA { };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -361,13 +347,9 @@ struct JC : JB, JA {};
 // CHECK-X64-NEXT:      |  nvsize=4, nvalign=4]
 
 #pragma pack()
-struct KA {
-  char a;
-};
+struct KA { char a; };
 #pragma pack(1)
-struct KB : KA {
-  __declspec(align(2)) char a;
-};
+struct KB : KA { __declspec(align(2)) char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -431,31 +413,31 @@ struct MB : virtual MA {
 
 struct RA {};
 #pragma pack(1)
-struct __declspec(align(8)) RB0 {
-  __declspec(align(1024)) int b : 3;
+struct __declspec(align(8)) RB0 { 
+	__declspec(align(1024)) int b : 3;
 };
 
-struct __declspec(align(8)) RB1 {
-  __declspec(align(1024)) int b : 3;
-  virtual void f() {}
+struct __declspec(align(8)) RB1 { 
+	__declspec(align(1024)) int b : 3;
+	virtual void f() {}
 };
 
-struct __declspec(align(8)) RB2 : virtual RA {
-  __declspec(align(1024)) int b : 3;
+struct __declspec(align(8)) RB2 : virtual RA { 
+	__declspec(align(1024)) int b : 3;
 };
 
-struct __declspec(align(8)) RB3 : virtual RA {
-  __declspec(align(1024)) int b : 3;
-  virtual void f() {}
+struct __declspec(align(8)) RB3 : virtual RA { 
+	__declspec(align(1024)) int b : 3;
+	virtual void f() {}
 };
 
 struct RC {
-  char _;
-  __declspec(align(1024)) int c : 3;
+	char _;
+	__declspec(align(1024)) int c : 3;
 };
 struct RE {
-  char _;
-  RC c;
+	char _;
+	RC c;
 };
 #pragma pack()
 
@@ -791,36 +773,37 @@ struct __declspec(align(4)) EmptyPackedAlignedLongLongMemb {
 // CHECK-X64-NEXT:      | [sizeof=4, align=4
 // CHECK-X64-NEXT:      |  nvsize=0, nvalign=4]
 
-int a[sizeof(X) +
-      sizeof(Y) +
-      sizeof(Z) +
-      sizeof(C1) +
-      sizeof(CA2) +
-      sizeof(YA) +
-      sizeof(YB) +
-      sizeof(YC) +
-      sizeof(YD) +
-      sizeof(YE) +
-      sizeof(YF) +
-      sizeof(YF) +
-      sizeof(D2) +
-      sizeof(JC) +
-      sizeof(KB) +
-      sizeof(L) +
-      sizeof(MB) +
-      sizeof(RB0) +
-      sizeof(RB1) +
-      sizeof(RB2) +
-      sizeof(RB3) +
-      sizeof(RC) +
-      sizeof(RE) +
-      sizeof(ND) +
-      sizeof(OD) +
-      sizeof(PC) +
-      sizeof(PE) +
-      sizeof(QB) +
-      sizeof(QC) +
-      sizeof(QD) +
-      sizeof(EmptyAlignedLongLongMemb) +
-      sizeof(EmptyPackedAlignedLongLongMemb) +
-      0];
+int a[
+sizeof(X)+
+sizeof(Y)+
+sizeof(Z)+
+sizeof(C1)+
+sizeof(CA2)+
+sizeof(YA)+
+sizeof(YB)+
+sizeof(YC)+
+sizeof(YD)+
+sizeof(YE)+
+sizeof(YF)+
+sizeof(YF)+
+sizeof(D2)+
+sizeof(JC)+
+sizeof(KB)+
+sizeof(L)+
+sizeof(MB)+
+sizeof(RB0)+
+sizeof(RB1)+
+sizeof(RB2)+
+sizeof(RB3)+
+sizeof(RC)+
+sizeof(RE)+
+sizeof(ND)+
+sizeof(OD)+
+sizeof(PC)+
+sizeof(PE)+
+sizeof(QB)+
+sizeof(QC)+
+sizeof(QD)+
+sizeof(EmptyAlignedLongLongMemb)+
+sizeof(EmptyPackedAlignedLongLongMemb)+
+0];

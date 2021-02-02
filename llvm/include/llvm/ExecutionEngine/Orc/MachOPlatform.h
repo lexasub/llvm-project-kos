@@ -74,6 +74,7 @@ public:
   Error registerObjCClasses() const;
 
 private:
+
   JITTargetAddress ObjCImageInfoAddr;
   RawPointerSectionList ModInitSections;
   RawPointerSectionList ObjCSelRefsSections;

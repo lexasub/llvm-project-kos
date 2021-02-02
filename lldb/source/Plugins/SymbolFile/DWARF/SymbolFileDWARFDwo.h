@@ -56,10 +56,9 @@ protected:
   lldb::TypeSP FindDefinitionTypeForDWARFDeclContext(
       const DWARFDeclContext &die_decl_ctx) override;
 
-  lldb::TypeSP
-  FindCompleteObjCDefinitionTypeForDIE(const DWARFDIE &die,
-                                       lldb_private::ConstString type_name,
-                                       bool must_be_implementation) override;
+  lldb::TypeSP FindCompleteObjCDefinitionTypeForDIE(
+      const DWARFDIE &die, lldb_private::ConstString type_name,
+      bool must_be_implementation) override;
 
   SymbolFileDWARF &GetBaseSymbolFile() { return m_base_symbol_file; }
 

@@ -17,12 +17,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::bernoulli_distribution D;
-    D d(.5);
-    assert(d.min() == false);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::bernoulli_distribution D;
+        D d(.5);
+        assert(d.min() == false);
+    }
 
   return 0;
 }

@@ -83,9 +83,8 @@ void EHStreamer::computeActionsTable(
   FilterOffsets.reserve(FilterIds.size());
   int Offset = -1;
 
-  for (std::vector<unsigned>::const_iterator I = FilterIds.begin(),
-                                             E = FilterIds.end();
-       I != E; ++I) {
+  for (std::vector<unsigned>::const_iterator
+         I = FilterIds.begin(), E = FilterIds.end(); I != E; ++I) {
     FilterOffsets.push_back(Offset);
     Offset -= getULEB128Size(*I);
   }
@@ -97,9 +96,7 @@ void EHStreamer::computeActionsTable(
   const LandingPadInfo *PrevLPI = nullptr;
 
   for (SmallVectorImpl<const LandingPadInfo *>::const_iterator
-           I = LandingPads.begin(),
-           E = LandingPads.end();
-       I != E; ++I) {
+         I = LandingPads.begin(), E = LandingPads.end(); I != E; ++I) {
     const LandingPadInfo *LPI = *I;
     const std::vector<int> &TypeIds = LPI->TypeIds;
     unsigned NumShared = PrevLPI ? sharedTypeIDs(LPI, PrevLPI) : 0;
@@ -137,7 +134,7 @@ void EHStreamer::computeActionsTable(
         SizeActionEntry = SizeTypeID + getSLEB128Size(NextAction);
         SizeSiteActions += SizeActionEntry;
 
-        ActionEntry Action = {ValueForTypeID, NextAction, PrevAction};
+        ActionEntry Action = { ValueForTypeID, NextAction, PrevAction };
         Actions.push_back(Action);
         PrevAction = Actions.size() - 1;
       }
@@ -171,12 +168,10 @@ bool EHStreamer::callToNoUnwindFunction(const MachineInstr *MI) {
   for (unsigned I = 0, E = MI->getNumOperands(); I != E; ++I) {
     const MachineOperand &MO = MI->getOperand(I);
 
-    if (!MO.isGlobal())
-      continue;
+    if (!MO.isGlobal()) continue;
 
     const Function *F = dyn_cast<Function>(MO.getGlobal());
-    if (!F)
-      continue;
+    if (!F) continue;
 
     if (SawFunc) {
       // Be conservative. If we have more than one function operand for this
@@ -207,7 +202,7 @@ void EHStreamer::computePadMap(
     for (unsigned j = 0, E = LandingPad->BeginLabels.size(); j != E; ++j) {
       MCSymbol *BeginLabel = LandingPad->BeginLabels[j];
       assert(!PadMap.count(BeginLabel) && "Duplicate landing pad labels!");
-      PadRange P = {i, j};
+      PadRange P = { i, j };
       PadMap[BeginLabel] = P;
     }
   }
@@ -312,8 +307,12 @@ void EHStreamer::computeCallSiteTable(
         PreviousIsInvoke = false;
       } else {
         // This try-range is for an invoke.
-        CallSiteEntry Site = {BeginLabel, LastLabel, LandingPad,
-                              FirstActions[P.PadIndex]};
+        CallSiteEntry Site = {
+          BeginLabel,
+          LastLabel,
+          LandingPad,
+          FirstActions[P.PadIndex]
+        };
 
         // Try to merge with the previous call-site. SJLJ doesn't do this
         if (PreviousIsInvoke && !IsSJLJ) {
@@ -416,8 +415,8 @@ MCSymbol *EHStreamer::emitExceptionTable() {
   bool IsWasm = Asm->MAI->getExceptionHandlingType() == ExceptionHandling::Wasm;
   bool HasLEB128Directives = Asm->MAI->hasLEB128Directives();
   unsigned CallSiteEncoding =
-      IsSJLJ ? static_cast<unsigned>(dwarf::DW_EH_PE_udata4)
-             : Asm->getObjFileLowering().getCallSiteEncoding();
+      IsSJLJ ? static_cast<unsigned>(dwarf::DW_EH_PE_udata4) :
+               Asm->getObjFileLowering().getCallSiteEncoding();
   bool HaveTTData = !TypeInfos.empty() || !FilterIds.empty();
 
   // Type infos.
@@ -468,8 +467,9 @@ MCSymbol *EHStreamer::emitExceptionTable() {
   Asm->emitAlignment(Align(4));
 
   // Emit the LSDA.
-  MCSymbol *GCCETSym = Asm->OutContext.getOrCreateSymbol(
-      Twine("GCC_except_table") + Twine(Asm->getFunctionNumber()));
+  MCSymbol *GCCETSym =
+    Asm->OutContext.getOrCreateSymbol(Twine("GCC_except_table")+
+                                      Twine(Asm->getFunctionNumber()));
   Asm->OutStreamer->emitLabel(GCCETSym);
   MCSymbol *CstEndLabel = Asm->createTempSymbol(
       CallSiteRanges.size() > 1 ? "action_table_base" : "cst_end");
@@ -588,16 +588,14 @@ MCSymbol *EHStreamer::emitExceptionTable() {
     EmitTypeTableRefAndCallSiteTableEndRef();
 
     unsigned idx = 0;
-    for (SmallVectorImpl<CallSiteEntry>::const_iterator I = CallSites.begin(),
-                                                        E = CallSites.end();
-         I != E; ++I, ++idx) {
+    for (SmallVectorImpl<CallSiteEntry>::const_iterator
+         I = CallSites.begin(), E = CallSites.end(); I != E; ++I, ++idx) {
       const CallSiteEntry &S = *I;
 
       // Index of the call site entry.
       if (VerboseAsm) {
         Asm->OutStreamer->AddComment(">> Call Site " + Twine(idx) + " <<");
-        Asm->OutStreamer->AddComment("  On exception at call site " +
-                                     Twine(idx));
+        Asm->OutStreamer->AddComment("  On exception at call site "+Twine(idx));
       }
       Asm->emitULEB128(idx);
 
@@ -759,15 +757,13 @@ MCSymbol *EHStreamer::emitExceptionTable() {
 
   // Emit the Action Table.
   int Entry = 0;
-  for (SmallVectorImpl<ActionEntry>::const_iterator I = Actions.begin(),
-                                                    E = Actions.end();
-       I != E; ++I) {
+  for (SmallVectorImpl<ActionEntry>::const_iterator
+         I = Actions.begin(), E = Actions.end(); I != E; ++I) {
     const ActionEntry &Action = *I;
 
     if (VerboseAsm) {
       // Emit comments that decode the action table.
-      Asm->OutStreamer->AddComment(">> Action Record " + Twine(++Entry) +
-                                   " <<");
+      Asm->OutStreamer->AddComment(">> Action Record " + Twine(++Entry) + " <<");
     }
 
     // Type Filter
@@ -822,8 +818,8 @@ void EHStreamer::emitTypeInfos(unsigned TTypeEncoding, MCSymbol *TTBaseLabel) {
     Entry = TypeInfos.size();
   }
 
-  for (const GlobalValue *GV :
-       make_range(TypeInfos.rbegin(), TypeInfos.rend())) {
+  for (const GlobalValue *GV : make_range(TypeInfos.rbegin(),
+                                          TypeInfos.rend())) {
     if (VerboseAsm)
       Asm->OutStreamer->AddComment("TypeInfo " + Twine(Entry--));
     Asm->emitTTypeReference(GV, TTypeEncoding);
@@ -837,9 +833,8 @@ void EHStreamer::emitTypeInfos(unsigned TTypeEncoding, MCSymbol *TTBaseLabel) {
     Asm->OutStreamer->AddBlankLine();
     Entry = 0;
   }
-  for (std::vector<unsigned>::const_iterator I = FilterIds.begin(),
-                                             E = FilterIds.end();
-       I < E; ++I) {
+  for (std::vector<unsigned>::const_iterator
+         I = FilterIds.begin(), E = FilterIds.end(); I < E; ++I) {
     unsigned TypeID = *I;
     if (VerboseAsm) {
       --Entry;

@@ -76,7 +76,6 @@ struct H : G {
   void *operator new(size_t) noexcept; // base class operator is inaccessible
 };
 
-template <typename Base>
-struct Derived : Base {
+template <typename Base> struct Derived : Base {
   void operator delete(void *);
 };

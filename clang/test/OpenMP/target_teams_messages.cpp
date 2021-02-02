@@ -16,13 +16,13 @@ void foo() {
 int main(int argc, char **argv) {
 #pragma omp target teams { // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
-#pragma omp target teams( // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
+#pragma omp target teams ( // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
-#pragma omp target teams[ // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
+#pragma omp target teams [ // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
-#pragma omp target teams] // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
+#pragma omp target teams ] // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
-#pragma omp target teams) // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
+#pragma omp target teams ) // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
 #pragma omp target teams } // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
   foo();
 #pragma omp target teams unknown() // expected-warning {{extra tokens at the end of '#pragma omp target teams' are ignored}}
   foo();
-L1:
-  foo();
+  L1:
+    foo();
 #pragma omp target teams
   ;
 #pragma omp target teams
@@ -41,16 +41,16 @@ L1:
   }
 
   for (int i = 0; i < 10; ++i) {
-    switch (argc) {
-    case (0):
-#pragma omp target teams
-    {
-      foo();
-      break;    // expected-error {{'break' statement not in loop or switch statement}}
-      continue; // expected-error {{'continue' statement not in loop statement}}
-    }
-    default:
-      break;
+    switch(argc) {
+     case (0):
+      #pragma omp target teams
+      {
+        foo();
+        break; // expected-error {{'break' statement not in loop or switch statement}}
+        continue; // expected-error {{'continue' statement not in loop statement}}
+      }
+      default:
+       break;
     }
   }
 #pragma omp target teams default(none) // expected-note {{explicit data sharing attribute requested here}}
@@ -68,7 +68,7 @@ L1:
 
   goto L2; // expected-error {{use of undeclared label 'L2'}}
 #pragma omp target teams
-L2:
+  L2:
   foo();
 #pragma omp target teams
   {
@@ -77,8 +77,7 @@ L2:
 
   [[]] // expected-error {{an attribute list cannot appear here}}
 #pragma omp target teams
-      for (int n = 0; n < 100; ++n) {
-  }
+  for (int n = 0; n < 100; ++n) {}
 
   return 0;
 }

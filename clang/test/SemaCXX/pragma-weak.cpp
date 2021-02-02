@@ -3,7 +3,8 @@
 #pragma weak foo
 static void foo();
 extern "C" {
-void foo(){};
+  void foo() {
+  };
 }
 
 extern "C" int Test;

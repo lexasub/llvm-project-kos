@@ -20,16 +20,19 @@
 #include "test_macros.h"
 
 template <class C>
-void test(C c) {
-  std::front_insert_iterator<C> i = std::front_inserter(c);
-  i = 0;
-  assert(c.size() == 1);
-  assert(c.front() == 0);
+void
+test(C c)
+{
+    std::front_insert_iterator<C> i = std::front_inserter(c);
+    i = 0;
+    assert(c.size() == 1);
+    assert(c.front() == 0);
 }
 
-int main(int, char**) {
-  test(std::list<int>());
-  test(nasty_list<int>());
+int main(int, char**)
+{
+    test(std::list<int>());
+    test(nasty_list<int>());
 
   return 0;
 }

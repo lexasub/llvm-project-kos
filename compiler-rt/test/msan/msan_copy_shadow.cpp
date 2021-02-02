@@ -4,8 +4,8 @@
 // RUN: %clangxx_msan -fsanitize-memory-track-origins=2 -O0 %s -o %t && not %run %t 2>&1 | FileCheck --check-prefix=CHECK --check-prefix=CHECK-%short-stack %s
 
 #include <assert.h>
-#include <sanitizer/msan_interface.h>
 #include <string.h>
+#include <sanitizer/msan_interface.h>
 
 int main() {
   char *a = new char[4];

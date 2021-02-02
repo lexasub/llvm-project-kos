@@ -17,15 +17,15 @@ int main(int argc, char **argv) {
   free(p);
   return x;
 
-  // CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value
-  // CHECK:   {{#0 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-3]]
+// CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value
+// CHECK:   {{#0 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-3]]
 
-  // CHECK:  Uninitialized value was stored to memory at
-  // CHECK-FULL-STACK:   {{#0 0x.* in .*realloc}}
-  // CHECK-FULL-STACK:   {{#1 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-10]]
-  // CHECK-SHORT-STACK:   {{#0 0x.* in .*realloc}}
+// CHECK:  Uninitialized value was stored to memory at
+// CHECK-FULL-STACK:   {{#0 0x.* in .*realloc}}
+// CHECK-FULL-STACK:   {{#1 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-10]]
+// CHECK-SHORT-STACK:   {{#0 0x.* in .*realloc}}
 
-  // CHECK:   Uninitialized value was created by a heap allocation
-  // CHECK:   {{#0 0x.* in .*malloc}}
-  // CHECK:   {{#1 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-16]]
+// CHECK:   Uninitialized value was created by a heap allocation
+// CHECK:   {{#0 0x.* in .*malloc}}
+// CHECK:   {{#1 0x.* in main .*realloc-large-origin.cpp:}}[[@LINE-16]]
 }

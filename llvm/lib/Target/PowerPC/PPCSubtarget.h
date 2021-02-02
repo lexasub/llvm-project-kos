@@ -36,7 +36,7 @@ namespace llvm {
 class StringRef;
 
 namespace PPC {
-// -m directive values.
+  // -m directive values.
 enum {
   DIR_NONE,
   DIR_32,
@@ -64,13 +64,17 @@ enum {
   DIR_PWR_FUTURE,
   DIR_64
 };
-} // namespace PPC
+}
 
 class GlobalValue;
 
 class PPCSubtarget : public PPCGenSubtargetInfo {
 public:
-  enum POPCNTDKind { POPCNTD_Unavailable, POPCNTD_Slow, POPCNTD_Fast };
+  enum POPCNTDKind {
+    POPCNTD_Unavailable,
+    POPCNTD_Slow,
+    POPCNTD_Fast
+  };
 
 protected:
   /// TargetTriple - What processor and OS we're targeting.
@@ -207,8 +211,8 @@ public:
   }
   const PPCTargetMachine &getTargetMachine() const { return TM; }
 
-  /// initializeSubtargetDependencies - Initializes using a CPU and feature
-  /// string so that we can use initializer lists for subtarget initialization.
+  /// initializeSubtargetDependencies - Initializes using a CPU and feature string
+  /// so that we can use initializer lists for subtarget initialization.
   PPCSubtarget &initializeSubtargetDependencies(StringRef CPU, StringRef FS);
 
 private:
@@ -280,8 +284,8 @@ public:
   bool hasOnlyMSYNC() const { return HasOnlyMSYNC; }
   bool isPPC4xx() const { return IsPPC4xx; }
   bool isPPC6xx() const { return IsPPC6xx; }
-  bool isSecurePlt() const { return SecurePlt; }
-  bool vectorsUseTwoUnits() const { return VectorsUseTwoUnits; }
+  bool isSecurePlt() const {return SecurePlt; }
+  bool vectorsUseTwoUnits() const {return VectorsUseTwoUnits; }
   bool isE500() const { return IsE500; }
   bool isFeatureMFTB() const { return FeatureMFTB; }
   bool allowsUnalignedFPAccess() const { return AllowsUnalignedFPAccess; }
@@ -295,9 +299,11 @@ public:
   bool hasPartwordAtomics() const { return HasPartwordAtomics; }
   bool hasDirectMove() const { return HasDirectMove; }
 
-  Align getPlatformStackAlignment() const { return Align(16); }
+  Align getPlatformStackAlignment() const {
+    return Align(16);
+  }
 
-  unsigned getRedZoneSize() const {
+  unsigned  getRedZoneSize() const {
     if (isPPC64())
       // 288 bytes = 18*8 (FPRs) + 18*8 (GPRs, GPR13 reserved)
       return 288;
@@ -332,8 +338,8 @@ public:
   bool isSVR4ABI() const { return !isAIXABI(); }
   bool isELFv2ABI() const;
 
-  bool is64BitELFABI() const { return isSVR4ABI() && isPPC64(); }
-  bool is32BitELFABI() const { return isSVR4ABI() && !isPPC64(); }
+  bool is64BitELFABI() const { return  isSVR4ABI() && isPPC64(); }
+  bool is32BitELFABI() const { return  isSVR4ABI() && !isPPC64(); }
   bool isUsingPCRelativeCalls() const;
 
   /// Originally, this function return hasISEL(). Now we always enable it,
@@ -382,7 +388,7 @@ public:
   MCRegister getEnvironmentPointerRegister() const {
     assert(usesFunctionDescriptors() &&
            "Should only be called when the target uses descriptors.");
-    return IsPPC64 ? PPC::X11 : PPC::R11;
+     return IsPPC64 ? PPC::X11 : PPC::R11;
   }
 
   MCRegister getTOCPointerRegister() const {
@@ -407,6 +413,6 @@ public:
   const LegalizerInfo *getLegalizerInfo() const override;
   InstructionSelector *getInstructionSelector() const override;
 };
-} // namespace llvm
+} // End llvm namespace
 
 #endif

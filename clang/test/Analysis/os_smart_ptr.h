@@ -5,7 +5,7 @@
 
 namespace os {
 
-template <class T>
+template<class T>
 struct smart_ptr {
   smart_ptr() : pointer(nullptr) {}
 
@@ -21,12 +21,12 @@ struct smart_ptr {
     }
   }
 
-  smart_ptr &operator=(T *&rhs) {
+  smart_ptr & operator=(T *&rhs) {
     smart_ptr(rhs).swap(*this);
     return *this;
   }
 
-  smart_ptr &operator=(smart_ptr &rhs) {
+  smart_ptr & operator=(smart_ptr &rhs) {
     smart_ptr(rhs).swap(*this);
     return *this;
   }
@@ -45,12 +45,12 @@ struct smart_ptr {
     return pointer;
   }
 
-  T **get_for_out_param() {
+  T ** get_for_out_param() {
     reset();
     return &pointer;
   }
 
-  T *operator->() const {
+  T * operator->() const {
     return pointer;
   }
 

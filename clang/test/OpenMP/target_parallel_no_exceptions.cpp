@@ -16,3 +16,4 @@ int main() {
 }
 
 //CHK-EXCEPTION-NOT: invoke
+

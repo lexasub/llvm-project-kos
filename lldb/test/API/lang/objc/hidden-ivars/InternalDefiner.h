@@ -3,9 +3,9 @@
 
 @interface InternalDefiner : NSObject {
 @public
-  uintptr_t foo;
+    uintptr_t foo;
 }
 
-- (id)initWithFoo:(uintptr_t)f andBar:(uintptr_t)b;
+-(id)initWithFoo:(uintptr_t)f andBar:(uintptr_t)b;
 
 @end

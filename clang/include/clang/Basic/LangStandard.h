@@ -61,7 +61,8 @@ enum LangFeatures {
 /// standard.
 struct LangStandard {
   enum Kind {
-#define LANGSTANDARD(id, name, lang, desc, features) lang_##id,
+#define LANGSTANDARD(id, name, lang, desc, features) \
+    lang_##id,
 #include "clang/Basic/LangStandards.def"
     lang_unspecified
   };
@@ -134,6 +135,6 @@ public:
   static const LangStandard *getLangStandardForName(StringRef Name);
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

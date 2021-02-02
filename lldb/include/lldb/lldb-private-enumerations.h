@@ -216,20 +216,21 @@ enum StatisticKind {
   StatisticMax = 4
 };
 
+
 inline std::string GetStatDescription(lldb_private::StatisticKind K) {
-  switch (K) {
-  case StatisticKind::ExpressionSuccessful:
-    return "Number of expr evaluation successes";
-  case StatisticKind::ExpressionFailure:
-    return "Number of expr evaluation failures";
-  case StatisticKind::FrameVarSuccess:
-    return "Number of frame var successes";
-  case StatisticKind::FrameVarFailure:
-    return "Number of frame var failures";
-  case StatisticKind::StatisticMax:
-    return "";
-  }
-  llvm_unreachable("Statistic not registered!");
+   switch (K) {
+   case StatisticKind::ExpressionSuccessful:
+     return "Number of expr evaluation successes";
+   case StatisticKind::ExpressionFailure:
+     return "Number of expr evaluation failures";
+   case StatisticKind::FrameVarSuccess:
+     return "Number of frame var successes";
+   case StatisticKind::FrameVarFailure:
+     return "Number of frame var failures";
+   case StatisticKind::StatisticMax:
+     return "";
+   }
+   llvm_unreachable("Statistic not registered!");
 }
 
 } // namespace lldb_private
@@ -252,6 +253,6 @@ template <> struct format_provider<lldb_private::Vote> {
     Stream << "invalid";
   }
 };
-} // namespace llvm
+}
 
 #endif // LLDB_LLDB_PRIVATE_ENUMERATIONS_H

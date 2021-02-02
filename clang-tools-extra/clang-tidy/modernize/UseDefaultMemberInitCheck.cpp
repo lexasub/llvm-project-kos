@@ -265,13 +265,12 @@ void UseDefaultMemberInitCheck::checkDefaultInit(
       CharSourceRange::getCharRange(LParenEnd, Init->getRParenLoc());
 
   bool ValueInit = isa<ImplicitValueInitExpr>(Init->getInit());
-  bool CanAssign =
-      UseAssignment &&
-      (!ValueInit || !Init->getInit()->getType()->isEnumeralType());
+  bool CanAssign = UseAssignment && (!ValueInit || !Init->getInit()->getType()->isEnumeralType());
 
   auto Diag =
       diag(Field->getLocation(), "use default member initializer for %0")
-      << Field << FixItHint::CreateInsertion(FieldEnd, CanAssign ? " = " : "{")
+      << Field
+      << FixItHint::CreateInsertion(FieldEnd, CanAssign ? " = " : "{")
       << FixItHint::CreateInsertionFromRange(FieldEnd, InitRange);
 
   if (CanAssign && ValueInit)
@@ -292,7 +291,8 @@ void UseDefaultMemberInitCheck::checkExistingInit(
     return;
 
   diag(Init->getSourceLocation(), "member initializer for %0 is redundant")
-      << Field << FixItHint::CreateRemoval(Init->getSourceRange());
+      << Field
+      << FixItHint::CreateRemoval(Init->getSourceRange());
 }
 
 } // namespace modernize

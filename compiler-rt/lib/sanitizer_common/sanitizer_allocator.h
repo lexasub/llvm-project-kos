@@ -45,8 +45,8 @@ void PrintHintAllocatorCannotReturnNull();
 
 // Allocators call these callbacks on mmap/munmap.
 struct NoOpMapUnmapCallback {
-  void OnMap(uptr p, uptr size) const {}
-  void OnUnmap(uptr p, uptr size) const {}
+  void OnMap(uptr p, uptr size) const { }
+  void OnUnmap(uptr p, uptr size) const { }
 };
 
 // Callback type for iterating over chunks.
@@ -58,24 +58,24 @@ inline u32 Rand(u32 *state) {  // ANSI C linear congruential PRNG.
 
 inline u32 RandN(u32 *state, u32 n) { return Rand(state) % n; }  // [0, n)
 
-template <typename T>
+template<typename T>
 inline void RandomShuffle(T *a, u32 n, u32 *rand_state) {
-  if (n <= 1)
-    return;
+  if (n <= 1) return;
   u32 state = *rand_state;
-  for (u32 i = n - 1; i > 0; i--) Swap(a[i], a[RandN(&state, i + 1)]);
+  for (u32 i = n - 1; i > 0; i--)
+    Swap(a[i], a[RandN(&state, i + 1)]);
   *rand_state = state;
 }
 
-#include "sanitizer_allocator_bytemap.h"
-#include "sanitizer_allocator_combined.h"
-#include "sanitizer_allocator_local_cache.h"
-#include "sanitizer_allocator_primary32.h"
-#include "sanitizer_allocator_primary64.h"
-#include "sanitizer_allocator_secondary.h"
 #include "sanitizer_allocator_size_class_map.h"
 #include "sanitizer_allocator_stats.h"
+#include "sanitizer_allocator_primary64.h"
+#include "sanitizer_allocator_bytemap.h"
+#include "sanitizer_allocator_primary32.h"
+#include "sanitizer_allocator_local_cache.h"
+#include "sanitizer_allocator_secondary.h"
+#include "sanitizer_allocator_combined.h"
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_ALLOCATOR_H
+#endif // SANITIZER_ALLOCATOR_H

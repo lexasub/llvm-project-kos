@@ -1,10 +1,10 @@
 // RUN: %clangxx -O0 -g %s -o %t && %run %t
 
 #include <netinet/in.h>
-#include <signal.h>
-#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 int main(void) {

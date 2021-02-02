@@ -6,8 +6,6 @@
 #include "decls.h"
 
 namespace StructuredBinding {
-struct R {
-  int x, y;
-};
-static auto [a, b] = R();
-} // namespace StructuredBinding
+  struct R { int x, y; };
+  static auto [a, b] = R();
+}

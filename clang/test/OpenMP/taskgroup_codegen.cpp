@@ -16,15 +16,12 @@
 
 // CHECK:       define {{.*}}void [[FOO:@.+]]()
 
-void foo() {
-  extern void mayThrow();
-  mayThrow();
-}
+void foo() { extern void mayThrow(); mayThrow(); }
 
 // CHECK-LABEL: @main
 // TERM_DEBUG-LABEL: @main
 int main() {
-  // CHECK:       [[A_ADDR:%.+]] = alloca i8
+// CHECK:       [[A_ADDR:%.+]] = alloca i8
   char a;
 
 // CHECK:       [[GTID:%.+]] = call {{.*}}i32 @__kmpc_global_thread_num([[IDENT_T_TY]]* [[DEFAULT_LOC:@.+]])
@@ -38,9 +35,9 @@ int main() {
 // CHECK:       call {{.*}}void @__kmpc_end_taskgroup([[IDENT_T_TY]]* [[DEFAULT_LOC]], i32 [[GTID]])
 #pragma omp taskgroup
   foo();
-  // CHECK-NOT:   call {{.*}}void @__kmpc_taskgroup
-  // CHECK-NOT:   call {{.*}}void @__kmpc_end_taskgroup
-  // CHECK:       ret
+// CHECK-NOT:   call {{.*}}void @__kmpc_taskgroup
+// CHECK-NOT:   call {{.*}}void @__kmpc_end_taskgroup
+// CHECK:       ret
   return a;
 }
 

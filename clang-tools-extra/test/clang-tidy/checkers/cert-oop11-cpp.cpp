@@ -1,11 +1,10 @@
 // RUN: %check_clang_tidy %s cert-oop11-cpp %t
 
 struct B {
-  B(B &&)
-  noexcept = default;
+  B(B&&) noexcept = default;
 
   B(const B &) = default;
-  B &operator=(const B &) = default;
+  B& operator=(const B&) = default;
   ~B() {}
 };
 

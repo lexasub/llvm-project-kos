@@ -1,6 +1,7 @@
 #ifndef BASIC_H
 #define BASIC_H
 
+
 class Parent {
 public:
   virtual void func() {}

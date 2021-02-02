@@ -8,16 +8,14 @@
 typedef struct __sFILE {
   unsigned char *_p;
 } FILE;
-FILE *fopen(const char *restrict, const char *restrict) __asm("_"
-                                                              "fopen");
+FILE *fopen(const char * restrict, const char * restrict) __asm("_" "fopen" );
 int fputc(int, FILE *);
-int fputs(const char *restrict, FILE *restrict) __asm("_"
-                                                      "fputs");
+int fputs(const char * restrict, FILE * restrict) __asm("_" "fputs" );
 int fclose(FILE *);
 void exit(int);
 
 // The following is a fake system header function
 typedef struct __FileStruct {
-  FILE *p;
+  FILE * p;
 } FileStruct;
 void fakeSystemHeaderCall(FileStruct *);

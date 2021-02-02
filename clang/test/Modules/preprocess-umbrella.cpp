@@ -18,7 +18,8 @@
 
 #pragma clang module build foo
 module foo {
-  umbrella "foo" module * {
+  umbrella "foo"
+  module * {
     export *
   }
 }

@@ -22,7 +22,10 @@ class MachineOperand;
 class MCSymbol;
 
 namespace ARM {
-enum DW_ISA { DW_ISA_ARM_thumb = 1, DW_ISA_ARM_arm = 2 };
+  enum DW_ISA {
+    DW_ISA_ARM_thumb = 1,
+    DW_ISA_ARM_arm = 2
+  };
 }
 
 class LLVM_LIBRARY_VISIBILITY ARMAsmPrinter : public AsmPrinter {
@@ -45,7 +48,7 @@ class LLVM_LIBRARY_VISIBILITY ARMAsmPrinter : public AsmPrinter {
 
   /// ThumbIndirectPads - These maintain a per-function list of jump pad
   /// labels used for ARMv4t thumb code to make register indirect calls.
-  SmallVector<std::pair<unsigned, MCSymbol *>, 4> ThumbIndirectPads;
+  SmallVector<std::pair<unsigned, MCSymbol*>, 4> ThumbIndirectPads;
 
   /// OptimizationGoals - Maintain a combined optimization goal for all
   /// functions in a module: one of Tag_ABI_optimization_goals values,
@@ -56,17 +59,19 @@ class LLVM_LIBRARY_VISIBILITY ARMAsmPrinter : public AsmPrinter {
   /// pool. This lives between calls to runOnMachineFunction and collects
   /// data from every MachineFunction. It is used during doFinalization
   /// when all non-function globals are emitted.
-  SmallPtrSet<const GlobalVariable *, 2> PromotedGlobals;
+  SmallPtrSet<const GlobalVariable*,2> PromotedGlobals;
   /// Set of globals in PromotedGlobals that we've emitted labels for.
   /// We need to emit labels even for promoted globals so that DWARF
   /// debug info can link properly.
-  SmallPtrSet<const GlobalVariable *, 2> EmittedPromotedGlobalLabels;
+  SmallPtrSet<const GlobalVariable*,2> EmittedPromotedGlobalLabels;
 
 public:
   explicit ARMAsmPrinter(TargetMachine &TM,
                          std::unique_ptr<MCStreamer> Streamer);
 
-  StringRef getPassName() const override { return "ARM Assembly Printer"; }
+  StringRef getPassName() const override {
+    return "ARM Assembly Printer";
+  }
 
   void printOperand(const MachineInstr *MI, int OpNum, raw_ostream &O);
 
@@ -130,7 +135,8 @@ public:
     const Triple &TT = TM.getTargetTriple();
     if (!TT.isOSBinFormatMachO())
       return 0;
-    bool isThumb = TT.isThumb() || TT.getSubArch() == Triple::ARMSubArch_v7m ||
+    bool isThumb = TT.isThumb() ||
+                   TT.getSubArch() == Triple::ARMSubArch_v7m ||
                    TT.getSubArch() == Triple::ARMSubArch_v6m;
     return isThumb ? ARM::DW_ISA_ARM_thumb : ARM::DW_ISA_ARM_arm;
   }

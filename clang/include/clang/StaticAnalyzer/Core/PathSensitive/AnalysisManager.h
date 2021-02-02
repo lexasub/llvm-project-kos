@@ -26,7 +26,7 @@ namespace clang {
 class CodeInjector;
 
 namespace ento {
-class CheckerManager;
+  class CheckerManager;
 
 class AnalysisManager : public BugReporterData {
   virtual void anchor();
@@ -55,17 +55,23 @@ public:
 
   ~AnalysisManager() override;
 
-  void ClearContexts() { AnaCtxMgr.clear(); }
+  void ClearContexts() {
+    AnaCtxMgr.clear();
+  }
 
-  AnalysisDeclContextManager &getAnalysisDeclContextManager() {
+  AnalysisDeclContextManager& getAnalysisDeclContextManager() {
     return AnaCtxMgr;
   }
 
   Preprocessor &getPreprocessor() override { return PP; }
 
-  StoreManagerCreator getStoreManagerCreator() { return CreateStoreMgr; }
+  StoreManagerCreator getStoreManagerCreator() {
+    return CreateStoreMgr;
+  }
 
-  AnalyzerOptions &getAnalyzerOptions() override { return options; }
+  AnalyzerOptions& getAnalyzerOptions() override {
+    return options;
+  }
 
   ConstraintManagerCreator getConstraintManagerCreator() {
     return CreateConstraintMgr;
@@ -73,15 +79,19 @@ public:
 
   CheckerManager *getCheckerManager() const { return CheckerMgr; }
 
-  ASTContext &getASTContext() override { return Ctx; }
+  ASTContext &getASTContext() override {
+    return Ctx;
+  }
 
   SourceManager &getSourceManager() override {
     return getASTContext().getSourceManager();
   }
 
-  const LangOptions &getLangOpts() const { return LangOpts; }
+  const LangOptions &getLangOpts() const {
+    return LangOpts;
+  }
 
-  ArrayRef<PathDiagnosticConsumer *> getPathDiagnosticConsumers() override {
+  ArrayRef<PathDiagnosticConsumer*> getPathDiagnosticConsumers() override {
     return PathConsumers;
   }
 
@@ -91,11 +101,16 @@ public:
     return options.visualizeExplodedGraphWithGraphViz;
   }
 
-  bool shouldInlineCall() const { return options.getIPAMode() != IPAK_None; }
+  bool shouldInlineCall() const {
+    return options.getIPAMode() != IPAK_None;
+  }
 
-  CFG *getCFG(Decl const *D) { return AnaCtxMgr.getContext(D)->getCFG(); }
+  CFG *getCFG(Decl const *D) {
+    return AnaCtxMgr.getContext(D)->getCFG();
+  }
 
-  template <typename T> T *getAnalysis(Decl const *D) {
+  template <typename T>
+  T *getAnalysis(Decl const *D) {
     return AnaCtxMgr.getContext(D)->getAnalysis<T>();
   }
 
@@ -138,8 +153,8 @@ public:
   }
 };
 
-} // namespace ento
+} // enAnaCtxMgrspace
 
-} // namespace clang
+} // end clang namespace
 
 #endif

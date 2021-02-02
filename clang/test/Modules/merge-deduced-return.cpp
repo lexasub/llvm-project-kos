@@ -6,13 +6,10 @@
 module A {}
 #pragma clang module contents
 #pragma clang module begin A
-inline auto f() {
-  struct X {};
-  return X();
-}
+inline auto f() { struct X {}; return X(); }
 inline auto a = f();
 auto g(int);
-template <typename T> auto h(T t) { return g(t); }
+template<typename T> auto h(T t) { return g(t); }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -20,20 +17,14 @@ template <typename T> auto h(T t) { return g(t); }
 module B {}
 #pragma clang module contents
 #pragma clang module begin B
-inline auto f() {
-  struct X {};
-  return X();
-}
+inline auto f() { struct X {}; return X(); }
 inline auto b = f();
 auto g(int) { return 0; }
 #pragma clang module end
 #pragma clang module endbuild
 
 #ifdef LOCAL
-inline auto f() {
-  struct X {};
-  return X();
-}
+inline auto f() { struct X {}; return X(); }
 inline auto b = f();
 auto g(int) { return 0; }
 #else

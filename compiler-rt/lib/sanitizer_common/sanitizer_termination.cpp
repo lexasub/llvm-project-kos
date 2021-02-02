@@ -66,8 +66,8 @@ void SetCheckFailedCallback(CheckFailedCallbackType callback) {
 
 const int kSecondsToSleepWhenRecursiveCheckFailed = 2;
 
-void NORETURN CheckFailed(const char *file, int line, const char *cond, u64 v1,
-                          u64 v2) {
+void NORETURN CheckFailed(const char *file, int line, const char *cond,
+                          u64 v1, u64 v2) {
   static atomic_uint32_t num_calls;
   if (atomic_fetch_add(&num_calls, 1, memory_order_relaxed) > 10) {
     SleepForSeconds(kSecondsToSleepWhenRecursiveCheckFailed);
@@ -78,11 +78,11 @@ void NORETURN CheckFailed(const char *file, int line, const char *cond, u64 v1,
     CheckFailedCallback(file, line, cond, v1, v2);
   }
   Report("Sanitizer CHECK failed: %s:%d %s (%lld, %lld)\n", file, line, cond,
-         v1, v2);
+                                                            v1, v2);
   Die();
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 using namespace __sanitizer;
 

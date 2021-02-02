@@ -84,7 +84,9 @@ public:
       Source->StartedDeserializing();
     }
 
-    ~Deserializing() { Source->FinishedDeserializing(); }
+    ~Deserializing() {
+      Source->FinishedDeserializing();
+    }
   };
 
   /// Get the current generation of this AST source. This number
@@ -147,8 +149,8 @@ public:
   /// we definitely have no declarations with tbis name.
   ///
   /// The default implementation of this method is a no-op returning \c false.
-  virtual bool FindExternalVisibleDeclsByName(const DeclContext *DC,
-                                              DeclarationName Name);
+  virtual bool
+  FindExternalVisibleDeclsByName(const DeclContext *DC, DeclarationName Name);
 
   /// Ensures that the table of all visible declarations inside this
   /// context is up to date.
@@ -182,8 +184,7 @@ public:
   /// DeclContext.
   void FindExternalLexicalDecls(const DeclContext *DC,
                                 SmallVectorImpl<Decl *> &Result) {
-    FindExternalLexicalDecls(
-        DC, [](Decl::Kind) { return true; }, Result);
+    FindExternalLexicalDecls(DC, [](Decl::Kind) { return true; }, Result);
   }
 
   /// Get the decls that are contained in a file in the Offset/Length
@@ -262,8 +263,8 @@ public:
   /// out according to the ABI.
   ///
   /// \param VirtualBaseOffsets The offset of each of the virtual base classes
-  /// (either direct or not). If any bases are not given offsets, the bases will
-  /// be laid out according to the ABI.
+  /// (either direct or not). If any bases are not given offsets, the bases will be laid
+  /// out according to the ABI.
   ///
   /// \returns true if the record layout was provided, false otherwise.
   virtual bool layoutRecordType(
@@ -302,11 +303,13 @@ public:
 
 protected:
   static DeclContextLookupResult
-  SetExternalVisibleDeclsForName(const DeclContext *DC, DeclarationName Name,
-                                 ArrayRef<NamedDecl *> Decls);
+  SetExternalVisibleDeclsForName(const DeclContext *DC,
+                                 DeclarationName Name,
+                                 ArrayRef<NamedDecl*> Decls);
 
   static DeclContextLookupResult
-  SetNoExternalVisibleDeclsForName(const DeclContext *DC, DeclarationName Name);
+  SetNoExternalVisibleDeclsForName(const DeclContext *DC,
+                                   DeclarationName Name);
 
   /// Increment the current generation.
   uint32_t incrementGeneration(ASTContext &C);
@@ -318,8 +321,7 @@ protected:
 /// The AST node is identified within the external AST source by a
 /// 63-bit offset, and can be retrieved via an operation on the
 /// external AST source itself.
-template <typename T, typename OffsT,
-          T *(ExternalASTSource::*Get)(OffsT Offset)>
+template<typename T, typename OffsT, T* (ExternalASTSource::*Get)(OffsT Offset)>
 struct LazyOffsetPtr {
   /// Either a pointer to an AST node or the offset within the
   /// external AST source where the AST node can be found.
@@ -371,20 +373,20 @@ public:
   /// \param Source the external AST source.
   ///
   /// \returns a pointer to the AST node.
-  T *get(ExternalASTSource *Source) const {
+  T* get(ExternalASTSource *Source) const {
     if (isOffset()) {
       assert(Source &&
              "Cannot deserialize a lazy pointer without an AST source");
       Ptr = reinterpret_cast<uint64_t>((Source->*Get)(Ptr >> 1));
     }
-    return reinterpret_cast<T *>(Ptr);
+    return reinterpret_cast<T*>(Ptr);
   }
 };
 
 /// A lazy value (of type T) that is within an AST node of type Owner,
 /// where the value might change in later generations of the external AST
 /// source.
-template <typename Owner, typename T, void (ExternalASTSource::*Update)(Owner)>
+template<typename Owner, typename T, void (ExternalASTSource::*Update)(Owner)>
 struct LazyGenerationalUpdatePtr {
   /// A cache of the value of this pointer, in the most recent generation in
   /// which we queried it.
@@ -398,7 +400,7 @@ struct LazyGenerationalUpdatePtr {
   };
 
   // Our value is represented as simply T if there is no external AST source.
-  using ValueType = llvm::PointerUnion<T, LazyData *>;
+  using ValueType = llvm::PointerUnion<T, LazyData*>;
   ValueType Value;
 
   LazyGenerationalUpdatePtr(ValueType V) : Value(V) {}
@@ -413,7 +415,8 @@ public:
   /// Create a pointer that is not potentially updated by later generations of
   /// the external AST source.
   enum NotUpdatedTag { NotUpdated };
-  LazyGenerationalUpdatePtr(NotUpdatedTag, T Value = T()) : Value(Value) {}
+  LazyGenerationalUpdatePtr(NotUpdatedTag, T Value = T())
+      : Value(Value) {}
 
   /// Forcibly set this pointer (which must be lazy) as needing updates.
   void markIncomplete() {
@@ -463,8 +466,8 @@ public:
 /// placed into a PointerUnion.
 namespace llvm {
 
-template <typename Owner, typename T,
-          void (clang::ExternalASTSource::*Update)(Owner)>
+template<typename Owner, typename T,
+         void (clang::ExternalASTSource::*Update)(Owner)>
 struct PointerLikeTypeTraits<
     clang::LazyGenerationalUpdatePtr<Owner, T, Update>> {
   using Ptr = clang::LazyGenerationalUpdatePtr<Owner, T, Update>;
@@ -486,9 +489,9 @@ namespace clang {
 /// from an external source and partially added by local translation. The
 /// items loaded from the external source are loaded lazily, when needed for
 /// iteration over the complete vector.
-template <typename T, typename Source,
-          void (Source::*Loader)(SmallVectorImpl<T> &),
-          unsigned LoadedStorage = 2, unsigned LocalStorage = 4>
+template<typename T, typename Source,
+         void (Source::*Loader)(SmallVectorImpl<T>&),
+         unsigned LoadedStorage = 2, unsigned LocalStorage = 4>
 class LazyVector {
   SmallVector<T, LoadedStorage> Loaded;
   SmallVector<T, LocalStorage> Local;
@@ -541,9 +544,13 @@ public:
     return iterator(this, -(int)Loaded.size());
   }
 
-  iterator end() { return iterator(this, Local.size()); }
+  iterator end() {
+    return iterator(this, Local.size());
+  }
 
-  void push_back(const T &LocalValue) { Local.push_back(LocalValue); }
+  void push_back(const T& LocalValue) {
+    Local.push_back(LocalValue);
+  }
 
   void erase(iterator From, iterator To) {
     if (From.isLoaded() && To.isLoaded()) {

@@ -29,6 +29,7 @@ void ReportTailOverwritten(StackTrace *stack, uptr addr, uptr orig_size,
 void ReportRegisters(uptr *registers_frame, uptr pc);
 void ReportAtExitStatistics();
 
+
 }  // namespace __hwasan
 
 #endif  // HWASAN_REPORT_H

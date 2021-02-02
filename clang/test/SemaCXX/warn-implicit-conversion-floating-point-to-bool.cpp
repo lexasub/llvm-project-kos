@@ -18,6 +18,7 @@ void bar() {
 
   b = food(e < 2); // expected-warning {{implicit conversion turns floating-point number into bool: 'double' to 'bool'}}
 
-  foo(c, b); // expected-warning {{implicit conversion turns floating-point number into bool: 'float' to 'bool'}}
+  foo(c, b);    // expected-warning {{implicit conversion turns floating-point number into bool: 'float' to 'bool'}}
   foo(c, c);
+
 }

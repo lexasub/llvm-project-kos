@@ -24,12 +24,11 @@ static llvm::ManagedStatic<lldb_private::SystemLifetimeManager>
     g_debugger_lifetime;
 
 static void display_usage(const char *progname) {
-  fprintf(stderr,
-          "Usage:\n"
-          "  %s v[ersion]\n"
-          "  %s g[dbserver] [options]\n"
-          "  %s p[latform] [options]\n"
-          "Invoke subcommand for additional help\n",
+  fprintf(stderr, "Usage:\n"
+                  "  %s v[ersion]\n"
+                  "  %s g[dbserver] [options]\n"
+                  "  %s p[latform] [options]\n"
+                  "Invoke subcommand for additional help\n",
           progname, progname, progname);
   exit(0);
 }

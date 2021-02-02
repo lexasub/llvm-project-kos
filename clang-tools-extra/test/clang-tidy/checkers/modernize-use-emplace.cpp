@@ -10,7 +10,8 @@
 
 namespace std {
 template <typename>
-class initializer_list {
+class initializer_list
+{
 public:
   initializer_list() noexcept {}
 };
@@ -25,7 +26,7 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&...args){};
+  void emplace_back(Args &&... args){};
   ~vector();
 };
 template <typename T>
@@ -35,7 +36,7 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&...args){};
+  void emplace_back(Args &&... args){};
   ~list();
 };
 
@@ -46,19 +47,15 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&...args){};
+  void emplace_back(Args &&... args){};
   ~deque();
 };
 
-template <typename T>
-struct remove_reference { using type = T; };
-template <typename T>
-struct remove_reference<T &> { using type = T; };
-template <typename T>
-struct remove_reference<T &&> { using type = T; };
+template <typename T> struct remove_reference { using type = T; };
+template <typename T> struct remove_reference<T &> { using type = T; };
+template <typename T> struct remove_reference<T &&> { using type = T; };
 
-template <typename T1, typename T2>
-class pair {
+template <typename T1, typename T2> class pair {
 public:
   pair() = default;
   pair(const pair &) = default;
@@ -67,10 +64,8 @@ public:
   pair(const T1 &, const T2 &) {}
   pair(T1 &&, T2 &&) {}
 
-  template <typename U1, typename U2>
-  pair(const pair<U1, U2> &){};
-  template <typename U1, typename U2>
-  pair(pair<U1, U2> &&){};
+  template <typename U1, typename U2> pair(const pair<U1, U2> &){};
+  template <typename U1, typename U2> pair(pair<U1, U2> &&){};
 };
 
 template <typename T1, typename T2>
@@ -79,8 +74,7 @@ make_pair(T1 &&, T2 &&) {
   return {};
 };
 
-template <typename... Ts>
-class tuple {
+template <typename... Ts> class tuple {
 public:
   tuple() = default;
   tuple(const tuple &) = default;
@@ -89,17 +83,13 @@ public:
   tuple(const Ts &...) {}
   tuple(Ts &&...) {}
 
-  template <typename... Us>
-  tuple(const tuple<Us...> &){};
-  template <typename... Us>
-  tuple(tuple<Us...> &&) {}
+  template <typename... Us> tuple(const tuple<Us...> &){};
+  template <typename... Us> tuple(tuple<Us...> &&) {}
 
-  template <typename U1, typename U2>
-  tuple(const pair<U1, U2> &) {
+  template <typename U1, typename U2> tuple(const pair<U1, U2> &) {
     static_assert(sizeof...(Ts) == 2, "Wrong tuple size");
   };
-  template <typename U1, typename U2>
-  tuple(pair<U1, U2> &&) {
+  template <typename U1, typename U2> tuple(pair<U1, U2> &&) {
     static_assert(sizeof...(Ts) == 2, "Wrong tuple size");
   };
 };
@@ -125,10 +115,10 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&...args){};
+  void emplace_back(Args &&... args){};
 };
 
-} // namespace llvm
+} // llvm
 
 void testInts() {
   std::vector<int> v;
@@ -385,7 +375,7 @@ void testMakePair() {
   // make_pair cannot be removed here, as X is not constructible with two ints.
 
   struct Y {
-    Y(std::pair<int, int> &&) {}
+    Y(std::pair<int, int>&&) {}
   };
   std::vector<Y> y;
   y.push_back(std::make_pair(2, 3));
@@ -412,8 +402,7 @@ void testMakeTuple() {
 }
 
 namespace test {
-template <typename T>
-struct Single {
+template <typename T> struct Single {
   Single() = default;
   Single(const Single &) = default;
   Single(Single &&) = default;
@@ -421,15 +410,11 @@ struct Single {
   Single(const T &) {}
   Single(T &&) {}
 
-  template <typename U>
-  Single(const Single<U> &) {}
-  template <typename U>
-  Single(Single<U> &&) {}
+  template <typename U> Single(const Single<U> &) {}
+  template <typename U> Single(Single<U> &&) {}
 
-  template <typename U>
-  Single(const std::tuple<U> &) {}
-  template <typename U>
-  Single(std::tuple<U> &&) {}
+  template <typename U> Single(const std::tuple<U> &) {}
+  template <typename U> Single(std::tuple<U> &&) {}
 };
 
 template <typename T>

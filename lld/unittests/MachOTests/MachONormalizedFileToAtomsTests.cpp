@@ -36,7 +36,7 @@ TEST(ToAtomsTest, basic_obj_x86_64) {
   NormalizedFile f;
   f.arch = lld::MachOLinkingContext::arch_x86_64;
   Section textSection;
-  static const uint8_t contentBytes[] = {0x90, 0xC3, 0xC3, 0xC4};
+  static const uint8_t contentBytes[] = { 0x90, 0xC3, 0xC3, 0xC4 };
   const unsigned contentSize = sizeof(contentBytes) / sizeof(contentBytes[0]);
   textSection.content = llvm::makeArrayRef(contentBytes, contentSize);
   f.sections.push_back(textSection);

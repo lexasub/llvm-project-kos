@@ -299,25 +299,25 @@ protected:
       m_name; ///< The name of this clang function - for debugging purposes.
 
   Function *m_function_ptr; ///< The function we're going to call. May be
-                            /// nullptr if we don't have debug info for the
-                            /// function.
-  Address m_function_addr; ///< If we don't have the FunctionSP, we at least
-                           /// need the address & return type.
+                            ///nullptr if we don't have debug info for the
+                            ///function.
+  Address m_function_addr;  ///< If we don't have the FunctionSP, we at least
+                            ///need the address & return type.
   CompilerType m_function_return_type; ///< The opaque clang qual type for the
-                                       /// function return type.
+                                       ///function return type.
 
   std::string m_wrapper_function_name; ///< The name of the wrapper function.
   std::string
       m_wrapper_function_text;       ///< The contents of the wrapper function.
   std::string m_wrapper_struct_name; ///< The name of the struct that contains
-                                     /// the target function address, arguments,
-                                     /// and result.
+                                     ///the target function address, arguments,
+                                     ///and result.
   std::list<lldb::addr_t> m_wrapper_args_addrs; ///< The addresses of the
-                                                /// arguments to the wrapper
-                                                /// function.
+                                                ///arguments to the wrapper
+                                                ///function.
 
   bool m_struct_valid; ///< True if the ASTStructExtractor has populated the
-                       /// variables below.
+                       ///variables below.
 
   /// These values are populated by the ASTStructExtractor
   size_t m_struct_size; ///< The size of the argument struct, in bytes.
@@ -325,7 +325,7 @@ protected:
       m_member_offsets; ///< The offset of each member in the struct, in bytes.
   uint64_t m_return_size;   ///< The size of the result variable, in bytes.
   uint64_t m_return_offset; ///< The offset of the result variable in the
-                            /// struct, in bytes.
+                            ///struct, in bytes.
 
   ValueList m_arg_values; ///< The default values of the arguments.
 

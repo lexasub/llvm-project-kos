@@ -13,111 +13,97 @@
 // FIXME: DR565 introduces parallel wording here for function templates.
 
 namespace test0 {
-namespace ns {
-void foo();
-} // namespace ns
-int foo(void); // expected-note {{conflicting declaration}}
-using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
-} // namespace test0
-
-namespace test1 {
-namespace ns {
-void foo();
-} // namespace ns
-using ns::foo; //expected-note {{using declaration}}
-int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
-} // namespace test1
-
-namespace test2 {
-namespace ns {
-void foo();
-} // namespace ns
-void test0() {
+  namespace ns { void foo(); } // expected-note {{target of using declaration}}
   int foo(void); // expected-note {{conflicting declaration}}
   using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
 }
 
-void test1() {
+namespace test1 {
+  namespace ns { void foo(); } // expected-note {{target of using declaration}}
   using ns::foo; //expected-note {{using declaration}}
   int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
 }
-} // namespace test2
+
+namespace test2 {
+  namespace ns { void foo(); } // expected-note 2 {{target of using declaration}}
+  void test0() {
+    int foo(void); // expected-note {{conflicting declaration}}
+    using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+  }
+
+  void test1() {
+    using ns::foo; //expected-note {{using declaration}}
+    int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+  }
+}
 
 namespace test3 {
-namespace ns {
-void foo();
-} // namespace ns
-class Test0 {
-  void test() {
-    int foo(void); // expected-note {{conflicting declaration}}
-    using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
-  }
-};
+  namespace ns { void foo(); } // expected-note 2 {{target of using declaration}}
+  class Test0 {
+    void test() {
+      int foo(void); // expected-note {{conflicting declaration}}
+      using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+    }
+  };
 
-class Test1 {
-  void test() {
-    using ns::foo; //expected-note {{using declaration}}
-    int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
-  }
-};
-} // namespace test3
+  class Test1 {
+    void test() {
+      using ns::foo; //expected-note {{using declaration}}
+      int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+    }
+  };
+}
 
 namespace test4 {
-namespace ns {
-void foo();
-} // namespace ns
-template <typename> class Test0 {
-  void test() {
-    int foo(void); // expected-note {{conflicting declaration}}
-    using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
-  }
-};
+  namespace ns { void foo(); } // expected-note 2 {{target of using declaration}}
+  template <typename> class Test0 {
+    void test() {
+      int foo(void); // expected-note {{conflicting declaration}}
+      using ns::foo; // expected-error {{target of using declaration conflicts with declaration already in scope}}
+    }
+  };
 
-template <typename> class Test1 {
-  void test() {
-    using ns::foo; //expected-note {{using declaration}}
-    int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
-  }
-};
-} // namespace test4
+  template <typename> class Test1 {
+    void test() {
+      using ns::foo; //expected-note {{using declaration}}
+      int foo(void); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+    }
+  };
+}
 
 // FIXME: we should be able to diagnose both of these, but we can't.
 namespace test5 {
-namespace ns {
-void foo(int);
+  namespace ns { void foo(int); }
+  template <typename T> class Test0 {
+    void test() {
+      int foo(T);
+      using ns::foo;
+    }
+  };
+
+  template <typename T> class Test1 {
+    void test() {
+      using ns::foo;
+      int foo(T);
+    }
+  };
+
+  template class Test0<int>;
+  template class Test1<int>;
 }
-template <typename T> class Test0 {
-  void test() {
-    int foo(T);
-    using ns::foo;
-  }
-};
-
-template <typename T> class Test1 {
-  void test() {
-    using ns::foo;
-    int foo(T);
-  }
-};
-
-template class Test0<int>;
-template class Test1<int>;
-} // namespace test5
 
 namespace test6 {
-namespace ns {
-void foo();
-} // namespace ns
-using ns::foo; // expected-note {{using declaration}}
-namespace ns {
-using test6::foo;
-void foo() {}
-} // namespace ns
-void foo(); // expected-error {{declaration conflicts with target of using declaration already in scope}}
-} // namespace test6
+  namespace ns { void foo(); } // expected-note {{target of using declaration}}
+  using ns::foo; // expected-note {{using declaration}}
+  namespace ns {
+    using test6::foo;
+    void foo() {}
+  }
+  void foo(); // expected-error {{declaration conflicts with target of using declaration already in scope}}
+}
 
 namespace test7 {
-void foo();
-using test7::foo;
-void foo() {}
-} // namespace test7
+  void foo();
+  using test7::foo;
+  void foo() {}
+}

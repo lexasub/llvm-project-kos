@@ -113,12 +113,10 @@ kern_return_t DNBArchMachARM64::SetPC(uint64_t value) {
 #if __has_feature(ptrauth_calls)
     // The incoming value could be garbage.  Strip it to avoid
     // trapping when it gets resigned in the thread state.
-    value =
-        (uint64_t)ptrauth_strip((void *)value, ptrauth_key_function_pointer);
-    value = (uint64_t)ptrauth_sign_unauthenticated(
-        (void *)value, ptrauth_key_function_pointer, 0);
+    value = (uint64_t) ptrauth_strip((void*) value, ptrauth_key_function_pointer);
+    value = (uint64_t) ptrauth_sign_unauthenticated((void*) value, ptrauth_key_function_pointer, 0);
 #endif
-    arm_thread_state64_set_pc_fptr(m_state.context.gpr, (void *)value);
+    arm_thread_state64_set_pc_fptr (m_state.context.gpr, (void*) value);
 #else
     m_state.context.gpr.__pc = value;
 #endif
@@ -192,10 +190,10 @@ kern_return_t DNBArchMachARM64::GetGPRState(bool force) {
         x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19], x[20], x[21],
         x[22], x[23], x[24], x[25], x[26], x[27], x[28],
 #if defined(__LP64__)
-        (uint64_t)arm_thread_state64_get_fp(m_state.context.gpr),
-        (uint64_t)arm_thread_state64_get_lr(m_state.context.gpr),
-        (uint64_t)arm_thread_state64_get_sp(m_state.context.gpr),
-        (uint64_t)arm_thread_state64_get_pc(m_state.context.gpr),
+        (uint64_t) arm_thread_state64_get_fp (m_state.context.gpr),
+        (uint64_t) arm_thread_state64_get_lr (m_state.context.gpr),
+        (uint64_t) arm_thread_state64_get_sp (m_state.context.gpr),
+        (uint64_t) arm_thread_state64_get_pc (m_state.context.gpr),
 #else
         m_state.context.gpr.__fp, m_state.context.gpr.__lr,
         m_state.context.gpr.__sp, m_state.context.gpr.__pc,
@@ -345,9 +343,8 @@ kern_return_t DNBArchMachARM64::GetEXCState(bool force) {
 static void DumpDBGState(const arm_debug_state_t &dbg) {
   uint32_t i = 0;
   for (i = 0; i < 16; i++)
-    DNBLogThreadedIf(LOG_STEP,
-                     "BVR%-2u/BCR%-2u = { 0x%8.8x, 0x%8.8x } "
-                     "WVR%-2u/WCR%-2u = { 0x%8.8x, 0x%8.8x }",
+    DNBLogThreadedIf(LOG_STEP, "BVR%-2u/BCR%-2u = { 0x%8.8x, 0x%8.8x } "
+                               "WVR%-2u/WCR%-2u = { 0x%8.8x, 0x%8.8x }",
                      i, i, dbg.__bvr[i], dbg.__bcr[i], i, i, dbg.__wvr[i],
                      dbg.__wcr[i]);
 }
@@ -418,10 +415,9 @@ kern_return_t DNBArchMachARM64::SetDBGState(bool also_set_on_task) {
         m_thread->Process()->Task().TaskPort(), ARM_DEBUG_STATE64,
         (thread_state_t)&m_state.dbg, e_regSetDBGCount);
     if (task_kret != KERN_SUCCESS)
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM64::SetDBGState failed "
-                       "to set debug control register state: "
-                       "0x%8.8x.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::SetDBGState failed "
+                                        "to set debug control register state: "
+                                        "0x%8.8x.",
                        task_kret);
   }
   m_state.SetError(set, Write,
@@ -456,9 +452,8 @@ void DNBArchMachARM64::ThreadWillResume() {
       }
 
       DisableHardwareWatchpoint(m_watchpoint_hw_index, false);
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM::ThreadWillResume() "
-                       "DisableHardwareWatchpoint(%d) called",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM::ThreadWillResume() "
+                                        "DisableHardwareWatchpoint(%d) called",
                        m_watchpoint_hw_index);
 
       // Enable hardware single step to move past the watchpoint-triggering
@@ -503,20 +498,18 @@ bool DNBArchMachARM64::NotifyException(MachException::Data &exc) {
       // it was too big.  If the watchpoint exception is indicating the 2nd half
       // of the two-parter, find the address of the 1st half and report that --
       // that's what lldb is going to expect to see.
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM::NotifyException "
-                       "watchpoint %d was hit on address "
-                       "0x%llx",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM::NotifyException "
+                                        "watchpoint %d was hit on address "
+                                        "0x%llx",
                        hw_index, (uint64_t)addr);
       const int num_watchpoints = NumSupportedHardwareWatchpoints();
       for (int i = 0; i < num_watchpoints; i++) {
         if (LoHi[i] != 0 && LoHi[i] == hw_index && LoHi[i] != i &&
             GetWatchpointAddressByIndex(i) != INVALID_NUB_ADDRESS) {
           addr = GetWatchpointAddressByIndex(i);
-          DNBLogThreadedIf(LOG_WATCHPOINTS,
-                           "DNBArchMachARM::NotifyException "
-                           "It is a linked watchpoint; "
-                           "rewritten to index %d addr 0x%llx",
+          DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM::NotifyException "
+                                            "It is a linked watchpoint; "
+                                            "rewritten to index %d addr 0x%llx",
                            LoHi[i], (uint64_t)addr);
         }
       }
@@ -533,7 +526,7 @@ bool DNBArchMachARM64::NotifyException(MachException::Data &exc) {
     }
     // detect a __builtin_debugtrap instruction pattern ("brk #0xf000")
     // and advance the $pc past it, so that the user can continue execution.
-    // Generally speaking, this knowledge should be centralized in lldb,
+    // Generally speaking, this knowledge should be centralized in lldb, 
     // recognizing the builtin_trap instruction and knowing how to advance
     // the pc past it, so that continue etc work.
     if (exc.exc_data.size() == 2 && exc.exc_data[0] == EXC_ARM_BREAKPOINT) {
@@ -620,7 +613,7 @@ kern_return_t DNBArchMachARM64::EnableHardwareSingleStep(bool enable) {
   }
 
 #if defined(__LP64__)
-  uint64_t pc = arm_thread_state64_get_pc(m_state.context.gpr);
+  uint64_t pc = arm_thread_state64_get_pc (m_state.context.gpr);
 #else
   uint64_t pc = m_state.context.gpr.__pc;
 #endif
@@ -826,15 +819,15 @@ uint32_t DNBArchMachARM64::EnableHardwareWatchpoint(nub_addr_t addr,
   // an 8 byte address, or (2) a power-of-two size region of memory; minimum
   // 8 bytes, maximum 2GB; the starting address must be aligned to that power
   // of two.
-  //
+  // 
   // For (1), 1-8 byte watchpoints, using the Byte Address Selector field in
   // DBGWCR<n>.BAS.  Any of the bytes may be watched, but if multiple bytes
   // are watched, the bytes selected must be contiguous.  The start address
   // watched must be doubleword (8-byte) aligned; if the start address is
   // word (4-byte) aligned, only 4 bytes can be watched.
-  //
+  // 
   // For (2), the MASK field in DBGWCR<n>.MASK is used.
-  //
+  // 
   // See the ARM ARM, section "Watchpoint exceptions", and more specifically,
   // "Watchpoint data address comparisons".
   //
@@ -846,9 +839,9 @@ uint32_t DNBArchMachARM64::EnableHardwareWatchpoint(nub_addr_t addr,
   // "Determining the memory location that caused a Watchpoint exception"),
   // and silently resume the inferior (disable watchpoint, stepi, re-enable
   // watchpoint) if the address lies outside the region that lldb asked us
-  // to watch.
+  // to watch.  
   //
-  // Alternatively, lldb would need to be prepared for a larger region
+  // Alternatively, lldb would need to be prepared for a larger region 
   // being watched than it requested, and silently resume the inferior if
   // the accessed address is outside the region lldb wants to watch.
 
@@ -862,11 +855,10 @@ uint32_t DNBArchMachARM64::EnableHardwareWatchpoint(nub_addr_t addr,
   //   one watchpoint on address 8 with bytes 0, 1, 2, 3 being monitored
 
   if (addr_dword_offset + size > 8) {
-    DNBLogThreadedIf(LOG_WATCHPOINTS,
-                     "DNBArchMachARM64::"
-                     "EnableHardwareWatchpoint(addr = "
-                     "0x%8.8llx, size = %zu) needs two "
-                     "hardware watchpoints slots to monitor",
+    DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::"
+                                      "EnableHardwareWatchpoint(addr = "
+                                      "0x%8.8llx, size = %zu) needs two "
+                                      "hardware watchpoints slots to monitor",
                      (uint64_t)addr, size);
     int low_watchpoint_size = 8 - addr_dword_offset;
     int high_watchpoint_size = addr_dword_offset + size - 8;
@@ -937,12 +929,11 @@ uint32_t DNBArchMachARM64::EnableHardwareWatchpoint(nub_addr_t addr,
                              (write ? WCR_STORE : 0) | // Stop on write access?
                              WCR_ENABLE; // Enable this watchpoint;
 
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM64::EnableHardwareWatchpoint() "
-                       "adding watchpoint on address 0x%llx with control "
-                       "register value 0x%x",
-                       (uint64_t)m_state.dbg.__wvr[i],
-                       (uint32_t)m_state.dbg.__wcr[i]);
+      DNBLogThreadedIf(
+          LOG_WATCHPOINTS, "DNBArchMachARM64::EnableHardwareWatchpoint() "
+                           "adding watchpoint on address 0x%llx with control "
+                           "register value 0x%x",
+          (uint64_t)m_state.dbg.__wvr[i], (uint32_t)m_state.dbg.__wcr[i]);
 
       // The kernel will set the MDE_ENABLE bit in the MDSCR_EL1 for us
       // automatically, don't need to do it here.
@@ -950,19 +941,17 @@ uint32_t DNBArchMachARM64::EnableHardwareWatchpoint(nub_addr_t addr,
       kret = SetDBGState(also_set_on_task);
       // DumpDBGState(m_state.dbg);
 
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM64::"
-                       "EnableHardwareWatchpoint() "
-                       "SetDBGState() => 0x%8.8x.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::"
+                                        "EnableHardwareWatchpoint() "
+                                        "SetDBGState() => 0x%8.8x.",
                        kret);
 
       if (kret == KERN_SUCCESS)
         return i;
     } else {
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchMachARM64::"
-                       "EnableHardwareWatchpoint(): All "
-                       "hardware resources (%u) are in use.",
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::"
+                                        "EnableHardwareWatchpoint(): All "
+                                        "hardware resources (%u) are in use.",
                        num_hw_watchpoints);
     }
   }
@@ -993,10 +982,9 @@ bool DNBArchMachARM64::ReenableHardwareWatchpoint_helper(uint32_t hw_index) {
   m_state.dbg.__wvr[hw_index] = m_disabled_watchpoints[hw_index].addr;
   m_state.dbg.__wcr[hw_index] = m_disabled_watchpoints[hw_index].control;
 
-  DNBLogThreadedIf(LOG_WATCHPOINTS,
-                   "DNBArchMachARM64::"
-                   "EnableHardwareWatchpoint( %u ) - WVR%u = "
-                   "0x%8.8llx  WCR%u = 0x%8.8llx",
+  DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::"
+                                    "EnableHardwareWatchpoint( %u ) - WVR%u = "
+                                    "0x%8.8llx  WCR%u = 0x%8.8llx",
                    hw_index, hw_index, (uint64_t)m_state.dbg.__wvr[hw_index],
                    hw_index, (uint64_t)m_state.dbg.__wcr[hw_index]);
 
@@ -1032,10 +1020,9 @@ bool DNBArchMachARM64::DisableHardwareWatchpoint_helper(uint32_t hw_index,
   m_disabled_watchpoints[hw_index].control = m_state.dbg.__wcr[hw_index];
 
   m_state.dbg.__wcr[hw_index] &= ~((nub_addr_t)WCR_ENABLE);
-  DNBLogThreadedIf(LOG_WATCHPOINTS,
-                   "DNBArchMachARM64::"
-                   "DisableHardwareWatchpoint( %u ) - WVR%u = "
-                   "0x%8.8llx  WCR%u = 0x%8.8llx",
+  DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchMachARM64::"
+                                    "DisableHardwareWatchpoint( %u ) - WVR%u = "
+                                    "0x%8.8llx  WCR%u = 0x%8.8llx",
                    hw_index, hw_index, (uint64_t)m_state.dbg.__wvr[hw_index],
                    hw_index, (uint64_t)m_state.dbg.__wcr[hw_index]);
 
@@ -1107,11 +1094,11 @@ uint32_t DNBArchMachARM64::GetHardwareWatchpointHit(nub_addr_t &addr) {
       nub_addr_t wp_addr = GetWatchAddress(debug_state, i);
       uint32_t byte_mask = bits(debug_state.__wcr[i], 12, 5);
 
-      DNBLogThreadedIf(LOG_WATCHPOINTS,
-                       "DNBArchImplX86_64::"
+      DNBLogThreadedIf(LOG_WATCHPOINTS, "DNBArchImplX86_64::"
                        "GetHardwareWatchpointHit() slot: %u "
                        "(addr = 0x%llx; byte_mask = 0x%x)",
-                       i, static_cast<uint64_t>(wp_addr), byte_mask);
+                       i, static_cast<uint64_t>(wp_addr),
+                       byte_mask);
 
       if (!IsWatchpointEnabled(debug_state, i))
         continue;
@@ -1628,14 +1615,22 @@ const DNBRegisterInfo DNBArchMachARM64::g_gpr_registers[] = {
     // on the last accessible register by hand for advertising the location
     // in the regctx to lldb.  We'll go through the accessor functions when
     // we read/write them here.
-    {e_regSetGPR, gpr_fp, "fp", "x29", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 8,
-     dwarf_fp, dwarf_fp, GENERIC_REGNUM_FP, debugserver_gpr_fp, NULL, NULL},
-    {e_regSetGPR, gpr_lr, "lr", "x30", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 16,
-     dwarf_lr, dwarf_lr, GENERIC_REGNUM_RA, debugserver_gpr_lr, NULL, NULL},
-    {e_regSetGPR, gpr_sp, "sp", "xsp", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 24,
-     dwarf_sp, dwarf_sp, GENERIC_REGNUM_SP, debugserver_gpr_sp, NULL, NULL},
-    {e_regSetGPR, gpr_pc, "pc", NULL, Uint, Hex, 8, GPR_OFFSET_IDX(28) + 32,
-     dwarf_pc, dwarf_pc, GENERIC_REGNUM_PC, debugserver_gpr_pc, NULL, NULL},
+    {
+       e_regSetGPR, gpr_fp, "fp", "x29", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 8,
+       dwarf_fp, dwarf_fp, GENERIC_REGNUM_FP, debugserver_gpr_fp, NULL, NULL
+    },
+    {
+       e_regSetGPR, gpr_lr, "lr", "x30", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 16,
+       dwarf_lr, dwarf_lr, GENERIC_REGNUM_RA, debugserver_gpr_lr, NULL, NULL
+    },
+    {
+       e_regSetGPR, gpr_sp, "sp", "xsp", Uint, Hex, 8, GPR_OFFSET_IDX(28) + 24,
+       dwarf_sp, dwarf_sp, GENERIC_REGNUM_SP, debugserver_gpr_sp, NULL, NULL
+    },
+    {
+       e_regSetGPR, gpr_pc, "pc", NULL, Uint, Hex, 8, GPR_OFFSET_IDX(28) + 32,
+       dwarf_pc, dwarf_pc, GENERIC_REGNUM_PC, debugserver_gpr_pc, NULL, NULL
+    },
 
     // in armv7 we specify that writing to the CPSR should invalidate r8-12, sp,
     // lr.
@@ -1994,15 +1989,15 @@ bool DNBArchMachARM64::GetRegisterValue(uint32_t set, uint32_t reg,
       if (reg <= gpr_pc) {
 #if defined(__LP64__)
         if (reg == gpr_pc)
-          value->value.uint64 = arm_thread_state64_get_pc(m_state.context.gpr);
+          value->value.uint64 = arm_thread_state64_get_pc (m_state.context.gpr);
         else if (reg == gpr_lr)
-          value->value.uint64 = arm_thread_state64_get_lr(m_state.context.gpr);
+          value->value.uint64 = arm_thread_state64_get_lr (m_state.context.gpr);
         else if (reg == gpr_sp)
-          value->value.uint64 = arm_thread_state64_get_sp(m_state.context.gpr);
+          value->value.uint64 = arm_thread_state64_get_sp (m_state.context.gpr);
         else if (reg == gpr_fp)
-          value->value.uint64 = arm_thread_state64_get_fp(m_state.context.gpr);
+          value->value.uint64 = arm_thread_state64_get_fp (m_state.context.gpr);
         else
-          value->value.uint64 = m_state.context.gpr.__x[reg];
+        value->value.uint64 = m_state.context.gpr.__x[reg];
 #else
         value->value.uint64 = m_state.context.gpr.__x[reg];
 #endif
@@ -2096,25 +2091,21 @@ bool DNBArchMachARM64::SetRegisterValue(uint32_t set, uint32_t reg,
     case e_regSetGPR:
       if (reg <= gpr_pc) {
 #if defined(__LP64__)
-        uint64_t signed_value = value->value.uint64;
+          uint64_t signed_value = value->value.uint64;
 #if __has_feature(ptrauth_calls)
-        // The incoming value could be garbage.  Strip it to avoid
-        // trapping when it gets resigned in the thread state.
-        signed_value = (uint64_t)ptrauth_strip((void *)signed_value,
-                                               ptrauth_key_function_pointer);
-        signed_value = (uint64_t)ptrauth_sign_unauthenticated(
-            (void *)signed_value, ptrauth_key_function_pointer, 0);
+          // The incoming value could be garbage.  Strip it to avoid
+          // trapping when it gets resigned in the thread state.
+          signed_value = (uint64_t) ptrauth_strip((void*) signed_value, ptrauth_key_function_pointer);
+          signed_value = (uint64_t) ptrauth_sign_unauthenticated((void*) signed_value, ptrauth_key_function_pointer, 0);
 #endif
-        if (reg == gpr_pc)
-          arm_thread_state64_set_pc_fptr(m_state.context.gpr,
-                                         (void *)signed_value);
+        if (reg == gpr_pc) 
+         arm_thread_state64_set_pc_fptr (m_state.context.gpr, (void*) signed_value);
         else if (reg == gpr_lr)
-          arm_thread_state64_set_lr_fptr(m_state.context.gpr,
-                                         (void *)signed_value);
+          arm_thread_state64_set_lr_fptr (m_state.context.gpr, (void*) signed_value);
         else if (reg == gpr_sp)
-          arm_thread_state64_set_sp(m_state.context.gpr, value->value.uint64);
+          arm_thread_state64_set_sp (m_state.context.gpr, value->value.uint64);
         else if (reg == gpr_fp)
-          arm_thread_state64_set_fp(m_state.context.gpr, value->value.uint64);
+          arm_thread_state64_set_fp (m_state.context.gpr, value->value.uint64);
         else
           m_state.context.gpr.__x[reg] = value->value.uint64;
 #else
@@ -2311,24 +2302,21 @@ nub_size_t DNBArchMachARM64::SetRegisterContext(const void *buf,
 
 uint32_t DNBArchMachARM64::SaveRegisterState() {
   kern_return_t kret = ::thread_abort_safely(m_thread->MachPortNumber());
-  DNBLogThreadedIf(LOG_THREAD,
-                   "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
-                   "(SetGPRState() for stop_count = %u)",
-                   m_thread->MachPortNumber(), kret,
-                   m_thread->Process()->StopCount());
+  DNBLogThreadedIf(
+      LOG_THREAD, "thread = 0x%4.4x calling thread_abort_safely (tid) => %u "
+                  "(SetGPRState() for stop_count = %u)",
+      m_thread->MachPortNumber(), kret, m_thread->Process()->StopCount());
 
   // Always re-read the registers because above we call thread_abort_safely();
   bool force = true;
 
   if ((kret = GetGPRState(force)) != KERN_SUCCESS) {
-    DNBLogThreadedIf(LOG_THREAD,
-                     "DNBArchMachARM64::SaveRegisterState () "
-                     "error: GPR regs failed to read: %u ",
+    DNBLogThreadedIf(LOG_THREAD, "DNBArchMachARM64::SaveRegisterState () "
+                                 "error: GPR regs failed to read: %u ",
                      kret);
   } else if ((kret = GetVFPState(force)) != KERN_SUCCESS) {
-    DNBLogThreadedIf(LOG_THREAD,
-                     "DNBArchMachARM64::SaveRegisterState () "
-                     "error: %s regs failed to read: %u",
+    DNBLogThreadedIf(LOG_THREAD, "DNBArchMachARM64::SaveRegisterState () "
+                                 "error: %s regs failed to read: %u",
                      "VFP", kret);
   } else {
     const uint32_t save_id = GetNextRegisterStateSaveID();
@@ -2346,17 +2334,15 @@ bool DNBArchMachARM64::RestoreRegisterState(uint32_t save_id) {
     kern_return_t kret;
     bool success = true;
     if ((kret = SetGPRState()) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchMachARM64::RestoreRegisterState "
-                       "(save_id = %u) error: GPR regs failed to "
-                       "write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchMachARM64::RestoreRegisterState "
+                                   "(save_id = %u) error: GPR regs failed to "
+                                   "write: %u",
                        save_id, kret);
       success = false;
     } else if ((kret = SetVFPState()) != KERN_SUCCESS) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "DNBArchMachARM64::RestoreRegisterState "
-                       "(save_id = %u) error: %s regs failed to "
-                       "write: %u",
+      DNBLogThreadedIf(LOG_THREAD, "DNBArchMachARM64::RestoreRegisterState "
+                                   "(save_id = %u) error: %s regs failed to "
+                                   "write: %u",
                        save_id, "VFP", kret);
       success = false;
     }

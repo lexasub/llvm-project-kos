@@ -18,15 +18,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    const std::error_code ec(6, std::generic_category());
-    assert(static_cast<bool>(ec));
-  }
-  {
-    const std::error_code ec(0, std::generic_category());
-    assert(!static_cast<bool>(ec));
-  }
+int main(int, char**)
+{
+    {
+        const std::error_code ec(6, std::generic_category());
+        assert(static_cast<bool>(ec));
+    }
+    {
+        const std::error_code ec(0, std::generic_category());
+        assert(!static_cast<bool>(ec));
+    }
 
   return 0;
 }

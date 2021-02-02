@@ -72,8 +72,8 @@ public:
       const_cast<Reference *>(ref)->setKindValue(page21);
       break;
     case gotOffset12:
-      const_cast<Reference *>(ref)->setKindValue(targetNowGOT ? offset12scale8
-                                                              : addOffset12);
+      const_cast<Reference *>(ref)->setKindValue(targetNowGOT ?
+                                                 offset12scale8 : addOffset12);
       break;
     case delta32ToGOT:
       const_cast<Reference *>(ref)->setKindValue(delta32);
@@ -89,13 +89,19 @@ public:
   const StubInfo &stubInfo() override { return _sStubInfo; }
 
   bool isCallSite(const Reference &) override;
-  bool isNonCallBranch(const Reference &) override { return false; }
+  bool isNonCallBranch(const Reference &) override {
+    return false;
+  }
 
   bool isPointer(const Reference &) override;
   bool isPairedReloc(const normalized::Relocation &) override;
 
-  bool needsCompactUnwind() override { return true; }
-  Reference::KindValue imageOffsetKind() override { return imageOffset; }
+  bool needsCompactUnwind() override {
+    return true;
+  }
+  Reference::KindValue imageOffsetKind() override {
+    return imageOffset;
+  }
   Reference::KindValue imageOffsetKindIndirect() override {
     return imageOffsetGot;
   }
@@ -104,7 +110,9 @@ public:
     return unwindCIEToPersonalityFunction;
   }
 
-  Reference::KindValue unwindRefToCIEKind() override { return negDelta32; }
+  Reference::KindValue unwindRefToCIEKind() override {
+    return negDelta32;
+  }
 
   Reference::KindValue unwindRefToFunctionKind() override {
     return unwindFDEToFunction;
@@ -114,38 +122,48 @@ public:
     return unwindInfoToEhFrame;
   }
 
-  Reference::KindValue pointerKind() override { return pointer64; }
+  Reference::KindValue pointerKind() override {
+    return pointer64;
+  }
 
   Reference::KindValue lazyImmediateLocationKind() override {
     return lazyImmediateLocation;
   }
 
-  uint32_t dwarfCompactUnwindType() override { return 0x03000000; }
+  uint32_t dwarfCompactUnwindType() override {
+    return 0x03000000;
+  }
 
   llvm::Error getReferenceInfo(const normalized::Relocation &reloc,
-                               const DefinedAtom *inAtom, uint32_t offsetInAtom,
+                               const DefinedAtom *inAtom,
+                               uint32_t offsetInAtom,
                                uint64_t fixupAddress, bool isBig,
                                FindAtomBySectionAndAddress atomFromAddress,
                                FindAtomBySymbolIndex atomFromSymbolIndex,
                                Reference::KindValue *kind,
                                const lld::Atom **target,
                                Reference::Addend *addend) override;
-  llvm::Error getPairReferenceInfo(
-      const normalized::Relocation &reloc1,
-      const normalized::Relocation &reloc2, const DefinedAtom *inAtom,
-      uint32_t offsetInAtom, uint64_t fixupAddress, bool isBig,
-      bool scatterable, FindAtomBySectionAndAddress atomFromAddress,
-      FindAtomBySymbolIndex atomFromSymbolIndex, Reference::KindValue *kind,
-      const lld::Atom **target, Reference::Addend *addend) override;
+  llvm::Error
+      getPairReferenceInfo(const normalized::Relocation &reloc1,
+                           const normalized::Relocation &reloc2,
+                           const DefinedAtom *inAtom,
+                           uint32_t offsetInAtom,
+                           uint64_t fixupAddress, bool isBig, bool scatterable,
+                           FindAtomBySectionAndAddress atomFromAddress,
+                           FindAtomBySymbolIndex atomFromSymbolIndex,
+                           Reference::KindValue *kind,
+                           const lld::Atom **target,
+                           Reference::Addend *addend) override;
 
   bool needsLocalSymbolInRelocatableFile(const DefinedAtom *atom) override {
     return (atom->contentType() == DefinedAtom::typeCString);
   }
 
-  void generateAtomContent(
-      const DefinedAtom &atom, bool relocatable, FindAddressForAtom findAddress,
-      FindAddressForAtom findSectionAddress, uint64_t imageBaseAddress,
-      llvm::MutableArrayRef<uint8_t> atomContentBuffer) override;
+  void generateAtomContent(const DefinedAtom &atom, bool relocatable,
+                           FindAddressForAtom findAddress,
+                           FindAddressForAtom findSectionAddress,
+                           uint64_t imageBaseAddress,
+                    llvm::MutableArrayRef<uint8_t> atomContentBuffer) override;
 
   void appendSectionRelocations(const DefinedAtom &atom,
                                 uint64_t atomSectionOffset,
@@ -160,27 +178,27 @@ private:
   static const StubInfo _sStubInfo;
 
   enum Arm64Kind : Reference::KindValue {
-    invalid, /// for error condition
+    invalid,               /// for error condition
 
     // Kinds found in mach-o .o files:
-    branch26,        /// ex: bl   _foo
-    page21,          /// ex: adrp x1, _foo@PAGE
-    offset12,        /// ex: ldrb w0, [x1, _foo@PAGEOFF]
-    offset12scale2,  /// ex: ldrs w0, [x1, _foo@PAGEOFF]
-    offset12scale4,  /// ex: ldr  w0, [x1, _foo@PAGEOFF]
-    offset12scale8,  /// ex: ldr  x0, [x1, _foo@PAGEOFF]
-    offset12scale16, /// ex: ldr  q0, [x1, _foo@PAGEOFF]
-    gotPage21,       /// ex: adrp x1, _foo@GOTPAGE
-    gotOffset12,     /// ex: ldr  w0, [x1, _foo@GOTPAGEOFF]
-    tlvPage21,       /// ex: adrp x1, _foo@TLVPAGE
-    tlvOffset12,     /// ex: ldr  w0, [x1, _foo@TLVPAGEOFF]
+    branch26,              /// ex: bl   _foo
+    page21,                /// ex: adrp x1, _foo@PAGE
+    offset12,              /// ex: ldrb w0, [x1, _foo@PAGEOFF]
+    offset12scale2,        /// ex: ldrs w0, [x1, _foo@PAGEOFF]
+    offset12scale4,        /// ex: ldr  w0, [x1, _foo@PAGEOFF]
+    offset12scale8,        /// ex: ldr  x0, [x1, _foo@PAGEOFF]
+    offset12scale16,       /// ex: ldr  q0, [x1, _foo@PAGEOFF]
+    gotPage21,             /// ex: adrp x1, _foo@GOTPAGE
+    gotOffset12,           /// ex: ldr  w0, [x1, _foo@GOTPAGEOFF]
+    tlvPage21,             /// ex: adrp x1, _foo@TLVPAGE
+    tlvOffset12,           /// ex: ldr  w0, [x1, _foo@TLVPAGEOFF]
 
-    pointer64,      /// ex: .quad _foo
-    delta64,        /// ex: .quad _foo - .
-    delta32,        /// ex: .long _foo - .
-    negDelta32,     /// ex: .long . - _foo
-    pointer64ToGOT, /// ex: .quad _foo@GOT
-    delta32ToGOT,   /// ex: .long _foo@GOT - .
+    pointer64,             /// ex: .quad _foo
+    delta64,               /// ex: .quad _foo - .
+    delta32,               /// ex: .long _foo - .
+    negDelta32,            /// ex: .long . - _foo
+    pointer64ToGOT,        /// ex: .quad _foo@GOT
+    delta32ToGOT,          /// ex: .long _foo@GOT - .
 
     // Kinds introduced by Passes:
     addOffset12,           /// Location contains LDR to change into ADD.
@@ -189,13 +207,13 @@ private:
     imageOffset,           /// Location contains offset of atom in final image
     imageOffsetGot,        /// Location contains offset of GOT entry for atom in
                            /// final image (typically personality function).
-    unwindCIEToPersonalityFunction, /// Nearly delta32ToGOT, but cannot be
-                                    /// rematerialized in relocatable object
-                                    /// (yay for implicit contracts!).
-    unwindFDEToFunction, /// Nearly delta64, but cannot be rematerialized in
-                         /// relocatable object (yay for implicit contracts!).
-    unwindInfoToEhFrame, /// Fix low 24 bits of compact unwind encoding to
-                         /// refer to __eh_frame entry.
+    unwindCIEToPersonalityFunction,   /// Nearly delta32ToGOT, but cannot be
+                           /// rematerialized in relocatable object
+                           /// (yay for implicit contracts!).
+    unwindFDEToFunction,   /// Nearly delta64, but cannot be rematerialized in
+                           /// relocatable object (yay for implicit contracts!).
+    unwindInfoToEhFrame,   /// Fix low 24 bits of compact unwind encoding to
+                           /// refer to __eh_frame entry.
   };
 
   void applyFixupFinal(const Reference &ref, uint8_t *location,
@@ -215,82 +233,84 @@ private:
 };
 
 const Registry::KindStrings ArchHandler_arm64::_sKindStrings[] = {
-    LLD_KIND_STRING_ENTRY(invalid),
-    LLD_KIND_STRING_ENTRY(branch26),
-    LLD_KIND_STRING_ENTRY(page21),
-    LLD_KIND_STRING_ENTRY(offset12),
-    LLD_KIND_STRING_ENTRY(offset12scale2),
-    LLD_KIND_STRING_ENTRY(offset12scale4),
-    LLD_KIND_STRING_ENTRY(offset12scale8),
-    LLD_KIND_STRING_ENTRY(offset12scale16),
-    LLD_KIND_STRING_ENTRY(gotPage21),
-    LLD_KIND_STRING_ENTRY(gotOffset12),
-    LLD_KIND_STRING_ENTRY(tlvPage21),
-    LLD_KIND_STRING_ENTRY(tlvOffset12),
-    LLD_KIND_STRING_ENTRY(pointer64),
-    LLD_KIND_STRING_ENTRY(delta64),
-    LLD_KIND_STRING_ENTRY(delta32),
-    LLD_KIND_STRING_ENTRY(negDelta32),
-    LLD_KIND_STRING_ENTRY(pointer64ToGOT),
-    LLD_KIND_STRING_ENTRY(delta32ToGOT),
+  LLD_KIND_STRING_ENTRY(invalid),
+  LLD_KIND_STRING_ENTRY(branch26),
+  LLD_KIND_STRING_ENTRY(page21),
+  LLD_KIND_STRING_ENTRY(offset12),
+  LLD_KIND_STRING_ENTRY(offset12scale2),
+  LLD_KIND_STRING_ENTRY(offset12scale4),
+  LLD_KIND_STRING_ENTRY(offset12scale8),
+  LLD_KIND_STRING_ENTRY(offset12scale16),
+  LLD_KIND_STRING_ENTRY(gotPage21),
+  LLD_KIND_STRING_ENTRY(gotOffset12),
+  LLD_KIND_STRING_ENTRY(tlvPage21),
+  LLD_KIND_STRING_ENTRY(tlvOffset12),
+  LLD_KIND_STRING_ENTRY(pointer64),
+  LLD_KIND_STRING_ENTRY(delta64),
+  LLD_KIND_STRING_ENTRY(delta32),
+  LLD_KIND_STRING_ENTRY(negDelta32),
+  LLD_KIND_STRING_ENTRY(pointer64ToGOT),
+  LLD_KIND_STRING_ENTRY(delta32ToGOT),
 
-    LLD_KIND_STRING_ENTRY(addOffset12),
-    LLD_KIND_STRING_ENTRY(lazyPointer),
-    LLD_KIND_STRING_ENTRY(lazyImmediateLocation),
-    LLD_KIND_STRING_ENTRY(imageOffset),
-    LLD_KIND_STRING_ENTRY(imageOffsetGot),
-    LLD_KIND_STRING_ENTRY(unwindCIEToPersonalityFunction),
-    LLD_KIND_STRING_ENTRY(unwindFDEToFunction),
-    LLD_KIND_STRING_ENTRY(unwindInfoToEhFrame),
+  LLD_KIND_STRING_ENTRY(addOffset12),
+  LLD_KIND_STRING_ENTRY(lazyPointer),
+  LLD_KIND_STRING_ENTRY(lazyImmediateLocation),
+  LLD_KIND_STRING_ENTRY(imageOffset),
+  LLD_KIND_STRING_ENTRY(imageOffsetGot),
+  LLD_KIND_STRING_ENTRY(unwindCIEToPersonalityFunction),
+  LLD_KIND_STRING_ENTRY(unwindFDEToFunction),
+  LLD_KIND_STRING_ENTRY(unwindInfoToEhFrame),
 
-    LLD_KIND_STRING_END};
+  LLD_KIND_STRING_END
+};
 
 const ArchHandler::StubInfo ArchHandler_arm64::_sStubInfo = {
-    "dyld_stub_binder",
+  "dyld_stub_binder",
 
-    // Lazy pointer references
-    {Reference::KindArch::AArch64, pointer64, 0, 0},
-    {Reference::KindArch::AArch64, lazyPointer, 0, 0},
+  // Lazy pointer references
+  { Reference::KindArch::AArch64, pointer64, 0, 0 },
+  { Reference::KindArch::AArch64, lazyPointer, 0, 0 },
 
-    // GOT pointer to dyld_stub_binder
-    {Reference::KindArch::AArch64, pointer64, 0, 0},
+  // GOT pointer to dyld_stub_binder
+  { Reference::KindArch::AArch64, pointer64, 0, 0 },
 
-    // arm64 code alignment 2^1
-    1,
+  // arm64 code alignment 2^1
+  1,
 
-    // Stub size and code
-    12,
-    {0x10, 0x00, 0x00, 0x90,  // ADRP  X16, lazy_pointer@page
-     0x10, 0x02, 0x40, 0xF9,  // LDR   X16, [X16, lazy_pointer@pageoff]
-     0x00, 0x02, 0x1F, 0xD6}, // BR    X16
-    {Reference::KindArch::AArch64, page21, 0, 0},
-    {true, offset12scale8, 4, 0},
+  // Stub size and code
+  12,
+  { 0x10, 0x00, 0x00, 0x90,   // ADRP  X16, lazy_pointer@page
+    0x10, 0x02, 0x40, 0xF9,   // LDR   X16, [X16, lazy_pointer@pageoff]
+    0x00, 0x02, 0x1F, 0xD6 }, // BR    X16
+  { Reference::KindArch::AArch64, page21, 0, 0 },
+  { true,                         offset12scale8, 4, 0 },
 
-    // Stub Helper size and code
-    12,
-    {0x50, 0x00, 0x00, 0x18,  //      LDR   W16, L0
-     0x00, 0x00, 0x00, 0x14,  //      LDR   B  helperhelper
-     0x00, 0x00, 0x00, 0x00}, // L0: .long 0
-    {Reference::KindArch::AArch64, lazyImmediateLocation, 8, 0},
-    {Reference::KindArch::AArch64, branch26, 4, 0},
+  // Stub Helper size and code
+  12,
+  { 0x50, 0x00, 0x00, 0x18,   //      LDR   W16, L0
+    0x00, 0x00, 0x00, 0x14,   //      LDR   B  helperhelper
+    0x00, 0x00, 0x00, 0x00 }, // L0: .long 0
+  { Reference::KindArch::AArch64, lazyImmediateLocation, 8, 0 },
+  { Reference::KindArch::AArch64, branch26, 4, 0 },
 
-    // Stub helper image cache content type
-    DefinedAtom::typeGOT,
+  // Stub helper image cache content type
+  DefinedAtom::typeGOT,
 
-    // Stub Helper-Common size and code
-    24,
-    // Stub helper alignment
-    2,
-    {0x11, 0x00, 0x00, 0x90,  //  ADRP  X17, dyld_ImageLoaderCache@page
-     0x31, 0x02, 0x00, 0x91,  //  ADD   X17, X17, dyld_ImageLoaderCache@pageoff
-     0xF0, 0x47, 0xBF, 0xA9,  //  STP   X16/X17, [SP, #-16]!
-     0x10, 0x00, 0x00, 0x90,  //  ADRP  X16, _fast_lazy_bind@page
-     0x10, 0x02, 0x40, 0xF9,  //  LDR   X16, [X16,_fast_lazy_bind@pageoff]
-     0x00, 0x02, 0x1F, 0xD6}, //  BR    X16
-    {Reference::KindArch::AArch64, page21, 0, 0},
-    {true, offset12, 4, 0},
-    {Reference::KindArch::AArch64, page21, 12, 0},
-    {true, offset12scale8, 16, 0}};
+  // Stub Helper-Common size and code
+  24,
+  // Stub helper alignment
+  2,
+  { 0x11, 0x00, 0x00, 0x90,   //  ADRP  X17, dyld_ImageLoaderCache@page
+    0x31, 0x02, 0x00, 0x91,   //  ADD   X17, X17, dyld_ImageLoaderCache@pageoff
+    0xF0, 0x47, 0xBF, 0xA9,   //  STP   X16/X17, [SP, #-16]!
+    0x10, 0x00, 0x00, 0x90,   //  ADRP  X16, _fast_lazy_bind@page
+    0x10, 0x02, 0x40, 0xF9,   //  LDR   X16, [X16,_fast_lazy_bind@pageoff]
+    0x00, 0x02, 0x1F, 0xD6 }, //  BR    X16
+  { Reference::KindArch::AArch64, page21,   0, 0 },
+  { true,                         offset12, 4, 0 },
+  { Reference::KindArch::AArch64, page21,   12, 0 },
+  { true,                         offset12scale8, 16, 0 }
+};
 
 bool ArchHandler_arm64::isCallSite(const Reference &ref) {
   if (ref.kindNamespace() != Reference::KindNamespace::mach_o)
@@ -362,75 +382,75 @@ llvm::Error ArchHandler_arm64::getReferenceInfo(
     const lld::Atom **target, Reference::Addend *addend) {
   const uint8_t *fixupContent = &inAtom->rawContent()[offsetInAtom];
   switch (relocPattern(reloc)) {
-  case ARM64_RELOC_BRANCH26 | rPcRel | rExtern | rLength4:
+  case ARM64_RELOC_BRANCH26           | rPcRel | rExtern | rLength4:
     // ex: bl _foo
     *kind = branch26;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_PAGE21 | rPcRel | rExtern | rLength4:
+  case ARM64_RELOC_PAGE21             | rPcRel | rExtern | rLength4:
     // ex: adrp x1, _foo@PAGE
     *kind = page21;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_PAGEOFF12 | rExtern | rLength4:
+  case ARM64_RELOC_PAGEOFF12                   | rExtern | rLength4:
     // ex: ldr x0, [x1, _foo@PAGEOFF]
     *kind = offset12KindFromInstruction(*(const little32_t *)fixupContent);
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_GOT_LOAD_PAGE21 | rPcRel | rExtern | rLength4:
+  case ARM64_RELOC_GOT_LOAD_PAGE21    | rPcRel | rExtern | rLength4:
     // ex: adrp x1, _foo@GOTPAGE
     *kind = gotPage21;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_GOT_LOAD_PAGEOFF12 | rExtern | rLength4:
+  case ARM64_RELOC_GOT_LOAD_PAGEOFF12          | rExtern | rLength4:
     // ex: ldr x0, [x1, _foo@GOTPAGEOFF]
     *kind = gotOffset12;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_TLVP_LOAD_PAGE21 | rPcRel | rExtern | rLength4:
+  case ARM64_RELOC_TLVP_LOAD_PAGE21   | rPcRel | rExtern | rLength4:
     // ex: adrp x1, _foo@TLVPAGE
     *kind = tlvPage21;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_TLVP_LOAD_PAGEOFF12 | rExtern | rLength4:
+  case ARM64_RELOC_TLVP_LOAD_PAGEOFF12         | rExtern | rLength4:
     // ex: ldr x0, [x1, _foo@TLVPAGEOFF]
     *kind = tlvOffset12;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_UNSIGNED | rExtern | rLength8:
+  case ARM64_RELOC_UNSIGNED                    | rExtern | rLength8:
     // ex: .quad _foo + N
     *kind = pointer64;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = *(const little64_t *)fixupContent;
     return llvm::Error::success();
-  case ARM64_RELOC_UNSIGNED | rLength8:
-    // ex: .quad Lfoo + N
-    *kind = pointer64;
-    return atomFromAddress(reloc.symbol, *(const little64_t *)fixupContent,
-                           target, addend);
-  case ARM64_RELOC_POINTER_TO_GOT | rExtern | rLength8:
+  case ARM64_RELOC_UNSIGNED                              | rLength8:
+     // ex: .quad Lfoo + N
+     *kind = pointer64;
+     return atomFromAddress(reloc.symbol, *(const little64_t *)fixupContent,
+                            target, addend);
+  case ARM64_RELOC_POINTER_TO_GOT              | rExtern | rLength8:
     // ex: .quad _foo@GOT
     *kind = pointer64ToGOT;
     if (auto ec = atomFromSymbolIndex(reloc.symbol, target))
       return ec;
     *addend = 0;
     return llvm::Error::success();
-  case ARM64_RELOC_POINTER_TO_GOT | rPcRel | rExtern | rLength4:
+  case ARM64_RELOC_POINTER_TO_GOT     | rPcRel | rExtern | rLength4:
     // ex: .long _foo@GOT - .
 
     // If we are in an .eh_frame section, then the kind of the relocation should
@@ -457,34 +477,34 @@ llvm::Error ArchHandler_arm64::getPairReferenceInfo(
     const lld::Atom **target, Reference::Addend *addend) {
   const uint8_t *fixupContent = &inAtom->rawContent()[offsetInAtom];
   switch (relocPattern(reloc1) << 16 | relocPattern(reloc2)) {
-  case ((ARM64_RELOC_ADDEND | rLength4) << 16 | ARM64_RELOC_BRANCH26 | rPcRel |
-        rExtern | rLength4):
+  case ((ARM64_RELOC_ADDEND                                | rLength4) << 16 |
+         ARM64_RELOC_BRANCH26           | rPcRel | rExtern | rLength4):
     // ex: bl _foo+8
     *kind = branch26;
     if (auto ec = atomFromSymbolIndex(reloc2.symbol, target))
       return ec;
     *addend = reloc1.symbol;
     return llvm::Error::success();
-  case ((ARM64_RELOC_ADDEND | rLength4) << 16 | ARM64_RELOC_PAGE21 | rPcRel |
-        rExtern | rLength4):
+  case ((ARM64_RELOC_ADDEND                                | rLength4) << 16 |
+         ARM64_RELOC_PAGE21             | rPcRel | rExtern | rLength4):
     // ex: adrp x1, _foo@PAGE
     *kind = page21;
     if (auto ec = atomFromSymbolIndex(reloc2.symbol, target))
       return ec;
     *addend = reloc1.symbol;
     return llvm::Error::success();
-  case ((ARM64_RELOC_ADDEND | rLength4) << 16 | ARM64_RELOC_PAGEOFF12 |
-        rExtern | rLength4): {
+  case ((ARM64_RELOC_ADDEND                                | rLength4) << 16 |
+         ARM64_RELOC_PAGEOFF12                   | rExtern | rLength4): {
     // ex: ldr w0, [x1, _foo@PAGEOFF]
-    uint32_t cont32 = (int32_t) * (const little32_t *)fixupContent;
+    uint32_t cont32 = (int32_t)*(const little32_t *)fixupContent;
     *kind = offset12KindFromInstruction(cont32);
     if (auto ec = atomFromSymbolIndex(reloc2.symbol, target))
       return ec;
     *addend = reloc1.symbol;
     return llvm::Error::success();
   }
-  case ((ARM64_RELOC_SUBTRACTOR | rExtern | rLength8) << 16 |
-        ARM64_RELOC_UNSIGNED | rExtern | rLength8):
+  case ((ARM64_RELOC_SUBTRACTOR                  | rExtern | rLength8) << 16 |
+         ARM64_RELOC_UNSIGNED                    | rExtern | rLength8):
     // ex: .quad _foo - .
     if (auto ec = atomFromSymbolIndex(reloc2.symbol, target))
       return ec;
@@ -499,16 +519,16 @@ llvm::Error ArchHandler_arm64::getPairReferenceInfo(
     // The offsets of the 2 relocations must match
     if (reloc1.offset != reloc2.offset)
       return llvm::make_error<GenericError>(
-          "paired relocs must have the same offset");
-    *addend = (int64_t) * (const little64_t *)fixupContent + offsetInAtom;
+                                    "paired relocs must have the same offset");
+    *addend = (int64_t)*(const little64_t *)fixupContent + offsetInAtom;
     return llvm::Error::success();
-  case ((ARM64_RELOC_SUBTRACTOR | rExtern | rLength4) << 16 |
-        ARM64_RELOC_UNSIGNED | rExtern | rLength4):
+  case ((ARM64_RELOC_SUBTRACTOR                  | rExtern | rLength4) << 16 |
+         ARM64_RELOC_UNSIGNED                    | rExtern | rLength4):
     // ex: .quad _foo - .
     *kind = delta32;
     if (auto ec = atomFromSymbolIndex(reloc2.symbol, target))
       return ec;
-    *addend = (int32_t) * (const little32_t *)fixupContent + offsetInAtom;
+    *addend = (int32_t)*(const little32_t *)fixupContent + offsetInAtom;
     return llvm::Error::success();
   default:
     return llvm::make_error<GenericError>("unsupported arm64 relocation pair");
@@ -525,13 +545,19 @@ void ArchHandler_arm64::generateAtomContent(
   // Apply fix-ups.
 #ifndef NDEBUG
   if (atom.begin() != atom.end()) {
-    DEBUG_WITH_TYPE("atom-content",
-                    llvm::dbgs()
-                        << "Applying fixups to atom:\n"
-                        << "   address=" << llvm::format("    0x%09lX", &atom)
-                        << ", file=#" << atom.file().ordinal() << ", atom=#"
-                        << atom.ordinal() << ", name=" << atom.name()
-                        << ", type=" << atom.contentType() << "\n");
+    DEBUG_WITH_TYPE("atom-content", llvm::dbgs()
+                    << "Applying fixups to atom:\n"
+                    << "   address="
+                    << llvm::format("    0x%09lX", &atom)
+                    << ", file=#"
+                    << atom.file().ordinal()
+                    << ", atom=#"
+                    << atom.ordinal()
+                    << ", name="
+                    << atom.name()
+                    << ", type="
+                    << atom.contentType()
+                    << "\n");
   }
 #endif
   for (const Reference *ref : atom) {
@@ -660,9 +686,12 @@ void ArchHandler_arm64::applyFixupFinal(const Reference &ref, uint8_t *loc,
   llvm_unreachable("invalid arm64 Reference Kind");
 }
 
-void ArchHandler_arm64::applyFixupRelocatable(
-    const Reference &ref, uint8_t *loc, uint64_t fixupAddress,
-    uint64_t targetAddress, uint64_t inAtomAddress, bool targetUnnamed) {
+void ArchHandler_arm64::applyFixupRelocatable(const Reference &ref,
+                                              uint8_t *loc,
+                                              uint64_t fixupAddress,
+                                              uint64_t targetAddress,
+                                              uint64_t inAtomAddress,
+                                              bool targetUnnamed) {
   if (ref.kindNamespace() != Reference::KindNamespace::mach_o)
     return;
   assert(ref.kindArch() == Reference::KindArch::AArch64);
@@ -758,7 +787,7 @@ void ArchHandler_arm64::appendSectionRelocations(
                   ARM64_RELOC_ADDEND | rLength4);
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_BRANCH26 | rPcRel | rExtern | rLength4);
-    } else {
+     } else {
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_BRANCH26 | rPcRel | rExtern | rLength4);
     }
@@ -769,7 +798,7 @@ void ArchHandler_arm64::appendSectionRelocations(
                   ARM64_RELOC_ADDEND | rLength4);
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_PAGE21 | rPcRel | rExtern | rLength4);
-    } else {
+     } else {
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_PAGE21 | rPcRel | rExtern | rLength4);
     }
@@ -783,8 +812,8 @@ void ArchHandler_arm64::appendSectionRelocations(
       appendReloc(relocs, sectionOffset, ref.addend(), 0,
                   ARM64_RELOC_ADDEND | rLength4);
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM64_RELOC_PAGEOFF12 | rExtern | rLength4);
-    } else {
+                  ARM64_RELOC_PAGEOFF12  | rExtern | rLength4);
+     } else {
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_PAGEOFF12 | rExtern | rLength4);
     }
@@ -792,27 +821,27 @@ void ArchHandler_arm64::appendSectionRelocations(
   case gotPage21:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_GOT_LOAD_PAGE21 | rPcRel | rExtern | rLength4);
+                  ARM64_RELOC_GOT_LOAD_PAGE21 | rPcRel | rExtern | rLength4);
     return;
   case gotOffset12:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_GOT_LOAD_PAGEOFF12 | rExtern | rLength4);
+                  ARM64_RELOC_GOT_LOAD_PAGEOFF12 | rExtern | rLength4);
     return;
   case tlvPage21:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_TLVP_LOAD_PAGE21 | rPcRel | rExtern | rLength4);
+                  ARM64_RELOC_TLVP_LOAD_PAGE21 | rPcRel | rExtern | rLength4);
     return;
   case tlvOffset12:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_TLVP_LOAD_PAGEOFF12 | rExtern | rLength4);
+                  ARM64_RELOC_TLVP_LOAD_PAGEOFF12 | rExtern | rLength4);
     return;
   case pointer64:
     if (ref.target()->name().empty())
       appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()), 0,
-                  ARM64_RELOC_UNSIGNED | rLength8);
+                  ARM64_RELOC_UNSIGNED           | rLength8);
     else
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
                   ARM64_RELOC_UNSIGNED | rExtern | rLength8);
@@ -821,23 +850,23 @@ void ArchHandler_arm64::appendSectionRelocations(
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(atom), 0,
                 ARM64_RELOC_SUBTRACTOR | rExtern | rLength8);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_UNSIGNED | rExtern | rLength8);
+                ARM64_RELOC_UNSIGNED  | rExtern | rLength8);
     return;
   case delta32:
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(atom), 0,
-                ARM64_RELOC_SUBTRACTOR | rExtern | rLength4);
+                ARM64_RELOC_SUBTRACTOR | rExtern | rLength4 );
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_UNSIGNED | rExtern | rLength4);
+                ARM64_RELOC_UNSIGNED   | rExtern | rLength4 );
     return;
   case pointer64ToGOT:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_POINTER_TO_GOT | rExtern | rLength8);
+                  ARM64_RELOC_POINTER_TO_GOT | rExtern | rLength8);
     return;
   case delta32ToGOT:
     assert(ref.addend() == 0);
     appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                ARM64_RELOC_POINTER_TO_GOT | rPcRel | rExtern | rLength4);
+                  ARM64_RELOC_POINTER_TO_GOT | rPcRel | rExtern | rLength4);
     return;
   case addOffset12:
     llvm_unreachable("lazy reference kind implies GOT pass was run");

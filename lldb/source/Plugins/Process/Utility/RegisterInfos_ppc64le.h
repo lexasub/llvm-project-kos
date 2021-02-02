@@ -24,12 +24,14 @@
 // Note that the size and offset will be updated by platform-specific classes.
 #define DEFINE_GPR(reg, alt, lldb_kind)                                        \
   {                                                                            \
-#reg, alt, GPR_SIZE(reg), GPR_OFFSET(reg), lldb::eEncodingUint,            \
-        lldb::eFormatHex,                                                      \
-        {ppc64le_dwarf::dwarf_##reg##_ppc64le,                                 \
-         ppc64le_dwarf::dwarf_##reg##_ppc64le, lldb_kind, LLDB_INVALID_REGNUM, \
-         gpr_##reg##_ppc64le },                                                \
-         NULL, NULL, NULL, 0                                                   \
+    #reg, alt, GPR_SIZE(reg), GPR_OFFSET(reg), lldb::eEncodingUint,            \
+                                         lldb::eFormatHex,                     \
+                                         {ppc64le_dwarf::dwarf_##reg##_ppc64le,\
+                                          ppc64le_dwarf::dwarf_##reg##_ppc64le,\
+                                          lldb_kind,                           \
+                                          LLDB_INVALID_REGNUM,                 \
+                                          gpr_##reg##_ppc64le },               \
+                                          NULL, NULL, NULL, 0                  \
   }
 #define DEFINE_FPR(reg, alt, lldb_kind)                                        \
   {                                                                            \
@@ -455,10 +457,13 @@ typedef struct _VSX {
   uint32_t vs63[4];
 } VSX;
 
-static lldb_private::RegisterInfo g_register_infos_ppc64le[] = {POWERPC_REGS};
+static lldb_private::RegisterInfo g_register_infos_ppc64le[] = {
+    POWERPC_REGS
+};
 
 static_assert((sizeof(g_register_infos_ppc64le) /
-               sizeof(g_register_infos_ppc64le[0])) == k_num_registers_ppc64le,
+               sizeof(g_register_infos_ppc64le[0])) ==
+                  k_num_registers_ppc64le,
               "g_register_infos_powerpc64 has wrong number of register infos");
 
 #undef DEFINE_FPR

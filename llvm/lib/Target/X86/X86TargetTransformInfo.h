@@ -105,10 +105,10 @@ public:
 
   /// \name Cache TTI Implementation
   /// @{
-  llvm::Optional<unsigned>
-  getCacheSize(TargetTransformInfo::CacheLevel Level) const override;
-  llvm::Optional<unsigned>
-  getCacheAssociativity(TargetTransformInfo::CacheLevel Level) const override;
+  llvm::Optional<unsigned> getCacheSize(
+    TargetTransformInfo::CacheLevel Level) const override;
+  llvm::Optional<unsigned> getCacheAssociativity(
+    TargetTransformInfo::CacheLevel Level) const override;
   /// @}
 
   /// \name Vector TTI Implementations
@@ -140,7 +140,8 @@ public:
   unsigned getScalarizationOverhead(VectorType *Ty, const APInt &DemandedElts,
                                     bool Insert, bool Extract);
   int getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                      unsigned AddressSpace, TTI::TargetCostKind CostKind,
+                      unsigned AddressSpace,
+                      TTI::TargetCostKind CostKind,
                       const Instruction *I = nullptr);
   int getMaskedMemoryOpCost(
       unsigned Opcode, Type *Src, Align Alignment, unsigned AddressSpace,
@@ -171,9 +172,9 @@ public:
   int getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                             TTI::TargetCostKind CostKind);
 
-  int getArithmeticReductionCost(
-      unsigned Opcode, VectorType *Ty, bool IsPairwiseForm,
-      TTI::TargetCostKind CostKind = TTI::TCK_SizeAndLatency);
+  int getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
+                                 bool IsPairwiseForm,
+                                 TTI::TargetCostKind CostKind = TTI::TCK_SizeAndLatency);
 
   int getMinMaxCost(Type *Ty, Type *CondTy, bool IsUnsigned);
 

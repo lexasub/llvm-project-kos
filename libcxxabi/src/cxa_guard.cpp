@@ -32,21 +32,22 @@ using guard_type = uint32_t;
 using guard_type = uint64_t;
 #endif
 
-extern "C" {
+extern "C"
+{
 _LIBCXXABI_FUNC_VIS int __cxa_guard_acquire(guard_type* raw_guard_object) {
   SelectedImplementation imp(raw_guard_object);
   return static_cast<int>(imp.cxa_guard_acquire());
 }
 
-_LIBCXXABI_FUNC_VIS void __cxa_guard_release(guard_type* raw_guard_object) {
+_LIBCXXABI_FUNC_VIS void __cxa_guard_release(guard_type *raw_guard_object) {
   SelectedImplementation imp(raw_guard_object);
   imp.cxa_guard_release();
 }
 
-_LIBCXXABI_FUNC_VIS void __cxa_guard_abort(guard_type* raw_guard_object) {
+_LIBCXXABI_FUNC_VIS void __cxa_guard_abort(guard_type *raw_guard_object) {
   SelectedImplementation imp(raw_guard_object);
   imp.cxa_guard_abort();
 }
-} // extern "C"
+}  // extern "C"
 
-} // namespace __cxxabiv1
+}  // __cxxabiv1

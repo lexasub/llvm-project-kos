@@ -1,15 +1,15 @@
 // RUN: %clang_cc1 -std=c++17 -verify %s
 
-template <typename T> int not_constexpr() { return T::error; }
-template <typename T> constexpr int is_constexpr() { return T::error; } // expected-error {{'::'}}
+template<typename T> int not_constexpr() { return T::error; }
+template<typename T> constexpr int is_constexpr() { return T::error; } // expected-error {{'::'}}
 
-template <typename T> int not_constexpr_var = T::error;
-template <typename T> constexpr int is_constexpr_var = T::error; // expected-error {{'::'}}
-template <typename T> const int is_const_var = T::error;         // expected-error {{'::'}}
-template <typename T> const volatile int is_const_volatile_var = T::error;
-template <typename T> T is_dependent_var = T::error;    // expected-error {{'::'}}
-template <typename T> int &is_reference_var = T::error; // expected-error {{'::'}}
-template <typename T> float is_float_var = T::error;
+template<typename T> int not_constexpr_var = T::error;
+template<typename T> constexpr int is_constexpr_var = T::error; // expected-error {{'::'}}
+template<typename T> const int is_const_var = T::error; // expected-error {{'::'}}
+template<typename T> const volatile int is_const_volatile_var = T::error;
+template<typename T> T is_dependent_var = T::error; // expected-error {{'::'}}
+template<typename T> int &is_reference_var = T::error; // expected-error {{'::'}}
+template<typename T> float is_float_var = T::error;
 
 void test() {
   // Do not instantiate functions referenced in unevaluated operands...
@@ -30,10 +30,10 @@ void test() {
   (void)sizeof(int{is_constexpr<int>()}); // expected-note {{instantiation of}}
   (void)sizeof(int{not_constexpr_var<int>});
   (void)sizeof(int{is_constexpr_var<int>}); // expected-note {{instantiation of}}
-  (void)sizeof(int{is_const_var<int>});     // expected-note {{instantiation of}}
+  (void)sizeof(int{is_const_var<int>}); // expected-note {{instantiation of}}
   (void)sizeof(int{is_const_volatile_var<int>});
   (void)sizeof(int{is_dependent_var<int>});
   (void)sizeof(int{is_dependent_var<const int>}); // expected-note {{instantiation of}}
-  (void)sizeof(int{is_reference_var<int>});       // expected-note {{instantiation of}}
-  (void)sizeof(int{is_float_var<int>});           // expected-error {{cannot be narrowed}} expected-note {{cast}}
+  (void)sizeof(int{is_reference_var<int>}); // expected-note {{instantiation of}}
+  (void)sizeof(int{is_float_var<int>}); // expected-error {{cannot be narrowed}} expected-note {{cast}}
 }

@@ -1,5 +1,4 @@
-//===-- AArch64WinCOFFStreamer.cpp - ARM Target WinCOFF Streamer ----*- C++
-//-*-===//
+//===-- AArch64WinCOFFStreamer.cpp - ARM Target WinCOFF Streamer ----*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -69,7 +68,8 @@ namespace llvm {
 // 2) take an offset: SEH_StackAlloc, SEH_SaveFPLR, SEH_SaveFPLR_X
 // 3) take a register and an offset/size: all others
 void AArch64TargetWinCOFFStreamer::EmitARM64WinUnwindCode(unsigned UnwindCode,
-                                                          int Reg, int Offset) {
+                                                          int Reg,
+                                                          int Offset) {
   auto &S = getStreamer();
   WinEH::FrameInfo *CurFrame = S.EnsureValidWinFrameInfo(SMLoc());
   if (!CurFrame)
@@ -106,7 +106,7 @@ void AArch64TargetWinCOFFStreamer::EmitARM64WinCFISaveFPLRX(int Offset) {
 void AArch64TargetWinCOFFStreamer::EmitARM64WinCFISaveReg(unsigned Reg,
                                                           int Offset) {
   assert(Offset >= 0 && Offset <= 504 &&
-         "Offset for save reg should be >= 0 && <= 504");
+        "Offset for save reg should be >= 0 && <= 504");
   EmitARM64WinUnwindCode(Win64EH::UOP_SaveReg, Reg, Offset);
 }
 
@@ -133,7 +133,7 @@ void AArch64TargetWinCOFFStreamer::EmitARM64WinCFISaveLRPair(unsigned Reg,
 void AArch64TargetWinCOFFStreamer::EmitARM64WinCFISaveFReg(unsigned Reg,
                                                            int Offset) {
   assert(Offset >= 0 && Offset <= 504 &&
-         "Offset for save reg should be >= 0 && <= 504");
+        "Offset for save reg should be >= 0 && <= 504");
   EmitARM64WinUnwindCode(Win64EH::UOP_SaveFReg, Reg, Offset);
 }
 
@@ -233,4 +233,4 @@ MCWinCOFFStreamer *createAArch64WinCOFFStreamer(
   return S;
 }
 
-} // namespace llvm
+} // end llvm namespace

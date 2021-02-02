@@ -72,27 +72,26 @@ typedef unsigned long __darwin_pthread_key_t;
 typedef __darwin_pthread_key_t pthread_key_t;
 int pthread_setspecific(pthread_key_t, const void *);
 
-int sqlite3_bind_text_my(int, const char *, int n, void (*)(void *));
+int sqlite3_bind_text_my(int, const char*, int n, void(*)(void*));
 
-typedef void (*freeCallback)(void *);
+typedef void (*freeCallback) (void*);
 typedef struct {
   int i;
   freeCallback fc;
 } StWithCallback;
 
-int dealocateMemWhenDoneByVal(void *, StWithCallback);
-int dealocateMemWhenDoneByRef(StWithCallback *, const void *);
+int dealocateMemWhenDoneByVal(void*, StWithCallback);
+int dealocateMemWhenDoneByRef(StWithCallback*, const void*);
 
 typedef struct CGContext *CGContextRef;
-CGContextRef CGBitmapContextCreate(void *data /*, size_t width, size_t height,
+CGContextRef CGBitmapContextCreate(void *data/*, size_t width, size_t height,
                                    size_t bitsPerComponent, size_t bytesPerRow,
                                    CGColorSpaceRef space,
-                                   CGBitmapInfo bitmapInfo*/
-);
+                                   CGBitmapInfo bitmapInfo*/);
 void *CGBitmapContextGetData(CGContextRef context);
 
 // Include xpc.
-typedef struct _xpc_connection_s *xpc_connection_t;
+typedef struct _xpc_connection_s * xpc_connection_t;
 typedef void (*xpc_finalizer_t)(void *value);
 void xpc_connection_set_context(xpc_connection_t connection, void *context);
 void xpc_connection_set_finalizer_f(xpc_connection_t connection, xpc_finalizer_t finalizer);
@@ -104,14 +103,12 @@ void fakeSystemHeaderCallIntPtr(int **);
 
 // Some data strauctures may hold onto the pointer and free it later.
 void fake_insque(void *, void *);
-typedef struct fake_rb_tree {
-  void *opaque[8];
-} fake_rb_tree_t;
+typedef struct fake_rb_tree { void *opaque[8]; } fake_rb_tree_t;
 void fake_rb_tree_init(fake_rb_tree_t *, const void *);
 void *fake_rb_tree_insert_node(fake_rb_tree_t *, void *);
 
 typedef struct __SomeStruct {
-  char *p;
+  char * p;
 } SomeStruct;
 void fakeSystemHeaderCall(SomeStruct *);
 
@@ -126,12 +123,12 @@ int execve(const char *path, char *const argv[], char *const envp[]);
 int execvp(const char *file, char *const argv[]);
 int execvpe(const char *file, char *const argv[], char *const envp[]);
 
-void exit(int status) __attribute__((__noreturn__));
-void _exit(int status) __attribute__((__noreturn__));
-void _Exit(int status) __attribute__((__noreturn__));
+void exit(int status) __attribute__ ((__noreturn__));
+void _exit(int status) __attribute__ ((__noreturn__));
+void _Exit(int status) __attribute__ ((__noreturn__));
 
-#define UINT32_MAX 4294967295U
-#define INT64_MIN (-INT64_MAX - 1)
+#define UINT32_MAX        4294967295U
+#define INT64_MIN        (-INT64_MAX-1)
 #define __DBL_MAX__ 1.7976931348623157e+308
 #define DBL_MAX __DBL_MAX__
 #ifndef NULL

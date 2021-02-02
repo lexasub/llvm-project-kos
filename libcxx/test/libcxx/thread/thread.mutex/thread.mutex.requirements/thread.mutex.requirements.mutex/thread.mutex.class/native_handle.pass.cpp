@@ -22,10 +22,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::mutex m;
-  pthread_mutex_t* h = m.native_handle();
-  assert(h);
+int main(int, char**)
+{
+    std::mutex m;
+    pthread_mutex_t* h = m.native_handle();
+    assert(h);
 
   return 0;
 }

@@ -24,8 +24,10 @@
 // RUN:                    -analyzer-checker=debug.ExprInspection \
 // RUN:                    -std=c++11 -verify=pure %s
 
+
 // We expect no diagnostics when all checks are disabled.
 // none-no-diagnostics
+
 
 #include "virtualcall.h"
 
@@ -40,7 +42,7 @@ public:
   virtual int foo() = 0;
   virtual void bar() = 0;
   void f() {
-    foo();                          // pure-warning{{Call to pure virtual method 'A::foo' during construction has undefined behavior}}
+    foo(); // pure-warning{{Call to pure virtual method 'A::foo' during construction has undefined behavior}}
     clang_analyzer_warnIfReached(); // no-warning
   }
 };
@@ -132,7 +134,7 @@ public:
     G g;
     g.foo();
     g.bar(); // no warning
-    f();     // impure-warning {{Call to virtual method 'H::f' during construction bypasses virtual dispatch}}
+    f(); // impure-warning {{Call to virtual method 'H::f' during construction bypasses virtual dispatch}}
     H &h = *this;
     h.f(); // impure-warning {{Call to virtual method 'H::f' during construction bypasses virtual dispatch}}
   }
@@ -191,7 +193,7 @@ int main() {
   G g;
   H h;
   H h1(1);
-  X x;
+  X x; 
   X x1(1);
   M m;
   Y *y = new Y;
@@ -208,7 +210,7 @@ struct a {
 };
 
 class e {
-public:
+ public:
   void b() const;
 };
 
@@ -218,4 +220,4 @@ class c {
 };
 
 void c::m_fn2() const { d->b(); }
-} // namespace PR34451
+}

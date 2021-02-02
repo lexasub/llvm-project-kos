@@ -7,21 +7,21 @@
 //CHECK: @[[ARGS2:.*]] = private unnamed_addr constant { %struct.Struct } { %struct.Struct { i32* getelementptr inbounds ([2 x i32], [2 x i32]* @_ZN1AIjLj9EE2SVE, i32 0, i32 0), i32* bitcast (i8* getelementptr (i8, i8* bitcast ([2 x i32]* @_ZN1AIjLj9EE2SVE to i8*), i64 4) to i32*) } }, section "llvm.metadata"
 //CHECK: @llvm.global.annotations = appending global [2 x { i8*, i8*, i8*, i32, i8* }] [{ i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.A*)* @_ZN1AIjLj9EE4testILi8EEEvv to i8*), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @[[STR:.*]], i32 0, i32 0), i8* getelementptr inbounds ([{{.*}} x i8], [{{.*}} x i8]* @[[STR1:.*]], i32 0, i32 0), i32 {{.*}}, i8* bitcast ({ i32, i8*, i32 }* @[[ARGS:.*]] to i8*) }, { i8*, i8*, i8*, i32, i8* } { i8* bitcast (void (%struct.A*)* @_ZN1AIjLj9EE5test2Ev to i8*), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([{{.*}} x i8], [{{.*}} x i8]* @.str.1, i32 0, i32 0), i32 24, i8* bitcast ({ %struct.Struct }* @[[ARGS2]] to i8*) }]
 
-constexpr const char *str() {
+constexpr const char* str() {
   return "abc";
 }
 
-template <typename T>
+template<typename T>
 struct Struct {
   T t1;
   T t2;
 };
 
-template <typename T, T V>
+template<typename T, T V>
 struct A {
   static constexpr const T SV[] = {V, V + 1};
   template <int I> __attribute__((annotate("test", V, str(), I))) void test() {}
-  __attribute__((annotate("test", Struct<const T *>{&SV[0], &SV[1]}))) void test2() {}
+  __attribute__((annotate("test", Struct<const T*>{&SV[0], &SV[1]}))) void test2() {}
 };
 
 void t() {
@@ -30,12 +30,12 @@ void t() {
   a.test2();
 }
 
-template <typename T, T V>
+template<typename T, T V>
 struct B {
-  template <typename T1, T1 V1>
-  struct foo {
-    int v __attribute__((annotate("v_ann_0", str(), 90, V))) __attribute__((annotate("v_ann_1", V1)));
-  };
+template<typename T1, T1 V1>
+struct foo {
+  int v __attribute__((annotate("v_ann_0", str(), 90, V))) __attribute__((annotate("v_ann_1", V1)));
+};
 };
 
 static B<int long, -1>::foo<unsigned, 9> gf;
@@ -68,8 +68,8 @@ static B<int long, -1>::foo<unsigned, 9> gf;
 // CHECK-NEXT:    ret i32 0
 //
 int main(int argc, char **argv) {
-  B<int, 7>::foo<unsigned, 9> f;
-  f.v = argc;
-  gf.v = argc;
-  return 0;
+    B<int, 7>::foo<unsigned, 9> f;
+    f.v = argc;
+    gf.v = argc;
+    return 0;
 }

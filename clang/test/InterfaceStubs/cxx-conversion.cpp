@@ -7,7 +7,7 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template <typename T> class C1 {
-  long a;
-  operator long() const { return a; }
+template<typename T> class C1 {
+    long a;
+    operator long() const { return a; }
 };

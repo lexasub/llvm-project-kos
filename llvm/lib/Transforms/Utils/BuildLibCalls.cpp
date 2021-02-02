@@ -13,7 +13,6 @@
 #include "llvm/Transforms/Utils/BuildLibCalls.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/Statistic.h"
-#include "llvm/Analysis/MemoryBuiltins.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DataLayout.h"
@@ -23,6 +22,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
+#include "llvm/Analysis/MemoryBuiltins.h"
 
 using namespace llvm;
 
@@ -137,7 +137,7 @@ static bool setOnlyWritesMemory(Function &F, unsigned ArgNo) {
 }
 
 static bool setSignExtendedArg(Function &F, unsigned ArgNo) {
-  if (F.hasParamAttribute(ArgNo, Attribute::SExt))
+ if (F.hasParamAttribute(ArgNo, Attribute::SExt))
     return false;
   F.addParamAttr(ArgNo, Attribute::SExt);
   ++NumSExtArg;
@@ -225,7 +225,7 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
 
   bool Changed = false;
 
-  if (!isLibFreeFunction(&F, TheLibFunc) && !isReallocLikeFn(&F, &TLI))
+  if(!isLibFreeFunction(&F, TheLibFunc) && !isReallocLikeFn(&F,  &TLI))
     Changed |= setDoesNotFreeMemory(F);
 
   if (F.getParent() != nullptr && F.getParent()->getRtLibUseGOT())
@@ -284,10 +284,10 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
     Changed |= setDoesNotCapture(F, 1);
     Changed |= setOnlyReadsMemory(F, 1);
     return Changed;
-  case LibFunc_strcmp:  // 0,1
-  case LibFunc_strspn:  // 0,1
-  case LibFunc_strncmp: // 0,1
-  case LibFunc_strcspn: // 0,1
+  case LibFunc_strcmp:      // 0,1
+  case LibFunc_strspn:      // 0,1
+  case LibFunc_strncmp:     // 0,1
+  case LibFunc_strcspn:     // 0,1
     Changed |= setDoesNotThrow(F);
     Changed |= setOnlyAccessesArgMemory(F);
     Changed |= setWillReturn(F);
@@ -1005,30 +1005,24 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
     Changed |= setDoesNotCapture(F, 0);
     Changed |= setDoesNotCapture(F, 1);
     return Changed;
-  case LibFunc_ZdlPvRKSt9nothrow_t:                // delete(void*, nothrow)
-  case LibFunc_ZdlPvSt11align_val_tRKSt9nothrow_t: // delete(void*, align_val_t,
-                                                   // nothrow)
-  case LibFunc_ZdaPvRKSt9nothrow_t:                // delete[](void*, nothrow)
-  case LibFunc_ZdaPvSt11align_val_tRKSt9nothrow_t: // delete[](void*,
-                                                   // align_val_t, nothrow)
+  case LibFunc_ZdlPvRKSt9nothrow_t: // delete(void*, nothrow)
+  case LibFunc_ZdlPvSt11align_val_tRKSt9nothrow_t: // delete(void*, align_val_t, nothrow)
+  case LibFunc_ZdaPvRKSt9nothrow_t: // delete[](void*, nothrow)
+  case LibFunc_ZdaPvSt11align_val_tRKSt9nothrow_t: // delete[](void*, align_val_t, nothrow)
     Changed |= setDoesNotThrow(F);
     LLVM_FALLTHROUGH;
-  case LibFunc_ZdlPv:                 // delete(void*)
-  case LibFunc_ZdlPvj:                // delete(void*, unsigned int)
-  case LibFunc_ZdlPvm:                // delete(void*, unsigned long)
-  case LibFunc_ZdaPv:                 // delete[](void*)
-  case LibFunc_ZdaPvj:                // delete[](void*, unsigned int)
-  case LibFunc_ZdaPvm:                // delete[](void*, unsigned long)
-  case LibFunc_ZdlPvSt11align_val_t:  // delete(void*, align_val_t)
-  case LibFunc_ZdlPvjSt11align_val_t: // delete(void*, unsigned int,
-                                      // align_val_t)
-  case LibFunc_ZdlPvmSt11align_val_t: // delete(void*, unsigned long,
-                                      // align_val_t)
-  case LibFunc_ZdaPvSt11align_val_t:  // delete[](void*, align_val_t)
-  case LibFunc_ZdaPvjSt11align_val_t: // delete[](void*, unsigned int,
-                                      // align_val_t)
-  case LibFunc_ZdaPvmSt11align_val_t: // delete[](void*, unsigned long,
-                                      // align_val_t);
+  case LibFunc_ZdlPv: // delete(void*)
+  case LibFunc_ZdlPvj: // delete(void*, unsigned int)
+  case LibFunc_ZdlPvm: // delete(void*, unsigned long)
+  case LibFunc_ZdaPv: // delete[](void*)
+  case LibFunc_ZdaPvj: // delete[](void*, unsigned int)
+  case LibFunc_ZdaPvm: // delete[](void*, unsigned long)
+  case LibFunc_ZdlPvSt11align_val_t: // delete(void*, align_val_t)
+  case LibFunc_ZdlPvjSt11align_val_t: // delete(void*, unsigned int, align_val_t)
+  case LibFunc_ZdlPvmSt11align_val_t: // delete(void*, unsigned long, align_val_t)
+  case LibFunc_ZdaPvSt11align_val_t: // delete[](void*, align_val_t)
+  case LibFunc_ZdaPvjSt11align_val_t: // delete[](void*, unsigned int, align_val_t)
+  case LibFunc_ZdaPvmSt11align_val_t: // delete[](void*, unsigned long, align_val_t);
     Changed |= setOnlyAccessesInaccessibleMemOrArgMem(F);
     Changed |= setArgsNoUndef(F);
     Changed |= setWillReturn(F);
@@ -1038,14 +1032,10 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
   case LibFunc_ZnwmRKSt9nothrow_t: // new(unsigned long, nothrow)
   case LibFunc_ZnajRKSt9nothrow_t: // new[](unsigned int, nothrow)
   case LibFunc_ZnamRKSt9nothrow_t: // new[](unsigned long, nothrow)
-  case LibFunc_ZnwjSt11align_val_tRKSt9nothrow_t: // new(unsigned int,
-                                                  // align_val_t, nothrow)
-  case LibFunc_ZnwmSt11align_val_tRKSt9nothrow_t: // new(unsigned long,
-                                                  // align_val_t, nothrow)
-  case LibFunc_ZnajSt11align_val_tRKSt9nothrow_t: // new[](unsigned int,
-                                                  // align_val_t, nothrow)
-  case LibFunc_ZnamSt11align_val_tRKSt9nothrow_t: // new[](unsigned long,
-                                                  // align_val_t, nothrow)
+  case LibFunc_ZnwjSt11align_val_tRKSt9nothrow_t: // new(unsigned int, align_val_t, nothrow)
+  case LibFunc_ZnwmSt11align_val_tRKSt9nothrow_t: // new(unsigned long, align_val_t, nothrow)
+  case LibFunc_ZnajSt11align_val_tRKSt9nothrow_t: // new[](unsigned int, align_val_t, nothrow)
+  case LibFunc_ZnamSt11align_val_tRKSt9nothrow_t: // new[](unsigned long, align_val_t, nothrow)
     // Nothrow operator new may return null pointer
     Changed |= setDoesNotThrow(F);
     Changed |= setOnlyAccessesInaccessibleMemory(F);
@@ -1053,17 +1043,17 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
     Changed |= setRetDoesNotAlias(F);
     Changed |= setWillReturn(F);
     return Changed;
-  case LibFunc_Znwj:                    // new(unsigned int)
-  case LibFunc_Znwm:                    // new(unsigned long)
-  case LibFunc_Znaj:                    // new[](unsigned int)
-  case LibFunc_Znam:                    // new[](unsigned long)
-  case LibFunc_ZnwjSt11align_val_t:     // new(unsigned int, align_val_t)
-  case LibFunc_ZnwmSt11align_val_t:     // new(unsigned long, align_val_t)
-  case LibFunc_ZnajSt11align_val_t:     // new[](unsigned int, align_val_t)
-  case LibFunc_ZnamSt11align_val_t:     // new[](unsigned long, align_val_t)
-  case LibFunc_msvc_new_int:            // new(unsigned int)
-  case LibFunc_msvc_new_longlong:       // new(unsigned long long)
-  case LibFunc_msvc_new_array_int:      // new[](unsigned int)
+  case LibFunc_Znwj: // new(unsigned int)
+  case LibFunc_Znwm: // new(unsigned long)
+  case LibFunc_Znaj: // new[](unsigned int)
+  case LibFunc_Znam: // new[](unsigned long)
+  case LibFunc_ZnwjSt11align_val_t: // new(unsigned int, align_val_t)
+  case LibFunc_ZnwmSt11align_val_t: // new(unsigned long, align_val_t)
+  case LibFunc_ZnajSt11align_val_t: // new[](unsigned int, align_val_t)
+  case LibFunc_ZnamSt11align_val_t: // new[](unsigned long, align_val_t)
+  case LibFunc_msvc_new_int: // new(unsigned int)
+  case LibFunc_msvc_new_longlong: // new(unsigned long long)
+  case LibFunc_msvc_new_array_int: // new[](unsigned int)
   case LibFunc_msvc_new_array_longlong: // new[](unsigned long long)
     Changed |= setOnlyAccessesInaccessibleMemory(F);
     // Operator new always returns a nonnull noalias pointer
@@ -1234,8 +1224,8 @@ bool llvm::inferLibFuncAttributes(Function &F, const TargetLibraryInfo &TLI) {
   }
 }
 
-bool llvm::hasFloatFn(const TargetLibraryInfo *TLI, Type *Ty, LibFunc DoubleFn,
-                      LibFunc FloatFn, LibFunc LongDoubleFn) {
+bool llvm::hasFloatFn(const TargetLibraryInfo *TLI, Type *Ty,
+                      LibFunc DoubleFn, LibFunc FloatFn, LibFunc LongDoubleFn) {
   switch (Ty->getTypeID()) {
   case Type::HalfTyID:
     return false;
@@ -1276,7 +1266,8 @@ Value *llvm::castToCStr(Value *V, IRBuilderBase &B) {
 static Value *emitLibCall(LibFunc TheLibFunc, Type *ReturnType,
                           ArrayRef<Type *> ParamTypes,
                           ArrayRef<Value *> Operands, IRBuilderBase &B,
-                          const TargetLibraryInfo *TLI, bool IsVaArgs = false) {
+                          const TargetLibraryInfo *TLI,
+                          bool IsVaArgs = false) {
   if (!TLI->has(TheLibFunc))
     return nullptr;
 
@@ -1485,7 +1476,7 @@ Value *llvm::emitVSPrintf(Value *Dest, Value *Fmt, Value *VAList,
 static void appendTypeSuffix(Value *Op, StringRef &Name,
                              SmallString<20> &NameBuffer) {
   if (!Op->getType()->isDoubleTy()) {
-    NameBuffer += Name;
+      NameBuffer += Name;
 
     if (Op->getType()->isFloatTy())
       NameBuffer += 'f';
@@ -1509,8 +1500,9 @@ static Value *emitUnaryFloatFnCallHelper(Value *Op, StringRef Name,
   // The incoming attribute set may have come from a speculatable intrinsic, but
   // is being replaced with a library call which is not allowed to be
   // speculatable.
-  CI->setAttributes(Attrs.removeAttribute(
-      B.getContext(), AttributeList::FunctionIndex, Attribute::Speculatable));
+  CI->setAttributes(Attrs.removeAttribute(B.getContext(),
+                                          AttributeList::FunctionIndex,
+                                          Attribute::Speculatable));
   if (const Function *F =
           dyn_cast<Function>(Callee.getCallee()->stripPointerCasts()))
     CI->setCallingConv(F->getCallingConv());
@@ -1531,30 +1523,31 @@ Value *llvm::emitUnaryFloatFnCall(Value *Op, const TargetLibraryInfo *TLI,
                                   LibFunc LongDoubleFn, IRBuilderBase &B,
                                   const AttributeList &Attrs) {
   // Get the name of the function according to TLI.
-  StringRef Name =
-      getFloatFnName(TLI, Op->getType(), DoubleFn, FloatFn, LongDoubleFn);
+  StringRef Name = getFloatFnName(TLI, Op->getType(),
+                                  DoubleFn, FloatFn, LongDoubleFn);
 
   return emitUnaryFloatFnCallHelper(Op, Name, B, Attrs);
 }
 
-static Value *
-emitBinaryFloatFnCallHelper(Value *Op1, Value *Op2, StringRef Name,
-                            IRBuilderBase &B, const AttributeList &Attrs,
-                            const TargetLibraryInfo *TLI = nullptr) {
+static Value *emitBinaryFloatFnCallHelper(Value *Op1, Value *Op2,
+                                          StringRef Name, IRBuilderBase &B,
+                                          const AttributeList &Attrs,
+                                          const TargetLibraryInfo *TLI = nullptr) {
   assert((Name != "") && "Must specify Name to emitBinaryFloatFnCall");
 
   Module *M = B.GetInsertBlock()->getModule();
-  FunctionCallee Callee = M->getOrInsertFunction(
-      Name, Op1->getType(), Op1->getType(), Op2->getType());
+  FunctionCallee Callee = M->getOrInsertFunction(Name, Op1->getType(),
+                                                 Op1->getType(), Op2->getType());
   if (TLI != nullptr)
     inferLibFuncAttributes(M, Name, *TLI);
-  CallInst *CI = B.CreateCall(Callee, {Op1, Op2}, Name);
+  CallInst *CI = B.CreateCall(Callee, { Op1, Op2 }, Name);
 
   // The incoming attribute set may have come from a speculatable intrinsic, but
   // is being replaced with a library call which is not allowed to be
   // speculatable.
-  CI->setAttributes(Attrs.removeAttribute(
-      B.getContext(), AttributeList::FunctionIndex, Attribute::Speculatable));
+  CI->setAttributes(Attrs.removeAttribute(B.getContext(),
+                                          AttributeList::FunctionIndex,
+                                          Attribute::Speculatable));
   if (const Function *F =
           dyn_cast<Function>(Callee.getCallee()->stripPointerCasts()))
     CI->setCallingConv(F->getCallingConv());
@@ -1579,8 +1572,8 @@ Value *llvm::emitBinaryFloatFnCall(Value *Op1, Value *Op2,
                                    LibFunc LongDoubleFn, IRBuilderBase &B,
                                    const AttributeList &Attrs) {
   // Get the name of the function according to TLI.
-  StringRef Name =
-      getFloatFnName(TLI, Op1->getType(), DoubleFn, FloatFn, LongDoubleFn);
+  StringRef Name = getFloatFnName(TLI, Op1->getType(),
+                                  DoubleFn, FloatFn, LongDoubleFn);
 
   return emitBinaryFloatFnCallHelper(Op1, Op2, Name, B, Attrs, TLI);
 }
@@ -1596,8 +1589,10 @@ Value *llvm::emitPutChar(Value *Char, IRBuilderBase &B,
       M->getOrInsertFunction(PutCharName, B.getInt32Ty(), B.getInt32Ty());
   inferLibFuncAttributes(M, PutCharName, *TLI);
   CallInst *CI = B.CreateCall(PutChar,
-                              B.CreateIntCast(Char, B.getInt32Ty(),
-                                              /*isSigned*/ true, "chari"),
+                              B.CreateIntCast(Char,
+                              B.getInt32Ty(),
+                              /*isSigned*/true,
+                              "chari"),
                               PutCharName);
 
   if (const Function *F =
@@ -1634,7 +1629,8 @@ Value *llvm::emitFPutC(Value *Char, Value *File, IRBuilderBase &B,
                                             B.getInt32Ty(), File->getType());
   if (File->getType()->isPointerTy())
     inferLibFuncAttributes(M, FPutcName, *TLI);
-  Char = B.CreateIntCast(Char, B.getInt32Ty(), /*isSigned*/ true, "chari");
+  Char = B.CreateIntCast(Char, B.getInt32Ty(), /*isSigned*/true,
+                         "chari");
   CallInst *CI = B.CreateCall(F, {Char, File}, FPutcName);
 
   if (const Function *Fn =

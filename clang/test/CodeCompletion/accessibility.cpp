@@ -1,21 +1,17 @@
 class X {
 public:
-  int pub;
-
+ int pub;
 protected:
-  int prot;
-
+ int prot;
 private:
-  int priv;
+ int priv;
 };
 
 class Unrelated {
 public:
   static int pub;
-
 protected:
   static int prot;
-
 private:
   static int priv;
 };
@@ -39,7 +35,7 @@ class Y : public X {
     // X-OBJ: priv (Inaccessible)
     // X-OBJ: prot (Inaccessible)
     // X-OBJ: pub : [#int#]pub
-
+    
     Y().pub + 10;
     // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:39:9 %s -o - \
     // RUN: | FileCheck -check-prefix=Y-OBJ %s
@@ -58,9 +54,10 @@ class Y : public X {
     //
     // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:47:8 %s -o - \
     // RUN: | FileCheck -check-prefix=THIS-BASE %s
+    
 
     this->Unrelated::pub = 10; // a check we don't crash in this cases.
-    Y().Unrelated::pub = 10;   // a check we don't crash in this cases.
+    Y().Unrelated::pub = 10; // a check we don't crash in this cases.
     Unrelated::pub = 10;
     // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:59:22 %s -o - \
     // RUN: | FileCheck -check-prefix=UNRELATED %s
@@ -76,26 +73,24 @@ class Y : public X {
 };
 
 class Outer {
-public:
+ public:
   static int pub;
-
-protected:
+ protected:
   static int prot;
-
-private:
+ private:
   static int priv;
 
   class Inner {
     int test() {
       Outer::pub = 10;
-      // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:85:14 %s -o - \
+    // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:85:14 %s -o - \
     // RUN: | FileCheck -check-prefix=OUTER %s
-      // OUTER: priv : [#int#]priv
-      // OUTER: prot : [#int#]prot
-      // OUTER: pub : [#int#]pub
+    // OUTER: priv : [#int#]priv
+    // OUTER: prot : [#int#]prot
+    // OUTER: pub : [#int#]pub
 
-      // Also check the unqualified case.
-      // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:85:1 %s -o - \
+    // Also check the unqualified case.
+    // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:85:1 %s -o - \
     // RUN: | FileCheck -check-prefix=OUTER %s
     }
   };

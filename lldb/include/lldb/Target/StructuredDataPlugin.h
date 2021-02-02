@@ -165,6 +165,6 @@ private:
   StructuredDataPlugin(const StructuredDataPlugin &) = delete;
   const StructuredDataPlugin &operator=(const StructuredDataPlugin &) = delete;
 };
-} // namespace lldb_private
+}
 
 #endif

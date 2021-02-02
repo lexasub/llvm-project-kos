@@ -36,8 +36,7 @@ using namespace llvm;
 
 STATISTIC(NumNonAddrTakenGlobalVars,
           "Number of global vars without address taken");
-STATISTIC(NumNonAddrTakenFunctions,
-          "Number of functions without address taken");
+STATISTIC(NumNonAddrTakenFunctions,"Number of functions without address taken");
 STATISTIC(NumNoMemFunctions, "Number of functions that do not access memory");
 STATISTIC(NumReadMemFunctions, "Number of functions that only read memory");
 STATISTIC(NumIndirectGlobalVars, "Number of indirect global objects");
@@ -104,11 +103,14 @@ class GlobalsAAResult::FunctionInfo {
 
 public:
   FunctionInfo() : Info() {}
-  ~FunctionInfo() { delete Info.getPointer(); }
+  ~FunctionInfo() {
+    delete Info.getPointer();
+  }
   // Spell out the copy ond move constructors and assignment operators to get
   // deep copy semantics and correct move semantics in the face of the
   // pointer-int pair.
-  FunctionInfo(const FunctionInfo &Arg) : Info(nullptr, Arg.Info.getInt()) {
+  FunctionInfo(const FunctionInfo &Arg)
+      : Info(nullptr, Arg.Info.getInt()) {
     if (const auto *ArgPtr = Arg.Info.getPointer())
       Info.setPointer(new AlignedMap(*ArgPtr));
   }
@@ -627,11 +629,12 @@ void GlobalsAAResult::AnalyzeCallGraph(CallGraph &CG, Module &M) {
   }
 }
 
-// GV is a non-escaping global. V is a pointer address that has been loaded
-// from. If we can prove that V must escape, we can conclude that a load from V
-// cannot alias GV.
+// GV is a non-escaping global. V is a pointer address that has been loaded from.
+// If we can prove that V must escape, we can conclude that a load from V cannot
+// alias GV.
 static bool isNonEscapingGlobalNoAliasWithLoad(const GlobalValue *GV,
-                                               const Value *V, int &Depth,
+                                               const Value *V,
+                                               int &Depth,
                                                const DataLayout &DL) {
   SmallPtrSet<const Value *, 8> Visited;
   SmallVector<const Value *, 8> Inputs;
@@ -640,8 +643,8 @@ static bool isNonEscapingGlobalNoAliasWithLoad(const GlobalValue *GV,
   do {
     const Value *Input = Inputs.pop_back_val();
 
-    if (isa<GlobalValue>(Input) || isa<Argument>(Input) ||
-        isa<CallInst>(Input) || isa<InvokeInst>(Input))
+    if (isa<GlobalValue>(Input) || isa<Argument>(Input) || isa<CallInst>(Input) ||
+        isa<InvokeInst>(Input))
       // Arguments to functions or returns from functions are inherently
       // escaping, so we can immediately classify those as not aliasing any
       // non-addr-taken globals.
@@ -737,9 +740,9 @@ bool GlobalsAAResult::isNonEscapingGlobalNoAlias(const GlobalValue *GV,
       // FIXME: The condition can be refined, but be conservative for now.
       auto *GVar = dyn_cast<GlobalVariable>(GV);
       auto *InputGVar = dyn_cast<GlobalVariable>(InputGV);
-      if (GVar && InputGVar && !GVar->isDeclaration() &&
-          !InputGVar->isDeclaration() && !GVar->isInterposable() &&
-          !InputGVar->isInterposable()) {
+      if (GVar && InputGVar &&
+          !GVar->isDeclaration() && !InputGVar->isDeclaration() &&
+          !GVar->isInterposable() && !InputGVar->isInterposable()) {
         Type *GVType = GVar->getInitializer()->getType();
         Type *InputGVType = InputGVar->getInitializer()->getType();
         if (GVType->isSized() && InputGVType->isSized() &&
@@ -913,7 +916,7 @@ ModRefInfo GlobalsAAResult::getModRefInfoForArgument(const CallBase *Call,
   // Iterate through all the arguments to the called function. If any argument
   // is based on GV, return the conservative result.
   for (auto &A : Call->args()) {
-    SmallVector<const Value *, 4> Objects;
+    SmallVector<const Value*, 4> Objects;
     getUnderlyingObjects(A, Objects);
 
     // All objects must be identified.

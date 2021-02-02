@@ -31,13 +31,13 @@ class LiveIntervals;
 /// Register allocation hints.
 namespace ARMRI {
 
-enum {
-  // Used for LDRD register pairs
-  RegPairOdd = 1,
-  RegPairEven = 2,
-  // Used to hint for lr in t2DoLoopStart
-  RegLR = 3
-};
+  enum {
+    // Used for LDRD register pairs
+    RegPairOdd  = 1,
+    RegPairEven = 2,
+    // Used to hint for lr in t2DoLoopStart
+    RegLR = 3
+  };
 
 } // end namespace ARMRI
 
@@ -47,27 +47,15 @@ static inline bool isARMArea1Register(unsigned Reg, bool isIOS) {
   using namespace ARM;
 
   switch (Reg) {
-  case R0:
-  case R1:
-  case R2:
-  case R3:
-  case R4:
-  case R5:
-  case R6:
-  case R7:
-  case LR:
-  case SP:
-  case PC:
-    return true;
-  case R8:
-  case R9:
-  case R10:
-  case R11:
-  case R12:
-    // For iOS we want r7 and lr to be next to each other.
-    return !isIOS;
-  default:
-    return false;
+    case R0:  case R1:  case R2:  case R3:
+    case R4:  case R5:  case R6:  case R7:
+    case LR:  case SP:  case PC:
+      return true;
+    case R8:  case R9:  case R10: case R11: case R12:
+      // For iOS we want r7 and lr to be next to each other.
+      return !isIOS;
+    default:
+      return false;
   }
 }
 
@@ -75,15 +63,11 @@ static inline bool isARMArea2Register(unsigned Reg, bool isIOS) {
   using namespace ARM;
 
   switch (Reg) {
-  case R8:
-  case R9:
-  case R10:
-  case R11:
-  case R12:
-    // iOS has this second area.
-    return isIOS;
-  default:
-    return false;
+    case R8: case R9: case R10: case R11: case R12:
+      // iOS has this second area.
+      return isIOS;
+    default:
+      return false;
   }
 }
 
@@ -91,41 +75,17 @@ static inline bool isARMArea3Register(unsigned Reg, bool isIOS) {
   using namespace ARM;
 
   switch (Reg) {
-  case D15:
-  case D14:
-  case D13:
-  case D12:
-  case D11:
-  case D10:
-  case D9:
-  case D8:
-  case D7:
-  case D6:
-  case D5:
-  case D4:
-  case D3:
-  case D2:
-  case D1:
-  case D0:
-  case D31:
-  case D30:
-  case D29:
-  case D28:
-  case D27:
-  case D26:
-  case D25:
-  case D24:
-  case D23:
-  case D22:
-  case D21:
-  case D20:
-  case D19:
-  case D18:
-  case D17:
-  case D16:
-    return true;
-  default:
-    return false;
+    case D15: case D14: case D13: case D12:
+    case D11: case D10: case D9:  case D8:
+    case D7:  case D6:  case D5:  case D4:
+    case D3:  case D2:  case D1:  case D0:
+    case D31: case D30: case D29: case D28:
+    case D27: case D26: case D25: case D24:
+    case D23: case D22: case D21: case D20:
+    case D19: case D18: case D17: case D16:
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -153,7 +113,8 @@ protected:
 public:
   /// Code Generation virtual methods...
   const MCPhysReg *getCalleeSavedRegs(const MachineFunction *MF) const override;
-  const MCPhysReg *getCalleeSavedRegsViaCopy(const MachineFunction *MF) const;
+  const MCPhysReg *
+  getCalleeSavedRegsViaCopy(const MachineFunction *MF) const;
   const uint32_t *getCallPreservedMask(const MachineFunction &MF,
                                        CallingConv::ID) const override;
   const uint32_t *getNoPreservedMask() const override;
@@ -176,7 +137,7 @@ public:
 
   BitVector getReservedRegs(const MachineFunction &MF) const override;
   bool isAsmClobberable(const MachineFunction &MF,
-                        MCRegister PhysReg) const override;
+                       MCRegister PhysReg) const override;
   bool isInlineAsmReadOnlyReg(const MachineFunction &MF,
                               unsigned PhysReg) const override;
 
@@ -236,14 +197,17 @@ public:
 
   bool requiresVirtualBaseRegisters(const MachineFunction &MF) const override;
 
-  void eliminateFrameIndex(MachineBasicBlock::iterator II, int SPAdj,
-                           unsigned FIOperandNum,
+  void eliminateFrameIndex(MachineBasicBlock::iterator II,
+                           int SPAdj, unsigned FIOperandNum,
                            RegScavenger *RS = nullptr) const override;
 
   /// SrcRC and DstRC will be morphed into NewRC if this returns true
-  bool shouldCoalesce(MachineInstr *MI, const TargetRegisterClass *SrcRC,
-                      unsigned SubReg, const TargetRegisterClass *DstRC,
-                      unsigned DstSubReg, const TargetRegisterClass *NewRC,
+  bool shouldCoalesce(MachineInstr *MI,
+                      const TargetRegisterClass *SrcRC,
+                      unsigned SubReg,
+                      const TargetRegisterClass *DstRC,
+                      unsigned DstSubReg,
+                      const TargetRegisterClass *NewRC,
                       LiveIntervals &LIS) const override;
 };
 

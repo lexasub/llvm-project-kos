@@ -30,31 +30,31 @@
 #include "test_workarounds.h"
 
 struct ThrowsMove {
-  ThrowsMove(ThrowsMove&&) noexcept(false) {}
+  ThrowsMove(ThrowsMove &&) noexcept(false) {}
 };
 
 struct NoCopy {
-  NoCopy(const NoCopy&) = delete;
+  NoCopy(const NoCopy &) = delete;
 };
 
 struct MoveOnly {
   int value;
   MoveOnly(int v) : value(v) {}
-  MoveOnly(const MoveOnly&) = delete;
-  MoveOnly(MoveOnly&&) = default;
+  MoveOnly(const MoveOnly &) = delete;
+  MoveOnly(MoveOnly &&) = default;
 };
 
 struct MoveOnlyNT {
   int value;
   MoveOnlyNT(int v) : value(v) {}
-  MoveOnlyNT(const MoveOnlyNT&) = delete;
-  MoveOnlyNT(MoveOnlyNT&& other) : value(other.value) { other.value = -1; }
+  MoveOnlyNT(const MoveOnlyNT &) = delete;
+  MoveOnlyNT(MoveOnlyNT &&other) : value(other.value) { other.value = -1; }
 };
 
 struct NTMove {
   constexpr NTMove(int v) : value(v) {}
-  NTMove(const NTMove&) = delete;
-  NTMove(NTMove&& that) : value(that.value) { that.value = -1; }
+  NTMove(const NTMove &) = delete;
+  NTMove(NTMove &&that) : value(that.value) { that.value = -1; }
   int value;
 };
 
@@ -63,8 +63,8 @@ static_assert(std::is_move_constructible<NTMove>::value, "");
 
 struct TMove {
   constexpr TMove(int v) : value(v) {}
-  TMove(const TMove&) = delete;
-  TMove(TMove&&) = default;
+  TMove(const TMove &) = delete;
+  TMove(TMove &&) = default;
   int value;
 };
 
@@ -83,21 +83,20 @@ static_assert(std::is_trivially_move_constructible<TMoveNTCopy>::value, "");
 struct MakeEmptyT {
   static int alive;
   MakeEmptyT() { ++alive; }
-  MakeEmptyT(const MakeEmptyT&) {
+  MakeEmptyT(const MakeEmptyT &) {
     ++alive;
     // Don't throw from the copy constructor since variant's assignment
     // operator performs a copy before committing to the assignment.
   }
-  MakeEmptyT(MakeEmptyT&&) { throw 42; }
-  MakeEmptyT& operator=(const MakeEmptyT&) { throw 42; }
-  MakeEmptyT& operator=(MakeEmptyT&&) { throw 42; }
+  MakeEmptyT(MakeEmptyT &&) { throw 42; }
+  MakeEmptyT &operator=(const MakeEmptyT &) { throw 42; }
+  MakeEmptyT &operator=(MakeEmptyT &&) { throw 42; }
   ~MakeEmptyT() { --alive; }
 };
 
 int MakeEmptyT::alive = 0;
 
-template <class Variant>
-void makeEmpty(Variant& v) {
+template <class Variant> void makeEmpty(Variant &v) {
   Variant v2(std::in_place_type<MakeEmptyT>);
   try {
     v = std::move(v2);
@@ -168,10 +167,7 @@ void test_move_ctor_sfinae() {
 }
 
 template <typename T>
-struct Result {
-  size_t index;
-  T value;
-};
+struct Result { size_t index; T value; };
 
 void test_move_ctor_basic() {
   {
@@ -305,12 +301,12 @@ void test_move_ctor_valueless_by_exception() {
 }
 
 template <size_t Idx>
-constexpr bool
-test_constexpr_ctor_imp(std::variant<long, void*, const int> const& v) {
+constexpr bool test_constexpr_ctor_imp(std::variant<long, void*, const int> const& v) {
   auto copy = v;
   auto v2 = std::move(copy);
-  return v2.index() == v.index() && v2.index() == Idx &&
-         std::get<Idx>(v2) == std::get<Idx>(v);
+  return v2.index() == v.index() &&
+         v2.index() == Idx &&
+        std::get<Idx>(v2) == std::get<Idx>(v);
 }
 
 void test_constexpr_move_ctor() {

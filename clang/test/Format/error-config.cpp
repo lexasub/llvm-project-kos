@@ -8,4 +8,4 @@
 // CHECK-FAIL-NEXT: {UnknownKey: true}
 // CHECK-FAIL-NEXT: ^~~~~~~~~~
 
-int i;
+int i ;

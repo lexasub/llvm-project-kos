@@ -77,8 +77,8 @@ private:
 } // end anonymous namespace
 
 char SjLjEHPrepare::ID = 0;
-INITIALIZE_PASS(SjLjEHPrepare, DEBUG_TYPE, "Prepare SjLj exceptions", false,
-                false)
+INITIALIZE_PASS(SjLjEHPrepare, DEBUG_TYPE, "Prepare SjLj exceptions",
+                false, false)
 
 // Public Interface To the SjLjEHPrepare pass.
 FunctionPass *llvm::createSjLjEHPreparePass(const TargetMachine *TM) {
@@ -116,7 +116,7 @@ void SjLjEHPrepare::insertCallSiteStore(Instruction *I, int Number) {
   Type *Int32Ty = Type::getInt32Ty(I->getContext());
   Value *Zero = ConstantInt::get(Int32Ty, 0);
   Value *One = ConstantInt::get(Int32Ty, 1);
-  Value *Idxs[2] = {Zero, One};
+  Value *Idxs[2] = { Zero, One };
   Value *CallSite =
       Builder.CreateGEP(FunctionContextTy, FuncCtx, Idxs, "call_site");
 
@@ -132,7 +132,7 @@ static void MarkBlocksLiveIn(BasicBlock *BB,
   if (!LiveBBs.insert(BB).second)
     return; // already been here.
 
-  df_iterator_default_set<BasicBlock *> Visited;
+  df_iterator_default_set<BasicBlock*> Visited;
 
   for (BasicBlock *B : inverse_depth_first_ext(BB, Visited))
     LiveBBs.insert(B);
@@ -480,9 +480,9 @@ bool SjLjEHPrepare::setupEntryBlockAndCallSites(Function &F) {
 
 bool SjLjEHPrepare::runOnFunction(Function &F) {
   Module &M = *F.getParent();
-  RegisterFn = M.getOrInsertFunction("_Unwind_SjLj_Register",
-                                     Type::getVoidTy(M.getContext()),
-                                     PointerType::getUnqual(FunctionContextTy));
+  RegisterFn = M.getOrInsertFunction(
+      "_Unwind_SjLj_Register", Type::getVoidTy(M.getContext()),
+      PointerType::getUnqual(FunctionContextTy));
   UnregisterFn = M.getOrInsertFunction(
       "_Unwind_SjLj_Unregister", Type::getVoidTy(M.getContext()),
       PointerType::getUnqual(FunctionContextTy));
@@ -493,7 +493,7 @@ bool SjLjEHPrepare::runOnFunction(Function &F) {
   StackAddrFn = Intrinsic::getDeclaration(&M, Intrinsic::stacksave);
   StackRestoreFn = Intrinsic::getDeclaration(&M, Intrinsic::stackrestore);
   BuiltinSetupDispatchFn =
-      Intrinsic::getDeclaration(&M, Intrinsic::eh_sjlj_setup_dispatch);
+    Intrinsic::getDeclaration(&M, Intrinsic::eh_sjlj_setup_dispatch);
   LSDAAddrFn = Intrinsic::getDeclaration(&M, Intrinsic::eh_sjlj_lsda);
   CallSiteFn = Intrinsic::getDeclaration(&M, Intrinsic::eh_sjlj_callsite);
   FuncCtxFn = Intrinsic::getDeclaration(&M, Intrinsic::eh_sjlj_functioncontext);

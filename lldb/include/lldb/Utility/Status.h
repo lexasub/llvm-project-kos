@@ -170,7 +170,7 @@ public:
   int SetErrorStringWithVarArg(const char *format, va_list args);
 
   template <typename... Args>
-  void SetErrorStringWithFormatv(const char *format, Args &&...args) {
+  void SetErrorStringWithFormatv(const char *format, Args &&... args) {
     SetErrorString(llvm::formatv(format, std::forward<Args>(args)...).str());
   }
 
@@ -208,7 +208,7 @@ template <> struct format_provider<lldb_private::Status> {
   static void format(const lldb_private::Status &error, llvm::raw_ostream &OS,
                      llvm::StringRef Options);
 };
-} // namespace llvm
+}
 
 #define LLDB_ERRORF(status, fmt, ...)                                          \
   do {                                                                         \

@@ -32,7 +32,7 @@ private:
   public:
     Entry();
 
-    template <typename ImplSP> bool IsCached();
+    template<typename ImplSP> bool IsCached();
     bool IsFormatCached();
     bool IsSummaryCached();
     bool IsSyntheticCached();

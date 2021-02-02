@@ -11,7 +11,7 @@ void compare_not_found_test() {
 
 struct deduction_compare_not_found {
   // expected-error@+1 {{cannot default 'operator<=>' because type 'std::strong_ordering' was not found; include <compare>}}
-  friend auto operator<=>(const deduction_compare_not_found &, const deduction_compare_not_found &) = default;
+  friend auto operator<=>(const deduction_compare_not_found&, const deduction_compare_not_found&) = default;
 };
 
 struct comparable {
@@ -19,7 +19,7 @@ struct comparable {
 };
 struct default_compare_not_found {
   // expected-error@+1 {{cannot default 'operator<=>' because type 'std::strong_ordering' was not found; include <compare>}}
-  friend int operator<=>(const default_compare_not_found &, const default_compare_not_found &) = default;
+  friend int operator<=>(const default_compare_not_found&, const default_compare_not_found&) = default;
 };
 bool b = default_compare_not_found() < default_compare_not_found(); // expected-note {{first required here}}
 

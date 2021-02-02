@@ -1,13 +1,13 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 // UNSUPPORTED: darwin
-#include <errno.h>
 #include <pthread.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#include <signal.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <unistd.h>
+#include <errno.h>
 
 volatile int X;
 int stop;
@@ -18,13 +18,13 @@ static void handler(int sig) {
     printf("bad");
 }
 
-static void *busy(void *p) {
+static void* busy(void *p) {
   while (__atomic_load_n(&stop, __ATOMIC_RELAXED) == 0) {
   }
   return 0;
 }
 
-static void *reset(void *p) {
+static void* reset(void *p) {
   struct sigaction act = {};
   for (int i = 0; i < 1000000; i++) {
     act.sa_handler = &handler;

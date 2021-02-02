@@ -15,15 +15,17 @@
 #include <chrono>
 
 template <int N, int D = 1>
-class Ratio {
+class Ratio
+{
 public:
-  static const int num = N;
-  static const int den = D;
+    static const int num = N;
+    static const int den = D;
 };
 
-int main(int, char**) {
-  typedef std::chrono::duration<int, Ratio<1> > D;
-  D d;
+int main(int, char**)
+{
+    typedef std::chrono::duration<int, Ratio<1> > D;
+    D d;
 
   return 0;
 }

@@ -56,15 +56,15 @@ extern llvm::cl::opt<bool> EnableLTOInternalization;
 
 namespace llvm {
 template <typename T> class ArrayRef;
-class LLVMContext;
-class DiagnosticInfo;
-class Linker;
-class Mangler;
-class MemoryBuffer;
-class TargetLibraryInfo;
-class TargetMachine;
-class raw_ostream;
-class raw_pwrite_stream;
+  class LLVMContext;
+  class DiagnosticInfo;
+  class Linker;
+  class Mangler;
+  class MemoryBuffer;
+  class TargetLibraryInfo;
+  class TargetMachine;
+  class raw_ostream;
+  class raw_pwrite_stream;
 
 //===----------------------------------------------------------------------===//
 /// C++ class which implements the opaque lto_code_gen_t type.
@@ -240,5 +240,5 @@ private:
 
   lto::Config Config;
 };
-} // namespace llvm
+}
 #endif

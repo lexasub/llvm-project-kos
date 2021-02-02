@@ -40,9 +40,7 @@
 // CHECK4: system-header.h:1:12: warning: single-argument constructors
 // CHECK4-QUIET: system-header.h:1:12: warning: single-argument constructors
 
-class A {
-  A(int);
-};
+class A { A(int); };
 // CHECK: :[[@LINE-1]]:11: warning: single-argument constructors
 // CHECK-QUIET: :[[@LINE-2]]:11: warning: single-argument constructors
 // CHECK2: :[[@LINE-3]]:11: warning: single-argument constructors

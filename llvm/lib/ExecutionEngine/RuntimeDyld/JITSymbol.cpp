@@ -56,8 +56,7 @@ JITSymbolFlags llvm::JITSymbolFlags::fromSummary(GlobalValueSummary *S) {
     Flags |= JITSymbolFlags::Weak;
   if (GlobalValue::isCommonLinkage(L))
     Flags |= JITSymbolFlags::Common;
-  if (GlobalValue::isExternalLinkage(L) ||
-      GlobalValue::isExternalWeakLinkage(L))
+  if (GlobalValue::isExternalLinkage(L) || GlobalValue::isExternalWeakLinkage(L))
     Flags |= JITSymbolFlags::Exported;
 
   if (isa<FunctionSummary>(S))

@@ -36,129 +36,127 @@
 #endif
 
 template <class T>
-struct HasNonTrivialABI
-    : std::integral_constant<
-          bool, !std::is_trivially_destructible<T>::value ||
-                    (std::is_copy_constructible<T>::value &&
-                     !std::is_trivially_copy_constructible<T>::value)
+struct HasNonTrivialABI : std::integral_constant<bool,
+    !std::is_trivially_destructible<T>::value
+    || (std::is_copy_constructible<T>::value && !std::is_trivially_copy_constructible<T>::value)
 #if TEST_STD_VER >= 11
-                    || (std::is_move_constructible<T>::value &&
-                        !std::is_trivially_move_constructible<T>::value)
+   || (std::is_move_constructible<T>::value && !std::is_trivially_move_constructible<T>::value)
 #endif
-          > {
-};
+> {};
 
 #if TEST_STD_VER >= 11
 struct NonTrivialDtor {
-  NonTrivialDtor(NonTrivialDtor const&) = default;
-  ~NonTrivialDtor();
+    NonTrivialDtor(NonTrivialDtor const&) = default;
+    ~NonTrivialDtor();
 };
 NonTrivialDtor::~NonTrivialDtor() {}
 static_assert(HasNonTrivialABI<NonTrivialDtor>::value, "");
 
 struct NonTrivialCopy {
-  NonTrivialCopy(NonTrivialCopy const&);
+    NonTrivialCopy(NonTrivialCopy const&);
 };
 NonTrivialCopy::NonTrivialCopy(NonTrivialCopy const&) {}
 static_assert(HasNonTrivialABI<NonTrivialCopy>::value, "");
 
 struct NonTrivialMove {
-  NonTrivialMove(NonTrivialMove const&) = default;
-  NonTrivialMove(NonTrivialMove&&);
+    NonTrivialMove(NonTrivialMove const&) = default;
+    NonTrivialMove(NonTrivialMove&&);
 };
 NonTrivialMove::NonTrivialMove(NonTrivialMove&&) {}
 static_assert(HasNonTrivialABI<NonTrivialMove>::value, "");
 
 struct DeletedCopy {
-  DeletedCopy(DeletedCopy const&) = delete;
-  DeletedCopy(DeletedCopy&&) = default;
+    DeletedCopy(DeletedCopy const&) = delete;
+    DeletedCopy(DeletedCopy&&) = default;
 };
 static_assert(!HasNonTrivialABI<DeletedCopy>::value, "");
 
 struct TrivialMove {
-  TrivialMove(TrivialMove&&) = default;
+  TrivialMove(TrivialMove &&) = default;
 };
 static_assert(!HasNonTrivialABI<TrivialMove>::value, "");
 
 struct Trivial {
-  Trivial(Trivial const&) = default;
+    Trivial(Trivial const&) = default;
 };
 static_assert(!HasNonTrivialABI<Trivial>::value, "");
 #endif
 
-void test_trivial() {
-  {
-    typedef std::pair<int, short> P;
-    static_assert(std::is_copy_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
+
+void test_trivial()
+{
+    {
+        typedef std::pair<int, short> P;
+        static_assert(std::is_copy_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
 #if TEST_STD_VER >= 11
-  {
-    typedef std::pair<int, short> P;
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<NonTrivialDtor, int>;
-    static_assert(!std::is_trivially_destructible<P>::value, "");
-    static_assert(std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<NonTrivialCopy, int>;
-    static_assert(std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<NonTrivialMove, int>;
-    static_assert(std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<DeletedCopy, int>;
-    static_assert(!std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<Trivial, int>;
-    static_assert(std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
-  {
-    using P = std::pair<TrivialMove, int>;
-    static_assert(!std::is_copy_constructible<P>::value, "");
-    static_assert(!std::is_trivially_copy_constructible<P>::value, "");
-    static_assert(std::is_move_constructible<P>::value, "");
-    static_assert(!std::is_trivially_move_constructible<P>::value, "");
-    static_assert(HasNonTrivialABI<P>::value, "");
-  }
+    {
+        typedef std::pair<int, short> P;
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<NonTrivialDtor, int>;
+        static_assert(!std::is_trivially_destructible<P>::value, "");
+        static_assert(std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<NonTrivialCopy, int>;
+        static_assert(std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<NonTrivialMove, int>;
+        static_assert(std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<DeletedCopy, int>;
+        static_assert(!std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<Trivial, int>;
+        static_assert(std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
+    {
+        using P = std::pair<TrivialMove, int>;
+        static_assert(!std::is_copy_constructible<P>::value, "");
+        static_assert(!std::is_trivially_copy_constructible<P>::value, "");
+        static_assert(std::is_move_constructible<P>::value, "");
+        static_assert(!std::is_trivially_move_constructible<P>::value, "");
+        static_assert(HasNonTrivialABI<P>::value, "");
+    }
 #endif
 }
 
 void test_layout() {
-  typedef std::pair<std::pair<char, char>, char> PairT;
-  static_assert(sizeof(PairT) == 3, "");
-  static_assert(TEST_ALIGNOF(PairT) == TEST_ALIGNOF(char), "");
-  static_assert(offsetof(PairT, first) == 0, "");
+    typedef std::pair<std::pair<char, char>, char> PairT;
+    static_assert(sizeof(PairT) == 3, "");
+    static_assert(TEST_ALIGNOF(PairT) == TEST_ALIGNOF(char), "");
+    static_assert(offsetof(PairT, first) == 0, "");
 }
 
 int main(int, char**) {
-  test_trivial();
-  test_layout();
-  return 0;
+    test_trivial();
+    test_layout();
+    return 0;
 }

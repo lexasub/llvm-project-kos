@@ -30,8 +30,7 @@ void do_test() {
     C c = C::from_address(nullptr);
     static_assert(noexcept(C::from_address(nullptr)), "");
     // FIXME: Should the return type not be 'C'?
-    static_assert(std::is_same<decltype(C::from_address(nullptr)), C>::value,
-                  "");
+    static_assert(std::is_same<decltype(C::from_address(nullptr)), C>::value, "");
     assert(c.address() == nullptr);
   }
   {
@@ -41,9 +40,10 @@ void do_test() {
   }
 }
 
-int main(int, char**) {
-  do_test<coro::coroutine_handle<> >();
-  do_test<coro::coroutine_handle<int> >();
+int main(int, char**)
+{
+  do_test<coro::coroutine_handle<>>();
+  do_test<coro::coroutine_handle<int>>();
 
   return 0;
 }

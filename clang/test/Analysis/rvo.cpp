@@ -19,7 +19,7 @@ struct B {
 void foo() {
   B b1(nullptr);
   clang_analyzer_eval(b1.p == nullptr); // expected-warning{{TRUE}}
-  B b2(new int);                        // No leak yet!
+  B b2(new int); // No leak yet!
   clang_analyzer_eval(b2.p == nullptr); // expected-warning{{FALSE}}
   // expected-warning@-1{{Potential leak of memory pointed to by 'b2.p'}}
 }

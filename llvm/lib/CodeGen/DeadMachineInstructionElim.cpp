@@ -25,34 +25,34 @@ using namespace llvm;
 
 #define DEBUG_TYPE "dead-mi-elimination"
 
-STATISTIC(NumDeletes, "Number of dead instructions deleted");
+STATISTIC(NumDeletes,          "Number of dead instructions deleted");
 
 namespace {
-class DeadMachineInstructionElim : public MachineFunctionPass {
-  bool runOnMachineFunction(MachineFunction &MF) override;
+  class DeadMachineInstructionElim : public MachineFunctionPass {
+    bool runOnMachineFunction(MachineFunction &MF) override;
 
-  const TargetRegisterInfo *TRI;
-  const MachineRegisterInfo *MRI;
-  const TargetInstrInfo *TII;
-  BitVector LivePhysRegs;
+    const TargetRegisterInfo *TRI;
+    const MachineRegisterInfo *MRI;
+    const TargetInstrInfo *TII;
+    BitVector LivePhysRegs;
 
-public:
-  static char ID; // Pass identification, replacement for typeid
-  DeadMachineInstructionElim() : MachineFunctionPass(ID) {
-    initializeDeadMachineInstructionElimPass(*PassRegistry::getPassRegistry());
-  }
+  public:
+    static char ID; // Pass identification, replacement for typeid
+    DeadMachineInstructionElim() : MachineFunctionPass(ID) {
+     initializeDeadMachineInstructionElimPass(*PassRegistry::getPassRegistry());
+    }
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesCFG();
-    MachineFunctionPass::getAnalysisUsage(AU);
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.setPreservesCFG();
+      MachineFunctionPass::getAnalysisUsage(AU);
+    }
 
-private:
-  bool isDead(const MachineInstr *MI) const;
+  private:
+    bool isDead(const MachineInstr *MI) const;
 
-  bool eliminateDeadMI(MachineFunction &MF);
-};
-} // namespace
+    bool eliminateDeadMI(MachineFunction &MF);
+  };
+}
 char DeadMachineInstructionElim::ID = 0;
 char &llvm::DeadMachineInstructionElimID = DeadMachineInstructionElim::ID;
 
@@ -166,7 +166,7 @@ bool DeadMachineInstructionElim::eliminateDeadMI(MachineFunction &MF) {
             // Check the subreg set, not the alias set, because a def
             // of a super-register may still be partially live after
             // this def.
-            for (MCSubRegIterator SR(Reg, TRI, /*IncludeSelf=*/true);
+            for (MCSubRegIterator SR(Reg, TRI,/*IncludeSelf=*/true);
                  SR.isValid(); ++SR)
               LivePhysRegs.reset(*SR);
           }

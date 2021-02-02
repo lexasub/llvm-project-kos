@@ -118,11 +118,10 @@ bool test1(int i1, int i2, bool b1, bool b2) {
   return ret;
 }
 
-enum E { e1,
-         e2 };
+enum E {e1, e2};
 E getE();
 
-bool test2(E e) {
+bool test2 (E e) {
   bool ret;
   ret = e == e1;
   ret = e == getE();
@@ -232,7 +231,7 @@ bool test_bitwise_op(int x) {
 bool PR16673(int x) {
   bool ret;
   // Make sure we don't emit a fixit for the left paren, but not the right paren.
-#define X(x) x
+#define X(x) x 
   ret = X(!x == 1 && 1);
   // expected-warning@-1 {{logical not is only applied to the left hand side of this comparison}}
   // expected-note@-2 {{add parentheses after the '!' to evaluate the comparison first}}

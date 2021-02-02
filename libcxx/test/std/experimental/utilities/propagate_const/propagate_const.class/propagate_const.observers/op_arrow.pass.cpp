@@ -25,7 +25,7 @@ int main(int, char**) {
 
   constexpr P p(1);
 
-  static_assert(*(p.operator->()) == 1, "");
+  static_assert(*(p.operator->())==1,"");
 
   return 0;
 }

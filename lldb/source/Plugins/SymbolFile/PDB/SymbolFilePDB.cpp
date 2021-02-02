@@ -311,7 +311,7 @@ SymbolFilePDB::ParseCompileUnitFunctionForPDBFunc(const PDBSymbolFunc &pdb_func,
   }
 
   TypeSystemClang *clang_type_system =
-      llvm::dyn_cast_or_null<TypeSystemClang>(&type_system_or_err.get());
+    llvm::dyn_cast_or_null<TypeSystemClang>(&type_system_or_err.get());
   if (!clang_type_system)
     return nullptr;
   clang_type_system->GetPDBParser()->GetDeclForSymbol(pdb_func);

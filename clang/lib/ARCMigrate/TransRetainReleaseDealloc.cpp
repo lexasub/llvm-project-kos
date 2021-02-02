@@ -16,8 +16,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Internals.h"
 #include "Transforms.h"
+#include "Internals.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ParentMap.h"
 #include "clang/Basic/SourceManager.h"
@@ -31,8 +31,8 @@ using namespace trans;
 
 namespace {
 
-class RetainReleaseDeallocRemover
-    : public RecursiveASTVisitor<RetainReleaseDeallocRemover> {
+class RetainReleaseDeallocRemover :
+                       public RecursiveASTVisitor<RetainReleaseDeallocRemover> {
   Stmt *Body;
   MigrationPass &Pass;
 
@@ -42,7 +42,8 @@ class RetainReleaseDeallocRemover
   Selector DelegateSel, FinalizeSel;
 
 public:
-  RetainReleaseDeallocRemover(MigrationPass &pass) : Body(nullptr), Pass(pass) {
+  RetainReleaseDeallocRemover(MigrationPass &pass)
+    : Body(nullptr), Pass(pass) {
     DelegateSel =
         Pass.Ctx.Selectors.getNullarySelector(&Pass.Ctx.Idents.get("delegate"));
     FinalizeSel =
@@ -83,13 +84,11 @@ public:
       if (E->getReceiverKind() == ObjCMessageExpr::Instance)
         if (Expr *rec = E->getInstanceReceiver()) {
           rec = rec->IgnoreParenImpCasts();
-          if (rec->getType().getObjCLifetime() ==
-                  Qualifiers::OCL_ExplicitNone &&
+          if (rec->getType().getObjCLifetime() == Qualifiers::OCL_ExplicitNone &&
               (E->getMethodFamily() != OMF_retain || isRemovable(E))) {
             std::string err = "it is not safe to remove '";
-            err += E->getSelector().getAsString() +
-                   "' message on "
-                   "an __unsafe_unretained type";
+            err += E->getSelector().getAsString() + "' message on "
+                "an __unsafe_unretained type";
             Pass.TA.reportError(err, rec->getBeginLoc());
             return true;
           }
@@ -98,7 +97,7 @@ public:
               (E->getMethodFamily() != OMF_retain || isRemovable(E))) {
             std::string err = "it is not safe to remove '";
             err += E->getSelector().getAsString() + "' message on "
-                                                    "a global variable";
+                "a global variable";
             Pass.TA.reportError(err, rec->getBeginLoc());
             return true;
           }
@@ -134,8 +133,7 @@ public:
     }
 
     Expr *rec = E->getInstanceReceiver();
-    if (!rec)
-      return true;
+    if (!rec) return true;
 
     Transaction Trans(Pass.TA);
     clearDiagnostics(E->getSelectorLoc(0));
@@ -145,8 +143,8 @@ public:
     SourceRange RecRange = rec->getSourceRange();
     checkForGCDOrXPC(Msg, RecContainer, rec, RecRange);
 
-    if (Msg->getMethodFamily() == OMF_release && isRemovable(RecContainer) &&
-        isInAtFinally(RecContainer)) {
+    if (Msg->getMethodFamily() == OMF_release &&
+        isRemovable(RecContainer) && isInAtFinally(RecContainer)) {
       // Change the -release to "receiver = nil" in a finally to avoid a leak
       // when an exception is thrown.
       Pass.TA.replace(RecContainer->getSourceRange(), RecRange);
@@ -239,7 +237,9 @@ private:
     return false;
   }
 
-  Stmt *getNextStmt(Expr *E) { return getPreviousAndNextStmt(E).second; }
+  Stmt *getNextStmt(Expr *E) {
+    return getPreviousAndNextStmt(E).second;
+  }
 
   std::pair<Stmt *, Stmt *> getPreviousAndNextStmt(Expr *E) {
     Stmt *prevStmt = nullptr, *nextStmt = nullptr;
@@ -250,8 +250,10 @@ private:
     do {
       InnerS = OuterS;
       OuterS = StmtMap->getParent(InnerS);
-    } while (OuterS && (isa<ParenExpr>(OuterS) || isa<CastExpr>(OuterS) ||
-                        isa<FullExpr>(OuterS)));
+    }
+    while (OuterS && (isa<ParenExpr>(OuterS) ||
+                      isa<CastExpr>(OuterS) ||
+                      isa<FullExpr>(OuterS)));
 
     if (!OuterS)
       return std::make_pair(prevStmt, nextStmt);
@@ -313,30 +315,27 @@ private:
   /// Check if the retain/release is due to a GCD/XPC macro that are
   /// defined as:
   ///
-  /// #define dispatch_retain(object) ({ dispatch_object_t _o = (object);
-  /// _dispatch_object_validate(_o); (void)[_o retain]; }) #define
-  /// dispatch_release(object) ({ dispatch_object_t _o = (object);
-  /// _dispatch_object_validate(_o); [_o release]; }) #define xpc_retain(object)
-  /// ({ xpc_object_t _o = (object); _xpc_object_validate(_o); [_o retain]; })
-  /// #define xpc_release(object) ({ xpc_object_t _o = (object);
-  /// _xpc_object_validate(_o); [_o release]; })
+  /// #define dispatch_retain(object) ({ dispatch_object_t _o = (object); _dispatch_object_validate(_o); (void)[_o retain]; })
+  /// #define dispatch_release(object) ({ dispatch_object_t _o = (object); _dispatch_object_validate(_o); [_o release]; })
+  /// #define xpc_retain(object) ({ xpc_object_t _o = (object); _xpc_object_validate(_o); [_o retain]; })
+  /// #define xpc_release(object) ({ xpc_object_t _o = (object); _xpc_object_validate(_o); [_o release]; })
   ///
   /// and return the top container which is the StmtExpr and the macro argument
   /// expression.
-  void checkForGCDOrXPC(ObjCMessageExpr *Msg, Expr *&RecContainer, Expr *&Rec,
-                        SourceRange &RecRange) {
+  void checkForGCDOrXPC(ObjCMessageExpr *Msg, Expr *&RecContainer,
+                        Expr *&Rec, SourceRange &RecRange) {
     SourceLocation Loc = Msg->getExprLoc();
     if (!Loc.isMacroID())
       return;
     SourceManager &SM = Pass.Ctx.getSourceManager();
-    StringRef MacroName =
-        Lexer::getImmediateMacroName(Loc, SM, Pass.Ctx.getLangOpts());
+    StringRef MacroName = Lexer::getImmediateMacroName(Loc, SM,
+                                                     Pass.Ctx.getLangOpts());
     bool isGCDOrXPC = llvm::StringSwitch<bool>(MacroName)
-                          .Case("dispatch_retain", true)
-                          .Case("dispatch_release", true)
-                          .Case("xpc_retain", true)
-                          .Case("xpc_release", true)
-                          .Default(false);
+        .Case("dispatch_retain", true)
+        .Case("dispatch_release", true)
+        .Case("xpc_retain", true)
+        .Case("xpc_release", true)
+        .Default(false);
     if (!isGCDOrXPC)
       return;
 
@@ -389,12 +388,12 @@ private:
   void clearDiagnostics(SourceLocation loc) const {
     Pass.TA.clearDiagnostic(diag::err_arc_illegal_explicit_message,
                             diag::err_unavailable,
-                            diag::err_unavailable_message, loc);
+                            diag::err_unavailable_message,
+                            loc);
   }
 
   bool isDelegateMessage(Expr *E) const {
-    if (!E)
-      return false;
+    if (!E) return false;
 
     E = E->IgnoreParenCasts();
 
@@ -420,7 +419,9 @@ private:
     return false;
   }
 
-  bool isRemovable(Expr *E) const { return Removables.count(E); }
+  bool isRemovable(Expr *E) const {
+    return Removables.count(E);
+  }
 
   bool tryRemoving(Expr *E) const {
     if (isRemovable(E)) {
@@ -436,17 +437,18 @@ private:
     if (ParenExpr *parenE = dyn_cast_or_null<ParenExpr>(parent))
       return tryRemoving(parenE);
 
-    if (BinaryOperator *bopE = dyn_cast_or_null<BinaryOperator>(parent)) {
+    if (BinaryOperator *
+          bopE = dyn_cast_or_null<BinaryOperator>(parent)) {
       if (bopE->getOpcode() == BO_Comma && bopE->getLHS() == E &&
           isRemovable(bopE)) {
-        Pass.TA.replace(bopE->getSourceRange(),
-                        bopE->getRHS()->getSourceRange());
+        Pass.TA.replace(bopE->getSourceRange(), bopE->getRHS()->getSourceRange());
         return true;
       }
     }
 
     return false;
   }
+
 };
 
 } // anonymous namespace

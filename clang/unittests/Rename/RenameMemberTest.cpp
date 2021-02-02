@@ -73,8 +73,8 @@ INSTANTIATE_TEST_CASE_P(
     DISABLED_RenameTemplatedClassStaticVariableTest, RenameMemberTest,
     testing::ValuesIn(std::vector<Case>({
         // FIXME: support renaming static variables for template classes.
-        {"void f() { ns::TA<int>::SMoo; }", "void f() { ns::TA<int>::SMeh; }",
-         "ns::TA::SMoo", "ns::TA::SMeh"},
+        {"void f() { ns::TA<int>::SMoo; }",
+         "void f() { ns::TA<int>::SMeh; }", "ns::TA::SMoo", "ns::TA::SMeh"},
     })), );
 
 INSTANTIATE_TEST_CASE_P(
@@ -105,8 +105,8 @@ INSTANTIATE_TEST_CASE_P(
          "void f() { ns::TA<int>::SBar(); }", "ns::TA::SFoo", "ns::TA::SBar"},
 
         // Static variables.
-        {"void f() { A::SMoo; }", "void f() { A::SMeh; }", "A::SMoo",
-         "A::SMeh"},
+        {"void f() { A::SMoo; }",
+         "void f() { A::SMeh; }", "A::SMoo", "A::SMeh"},
 
         // Templated methods.
         {"void f() { TA<int> a; a.Foo(); }", "void f() { TA<int> a; a.Bar(); }",
@@ -225,4 +225,4 @@ TEST_F(RenameMemberTest, RenameCtorInitializer) {
 } // anonymous namespace
 } // namespace test
 } // namespace clang_rename
-} // namespace clang
+} // namesdpace clang

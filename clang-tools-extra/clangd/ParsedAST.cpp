@@ -316,7 +316,7 @@ ParsedAST::build(llvm::StringRef Filename, const ParseInputs &Inputs,
       Check->registerMatchers(&CTFinder);
     }
 
-    const Config &Cfg = Config::current();
+    const Config& Cfg = Config::current();
     ASTDiags.setLevelAdjuster([&](DiagnosticsEngine::Level DiagLevel,
                                   const clang::Diagnostic &Info) {
       if (Cfg.Diagnostics.SuppressAll ||

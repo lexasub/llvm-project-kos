@@ -15,8 +15,8 @@
 #define __CLDEMOTEINTRIN_H
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS                                                     \
-  __attribute__((__always_inline__, __nodebug__, __target__("cldemote")))
+#define __DEFAULT_FN_ATTRS \
+  __attribute__((__always_inline__, __nodebug__,  __target__("cldemote")))
 
 /// Hint to hardware that the cache line that contains \p __P should be demoted
 /// from the cache closest to the processor core to a level more distant from
@@ -25,7 +25,8 @@
 /// \headerfile <x86intrin.h>
 ///
 /// This intrinsic corresponds to the <c> CLDEMOTE </c> instruction.
-static __inline__ void __DEFAULT_FN_ATTRS _cldemote(const void *__P) {
+static __inline__ void __DEFAULT_FN_ATTRS
+_cldemote(const void * __P) {
   __builtin_ia32_cldemote(__P);
 }
 

@@ -55,9 +55,9 @@ static void addBCLib(const Driver &D, const ArgList &Args,
 } // namespace
 
 void AMDGCN::Linker::constructLldCommand(Compilation &C, const JobAction &JA,
-                                         const InputInfoList &Inputs,
-                                         const InputInfo &Output,
-                                         const llvm::opt::ArgList &Args) const {
+                                          const InputInfoList &Inputs,
+                                          const InputInfo &Output,
+                                          const llvm::opt::ArgList &Args) const {
   // Construct lld command.
   // The output from ld.lld is an HSA code object file.
   ArgStringList LldArgs{"-flavor", "gnu", "--no-undefined", "-shared",
@@ -104,10 +104,8 @@ void AMDGCN::Linker::constructLldCommand(Compilation &C, const JobAction &JA,
 // Construct a clang-offload-bundler command to bundle code objects for
 // different GPU's into a HIP fat binary.
 void AMDGCN::constructHIPFatbinCommand(Compilation &C, const JobAction &JA,
-                                       StringRef OutputFileName,
-                                       const InputInfoList &Inputs,
-                                       const llvm::opt::ArgList &Args,
-                                       const Tool &T) {
+                  StringRef OutputFileName, const InputInfoList &Inputs,
+                  const llvm::opt::ArgList &Args, const Tool& T) {
   // Construct clang-offload-bundler command to bundle object files for
   // for different GPU archs.
   ArgStringList BundlerArgs;
@@ -126,7 +124,7 @@ void AMDGCN::constructHIPFatbinCommand(Compilation &C, const JobAction &JA,
   // offload kind in bundle ID is 'hipv4'.
   std::string OffloadKind = "hip";
   for (const auto &II : Inputs) {
-    const auto *A = II.getAction();
+    const auto* A = II.getAction();
     BundlerTargetArg = BundlerTargetArg + "," + OffloadKind +
                        "-amdgcn-amd-amdhsa--" +
                        StringRef(A->getOffloadingArch()).str();
@@ -152,10 +150,12 @@ void AMDGCN::constructHIPFatbinCommand(Compilation &C, const JobAction &JA,
 /// device code and also define symbols required by the code generation so that
 /// the image can be retrieved at runtime.
 void AMDGCN::Linker::constructGenerateObjFileFromHIPFatBinary(
-    Compilation &C, const InputInfo &Output, const InputInfoList &Inputs,
-    const ArgList &Args, const JobAction &JA) const {
+    Compilation &C, const InputInfo &Output,
+    const InputInfoList &Inputs, const ArgList &Args,
+    const JobAction &JA) const {
   const ToolChain &TC = getToolChain();
-  std::string Name = std::string(llvm::sys::path::stem(Output.getFilename()));
+  std::string Name =
+      std::string(llvm::sys::path::stem(Output.getFilename()));
 
   // Create Temp Object File Generator,
   // Offload Bundled file and Bundled Object file.
@@ -208,7 +208,8 @@ void AMDGCN::Linker::constructGenerateObjFileFromHIPFatBinary(
 
   Objf << ObjBuffer;
 
-  ArgStringList McArgs{"-o", Output.getFilename(), McinFile, "--filetype=obj"};
+  ArgStringList McArgs{"-o",      Output.getFilename(),
+                       McinFile,  "--filetype=obj"};
   const char *Mc = Args.MakeArgString(TC.GetProgramPath("llvm-mc"));
   C.addCommand(std::make_unique<Command>(JA, *this, ResponseFileSupport::None(),
                                          Mc, McArgs, Inputs, Output));
@@ -217,24 +218,23 @@ void AMDGCN::Linker::constructGenerateObjFileFromHIPFatBinary(
 // For amdgcn the inputs of the linker job are device bitcode and output is
 // object file. It calls llvm-link, opt, llc, then lld steps.
 void AMDGCN::Linker::ConstructJob(Compilation &C, const JobAction &JA,
-                                  const InputInfo &Output,
-                                  const InputInfoList &Inputs,
-                                  const ArgList &Args,
-                                  const char *LinkingOutput) const {
-  if (Inputs.size() > 0 && Inputs[0].getType() == types::TY_Image &&
+                                   const InputInfo &Output,
+                                   const InputInfoList &Inputs,
+                                   const ArgList &Args,
+                                   const char *LinkingOutput) const {
+  if (Inputs.size() > 0 &&
+      Inputs[0].getType() == types::TY_Image &&
       JA.getType() == types::TY_Object)
-    return constructGenerateObjFileFromHIPFatBinary(C, Output, Inputs, Args,
-                                                    JA);
+    return constructGenerateObjFileFromHIPFatBinary(C, Output, Inputs, Args, JA);
 
   if (JA.getType() == types::TY_HIP_FATBIN)
-    return constructHIPFatbinCommand(C, JA, Output.getFilename(), Inputs, Args,
-                                     *this);
+    return constructHIPFatbinCommand(C, JA, Output.getFilename(), Inputs, Args, *this);
 
   return constructLldCommand(C, JA, Inputs, Output, Args);
 }
 
 HIPToolChain::HIPToolChain(const Driver &D, const llvm::Triple &Triple,
-                           const ToolChain &HostTC, const ArgList &Args)
+                             const ToolChain &HostTC, const ArgList &Args)
     : ROCMToolChain(D, Triple, Args), HostTC(HostTC) {
   // Lookup binaries into the driver directory, this is used to
   // discover the clang-offload-bundler executable.
@@ -242,13 +242,14 @@ HIPToolChain::HIPToolChain(const Driver &D, const llvm::Triple &Triple,
 }
 
 void HIPToolChain::addClangTargetOptions(
-    const llvm::opt::ArgList &DriverArgs, llvm::opt::ArgStringList &CC1Args,
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args,
     Action::OffloadKind DeviceOffloadingKind) const {
   HostTC.addClangTargetOptions(DriverArgs, CC1Args, DeviceOffloadingKind);
 
   StringRef GpuArch = getGPUArch(DriverArgs);
   assert(!GpuArch.empty() && "Must have an explicit GPU arch.");
-  (void)GpuArch;
+  (void) GpuArch;
   assert(DeviceOffloadingKind == Action::OFK_HIP &&
          "Only HIP offloading kinds are supported for GPUs.");
   auto Kind = llvm::AMDGPU::parseArchAMDGCN(GpuArch);
@@ -330,8 +331,8 @@ void HIPToolChain::addClangTargetOptions(
 
     // Add the generic set of libraries.
     RocmInstallation.addCommonBitcodeLibCC1Args(
-        DriverArgs, CC1Args, LibDeviceFile, Wave64, DAZ, FiniteOnly,
-        UnsafeMathOpt, FastRelaxedMath, CorrectSqrt);
+      DriverArgs, CC1Args, LibDeviceFile, Wave64, DAZ, FiniteOnly,
+      UnsafeMathOpt, FastRelaxedMath, CorrectSqrt);
 
     // Add instrument lib.
     auto InstLib =
@@ -348,8 +349,8 @@ void HIPToolChain::addClangTargetOptions(
 
 llvm::opt::DerivedArgList *
 HIPToolChain::TranslateArgs(const llvm::opt::DerivedArgList &Args,
-                            StringRef BoundArch,
-                            Action::OffloadKind DeviceOffloadKind) const {
+                             StringRef BoundArch,
+                             Action::OffloadKind DeviceOffloadKind) const {
   DerivedArgList *DAL =
       HostTC.TranslateArgs(Args, BoundArch, DeviceOffloadKind);
   if (!DAL)
@@ -386,17 +387,17 @@ HIPToolChain::GetCXXStdlibType(const ArgList &Args) const {
 }
 
 void HIPToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
-                                             ArgStringList &CC1Args) const {
+                                              ArgStringList &CC1Args) const {
   HostTC.AddClangSystemIncludeArgs(DriverArgs, CC1Args);
 }
 
 void HIPToolChain::AddClangCXXStdlibIncludeArgs(const ArgList &Args,
-                                                ArgStringList &CC1Args) const {
+                                                 ArgStringList &CC1Args) const {
   HostTC.AddClangCXXStdlibIncludeArgs(Args, CC1Args);
 }
 
 void HIPToolChain::AddIAMCUIncludeArgs(const ArgList &Args,
-                                       ArgStringList &CC1Args) const {
+                                        ArgStringList &CC1Args) const {
   HostTC.AddIAMCUIncludeArgs(Args, CC1Args);
 }
 
@@ -419,6 +420,6 @@ SanitizerMask HIPToolChain::getSupportedSanitizers() const {
 }
 
 VersionTuple HIPToolChain::computeMSVCVersion(const Driver *D,
-                                              const ArgList &Args) const {
+                                               const ArgList &Args) const {
   return HostTC.computeMSVCVersion(D, Args);
 }

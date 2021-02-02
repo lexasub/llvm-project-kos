@@ -18,37 +18,39 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef int T;
-    T a[] = {1, 2, 3, 4, 5};
-    const unsigned N = sizeof(a) / sizeof(a[0]);
-    std::valarray<T> v(a, N);
-    assert(v.size() == N);
-    for (unsigned i = 0; i < N; ++i)
-      assert(v[i] == a[i]);
-  }
-  {
-    typedef double T;
-    T a[] = {1, 2.5, 3, 4.25, 5};
-    const unsigned N = sizeof(a) / sizeof(a[0]);
-    std::valarray<T> v(a, N);
-    assert(v.size() == N);
-    for (unsigned i = 0; i < N; ++i)
-      assert(v[i] == a[i]);
-  }
-  {
-    typedef std::valarray<double> T;
-    T a[] = {T(1), T(2), T(3), T(4), T(5)};
-    const unsigned N = sizeof(a) / sizeof(a[0]);
-    std::valarray<T> v(a, N);
-    assert(v.size() == N);
-    for (unsigned i = 0; i < N; ++i) {
-      assert(v[i].size() == a[i].size());
-      for (std::size_t j = 0; j < v[i].size(); ++j)
-        assert(v[i][j] == a[i][j]);
+int main(int, char**)
+{
+    {
+        typedef int T;
+        T a[] = {1, 2, 3, 4, 5};
+        const unsigned N = sizeof(a)/sizeof(a[0]);
+        std::valarray<T> v(a, N);
+        assert(v.size() == N);
+        for (unsigned i = 0; i < N; ++i)
+            assert(v[i] == a[i]);
     }
-  }
+    {
+        typedef double T;
+        T a[] = {1, 2.5, 3, 4.25, 5};
+        const unsigned N = sizeof(a)/sizeof(a[0]);
+        std::valarray<T> v(a, N);
+        assert(v.size() == N);
+        for (unsigned i = 0; i < N; ++i)
+            assert(v[i] == a[i]);
+    }
+    {
+        typedef std::valarray<double> T;
+        T a[] = {T(1), T(2), T(3), T(4), T(5)};
+        const unsigned N = sizeof(a)/sizeof(a[0]);
+        std::valarray<T> v(a, N);
+        assert(v.size() == N);
+        for (unsigned i = 0; i < N; ++i)
+        {
+            assert(v[i].size() == a[i].size());
+            for (std::size_t j = 0; j < v[i].size(); ++j)
+                assert(v[i][j] == a[i][j]);
+        }
+    }
 
   return 0;
 }

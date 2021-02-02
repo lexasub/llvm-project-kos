@@ -10,6 +10,7 @@
 
 #include "llvm/Support/Compiler.h"
 
+
 #ifdef DECLARE_REGISTER_INFOS_S390X_STRUCT
 
 // Computes the offset of the given GPR in the user data area.
@@ -23,7 +24,7 @@
 
 #define DEFINE_GPR(name, size, offset, alt, generic)                           \
   {                                                                            \
-#name, alt, size, offset, eEncodingUint, eFormatHex,                       \
+    #name, alt, size, offset, eEncodingUint, eFormatHex,                       \
         {dwarf_##name##_s390x, dwarf_##name##_s390x, generic,                  \
          LLDB_INVALID_REGNUM, lldb_##name##_s390x },                           \
          NULL, NULL, NULL, 0                                                   \
@@ -31,7 +32,7 @@
 
 #define DEFINE_GPR_NODWARF(name, size, offset, alt, generic)                   \
   {                                                                            \
-#name, alt, size, offset, eEncodingUint, eFormatHex,                       \
+    #name, alt, size, offset, eEncodingUint, eFormatHex,                       \
         {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, generic,                    \
          LLDB_INVALID_REGNUM, lldb_##name##_s390x },                           \
          NULL, NULL, NULL, 0                                                   \
@@ -39,7 +40,7 @@
 
 #define DEFINE_FPR(name, size, offset)                                         \
   {                                                                            \
-#name, NULL, size, offset, eEncodingUint, eFormatHex,                      \
+    #name, NULL, size, offset, eEncodingUint, eFormatHex,                      \
         {dwarf_##name##_s390x, dwarf_##name##_s390x, LLDB_INVALID_REGNUM,      \
          LLDB_INVALID_REGNUM, lldb_##name##_s390x },                           \
          NULL, NULL, NULL, 0                                                   \
@@ -47,7 +48,7 @@
 
 #define DEFINE_FPR_NODWARF(name, size, offset)                                 \
   {                                                                            \
-#name, NULL, size, offset, eEncodingUint, eFormatHex,                      \
+    #name, NULL, size, offset, eEncodingUint, eFormatHex,                      \
         {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
          LLDB_INVALID_REGNUM, lldb_##name##_s390x },                           \
          NULL, NULL, NULL, 0                                                   \
@@ -91,22 +92,14 @@ static RegisterInfo g_register_infos_s390x[] = {
     DEFINE_GPR(pswa, 8, 8, "pc", LLDB_REGNUM_GENERIC_PC),
 
     // Floating point registers.
-    DEFINE_FPR(f0, 8, FPR_OFFSET(0)),
-    DEFINE_FPR(f1, 8, FPR_OFFSET(1)),
-    DEFINE_FPR(f2, 8, FPR_OFFSET(2)),
-    DEFINE_FPR(f3, 8, FPR_OFFSET(3)),
-    DEFINE_FPR(f4, 8, FPR_OFFSET(4)),
-    DEFINE_FPR(f5, 8, FPR_OFFSET(5)),
-    DEFINE_FPR(f6, 8, FPR_OFFSET(6)),
-    DEFINE_FPR(f7, 8, FPR_OFFSET(7)),
-    DEFINE_FPR(f8, 8, FPR_OFFSET(8)),
-    DEFINE_FPR(f9, 8, FPR_OFFSET(9)),
-    DEFINE_FPR(f10, 8, FPR_OFFSET(10)),
-    DEFINE_FPR(f11, 8, FPR_OFFSET(11)),
-    DEFINE_FPR(f12, 8, FPR_OFFSET(12)),
-    DEFINE_FPR(f13, 8, FPR_OFFSET(13)),
-    DEFINE_FPR(f14, 8, FPR_OFFSET(14)),
-    DEFINE_FPR(f15, 8, FPR_OFFSET(15)),
+    DEFINE_FPR(f0, 8, FPR_OFFSET(0)), DEFINE_FPR(f1, 8, FPR_OFFSET(1)),
+    DEFINE_FPR(f2, 8, FPR_OFFSET(2)), DEFINE_FPR(f3, 8, FPR_OFFSET(3)),
+    DEFINE_FPR(f4, 8, FPR_OFFSET(4)), DEFINE_FPR(f5, 8, FPR_OFFSET(5)),
+    DEFINE_FPR(f6, 8, FPR_OFFSET(6)), DEFINE_FPR(f7, 8, FPR_OFFSET(7)),
+    DEFINE_FPR(f8, 8, FPR_OFFSET(8)), DEFINE_FPR(f9, 8, FPR_OFFSET(9)),
+    DEFINE_FPR(f10, 8, FPR_OFFSET(10)), DEFINE_FPR(f11, 8, FPR_OFFSET(11)),
+    DEFINE_FPR(f12, 8, FPR_OFFSET(12)), DEFINE_FPR(f13, 8, FPR_OFFSET(13)),
+    DEFINE_FPR(f14, 8, FPR_OFFSET(14)), DEFINE_FPR(f15, 8, FPR_OFFSET(15)),
     DEFINE_FPR_NODWARF(fpc, 4, 0),
 
     // Linux operating-specific info.

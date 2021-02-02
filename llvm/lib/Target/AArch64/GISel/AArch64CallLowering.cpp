@@ -49,7 +49,7 @@
 using namespace llvm;
 
 AArch64CallLowering::AArch64CallLowering(const AArch64TargetLowering &TLI)
-    : CallLowering(&TLI) {}
+  : CallLowering(&TLI) {}
 
 namespace {
 struct IncomingArgHandler : public CallLowering::IncomingValueHandler {
@@ -101,8 +101,8 @@ struct IncomingArgHandler : public CallLowering::IncomingValueHandler {
     MemSize = std::min(static_cast<uint64_t>(RegTy.getSizeInBytes()), MemSize);
 
     auto MMO = MF.getMachineMemOperand(
-        MPO, MachineMemOperand::MOLoad | MachineMemOperand::MOInvariant,
-        MemSize, inferAlignFromPtrInfo(MF, MPO));
+        MPO, MachineMemOperand::MOLoad | MachineMemOperand::MOInvariant, MemSize,
+        inferAlignFromPtrInfo(MF, MPO));
     MIRBuilder.buildLoad(ValVReg, Addr, *MMO);
   }
 
@@ -117,7 +117,7 @@ struct IncomingArgHandler : public CallLowering::IncomingValueHandler {
 struct FormalArgHandler : public IncomingArgHandler {
   FormalArgHandler(MachineIRBuilder &MIRBuilder, MachineRegisterInfo &MRI,
                    CCAssignFn *AssignFn)
-      : IncomingArgHandler(MIRBuilder, MRI, AssignFn) {}
+    : IncomingArgHandler(MIRBuilder, MRI, AssignFn) {}
 
   void markPhysRegUsed(MCRegister PhysReg) override {
     MIRBuilder.getMRI()->addLiveIn(PhysReg);
@@ -128,7 +128,7 @@ struct FormalArgHandler : public IncomingArgHandler {
 struct CallReturnHandler : public IncomingArgHandler {
   CallReturnHandler(MachineIRBuilder &MIRBuilder, MachineRegisterInfo &MRI,
                     MachineInstrBuilder MIB, CCAssignFn *AssignFn)
-      : IncomingArgHandler(MIRBuilder, MRI, AssignFn), MIB(MIB) {}
+    : IncomingArgHandler(MIRBuilder, MRI, AssignFn), MIB(MIB) {}
 
   void markPhysRegUsed(MCRegister PhysReg) override {
     MIB.addDef(PhysReg, RegState::Implicit);
@@ -211,7 +211,8 @@ struct OutgoingArgHandler : public CallLowering::OutgoingValueHandler {
 
   bool assignArg(unsigned ValNo, MVT ValVT, MVT LocVT,
                  CCValAssign::LocInfo LocInfo,
-                 const CallLowering::ArgInfo &Info, ISD::ArgFlagsTy Flags,
+                 const CallLowering::ArgInfo &Info,
+                 ISD::ArgFlagsTy Flags,
                  CCState &State) override {
     bool Res;
     if (Info.IsFixed)
@@ -241,11 +242,9 @@ static bool doesCalleeRestoreStack(CallingConv::ID CallConv, bool TailCallOpt) {
   return CallConv == CallingConv::Fast && TailCallOpt;
 }
 
-void AArch64CallLowering::splitToValueTypes(const ArgInfo &OrigArg,
-                                            SmallVectorImpl<ArgInfo> &SplitArgs,
-                                            const DataLayout &DL,
-                                            MachineRegisterInfo &MRI,
-                                            CallingConv::ID CallConv) const {
+void AArch64CallLowering::splitToValueTypes(
+    const ArgInfo &OrigArg, SmallVectorImpl<ArgInfo> &SplitArgs,
+    const DataLayout &DL, MachineRegisterInfo &MRI, CallingConv::ID CallConv) const {
   const AArch64TargetLowering &TLI = *getTLI<AArch64TargetLowering>();
   LLVMContext &Ctx = OrigArg.Ty->getContext();
 
@@ -310,8 +309,7 @@ bool AArch64CallLowering::lowerReturn(MachineIRBuilder &MIRBuilder,
 
     for (unsigned i = 0; i < SplitEVTs.size(); ++i) {
       if (TLI.getNumRegistersForCallingConv(Ctx, CC, SplitEVTs[i]) > 1) {
-        LLVM_DEBUG(
-            dbgs() << "Can't handle extended arg types which need split");
+        LLVM_DEBUG(dbgs() << "Can't handle extended arg types which need split");
         return false;
       }
 
@@ -382,7 +380,7 @@ bool AArch64CallLowering::lowerReturn(MachineIRBuilder &MIRBuilder,
         // Reset the arg flags after modifying CurVReg.
         setArgFlags(CurArgInfo, AttributeList::ReturnIndex, DL, F);
       }
-      splitToValueTypes(CurArgInfo, SplitArgs, DL, MRI, CC);
+     splitToValueTypes(CurArgInfo, SplitArgs, DL, MRI, CC);
     }
 
     OutgoingArgHandler Handler(MIRBuilder, MRI, MIB, AssignFn, AssignFn);
@@ -486,7 +484,7 @@ bool AArch64CallLowering::lowerFormalArguments(
   if (F.isVarArg()) {
     auto &Subtarget = MF.getSubtarget<AArch64Subtarget>();
     if (!Subtarget.isTargetDarwin()) {
-      // FIXME: we need to reimplement saveVarArgsRegisters from
+        // FIXME: we need to reimplement saveVarArgsRegisters from
       // AArch64ISelLowering.
       return false;
     }
@@ -656,7 +654,8 @@ bool AArch64CallLowering::areCalleeOutgoingArgsTailCallable(
 
 bool AArch64CallLowering::isEligibleForTailCallOptimization(
     MachineIRBuilder &MIRBuilder, CallLoweringInfo &Info,
-    SmallVectorImpl<ArgInfo> &InArgs, SmallVectorImpl<ArgInfo> &OutArgs) const {
+    SmallVectorImpl<ArgInfo> &InArgs,
+    SmallVectorImpl<ArgInfo> &OutArgs) const {
 
   // Must pass all target-independent checks in order to tail call optimize.
   if (!Info.IsTailCall)
@@ -750,7 +749,8 @@ bool AArch64CallLowering::isEligibleForTailCallOptimization(
   if (!areCalleeOutgoingArgsTailCallable(Info, MF, OutArgs))
     return false;
 
-  LLVM_DEBUG(dbgs() << "... Call is eligible for tail call optimization.\n");
+  LLVM_DEBUG(
+      dbgs() << "... Call is eligible for tail call optimization.\n");
   return true;
 }
 

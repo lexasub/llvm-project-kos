@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lldb/Breakpoint/BreakpointIDList.h"
 #include "lldb/lldb-enumerations.h"
+#include "lldb/Breakpoint/BreakpointIDList.h"
 
 #include "lldb/Breakpoint/Breakpoint.h"
 #include "lldb/Breakpoint/BreakpointLocation.h"
@@ -84,7 +84,7 @@ bool BreakpointIDList::FindBreakpointID(const char *bp_id_str,
 
 void BreakpointIDList::InsertStringArray(
     llvm::ArrayRef<const char *> string_array, CommandReturnObject &result) {
-  if (string_array.empty())
+  if(string_array.empty())
     return;
 
   for (const char *str : string_array) {
@@ -108,10 +108,12 @@ void BreakpointIDList::InsertStringArray(
 //  NEW_ARGS should be a copy of OLD_ARGS, with and ID range specifiers replaced
 //  by the members of the range.
 
-void BreakpointIDList::FindAndReplaceIDRanges(
-    Args &old_args, Target *target, bool allow_locations,
-    BreakpointName::Permissions ::PermissionKinds purpose,
-    CommandReturnObject &result, Args &new_args) {
+void BreakpointIDList::FindAndReplaceIDRanges(Args &old_args, Target *target,
+                                              bool allow_locations,
+                                              BreakpointName::Permissions
+                                                  ::PermissionKinds purpose,
+                                              CommandReturnObject &result,
+                                              Args &new_args) {
   llvm::StringRef range_from;
   llvm::StringRef range_to;
   llvm::StringRef current_arg;
@@ -214,7 +216,7 @@ void BreakpointIDList::FindAndReplaceIDRanges(
     break_id_t end_bp_id = end_bp->GetBreakpointID();
     break_id_t end_loc_id = end_bp->GetLocationID();
     if (((start_loc_id == LLDB_INVALID_BREAK_ID) &&
-         (end_loc_id != LLDB_INVALID_BREAK_ID)) ||
+            (end_loc_id != LLDB_INVALID_BREAK_ID)) ||
         ((start_loc_id != LLDB_INVALID_BREAK_ID) &&
          (end_loc_id == LLDB_INVALID_BREAK_ID))) {
       new_args.Clear();
@@ -299,14 +301,15 @@ void BreakpointIDList::FindAndReplaceIDRanges(
     // Remove any names that aren't visible for this purpose:
     auto iter = names_found.begin();
     while (iter != names_found.end()) {
-      BreakpointName *bp_name =
-          target->FindBreakpointName(ConstString(*iter), true, error);
+      BreakpointName *bp_name = target->FindBreakpointName(ConstString(*iter),
+                                                           true,
+                                                           error);
       if (bp_name && !bp_name->GetPermission(purpose))
         iter = names_found.erase(iter);
       else
         iter++;
     }
-
+    
     if (!names_found.empty()) {
       for (BreakpointSP bkpt_sp : target->GetBreakpointList().Breakpoints()) {
         for (std::string name : names_found) {

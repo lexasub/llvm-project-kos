@@ -5,30 +5,36 @@ struct RefCntblBase {
   void deref() {}
 };
 
-struct Derived : RefCntblBase {};
+struct Derived : RefCntblBase { };
 // expected-warning@-1{{Struct 'RefCntblBase' is used as a base of struct 'Derived' but doesn't have virtual destructor}}
 
 struct DerivedWithVirtualDtor : RefCntblBase {
-  // expected-warning@-1{{Struct 'RefCntblBase' is used as a base of struct 'DerivedWithVirtualDtor' but doesn't have virtual destructor}}
+// expected-warning@-1{{Struct 'RefCntblBase' is used as a base of struct 'DerivedWithVirtualDtor' but doesn't have virtual destructor}}
   virtual ~DerivedWithVirtualDtor() {}
 };
 
-template <class T>
-struct DerivedClassTmpl : T {};
+
+
+template<class T>
+struct DerivedClassTmpl : T { };
 typedef DerivedClassTmpl<RefCntblBase> Foo;
 
+
+
 struct RandomBase {};
-struct RandomDerivedClass : RandomBase {};
+struct RandomDerivedClass : RandomBase { };
+
+
 
 struct FakeRefCntblBase1 {
-private:
+  private:
   void ref() {}
   void deref() {}
 };
 struct Quiet1 : FakeRefCntblBase1 {};
 
 struct FakeRefCntblBase2 {
-protected:
+  protected:
   void ref() {}
   void deref() {}
 };
@@ -42,6 +48,6 @@ struct Quiet3 : FakeRefCntblBase3 {};
 struct Quiet4 : private RefCntblBase {};
 class Quiet5 : RefCntblBase {};
 
-void foo() {
+void foo () {
   Derived d;
 }

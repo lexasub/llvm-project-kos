@@ -19,7 +19,7 @@ int main() {
   for (int i = 0; i < kNumAllocs; i++) {
     g = new char[kAllocSize];
     memset(g, -1, kAllocSize);
-    delete[](g);
+    delete [] (g);
   }
 }
 

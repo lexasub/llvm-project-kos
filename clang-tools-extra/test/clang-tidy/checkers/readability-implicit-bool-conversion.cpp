@@ -5,12 +5,13 @@
 #undef NULL
 #define NULL 0L
 
-template <typename T>
+template<typename T>
 void functionTaking(T);
 
 struct Struct {
   int member;
 };
+
 
 ////////// Implicit conversion from bool.
 
@@ -77,7 +78,7 @@ void implicitConversionFromBoollInComplexBoolExpressions() {
   // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: implicit conversion bool -> 'int'
   // CHECK-FIXES: int integer = static_cast<int>(boolean && anotherBoolean);
 
-  unsigned long unsignedLong = (!boolean) + 4ul;
+  unsigned long unsignedLong = (! boolean) + 4ul;
   // CHECK-MESSAGES: :[[@LINE-1]]:32: warning: implicit conversion bool -> 'unsigned long'
   // CHECK-FIXES: unsigned long unsignedLong = static_cast<unsigned long>(! boolean) + 4ul;
 
@@ -144,16 +145,16 @@ void ignoreExplicitCastsFromBool() {
 void ignoreImplicitConversionFromBoolInMacroExpansions() {
   bool boolean = true;
 
-#define CAST_FROM_BOOL_IN_MACRO_BODY boolean + 3
+  #define CAST_FROM_BOOL_IN_MACRO_BODY boolean + 3
   int integerFromMacroBody = CAST_FROM_BOOL_IN_MACRO_BODY;
 
-#define CAST_FROM_BOOL_IN_MACRO_ARGUMENT(x) x + 3
+  #define CAST_FROM_BOOL_IN_MACRO_ARGUMENT(x) x + 3
   int integerFromMacroArgument = CAST_FROM_BOOL_IN_MACRO_ARGUMENT(boolean);
 }
 
 namespace ignoreImplicitConversionFromBoolInTemplateInstantiations {
 
-template <typename T>
+template<typename T>
 void templateFunction() {
   bool boolean = true;
   T uknownType = boolean + 3;
@@ -193,7 +194,7 @@ void implicitConversionToBoolSimpleCases() {
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'signed char' -> bool
   // CHECK-FIXES: functionTaking<bool>(character != 0);
 
-  int *pointer = nullptr;
+  int* pointer = nullptr;
   functionTaking<bool>(pointer);
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'int *' -> bool
   // CHECK-FIXES: functionTaking<bool>(pointer != nullptr);
@@ -220,7 +221,7 @@ void implicitConversionToBoolInSingleExpressions() {
   // CHECK-MESSAGES: :[[@LINE-1]]:29: warning: implicit conversion 'signed char' -> bool
   // CHECK-FIXES: bool boolComingFromChar = character != 0;
 
-  int *pointer = nullptr;
+  int* pointer = nullptr;
   bool boolComingFromPointer = pointer;
   // CHECK-MESSAGES: :[[@LINE-1]]:32: warning: implicit conversion 'int *' -> bool
   // CHECK-FIXES: bool boolComingFromPointer = pointer != nullptr;
@@ -253,16 +254,16 @@ void implicitConversionInNegationExpressions() {
   // CHECK-FIXES: bool boolComingFromNegatedInt = integer == 0;
 
   float floating = 10.0f;
-  bool boolComingFromNegatedFloat = !floating;
+  bool boolComingFromNegatedFloat = ! floating;
   // CHECK-MESSAGES: :[[@LINE-1]]:39: warning: implicit conversion 'float' -> bool
   // CHECK-FIXES: bool boolComingFromNegatedFloat = floating == 0.0f;
 
   signed char character = 'a';
-  bool boolComingFromNegatedChar = (!character);
+  bool boolComingFromNegatedChar = (! character);
   // CHECK-MESSAGES: :[[@LINE-1]]:39: warning: implicit conversion 'signed char' -> bool
   // CHECK-FIXES: bool boolComingFromNegatedChar = (character == 0);
 
-  int *pointer = nullptr;
+  int* pointer = nullptr;
   bool boolComingFromNegatedPointer = not pointer;
   // CHECK-MESSAGES: :[[@LINE-1]]:43: warning: implicit conversion 'int *' -> bool
   // CHECK-FIXES: bool boolComingFromNegatedPointer = pointer == nullptr;
@@ -270,26 +271,22 @@ void implicitConversionInNegationExpressions() {
 
 void implicitConversionToBoolInControlStatements() {
   int integer = 10;
-  if (integer) {
-  }
+  if (integer) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: implicit conversion 'int' -> bool
   // CHECK-FIXES: if (integer != 0) {}
 
   long int longInteger = 0.2f;
-  for (; longInteger;) {
-  }
+  for (;longInteger;) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: implicit conversion 'long' -> bool
   // CHECK-FIXES: for (;longInteger != 0;) {}
 
   float floating = 0.3f;
-  while (floating) {
-  }
+  while (floating) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: implicit conversion 'float' -> bool
   // CHECK-FIXES: while (floating != 0.0f) {}
 
   double doubleFloating = 0.4;
-  do {
-  } while (doubleFloating);
+  do {} while (doubleFloating);
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: implicit conversion 'double' -> bool
   // CHECK-FIXES: do {} while (doubleFloating != 0.0);
 }
@@ -314,6 +311,7 @@ void implicitConversionToBoolFromLiterals() {
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'unsigned long' -> bool
   // CHECK-FIXES: functionTaking<bool>(true);
 
+
   functionTaking<bool>(0.0f);
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'float' -> bool
   // CHECK-FIXES: functionTaking<bool>(false);
@@ -326,6 +324,7 @@ void implicitConversionToBoolFromLiterals() {
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'double' -> bool
   // CHECK-FIXES: functionTaking<bool>(true);
 
+
   functionTaking<bool>('\0');
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'char' -> bool
   // CHECK-FIXES: functionTaking<bool>(false);
@@ -333,6 +332,7 @@ void implicitConversionToBoolFromLiterals() {
   functionTaking<bool>('a');
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'char' -> bool
   // CHECK-FIXES: functionTaking<bool>(true);
+
 
   functionTaking<bool>("");
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'const char *' -> bool
@@ -379,14 +379,12 @@ void implicitConversionToBoolInWithOverloadedOperators() {
 }
 
 int functionReturningInt();
-int *functionReturningPointer();
+int* functionReturningPointer();
 
 void ignoreImplicitConversionToBoolWhenDeclaringVariableInControlStatements() {
-  if (int integer = functionReturningInt()) {
-  }
+  if (int integer = functionReturningInt()) {}
 
-  while (int *pointer = functionReturningPointer()) {
-  }
+  while (int* pointer = functionReturningPointer()) {}
 }
 
 void ignoreExplicitCastsToBool() {
@@ -399,23 +397,23 @@ void ignoreExplicitCastsToBool() {
   char character = 'a';
   bool boolComingFromChar = static_cast<bool>(character);
 
-  int *pointer = nullptr;
+  int* pointer = nullptr;
   bool booleanComingFromPointer = static_cast<bool>(pointer);
 }
 
 void ignoreImplicitConversionToBoolInMacroExpansions() {
   int integer = 3;
 
-#define CAST_TO_BOOL_IN_MACRO_BODY integer && false
+  #define CAST_TO_BOOL_IN_MACRO_BODY integer && false
   bool boolFromMacroBody = CAST_TO_BOOL_IN_MACRO_BODY;
 
-#define CAST_TO_BOOL_IN_MACRO_ARGUMENT(x) x || true
+  #define CAST_TO_BOOL_IN_MACRO_ARGUMENT(x) x || true
   bool boolFromMacroArgument = CAST_TO_BOOL_IN_MACRO_ARGUMENT(integer);
 }
 
 namespace ignoreImplicitConversionToBoolInTemplateInstantiations {
 
-template <typename T>
+template<typename T>
 void templateFunction() {
   T unknownType = 0;
   bool boolean = unknownType;
@@ -453,7 +451,7 @@ struct S {
   // CHECK-FIXES: S(bool a, bool b, bool c) : a(static_cast<int>(a)), b(b), c(static_cast<int>(c)) {}
 };
 
-bool f(S &s) {
+bool f(S& s) {
   functionTaking<bool>(s.a);
   // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: implicit conversion 'int' -> bool
   // CHECK-FIXES: functionTaking<bool>(s.a != 0);

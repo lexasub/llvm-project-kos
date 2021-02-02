@@ -28,128 +28,128 @@
 #ifdef CK1
 
 template <typename T, int X, long long Y>
-struct SS {
+struct SS{
   T a[X];
   float b;
   // CK1: define {{.*}}i32 @{{.+}}foo{{.+}}(
   int foo(void) {
 
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL1:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd
-    for (int i = 0; i < X; i++) {
+  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+  // CK1: call void @[[OFFL1:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd
+    for(int i = 0; i < X; i++) {
       a[i] = (T)0;
     }
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL2:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd schedule(static)
-    for (int i = 0; i < X; i++) {
+  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+  // CK1: call void @[[OFFL2:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd schedule(static)
+    for(int i = 0; i < X; i++) {
       a[i] = (T)0;
     }
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL3:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd schedule(static, X / 2)
-    for (int i = 0; i < X; i++) {
-      a[i] = (T)0;
-    }
-
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL4:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd schedule(dynamic)
-    for (int i = 0; i < X; i++) {
+  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+  // CK1: call void @[[OFFL3:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd schedule(static, X/2)
+    for(int i = 0; i < X; i++) {
       a[i] = (T)0;
     }
 
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL5:.+]](
-#pragma omp target
-#pragma omp teams distribute parallel for simd schedule(dynamic, X / 2)
-    for (int i = 0; i < X; i++) {
+  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+  // CK1: call void @[[OFFL4:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd schedule(dynamic)
+    for(int i = 0; i < X; i++) {
       a[i] = (T)0;
     }
 
-    // CK1: define internal void @[[OFFL1]](
-    // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL1:.+]] to {{.+}},
-    // CK1: ret void
+  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+  // CK1: call void @[[OFFL5:.+]](
+    #pragma omp target
+    #pragma omp teams distribute parallel for simd schedule(dynamic, X/2)
+    for(int i = 0; i < X; i++) {
+      a[i] = (T)0;
+    }
 
-    // CK1: define internal void @[[OUTL1]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4(
-    // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL1:.+]] to
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OFFL1]](
+  // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL1:.+]] to {{.+}},
+  // CK1: ret void
 
-    // CK1: define internal void @[[PAR_OUTL1]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 34,
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OUTL1]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4(
+  // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL1:.+]] to
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OFFL2]](
-    // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL2:.+]] to {{.+}},
-    // CK1: ret void
+  // CK1: define internal void @[[PAR_OUTL1]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 34,
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OUTL2]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4(
-    // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL2:.+]] to
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OFFL2]](
+  // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL2:.+]] to {{.+}},
+  // CK1: ret void
 
-    // CK1: define internal void @[[PAR_OUTL2]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 34,
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OUTL2]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4(
+  // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL2:.+]] to
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OFFL3]](
-    // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL3:.+]] to {{.+}},
-    // CK1: ret void
+  // CK1: define internal void @[[PAR_OUTL2]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 34,
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OUTL3]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4(
-    // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL3:.+]] to
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OFFL3]](
+  // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL3:.+]] to {{.+}},
+  // CK1: ret void
 
-    // CK1: define internal void @[[PAR_OUTL3]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 33,
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OUTL3]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4(
+  // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL3:.+]] to
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OFFL4]](
-    // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL4:.+]] to {{.+}},
-    // CK1: ret void
+  // CK1: define internal void @[[PAR_OUTL3]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 33,
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OUTL4]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4(
-    // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL4:.+]] to
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OFFL4]](
+  // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL4:.+]] to {{.+}},
+  // CK1: ret void
 
-    // CK1: define internal void @[[PAR_OUTL4]]({{.+}})
-    // CK1-OMP45: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 35,
-    // CK1-OMP50: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 1073741859,
-    // CK1: call {{.+}} @__kmpc_dispatch_next_4(
-    // CK1: ret void
+  // CK1: define internal void @[[OUTL4]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4(
+  // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL4:.+]] to
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OFFL5]](
-    // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL5:.+]] to {{.+}},
-    // CK1: ret void
+  // CK1: define internal void @[[PAR_OUTL4]]({{.+}})
+  // CK1-OMP45: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 35,
+  // CK1-OMP50: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 1073741859,
+  // CK1: call {{.+}} @__kmpc_dispatch_next_4(
+  // CK1: ret void
 
-    // CK1: define internal void @[[OUTL5]]({{.+}})
-    // CK1: call void @__kmpc_for_static_init_4(
-    // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL5:.+]] to
-    // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void
+  // CK1: define internal void @[[OFFL5]](
+  // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL5:.+]] to {{.+}},
+  // CK1: ret void
 
-    // CK1: define internal void @[[PAR_OUTL5]]({{.+}})
-    // CK1-OMP45: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 35,
-    // CK1-OMP50: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 1073741859,
-    // CK1: call {{.+}} @__kmpc_dispatch_next_4(
-    // CK1: ret void
+  // CK1: define internal void @[[OUTL5]]({{.+}})
+  // CK1: call void @__kmpc_for_static_init_4(
+  // CK1: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[PAR_OUTL5:.+]] to
+  // CK1: call void @__kmpc_for_static_fini(
+  // CK1: ret void
 
-    // CK1: !{!"llvm.loop.vectorize.enable", i1 true}
+  // CK1: define internal void @[[PAR_OUTL5]]({{.+}})
+  // CK1-OMP45: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 35,
+  // CK1-OMP50: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 1073741859,
+  // CK1: call {{.+}} @__kmpc_dispatch_next_4(
+  // CK1: ret void
+
+  // CK1: !{!"llvm.loop.vectorize.enable", i1 true}
 
     return a[0];
   }
@@ -158,6 +158,7 @@ struct SS {
 int teams_template_struct(void) {
   SS<int, 123, 456> V;
   return V.foo();
+
 }
 #endif // CK1
 
@@ -170,6 +171,7 @@ int teams_template_struct(void) {
 // RUN: %clang_cc1 -DCK2 -fopenmp -fopenmp-version=45 -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix CK2 --check-prefix CK2-64
 // RUN: %clang_cc1 -DCK2 -fopenmp -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -emit-pch -o %t %s
 // RUN: %clang_cc1 -DCK2 -fopenmp -x c++ -triple powerpc64le-unknown-unknown -fopenmp-targets=powerpc64le-ibm-linux-gnu -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck %s --check-prefix CK2 --check-prefix CK2-64
+
 
 // RUN: %clang_cc1 -DCK2 -verify -fopenmp -fopenmp-version=45 -x c++ -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-llvm %s -o - | FileCheck %s --check-prefix CK2 --check-prefix CK2-32
 // RUN: %clang_cc1 -DCK2 -fopenmp -fopenmp-version=45 -x c++ -std=c++11 -triple i386-unknown-unknown -fopenmp-targets=i386-pc-linux-gnu -emit-pch -o %t %s
@@ -194,59 +196,59 @@ int tmain(T argc) {
   int m = 10;
 #pragma omp target
 #pragma omp teams distribute parallel for simd
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(static)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(static, m)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(dynamic)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(dynamic, m)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
   return 0;
 }
 
-int main(int argc, char **argv) {
+int main (int argc, char **argv) {
   int n = 100;
   int a[n];
   int m = 10;
 #pragma omp target
 #pragma omp teams distribute parallel for simd
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = 0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd dist_schedule(static)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = 0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd dist_schedule(static, m)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = 0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(dynamic)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = 0;
   }
 #pragma omp target
 #pragma omp teams distribute parallel for simd schedule(dynamic, m)
-  for (int i = 0; i < n; i++) {
+  for(int i = 0; i < n; i++) {
     a[i] = 0;
   }
   return tmain<int, 10>(argc);
@@ -326,6 +328,7 @@ int main(int argc, char **argv) {
 // CK2-OMP50: call void @__kmpc_dispatch_init_4({{.+}}, {{.+}}, i32 1073741859,
 // CK2: call {{.+}} @__kmpc_dispatch_next_4(
 // CK2: ret void
+
 
 // CK2: define {{.*}}void @[[OFFL5]]({{.+}})
 // CK2: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 {{.+}}, {{.+}} @[[OUTL5:.+]] to {{.+}},

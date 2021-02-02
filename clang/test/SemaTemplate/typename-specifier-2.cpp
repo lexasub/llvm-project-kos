@@ -1,14 +1,14 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
-template <typename MetaFun, typename T>
+template<typename MetaFun, typename T>
 struct bind_metafun {
   typedef typename MetaFun::template apply<T> type;
 };
 
 struct add_pointer {
-  template <typename T>
+  template<typename T>
   struct apply {
-    typedef T *type;
+    typedef T* type;
   };
 };
 
@@ -20,10 +20,11 @@ int i;
 bind_metafun<add_pointer, int>::type::type ip = &i;
 bind_metafun<add_pointer, float>::type::type fp = &i; // expected-error{{cannot initialize a variable of type 'bind_metafun<add_pointer, float>::type::type' (aka 'float *') with an rvalue of type 'int *'}}
 
-template <typename T>
+
+template<typename T>
 struct extract_type_type {
   typedef typename T::type::type t;
 };
 
 double d;
-extract_type_type<bind_metafun<add_pointer, double>>::t dp = &d;
+extract_type_type<bind_metafun<add_pointer, double> >::t dp = &d;

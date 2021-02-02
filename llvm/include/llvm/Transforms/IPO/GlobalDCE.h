@@ -31,7 +31,7 @@ public:
   PreservedAnalyses run(Module &M, ModuleAnalysisManager &);
 
 private:
-  SmallPtrSet<GlobalValue *, 32> AliveGlobals;
+  SmallPtrSet<GlobalValue*, 32> AliveGlobals;
 
   /// Global -> Global that uses this global.
   DenseMap<GlobalValue *, SmallPtrSet<GlobalValue *, 4>> GVDependencies;
@@ -65,6 +65,6 @@ private:
   void ComputeDependencies(Value *V, SmallPtrSetImpl<GlobalValue *> &U);
 };
 
-} // namespace llvm
+}
 
 #endif // LLVM_TRANSFORMS_IPO_GLOBALDCE_H

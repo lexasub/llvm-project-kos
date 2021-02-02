@@ -68,10 +68,9 @@ public:
   TranslateArgs(const llvm::opt::DerivedArgList &Args, StringRef BoundArch,
                 Action::OffloadKind DeviceOffloadKind) const override;
 
-  void
-  addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
-                        llvm::opt::ArgStringList &CC1Args,
-                        Action::OffloadKind DeviceOffloadKind) const override;
+  void addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
+                             llvm::opt::ArgStringList &CC1Args,
+                             Action::OffloadKind DeviceOffloadKind) const override;
 
   /// Return whether denormals should be flushed, and treated as 0 by default
   /// for the subtarget.
@@ -84,7 +83,9 @@ public:
   static bool isWave64(const llvm::opt::ArgList &DriverArgs,
                        llvm::AMDGPU::GPUKind Kind);
   /// Needed for using lto.
-  bool HasNativeLLVMSupport() const override { return true; }
+  bool HasNativeLLVMSupport() const override {
+    return true;
+  }
 
   /// Needed for translating LTO options.
   const char *getDefaultLinker() const override { return "ld.lld"; }

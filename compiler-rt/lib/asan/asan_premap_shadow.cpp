@@ -45,14 +45,13 @@ bool PremapShadowFailed() {
     return true;
   return false;
 }
-}  // namespace __asan
+} // namespace __asan
 
 extern "C" {
 decltype(__asan_shadow)* __asan_premap_shadow() {
   // The resolver may be called multiple times. Map the shadow just once.
   static uptr premapped_shadow = 0;
-  if (!premapped_shadow)
-    premapped_shadow = __asan::PremapShadow();
+  if (!premapped_shadow) premapped_shadow = __asan::PremapShadow();
   return reinterpret_cast<decltype(__asan_shadow)*>(premapped_shadow);
 }
 
@@ -62,4 +61,4 @@ INTERFACE_ATTRIBUTE __attribute__((ifunc("__asan_premap_shadow"))) void
 __asan_shadow();
 }
 
-#endif  // ASAN_PREMAP_SHADOW
+#endif // ASAN_PREMAP_SHADOW

@@ -8,11 +8,11 @@ typedef kern_return_t IOReturn;
 class MyServer {
 public:
   virtual __attribute__((mig_server_routine)) IOReturn externalMethod();
-  virtual __attribute__((mig_server_routine)) void anotherMethod();   // expected-warning{{'mig_server_routine' attribute only applies to routines that return a kern_return_t}}
+  virtual __attribute__((mig_server_routine)) void anotherMethod(); // expected-warning{{'mig_server_routine' attribute only applies to routines that return a kern_return_t}}
   virtual __attribute__((mig_server_routine)) int yetAnotherMethod(); // expected-warning{{'mig_server_routine' attribute only applies to routines that return a kern_return_t}}
   [[clang::mig_server_routine]] virtual IOReturn cppAnnotatedMethod();
   [[clang::mig_server_routine("arg")]] virtual IOReturn cppAnnotatedMethodWithInvalidArgs(); // expected-error{{'mig_server_routine' attribute takes no arguments}}
-  [[clang::mig_server_routine]] virtual int cppInvalidAnnotatedMethod();                     // expected-warning{{'mig_server_routine' attribute only applies to routines that return a kern_return_t}}
+  [[clang::mig_server_routine]] virtual int cppInvalidAnnotatedMethod(); // expected-warning{{'mig_server_routine' attribute only applies to routines that return a kern_return_t}}
 };
 
 IOReturn MyServer::externalMethod() {

@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -std=c++11 -fcoroutines-ts %s -verify
 
-template <typename T, typename U>
+template<typename T, typename U>
 U f(T t) {
   co_await t;
   co_yield t;
@@ -11,11 +11,8 @@ U f(T t) {
   auto x = co_await t;
   auto y = co_yield t;
 
-  for
-    co_await(int x
-             : t) {}
-  for
-    co_await(int x = 0; x != 10; ++x) {} // expected-error {{'co_await' modifier can only be applied to range-based for loop}}
+  for co_await (int x : t) {}
+  for co_await (int x = 0; x != 10; ++x) {} // expected-error {{'co_await' modifier can only be applied to range-based for loop}}
 
   if (t)
     co_return t;
@@ -24,9 +21,7 @@ U f(T t) {
 }
 
 struct Y {};
-struct X {
-  Y operator co_await();
-};
+struct X { Y operator co_await(); };
 struct Z {};
 Y operator co_await(Z);
 
@@ -35,6 +30,6 @@ void f(X x, Z z) {
   operator co_await(z);
 }
 
-void operator co_await();        // expected-error {{must have at least one parameter}}
+void operator co_await(); // expected-error {{must have at least one parameter}}
 void operator co_await(X, Y, Z); // expected-error {{must be a unary operator}}
-void operator co_await(int);     // expected-error {{parameter of class or enumeration type}}
+void operator co_await(int); // expected-error {{parameter of class or enumeration type}}

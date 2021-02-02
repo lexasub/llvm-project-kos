@@ -30,10 +30,14 @@
 #define __RETURN_TYPE int
 #endif
 
-#if defined(__cplusplus) && __cplusplus < 201103L
+#if defined (__cplusplus) && __cplusplus < 201103L
 // emulate static_assert on type sizes
-template <bool> struct __compare_result {};
-template <> struct __compare_result<true> { static const bool valid; };
+template<bool>
+struct __compare_result{};
+template<>
+struct __compare_result<true> {
+  static const bool valid;
+};
 
 __DEVICE__
 void __suppress_unused_warning(bool b){};
@@ -42,10 +46,12 @@ __DEVICE__ void __static_assert_equal_size() {
   __suppress_unused_warning(__compare_result<S == T>::valid);
 }
 
-#define __static_assert_type_size_equal(A, B) __static_assert_equal_size<A, B>()
+#define __static_assert_type_size_equal(A, B) \
+  __static_assert_equal_size<A,B>()
 
 #else
-#define __static_assert_type_size_equal(A, B) static_assert((A) == (B), "")
+#define __static_assert_type_size_equal(A,B) \
+  static_assert((A) == (B), "")
 
 #endif
 

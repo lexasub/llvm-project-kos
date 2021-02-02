@@ -110,7 +110,7 @@ WasmSymbolType Symbol::getWasmType() const {
 }
 
 const WasmSignature *Symbol::getSignature() const {
-  if (auto *f = dyn_cast<FunctionSymbol>(this))
+  if (auto* f = dyn_cast<FunctionSymbol>(this))
     return f->signature;
   if (auto *l = dyn_cast<LazySymbol>(this))
     return l->signature;
@@ -218,7 +218,9 @@ bool Symbol::isExported() const {
   return flags & WASM_SYMBOL_EXPORTED;
 }
 
-bool Symbol::isNoStrip() const { return flags & WASM_SYMBOL_NO_STRIP; }
+bool Symbol::isNoStrip() const {
+  return flags & WASM_SYMBOL_NO_STRIP;
+}
 
 uint32_t FunctionSymbol::getFunctionIndex() const {
   if (auto *f = dyn_cast<DefinedFunction>(this))
@@ -404,7 +406,7 @@ MemoryBufferRef LazySymbol::getMemberBuffer() {
                    toString(*this));
 }
 
-void printTraceSymbolUndefined(StringRef name, const InputFile *file) {
+void printTraceSymbolUndefined(StringRef name, const InputFile* file) {
   message(toString(file) + ": reference to " + name);
 }
 

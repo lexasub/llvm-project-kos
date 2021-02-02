@@ -22,7 +22,7 @@ class X86IntelInstPrinter final : public X86InstPrinterCommon {
 public:
   X86IntelInstPrinter(const MCAsmInfo &MAI, const MCInstrInfo &MII,
                       const MCRegisterInfo &MRI)
-      : X86InstPrinterCommon(MAI, MII, MRI) {}
+    : X86InstPrinterCommon(MAI, MII, MRI) {}
 
   void printRegName(raw_ostream &OS, unsigned RegNo) const override;
   void printInst(const MCInst *MI, uint64_t Address, StringRef Annot,
@@ -81,6 +81,7 @@ public:
     O << "tbyte ptr ";
     printMemReference(MI, OpNo, O);
   }
+
 
   void printSrcIdx8(const MCInst *MI, unsigned OpNo, raw_ostream &O) {
     O << "byte ptr ";

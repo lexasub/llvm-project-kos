@@ -76,8 +76,7 @@ void dontwarn1(unsigned char a, int i, unsigned char *p) {
   l = (long)(((*p) << 8) + *(p + 1));
 }
 
-template <class T>
-struct DontWarn2 {
+template <class T> struct DontWarn2 {
   void assign(T a, T b) {
     long l;
     l = (long)(a * b);
@@ -86,15 +85,15 @@ struct DontWarn2 {
 DontWarn2<int> DW2;
 
 // Cast is not suspicious when casting macro.
-#define A (X << 2)
+#define A  (X<<2)
 long macro1(int X) {
   return (long)A;
 }
 
 // Don't warn about cast in macro.
-#define B(X, Y) (long)(X * Y)
+#define B(X,Y)   (long)(X*Y)
 long macro2(int x, int y) {
-  return B(x, y);
+  return B(x,y);
 }
 
 void floatingpoint(float a, float b) {

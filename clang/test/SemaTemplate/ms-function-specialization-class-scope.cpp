@@ -4,12 +4,12 @@
 // expected-no-diagnostics
 class A {
 public:
-  template <class U> A(U p) {}
-  template <> A(int p) {}
+  template<class U> A(U p) {}
+  template<> A(int p) {}
 
-  template <class U> void f(U p) {}
+  template<class U> void f(U p) {}
 
-  template <> void f(int p) {}
+  template<> void f(int p) {}
 
   void f(int p) {}
 };
@@ -22,14 +22,14 @@ void test1() {
   a.f(100);
 }
 
-template <class T> class B {
+template<class T> class B {
 public:
-  template <class U> B(U p) {}
-  template <> B(int p) {}
+  template<class U> B(U p) {}
+  template<> B(int p) {}
 
-  template <class U> void f(U p) { T y = 9; }
+  template<class U> void f(U p) { T y = 9; }
 
-  template <> void f(int p) {
+  template<> void f(int p) {
     T a = 3;
   }
 
@@ -45,28 +45,28 @@ void test2() {
 }
 
 namespace PR12709 {
-template <class T> class TemplateClass {
-  void member_function() { specialized_member_template<false>(); }
+  template<class T> class TemplateClass {
+    void member_function() { specialized_member_template<false>(); }
 
-  template <bool b> void specialized_member_template() {}
+    template<bool b> void specialized_member_template() {}
 
-  template <> void specialized_member_template<false>() {}
-};
+    template<> void specialized_member_template<false>() {}
+  };
 
-void f() { TemplateClass<int> t; }
-} // namespace PR12709
+  void f() { TemplateClass<int> t; }
+}
 
 namespace Duplicates {
-template <typename T> struct A {
-  template <typename U> void f();
-  template <> void f<int>() {}
-  template <> void f<T>() {}
-};
+  template<typename T> struct A {
+    template<typename U> void f();
+    template<> void f<int>() {}
+    template<> void f<T>() {}
+  };
 
-// FIXME: We should diagnose the duplicate explicit specialization definitions
-// here.
-template struct A<int>;
-} // namespace Duplicates
+  // FIXME: We should diagnose the duplicate explicit specialization definitions
+  // here.
+  template struct A<int>;
+}
 
 namespace PR28082 {
 struct S {
@@ -75,4 +75,4 @@ struct S {
   template <>
   int f<0>(int);
 };
-} // namespace PR28082
+}

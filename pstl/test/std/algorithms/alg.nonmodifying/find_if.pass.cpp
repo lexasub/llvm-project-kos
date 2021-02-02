@@ -94,9 +94,8 @@ main()
 {
 #if !_PSTL_ICC_17_TEST_MAC_RELEASE_32_BROKEN
     // Note that the "hit" and "miss" functions here avoid overflow issues.
-    test<Number>(
-        IsMultiple(5, OddTag()), [](int32_t j) { return Number(j - j % 5, OddTag()); }, // hit
-        [](int32_t j) { return Number(j % 5 == 0 ? j ^ 1 : j, OddTag()); });            // miss
+    test<Number>(IsMultiple(5, OddTag()), [](int32_t j) { return Number(j - j % 5, OddTag()); }, // hit
+                 [](int32_t j) { return Number(j % 5 == 0 ? j ^ 1 : j, OddTag()); });            // miss
 #endif
 
     // Try type for which algorithm can really be vectorized.

@@ -6,7 +6,7 @@
 namespace coro = std::experimental::coroutines_v1;
 
 struct coro_t {
-  void *p;
+  void* p;
   ~coro_t();
   struct promise_type {
     coro_t get_return_object();
@@ -19,9 +19,7 @@ struct coro_t {
   };
 };
 
-struct Cleanup {
-  ~Cleanup();
-};
+struct Cleanup { ~Cleanup(); };
 void may_throw();
 
 coro_t f() {

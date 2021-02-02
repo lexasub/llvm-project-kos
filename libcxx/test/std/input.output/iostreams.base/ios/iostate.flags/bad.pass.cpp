@@ -20,24 +20,25 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**) {
-  {
-    std::ios ios(0);
-    assert(ios.bad());
-    ios.setstate(std::ios::eofbit);
-    assert(ios.bad());
-  }
-  {
-    testbuf sb;
-    std::ios ios(&sb);
-    assert(!ios.bad());
-    ios.setstate(std::ios::eofbit);
-    assert(!ios.bad());
-    ios.setstate(std::ios::failbit);
-    assert(!ios.bad());
-    ios.setstate(std::ios::badbit);
-    assert(ios.bad());
-  }
+int main(int, char**)
+{
+    {
+        std::ios ios(0);
+        assert(ios.bad());
+        ios.setstate(std::ios::eofbit);
+        assert(ios.bad());
+    }
+    {
+        testbuf sb;
+        std::ios ios(&sb);
+        assert(!ios.bad());
+        ios.setstate(std::ios::eofbit);
+        assert(!ios.bad());
+        ios.setstate(std::ios::failbit);
+        assert(!ios.bad());
+        ios.setstate(std::ios::badbit);
+        assert(ios.bad());
+    }
 
   return 0;
 }

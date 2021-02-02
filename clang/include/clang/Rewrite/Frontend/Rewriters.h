@@ -29,6 +29,6 @@ void DoRewriteTest(Preprocessor &PP, raw_ostream *OS);
 void RewriteIncludesInInput(Preprocessor &PP, raw_ostream *OS,
                             const PreprocessorOutputOptions &Opts);
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

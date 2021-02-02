@@ -20,8 +20,7 @@ using namespace lldb_private;
 
 enum { FOO = 1, BAR = 2 };
 static constexpr Log::Category test_categories[] = {
-    {{"foo"}, {"log foo"}, FOO},
-    {{"bar"}, {"log bar"}, BAR},
+    {{"foo"}, {"log foo"}, FOO}, {{"bar"}, {"log bar"}, BAR},
 };
 static constexpr uint32_t default_flags = FOO;
 
@@ -57,7 +56,9 @@ namespace {
 struct LogChannelTest : public ::testing::Test {
   void TearDown() override { Log::DisableAllLogChannels(); }
 
-  static void SetUpTestCase() { Log::Register("chan", test_channel); }
+  static void SetUpTestCase() {
+    Log::Register("chan", test_channel);
+  }
 
   static void TearDownTestCase() {
     Log::Unregister("chan");
@@ -98,12 +99,11 @@ void LogChannelEnabledTest::SetUp() {
 
 llvm::StringRef LogChannelEnabledTest::takeOutput() {
   llvm::StringRef result = m_stream_sp->str().drop_front(m_consumed_bytes);
-  m_consumed_bytes += result.size();
+  m_consumed_bytes+= result.size();
   return result;
 }
 
-llvm::StringRef
-LogChannelEnabledTest::logAndTakeOutput(llvm::StringRef Message) {
+llvm::StringRef LogChannelEnabledTest::logAndTakeOutput(llvm::StringRef Message) {
   LLDB_LOG(m_log, "{0}", Message);
   return takeOutput();
 }
@@ -128,8 +128,7 @@ TEST(LogTest, Unregister) {
   std::string message;
   std::shared_ptr<llvm::raw_string_ostream> stream_sp(
       new llvm::raw_string_ostream(message));
-  EXPECT_TRUE(
-      Log::EnableLogChannel(stream_sp, 0, "chan", {"foo"}, llvm::nulls()));
+  EXPECT_TRUE(Log::EnableLogChannel(stream_sp, 0, "chan", {"foo"}, llvm::nulls()));
   EXPECT_NE(nullptr, test_channel.GetLogIfAny(FOO));
   Log::Unregister("chan");
   EXPECT_EQ(nullptr, test_channel.GetLogIfAny(FOO));
@@ -213,8 +212,8 @@ TEST_F(LogChannelTest, List) {
 TEST_F(LogChannelEnabledTest, log_options) {
   std::string Err;
   EXPECT_EQ("Hello World\n", logAndTakeOutput("Hello World"));
-  EXPECT_TRUE(
-      EnableChannel(getStream(), LLDB_LOG_OPTION_THREADSAFE, "chan", {}, Err));
+  EXPECT_TRUE(EnableChannel(getStream(), LLDB_LOG_OPTION_THREADSAFE, "chan", {},
+                            Err));
   EXPECT_EQ("Hello World\n", logAndTakeOutput("Hello World"));
 
   {
@@ -226,15 +225,13 @@ TEST_F(LogChannelEnabledTest, log_options) {
   }
 
   {
-    EXPECT_TRUE(EnableChannel(
-        getStream(), LLDB_LOG_OPTION_PREPEND_FILE_FUNCTION, "chan", {}, Err));
+    EXPECT_TRUE(EnableChannel(getStream(), LLDB_LOG_OPTION_PREPEND_FILE_FUNCTION,
+                              "chan", {}, Err));
     llvm::StringRef Msg = logAndTakeOutput("Hello World");
     char File[12];
     char Function[17];
-
-    sscanf(Msg.str().c_str(),
-           "%[^:]:%s                                 Hello World", File,
-           Function);
+      
+    sscanf(Msg.str().c_str(), "%[^:]:%s                                 Hello World", File, Function);
     EXPECT_STRCASEEQ("LogTest.cpp", File);
     EXPECT_STREQ("logAndTakeOutput", Function);
   }

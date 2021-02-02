@@ -4,8 +4,8 @@
 // RUN: %clangxx_asan -O1 %s -o %t && not %run %t 2>&1 | FileCheck %s
 // RUN: %clangxx_asan -O2 %s -o %t && not %run %t 2>&1 | FileCheck %s
 // RUN: %clangxx_asan -O3 %s -o %t && not %run %t 2>&1 | FileCheck %s
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 
 extern "C" void *__interceptor_malloc(size_t size);
@@ -15,7 +15,7 @@ extern "C" void *malloc(size_t size) {
 }
 
 int main() {
-  char *x = (char *)malloc(10 * sizeof(char));
+  char *x = (char*)malloc(10 * sizeof(char));
   free(x);
   return (int)strtol(x, 0, 10);
   // CHECK: malloc call

@@ -36,8 +36,9 @@ public:
     return SMRange(getLoc(Offset), getLoc(Offset + Length));
   }
 
-  void printMessage(SMLoc Loc, SourceMgr::DiagKind Kind, const Twine &Msg,
-                    ArrayRef<SMRange> Ranges, ArrayRef<SMFixIt> FixIts) {
+  void printMessage(SMLoc Loc, SourceMgr::DiagKind Kind,
+                    const Twine &Msg, ArrayRef<SMRange> Ranges,
+                    ArrayRef<SMFixIt> FixIts) {
     raw_string_ostream OS(Output);
     SM.PrintMessage(OS, Loc, Kind, Msg, Ranges, FixIts);
   }
@@ -195,18 +196,18 @@ TEST_F(SourceMgrTest, LocationOnEOLOfSecondSecondLineOfMultiline) {
             Output);
 }
 
-#define STRING_LITERAL_253_BYTES                                               \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
-  "1234567890\n1234567890\n"                                                   \
+#define STRING_LITERAL_253_BYTES \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
+  "1234567890\n1234567890\n" \
   "1234567890\n"
 
 //===----------------------------------------------------------------------===//
@@ -214,10 +215,9 @@ TEST_F(SourceMgrTest, LocationOnEOLOfSecondSecondLineOfMultiline) {
 //===----------------------------------------------------------------------===//
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf255ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12"                     // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12"                       // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(253), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:1: error: message\n"
             "12\n"
@@ -226,10 +226,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf255ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf255ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12"                     // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12"                       // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(254), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:2: error: message\n"
             "12\n"
@@ -238,10 +237,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf255ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf255ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12"                     // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12"                       // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:3: error: message\n"
             "12\n"
@@ -250,10 +248,9 @@ TEST_F(SourceMgrTest, LocationPastEndOf255ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf255ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1\n"                    // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1\n"                      // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(253), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:1: error: message\n"
             "1\n"
@@ -262,10 +259,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf255ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf255ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1\n"                    // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1\n"                      // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(254), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:2: error: message\n"
             "1\n"
@@ -274,10 +270,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf255ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf255ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1\n"                    // + 2 = 255 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1\n"                      // + 2 = 255 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:25:1: error: message\n"
             "\n"
@@ -290,10 +285,9 @@ TEST_F(SourceMgrTest, LocationPastEndOf255ByteBufferEndingInNewline) {
 //===----------------------------------------------------------------------===//
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf256ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123"                    // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123"                      // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(254), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:2: error: message\n"
             "123\n"
@@ -302,10 +296,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf256ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf256ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123"                    // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123"                      // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:3: error: message\n"
             "123\n"
@@ -314,10 +307,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf256ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf256ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123"                    // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123"                      // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(256), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:4: error: message\n"
             "123\n"
@@ -326,10 +318,9 @@ TEST_F(SourceMgrTest, LocationPastEndOf256ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf256ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12\n"                   // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12\n"                     // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(254), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:2: error: message\n"
             "12\n"
@@ -338,10 +329,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf256ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf256ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12\n"                   // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12\n"                     // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:3: error: message\n"
             "12\n"
@@ -350,10 +340,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf256ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf256ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "12\n"                   // + 3 = 256 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "12\n"                     // + 3 = 256 bytes
+                , "file.in");
   printMessage(getLoc(256), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:25:1: error: message\n"
             "\n"
@@ -366,10 +355,9 @@ TEST_F(SourceMgrTest, LocationPastEndOf256ByteBufferEndingInNewline) {
 //===----------------------------------------------------------------------===//
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf257ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1234"                   // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1234"                     // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:3: error: message\n"
             "1234\n"
@@ -378,10 +366,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf257ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf257ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1234"                   // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1234"                     // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(256), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:4: error: message\n"
             "1234\n"
@@ -390,10 +377,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf257ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf257ByteBuffer) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "1234"                   // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "1234"                     // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(257), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:5: error: message\n"
             "1234\n"
@@ -402,10 +388,9 @@ TEST_F(SourceMgrTest, LocationPastEndOf257ByteBuffer) {
 }
 
 TEST_F(SourceMgrTest, LocationBeforeEndOf257ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123\n"                  // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123\n"                    // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(255), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:3: error: message\n"
             "123\n"
@@ -414,10 +399,9 @@ TEST_F(SourceMgrTest, LocationBeforeEndOf257ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationAtEndOf257ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123\n"                  // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123\n"                    // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(256), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:24:4: error: message\n"
             "123\n"
@@ -426,10 +410,9 @@ TEST_F(SourceMgrTest, LocationAtEndOf257ByteBufferEndingInNewline) {
 }
 
 TEST_F(SourceMgrTest, LocationPastEndOf257ByteBufferEndingInNewline) {
-  setMainBuffer(STRING_LITERAL_253_BYTES // first 253 bytes
-                "123\n"                  // + 4 = 257 bytes
-                ,
-                "file.in");
+  setMainBuffer(STRING_LITERAL_253_BYTES   // first 253 bytes
+                "123\n"                    // + 4 = 257 bytes
+                , "file.in");
   printMessage(getLoc(257), SourceMgr::DK_Error, "message", None, None);
   EXPECT_EQ("file.in:25:1: error: message\n"
             "\n"
@@ -469,7 +452,7 @@ TEST_F(SourceMgrTest, MultiLineRange) {
 
 TEST_F(SourceMgrTest, MultipleRanges) {
   setMainBuffer("aaa bbb\nccc ddd\n", "file.in");
-  SMRange Ranges[] = {getRange(0, 3), getRange(4, 3)};
+  SMRange Ranges[] = { getRange(0, 3), getRange(4, 3) };
   printMessage(getLoc(4), SourceMgr::DK_Error, "message", Ranges, None);
 
   EXPECT_EQ("file.in:1:5: error: message\n"
@@ -480,7 +463,7 @@ TEST_F(SourceMgrTest, MultipleRanges) {
 
 TEST_F(SourceMgrTest, OverlappingRanges) {
   setMainBuffer("aaa bbb\nccc ddd\n", "file.in");
-  SMRange Ranges[] = {getRange(0, 3), getRange(2, 4)};
+  SMRange Ranges[] = { getRange(0, 3), getRange(2, 4) };
   printMessage(getLoc(4), SourceMgr::DK_Error, "message", Ranges, None);
 
   EXPECT_EQ("file.in:1:5: error: message\n"
@@ -512,3 +495,4 @@ TEST_F(SourceMgrTest, FixitForTab) {
             "   zzz\n",
             Output);
 }
+

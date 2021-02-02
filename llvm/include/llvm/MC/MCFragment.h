@@ -183,13 +183,14 @@ public:
 /// Interface implemented by fragments that contain encoded instructions and/or
 /// data.
 ///
-template <unsigned ContentsSize>
+template<unsigned ContentsSize>
 class MCEncodedFragmentWithContents : public MCEncodedFragment {
   SmallVector<char, ContentsSize> Contents;
 
 protected:
   MCEncodedFragmentWithContents(MCFragment::FragmentType FType,
-                                bool HasInstructions, MCSection *Sec)
+                                bool HasInstructions,
+                                MCSection *Sec)
       : MCEncodedFragment(FType, HasInstructions, Sec) {}
 
 public:
@@ -200,20 +201,22 @@ public:
 /// Interface implemented by fragments that contain encoded instructions and/or
 /// data and also have fixups registered.
 ///
-template <unsigned ContentsSize, unsigned FixupsSize>
-class MCEncodedFragmentWithFixups
-    : public MCEncodedFragmentWithContents<ContentsSize> {
+template<unsigned ContentsSize, unsigned FixupsSize>
+class MCEncodedFragmentWithFixups :
+  public MCEncodedFragmentWithContents<ContentsSize> {
 
   /// The list of fixups in this fragment.
   SmallVector<MCFixup, FixupsSize> Fixups;
 
 protected:
   MCEncodedFragmentWithFixups(MCFragment::FragmentType FType,
-                              bool HasInstructions, MCSection *Sec)
+                              bool HasInstructions,
+                              MCSection *Sec)
       : MCEncodedFragmentWithContents<ContentsSize>(FType, HasInstructions,
                                                     Sec) {}
 
 public:
+
   using const_fixup_iterator = SmallVectorImpl<MCFixup>::const_iterator;
   using fixup_iterator = SmallVectorImpl<MCFixup>::iterator;
 
@@ -254,7 +257,8 @@ public:
 class MCCompactEncodedInstFragment : public MCEncodedFragmentWithContents<4> {
 public:
   MCCompactEncodedInstFragment(MCSection *Sec = nullptr)
-      : MCEncodedFragmentWithContents(FT_CompactEncodedInst, true, Sec) {}
+      : MCEncodedFragmentWithContents(FT_CompactEncodedInst, true, Sec) {
+  }
 
   static bool classof(const MCFragment *F) {
     return F->getKind() == MCFragment::FT_CompactEncodedInst;
@@ -274,9 +278,8 @@ class MCRelaxableFragment : public MCEncodedFragmentWithFixups<8, 1> {
 public:
   MCRelaxableFragment(const MCInst &Inst, const MCSubtargetInfo &STI,
                       MCSection *Sec = nullptr)
-      : MCEncodedFragmentWithFixups(FT_Relaxable, true, Sec), Inst(Inst) {
-    this->STI = &STI;
-  }
+      : MCEncodedFragmentWithFixups(FT_Relaxable, true, Sec),
+        Inst(Inst) { this->STI = &STI; }
 
   const MCInst &getInst() const { return Inst; }
   void setInst(const MCInst &Value) { Inst = Value; }

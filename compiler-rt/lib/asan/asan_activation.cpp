@@ -12,7 +12,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "asan_activation.h"
-
 #include "asan_allocator.h"
 #include "asan_flags.h"
 #include "asan_internal.h"
@@ -57,7 +56,7 @@ static struct AsanDeactivatedFlags {
     cf.coverage = coverage;
     cf.coverage_dir = coverage_dir;
     cf.verbosity = Verbosity();
-    cf.help = false;  // this is activation-specific help
+    cf.help = false; // this is activation-specific help
 
     // Check if activation flags need to be overriden.
     if (const char *env = GetEnv("ASAN_ACTIVATION_OPTIONS")) {
@@ -66,11 +65,9 @@ static struct AsanDeactivatedFlags {
 
     InitializeCommonFlags(&cf);
 
-    if (Verbosity())
-      ReportUnrecognizedFlags();
+    if (Verbosity()) ReportUnrecognizedFlags();
 
-    if (cf.help)
-      parser.PrintFlagDescriptions();
+    if (cf.help) parser.PrintFlagDescriptions();
 
     allocator_options.SetFrom(&f, &cf);
     malloc_context_size = cf.malloc_context_size;
@@ -125,8 +122,7 @@ void AsanDeactivate() {
 }
 
 void AsanActivate() {
-  if (!asan_is_deactivated)
-    return;
+  if (!asan_is_deactivated) return;
   VReport(1, "Activating ASan\n");
 
   UpdateProcessName();

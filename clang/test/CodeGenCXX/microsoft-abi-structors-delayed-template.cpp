@@ -9,4 +9,4 @@ struct ImplicitCtor {
 template <class T> void foo(T t) { new ImplicitCtor; }
 void bar() { foo(0); }
 // CHECK: store {{.*}} @"??_7ImplicitCtor@vtable_referenced_from_template@@6B@"
-} // namespace vtable_referenced_from_template
+}

@@ -22,8 +22,7 @@ class BitVector;
 
 namespace mlir {
 class TypeRange;
-template <typename ValueRangeT>
-class ValueTypeRange;
+template <typename ValueRangeT> class ValueTypeRange;
 
 /// `Block` represents an ordered list of `Operation`s.
 class Block : public IRObjectWithUseList<BlockOperand>,
@@ -175,18 +174,15 @@ public:
 
   /// Return an iterator range over the operations within this block that are of
   /// 'OpT'.
-  template <typename OpT>
-  iterator_range<op_iterator<OpT>> getOps() {
+  template <typename OpT> iterator_range<op_iterator<OpT>> getOps() {
     auto endIt = end();
     return {detail::op_filter_iterator<OpT, iterator>(begin(), endIt),
             detail::op_filter_iterator<OpT, iterator>(endIt, endIt)};
   }
-  template <typename OpT>
-  op_iterator<OpT> op_begin() {
+  template <typename OpT> op_iterator<OpT> op_begin() {
     return detail::op_filter_iterator<OpT, iterator>(begin(), end());
   }
-  template <typename OpT>
-  op_iterator<OpT> op_end() {
+  template <typename OpT> op_iterator<OpT> op_end() {
     return detail::op_filter_iterator<OpT, iterator>(end(), end());
   }
 

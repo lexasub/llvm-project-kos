@@ -16,7 +16,7 @@
 #include "llvm/IR/DerivedTypes.h"
 
 namespace llvm {
-class StructType;
+  class StructType;
 }
 
 namespace clang {
@@ -107,9 +107,11 @@ struct CGBitFieldInfo {
   /// Given a bit-field decl, build an appropriate helper object for
   /// accessing that field (which is expected to have the given offset and
   /// size).
-  static CGBitFieldInfo MakeInfo(class CodeGenTypes &Types, const FieldDecl *FD,
+  static CGBitFieldInfo MakeInfo(class CodeGenTypes &Types,
+                                 const FieldDecl *FD,
                                  uint64_t Offset, uint64_t Size,
-                                 uint64_t StorageSize, CharUnits StorageOffset);
+                                 uint64_t StorageSize,
+                                 CharUnits StorageOffset);
 };
 
 /// CGRecordLayout - This class handles struct and union layout info while
@@ -158,16 +160,19 @@ private:
 
 public:
   CGRecordLayout(llvm::StructType *CompleteObjectType,
-                 llvm::StructType *BaseSubobjectType, bool IsZeroInitializable,
+                 llvm::StructType *BaseSubobjectType,
+                 bool IsZeroInitializable,
                  bool IsZeroInitializableAsBase)
-      : CompleteObjectType(CompleteObjectType),
-        BaseSubobjectType(BaseSubobjectType),
-        IsZeroInitializable(IsZeroInitializable),
-        IsZeroInitializableAsBase(IsZeroInitializableAsBase) {}
+    : CompleteObjectType(CompleteObjectType),
+      BaseSubobjectType(BaseSubobjectType),
+      IsZeroInitializable(IsZeroInitializable),
+      IsZeroInitializableAsBase(IsZeroInitializableAsBase) {}
 
   /// Return the "complete object" LLVM type associated with
   /// this record.
-  llvm::StructType *getLLVMType() const { return CompleteObjectType; }
+  llvm::StructType *getLLVMType() const {
+    return CompleteObjectType;
+  }
 
   /// Return the "base subobject" LLVM type associated with
   /// this record.
@@ -177,11 +182,15 @@ public:
 
   /// Check whether this struct can be C++ zero-initialized
   /// with a zeroinitializer.
-  bool isZeroInitializable() const { return IsZeroInitializable; }
+  bool isZeroInitializable() const {
+    return IsZeroInitializable;
+  }
 
   /// Check whether this struct can be C++ zero-initialized
   /// with a zeroinitializer when considered as a base subobject.
-  bool isZeroInitializableAsBase() const { return IsZeroInitializableAsBase; }
+  bool isZeroInitializableAsBase() const {
+    return IsZeroInitializableAsBase;
+  }
 
   /// Return llvm::StructType element number that corresponds to the
   /// field FD.
@@ -207,8 +216,8 @@ public:
   const CGBitFieldInfo &getBitFieldInfo(const FieldDecl *FD) const {
     FD = FD->getCanonicalDecl();
     assert(FD->isBitField() && "Invalid call for non-bit-field decl!");
-    llvm::DenseMap<const FieldDecl *, CGBitFieldInfo>::const_iterator it =
-        BitFields.find(FD);
+    llvm::DenseMap<const FieldDecl *, CGBitFieldInfo>::const_iterator
+      it = BitFields.find(FD);
     assert(it != BitFields.end() && "Unable to find bitfield info");
     return it->second;
   }
@@ -217,7 +226,7 @@ public:
   void dump() const;
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

@@ -19,61 +19,62 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::stringbuf sb("0123456789", std::ios_base::in);
-    assert(sb.pubseekpos(3, std::ios_base::out) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::in | std::ios_base::out) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::in) == 3);
-    assert(sb.sgetc() == '3');
-  }
-  {
-    std::stringbuf sb("0123456789", std::ios_base::out);
-    assert(sb.pubseekpos(3, std::ios_base::in) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::out) == 3);
-    assert(sb.sputc('a') == 'a');
-    assert(sb.str() == "012a456789");
-  }
-  {
-    std::stringbuf sb("0123456789");
-    assert(sb.pubseekpos(3, std::ios_base::in) == 3);
-    assert(sb.sgetc() == '3');
-    assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == 3);
-    assert(sb.sgetc() == '3');
-    assert(sb.sputc('a') == 'a');
-    assert(sb.str() == "012a456789");
-    assert(sb.pubseekpos(3, std::ios_base::out) == 3);
-    assert(sb.sputc('3') == '3');
-    assert(sb.str() == "0123456789");
-  }
-  {
-    std::wstringbuf sb(L"0123456789", std::ios_base::in);
-    assert(sb.pubseekpos(3, std::ios_base::out) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::in | std::ios_base::out) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::in) == 3);
-    assert(sb.sgetc() == L'3');
-  }
-  {
-    std::wstringbuf sb(L"0123456789", std::ios_base::out);
-    assert(sb.pubseekpos(3, std::ios_base::in) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == -1);
-    assert(sb.pubseekpos(3, std::ios_base::out) == 3);
-    assert(sb.sputc(L'a') == L'a');
-    assert(sb.str() == L"012a456789");
-  }
-  {
-    std::wstringbuf sb(L"0123456789");
-    assert(sb.pubseekpos(3, std::ios_base::in) == 3);
-    assert(sb.sgetc() == L'3');
-    assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == 3);
-    assert(sb.sgetc() == L'3');
-    assert(sb.sputc(L'a') == L'a');
-    assert(sb.str() == L"012a456789");
-    assert(sb.pubseekpos(3, std::ios_base::out) == 3);
-    assert(sb.sputc(L'3') == L'3');
-    assert(sb.str() == L"0123456789");
-  }
+int main(int, char**)
+{
+    {
+        std::stringbuf sb("0123456789", std::ios_base::in);
+        assert(sb.pubseekpos(3, std::ios_base::out) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::in | std::ios_base::out) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::in) == 3);
+        assert(sb.sgetc() == '3');
+    }
+    {
+        std::stringbuf sb("0123456789", std::ios_base::out);
+        assert(sb.pubseekpos(3, std::ios_base::in) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::out) == 3);
+        assert(sb.sputc('a') == 'a');
+        assert(sb.str() == "012a456789");
+    }
+    {
+        std::stringbuf sb("0123456789");
+        assert(sb.pubseekpos(3, std::ios_base::in) == 3);
+        assert(sb.sgetc() == '3');
+        assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == 3);
+        assert(sb.sgetc() == '3');
+        assert(sb.sputc('a') == 'a');
+        assert(sb.str() == "012a456789");
+        assert(sb.pubseekpos(3, std::ios_base::out) == 3);
+        assert(sb.sputc('3') == '3');
+        assert(sb.str() == "0123456789");
+    }
+    {
+        std::wstringbuf sb(L"0123456789", std::ios_base::in);
+        assert(sb.pubseekpos(3, std::ios_base::out) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::in | std::ios_base::out) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::in) == 3);
+        assert(sb.sgetc() == L'3');
+    }
+    {
+        std::wstringbuf sb(L"0123456789", std::ios_base::out);
+        assert(sb.pubseekpos(3, std::ios_base::in) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == -1);
+        assert(sb.pubseekpos(3, std::ios_base::out) == 3);
+        assert(sb.sputc(L'a') == L'a');
+        assert(sb.str() == L"012a456789");
+    }
+    {
+        std::wstringbuf sb(L"0123456789");
+        assert(sb.pubseekpos(3, std::ios_base::in) == 3);
+        assert(sb.sgetc() == L'3');
+        assert(sb.pubseekpos(3, std::ios_base::out | std::ios_base::in) == 3);
+        assert(sb.sgetc() == L'3');
+        assert(sb.sputc(L'a') == L'a');
+        assert(sb.str() == L"012a456789");
+        assert(sb.pubseekpos(3, std::ios_base::out) == 3);
+        assert(sb.sputc(L'3') == L'3');
+        assert(sb.str() == L"0123456789");
+    }
 
   return 0;
 }

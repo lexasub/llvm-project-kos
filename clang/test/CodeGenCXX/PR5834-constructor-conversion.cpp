@@ -4,7 +4,7 @@
 struct ASTMultiMover {};
 struct ASTMultiPtr {
   ASTMultiPtr();
-  ASTMultiPtr(ASTMultiPtr &);
+  ASTMultiPtr(ASTMultiPtr&);
   ASTMultiPtr(ASTMultiMover mover);
   operator ASTMultiMover();
 };

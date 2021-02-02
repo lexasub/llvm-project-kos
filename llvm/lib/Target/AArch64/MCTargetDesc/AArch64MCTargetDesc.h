@@ -69,7 +69,7 @@ namespace AArch64_MC {
 void initLLVMToCVRegMapping(MCRegisterInfo *MRI);
 }
 
-} // namespace llvm
+} // End llvm namespace
 
 // Defines symbolic names for AArch64 registers.  This defines a mapping from
 // register name to register number.

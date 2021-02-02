@@ -36,7 +36,8 @@ public:
                             std::unique_ptr<DiagnosticConsumer> Secondary)
       : Primary(Primary), Secondary(std::move(Secondary)) {}
 
-  void BeginSourceFile(const LangOptions &LO, const Preprocessor *PP) override {
+  void BeginSourceFile(const LangOptions &LO,
+                       const Preprocessor *PP) override {
     Primary->BeginSourceFile(LO, PP);
     Secondary->BeginSourceFile(LO, PP);
   }
@@ -65,6 +66,6 @@ public:
   }
 };
 
-} // namespace clang
+} // end namspace clang
 
 #endif

@@ -23,18 +23,21 @@
 #include <iterator>
 
 template <class It, class U>
-void test(U u) {
-  const std::move_iterator<U> r2(u);
-  std::move_iterator<It> r1;
-  r1 = r2;
+void
+test(U u)
+{
+    const std::move_iterator<U> r2(u);
+    std::move_iterator<It> r1;
+    r1 = r2;
 }
 
 struct base {};
 struct derived {};
 
-int main(int, char**) {
-  derived d;
-  test<base*>(&d);
+int main(int, char**)
+{
+    derived d;
+    test<base*>(&d);
 
   return 0;
 }

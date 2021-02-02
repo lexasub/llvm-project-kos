@@ -4,9 +4,9 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <fstab.h>
 #include <stdio.h>
 #include <string.h>
+#include <fstab.h>
 
 int main(void) {
   printf("getfsent\n");
@@ -26,7 +26,7 @@ int main(void) {
   assert(!memcmp(pentry, wentry, sizeof(*pentry)));
 
   printf("First entry: device block '%s', mounted with '%s'\n",
-         fentry->fs_spec, fentry->fs_mntops);
+    fentry->fs_spec, fentry->fs_mntops);
 
   endfsent();
 

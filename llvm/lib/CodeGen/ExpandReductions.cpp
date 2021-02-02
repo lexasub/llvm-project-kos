@@ -82,8 +82,7 @@ bool expandReductions(Function &F, const TargetTransformInfo *TTI) {
   for (auto &I : instructions(F)) {
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       switch (II->getIntrinsicID()) {
-      default:
-        break;
+      default: break;
       case Intrinsic::vector_reduce_fadd:
       case Intrinsic::vector_reduce_fmul:
       case Intrinsic::vector_reduce_add:
@@ -116,8 +115,7 @@ bool expandReductions(Function &F, const TargetTransformInfo *TTI) {
     IRBuilder<>::FastMathFlagGuard FMFGuard(Builder);
     Builder.setFastMathFlags(FMF);
     switch (ID) {
-    default:
-      llvm_unreachable("Unexpected intrinsic!");
+    default: llvm_unreachable("Unexpected intrinsic!");
     case Intrinsic::vector_reduce_fadd:
     case Intrinsic::vector_reduce_fmul: {
       // FMFs must be attached to the call, otherwise it's an ordered reduction
@@ -132,8 +130,8 @@ bool expandReductions(Function &F, const TargetTransformInfo *TTI) {
           continue;
 
         Rdx = getShuffleReduction(Builder, Vec, getOpcode(ID), RK);
-        Rdx = Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(ID), Acc,
-                                  Rdx, "bin.rdx");
+        Rdx = Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(ID),
+                                  Acc, Rdx, "bin.rdx");
       }
       break;
     }
@@ -184,7 +182,7 @@ public:
   }
 
   bool runOnFunction(Function &F) override {
-    const auto *TTI = &getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
+    const auto *TTI =&getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
     return expandReductions(F, TTI);
   }
 
@@ -193,7 +191,7 @@ public:
     AU.setPreservesCFG();
   }
 };
-} // namespace
+}
 
 char ExpandReductions::ID;
 INITIALIZE_PASS_BEGIN(ExpandReductions, "expand-reductions",

@@ -19,10 +19,7 @@ struct T {
   BIGTYPE f;
   char c;
   T() : a(12), f(15) {}
-  T &operator+(T &b) {
-    f += b.a;
-    return *this;
-  }
+  T &operator+(T &b) { f += b.a; return *this;}
 };
 
 struct T1 {
@@ -31,10 +28,7 @@ struct T1 {
   __int128 f1;
   char c;
   T1() : a(12), f(15) {}
-  T1 &operator+(T1 &b) {
-    f += b.a;
-    return *this;
-  }
+  T1 &operator+(T1 &b) { f += b.a; return *this;}
 };
 
 #pragma omp declare target
@@ -46,16 +40,16 @@ void foo(T a = T()) {
 }
 // CHECK: define{{ hidden | }}[6 x i64] @{{.+}}bar{{.+}}()
 T bar() {
-  // CHECK:      bitcast [[T]]* %{{.+}} to [6 x i64]*
-  // CHECK-NEXT: load [6 x i64], [6 x i64]* %{{.+}},
-  // CHECK-NEXT: ret [6 x i64]
+// CHECK:      bitcast [[T]]* %{{.+}} to [6 x i64]*
+// CHECK-NEXT: load [6 x i64], [6 x i64]* %{{.+}},
+// CHECK-NEXT: ret [6 x i64]
   return T();
 }
 // CHECK: define{{ hidden | }}void @{{.+}}baz{{.+}}()
 void baz() {
-  // CHECK:      call [6 x i64] @{{.+}}bar{{.+}}()
-  // CHECK-NEXT: bitcast [[T]]* %{{.+}} to [6 x i64]*
-  // CHECK-NEXT: store [6 x i64] %{{.+}}, [6 x i64]* %{{.+}},
+// CHECK:      call [6 x i64] @{{.+}}bar{{.+}}()
+// CHECK-NEXT: bitcast [[T]]* %{{.+}} to [6 x i64]*
+// CHECK-NEXT: store [6 x i64] %{{.+}}, [6 x i64]* %{{.+}},
   T t = bar();
 }
 T1 a1 = T1();
@@ -66,13 +60,14 @@ void foo1(T1 a = T1()) {
 }
 // CHECK: define{{ hidden | }}[[T1]] @{{.+}}bar1{{.+}}()
 T1 bar1() {
-  // CHECK:      load [[T1]], [[T1]]*
-  // CHECK-NEXT: ret [[T1]]
+// CHECK:      load [[T1]], [[T1]]*
+// CHECK-NEXT: ret [[T1]]
   return T1();
 }
 // CHECK: define{{ hidden | }}void @{{.+}}baz1{{.+}}()
 void baz1() {
-  // CHECK: call [[T1]] @{{.+}}bar1{{.+}}()
+// CHECK: call [[T1]] @{{.+}}bar1{{.+}}()
   T1 t = bar1();
 }
 #pragma omp end declare target
+

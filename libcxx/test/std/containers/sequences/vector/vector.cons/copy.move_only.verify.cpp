@@ -12,15 +12,16 @@
 
 #include <vector>
 
-struct move_only {
-  move_only() = default;
-  move_only(move_only&&) = default;
-  move_only& operator=(move_only&&) = default;
+struct move_only
+{
+    move_only() = default;
+    move_only(move_only&&) = default;
+    move_only& operator=(move_only&&) = default;
 };
 
-int main(int, char**) {
-  std::vector<move_only> v;
-  std::vector<move_only> copy =
-      v; // expected-error-re@* {{{{(no matching function for call to 'construct_at')|(call to implicitly-deleted copy constructor of 'move_only')}}}}
-  return 0;
+int main(int, char**)
+{
+    std::vector<move_only> v;
+    std::vector<move_only> copy = v; // expected-error-re@* {{{{(no matching function for call to 'construct_at')|(call to implicitly-deleted copy constructor of 'move_only')}}}}
+    return 0;
 }

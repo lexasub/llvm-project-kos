@@ -16,10 +16,8 @@
 
 using namespace __ubsan;
 
-void __sanitizer::BufferedStackTrace::UnwindImpl(uptr pc, uptr bp,
-                                                 void *context,
-                                                 bool request_fast,
-                                                 u32 max_depth) {
+void __sanitizer::BufferedStackTrace::UnwindImpl(
+    uptr pc, uptr bp, void *context, bool request_fast, u32 max_depth) {
   uptr top = 0;
   uptr bottom = 0;
   if (StackTrace::WillUseFastUnwind(request_fast)) {
@@ -39,4 +37,4 @@ void __sanitizer_print_stack_trace() {
 }
 } // extern "C"
 
-#endif // CAN_SANITIZE_UB
+#endif  // CAN_SANITIZE_UB

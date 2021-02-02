@@ -46,7 +46,9 @@ bool GlobalValue::isMaterializable() const {
     return F->isMaterializable();
   return false;
 }
-Error GlobalValue::materialize() { return getParent()->materialize(this); }
+Error GlobalValue::materialize() {
+  return getParent()->materialize(this);
+}
 
 /// Override destroyConstantImpl to make sure it doesn't get called on
 /// GlobalValue's because they shouldn't be treated like other constants.
@@ -423,11 +425,10 @@ void GlobalVariable::dropAllReferences() {
 //===----------------------------------------------------------------------===//
 
 GlobalIndirectSymbol::GlobalIndirectSymbol(Type *Ty, ValueTy VTy,
-                                           unsigned AddressSpace,
-                                           LinkageTypes Linkage,
-                                           const Twine &Name, Constant *Symbol)
+    unsigned AddressSpace, LinkageTypes Linkage, const Twine &Name,
+    Constant *Symbol)
     : GlobalValue(Ty, VTy, &Op<0>(), 1, Linkage, Name, AddressSpace) {
-  Op<0>() = Symbol;
+    Op<0>() = Symbol;
 }
 
 static const GlobalObject *

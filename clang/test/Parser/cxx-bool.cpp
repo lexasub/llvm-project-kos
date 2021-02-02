@@ -5,6 +5,7 @@ bool a = true;
 bool b = false;
 
 namespace pr34273 {
-char c = "clang"[true];
-char d = true["clang"];
-} // namespace pr34273
+  char c = "clang"[true];
+  char d = true["clang"];
+}
+

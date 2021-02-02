@@ -13,8 +13,8 @@
 #ifndef PHASE1_DONE
 #define PHASE1_DONE
 
-template <int n> int f() noexcept(n % 2) { return 0; }
-template <int n> int g() noexcept(n % 2);
+template<int n> int f() noexcept(n % 2) { return 0; }
+template<int n> int g() noexcept(n % 2);
 
 decltype(f<2>()) f0;
 decltype(f<3>()) f1;
@@ -25,7 +25,7 @@ decltype(f<7>()) f7;
 
 struct A {
   A();
-  A(const A &);
+  A(const A&);
 };
 
 decltype(g<0>()) g0;
@@ -41,7 +41,7 @@ template int f<10>();
 template int f<11>();
 
 A::A() = default;
-A::A(const A &) = default;
+A::A(const A&) = default;
 
 int g0val = g<0>();
 

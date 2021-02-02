@@ -9,13 +9,13 @@ int main() {
       ++b; // CHECK: add nsw{{.*}}, 1
     else
       ++a; // CHECK: add nsw{{.*}}, 1
-      // The continuation block if the if statement should not share the
-      // location of the ++a statement. The branch back to the start of the loop
-      // should be attributed to the loop header line.
+  // The continuation block if the if statement should not share the
+  // location of the ++a statement. The branch back to the start of the loop
+  // should be attributed to the loop header line.
 
-      // CHECK: br label
-      // CHECK: br label
-      // CHECK: br label {{.*}}, !dbg [[DBG1:![0-9]*]], !llvm.loop [[L1:![0-9]*]]
+  // CHECK: br label
+  // CHECK: br label
+  // CHECK: br label {{.*}}, !dbg [[DBG1:![0-9]*]], !llvm.loop [[L1:![0-9]*]]
 
 #line 200
   while (a)
@@ -24,18 +24,18 @@ int main() {
     else
       ++a; // CHECK: add nsw{{.*}}, 1
 
-      // CHECK: br label
-      // CHECK: br label {{.*}}, !dbg [[DBG2:![0-9]*]], !llvm.loop [[L2:![0-9]*]]
+  // CHECK: br label
+  // CHECK: br label {{.*}}, !dbg [[DBG2:![0-9]*]], !llvm.loop [[L2:![0-9]*]]
 
 #line 300
-  for (; a;)
+  for (; a; )
     if (b)
       ++b; // CHECK: add nsw{{.*}}, 1
     else
       ++a; // CHECK: add nsw{{.*}}, 1
 
-      // CHECK: br label
-      // CHECK: br label {{.*}}, !dbg [[DBG3:![0-9]*]], !llvm.loop [[L3:![0-9]*]]
+  // CHECK: br label
+  // CHECK: br label {{.*}}, !dbg [[DBG3:![0-9]*]], !llvm.loop [[L3:![0-9]*]]
 
 #line 400
   int x[] = {1, 2};

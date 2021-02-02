@@ -9,12 +9,12 @@
 // Tests for sanitizer_printf.cpp
 //
 //===----------------------------------------------------------------------===//
-#include <limits.h>
-#include <string.h>
-
-#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
+#include "gtest/gtest.h"
+
+#include <string.h>
+#include <limits.h>
 
 namespace __sanitizer {
 
@@ -81,9 +81,9 @@ TEST(Printf, OverflowPtr) {
   char buf[] = "123456789";
   void *p;
   if (sizeof(p) == 4) {
-    p = (void *)0x1234567;
+    p = (void*)0x1234567;
   } else {
-    p = (void *)0x123456789ULL;
+    p = (void*)0x123456789ULL;
   }
   internal_snprintf(buf, 4, "%p", p);  // NOLINT
   EXPECT_STREQ("0x0", buf);
@@ -98,10 +98,10 @@ TEST(Printf, OverflowPtr) {
 
 #if defined(_WIN32)
 // Oh well, MSVS headers don't define snprintf.
-#define snprintf _snprintf
+# define snprintf _snprintf
 #endif
 
-template <typename T>
+template<typename T>
 static void TestAgainstLibc(const char *fmt, T arg1, T arg2) {
   char buf[1024];
   uptr len = internal_snprintf(buf, sizeof(buf), fmt, arg1, arg2);

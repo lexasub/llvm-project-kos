@@ -21,6 +21,7 @@
 // std::u16string generic_u16string() const;
 // std::u32string generic_u32string() const;
 
+
 #include "filesystem_include.h"
 #include <type_traits>
 #include <cassert>
@@ -31,12 +32,10 @@
 #include "min_allocator.h"
 #include "filesystem_test_helper.h"
 
-MultiStringType longString =
-    MKSTR("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/123456789/"
-          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnop"
-          "qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+MultiStringType longString = MKSTR("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/123456789/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
-int main(int, char**) {
+int main(int, char**)
+{
   using namespace fs;
   auto const& MS = longString;
   const char* value = longString;

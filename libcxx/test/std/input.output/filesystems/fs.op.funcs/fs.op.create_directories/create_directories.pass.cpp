@@ -28,50 +28,51 @@ using namespace fs;
 
 TEST_SUITE(filesystem_create_directories_test_suite)
 
-TEST_CASE(test_signatures) {
-  const path p;
-  ((void)p);
-  std::error_code ec;
-  ((void)ec);
-  ASSERT_SAME_TYPE(decltype(fs::create_directories(p)), bool);
-  ASSERT_SAME_TYPE(decltype(fs::create_directories(p, ec)), bool);
-  ASSERT_NOT_NOEXCEPT(fs::create_directories(p));
-  ASSERT_NOT_NOEXCEPT(fs::create_directories(p, ec));
+TEST_CASE(test_signatures)
+{
+    const path p; ((void)p);
+    std::error_code ec; ((void)ec);
+    ASSERT_SAME_TYPE(decltype(fs::create_directories(p)), bool);
+    ASSERT_SAME_TYPE(decltype(fs::create_directories(p, ec)), bool);
+    ASSERT_NOT_NOEXCEPT(fs::create_directories(p));
+    ASSERT_NOT_NOEXCEPT(fs::create_directories(p, ec));
 }
 
-TEST_CASE(create_existing_directory) {
-  scoped_test_env env;
-  const path dir = env.create_dir("dir1");
-  std::error_code ec;
-  TEST_CHECK(fs::create_directories(dir, ec) == false);
-  TEST_CHECK(!ec);
-  TEST_CHECK(is_directory(dir));
+TEST_CASE(create_existing_directory)
+{
+    scoped_test_env env;
+    const path dir = env.create_dir("dir1");
+    std::error_code ec;
+    TEST_CHECK(fs::create_directories(dir, ec) == false);
+    TEST_CHECK(!ec);
+    TEST_CHECK(is_directory(dir));
 }
 
-TEST_CASE(create_directory_one_level) {
-  scoped_test_env env;
-  const path dir = env.make_env_path("dir1");
-  std::error_code ec;
-  TEST_CHECK(fs::create_directories(dir, ec) == true);
-  TEST_CHECK(!ec);
-  TEST_CHECK(is_directory(dir));
+TEST_CASE(create_directory_one_level)
+{
+    scoped_test_env env;
+    const path dir = env.make_env_path("dir1");
+    std::error_code ec;
+    TEST_CHECK(fs::create_directories(dir, ec) == true);
+    TEST_CHECK(!ec);
+    TEST_CHECK(is_directory(dir));
 }
 
-TEST_CASE(create_directories_multi_level) {
-  scoped_test_env env;
-  const path dir = env.make_env_path("dir1/dir2/dir3");
-  std::error_code ec;
-  TEST_CHECK(fs::create_directories(dir, ec) == true);
-  TEST_CHECK(!ec);
-  TEST_CHECK(is_directory(dir));
+TEST_CASE(create_directories_multi_level)
+{
+    scoped_test_env env;
+    const path dir = env.make_env_path("dir1/dir2/dir3");
+    std::error_code ec;
+    TEST_CHECK(fs::create_directories(dir, ec) == true);
+    TEST_CHECK(!ec);
+    TEST_CHECK(is_directory(dir));
 }
 
 TEST_CASE(create_directory_symlinks) {
   scoped_test_env env;
   const path root = env.create_dir("dir");
   const path sym_dest_dead = env.make_env_path("dead");
-  const path dead_sym =
-      env.create_directory_symlink(sym_dest_dead, "dir/sym_dir");
+  const path dead_sym = env.create_directory_symlink(sym_dest_dead, "dir/sym_dir");
   const path target = env.make_env_path("dir/sym_dir/foo");
   {
     std::error_code ec = GetTestEC();
@@ -99,39 +100,42 @@ TEST_CASE(create_directory_through_symlinks) {
   }
 }
 
-TEST_CASE(dest_is_file) {
-  scoped_test_env env;
-  const path file = env.create_file("file", 42);
-  std::error_code ec = GetTestEC();
-  TEST_CHECK(fs::create_directories(file, ec) == false);
-  TEST_CHECK(ec);
-  TEST_CHECK(ErrorIs(ec, std::errc::file_exists));
-  TEST_CHECK(is_regular_file(file));
+TEST_CASE(dest_is_file)
+{
+    scoped_test_env env;
+    const path file = env.create_file("file", 42);
+    std::error_code ec = GetTestEC();
+    TEST_CHECK(fs::create_directories(file, ec) == false);
+    TEST_CHECK(ec);
+    TEST_CHECK(ErrorIs(ec, std::errc::file_exists));
+    TEST_CHECK(is_regular_file(file));
 }
 
-TEST_CASE(dest_part_is_file) {
-  scoped_test_env env;
-  const path file = env.create_file("file");
-  const path dir = env.make_env_path("file/dir1");
-  std::error_code ec = GetTestEC();
-  TEST_CHECK(fs::create_directories(dir, ec) == false);
-  TEST_CHECK(ec);
-  TEST_CHECK(ErrorIs(ec, std::errc::not_a_directory));
-  TEST_CHECK(is_regular_file(file));
-  TEST_CHECK(!exists(dir));
+TEST_CASE(dest_part_is_file)
+{
+    scoped_test_env env;
+    const path file = env.create_file("file");
+    const path dir = env.make_env_path("file/dir1");
+    std::error_code ec = GetTestEC();
+    TEST_CHECK(fs::create_directories(dir, ec) == false);
+    TEST_CHECK(ec);
+    TEST_CHECK(ErrorIs(ec, std::errc::not_a_directory));
+    TEST_CHECK(is_regular_file(file));
+    TEST_CHECK(!exists(dir));
 }
 
-TEST_CASE(dest_final_part_is_file) {
-  scoped_test_env env;
-  env.create_dir("dir");
-  const path file = env.create_file("dir/file");
-  const path dir = env.make_env_path("dir/file/dir1");
-  std::error_code ec = GetTestEC();
-  TEST_CHECK(fs::create_directories(dir, ec) == false);
-  TEST_CHECK(ec);
-  TEST_CHECK(ErrorIs(ec, std::errc::not_a_directory));
-  TEST_CHECK(is_regular_file(file));
-  TEST_CHECK(!exists(dir));
+TEST_CASE(dest_final_part_is_file)
+{
+    scoped_test_env env;
+    env.create_dir("dir");
+    const path file = env.create_file("dir/file");
+    const path dir = env.make_env_path("dir/file/dir1");
+    std::error_code ec = GetTestEC();
+    TEST_CHECK(fs::create_directories(dir, ec) == false);
+    TEST_CHECK(ec);
+    TEST_CHECK(ErrorIs(ec, std::errc::not_a_directory));
+    TEST_CHECK(is_regular_file(file));
+    TEST_CHECK(!exists(dir));
 }
 
 TEST_SUITE_END()

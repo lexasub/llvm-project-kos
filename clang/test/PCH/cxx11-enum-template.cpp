@@ -8,7 +8,7 @@
 
 #define HEADER_INCLUDED
 
-template <typename T> struct S {
+template<typename T> struct S {
   enum class E {
     e = T()
   };

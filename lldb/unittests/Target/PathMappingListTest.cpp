@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/ADT/ArrayRef.h"
 #include "lldb/Target/PathMappingList.h"
 #include "lldb/Utility/FileSpec.h"
-#include "llvm/ADT/ArrayRef.h"
 #include "gtest/gtest.h"
 #include <utility>
 
@@ -46,13 +46,13 @@ static void TestPathMappings(const PathMappingList &map,
 
 TEST(PathMappingListTest, RelativeTests) {
   Matches matches[] = {
-      {".", "/tmp"},
-      {"./", "/tmp"},
-      {"./////", "/tmp"},
-      {"./foo.c", "/tmp/foo.c"},
-      {"foo.c", "/tmp/foo.c"},
-      {"./bar/foo.c", "/tmp/bar/foo.c"},
-      {"bar/foo.c", "/tmp/bar/foo.c"},
+    {".", "/tmp"},
+    {"./", "/tmp"},
+    {"./////", "/tmp"},
+    {"./foo.c", "/tmp/foo.c"},
+    {"foo.c", "/tmp/foo.c"},
+    {"./bar/foo.c", "/tmp/bar/foo.c"},
+    {"bar/foo.c", "/tmp/bar/foo.c"},
   };
   ConstString fails[] = {
 #ifdef _WIN32
@@ -75,17 +75,20 @@ TEST(PathMappingListTest, AbsoluteTests) {
   PathMappingList map;
   map.Append(ConstString("/old"), ConstString("/new"), false);
   Matches matches[] = {
-      {"/old", "/new"},
-      {"/old/", "/new"},
-      {"/old/foo/.", "/new/foo"},
-      {"/old/foo.c", "/new/foo.c"},
-      {"/old/foo.c/.", "/new/foo.c"},
-      {"/old/./foo.c", "/new/foo.c"},
+    {"/old", "/new"},
+    {"/old/", "/new"},
+    {"/old/foo/.", "/new/foo"},
+    {"/old/foo.c", "/new/foo.c"},
+    {"/old/foo.c/.", "/new/foo.c"},
+    {"/old/./foo.c", "/new/foo.c"},
   };
   ConstString fails[] = {
-      ConstString("/foo"),     ConstString("/"),
-      ConstString("foo.c"),    ConstString("./foo.c"),
-      ConstString("../foo.c"), ConstString("../bar/foo.c"),
+    ConstString("/foo"),
+    ConstString("/"),
+    ConstString("foo.c"),
+    ConstString("./foo.c"),
+    ConstString("../foo.c"),
+    ConstString("../bar/foo.c"),
   };
   TestPathMappings(map, matches, fails);
 }
@@ -94,18 +97,18 @@ TEST(PathMappingListTest, RemapRoot) {
   PathMappingList map;
   map.Append(ConstString("/"), ConstString("/new"), false);
   Matches matches[] = {
-      {"/old", "/new/old"},
-      {"/old/", "/new/old"},
-      {"/old/foo/.", "/new/old/foo"},
-      {"/old/foo.c", "/new/old/foo.c"},
-      {"/old/foo.c/.", "/new/old/foo.c"},
-      {"/old/./foo.c", "/new/old/foo.c"},
+    {"/old", "/new/old"},
+    {"/old/", "/new/old"},
+    {"/old/foo/.", "/new/old/foo"},
+    {"/old/foo.c", "/new/old/foo.c"},
+    {"/old/foo.c/.", "/new/old/foo.c"},
+    {"/old/./foo.c", "/new/old/foo.c"},
   };
   ConstString fails[] = {
-      ConstString("foo.c"),
-      ConstString("./foo.c"),
-      ConstString("../foo.c"),
-      ConstString("../bar/foo.c"),
+    ConstString("foo.c"),
+    ConstString("./foo.c"),
+    ConstString("../foo.c"),
+    ConstString("../bar/foo.c"),
   };
   TestPathMappings(map, matches, fails);
 }

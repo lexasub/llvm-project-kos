@@ -16,6 +16,8 @@
 using namespace clang;
 using namespace clang::interp;
 
+
+
 void Block::addPointer(Pointer *P) {
   if (IsStatic)
     return;

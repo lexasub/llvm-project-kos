@@ -46,11 +46,12 @@ private:
     if (!StatPath)
       StatPath = Path;
 
-    auto fileType = IsFile ? llvm::sys::fs::file_type::regular_file
-                           : llvm::sys::fs::file_type::directory_file;
+    auto fileType = IsFile ?
+      llvm::sys::fs::file_type::regular_file :
+      llvm::sys::fs::file_type::directory_file;
     llvm::vfs::Status Status(StatPath, llvm::sys::fs::UniqueID(1, INode),
-                             /*MTime*/ {}, /*User*/ 0, /*Group*/ 0,
-                             /*Size*/ 0, fileType,
+                             /*MTime*/{}, /*User*/0, /*Group*/0,
+                             /*Size*/0, fileType,
                              llvm::sys::fs::perms::all_all);
     StatCalls[Path] = Status;
   }
@@ -69,7 +70,8 @@ public:
 
   // Implement FileSystemStatCache::getStat().
   std::error_code getStat(StringRef Path, llvm::vfs::Status &Status,
-                          bool isFile, std::unique_ptr<llvm::vfs::File> *F,
+                          bool isFile,
+                          std::unique_ptr<llvm::vfs::File> *F,
                           llvm::vfs::FileSystem &FS) override {
 #ifndef _WIN32
     SmallString<128> NormalizedPath(Path);
@@ -88,8 +90,9 @@ public:
 
 // The test fixture.
 class FileManagerTest : public ::testing::Test {
-protected:
-  FileManagerTest() : manager(options) {}
+ protected:
+  FileManagerTest() : manager(options) {
+  }
 
   FileSystemOptions options;
   FileManager manager;
@@ -256,7 +259,8 @@ TEST_F(FileManagerTest, getFileReturnsSameFileEntryForAliasedRealFiles) {
   auto f1 = manager.getFile("abc/foo.cpp");
   auto f2 = manager.getFile("abc/bar.cpp");
 
-  EXPECT_EQ(f1 ? *f1 : nullptr, f2 ? *f2 : nullptr);
+  EXPECT_EQ(f1 ? *f1 : nullptr,
+            f2 ? *f2 : nullptr);
 
   // Check that getFileRef also does the right thing.
   auto r1 = manager.getFileRef("abc/foo.cpp");
@@ -342,7 +346,8 @@ TEST_F(FileManagerTest, getFileReturnsSameFileEntryForAliasedVirtualFiles) {
   auto f1 = manager.getFile("abc/foo.cpp");
   auto f2 = manager.getFile("abc/bar.cpp");
 
-  EXPECT_EQ(f1 ? *f1 : nullptr, f2 ? *f2 : nullptr);
+  EXPECT_EQ(f1 ? *f1 : nullptr,
+            f2 ? *f2 : nullptr);
 }
 
 TEST_F(FileManagerTest, getFileRefEquality) {
@@ -428,7 +433,7 @@ TEST_F(FileManagerTest, getVirtualFileWithDifferentName) {
   EXPECT_EQ(123, (*file2)->getSize());
 }
 
-#endif // !_WIN32
+#endif  // !_WIN32
 
 TEST_F(FileManagerTest, makeAbsoluteUsesVFS) {
   SmallString<64> CustomWorkingDir;

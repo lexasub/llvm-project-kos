@@ -19,8 +19,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::condition_variable_any cv;
+int main(int, char**)
+{
+    std::condition_variable_any cv;
 
   return 0;
 }

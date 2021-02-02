@@ -61,8 +61,8 @@ class Mutex {
   StatType stat_type_;
 #endif
 
-  Mutex(const Mutex &);
-  void operator=(const Mutex &);
+  Mutex(const Mutex&);
+  void operator = (const Mutex&);
 };
 
 typedef GenericScopedLock<Mutex> Lock;
@@ -74,7 +74,6 @@ class InternalDeadlockDetector {
   void Lock(MutexType t);
   void Unlock(MutexType t);
   void CheckNoLocks();
-
  private:
   u64 seq_;
   u64 locked_[MutexTypeCount];

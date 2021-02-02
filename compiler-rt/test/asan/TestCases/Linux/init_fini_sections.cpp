@@ -17,11 +17,14 @@ int main() {
   return 0;
 }
 
-__attribute__((section(".preinit_array"))) void (*call_foo)(void) = &foo;
+__attribute__((section(".preinit_array")))
+void (*call_foo)(void) = &foo;
 
-__attribute__((section(".init_array"))) void (*call_foo_2)(void) = &foo;
+__attribute__((section(".init_array")))
+void (*call_foo_2)(void) = &foo;
 
-__attribute__((section(".fini_array"))) void (*call_foo_3)(void) = &fini;
+__attribute__((section(".fini_array")))
+void (*call_foo_3)(void) = &fini;
 
 // CHECK: c=2
 // CHECK: fini

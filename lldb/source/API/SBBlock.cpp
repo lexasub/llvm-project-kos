@@ -37,8 +37,8 @@ SBBlock::SBBlock(const SBBlock &rhs) : m_opaque_ptr(rhs.m_opaque_ptr) {
 }
 
 const SBBlock &SBBlock::operator=(const SBBlock &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBBlock &, SBBlock, operator=,
-                     (const lldb::SBBlock &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBBlock &,
+                     SBBlock, operator=,(const lldb::SBBlock &), rhs);
 
   m_opaque_ptr = rhs.m_opaque_ptr;
   return LLDB_RECORD_RESULT(*this);
@@ -119,9 +119,8 @@ void SBBlock::AppendVariables(bool can_create, bool get_parent_variables,
                               lldb_private::VariableList *var_list) {
   if (IsValid()) {
     bool show_inline = true;
-    m_opaque_ptr->AppendVariables(
-        can_create, get_parent_variables, show_inline,
-        [](Variable *) { return true; }, var_list);
+    m_opaque_ptr->AppendVariables(can_create, get_parent_variables, show_inline,
+                                  [](Variable *) { return true; }, var_list);
   }
 }
 
@@ -350,17 +349,18 @@ lldb::SBValueList SBBlock::GetVariables(lldb::SBTarget &target, bool arguments,
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBBlock>(Registry &R) {
+template <>
+void RegisterMethods<SBBlock>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBBlock, ());
   LLDB_REGISTER_CONSTRUCTOR(SBBlock, (const lldb::SBBlock &));
-  LLDB_REGISTER_METHOD(const lldb::SBBlock &, SBBlock, operator=,
-                       (const lldb::SBBlock &));
+  LLDB_REGISTER_METHOD(const lldb::SBBlock &,
+                       SBBlock, operator=,(const lldb::SBBlock &));
   LLDB_REGISTER_METHOD_CONST(bool, SBBlock, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBBlock, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBBlock, IsInlined, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBBlock, GetInlinedName, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBFileSpec, SBBlock, GetInlinedCallSiteFile,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(lldb::SBFileSpec, SBBlock,
+                             GetInlinedCallSiteFile, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBBlock, GetInlinedCallSiteLine, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBBlock, GetInlinedCallSiteColumn, ());
   LLDB_REGISTER_METHOD(lldb::SBBlock, SBBlock, GetParent, ());
@@ -382,5 +382,5 @@ template <> void RegisterMethods<SBBlock>(Registry &R) {
                        (lldb::SBTarget &, bool, bool, bool));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

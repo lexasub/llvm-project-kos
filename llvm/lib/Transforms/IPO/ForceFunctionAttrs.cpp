@@ -144,7 +144,7 @@ struct ForceFunctionAttrsLegacyPass : public ModulePass {
     return true;
   }
 };
-} // namespace
+}
 
 char ForceFunctionAttrsLegacyPass::ID = 0;
 INITIALIZE_PASS(ForceFunctionAttrsLegacyPass, "forceattrs",

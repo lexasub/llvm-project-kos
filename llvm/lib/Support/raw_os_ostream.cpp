@@ -18,7 +18,9 @@ using namespace llvm;
 //  raw_os_ostream
 //===----------------------------------------------------------------------===//
 
-raw_os_ostream::~raw_os_ostream() { flush(); }
+raw_os_ostream::~raw_os_ostream() {
+  flush();
+}
 
 void raw_os_ostream::write_impl(const char *Ptr, size_t Size) {
   OS.write(Ptr, Size);

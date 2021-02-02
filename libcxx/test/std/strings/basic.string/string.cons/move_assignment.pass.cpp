@@ -21,17 +21,20 @@
 #include "min_allocator.h"
 
 template <class S>
-void test(S s1, S s2) {
-  S s0 = s2;
-  s1 = std::move(s2);
-  LIBCPP_ASSERT(s1.__invariants());
-  LIBCPP_ASSERT(s2.__invariants());
-  assert(s1 == s0);
-  assert(s1.capacity() >= s1.size());
+void
+test(S s1, S s2)
+{
+    S s0 = s2;
+    s1 = std::move(s2);
+    LIBCPP_ASSERT(s1.__invariants());
+    LIBCPP_ASSERT(s2.__invariants());
+    assert(s1 == s0);
+    assert(s1.capacity() >= s1.size());
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string S;
     test(S(), S());
     test(S("1"), S());
@@ -39,46 +42,34 @@ int main(int, char**) {
     test(S("1"), S("2"));
     test(S("1"), S("2"));
 
-    test(S(), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"
-                "klmnopqrstuvwxyz"));
-    test(S("123456789"), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"
-                           "zabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
-           "pqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"
-           "1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
-           "pqrstuvwxyz"));
-  }
-  {
-    typedef std::basic_string<char, std::char_traits<char>,
-                              min_allocator<char> >
-        S;
+    test(S(),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("123456789"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"
+           "1234567890123456789012345678901234567890123456789012345678901234567890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    }
+    {
+    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
     test(S(), S());
     test(S("1"), S());
     test(S(), S("1"));
     test(S("1"), S("2"));
     test(S("1"), S("2"));
 
-    test(S(), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"
-                "klmnopqrstuvwxyz"));
-    test(S("123456789"), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"
-                           "zabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
-           "pqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"
-           "1234567890123456789012345678901234567890123456789012345678901234567"
-           "890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
-           "pqrstuvwxyz"));
-  }
+    test(S(),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("123456789"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"
+           "1234567890123456789012345678901234567890123456789012345678901234567890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
+    }
 
   return 0;
 }

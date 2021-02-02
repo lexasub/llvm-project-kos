@@ -6,3 +6,4 @@ struct FNonTrivial {
   virtual ~FNonTrivial() = default;
   int i;
 };
+

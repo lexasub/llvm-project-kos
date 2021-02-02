@@ -16,6 +16,7 @@
 
 // CHECK-OLD-TEST-H-CASE1-NOT: enum E1 { Green, Red };
 
+
 // -----------------------------------------------------------------------------
 // Test moving scoped enum declarations.
 // -----------------------------------------------------------------------------
@@ -30,6 +31,7 @@
 // CHECK-NEW-TEST-H-CASE2-NEXT: }
 
 // CHECK-OLD-TEST-H-CASE2-NOT: enum class E2 { Yellow };
+
 
 // -----------------------------------------------------------------------------
 // Test not moving class-insided enum declarations.

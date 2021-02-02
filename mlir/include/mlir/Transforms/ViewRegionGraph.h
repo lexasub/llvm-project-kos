@@ -19,8 +19,7 @@
 
 namespace mlir {
 class FuncOp;
-template <typename T>
-class OperationPass;
+template <typename T> class OperationPass;
 class Region;
 
 /// Displays the CFG in a window. This is for use from the debugger and

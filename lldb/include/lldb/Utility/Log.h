@@ -93,6 +93,7 @@ public:
     }
   };
 
+
   static void Initialize();
 
   // Static accessors for logging channels
@@ -137,14 +138,14 @@ public:
 
   template <typename... Args>
   void Format(llvm::StringRef file, llvm::StringRef function,
-              const char *format, Args &&...args) {
+              const char *format, Args &&... args) {
     Format(file, function, llvm::formatv(format, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   void FormatError(llvm::Error error, llvm::StringRef file,
                    llvm::StringRef function, const char *format,
-                   Args &&...args) {
+                   Args &&... args) {
     Format(file, function,
            llvm::formatv(format, llvm::toString(std::move(error)),
                          std::forward<Args>(args)...));
@@ -207,8 +208,7 @@ private:
 
   static void ListCategories(llvm::raw_ostream &stream,
                              const ChannelMap::value_type &entry);
-  static uint32_t GetFlags(llvm::raw_ostream &stream,
-                           const ChannelMap::value_type &entry,
+  static uint32_t GetFlags(llvm::raw_ostream &stream, const ChannelMap::value_type &entry,
                            llvm::ArrayRef<const char *> categories);
 
   static void DisableLoggingChild();

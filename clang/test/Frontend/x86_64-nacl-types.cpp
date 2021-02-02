@@ -1,8 +1,8 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-nacl -std=c++11 -verify %s
 // expected-no-diagnostics
 
-#include <stdarg.h>
 #include <stddef.h>
+#include <stdarg.h>
 
 static_assert(alignof(char) == 1, "alignof char is wrong");
 
@@ -18,8 +18,8 @@ static_assert(alignof(long) == 4, "alignof long is wrong");
 static_assert(sizeof(long long) == 8, "sizeof long long is wrong wrong");
 static_assert(alignof(long long) == 8, "alignof long long is wrong wrong");
 
-static_assert(sizeof(void *) == 4, "sizeof void * is wrong");
-static_assert(alignof(void *) == 4, "alignof void * is wrong");
+static_assert(sizeof(void*) == 4, "sizeof void * is wrong");
+static_assert(alignof(void*) == 4, "alignof void * is wrong");
 
 static_assert(sizeof(float) == 4, "sizeof float is wrong");
 static_assert(alignof(float) == 4, "alignof float is wrong");

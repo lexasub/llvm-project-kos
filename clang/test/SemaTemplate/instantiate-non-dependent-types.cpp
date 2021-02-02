@@ -1,13 +1,13 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
-template <typename T>
+template<typename T>
 struct X1 {
-  static void member() { T *x = 1; } // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
+  static void member() { T* x = 1; } // expected-error{{cannot initialize a variable of type 'int *' with an rvalue of type 'int'}}
 };
 
-template <void (*)()> struct instantiate {};
+template<void(*)()> struct instantiate { };
 
-template <typename T>
+template<typename T>
 struct X2 {
   typedef instantiate<&X1<int>::member> i; // expected-note{{in instantiation of}}
 };
@@ -38,9 +38,7 @@ public:
   ~Q() {}
 };
 
-enum Colors { red,
-              green,
-              blue };
+enum Colors {red, green, blue};
 
 C<Q, int> dummy;
 C<Q, Colors> dummyColors;
@@ -51,3 +49,4 @@ int main() {
   // expected-note@+1 {{in instantiation of member function 'C<Q, Colors>::f' requested here}}
   dummyColors.f(qinst);
 }
+

@@ -45,7 +45,7 @@ class LegalizationArtifactCombiner {
 
 public:
   LegalizationArtifactCombiner(MachineIRBuilder &B, MachineRegisterInfo &MRI,
-                               const LegalizerInfo &LI)
+                    const LegalizerInfo &LI)
       : Builder(B), MRI(MRI), LI(LI) {}
 
   bool tryCombineAnyExt(MachineInstr &MI,
@@ -121,9 +121,9 @@ public:
       LLT SrcTy = MRI.getType(SrcReg);
       APInt MaskVal = APInt::getAllOnesValue(SrcTy.getScalarSizeInBits());
       auto Mask = Builder.buildConstant(
-          DstTy, MaskVal.zext(DstTy.getScalarSizeInBits()));
-      auto Extended = SextSrc ? Builder.buildSExtOrTrunc(DstTy, SextSrc)
-                              : Builder.buildAnyExtOrTrunc(DstTy, TruncSrc);
+        DstTy, MaskVal.zext(DstTy.getScalarSizeInBits()));
+      auto Extended = SextSrc ? Builder.buildSExtOrTrunc(DstTy, SextSrc) :
+                                Builder.buildAnyExtOrTrunc(DstTy, TruncSrc);
       Builder.buildAnd(DstReg, Extended, Mask);
       markInstAndDefDead(MI, *MRI.getVRegDef(SrcReg), DeadInsts);
       return true;
@@ -432,8 +432,8 @@ public:
     return false;
   }
 
-  static bool canFoldMergeOpcode(unsigned MergeOp, unsigned ConvertOp, LLT OpTy,
-                                 LLT DestTy) {
+  static bool canFoldMergeOpcode(unsigned MergeOp, unsigned ConvertOp,
+                                 LLT OpTy, LLT DestTy) {
     // Check if we found a definition that is like G_MERGE_VALUES.
     switch (MergeOp) {
     default:
@@ -591,8 +591,8 @@ public:
       MergeI = getDefIgnoringCopies(SrcDef->getOperand(1).getReg(), MRI);
     }
 
-    if (!MergeI ||
-        !canFoldMergeOpcode(MergeI->getOpcode(), ConvertOp, OpTy, DestTy)) {
+    if (!MergeI || !canFoldMergeOpcode(MergeI->getOpcode(),
+                                       ConvertOp, OpTy, DestTy)) {
       // We might have a chance to combine later by trying to combine
       // unmerge(cast) first
       return tryFoldUnmergeCast(MI, *SrcDef, DeadInsts, UpdatedDefs);
@@ -630,8 +630,7 @@ public:
           // Handle split to smaller vectors, with conversions.
           // %2(<8 x s8>) = G_CONCAT_VECTORS %0(<4 x s8>), %1(<4 x s8>)
           // %3(<8 x s16>) = G_SEXT %2
-          // %4(<2 x s16>), %5(<2 x s16>), %6(<2 x s16>), %7(<2 x s16>) =
-          // G_UNMERGE_VALUES %3
+          // %4(<2 x s16>), %5(<2 x s16>), %6(<2 x s16>), %7(<2 x s16>) = G_UNMERGE_VALUES %3
           //
           // =>
           //

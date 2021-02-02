@@ -29,7 +29,8 @@ void test0(S s, U val, S expected, size_t expected_erased_count) {
 }
 
 template <class S>
-void test() {
+void test()
+{
 
   test0(S(""), 'a', S(""), 0);
 
@@ -64,12 +65,11 @@ void test() {
   test0(S("aba"), opt('c'), S("aba"), 0);
 }
 
-int main(int, char**) {
-  test<std::string>();
-  test<
-      std::basic_string<char, std::char_traits<char>, min_allocator<char> > >();
-  test<std::basic_string<char, std::char_traits<char>,
-                         test_allocator<char> > >();
+int main(int, char**)
+{
+    test<std::string>();
+    test<std::basic_string<char, std::char_traits<char>, min_allocator<char>>> ();
+    test<std::basic_string<char, std::char_traits<char>, test_allocator<char>>> ();
 
   return 0;
 }

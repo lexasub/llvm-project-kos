@@ -42,11 +42,11 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <limits>
-#include <new>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits>
+#include <new>
 
 #include "utils.h"
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   } else if (!untag_strcmp(action, "realloc")) {
     x = realloc(0, kMaxAllowedMallocSizePlusOne);
   } else if (!untag_strcmp(action, "realloc-after-malloc")) {
-    char *t = (char *)malloc(100);
+    char *t = (char*)malloc(100);
     *t = 42;
     x = realloc(t, kMaxAllowedMallocSizePlusOne);
     assert(*t == 42);

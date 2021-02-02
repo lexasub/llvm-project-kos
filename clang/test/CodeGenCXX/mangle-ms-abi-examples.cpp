@@ -8,21 +8,17 @@
 
 // Microsoft Visual C++ ABI examples.
 struct A {
-  void foo(int) {
-    struct B {
-      virtual ~B() {}
-    };
+  void foo (int) {
+    struct B { virtual ~B() {} };
     B();
   }
 };
-inline void foo() {
+inline void foo () {
   struct C {
-    struct D {
-      virtual ~D() {}
-    };
-    void bar() {
+    struct D { virtual ~D() {} };
+    void bar () {
       struct E {
-        void baz() {}
+        void baz() { }
       };
       E().baz();
     }
@@ -31,6 +27,6 @@ inline void foo() {
   C::D();
   C().bar();
 }
-void call() {
+void call () {
   foo();
 }

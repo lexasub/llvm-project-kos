@@ -22,15 +22,18 @@
 #include "test_macros.h"
 
 template <class T>
-void test() {
-  typedef std::complex<T> C;
-  static_assert((std::is_same<typename C::value_type, T>::value), "");
+void
+test()
+{
+    typedef std::complex<T> C;
+    static_assert((std::is_same<typename C::value_type, T>::value), "");
 }
 
-int main(int, char**) {
-  test<float>();
-  test<double>();
-  test<long double>();
+int main(int, char**)
+{
+    test<float>();
+    test<double>();
+    test<long double>();
 
   return 0;
 }

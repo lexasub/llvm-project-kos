@@ -32,29 +32,32 @@
 #include "test_macros.h"
 
 template <class C>
-struct find_container : private std::front_insert_iterator<C> {
-  explicit find_container(C& c) : std::front_insert_iterator<C>(c) {}
-  void test() { this->container = 0; }
+struct find_container
+    : private std::front_insert_iterator<C>
+{
+    explicit find_container(C& c) : std::front_insert_iterator<C>(c) {}
+    void test() {this->container = 0;}
 };
 
 template <class C>
-void test() {
-  typedef std::front_insert_iterator<C> R;
-  C c;
-  find_container<C> q(c);
-  q.test();
-  static_assert((std::is_same<typename R::container_type, C>::value), "");
-  static_assert((std::is_same<typename R::value_type, void>::value), "");
-  static_assert((std::is_same<typename R::difference_type, void>::value), "");
-  static_assert((std::is_same<typename R::reference, void>::value), "");
-  static_assert((std::is_same<typename R::pointer, void>::value), "");
-  static_assert((std::is_same<typename R::iterator_category,
-                              std::output_iterator_tag>::value),
-                "");
+void
+test()
+{
+    typedef std::front_insert_iterator<C> R;
+    C c;
+    find_container<C> q(c);
+    q.test();
+    static_assert((std::is_same<typename R::container_type, C>::value), "");
+    static_assert((std::is_same<typename R::value_type, void>::value), "");
+    static_assert((std::is_same<typename R::difference_type, void>::value), "");
+    static_assert((std::is_same<typename R::reference, void>::value), "");
+    static_assert((std::is_same<typename R::pointer, void>::value), "");
+    static_assert((std::is_same<typename R::iterator_category, std::output_iterator_tag>::value), "");
 }
 
-int main(int, char**) {
-  test<std::vector<int> >();
+int main(int, char**)
+{
+    test<std::vector<int> >();
 
   return 0;
 }

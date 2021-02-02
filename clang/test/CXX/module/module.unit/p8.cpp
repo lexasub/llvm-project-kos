@@ -17,18 +17,18 @@ module foo;
 
 #elif MODE == 2
 export module foo; // expected-error {{redefinition of module 'foo'}}
-                   // expected-note-re@* {{module loaded from '{{.*}}.pcm'}}
+// expected-note-re@* {{module loaded from '{{.*}}.pcm'}}
 #define IMPORTED
 
 #elif MODE == 3
 export module bar;
 
 #elif MODE == 4
-module foo : bar; // expected-error {{not yet supported}}
+module foo:bar; // expected-error {{not yet supported}}
 #define IMPORTED // FIXME
 
 #elif MODE == 5
-export module foo : bar; // expected-error {{not yet supported}} expected-error {{redefinition}} expected-note@* {{loaded from}}
+export module foo:bar; // expected-error {{not yet supported}} expected-error {{redefinition}} expected-note@* {{loaded from}}
 #define IMPORTED // FIXME
 
 #endif

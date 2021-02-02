@@ -12,10 +12,9 @@
 //===----------------------------------------------------------------------===//
 
 #ifdef SANITIZER_DLL_THUNK
-#include "sanitizer_win_dll_thunk.h"
-
-#include "interception/interception.h"
 #include "sanitizer_win_defs.h"
+#include "sanitizer_win_dll_thunk.h"
+#include "interception/interception.h"
 
 extern "C" {
 void *WINAPI GetModuleHandleA(const char *module_name);
@@ -31,25 +30,24 @@ uptr dllThunkGetRealAddrOrDie(const char *name) {
   return ret;
 }
 
-int dllThunkIntercept(const char *main_function, uptr dll_function) {
+int dllThunkIntercept(const char* main_function, uptr dll_function) {
   uptr wrapper = dllThunkGetRealAddrOrDie(main_function);
   if (!__interception::OverrideFunction(dll_function, wrapper, 0))
     abort();
   return 0;
 }
 
-int dllThunkInterceptWhenPossible(const char *main_function,
-                                  const char *default_function,
-                                  uptr dll_function) {
+int dllThunkInterceptWhenPossible(const char* main_function,
+    const char* default_function, uptr dll_function) {
   uptr wrapper = __interception::InternalGetProcAddress(
-      (void *)GetModuleHandleA(0), main_function);
+    (void *)GetModuleHandleA(0), main_function);
   if (!wrapper)
     wrapper = dllThunkGetRealAddrOrDie(default_function);
   if (!__interception::OverrideFunction(dll_function, wrapper, 0))
     abort();
   return 0;
 }
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 // Include Sanitizer Common interface.
 #define INTERFACE_FUNCTION(Name) INTERCEPT_SANITIZER_FUNCTION(Name)
@@ -67,14 +65,13 @@ __declspec(allocate(".DLLTH$Z")) DllThunkCB __stop_dll_thunk;
 
 // Disable compiler warnings that show up if we declare our own version
 // of a compiler intrinsic (e.g. strlen).
-#pragma warning(disable : 4391)
-#pragma warning(disable : 4392)
+#pragma warning(disable: 4391)
+#pragma warning(disable: 4392)
 
 extern "C" int __dll_thunk_init() {
   static bool flag = false;
   // __dll_thunk_init is expected to be called by only one thread.
-  if (flag)
-    return 0;
+  if (flag) return 0;
   flag = true;
 
   for (DllThunkCB *it = &__start_dll_thunk; it < &__stop_dll_thunk; ++it)
@@ -94,12 +91,11 @@ __declspec(allocate(".CRT$XIB")) int (*__dll_thunk_preinit)() =
 
 static void WINAPI dll_thunk_thread_init(void *mod, unsigned long reason,
                                          void *reserved) {
-  if (reason == /*DLL_PROCESS_ATTACH=*/1)
-    __dll_thunk_init();
+  if (reason == /*DLL_PROCESS_ATTACH=*/1) __dll_thunk_init();
 }
 
 #pragma section(".CRT$XLAB", long, read)
-__declspec(allocate(".CRT$XLAB")) void(WINAPI *__dll_thunk_tls_init)(
-    void *, unsigned long, void *) = dll_thunk_thread_init;
+__declspec(allocate(".CRT$XLAB")) void (WINAPI *__dll_thunk_tls_init)(void *,
+    unsigned long, void *) = dll_thunk_thread_init;
 
-#endif  // SANITIZER_DLL_THUNK
+#endif // SANITIZER_DLL_THUNK

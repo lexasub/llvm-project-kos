@@ -1,3 +1,3 @@
 struct S {
-#include "b2.h"
+  #include "b2.h"
 };

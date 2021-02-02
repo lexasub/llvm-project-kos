@@ -21,8 +21,9 @@
 
 #include <utility>
 
-std::piecewise_construct_t f() {
-  return {};
-} // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
 
-int main(int, char**) { return 0; }
+std::piecewise_construct_t f() { return {}; } // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
+
+int main(int, char**) {
+    return 0;
+}

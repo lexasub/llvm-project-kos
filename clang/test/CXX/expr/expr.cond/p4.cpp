@@ -3,10 +3,7 @@
 
 // expected-no-diagnostics
 
-struct A {
-  A();
-  A(int);
-};
+struct A { A(); A(int); };
 void f() {
   const A a;
   true ? a : 0;

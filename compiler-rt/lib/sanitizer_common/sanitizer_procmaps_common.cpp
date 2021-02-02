@@ -11,7 +11,7 @@
 
 #include "sanitizer_platform.h"
 
-#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD || \
+#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD ||                \
     SANITIZER_SOLARIS
 
 #include "sanitizer_common.h"
@@ -50,14 +50,18 @@ bool IsDecimal(char c) {
   return d >= 0 && d < 10;
 }
 
-uptr ParseDecimal(const char **p) { return ParseNumber(p, 10); }
+uptr ParseDecimal(const char **p) {
+  return ParseNumber(p, 10);
+}
 
 bool IsHex(char c) {
   int d = TranslateDigit(c);
   return d >= 0 && d < 16;
 }
 
-uptr ParseHex(const char **p) { return ParseNumber(p, 16); }
+uptr ParseHex(const char **p) {
+  return ParseNumber(p, 16);
+}
 
 void MemoryMappedSegment::AddAddressRanges(LoadedModule *module) {
   // data_ should be unused on this platform
@@ -79,7 +83,9 @@ MemoryMappingLayout::MemoryMappingLayout(bool cache_enabled) {
   Reset();
 }
 
-bool MemoryMappingLayout::Error() const { return data_.current == nullptr; }
+bool MemoryMappingLayout::Error() const {
+  return data_.current == nullptr;
+}
 
 MemoryMappingLayout::~MemoryMappingLayout() {
   // Only unmap the buffer if it is different from the cached one. Otherwise
@@ -88,7 +94,9 @@ MemoryMappingLayout::~MemoryMappingLayout() {
     UnmapOrDie(data_.proc_self_maps.data, data_.proc_self_maps.mmaped_size);
 }
 
-void MemoryMappingLayout::Reset() { data_.current = data_.proc_self_maps.data; }
+void MemoryMappingLayout::Reset() {
+  data_.current = data_.proc_self_maps.data;
+}
 
 // static
 void MemoryMappingLayout::CacheMemoryMappings() {
@@ -149,20 +157,18 @@ void GetMemoryProfile(fill_profile_f cb, uptr *stats, uptr stats_size) {
   while (pos < smaps + smaps_len) {
     if (IsHex(pos[0])) {
       start = ParseHex(&pos);
-      for (; *pos != '/' && *pos > '\n'; pos++) {
-      }
+      for (; *pos != '/' && *pos > '\n'; pos++) {}
       file = *pos == '/';
     } else if (internal_strncmp(pos, "Rss:", 4) == 0) {
       while (!IsDecimal(*pos)) pos++;
       uptr rss = ParseDecimal(&pos) * 1024;
       cb(start, rss, file, stats, stats_size);
     }
-    while (*pos++ != '\n') {
-    }
+    while (*pos++ != '\n') {}
   }
   UnmapOrDie(smaps, smaps_cap);
 }
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 #endif

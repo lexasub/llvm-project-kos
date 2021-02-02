@@ -1,34 +1,36 @@
 // RUN: %clang_cc1 -std=c++11 -S -triple x86_64-none-linux-gnu -emit-llvm -o - %s | FileCheck %s
 
 namespace std {
-typedef decltype(sizeof(int)) size_t;
+  typedef decltype(sizeof(int)) size_t;
 
-// libc++'s implementation with __size_ replaced by __end_
-template <class _E>
-class initializer_list {
-  const _E *__begin_;
-  const _E *__end_;
+  // libc++'s implementation with __size_ replaced by __end_
+  template <class _E>
+  class initializer_list
+  {
+    const _E* __begin_;
+    const _E* __end_;
 
-  initializer_list(const _E *__b, const _E *__e)
+    initializer_list(const _E* __b, const _E* __e)
       : __begin_(__b),
-        __end_(__e) {}
+        __end_(__e)
+    {}
 
-public:
-  typedef _E value_type;
-  typedef const _E &reference;
-  typedef const _E &const_reference;
-  typedef size_t size_type;
+  public:
+    typedef _E        value_type;
+    typedef const _E& reference;
+    typedef const _E& const_reference;
+    typedef size_t    size_type;
 
-  typedef const _E *iterator;
-  typedef const _E *const_iterator;
+    typedef const _E* iterator;
+    typedef const _E* const_iterator;
 
-  initializer_list() : __begin_(nullptr), __end_(nullptr) {}
+    initializer_list() : __begin_(nullptr), __end_(nullptr) {}
 
-  size_t size() const { return __end_ - __begin_; }
-  const _E *begin() const { return __begin_; }
-  const _E *end() const { return __end_; }
-};
-} // namespace std
+    size_t    size()  const {return __end_ - __begin_;}
+    const _E* begin() const {return __begin_;}
+    const _E* end()   const {return __end_;}
+  };
+}
 
 // CHECK: @_ZGR15globalInitList1_ = internal constant [3 x i32] [i32 1, i32 2, i32 3]
 // CHECK: @globalInitList1 ={{.*}} global {{[^ ]+}} { i32* getelementptr inbounds ([3 x i32], [3 x i32]* @_ZGR15globalInitList1_, {{[^)]*}}), i32*
@@ -62,11 +64,12 @@ struct destroyme2 {
   ~destroyme2();
 };
 
+
 void fn2() {
   // CHECK-LABEL: define{{.*}} void @_Z3fn2v
   void target(std::initializer_list<destroyme1>);
   // objects should be destroyed before dm2, after call returns
-  target({destroyme1(), destroyme1()});
+  target({ destroyme1(), destroyme1() });
   // CHECK: call void @_ZN10destroyme1D1Ev
   destroyme2 dm2;
   // CHECK: call void @_ZN10destroyme2D1Ev
@@ -75,7 +78,7 @@ void fn2() {
 void fn3() {
   // CHECK-LABEL: define{{.*}} void @_Z3fn3v
   // objects should be destroyed after dm2
-  auto list = {destroyme1(), destroyme1()};
+  auto list = { destroyme1(), destroyme1() };
   destroyme2 dm2;
   // CHECK: call void @_ZN10destroyme2D1Ev
   // CHECK: call void @_ZN10destroyme1D1Ev

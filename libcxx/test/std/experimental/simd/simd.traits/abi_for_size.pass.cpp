@@ -23,11 +23,13 @@
 namespace ex = std::experimental::parallelism_v2;
 
 static_assert(std::is_same<typename ex::abi_for_size<int, 4>::type,
-                           ex::simd_abi::fixed_size<4> >::value,
+                           ex::simd_abi::fixed_size<4>>::value,
               "");
 
 static_assert(std::is_same<ex::abi_for_size_t<int, 4>,
-                           ex::simd_abi::fixed_size<4> >::value,
+                           ex::simd_abi::fixed_size<4>>::value,
               "");
 
-int main(int, char**) { return 0; }
+int main(int, char**) {
+  return 0;
+}

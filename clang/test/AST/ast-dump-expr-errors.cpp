@@ -40,6 +40,7 @@ int c = &(bar() + baz()) * 10;
 // CHECK-NEXT:|     `-IntegerLiteral {{.*}} 1
 int d = static_cast<int>(bar() + 1);
 
+
 // Error type should result in an invalid decl.
 // CHECK: -VarDecl {{.*}} invalid f 'decltype(<recovery-expr>(bar))'
 decltype(bar()) f;

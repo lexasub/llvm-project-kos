@@ -18,11 +18,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  std::ostringstream os;
-  std::ostream_iterator<int> i(os);
-  std::ostream_iterator<int>& iref = *i;
-  assert(&iref == &i);
+int main(int, char**)
+{
+    std::ostringstream os;
+    std::ostream_iterator<int> i(os);
+    std::ostream_iterator<int>& iref = *i;
+    assert(&iref == &i);
 
   return 0;
 }

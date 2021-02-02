@@ -14,9 +14,9 @@
 #ifndef LLVM_CLANG_LEX_PREPROCESSORLEXER_H
 #define LLVM_CLANG_LEX_PREPROCESSORLEXER_H
 
-#include "clang/Basic/SourceLocation.h"
 #include "clang/Lex/MultipleIncludeOpt.h"
 #include "clang/Lex/Token.h"
+#include "clang/Basic/SourceLocation.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include <cassert>
@@ -78,7 +78,7 @@ protected:
   PreprocessorLexer(Preprocessor *pp, FileID fid);
   virtual ~PreprocessorLexer() = default;
 
-  virtual void IndirectLex(Token &Result) = 0;
+  virtual void IndirectLex(Token& Result) = 0;
 
   /// Return the source location for the next observable location.
   virtual SourceLocation getSourceLocation() = 0;
@@ -144,13 +144,15 @@ public:
   Preprocessor *getPP() const { return PP; }
 
   FileID getFileID() const {
-    assert(PP && "PreprocessorLexer::getFileID() should only be used with a "
-                 "Preprocessor");
+    assert(PP &&
+      "PreprocessorLexer::getFileID() should only be used with a Preprocessor");
     return FID;
   }
 
   /// Number of SLocEntries before lexing the file.
-  unsigned getInitialNumSLocEntries() const { return InitialNumSLocEntries; }
+  unsigned getInitialNumSLocEntries() const {
+    return InitialNumSLocEntries;
+  }
 
   /// getFileEntry - Return the FileEntry corresponding to this FileID.  Like
   /// getFileID(), this only works for lexers with attached preprocessors.

@@ -56,3 +56,4 @@ bool SanitizerBlacklist::isBlacklistedLocation(SanitizerMask Mask,
   return Loc.isValid() &&
          isBlacklistedFile(Mask, SM.getFilename(SM.getFileLoc(Loc)), Category);
 }
+

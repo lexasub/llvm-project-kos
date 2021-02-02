@@ -11,9 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "ARMInstPrinter.h"
+#include "Utils/ARMBaseInfo.h"
 #include "MCTargetDesc/ARMAddressingModes.h"
 #include "MCTargetDesc/ARMBaseInfo.h"
-#include "Utils/ARMBaseInfo.h"
 #include "llvm/MC/MCAsmInfo.h"
 #include "llvm/MC/MCExpr.h"
 #include "llvm/MC/MCInst.h"
@@ -604,7 +604,7 @@ void ARMInstPrinter::printPostIdxImm8s4Operand(const MCInst *MI, unsigned OpNum,
     << markup(">");
 }
 
-template <int shift>
+template<int shift>
 void ARMInstPrinter::printMveAddrModeRQOperand(const MCInst *MI, unsigned OpNum,
                                                const MCSubtargetInfo &STI,
                                                raw_ostream &O) {
@@ -623,8 +623,8 @@ void ARMInstPrinter::printMveAddrModeRQOperand(const MCInst *MI, unsigned OpNum,
 }
 
 void ARMInstPrinter::printMveAddrModeQOperand(const MCInst *MI, unsigned OpNum,
-                                              const MCSubtargetInfo &STI,
-                                              raw_ostream &O) {
+                                               const MCSubtargetInfo &STI,
+                                               raw_ostream &O) {
   const MCOperand &MO1 = MI->getOperand(OpNum);
   const MCOperand &MO2 = MI->getOperand(OpNum + 1);
 
@@ -675,9 +675,9 @@ void ARMInstPrinter::printAddrMode5FP16Operand(const MCInst *MI, unsigned OpNum,
                                                const MCSubtargetInfo &STI,
                                                raw_ostream &O) {
   const MCOperand &MO1 = MI->getOperand(OpNum);
-  const MCOperand &MO2 = MI->getOperand(OpNum + 1);
+  const MCOperand &MO2 = MI->getOperand(OpNum+1);
 
-  if (!MO1.isReg()) { // FIXME: This is for CP entries, but isn't right.
+  if (!MO1.isReg()) {   // FIXME: This is for CP entries, but isn't right.
     printOperand(MI, OpNum, STI, O);
     return;
   }
@@ -688,9 +688,12 @@ void ARMInstPrinter::printAddrMode5FP16Operand(const MCInst *MI, unsigned OpNum,
   unsigned ImmOffs = ARM_AM::getAM5FP16Offset(MO2.getImm());
   unsigned Op = ARM_AM::getAM5FP16Op(MO2.getImm());
   if (AlwaysPrintImm0 || ImmOffs || Op == ARM_AM::sub) {
-    O << ", " << markup("<imm:") << "#"
+    O << ", "
+      << markup("<imm:")
+      << "#"
       << ARM_AM::getAddrOpcStr(ARM_AM::getAM5FP16Op(MO2.getImm()))
-      << ImmOffs * 2 << markup(">");
+      << ImmOffs * 2
+      << markup(">");
   }
   O << "]" << markup(">");
 }
@@ -759,8 +762,8 @@ void ARMInstPrinter::printInstSyncBOption(const MCInst *MI, unsigned OpNum,
 }
 
 void ARMInstPrinter::printTraceSyncBOption(const MCInst *MI, unsigned OpNum,
-                                           const MCSubtargetInfo &STI,
-                                           raw_ostream &O) {
+                                          const MCSubtargetInfo &STI,
+                                          raw_ostream &O) {
   unsigned val = MI->getOperand(OpNum).getImm();
   O << ARM_TSB::TraceSyncBOptToString(val);
 }
@@ -869,22 +872,22 @@ void ARMInstPrinter::printMSRMaskOperand(const MCInst *MI, unsigned OpNum,
 
     // For writes, handle extended mask bits if the DSP extension is present.
     if (Opcode == ARM::t2MSR_M && FeatureBits[ARM::FeatureDSP]) {
-      auto TheReg = ARMSysReg::lookupMClassSysRegBy12bitSYSmValue(SYSm);
+      auto TheReg =ARMSysReg::lookupMClassSysRegBy12bitSYSmValue(SYSm);
       if (TheReg && TheReg->isInRequiredFeatures({ARM::FeatureDSP})) {
-        O << TheReg->Name;
-        return;
+          O << TheReg->Name;
+          return;
       }
     }
 
     // Handle the basic 8-bit mask.
     SYSm &= 0xff;
-    if (Opcode == ARM::t2MSR_M && FeatureBits[ARM::HasV7Ops]) {
+    if (Opcode == ARM::t2MSR_M && FeatureBits [ARM::HasV7Ops]) {
       // ARMv7-M deprecates using MSR APSR without a _<bits> qualifier as an
       // alias for MSR APSR_nzcvq.
       auto TheReg = ARMSysReg::lookupMClassSysRegAPSRNonDeprecated(SYSm);
       if (TheReg) {
-        O << TheReg->Name;
-        return;
+          O << TheReg->Name;
+          return;
       }
     }
 
@@ -981,9 +984,10 @@ void ARMInstPrinter::printMandatoryPredicateOperand(const MCInst *MI,
   O << ARMCondCodeToString(CC);
 }
 
-void ARMInstPrinter::printMandatoryInvertedPredicateOperand(
-    const MCInst *MI, unsigned OpNum, const MCSubtargetInfo &STI,
-    raw_ostream &O) {
+void ARMInstPrinter::printMandatoryInvertedPredicateOperand(const MCInst *MI,
+                                                            unsigned OpNum,
+                                                            const MCSubtargetInfo &STI,
+                                                            raw_ostream &O) {
   ARMCC::CondCodes CC = (ARMCC::CondCodes)MI->getOperand(OpNum).getImm();
   O << ARMCondCodeToString(ARMCC::getOppositeCondition(CC));
 }
@@ -1619,7 +1623,7 @@ void ARMInstPrinter::printVectorListFourSpaced(const MCInst *MI, unsigned OpNum,
   O << "}";
 }
 
-template <unsigned NumRegs>
+template<unsigned NumRegs>
 void ARMInstPrinter::printMVEVectorList(const MCInst *MI, unsigned OpNum,
                                         const MCSubtargetInfo &STI,
                                         raw_ostream &O) {
@@ -1633,7 +1637,7 @@ void ARMInstPrinter::printMVEVectorList(const MCInst *MI, unsigned OpNum,
   O << "}";
 }
 
-template <int64_t Angle, int64_t Remainder>
+template<int64_t Angle, int64_t Remainder>
 void ARMInstPrinter::printComplexRotationOp(const MCInst *MI, unsigned OpNo,
                                             const MCSubtargetInfo &STI,
                                             raw_ostream &O) {
@@ -1650,7 +1654,8 @@ void ARMInstPrinter::printVPTPredicateOperand(const MCInst *MI, unsigned OpNum,
 }
 
 void ARMInstPrinter::printVPTMask(const MCInst *MI, unsigned OpNum,
-                                  const MCSubtargetInfo &STI, raw_ostream &O) {
+                                  const MCSubtargetInfo &STI,
+                                  raw_ostream &O) {
   // (3 - the number of trailing zeroes) is the number of them / else.
   unsigned Mask = MI->getOperand(OpNum).getImm();
   unsigned NumTZ = countTrailingZeros(Mask);

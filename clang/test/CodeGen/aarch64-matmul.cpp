@@ -4,3 +4,5 @@
 extern "C" void arm_feature_matmulint8_defined() {}
 #endif
 // CHECK: define{{.*}} void @arm_feature_matmulint8_defined()
+
+

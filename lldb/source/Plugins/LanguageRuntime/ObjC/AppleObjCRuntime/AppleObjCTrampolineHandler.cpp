@@ -655,16 +655,21 @@ const AppleObjCTrampolineHandler::DispatchFunction
 // This is the table of ObjC "accelerated dispatch" functions.  They are a set
 // of objc methods that are "seldom overridden" and so the compiler replaces the
 // objc_msgSend with a call to one of the dispatch functions.  That will check
-// whether the method has been overridden, and directly call the Foundation
-// implementation if not.
+// whether the method has been overridden, and directly call the Foundation 
+// implementation if not.  
 // This table is supposed to be complete.  If ones get added in the future, we
 // will have to add them to the table.
 const char *AppleObjCTrampolineHandler::g_opt_dispatch_names[] = {
-    "objc_alloc",      "objc_autorelease",
-    "objc_release",    "objc_retain",
-    "objc_alloc_init", "objc_allocWithZone",
-    "objc_opt_class",  "objc_opt_isKindOfClass",
-    "objc_opt_new",    "objc_opt_respondsToSelector",
+    "objc_alloc",
+    "objc_autorelease",
+    "objc_release",
+    "objc_retain",
+    "objc_alloc_init",
+    "objc_allocWithZone",
+    "objc_opt_class",
+    "objc_opt_isKindOfClass",
+    "objc_opt_new",
+    "objc_opt_respondsToSelector",
     "objc_opt_self",
 };
 
@@ -762,7 +767,7 @@ AppleObjCTrampolineHandler::AppleObjCTrampolineHandler(
       m_msgSend_map.insert(std::pair<lldb::addr_t, int>(sym_addr, i));
     }
   }
-
+  
   // Similarly, cache the addresses of the "optimized dispatch" function.
   for (size_t i = 0; i != llvm::array_lengthof(g_opt_dispatch_names); i++) {
     ConstString name_const_str(g_opt_dispatch_names[i]);
@@ -869,8 +874,10 @@ AppleObjCTrampolineHandler::FindDispatchFunction(lldb::addr_t addr) {
   return nullptr;
 }
 
-void AppleObjCTrampolineHandler::ForEachDispatchFunction(
-    std::function<void(lldb::addr_t, const DispatchFunction &)> callback) {
+void
+AppleObjCTrampolineHandler::ForEachDispatchFunction(
+    std::function<void(lldb::addr_t, 
+                       const DispatchFunction &)> callback) {
   for (auto elem : m_msgSend_map) {
     callback(elem.first, g_dispatch_functions[elem.second]);
   }
@@ -882,15 +889,15 @@ AppleObjCTrampolineHandler::GetStepThroughDispatchPlan(Thread &thread,
   ThreadPlanSP ret_plan_sp;
   lldb::addr_t curr_pc = thread.GetRegisterContext()->GetPC();
 
-  DispatchFunction vtable_dispatch = {"vtable", 0, false, false,
-                                      DispatchFunction::eFixUpFixed};
+  DispatchFunction vtable_dispatch
+      = {"vtable", 0, false, false, DispatchFunction::eFixUpFixed};
 
   // First step is to look and see if we are in one of the known ObjC
   // dispatch functions.  We've already compiled a table of same, so
   // consult it.
 
   const DispatchFunction *this_dispatch = FindDispatchFunction(curr_pc);
-
+  
   // Next check to see if we are in a vtable region:
 
   if (!this_dispatch && m_vtables_up) {
@@ -1164,12 +1171,12 @@ AppleObjCTrampolineHandler::GetStepThroughDispatchPlan(Thread &thread,
       }
     }
   }
-
+  
   // Finally, check if we have hit an "optimized dispatch" function.  This will
   // either directly call the base implementation or dispatch an objc_msgSend
   // if the method has been overridden.  So we just do a "step in/step out",
-  // setting a breakpoint on objc_msgSend, and if we hit the msgSend, we
-  // will automatically step in again.  That's the job of the
+  // setting a breakpoint on objc_msgSend, and if we hit the msgSend, we 
+  // will automatically step in again.  That's the job of the 
   // AppleThreadPlanStepThroughDirectDispatch.
   if (!this_dispatch && !ret_plan_sp) {
     MsgsendMap::iterator pos;
@@ -1180,7 +1187,7 @@ AppleObjCTrampolineHandler::GetStepThroughDispatchPlan(Thread &thread,
 
       bool trampoline_stop_others = false;
       LazyBool step_in_should_stop = eLazyBoolCalculate;
-      ret_plan_sp = std::make_shared<AppleThreadPlanStepThroughDirectDispatch>(
+      ret_plan_sp = std::make_shared<AppleThreadPlanStepThroughDirectDispatch> (
           thread, *this, opt_name, trampoline_stop_others, step_in_should_stop);
     }
   }

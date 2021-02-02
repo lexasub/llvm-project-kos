@@ -77,7 +77,7 @@ LLVMRemarkStreamer::toRemark(const DiagnosticInfoOptimizationBase &Diag) const {
 
 void LLVMRemarkStreamer::emit(const DiagnosticInfoOptimizationBase &Diag) {
   if (!RS.matchesFilter(Diag.getPassName()))
-    return;
+      return;
 
   // First, convert the diagnostic to a remark.
   remarks::Remark R = toRemark(Diag);
@@ -106,8 +106,8 @@ Expected<std::unique_ptr<ToolOutputFile>> llvm::setupLLVMOptimizationRemarks(
     return make_error<LLVMRemarkSetupFormatError>(std::move(E));
 
   std::error_code EC;
-  auto Flags =
-      *Format == remarks::Format::YAML ? sys::fs::OF_Text : sys::fs::OF_None;
+  auto Flags = *Format == remarks::Format::YAML ? sys::fs::OF_Text
+                                                : sys::fs::OF_None;
   auto RemarksFile =
       std::make_unique<ToolOutputFile>(RemarksFilename, EC, Flags);
   // We don't use llvm::FileError here because some diagnostics want the file

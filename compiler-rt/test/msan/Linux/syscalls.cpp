@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 
   __msan_poison(buf, sizeof(buf));
   struct iocb iocb[3];
-  struct iocb *iocbp[3] = {&iocb[0], &iocb[1], &iocb[2]};
+  struct iocb *iocbp[3] = { &iocb[0], &iocb[1], &iocb[2] };
   memset(iocb, 0, sizeof(iocb));
   iocb[0].aio_lio_opcode = IOCB_CMD_PREAD;
   iocb[0].aio_buf = (__u64)buf;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
   iocb[1].aio_lio_opcode = IOCB_CMD_PREAD;
   iocb[1].aio_buf = (__u64)(&buf[20]);
   iocb[1].aio_nbytes = 15;
-  struct iovec vec[2] = {{&buf[40], 3}, {&buf[50], 20}};
+  struct iovec vec[2] = { {&buf[40], 3}, {&buf[50], 20} };
   iocb[2].aio_lio_opcode = IOCB_CMD_PREADV;
   iocb[2].aio_buf = (__u64)(&vec);
   iocb[2].aio_nbytes = 2;

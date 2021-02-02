@@ -78,14 +78,13 @@ public:
                                                   bool stop_others) override;
 
   bool IsAllowedRuntimeValue(ConstString name) override;
-
 protected:
   // Classes that inherit from CPPLanguageRuntime can see and modify these
   CPPLanguageRuntime(Process *process);
 
 private:
   using OperatorStringToCallableInfoMap =
-      llvm::StringMap<CPPLanguageRuntime::LibCppStdFunctionCallableInfo>;
+    llvm::StringMap<CPPLanguageRuntime::LibCppStdFunctionCallableInfo>;
 
   OperatorStringToCallableInfoMap CallableLookupCache;
 };

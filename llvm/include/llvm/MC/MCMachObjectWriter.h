@@ -29,10 +29,8 @@ class MachObjectWriter;
 class MCMachObjectTargetWriter : public MCObjectTargetWriter {
   const unsigned Is64Bit : 1;
   const uint32_t CPUType;
-
 protected:
   uint32_t CPUSubtype;
-
 public:
   unsigned LocalDifference_RIT;
 

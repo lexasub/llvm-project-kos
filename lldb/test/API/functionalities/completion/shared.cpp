@@ -1,1 +1,3 @@
-int foo() { return 123; }
+int foo() {
+  return 123;
+}

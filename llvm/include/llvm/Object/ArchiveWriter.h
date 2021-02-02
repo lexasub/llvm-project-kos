@@ -45,6 +45,6 @@ Error writeArchive(StringRef ArcName, ArrayRef<NewArchiveMember> NewMembers,
 Expected<std::unique_ptr<MemoryBuffer>>
 writeArchiveToBuffer(ArrayRef<NewArchiveMember> NewMembers, bool WriteSymtab,
                      object::Archive::Kind Kind, bool Deterministic, bool Thin);
-} // namespace llvm
+}
 
 #endif

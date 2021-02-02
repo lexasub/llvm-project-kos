@@ -39,8 +39,7 @@ struct MachineIRBuilderState {
   MachineFunction *MF = nullptr;
   /// Information used to access the description of the opcodes.
   const TargetInstrInfo *TII = nullptr;
-  /// Information used to verify types are consistent and to create virtual
-  /// registers.
+  /// Information used to verify types are consistent and to create virtual registers.
   MachineRegisterInfo *MRI = nullptr;
   /// Debug location to be set to any instruction we create.
   DebugLoc DL;
@@ -247,14 +246,14 @@ public:
     setInsertPt(MBB, InsPt);
   }
 
-  MachineIRBuilder(MachineInstr &MI)
-      : MachineIRBuilder(*MI.getParent(), MI.getIterator()) {
+  MachineIRBuilder(MachineInstr &MI) :
+    MachineIRBuilder(*MI.getParent(), MI.getIterator()) {
     setInstr(MI);
     setDebugLoc(MI.getDebugLoc());
   }
 
-  MachineIRBuilder(MachineInstr &MI, GISelChangeObserver &Observer)
-      : MachineIRBuilder(MI) {
+  MachineIRBuilder(MachineInstr &MI, GISelChangeObserver &Observer) :
+    MachineIRBuilder(MI) {
     setChangeObserver(Observer);
   }
 
@@ -451,9 +450,9 @@ public:
 
   /// Build and insert \p Res = G_PTR_ADD \p Op0, \p Op1
   ///
-  /// G_PTR_ADD adds \p Op1 addressible units to the pointer specified by \p
-  /// Op0, storing the resulting pointer in \p Res. Addressible units are
-  /// typically bytes but this can vary between targets.
+  /// G_PTR_ADD adds \p Op1 addressible units to the pointer specified by \p Op0,
+  /// storing the resulting pointer in \p Res. Addressible units are typically
+  /// bytes but this can vary between targets.
   ///
   /// \pre setBasicBlock or setMI must have been called.
   /// \pre \p Res and \p Op0 must be generic virtual registers with pointer
@@ -490,8 +489,7 @@ public:
     return buildInstr(TargetOpcode::G_PTRMASK, {Res}, {Op0, Op1});
   }
 
-  /// Build and insert \p Res = G_PTRMASK \p Op0, \p G_CONSTANT (1 << NumBits) -
-  /// 1
+  /// Build and insert \p Res = G_PTRMASK \p Op0, \p G_CONSTANT (1 << NumBits) - 1
   ///
   /// This clears the low bits of a pointer operand without destroying its
   /// pointer properties. This has the effect of rounding the address *down* to
@@ -560,7 +558,7 @@ public:
                                  const SrcOp &Op0, const SrcOp &Op1,
                                  const SrcOp &CarryIn) {
     return buildInstr(TargetOpcode::G_UADDE, {Res, CarryOut},
-                      {Op0, Op1, CarryIn});
+                                             {Op0, Op1, CarryIn});
   }
 
   /// Build and insert \p Res, \p CarryOut = G_USUBE \p Op0, \p Op1, \p CarryInp
@@ -568,7 +566,7 @@ public:
                                  const SrcOp &Op0, const SrcOp &Op1,
                                  const SrcOp &CarryIn) {
     return buildInstr(TargetOpcode::G_USUBE, {Res, CarryOut},
-                      {Op0, Op1, CarryIn});
+                                             {Op0, Op1, CarryIn});
   }
 
   /// Build and insert \p Res, \p CarryOut = G_SADDE \p Op0, \p Op1, \p CarryInp
@@ -576,7 +574,7 @@ public:
                                  const SrcOp &Op0, const SrcOp &Op1,
                                  const SrcOp &CarryIn) {
     return buildInstr(TargetOpcode::G_SADDE, {Res, CarryOut},
-                      {Op0, Op1, CarryIn});
+                                             {Op0, Op1, CarryIn});
   }
 
   /// Build and insert \p Res, \p CarryOut = G_SSUBE \p Op0, \p Op1, \p CarryInp
@@ -584,7 +582,7 @@ public:
                                  const SrcOp &Op0, const SrcOp &Op1,
                                  const SrcOp &CarryIn) {
     return buildInstr(TargetOpcode::G_SSUBE, {Res, CarryOut},
-                      {Op0, Op1, CarryIn});
+                                             {Op0, Op1, CarryIn});
   }
 
   /// Build and insert \p Res = G_ANYEXT \p Op0
@@ -618,8 +616,7 @@ public:
   MachineInstrBuilder buildSExt(const DstOp &Res, const SrcOp &Op);
 
   /// Build and insert \p Res = G_SEXT_INREG \p Op, ImmOp
-  MachineInstrBuilder buildSExtInReg(const DstOp &Res, const SrcOp &Op,
-                                     int64_t ImmOp) {
+  MachineInstrBuilder buildSExtInReg(const DstOp &Res, const SrcOp &Op, int64_t ImmOp) {
     return buildInstr(TargetOpcode::G_SEXT_INREG, {Res}, {Op, SrcOp(ImmOp)});
   }
 
@@ -628,6 +625,7 @@ public:
                                  Optional<unsigned> Flags = None) {
     return buildInstr(TargetOpcode::G_FPEXT, {Res}, {Op}, Flags);
   }
+
 
   /// Build and insert a G_PTRTOINT instruction.
   MachineInstrBuilder buildPtrToInt(const DstOp &Dst, const SrcOp &Src) {
@@ -644,7 +642,7 @@ public:
     return buildInstr(TargetOpcode::G_BITCAST, {Dst}, {Src});
   }
 
-  /// Build and insert \p Dst = G_ADDRSPACE_CAST \p Src
+    /// Build and insert \p Dst = G_ADDRSPACE_CAST \p Src
   MachineInstrBuilder buildAddrSpaceCast(const DstOp &Dst, const SrcOp &Src) {
     return buildInstr(TargetOpcode::G_ADDRSPACE_CAST, {Dst}, {Src});
   }
@@ -886,8 +884,7 @@ public:
   /// \pre \p Res and \p Src must be generic virtual registers.
   ///
   /// \return a MachineInstrBuilder for the newly created instruction.
-  MachineInstrBuilder buildExtract(const DstOp &Res, const SrcOp &Src,
-                                   uint64_t Index);
+  MachineInstrBuilder buildExtract(const DstOp &Res, const SrcOp &Src, uint64_t Index);
 
   /// Build and insert \p Res = IMPLICIT_DEF.
   MachineInstrBuilder buildUndef(const DstOp &Res);
@@ -953,7 +950,8 @@ public:
 
   /// Build and insert \p Res = G_BUILD_VECTOR with \p Src replicated to fill
   /// the number of elements
-  MachineInstrBuilder buildSplatVector(const DstOp &Res, const SrcOp &Src);
+  MachineInstrBuilder buildSplatVector(const DstOp &Res,
+                                       const SrcOp &Src);
 
   /// Build and insert \p Res = G_BUILD_VECTOR_TRUNC \p Op0, ...
   ///
@@ -1345,14 +1343,14 @@ public:
                                          Register Val, MachineMemOperand &MMO);
 
   /// Build and insert `OldValRes<def> = G_ATOMICRMW_FADD Addr, Val, MMO`.
-  MachineInstrBuilder buildAtomicRMWFAdd(const DstOp &OldValRes,
-                                         const SrcOp &Addr, const SrcOp &Val,
-                                         MachineMemOperand &MMO);
+  MachineInstrBuilder buildAtomicRMWFAdd(
+    const DstOp &OldValRes, const SrcOp &Addr, const SrcOp &Val,
+    MachineMemOperand &MMO);
 
   /// Build and insert `OldValRes<def> = G_ATOMICRMW_FSUB Addr, Val, MMO`.
-  MachineInstrBuilder buildAtomicRMWFSub(const DstOp &OldValRes,
-                                         const SrcOp &Addr, const SrcOp &Val,
-                                         MachineMemOperand &MMO);
+  MachineInstrBuilder buildAtomicRMWFSub(
+        const DstOp &OldValRes, const SrcOp &Addr, const SrcOp &Val,
+        MachineMemOperand &MMO);
 
   /// Build and insert `G_FENCE Ordering, Scope`.
   MachineInstrBuilder buildFence(unsigned Ordering, unsigned Scope);
@@ -1539,8 +1537,7 @@ public:
   }
 
   /// Build and insert \p Res = G_CTLZ_ZERO_UNDEF \p Op0, \p Src0
-  MachineInstrBuilder buildCTLZ_ZERO_UNDEF(const DstOp &Dst,
-                                           const SrcOp &Src0) {
+  MachineInstrBuilder buildCTLZ_ZERO_UNDEF(const DstOp &Dst, const SrcOp &Src0) {
     return buildInstr(TargetOpcode::G_CTLZ_ZERO_UNDEF, {Dst}, {Src0});
   }
 
@@ -1550,8 +1547,7 @@ public:
   }
 
   /// Build and insert \p Res = G_CTTZ_ZERO_UNDEF \p Op0, \p Src0
-  MachineInstrBuilder buildCTTZ_ZERO_UNDEF(const DstOp &Dst,
-                                           const SrcOp &Src0) {
+  MachineInstrBuilder buildCTTZ_ZERO_UNDEF(const DstOp &Dst, const SrcOp &Src0) {
     return buildInstr(TargetOpcode::G_CTTZ_ZERO_UNDEF, {Dst}, {Src0});
   }
 
@@ -1615,13 +1611,13 @@ public:
 
   /// Build and insert \p Dst = G_INTRINSIC_TRUNC \p Src0
   MachineInstrBuilder buildIntrinsicTrunc(const DstOp &Dst, const SrcOp &Src0,
-                                          Optional<unsigned> Flags = None) {
+                                         Optional<unsigned> Flags = None) {
     return buildInstr(TargetOpcode::G_INTRINSIC_TRUNC, {Dst}, {Src0}, Flags);
   }
 
   /// Build and insert \p Res = GFFLOOR \p Op0, \p Op1
   MachineInstrBuilder buildFFloor(const DstOp &Dst, const SrcOp &Src0,
-                                  Optional<unsigned> Flags = None) {
+                                          Optional<unsigned> Flags = None) {
     return buildInstr(TargetOpcode::G_FFLOOR, {Dst}, {Src0}, Flags);
   }
 
@@ -1633,13 +1629,13 @@ public:
 
   /// Build and insert \p Dst = G_FLOG2 \p Src
   MachineInstrBuilder buildFLog2(const DstOp &Dst, const SrcOp &Src,
-                                 Optional<unsigned> Flags = None) {
+                                Optional<unsigned> Flags = None) {
     return buildInstr(TargetOpcode::G_FLOG2, {Dst}, {Src}, Flags);
   }
 
   /// Build and insert \p Dst = G_FEXP2 \p Src
   MachineInstrBuilder buildFExp2(const DstOp &Dst, const SrcOp &Src,
-                                 Optional<unsigned> Flags = None) {
+                                Optional<unsigned> Flags = None) {
     return buildInstr(TargetOpcode::G_FEXP2, {Dst}, {Src}, Flags);
   }
 

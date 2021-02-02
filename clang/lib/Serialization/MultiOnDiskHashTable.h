@@ -37,7 +37,7 @@ namespace clang {
 namespace serialization {
 
 /// A collection of on-disk hash tables, merged when relevant for performance.
-template <typename Info> class MultiOnDiskHashTable {
+template<typename Info> class MultiOnDiskHashTable {
 public:
   /// A handle to a file, used when overriding tables.
   using file_type = typename Info::file_type;
@@ -53,7 +53,7 @@ public:
 
 private:
   /// The generator is permitted to read our merged table.
-  template <typename ReaderInfo, typename WriterInfo>
+  template<typename ReaderInfo, typename WriterInfo>
   friend class MultiOnDiskHashTableGenerator;
 
   /// A hash table stored on disk.
@@ -112,9 +112,8 @@ private:
 
   MergedTable *getMergedTable() const {
     // If we already have a merged table, it's the first one.
-    return Tables.empty() ? nullptr
-                          : Table::getFromOpaqueValue(*Tables.begin())
-                                .template dyn_cast<MergedTable *>();
+    return Tables.empty() ? nullptr : Table::getFromOpaqueValue(*Tables.begin())
+                                          .template dyn_cast<MergedTable*>();
   }
 
   /// Delete all our current on-disk tables.
@@ -161,7 +160,8 @@ private:
         auto L = InfoObj.ReadKeyDataLength(LocalPtr);
         const internal_key_type &Key = InfoObj.ReadKey(LocalPtr, L.first);
         data_type_builder ValueBuilder(Merged->Data[Key]);
-        InfoObj.ReadDataInto(Key, LocalPtr + L.first, L.second, ValueBuilder);
+        InfoObj.ReadDataInto(Key, LocalPtr + L.first, L.second,
+                             ValueBuilder);
       }
 
       Merged->Files.push_back(ODT->File);
@@ -219,8 +219,8 @@ public:
 
     // Register the table.
     Table NewTable = new OnDiskTable(File, NumBucketsAndEntries.first,
-                                     NumBucketsAndEntries.second, Buckets, Ptr,
-                                     Data, std::move(InfoObj));
+                                     NumBucketsAndEntries.second,
+                                     Buckets, Ptr, Data, std::move(InfoObj));
     Tables.push_back(NewTable.getOpaqueValue());
   }
 
@@ -288,7 +288,7 @@ public:
 };
 
 /// Writer for the on-disk hash table.
-template <typename ReaderInfo, typename WriterInfo>
+template<typename ReaderInfo, typename WriterInfo>
 class MultiOnDiskHashTableGenerator {
   using BaseTable = MultiOnDiskHashTable<ReaderInfo>;
   using Generator = llvm::OnDiskChainedHashTableGenerator<WriterInfo>;

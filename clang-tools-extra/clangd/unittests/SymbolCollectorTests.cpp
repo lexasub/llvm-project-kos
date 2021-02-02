@@ -913,12 +913,12 @@ TEST_F(SymbolCollectorTest, SpelledReferences) {
     llvm::StringRef Main;
     llvm::StringRef TargetSymbolName;
   } TestCases[] = {
-      {
-          R"cpp(
+    {
+      R"cpp(
         struct Foo;
         #define MACRO Foo
       )cpp",
-          R"cpp(
+      R"cpp(
         struct $spelled[[Foo]] {
           $spelled[[Foo]]();
           ~$spelled[[Foo]]();
@@ -926,24 +926,24 @@ TEST_F(SymbolCollectorTest, SpelledReferences) {
         $spelled[[Foo]] Variable1;
         $implicit[[MACRO]] Variable2;
       )cpp",
-          "Foo",
-      },
-      {
-          R"cpp(
+      "Foo",
+    },
+    {
+      R"cpp(
         class Foo {
         public:
           Foo() = default;
         };
       )cpp",
-          R"cpp(
+      R"cpp(
         void f() { Foo $implicit[[f]]; f = $spelled[[Foo]]();}
       )cpp",
-          "Foo::Foo" /// constructor.
-      },
+      "Foo::Foo" /// constructor.
+    },
   };
   CollectorOpts.RefFilter = RefKind::All;
   CollectorOpts.RefsInHeaders = false;
-  for (const auto &T : TestCases) {
+  for (const auto& T : TestCases) {
     Annotations Header(T.Header);
     Annotations Main(T.Main);
     // Reset the file system.

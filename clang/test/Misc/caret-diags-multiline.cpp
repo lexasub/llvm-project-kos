@@ -148,6 +148,7 @@ int f5(int cond) {
   return a;
 }
 
+
 // Check that we don't include lines with no interesting code if we can't reach
 // the interesting part within the line limit.
 
@@ -161,16 +162,26 @@ int f5(int cond) {
 // CHECK-NEXT: {{^}}    + 3
 // CHECK-NEXT: {{^}}void g();
 // CHECK-NEXT: {{^}}     ^{{$}}
-template <typename T>
-decltype(T() + 1 + 2 + 3) void g();
+template<typename T>
+decltype(T()
+    + 1
+    + 2
+    + 3)
+void g();
 
 // CHECK:      note: candidate template ignored: substitution failure
 // CHECK-NEXT: {{^}}void g();
 // CHECK-NEXT: {{^}}     ^{{$}}
-template <typename T>
-decltype(T() + 1 + 2 + 3 + 4) void g();
+template<typename T>
+decltype(T()
+    + 1
+    + 2
+    + 3
+    + 4)
+void g();
 
 void h() { g<int()>(); }
+
 
 void multiple_ranges(int a, int b) {
   // CHECK:      error: invalid operands
@@ -180,8 +191,9 @@ void multiple_ranges(int a, int b) {
   // CHECK-NEXT: ^
   // CHECK-NEXT: &(b)
   // CHECK-NEXT: ~~~~
-  &(a) +
-      &(b);
+  &(a)
+  +
+  &(b);
 
   // CHECK-NEXT: error: invalid operands
   // CHECK-NEXT: &(
@@ -195,9 +207,12 @@ void multiple_ranges(int a, int b) {
   // CHECK-NEXT: &(
   // CHECK-NEXT: ~~
   &(
-      a) +
-      &(
-          b);
+  a
+  )
+  +
+  &(
+  b
+  );
 
   // CHECK-NEXT: error: invalid operands
   // CHECK-NEXT: &(a
@@ -210,9 +225,12 @@ void multiple_ranges(int a, int b) {
   // CHECK-NEXT: ~~
   // CHECK-NEXT: b
   // CHECK-NEXT: ~
-  &(a) +
-      &(
-          b);
+  &(a
+  )
+  +
+  &(
+  b
+  );
 }
 
 #define pr33902_a(b) #b

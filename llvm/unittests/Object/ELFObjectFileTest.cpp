@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Object/ELFObjectFile.h"
-#include "llvm/ObjectYAML/yaml2obj.h"
 #include "llvm/Support/MemoryBuffer.h"
+#include "llvm/ObjectYAML/yaml2obj.h"
 #include "llvm/Support/YAMLTraits.h"
 #include "llvm/Testing/Support/Error.h"
 #include "gtest/gtest.h"

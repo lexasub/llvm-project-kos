@@ -43,6 +43,6 @@ public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 };
 
-} // namespace llvm
+}
 
 #endif

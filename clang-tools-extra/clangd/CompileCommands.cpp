@@ -182,7 +182,9 @@ CommandMangler CommandMangler::detect() {
   return Result;
 }
 
-CommandMangler CommandMangler::forTests() { return CommandMangler(); }
+CommandMangler CommandMangler::forTests() {
+  return CommandMangler();
+}
 
 void CommandMangler::adjust(std::vector<std::string> &Cmd) const {
   for (auto &Edit : Config::current().CompileFlags.Edits)
@@ -500,6 +502,7 @@ void ArgStripper::process(std::vector<std::string> &Args) const {
   }
   Args.resize(Write);
 }
+
 
 std::string printArgv(llvm::ArrayRef<llvm::StringRef> Args) {
   std::string Buf;

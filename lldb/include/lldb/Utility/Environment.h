@@ -25,7 +25,7 @@ public:
     Envp &operator=(Envp &&RHS) = default;
 
     char *const *get() const { return Data; }
-    operator char * const *() const { return get(); }
+    operator char *const *() const { return get(); }
 
   private:
     explicit Envp(const Environment &Env);

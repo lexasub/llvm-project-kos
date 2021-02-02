@@ -51,7 +51,7 @@ TEST(LlvmLibcStrRChrTest, FindsLastBehindFirstNullTerminator) {
   ASSERT_STREQ(__llvm_libc::strrchr(src, 'b'), nullptr);
   // Same goes for 'c'.
   ASSERT_STREQ(__llvm_libc::strrchr(src, 'c'), nullptr);
-
+  
   // Should find the second of the two a's.
   ASSERT_STREQ(__llvm_libc::strrchr(src, 'a'), "a");
 }

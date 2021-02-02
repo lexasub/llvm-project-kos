@@ -125,11 +125,11 @@ llvm::ExitOnError ExitOnErr;
 int main(int argc, const char **argv) {
   // This just needs to be some symbol in the binary; C++ doesn't
   // allow taking the address of ::main however.
-  void *MainAddr = (void *)(intptr_t)GetExecutablePath;
+  void *MainAddr = (void*) (intptr_t) GetExecutablePath;
   std::string Path = GetExecutablePath(argv[0], MainAddr);
   IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
   TextDiagnosticPrinter *DiagClient =
-      new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
+    new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
 
   IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
   DiagnosticsEngine Diags(DiagID, &*DiagOpts, DiagClient);
@@ -204,7 +204,7 @@ int main(int argc, const char **argv) {
   if (Clang.getHeaderSearchOpts().UseBuiltinIncludes &&
       Clang.getHeaderSearchOpts().ResourceDir.empty())
     Clang.getHeaderSearchOpts().ResourceDir =
-        CompilerInvocation::GetResourcesPath(argv[0], MainAddr);
+      CompilerInvocation::GetResourcesPath(argv[0], MainAddr);
 
   // Create and execute the frontend to generate an LLVM bitcode module.
   std::unique_ptr<CodeGenAction> Act(new EmitLLVMOnlyAction());

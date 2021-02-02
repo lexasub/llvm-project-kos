@@ -155,6 +155,7 @@ int gcovMain(int argc, const char *argv[]) {
                               cl::desc("Hash long pathnames"));
   cl::alias HashFilenamesA("hash-filenames", cl::aliasopt(HashFilenames));
 
+
   cl::OptionCategory DebugCat("Internal and debugging options");
   cl::opt<bool> DumpGCOV("dump", cl::init(false), cl::cat(DebugCat),
                          cl::desc("Dump the gcov file to stderr"));

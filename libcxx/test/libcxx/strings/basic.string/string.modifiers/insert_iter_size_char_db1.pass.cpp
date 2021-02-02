@@ -20,13 +20,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::string s;
-    std::string s2;
-    s.insert(s2.begin(), 1, 'a');
-    assert(false);
-  }
+int main(int, char**)
+{
+    {
+        std::string s;
+        std::string s2;
+        s.insert(s2.begin(), 1, 'a');
+        assert(false);
+    }
 
-  return 0;
+    return 0;
 }

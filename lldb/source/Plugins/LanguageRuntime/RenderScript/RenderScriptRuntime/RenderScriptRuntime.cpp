@@ -577,7 +577,7 @@ struct RenderScriptRuntime::Element {
       array_size;        // Number of items in array, only needed for structs
   ConstString type_name; // Name of type, only needed for structs
 
-  static ConstString
+  static ConstString 
   GetFallbackStructName(); // Print this as the type name of a struct Element
                            // If we can't resolve the actual struct name
 
@@ -901,7 +901,7 @@ Searcher::CallbackReturn RSScriptGroupBreakpointResolver::SearchCallback(
     return Searcher::eCallbackReturnContinue;
 
   std::vector<std::string> names;
-  Breakpoint &breakpoint = *breakpoint_sp;
+  Breakpoint& breakpoint = *breakpoint_sp;
   breakpoint.GetNames(names);
   if (names.empty())
     return eCallbackReturnContinue;
@@ -1048,9 +1048,8 @@ RenderScriptRuntime::CreateExceptionResolver(const lldb::BreakpointSP &bp,
 const RenderScriptRuntime::HookDefn RenderScriptRuntime::s_runtimeHookDefns[] =
     {
         // rsdScript
-        {"rsdScriptInit",
-         "_Z13rsdScriptInitPKN7android12renderscript7ContextEP"
-         "NS0_7ScriptCEPKcS7_PKhjj",
+        {"rsdScriptInit", "_Z13rsdScriptInitPKN7android12renderscript7ContextEP"
+                          "NS0_7ScriptCEPKcS7_PKhjj",
          "_Z13rsdScriptInitPKN7android12renderscript7ContextEPNS0_"
          "7ScriptCEPKcS7_PKhmj",
          0, RenderScriptRuntime::eModuleKindDriver,
@@ -1062,18 +1061,16 @@ const RenderScriptRuntime::HookDefn RenderScriptRuntime::s_runtimeHookDefns[] =
          "_6ScriptEjPPKNS0_10AllocationEmPS6_PKvmPK12RsScriptCall",
          0, RenderScriptRuntime::eModuleKindDriver,
          &lldb_private::RenderScriptRuntime::CaptureScriptInvokeForEachMulti},
-        {"rsdScriptSetGlobalVar",
-         "_Z21rsdScriptSetGlobalVarPKN7android12render"
-         "script7ContextEPKNS0_6ScriptEjPvj",
+        {"rsdScriptSetGlobalVar", "_Z21rsdScriptSetGlobalVarPKN7android12render"
+                                  "script7ContextEPKNS0_6ScriptEjPvj",
          "_Z21rsdScriptSetGlobalVarPKN7android12renderscript7ContextEPKNS0_"
          "6ScriptEjPvm",
          0, RenderScriptRuntime::eModuleKindDriver,
          &lldb_private::RenderScriptRuntime::CaptureSetGlobalVar},
 
         // rsdAllocation
-        {"rsdAllocationInit",
-         "_Z17rsdAllocationInitPKN7android12renderscript7C"
-         "ontextEPNS0_10AllocationEb",
+        {"rsdAllocationInit", "_Z17rsdAllocationInitPKN7android12renderscript7C"
+                              "ontextEPNS0_10AllocationEb",
          "_Z17rsdAllocationInitPKN7android12renderscript7ContextEPNS0_"
          "10AllocationEb",
          0, RenderScriptRuntime::eModuleKindDriver,
@@ -1084,19 +1081,17 @@ const RenderScriptRuntime::HookDefn RenderScriptRuntime::s_runtimeHookDefns[] =
          "_Z19rsdAllocationRead2DPKN7android12renderscript7ContextEPKNS0_"
          "10AllocationEjjj23RsAllocationCubemapFacejjPvmm",
          0, RenderScriptRuntime::eModuleKindDriver, nullptr},
-        {"rsdAllocationDestroy",
-         "_Z20rsdAllocationDestroyPKN7android12rendersc"
-         "ript7ContextEPNS0_10AllocationE",
+        {"rsdAllocationDestroy", "_Z20rsdAllocationDestroyPKN7android12rendersc"
+                                 "ript7ContextEPNS0_10AllocationE",
          "_Z20rsdAllocationDestroyPKN7android12renderscript7ContextEPNS0_"
          "10AllocationE",
          0, RenderScriptRuntime::eModuleKindDriver,
          &lldb_private::RenderScriptRuntime::CaptureAllocationDestroy},
 
         // renderscript script groups
-        {"rsdDebugHintScriptGroup2",
-         "_ZN7android12renderscript21debugHintScrip"
-         "tGroup2EPKcjPKPFvPK24RsExpandKernelDriver"
-         "InfojjjEj",
+        {"rsdDebugHintScriptGroup2", "_ZN7android12renderscript21debugHintScrip"
+                                     "tGroup2EPKcjPKPFvPK24RsExpandKernelDriver"
+                                     "InfojjjEj",
          "_ZN7android12renderscript21debugHintScriptGroup2EPKcjPKPFvPK24RsExpan"
          "dKernelDriverInfojjjEj",
          0, RenderScriptRuntime::eModuleKindImpl,
@@ -1761,8 +1756,7 @@ enum ExpressionStrings {
 const int jit_max_expr_size = 512;
 
 // Retrieve the string to JIT for the given expression
-#define JIT_TEMPLATE_CONTEXT                                                   \
-  "void* ctxt = (void*)rsDebugGetContextWrapper(0x%" PRIx64 "); "
+#define JIT_TEMPLATE_CONTEXT "void* ctxt = (void*)rsDebugGetContextWrapper(0x%" PRIx64 "); "
 const char *JITTemplate(ExpressionStrings e) {
   // Format strings containing the expressions we may need to evaluate.
   static std::array<const char *, _eExprLast> runtime_expressions = {
@@ -1770,12 +1764,10 @@ const char *JITTemplate(ExpressionStrings e) {
        "(int*)_"
        "Z12GetOffsetPtrPKN7android12renderscript10AllocationEjjjj23RsAllocation"
        "CubemapFace"
-       "(0x%" PRIx64 ", %" PRIu32 ", %" PRIu32 ", %" PRIu32
-       ", 0, 0)", // eExprGetOffsetPtr
+       "(0x%" PRIx64 ", %" PRIu32 ", %" PRIu32 ", %" PRIu32 ", 0, 0)", // eExprGetOffsetPtr
 
        // Type* rsaAllocationGetType(Context*, Allocation*)
-       JIT_TEMPLATE_CONTEXT "(void*)rsaAllocationGetType(ctxt, 0x%" PRIx64
-                            ")", // eExprAllocGetType
+       JIT_TEMPLATE_CONTEXT "(void*)rsaAllocationGetType(ctxt, 0x%" PRIx64 ")", // eExprAllocGetType
 
        // rsaTypeGetNativeData(Context*, Type*, void* typeData, size) Pack the
        // data in the following way mHal.state.dimX; mHal.state.dimY;
@@ -1816,29 +1808,25 @@ const char *JITTemplate(ExpressionStrings e) {
        // Needed for Allocations of structs to gather details about
        // fields/Subelements Element* of field
        JIT_TEMPLATE_CONTEXT "void* ids[%" PRIu32 "]; const char* names[%" PRIu32
-                            "]; size_t arr_size[%" PRIu32 "];"
-                            "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
-                            ", ids, names, arr_size, %" PRIu32 "); ids[%" PRIu32
-                            "]", // eExprSubelementsId
+       "]; size_t arr_size[%" PRIu32 "];"
+       "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
+       ", ids, names, arr_size, %" PRIu32 "); ids[%" PRIu32 "]", // eExprSubelementsId
 
        // Name of field
        JIT_TEMPLATE_CONTEXT "void* ids[%" PRIu32 "]; const char* names[%" PRIu32
-                            "]; size_t arr_size[%" PRIu32 "];"
-                            "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
-                            ", ids, names, arr_size, %" PRIu32
-                            "); names[%" PRIu32 "]", // eExprSubelementsName
+       "]; size_t arr_size[%" PRIu32 "];"
+       "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
+       ", ids, names, arr_size, %" PRIu32 "); names[%" PRIu32 "]", // eExprSubelementsName
 
        // Array size of field
        JIT_TEMPLATE_CONTEXT "void* ids[%" PRIu32 "]; const char* names[%" PRIu32
-                            "]; size_t arr_size[%" PRIu32 "];"
-                            "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
-                            ", ids, names, arr_size, %" PRIu32
-                            "); arr_size[%" PRIu32
-                            "]"}}; // eExprSubelementsArrSize
+       "]; size_t arr_size[%" PRIu32 "];"
+       "(void*)rsaElementGetSubElements(ctxt, 0x%" PRIx64
+       ", ids, names, arr_size, %" PRIu32 "); arr_size[%" PRIu32 "]"}}; // eExprSubelementsArrSize
 
   return runtime_expressions[e];
 }
-} // namespace
+} // end of the anonymous namespace
 
 // JITs the RS runtime for the internal data pointer of an allocation. Is
 // passed x,y,z coordinates for the pointer to a specific element. Then sets
@@ -2056,8 +2044,8 @@ bool RenderScriptRuntime::JITSubelements(Element &elem,
     for (uint32_t expr_index = 0; expr_index < num_exprs; ++expr_index) {
       const char *fmt_str =
           JITTemplate(ExpressionStrings(eExprSubelementsId + expr_index));
-      int written = snprintf(expr_buffer, jit_max_expr_size, fmt_str, context,
-                             field_count, field_count, field_count,
+      int written = snprintf(expr_buffer, jit_max_expr_size, fmt_str,
+                             context, field_count, field_count, field_count,
                              *elem.element_ptr.get(), field_count, field_index);
       if (written < 0) {
         LLDB_LOGF(log, "%s - encoding error in snprintf().", __FUNCTION__);
@@ -2487,9 +2475,8 @@ bool RenderScriptRuntime::LoadAllocation(Stream &strm, const uint32_t alloc_id,
 
   // Look at the type of the root element in the header
   AllocationDetails::ElementHeader root_el_hdr;
-  memcpy(&root_el_hdr,
-         static_cast<uint8_t *>(file_buf) +
-             sizeof(AllocationDetails::FileHeader),
+  memcpy(&root_el_hdr, static_cast<uint8_t *>(file_buf) +
+                           sizeof(AllocationDetails::FileHeader),
          sizeof(AllocationDetails::ElementHeader));
 
   LLDB_LOGF(log, "%s - header type %" PRIu32 ", element size %" PRIu32,
@@ -3506,7 +3493,8 @@ void RenderScriptRuntime::SetBreakAllKernels(bool do_break, TargetSP target) {
 
 // Given the name of a kernel this function creates a breakpoint using our own
 // breakpoint resolver, and returns the Breakpoint shared pointer.
-BreakpointSP RenderScriptRuntime::CreateKernelBreakpoint(ConstString name) {
+BreakpointSP
+RenderScriptRuntime::CreateKernelBreakpoint(ConstString name) {
   Log *log(
       GetLogIfAnyCategoriesSet(LIBLLDB_LOG_LANGUAGE | LIBLLDB_LOG_BREAKPOINTS));
 
@@ -3518,8 +3506,8 @@ BreakpointSP RenderScriptRuntime::CreateKernelBreakpoint(ConstString name) {
 
   BreakpointResolverSP resolver_sp(new RSBreakpointResolver(nullptr, name));
   Target &target = GetProcess()->GetTarget();
-  BreakpointSP bp =
-      target.CreateBreakpoint(m_filtersp, resolver_sp, false, false, false);
+  BreakpointSP bp = target.CreateBreakpoint(
+      m_filtersp, resolver_sp, false, false, false);
 
   // Give RS breakpoints a specific name, so the user can manipulate them as a
   // group.
@@ -3532,8 +3520,9 @@ BreakpointSP RenderScriptRuntime::CreateKernelBreakpoint(ConstString name) {
   return bp;
 }
 
-BreakpointSP RenderScriptRuntime::CreateReductionBreakpoint(ConstString name,
-                                                            int kernel_types) {
+BreakpointSP
+RenderScriptRuntime::CreateReductionBreakpoint(ConstString name,
+                                               int kernel_types) {
   Log *log(
       GetLogIfAnyCategoriesSet(LIBLLDB_LOG_LANGUAGE | LIBLLDB_LOG_BREAKPOINTS));
 
@@ -3546,8 +3535,8 @@ BreakpointSP RenderScriptRuntime::CreateReductionBreakpoint(ConstString name,
   BreakpointResolverSP resolver_sp(new RSReduceBreakpointResolver(
       nullptr, name, &m_rsmodules, kernel_types));
   Target &target = GetProcess()->GetTarget();
-  BreakpointSP bp =
-      target.CreateBreakpoint(m_filtersp, resolver_sp, false, false, false);
+  BreakpointSP bp = target.CreateBreakpoint(
+      m_filtersp, resolver_sp, false, false, false);
 
   // Give RS breakpoints a specific name, so the user can manipulate them as a
   // group.
@@ -3778,8 +3767,8 @@ RenderScriptRuntime::CreateScriptGroupBreakpoint(ConstString name,
   BreakpointResolverSP resolver_sp(new RSScriptGroupBreakpointResolver(
       nullptr, name, m_scriptGroups, stop_on_all));
   Target &target = GetProcess()->GetTarget();
-  BreakpointSP bp =
-      target.CreateBreakpoint(m_filtersp, resolver_sp, false, false, false);
+  BreakpointSP bp = target.CreateBreakpoint(
+      m_filtersp, resolver_sp, false, false, false);
   // Give RS breakpoints a specific name, so the user can manipulate them as a
   // group.
   Status err;
@@ -4070,26 +4059,12 @@ public:
 };
 
 static constexpr OptionDefinition g_renderscript_reduction_bp_set_options[] = {
-    {LLDB_OPT_SET_1,
-     false,
-     "function-role",
-     't',
-     OptionParser::eRequiredArgument,
-     nullptr,
-     {},
-     0,
-     eArgTypeOneLiner,
+    {LLDB_OPT_SET_1, false, "function-role", 't',
+     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeOneLiner,
      "Break on a comma separated set of reduction kernel types "
      "(accumulator,outcoverter,combiner,initializer"},
-    {LLDB_OPT_SET_1,
-     false,
-     "coordinate",
-     'c',
-     OptionParser::eRequiredArgument,
-     nullptr,
-     {},
-     0,
-     eArgTypeValue,
+    {LLDB_OPT_SET_1, false, "coordinate", 'c', OptionParser::eRequiredArgument,
+     nullptr, {}, 0, eArgTypeValue,
      "Set a breakpoint on a single invocation of the kernel with specified "
      "coordinate.\n"
      "Coordinate takes the form 'x[,y][,z] where x,y,z are positive "
@@ -4242,15 +4217,8 @@ private:
 };
 
 static constexpr OptionDefinition g_renderscript_kernel_bp_set_options[] = {
-    {LLDB_OPT_SET_1,
-     false,
-     "coordinate",
-     'c',
-     OptionParser::eRequiredArgument,
-     nullptr,
-     {},
-     0,
-     eArgTypeValue,
+    {LLDB_OPT_SET_1, false, "coordinate", 'c', OptionParser::eRequiredArgument,
+     nullptr, {}, 0, eArgTypeValue,
      "Set a breakpoint on a single invocation of the kernel with specified "
      "coordinate.\n"
      "Coordinate takes the form 'x[,y][,z] where x,y,z are positive "
@@ -4520,17 +4488,10 @@ public:
   }
 };
 
-static constexpr OptionDefinition g_renderscript_runtime_alloc_dump_options[] =
-    {{LLDB_OPT_SET_1,
-      false,
-      "file",
-      'f',
-      OptionParser::eRequiredArgument,
-      nullptr,
-      {},
-      0,
-      eArgTypeFilename,
-      "Print results to specified file instead of command line."}};
+static constexpr OptionDefinition g_renderscript_runtime_alloc_dump_options[] = {
+    {LLDB_OPT_SET_1, false, "file", 'f', OptionParser::eRequiredArgument,
+     nullptr, {}, 0, eArgTypeFilename,
+     "Print results to specified file instead of command line."}};
 
 class CommandObjectRenderScriptRuntimeContext : public CommandObjectMultiword {
 public:
@@ -4669,17 +4630,10 @@ private:
   CommandOptions m_options;
 };
 
-static constexpr OptionDefinition g_renderscript_runtime_alloc_list_options[] =
-    {{LLDB_OPT_SET_1,
-      false,
-      "id",
-      'i',
-      OptionParser::eRequiredArgument,
-      nullptr,
-      {},
-      0,
-      eArgTypeIndex,
-      "Only show details of a single allocation with specified id."}};
+static constexpr OptionDefinition g_renderscript_runtime_alloc_list_options[] = {
+    {LLDB_OPT_SET_1, false, "id", 'i', OptionParser::eRequiredArgument, nullptr,
+     {}, 0, eArgTypeIndex,
+     "Only show details of a single allocation with specified id."}};
 
 class CommandObjectRenderScriptRuntimeAllocationList
     : public CommandObjectParsed {

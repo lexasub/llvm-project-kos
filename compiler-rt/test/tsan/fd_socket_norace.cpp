@@ -66,3 +66,4 @@ int main() {
 }
 
 // CHECK-NOT: WARNING: ThreadSanitizer: data race
+

@@ -27,6 +27,7 @@
 using namespace llvm;
 using namespace MIPatternMatch;
 
+
 #define AMDGPUREGBANKCOMBINERHELPER_GENCOMBINERHELPER_DEPS
 #include "AMDGPUGenRegBankGICombiner.inc"
 #undef AMDGPUREGBANKCOMBINERHELPER_GENCOMBINERHELPER_DEPS
@@ -44,8 +45,8 @@ public:
   AMDGPUGenRegBankCombinerHelperRuleConfig GeneratedRuleCfg;
 
   AMDGPURegBankCombinerInfo(bool EnableOpt, bool OptSize, bool MinSize,
-                            const AMDGPULegalizerInfo *LI, GISelKnownBits *KB,
-                            MachineDominatorTree *MDT)
+                                  const AMDGPULegalizerInfo *LI,
+                                  GISelKnownBits *KB, MachineDominatorTree *MDT)
       : CombinerInfo(/*AllowIllegalOps*/ false, /*ShouldLegalizeIllegal*/ true,
                      /*LegalizerInfo*/ LI, EnableOpt, OptSize, MinSize),
         KB(KB), MDT(MDT) {
@@ -58,8 +59,8 @@ public:
 };
 
 bool AMDGPURegBankCombinerInfo::combine(GISelChangeObserver &Observer,
-                                        MachineInstr &MI,
-                                        MachineIRBuilder &B) const {
+                                              MachineInstr &MI,
+                                              MachineIRBuilder &B) const {
   CombinerHelper Helper(Observer, B, KB, MDT);
   AMDGPUGenRegBankCombinerHelper Generated(GeneratedRuleCfg);
 
@@ -82,12 +83,13 @@ public:
 
   AMDGPURegBankCombiner(bool IsOptNone = false);
 
-  StringRef getPassName() const override { return "AMDGPURegBankCombiner"; }
+  StringRef getPassName() const override {
+    return "AMDGPURegBankCombiner";
+  }
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
-
 private:
   bool IsOptNone;
 };
@@ -107,7 +109,7 @@ void AMDGPURegBankCombiner::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 AMDGPURegBankCombiner::AMDGPURegBankCombiner(bool IsOptNone)
-    : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
+  : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
   initializeAMDGPURegBankCombinerPass(*PassRegistry::getPassRegistry());
 }
 
@@ -121,14 +123,14 @@ bool AMDGPURegBankCombiner::runOnMachineFunction(MachineFunction &MF) {
       MF.getTarget().getOptLevel() != CodeGenOpt::None && !skipFunction(F);
 
   const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
-  const AMDGPULegalizerInfo *LI =
-      static_cast<const AMDGPULegalizerInfo *>(ST.getLegalizerInfo());
+  const AMDGPULegalizerInfo *LI
+    = static_cast<const AMDGPULegalizerInfo *>(ST.getLegalizerInfo());
 
   GISelKnownBits *KB = &getAnalysis<GISelKnownBitsAnalysis>().get(MF);
   MachineDominatorTree *MDT =
       IsOptNone ? nullptr : &getAnalysis<MachineDominatorTree>();
-  AMDGPURegBankCombinerInfo PCInfo(EnableOpt, F.hasOptSize(), F.hasMinSize(),
-                                   LI, KB, MDT);
+  AMDGPURegBankCombinerInfo PCInfo(EnableOpt, F.hasOptSize(),
+                                         F.hasMinSize(), LI, KB, MDT);
   Combiner C(PCInfo, TPC);
   return C.combineMachineInstrs(MF, /*CSEInfo*/ nullptr);
 }

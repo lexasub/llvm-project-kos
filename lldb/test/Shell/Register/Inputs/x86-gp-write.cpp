@@ -11,30 +11,32 @@ int main() {
   uint64_t esp, ebp;
 
   asm volatile(
-      // save esp & ebp
-      "movd    %%esp, %%mm0\n\t"
-      "movd    %%ebp, %%mm1\n\t"
-      "\n\t"
-      "movl    %8, %%eax\n\t"
-      "movl    %8, %%ebx\n\t"
-      "movl    %8, %%ecx\n\t"
-      "movl    %8, %%edx\n\t"
-      "movl    %8, %%esp\n\t"
-      "movl    %8, %%ebp\n\t"
-      "movl    %8, %%esi\n\t"
-      "movl    %8, %%edi\n\t"
-      "\n\t"
-      "int3\n\t"
-      "\n\t"
-      // copy new values of esp & ebp
-      "movd    %%esp, %4\n\t"
-      "movd    %%ebp, %5\n\t"
-      // restore saved esp & ebp
-      "movd    %%mm0, %%esp\n\t"
-      "movd    %%mm1, %%ebp\n\t"
-      : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx), "=y"(esp), "=y"(ebp), "=S"(esi), "=D"(edi)
-      : "i"(fill)
-      : "%mm0", "%mm1");
+    // save esp & ebp
+    "movd    %%esp, %%mm0\n\t"
+    "movd    %%ebp, %%mm1\n\t"
+    "\n\t"
+    "movl    %8, %%eax\n\t"
+    "movl    %8, %%ebx\n\t"
+    "movl    %8, %%ecx\n\t"
+    "movl    %8, %%edx\n\t"
+    "movl    %8, %%esp\n\t"
+    "movl    %8, %%ebp\n\t"
+    "movl    %8, %%esi\n\t"
+    "movl    %8, %%edi\n\t"
+    "\n\t"
+    "int3\n\t"
+    "\n\t"
+    // copy new values of esp & ebp
+    "movd    %%esp, %4\n\t"
+    "movd    %%ebp, %5\n\t"
+    // restore saved esp & ebp
+    "movd    %%mm0, %%esp\n\t"
+    "movd    %%mm1, %%ebp\n\t"
+    : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx), "=y"(esp), "=y"(ebp),
+      "=S"(esi), "=D"(edi)
+    : "i"(fill)
+    : "%mm0", "%mm1"
+  );
 
   printf("eax = 0x%08" PRIx32 "\n", eax);
   printf("ebx = 0x%08" PRIx32 "\n", ebx);

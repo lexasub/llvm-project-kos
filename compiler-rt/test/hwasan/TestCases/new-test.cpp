@@ -2,10 +2,10 @@
 // RUN: %clangxx_hwasan %s -o %t
 // RUN: %run %t
 
-#include <assert.h>
-#include <sanitizer/allocator_interface.h>
-#include <sanitizer/hwasan_interface.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <sanitizer/hwasan_interface.h>
+#include <sanitizer/allocator_interface.h>
 
 int main() {
   __hwasan_enable_allocator_tagging();

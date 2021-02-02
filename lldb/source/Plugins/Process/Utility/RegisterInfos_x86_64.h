@@ -63,69 +63,78 @@
 // Note that the size and offset will be updated by platform-specific classes.
 #define DEFINE_GPR(reg, alt, kind1, kind2, kind3, kind4)                       \
   {                                                                            \
-#reg, alt, sizeof(((GPR *)nullptr)->reg), GPR_OFFSET(reg), eEncodingUint,  \
-        eFormatHex,                                                            \
-        {kind1, kind2, kind3, kind4, lldb_##reg##_x86_64 }, nullptr, nullptr,  \
-         nullptr, 0                                                            \
+    #reg, alt, sizeof(((GPR *)nullptr)->reg),                                  \
+                      GPR_OFFSET(reg), eEncodingUint, eFormatHex,              \
+                                 {kind1, kind2, kind3, kind4,                  \
+                                  lldb_##reg##_x86_64 },                       \
+                                  nullptr, nullptr, nullptr, 0                 \
   }
 
 #define DEFINE_FPR(name, reg, kind1, kind2, kind3, kind4)                      \
   {                                                                            \
-#name, nullptr, FPR_SIZE(reg), FPR_OFFSET(reg), eEncodingUint, eFormatHex, \
-        {kind1, kind2, kind3, kind4, lldb_##name##_x86_64 }, nullptr, nullptr, \
-         nullptr, 0                                                            \
+    #name, nullptr, FPR_SIZE(reg), FPR_OFFSET(reg), eEncodingUint, eFormatHex, \
+                                           {kind1, kind2, kind3, kind4,        \
+                                            lldb_##name##_x86_64 },            \
+                                            nullptr, nullptr, nullptr, 0       \
   }
 
 #define DEFINE_FP_ST(reg, i)                                                   \
   {                                                                            \
-#reg #i, nullptr, FP_SIZE, LLVM_EXTENSION FPR_OFFSET(stmm[i]),             \
-        eEncodingVector, eFormatVectorOfUInt8,                                 \
-        {dwarf_st##i##_x86_64, dwarf_st##i##_x86_64, LLDB_INVALID_REGNUM,      \
-         LLDB_INVALID_REGNUM, lldb_st##i##_x86_64 },                           \
-         nullptr, nullptr, nullptr, 0                                          \
+    #reg #i, nullptr, FP_SIZE,                                                 \
+        LLVM_EXTENSION FPR_OFFSET(                                             \
+            stmm[i]), eEncodingVector, eFormatVectorOfUInt8,                   \
+            {dwarf_st##i##_x86_64, dwarf_st##i##_x86_64, LLDB_INVALID_REGNUM,  \
+             LLDB_INVALID_REGNUM, lldb_st##i##_x86_64 },                       \
+             nullptr, nullptr, nullptr, 0                                      \
   }
 
 #define DEFINE_FP_MM(reg, i, streg)                                            \
   {                                                                            \
-#reg #i, nullptr, sizeof(uint64_t), LLVM_EXTENSION FPR_OFFSET(stmm[i]),    \
-        eEncodingUint, eFormatHex,                                             \
-        {dwarf_mm##i##_x86_64, dwarf_mm##i##_x86_64, LLDB_INVALID_REGNUM,      \
-         LLDB_INVALID_REGNUM, lldb_mm##i##_x86_64 },                           \
-         RegisterContextPOSIX_x86::g_contained_##streg##_64,                   \
-         RegisterContextPOSIX_x86::g_invalidate_##streg##_64, nullptr, 0       \
+    #reg #i, nullptr, sizeof(uint64_t), LLVM_EXTENSION FPR_OFFSET(stmm[i]),    \
+    eEncodingUint, eFormatHex,                                                 \
+    {dwarf_mm##i##_x86_64, dwarf_mm##i##_x86_64, LLDB_INVALID_REGNUM,          \
+     LLDB_INVALID_REGNUM, lldb_mm##i##_x86_64 },                               \
+    RegisterContextPOSIX_x86::g_contained_##streg##_64,                        \
+    RegisterContextPOSIX_x86::g_invalidate_##streg##_64, nullptr, 0            \
   }
 
 #define DEFINE_XMM(reg, i)                                                     \
   {                                                                            \
-#reg #i, nullptr, XMM_SIZE, LLVM_EXTENSION FPR_OFFSET(reg[i]),             \
-        eEncodingVector, eFormatVectorOfUInt8,                                 \
-        {dwarf_##reg##i##_x86_64, dwarf_##reg##i##_x86_64,                     \
-         LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, lldb_##reg##i##_x86_64 },   \
-         nullptr, nullptr, nullptr, 0                                          \
+    #reg #i, nullptr, XMM_SIZE,                                                \
+        LLVM_EXTENSION FPR_OFFSET(                                             \
+            reg[i]), eEncodingVector, eFormatVectorOfUInt8,                    \
+            {dwarf_##reg##i##_x86_64, dwarf_##reg##i##_x86_64,                 \
+             LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                         \
+             lldb_##reg##i##_x86_64 },                                         \
+             nullptr, nullptr, nullptr, 0                                      \
   }
 
 #define DEFINE_YMM(reg, i)                                                     \
   {                                                                            \
-#reg #i, nullptr, YMM_SIZE, LLVM_EXTENSION YMM_OFFSET(i), eEncodingVector, \
-        eFormatVectorOfUInt8,                                                  \
-        {dwarf_##reg##i##h_x86_64, dwarf_##reg##i##h_x86_64,                   \
-         LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, lldb_##reg##i##_x86_64 },   \
-         nullptr, nullptr, nullptr, 0                                          \
+    #reg #i, nullptr, YMM_SIZE,                                                \
+        LLVM_EXTENSION YMM_OFFSET(i), eEncodingVector, eFormatVectorOfUInt8,   \
+                                  {dwarf_##reg##i##h_x86_64,                   \
+                                   dwarf_##reg##i##h_x86_64,                   \
+                                   LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,   \
+                                   lldb_##reg##i##_x86_64 },                   \
+                                   nullptr, nullptr, nullptr, 0                \
   }
 
 #define DEFINE_BNDR(reg, i)                                                    \
   {                                                                            \
-#reg #i, nullptr, BNDR_SIZE, LLVM_EXTENSION BNDR_OFFSET(i),                \
-        eEncodingVector, eFormatVectorOfUInt64,                                \
-        {dwarf_##reg##i##_x86_64, dwarf_##reg##i##_x86_64,                     \
-         LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, lldb_##reg##i##_x86_64 },   \
-         nullptr, nullptr, nullptr, 0                                          \
+    #reg #i, nullptr, BNDR_SIZE,                                               \
+        LLVM_EXTENSION BNDR_OFFSET(i), eEncodingVector, eFormatVectorOfUInt64, \
+                                   {dwarf_##reg##i##_x86_64,                   \
+                                    dwarf_##reg##i##_x86_64,                   \
+                                    LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,  \
+                                    lldb_##reg##i##_x86_64 },                  \
+                                    nullptr, nullptr, nullptr, 0               \
   }
 
 #define DEFINE_BNDC(name, i)                                                   \
   {                                                                            \
-#name, nullptr, BNDC_SIZE, LLVM_EXTENSION BNDC_OFFSET(i), eEncodingVector, \
-        eFormatVectorOfUInt8,                                                  \
+    #name, nullptr, BNDC_SIZE,                                                 \
+        LLVM_EXTENSION BNDC_OFFSET(i), eEncodingVector, eFormatVectorOfUInt8,  \
         {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
          LLDB_INVALID_REGNUM, lldb_##name##_x86_64 },                          \
          nullptr, nullptr, nullptr, 0                                          \
@@ -133,54 +142,64 @@
 
 #define DEFINE_DR(reg, i)                                                      \
   {                                                                            \
-#reg #i, nullptr, DR_SIZE, DR_OFFSET(i), eEncodingUint, eFormatHex,        \
-        {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
-         LLDB_INVALID_REGNUM, lldb_##reg##i##_x86_64 },                        \
-         nullptr, nullptr, nullptr, 0                                          \
+    #reg #i, nullptr, DR_SIZE,                                                 \
+        DR_OFFSET(i), eEncodingUint, eFormatHex,                               \
+                  {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                   \
+                   LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                   \
+                   lldb_##reg##i##_x86_64 },                                   \
+                   nullptr, nullptr, nullptr, 0                                \
   }
 
 #define DEFINE_GPR_PSEUDO_32(reg32, reg64)                                     \
   {                                                                            \
-#reg32, nullptr, 4, GPR_OFFSET(reg64), eEncodingUint, eFormatHex,          \
-        {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
-         LLDB_INVALID_REGNUM, lldb_##reg32##_x86_64 },                         \
-         RegisterContextPOSIX_x86::g_contained_##reg64,                        \
-         RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0            \
+    #reg32, nullptr, 4,                                                        \
+        GPR_OFFSET(reg64), eEncodingUint, eFormatHex,                          \
+                   {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    lldb_##reg32##_x86_64 },                                   \
+                    RegisterContextPOSIX_x86::g_contained_##reg64,             \
+                    RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0 \
   }
 
 #define DEFINE_GPR_PSEUDO_16(reg16, reg64)                                     \
   {                                                                            \
-#reg16, nullptr, 2, GPR_OFFSET(reg64), eEncodingUint, eFormatHex,          \
-        {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
-         LLDB_INVALID_REGNUM, lldb_##reg16##_x86_64 },                         \
-         RegisterContextPOSIX_x86::g_contained_##reg64,                        \
-         RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0            \
+    #reg16, nullptr, 2,                                                        \
+        GPR_OFFSET(reg64), eEncodingUint, eFormatHex,                          \
+                   {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    lldb_##reg16##_x86_64 },                                   \
+                    RegisterContextPOSIX_x86::g_contained_##reg64,             \
+                    RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0 \
   }
 
 #define DEFINE_GPR_PSEUDO_8H(reg8, reg64)                                      \
   {                                                                            \
-#reg8, nullptr, 1, GPR_OFFSET(reg64) + 1, eEncodingUint, eFormatHex,       \
-        {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
-         LLDB_INVALID_REGNUM, lldb_##reg8##_x86_64 },                          \
-         RegisterContextPOSIX_x86::g_contained_##reg64,                        \
-         RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0            \
+    #reg8, nullptr, 1,                                                         \
+        GPR_OFFSET(reg64) + 1, eEncodingUint, eFormatHex,                      \
+                   {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    lldb_##reg8##_x86_64 },                                    \
+                    RegisterContextPOSIX_x86::g_contained_##reg64,             \
+                    RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0 \
   }
 
 #define DEFINE_GPR_PSEUDO_8L(reg8, reg64)                                      \
   {                                                                            \
-#reg8, nullptr, 1, GPR_OFFSET(reg64), eEncodingUint, eFormatHex,           \
-        {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,        \
-         LLDB_INVALID_REGNUM, lldb_##reg8##_x86_64 },                          \
-         RegisterContextPOSIX_x86::g_contained_##reg64,                        \
-         RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0            \
+    #reg8, nullptr, 1,                                                         \
+        GPR_OFFSET(reg64), eEncodingUint, eFormatHex,                          \
+                   {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,                  \
+                    lldb_##reg8##_x86_64 },                                    \
+                    RegisterContextPOSIX_x86::g_contained_##reg64,             \
+                    RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0 \
   }
 
 #define DEFINE_FPR_32(name, reg, kind1, kind2, kind3, kind4, reg64)            \
   {                                                                            \
-#name, nullptr, FPR_SIZE(reg), FPR_OFFSET(reg), eEncodingUint, eFormatHex, \
-        {kind1, kind2, kind3, kind4, lldb_##name##_x86_64 },                   \
-         RegisterContextPOSIX_x86::g_contained_##reg64,                        \
-         RegisterContextPOSIX_x86::g_invalidate_##reg64, nullptr, 0            \
+    #name, nullptr, FPR_SIZE(reg), FPR_OFFSET(reg), eEncodingUint, eFormatHex, \
+    {kind1, kind2, kind3, kind4, lldb_##name##_x86_64 },                       \
+    RegisterContextPOSIX_x86::g_contained_##reg64,                             \
+    RegisterContextPOSIX_x86::g_invalidate_##reg64,           nullptr, 0       \
   }
 
 // clang-format off

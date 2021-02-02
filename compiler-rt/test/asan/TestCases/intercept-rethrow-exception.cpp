@@ -64,7 +64,7 @@ int main() {
 
   try {
     create_redzones_and_throw(my_exception_ptr);
-  } catch (char const *) {
+  } catch(char const *) {
     assert(!__asan_region_is_poisoned(poisoned1, poisoned2 - poisoned1 + 1));
   }
 }

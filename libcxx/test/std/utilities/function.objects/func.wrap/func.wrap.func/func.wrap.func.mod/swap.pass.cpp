@@ -33,7 +33,7 @@ public:
     data_[0] = j;
   }
 
-  A(const A& a) {
+  A(const A &a) {
     ++count;
     for (int i = 0; i < 10; ++i)
       data_[i] = a.data_[i];

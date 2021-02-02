@@ -4,7 +4,7 @@
 
 // CHECK-NOT: fix-it:
 
-template <template <typename> +> void func();
+template<template<typename> +> void func();
 
 struct {
   void i() {
@@ -22,4 +22,4 @@ void bar(Bar *o) {
   o.~Bar(); // no fixit
 }
 
-} // namespace dotPointerDestructor
+}

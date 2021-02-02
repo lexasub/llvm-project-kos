@@ -1,2 +1,2 @@
 #include "a.h"
-void f(SmallString<256> &);
+void f(SmallString<256>&);

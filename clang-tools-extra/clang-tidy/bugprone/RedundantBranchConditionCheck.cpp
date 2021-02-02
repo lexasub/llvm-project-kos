@@ -1,5 +1,4 @@
-//===--- RedundantBranchConditionCheck.cpp - clang-tidy
-//-------------------------===//
+//===--- RedundantBranchConditionCheck.cpp - clang-tidy -------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -56,14 +55,14 @@ void RedundantBranchConditionCheck::registerMatchers(MatchFinder *Finder) {
                                  declRefExpr(hasDeclaration(ImmutableVar))
                                      .bind(OuterIfVar2Str))))))),
           hasThen(hasDescendant(
-              ifStmt(hasCondition(ignoringParenImpCasts(anyOf(
-                         declRefExpr(hasDeclaration(
-                                         varDecl(equalsBoundNode(CondVarStr))))
-                             .bind(InnerIfVar1Str),
-                         binaryOperator(
-                             hasAnyOperatorName("&&", "||"),
-                             hasEitherOperand(ignoringParenImpCasts(
-                                 declRefExpr(hasDeclaration(varDecl(
+              ifStmt(hasCondition(ignoringParenImpCasts(
+                         anyOf(declRefExpr(hasDeclaration(varDecl(
+                                            equalsBoundNode(CondVarStr))))
+                                .bind(InnerIfVar1Str),
+                               binaryOperator(
+                                   hasAnyOperatorName("&&", "||"),
+                                   hasEitherOperand(ignoringParenImpCasts(
+                                       declRefExpr(hasDeclaration(varDecl(
                                                  equalsBoundNode(CondVarStr))))
                                      .bind(InnerIfVar2Str))))))))
                   .bind(InnerIfStr))),
@@ -73,8 +72,7 @@ void RedundantBranchConditionCheck::registerMatchers(MatchFinder *Finder) {
   // FIXME: Handle longer conjunctive and disjunctive clauses.
 }
 
-void RedundantBranchConditionCheck::check(
-    const MatchFinder::MatchResult &Result) {
+void RedundantBranchConditionCheck::check(const MatchFinder::MatchResult &Result) {
   const auto *OuterIf = Result.Nodes.getNodeAs<IfStmt>(OuterIfStr);
   const auto *InnerIf = Result.Nodes.getNodeAs<IfStmt>(InnerIfStr);
   const auto *CondVar = Result.Nodes.getNodeAs<VarDecl>(CondVarStr);

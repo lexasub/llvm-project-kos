@@ -26,6 +26,6 @@ public:
                     llvm::StringRef &hostname, int &port,
                     llvm::StringRef &path);
 };
-} // namespace lldb_private
+}
 
 #endif // LLDB_UTILITY_URIPARSER_H

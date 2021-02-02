@@ -8,8 +8,7 @@ used inline void f1() {
 }
 
 __attribute__((visibility("default")))
-used inline void
-f2() {
+used inline void f2() {
   // CHECK: @_ZZ2f2vE6f2_var = linkonce_odr global i32 0
   static int f2_var = 0;
 }
@@ -30,8 +29,7 @@ used void f4() {
 }
 
 __attribute__((visibility("default")))
-used void
-f5() {
+used void f5() {
   // CHECK: @_ZZ2f5vE6f5_var = internal global i32 0
   static int f5_var = 0;
 }
@@ -45,6 +43,7 @@ used inline void S::f7() {
   // CHECK: @_ZZN1S2f7EvE6f7_var = linkonce_odr hidden global i32 0
   static int f7_var = 0;
 }
+
 
 struct __attribute__((visibility("default"))) S2 {
   used void f8() {

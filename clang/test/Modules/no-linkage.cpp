@@ -3,20 +3,16 @@
 
 #include "empty.h"
 
-namespace NS {
-int n;
-} // namespace NS
-struct Typedef {
-  int n;
-};                        // expected-note {{candidate}}
-int AliasDecl;            // expected-note {{candidate}}
-int UsingDecl;            // expected-note {{candidate}}
-namespace RealNS = NS;    // expected-note {{candidate}}
-typedef int Struct;       // expected-note {{candidate}}
-enum { Variable };        // expected-note {{candidate}}
-const int AnotherNS = 0;  // expected-note {{candidate}}
+namespace NS { int n; } // expected-note {{candidate}}
+struct Typedef { int n; }; // expected-note {{candidate}}
+int AliasDecl; // expected-note {{candidate}}
+int UsingDecl; // expected-note {{candidate}}
+namespace RealNS = NS; // expected-note {{candidate}}
+typedef int Struct; // expected-note {{candidate}}
+enum { Variable }; // expected-note {{candidate}}
+const int AnotherNS = 0; // expected-note {{candidate}}
 const int Enumerator = 0; // expected-note {{candidate}}
-static int Overloads;     // expected-note {{candidate}}
+static int Overloads; // expected-note {{candidate}}
 
 // expected-note@decls.h:1 {{candidate}}
 // expected-note@decls.h:2 {{candidate}}
@@ -48,13 +44,13 @@ void use_things() {
 
 void use_things_again() {
   use(Typedef().n); // expected-error {{ambiguous}}
-  use(NS::n);       // expected-error {{ambiguous}}
-  use(AliasDecl);   // expected-error {{ambiguous}}
-  use(UsingDecl);   // expected-error {{ambiguous}}
-  use(RealNS::n);   // expected-error {{ambiguous}}
-  use(Struct(0));   // expected-error {{ambiguous}}
-  use(Variable);    // expected-error {{ambiguous}}
-  use(AnotherNS);   // expected-error {{ambiguous}}
-  use(Enumerator);  // expected-error {{ambiguous}}
-  use(Overloads);   // expected-error {{ambiguous}}
+  use(NS::n); // expected-error {{ambiguous}}
+  use(AliasDecl); // expected-error {{ambiguous}}
+  use(UsingDecl); // expected-error {{ambiguous}}
+  use(RealNS::n); // expected-error {{ambiguous}}
+  use(Struct(0)); // expected-error {{ambiguous}}
+  use(Variable); // expected-error {{ambiguous}}
+  use(AnotherNS); // expected-error {{ambiguous}}
+  use(Enumerator); // expected-error {{ambiguous}}
+  use(Overloads); // expected-error {{ambiguous}}
 }

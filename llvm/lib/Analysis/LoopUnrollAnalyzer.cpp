@@ -153,7 +153,8 @@ bool UnrolledInstAnalyzer::visitCastInst(CastInst &I) {
   // analysis, which operates on integers (and, e.g., might convert i8* null to
   // i32 0).
   if (COp && CastInst::castIsValid(I.getOpcode(), COp, I.getType())) {
-    if (Constant *C = ConstantExpr::getCast(I.getOpcode(), COp, I.getType())) {
+    if (Constant *C =
+            ConstantExpr::getCast(I.getOpcode(), COp, I.getType())) {
       SimplifiedValues[&I] = C;
       return true;
     }
@@ -192,8 +193,7 @@ bool UnrolledInstAnalyzer::visitCmpInst(CmpInst &I) {
   if (Constant *CLHS = dyn_cast<Constant>(LHS)) {
     if (Constant *CRHS = dyn_cast<Constant>(RHS)) {
       if (CLHS->getType() == CRHS->getType()) {
-        if (Constant *C =
-                ConstantExpr::getCompare(I.getPredicate(), CLHS, CRHS)) {
+        if (Constant *C = ConstantExpr::getCompare(I.getPredicate(), CLHS, CRHS)) {
           SimplifiedValues[&I] = C;
           return true;
         }

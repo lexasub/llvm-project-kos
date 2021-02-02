@@ -44,3 +44,4 @@ void evalNonNullParamNonNullReturn(const Shape *S) {
   // expected-note@-2 {{Division by zero}}
   // expected-warning@-3 {{Division by zero}}
 }
+

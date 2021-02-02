@@ -15,130 +15,137 @@
 #include "llvm/IR/Type.h"
 
 namespace llvm {
-class Value;
-class LLVMContext;
-class DataLayout;
-class Type;
-} // namespace llvm
-
-namespace clang {
-class ASTContext;
-class CodeGenOptions;
-class TargetInfo;
-
-namespace CodeGen {
-class ABIArgInfo;
-class Address;
-class CGCXXABI;
-class CGFunctionInfo;
-class CodeGenFunction;
-class CodeGenTypes;
-class SwiftABIInfo;
-
-namespace swiftcall {
-class SwiftAggLowering;
+  class Value;
+  class LLVMContext;
+  class DataLayout;
+  class Type;
 }
 
-// FIXME: All of this stuff should be part of the target interface
-// somehow. It is currently here because it is not clear how to factor
-// the targets to support this, since the Targets currently live in a
-// layer below types n'stuff.
+namespace clang {
+  class ASTContext;
+  class CodeGenOptions;
+  class TargetInfo;
 
-/// ABIInfo - Target specific hooks for defining how a type should be
-/// passed or returned from functions.
-class ABIInfo {
-public:
-  CodeGen::CodeGenTypes &CGT;
+namespace CodeGen {
+  class ABIArgInfo;
+  class Address;
+  class CGCXXABI;
+  class CGFunctionInfo;
+  class CodeGenFunction;
+  class CodeGenTypes;
+  class SwiftABIInfo;
 
-protected:
-  llvm::CallingConv::ID RuntimeCC;
+namespace swiftcall {
+  class SwiftAggLowering;
+}
 
-public:
-  ABIInfo(CodeGen::CodeGenTypes &cgt)
-      : CGT(cgt), RuntimeCC(llvm::CallingConv::C) {}
+  // FIXME: All of this stuff should be part of the target interface
+  // somehow. It is currently here because it is not clear how to factor
+  // the targets to support this, since the Targets currently live in a
+  // layer below types n'stuff.
 
-  virtual ~ABIInfo();
 
-  virtual bool supportsSwift() const { return false; }
+  /// ABIInfo - Target specific hooks for defining how a type should be
+  /// passed or returned from functions.
+  class ABIInfo {
+  public:
+    CodeGen::CodeGenTypes &CGT;
+  protected:
+    llvm::CallingConv::ID RuntimeCC;
+  public:
+    ABIInfo(CodeGen::CodeGenTypes &cgt)
+        : CGT(cgt), RuntimeCC(llvm::CallingConv::C) {}
 
-  virtual bool allowBFloatArgsAndRet() const { return false; }
+    virtual ~ABIInfo();
 
-  CodeGen::CGCXXABI &getCXXABI() const;
-  ASTContext &getContext() const;
-  llvm::LLVMContext &getVMContext() const;
-  const llvm::DataLayout &getDataLayout() const;
-  const TargetInfo &getTarget() const;
-  const CodeGenOptions &getCodeGenOpts() const;
+    virtual bool supportsSwift() const { return false; }
 
-  /// Return the calling convention to use for system runtime
-  /// functions.
-  llvm::CallingConv::ID getRuntimeCC() const { return RuntimeCC; }
+    virtual bool allowBFloatArgsAndRet() const { return false; }
 
-  virtual void computeInfo(CodeGen::CGFunctionInfo &FI) const = 0;
+    CodeGen::CGCXXABI &getCXXABI() const;
+    ASTContext &getContext() const;
+    llvm::LLVMContext &getVMContext() const;
+    const llvm::DataLayout &getDataLayout() const;
+    const TargetInfo &getTarget() const;
+    const CodeGenOptions &getCodeGenOpts() const;
 
-  /// EmitVAArg - Emit the target dependent code to load a value of
-  /// \arg Ty from the va_list pointed to by \arg VAListAddr.
+    /// Return the calling convention to use for system runtime
+    /// functions.
+    llvm::CallingConv::ID getRuntimeCC() const {
+      return RuntimeCC;
+    }
 
-  // FIXME: This is a gaping layering violation if we wanted to drop
-  // the ABI information any lower than CodeGen. Of course, for
-  // VAArg handling it has to be at this level; there is no way to
-  // abstract this out.
-  virtual CodeGen::Address EmitVAArg(CodeGen::CodeGenFunction &CGF,
-                                     CodeGen::Address VAListAddr,
-                                     QualType Ty) const = 0;
+    virtual void computeInfo(CodeGen::CGFunctionInfo &FI) const = 0;
 
-  bool isAndroid() const;
+    /// EmitVAArg - Emit the target dependent code to load a value of
+    /// \arg Ty from the va_list pointed to by \arg VAListAddr.
 
-  /// Emit the target dependent code to load a value of
-  /// \arg Ty from the \c __builtin_ms_va_list pointed to by \arg VAListAddr.
-  virtual CodeGen::Address EmitMSVAArg(CodeGen::CodeGenFunction &CGF,
+    // FIXME: This is a gaping layering violation if we wanted to drop
+    // the ABI information any lower than CodeGen. Of course, for
+    // VAArg handling it has to be at this level; there is no way to
+    // abstract this out.
+    virtual CodeGen::Address EmitVAArg(CodeGen::CodeGenFunction &CGF,
                                        CodeGen::Address VAListAddr,
-                                       QualType Ty) const;
+                                       QualType Ty) const = 0;
 
-  virtual bool isHomogeneousAggregateBaseType(QualType Ty) const;
+    bool isAndroid() const;
 
-  virtual bool isHomogeneousAggregateSmallEnough(const Type *Base,
-                                                 uint64_t Members) const;
+    /// Emit the target dependent code to load a value of
+    /// \arg Ty from the \c __builtin_ms_va_list pointed to by \arg VAListAddr.
+    virtual CodeGen::Address EmitMSVAArg(CodeGen::CodeGenFunction &CGF,
+                                         CodeGen::Address VAListAddr,
+                                         QualType Ty) const;
 
-  bool isHomogeneousAggregate(QualType Ty, const Type *&Base,
-                              uint64_t &Members) const;
+    virtual bool isHomogeneousAggregateBaseType(QualType Ty) const;
 
-  // Implement the Type::IsPromotableIntegerType for ABI specific needs. The
-  // only difference is that this considers _ExtInt as well.
-  bool isPromotableIntegerTypeForABI(QualType Ty) const;
+    virtual bool isHomogeneousAggregateSmallEnough(const Type *Base,
+                                                   uint64_t Members) const;
 
-  /// A convenience method to return an indirect ABIArgInfo with an
-  /// expected alignment equal to the ABI alignment of the given type.
-  CodeGen::ABIArgInfo
-  getNaturalAlignIndirect(QualType Ty, bool ByVal = true, bool Realign = false,
-                          llvm::Type *Padding = nullptr) const;
+    bool isHomogeneousAggregate(QualType Ty, const Type *&Base,
+                                uint64_t &Members) const;
 
-  CodeGen::ABIArgInfo getNaturalAlignIndirectInReg(QualType Ty,
-                                                   bool Realign = false) const;
-};
+    // Implement the Type::IsPromotableIntegerType for ABI specific needs. The
+    // only difference is that this considers _ExtInt as well.
+    bool isPromotableIntegerTypeForABI(QualType Ty) const;
 
-/// A refining implementation of ABIInfo for targets that support swiftcall.
-///
-/// If we find ourselves wanting multiple such refinements, they'll probably
-/// be independent refinements, and we should probably find another way
-/// to do it than simple inheritance.
-class SwiftABIInfo : public ABIInfo {
-public:
-  SwiftABIInfo(CodeGen::CodeGenTypes &cgt) : ABIInfo(cgt) {}
+    /// A convenience method to return an indirect ABIArgInfo with an
+    /// expected alignment equal to the ABI alignment of the given type.
+    CodeGen::ABIArgInfo
+    getNaturalAlignIndirect(QualType Ty, bool ByVal = true,
+                            bool Realign = false,
+                            llvm::Type *Padding = nullptr) const;
 
-  bool supportsSwift() const final override { return true; }
+    CodeGen::ABIArgInfo
+    getNaturalAlignIndirectInReg(QualType Ty, bool Realign = false) const;
 
-  virtual bool shouldPassIndirectlyForSwift(ArrayRef<llvm::Type *> types,
-                                            bool asReturnValue) const = 0;
 
-  virtual bool isLegalVectorTypeForSwift(CharUnits totalSize, llvm::Type *eltTy,
-                                         unsigned elts) const;
+  };
 
-  virtual bool isSwiftErrorInRegister() const = 0;
+  /// A refining implementation of ABIInfo for targets that support swiftcall.
+  ///
+  /// If we find ourselves wanting multiple such refinements, they'll probably
+  /// be independent refinements, and we should probably find another way
+  /// to do it than simple inheritance.
+  class SwiftABIInfo : public ABIInfo {
+  public:
+    SwiftABIInfo(CodeGen::CodeGenTypes &cgt) : ABIInfo(cgt) {}
 
-  static bool classof(const ABIInfo *info) { return info->supportsSwift(); }
-};
-} // end namespace CodeGen
-} // end namespace clang
+    bool supportsSwift() const final override { return true; }
+
+    virtual bool shouldPassIndirectlyForSwift(ArrayRef<llvm::Type*> types,
+                                              bool asReturnValue) const = 0;
+
+    virtual bool isLegalVectorTypeForSwift(CharUnits totalSize,
+                                           llvm::Type *eltTy,
+                                           unsigned elts) const;
+
+    virtual bool isSwiftErrorInRegister() const = 0;
+
+    static bool classof(const ABIInfo *info) {
+      return info->supportsSwift();
+    }
+  };
+}  // end namespace CodeGen
+}  // end namespace clang
 
 #endif

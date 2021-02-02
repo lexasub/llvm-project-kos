@@ -54,7 +54,7 @@ void Foo<T>::static_member_function2() {
 template <class T>
 int Foo<T>::static_data_member = T::invalid; // expected-error{{no member named 'invalid' in 'Empty'}}
 
-struct Empty {};
+struct Empty { };
 extern template struct Foo<Empty>;
 
 int main() {

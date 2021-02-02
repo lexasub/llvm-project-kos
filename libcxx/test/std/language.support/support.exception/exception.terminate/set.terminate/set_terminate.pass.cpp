@@ -17,9 +17,10 @@
 void f1() {}
 void f2() {}
 
-int main(int, char**) {
-  std::set_terminate(f1);
-  assert(std::set_terminate(f2) == f1);
+int main(int, char**)
+{
+    std::set_terminate(f1);
+    assert(std::set_terminate(f2) == f1);
 
   return 0;
 }

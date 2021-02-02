@@ -23,8 +23,8 @@
 #ifndef HEADER
 #define HEADER
 
-template <typename tx, typename ty>
-struct TT {
+template<typename tx, typename ty>
+struct TT{
   tx X;
   ty Y;
 };
@@ -41,7 +41,7 @@ int foo(int n) {
   double cn[5][n];
   TT<long long, char> d;
 
-#pragma omp target private(a)
+  #pragma omp target private(a)
   {
   }
 
@@ -73,7 +73,7 @@ int foo(int n) {
   // TCHECK:  store i{{[0-9]+}} 1, i{{[0-9]+}}* [[A2]],
   // TCHECK:  ret void
 
-#pragma omp target private(a, b, bn, c, cn, d)
+  #pragma omp target private(a, b, bn, c, cn, d)
   {
     a = 1;
     b[2] = 1.0;
@@ -144,13 +144,14 @@ int foo(int n) {
   return a;
 }
 
-template <typename tx>
+
+template<typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-#pragma omp target private(a, aa, b)
+#pragma omp target private(a,aa,b)
   {
     a = 1;
     aa = 1;
@@ -160,13 +161,14 @@ tx ftemplate(int n) {
   return a;
 }
 
-static int fstatic(int n) {
+static
+int fstatic(int n) {
   int a = 0;
   short aa = 0;
   char aaa = 0;
   int b[10];
 
-#pragma omp target private(a, aa, aaa, b)
+#pragma omp target private(a,aa,aaa,b)
   {
     a = 1;
     aa = 1;
@@ -192,11 +194,11 @@ static int fstatic(int n) {
 struct S1 {
   double a;
 
-  int r1(int n) {
-    int b = n + 1;
+  int r1(int n){
+    int b = n+1;
     short int c[2][n];
 
-#pragma omp target private(b, c)
+#pragma omp target private(b,c)
     {
       this->a = (double)b + 1.5;
       c[1][1] = ++a;
@@ -246,7 +248,8 @@ struct S1 {
   // TCHECK: ret void
 };
 
-int bar(int n) {
+
+int bar(int n){
   int a = 0;
   a += foo(n);
   S1 S;

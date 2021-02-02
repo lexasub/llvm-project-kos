@@ -10,14 +10,14 @@ const int S<char>::x[] = {1};
 
 // CHECK-LABEL: @"?x@?$S@D@@2QBHB" = weak_odr dso_local constant [1 x i32] [i32 1], comdat
 
-template <class T>
+template<class T>
 void destroy(T *p) {
   p->~T();
 }
 
 extern "C" void f() {
   int a;
-  destroy((void *)&a);
+  destroy((void*)&a);
 }
 
 // CHECK-LABEL: define dso_local void @f()

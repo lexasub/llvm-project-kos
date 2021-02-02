@@ -16,15 +16,16 @@
 #include "llvm/Object/Minidump.h"
 #include "llvm/Object/Wasm.h"
 #include "llvm/Object/XCOFFObjectFile.h"
-#include "llvm/Support/MemoryBufferRef.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/MemoryBufferRef.h"
 #include <system_error>
 
 std::error_code coff2yaml(llvm::raw_ostream &Out,
                           const llvm::object::COFFObjectFile &Obj);
 llvm::Error elf2yaml(llvm::raw_ostream &Out,
-                     const llvm::object::ObjectFile &Obj);
-llvm::Error macho2yaml(llvm::raw_ostream &Out, const llvm::object::Binary &Obj);
+                         const llvm::object::ObjectFile &Obj);
+llvm::Error macho2yaml(llvm::raw_ostream &Out,
+                           const llvm::object::Binary &Obj);
 llvm::Error minidump2yaml(llvm::raw_ostream &Out,
                           const llvm::object::MinidumpFile &Obj);
 std::error_code xcoff2yaml(llvm::raw_ostream &Out,
@@ -39,7 +40,7 @@ class DWARFContext;
 namespace DWARFYAML {
 struct Data;
 }
-} // namespace llvm
+}
 
 void dumpDebugAbbrev(llvm::DWARFContext &DCtx, llvm::DWARFYAML::Data &Y);
 llvm::Error dumpDebugAddr(llvm::DWARFContext &DCtx, llvm::DWARFYAML::Data &Y);

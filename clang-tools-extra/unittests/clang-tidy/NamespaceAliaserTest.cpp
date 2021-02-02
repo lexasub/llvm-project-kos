@@ -22,7 +22,7 @@ namespace utils {
 class InsertAliasCheck : public ClangTidyCheck {
 public:
   InsertAliasCheck(StringRef Name, ClangTidyContext *Context)
-      : ClangTidyCheck(Name, Context) {}
+      :ClangTidyCheck(Name, Context) {}
   void registerMatchers(ast_matchers::MatchFinder *Finder) override {
     Finder->addMatcher(ast_matchers::callExpr().bind("foo"), this);
   }

@@ -41,11 +41,7 @@ T tmain() {
   S<T> s_arr[] = {1, 2};
   S<T> var(3), var1;
 #pragma omp parallel
-#pragma omp sections reduction(+                                                         \
-                               : t_var) reduction(&                                      \
-                                                  : var) reduction(&&                    \
-                                                                   : var1) reduction(min \
-                                                                                     : t_var1) nowait
+#pragma omp sections reduction(+:t_var) reduction(&:var) reduction(&& : var1) reduction(min: t_var1) nowait
   {
     vec[0] = t_var;
 #pragma omp section
@@ -63,57 +59,56 @@ int main() {
   // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
   // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
-#pragma omp sections reduction(+ \
-                               : g)
+#pragma omp sections reduction(+:g)
     {
-      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca double,
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca double,
 
-      // Reduction list for runtime.
-      // LAMBDA: [[RED_LIST:%.+]] = alloca [1 x i8*],
+    // Reduction list for runtime.
+    // LAMBDA: [[RED_LIST:%.+]] = alloca [1 x i8*],
 
-      // LAMBDA: store double 0.0{{.+}}, double* [[G_PRIVATE_ADDR]]
-      // LAMBDA: call void @__kmpc_for_static_init_4(
-      g = 1;
-      // LAMBDA: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
-      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: store double* [[G_PRIVATE_ADDR]], double** [[G_PRIVATE_ADDR_REF]]
-      // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-      // LAMBDA: call void @__kmpc_for_static_fini(
+    // LAMBDA: store double 0.0{{.+}}, double* [[G_PRIVATE_ADDR]]
+    // LAMBDA: call void @__kmpc_for_static_init_4(
+    g = 1;
+    // LAMBDA: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
+    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+    // LAMBDA: store double* [[G_PRIVATE_ADDR]], double** [[G_PRIVATE_ADDR_REF]]
+    // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+    // LAMBDA: call void @__kmpc_for_static_fini(
 
-      // LAMBDA: [[G_PRIV_REF:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[RED_LIST]], i64 0, i64 0
-      // LAMBDA: [[BITCAST:%.+]] = bitcast double* [[G_PRIVATE_ADDR]] to i8*
-      // LAMBDA: store i8* [[BITCAST]], i8** [[G_PRIV_REF]],
-      // LAMBDA: call i32 @__kmpc_reduce(
-      // LAMBDA: switch i32 %{{.+}}, label %[[REDUCTION_DONE:.+]] [
-      // LAMBDA: i32 1, label %[[CASE1:.+]]
-      // LAMBDA: i32 2, label %[[CASE2:.+]]
-      // LAMBDA: [[CASE1]]
-      // LAMBDA: [[G_VAL:%.+]] = load double, double* [[G]]
-      // LAMBDA: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
-      // LAMBDA: [[ADD:%.+]] = fadd double [[G_VAL]], [[G_PRIV_VAL]]
-      // LAMBDA: store double [[ADD]], double* [[G]]
-      // LAMBDA: call void @__kmpc_end_reduce(
-      // LAMBDA: br label %[[REDUCTION_DONE]]
-      // LAMBDA: [[CASE2]]
-      // LAMBDA: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
-      // LAMBDA: fadd double
-      // LAMBDA: cmpxchg i64*
-      // LAMBDA: call void @__kmpc_end_reduce(
-      // LAMBDA: br label %[[REDUCTION_DONE]]
-      // LAMBDA: [[REDUCTION_DONE]]
-      // LAMBDA: ret void
+    // LAMBDA: [[G_PRIV_REF:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[RED_LIST]], i64 0, i64 0
+    // LAMBDA: [[BITCAST:%.+]] = bitcast double* [[G_PRIVATE_ADDR]] to i8*
+    // LAMBDA: store i8* [[BITCAST]], i8** [[G_PRIV_REF]],
+    // LAMBDA: call i32 @__kmpc_reduce(
+    // LAMBDA: switch i32 %{{.+}}, label %[[REDUCTION_DONE:.+]] [
+    // LAMBDA: i32 1, label %[[CASE1:.+]]
+    // LAMBDA: i32 2, label %[[CASE2:.+]]
+    // LAMBDA: [[CASE1]]
+    // LAMBDA: [[G_VAL:%.+]] = load double, double* [[G]]
+    // LAMBDA: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
+    // LAMBDA: [[ADD:%.+]] = fadd double [[G_VAL]], [[G_PRIV_VAL]]
+    // LAMBDA: store double [[ADD]], double* [[G]]
+    // LAMBDA: call void @__kmpc_end_reduce(
+    // LAMBDA: br label %[[REDUCTION_DONE]]
+    // LAMBDA: [[CASE2]]
+    // LAMBDA: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
+    // LAMBDA: fadd double
+    // LAMBDA: cmpxchg i64*
+    // LAMBDA: call void @__kmpc_end_reduce(
+    // LAMBDA: br label %[[REDUCTION_DONE]]
+    // LAMBDA: [[REDUCTION_DONE]]
+    // LAMBDA: ret void
 #pragma omp section
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        g = 2;
-        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-        // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
-        // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
-      }();
-    }
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      g = 2;
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
+      // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
+    }();
+  }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -124,57 +119,56 @@ int main() {
   // BLOCKS: define{{.*}} internal{{.*}} void {{.+}}(i8*
   // BLOCKS: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 0, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
-#pragma omp sections reduction(- \
-                               : g)
+#pragma omp sections reduction(-:g)
     {
-      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-      // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca double,
+    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+    // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca double,
 
-      // Reduction list for runtime.
-      // BLOCKS: [[RED_LIST:%.+]] = alloca [1 x i8*],
+    // Reduction list for runtime.
+    // BLOCKS: [[RED_LIST:%.+]] = alloca [1 x i8*],
 
-      // BLOCKS: store double 0.0{{.+}}, double* [[G_PRIVATE_ADDR]]
-      g = 1;
-      // BLOCKS: call void @__kmpc_for_static_init_4(
-      // BLOCKS: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: double* [[G_PRIVATE_ADDR]]
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: call void {{%.+}}(i8
-      // BLOCKS: call void @__kmpc_for_static_fini(
+    // BLOCKS: store double 0.0{{.+}}, double* [[G_PRIVATE_ADDR]]
+    g = 1;
+    // BLOCKS: call void @__kmpc_for_static_init_4(
+    // BLOCKS: store double 1.0{{.+}}, double* [[G_PRIVATE_ADDR]],
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: double* [[G_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: call void {{%.+}}(i8
+    // BLOCKS: call void @__kmpc_for_static_fini(
 
-      // BLOCKS: [[G_PRIV_REF:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[RED_LIST]], i64 0, i64 0
-      // BLOCKS: [[BITCAST:%.+]] = bitcast double* [[G_PRIVATE_ADDR]] to i8*
-      // BLOCKS: store i8* [[BITCAST]], i8** [[G_PRIV_REF]],
-      // BLOCKS: call i32 @__kmpc_reduce(
-      // BLOCKS: switch i32 %{{.+}}, label %[[REDUCTION_DONE:.+]] [
-      // BLOCKS: i32 1, label %[[CASE1:.+]]
-      // BLOCKS: i32 2, label %[[CASE2:.+]]
-      // BLOCKS: [[CASE1]]
-      // BLOCKS: [[G_VAL:%.+]] = load double, double* [[G]]
-      // BLOCKS: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
-      // BLOCKS: [[ADD:%.+]] = fadd double [[G_VAL]], [[G_PRIV_VAL]]
-      // BLOCKS: store double [[ADD]], double* [[G]]
-      // BLOCKS: call void @__kmpc_end_reduce(
-      // BLOCKS: br label %[[REDUCTION_DONE]]
-      // BLOCKS: [[CASE2]]
-      // BLOCKS: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
-      // BLOCKS: fadd double
-      // BLOCKS: cmpxchg i64*
-      // BLOCKS: call void @__kmpc_end_reduce(
-      // BLOCKS: br label %[[REDUCTION_DONE]]
-      // BLOCKS: [[REDUCTION_DONE]]
-      // BLOCKS: ret void
+    // BLOCKS: [[G_PRIV_REF:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[RED_LIST]], i64 0, i64 0
+    // BLOCKS: [[BITCAST:%.+]] = bitcast double* [[G_PRIVATE_ADDR]] to i8*
+    // BLOCKS: store i8* [[BITCAST]], i8** [[G_PRIV_REF]],
+    // BLOCKS: call i32 @__kmpc_reduce(
+    // BLOCKS: switch i32 %{{.+}}, label %[[REDUCTION_DONE:.+]] [
+    // BLOCKS: i32 1, label %[[CASE1:.+]]
+    // BLOCKS: i32 2, label %[[CASE2:.+]]
+    // BLOCKS: [[CASE1]]
+    // BLOCKS: [[G_VAL:%.+]] = load double, double* [[G]]
+    // BLOCKS: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
+    // BLOCKS: [[ADD:%.+]] = fadd double [[G_VAL]], [[G_PRIV_VAL]]
+    // BLOCKS: store double [[ADD]], double* [[G]]
+    // BLOCKS: call void @__kmpc_end_reduce(
+    // BLOCKS: br label %[[REDUCTION_DONE]]
+    // BLOCKS: [[CASE2]]
+    // BLOCKS: [[G_PRIV_VAL:%.+]] = load double, double* [[G_PRIVATE_ADDR]]
+    // BLOCKS: fadd double
+    // BLOCKS: cmpxchg i64*
+    // BLOCKS: call void @__kmpc_end_reduce(
+    // BLOCKS: br label %[[REDUCTION_DONE]]
+    // BLOCKS: [[REDUCTION_DONE]]
+    // BLOCKS: ret void
 #pragma omp section
-      ^{
-        // BLOCKS: define {{.+}} void {{@.+}}(i8*
-        g = 2;
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: store double 2.0{{.+}}, double*
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: ret
-      }();
-    }
+    ^{
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      g = 2;
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: store double 2.0{{.+}}, double*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: ret
+    }();
+  }
   }();
   return 0;
 #else
@@ -184,17 +178,13 @@ int main() {
   S<float> s_arr[] = {1, 2};
   S<float> var(3), var1;
 #pragma omp parallel
-#pragma omp sections reduction(+                                                         \
-                               : t_var) reduction(&                                      \
-                                                  : var) reduction(&&                    \
-                                                                   : var1) reduction(min \
-                                                                                     : t_var1)
+#pragma omp sections reduction(+:t_var) reduction(&:var) reduction(&& : var1) reduction(min: t_var1)
   {
     {
-      vec[0] = t_var;
-      s_arr[0] = var;
-      vec[1] = t_var1;
-      s_arr[1] = var1;
+    vec[0] = t_var;
+    s_arr[0] = var;
+    vec[1] = t_var1;
+    s_arr[1] = var1;
     }
   }
   return tmain<int>();
@@ -468,3 +458,4 @@ int main() {
 // CHECK: ret void
 
 #endif
+

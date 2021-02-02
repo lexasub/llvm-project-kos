@@ -6,11 +6,10 @@
 // CHECK-MESSAGES: :[[@LINE+1]]:6: error: decomposition declaration '[x]' requires an initializer [clang-diagnostic-error]
 auto [x];
 
-struct S {
-  int a;
-};
+struct S { int a; };
 S f();
 
 int main() {
   auto [x] = f();
 }
+

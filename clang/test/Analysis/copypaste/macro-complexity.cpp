@@ -5,7 +5,7 @@
 // influence the complexity. See the CloneSignature class in CloneDetection.h
 // for more information about complexity values of clones.
 
-#define MACRO_FOO(a, b) a > b ? -a *a : -b *b;
+#define MACRO_FOO(a, b) a > b ? -a * a : -b * b;
 
 // First, manually apply MACRO_FOO and see if the code gets detected as a clone.
 // This confirms that with the current configuration the macro body would be

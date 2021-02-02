@@ -1890,13 +1890,12 @@ public:
           std::string filename = "<unknown>";
           SectionSP first_section_sp(m_section_list->GetSectionAtIndex(0));
           if (first_section_sp)
-            filename =
-                first_section_sp->GetObjectFile()->GetFileSpec().GetPath();
+            filename = first_section_sp->GetObjectFile()->GetFileSpec().GetPath();
 
           Host::SystemLog(Host::eSystemLogError,
-                          "error: unable to find section %d for a symbol in "
-                          "%s, corrupt file?\n",
-                          n_sect, filename.c_str());
+                          "error: unable to find section %d for a symbol in %s, corrupt file?\n",
+                          n_sect, 
+                          filename.c_str());
         }
       }
       if (m_section_infos[n_sect].vm_range.Contains(file_addr)) {
@@ -2315,44 +2314,45 @@ size_t ObjectFileMachO::ParseSymtab() {
       strtab_addr = linkedit_load_addr + symtab_load_command.stroff -
                     linkedit_file_offset;
 
-      // Always load dyld - the dynamic linker - from memory if we didn't
-      // find a binary anywhere else. lldb will not register
-      // dylib/framework/bundle loads/unloads if we don't have the dyld
-      // symbols, we force dyld to load from memory despite the user's
-      // target.memory-module-load-level setting.
-      if (memory_module_load_level == eMemoryModuleLoadLevelComplete ||
-          m_header.filetype == llvm::MachO::MH_DYLINKER) {
-        DataBufferSP nlist_data_sp(
-            ReadMemory(process_sp, symoff_addr, nlist_data_byte_size));
-        if (nlist_data_sp)
-          nlist_data.SetData(nlist_data_sp, 0, nlist_data_sp->GetByteSize());
-        if (m_dysymtab.nindirectsyms != 0) {
-          const addr_t indirect_syms_addr = linkedit_load_addr +
-                                            m_dysymtab.indirectsymoff -
-                                            linkedit_file_offset;
-          DataBufferSP indirect_syms_data_sp(ReadMemory(
-              process_sp, indirect_syms_addr, m_dysymtab.nindirectsyms * 4));
-          if (indirect_syms_data_sp)
-            indirect_symbol_index_data.SetData(
-                indirect_syms_data_sp, 0, indirect_syms_data_sp->GetByteSize());
-          // If this binary is outside the shared cache,
-          // cache the string table.
-          // Binaries in the shared cache all share a giant string table,
-          // and we can't share the string tables across multiple
-          // ObjectFileMachO's, so we'd end up re-reading this mega-strtab
-          // for every binary in the shared cache - it would be a big perf
-          // problem. For binaries outside the shared cache, it's faster to
-          // read the entire strtab at once instead of piece-by-piece as we
-          // process the nlist records.
-          if (!is_shared_cache_image) {
-            DataBufferSP strtab_data_sp(
-                ReadMemory(process_sp, strtab_addr, strtab_data_byte_size));
-            if (strtab_data_sp) {
-              strtab_data.SetData(strtab_data_sp, 0,
-                                  strtab_data_sp->GetByteSize());
+        // Always load dyld - the dynamic linker - from memory if we didn't
+        // find a binary anywhere else. lldb will not register
+        // dylib/framework/bundle loads/unloads if we don't have the dyld
+        // symbols, we force dyld to load from memory despite the user's
+        // target.memory-module-load-level setting.
+        if (memory_module_load_level == eMemoryModuleLoadLevelComplete ||
+            m_header.filetype == llvm::MachO::MH_DYLINKER) {
+          DataBufferSP nlist_data_sp(
+              ReadMemory(process_sp, symoff_addr, nlist_data_byte_size));
+          if (nlist_data_sp)
+            nlist_data.SetData(nlist_data_sp, 0, nlist_data_sp->GetByteSize());
+          if (m_dysymtab.nindirectsyms != 0) {
+            const addr_t indirect_syms_addr = linkedit_load_addr +
+                                              m_dysymtab.indirectsymoff -
+                                              linkedit_file_offset;
+            DataBufferSP indirect_syms_data_sp(ReadMemory(
+                process_sp, indirect_syms_addr, m_dysymtab.nindirectsyms * 4));
+            if (indirect_syms_data_sp)
+              indirect_symbol_index_data.SetData(
+                  indirect_syms_data_sp, 0,
+                  indirect_syms_data_sp->GetByteSize());
+            // If this binary is outside the shared cache,
+            // cache the string table.
+            // Binaries in the shared cache all share a giant string table,
+            // and we can't share the string tables across multiple
+            // ObjectFileMachO's, so we'd end up re-reading this mega-strtab
+            // for every binary in the shared cache - it would be a big perf
+            // problem. For binaries outside the shared cache, it's faster to
+            // read the entire strtab at once instead of piece-by-piece as we
+            // process the nlist records.
+            if (!is_shared_cache_image) {
+              DataBufferSP strtab_data_sp(
+                  ReadMemory(process_sp, strtab_addr, strtab_data_byte_size));
+              if (strtab_data_sp) {
+                strtab_data.SetData(strtab_data_sp, 0,
+                                    strtab_data_sp->GetByteSize());
+              }
             }
           }
-        }
         if (memory_module_load_level >= eMemoryModuleLoadLevelPartial) {
           if (function_starts_load_command.cmd) {
             const addr_t func_start_addr =
@@ -2746,8 +2746,7 @@ size_t ObjectFileMachO::ParseSymtab() {
 
             offset = 0;
 
-            typedef llvm::DenseMap<ConstString, uint16_t>
-                UndefinedNameToDescMap;
+            typedef llvm::DenseMap<ConstString, uint16_t> UndefinedNameToDescMap;
             typedef llvm::DenseMap<uint32_t, ConstString> SymbolIndexToName;
             UndefinedNameToDescMap undefined_name_to_desc;
             SymbolIndexToName reexport_shlib_needs_fixup;
@@ -3373,12 +3372,14 @@ size_t ObjectFileMachO::ParseSymtab() {
                                 if (symbol_name) {
                                   llvm::StringRef symbol_name_ref(symbol_name);
                                   if (symbol_name_ref.startswith("_OBJC_")) {
-                                    llvm::StringRef g_objc_v2_prefix_class(
-                                        "_OBJC_CLASS_$_");
-                                    llvm::StringRef g_objc_v2_prefix_metaclass(
-                                        "_OBJC_METACLASS_$_");
-                                    llvm::StringRef g_objc_v2_prefix_ivar(
-                                        "_OBJC_IVAR_$_");
+                                    llvm::StringRef
+                                        g_objc_v2_prefix_class(
+                                            "_OBJC_CLASS_$_");
+                                    llvm::StringRef
+                                        g_objc_v2_prefix_metaclass(
+                                            "_OBJC_METACLASS_$_");
+                                    llvm::StringRef
+                                        g_objc_v2_prefix_ivar("_OBJC_IVAR_$_");
                                     if (symbol_name_ref.startswith(
                                             g_objc_v2_prefix_class)) {
                                       symbol_name_non_abi_mangled =
@@ -3427,8 +3428,8 @@ size_t ObjectFileMachO::ParseSymtab() {
                               type = eSymbolTypeRuntime;
                               if (symbol_name && symbol_name[0] == '.') {
                                 llvm::StringRef symbol_name_ref(symbol_name);
-                                llvm::StringRef g_objc_v1_prefix_class(
-                                    ".objc_class_name_");
+                                llvm::StringRef
+                                    g_objc_v1_prefix_class(".objc_class_name_");
                                 if (symbol_name_ref.startswith(
                                         g_objc_v1_prefix_class)) {
                                   symbol_name_non_abi_mangled = symbol_name;
@@ -4251,10 +4252,12 @@ size_t ObjectFileMachO::ParseSymtab() {
                   if (symbol_name) {
                     llvm::StringRef symbol_name_ref(symbol_name);
                     if (symbol_name_ref.startswith("_OBJC_")) {
-                      llvm::StringRef g_objc_v2_prefix_class("_OBJC_CLASS_$_");
+                      llvm::StringRef g_objc_v2_prefix_class(
+                          "_OBJC_CLASS_$_");
                       llvm::StringRef g_objc_v2_prefix_metaclass(
                           "_OBJC_METACLASS_$_");
-                      llvm::StringRef g_objc_v2_prefix_ivar("_OBJC_IVAR_$_");
+                      llvm::StringRef g_objc_v2_prefix_ivar(
+                          "_OBJC_IVAR_$_");
                       if (symbol_name_ref.startswith(g_objc_v2_prefix_class)) {
                         symbol_name_non_abi_mangled = symbol_name + 1;
                         symbol_name =
@@ -4293,7 +4296,8 @@ size_t ObjectFileMachO::ParseSymtab() {
                 type = eSymbolTypeRuntime;
                 if (symbol_name && symbol_name[0] == '.') {
                   llvm::StringRef symbol_name_ref(symbol_name);
-                  llvm::StringRef g_objc_v1_prefix_class(".objc_class_name_");
+                  llvm::StringRef g_objc_v1_prefix_class(
+                      ".objc_class_name_");
                   if (symbol_name_ref.startswith(g_objc_v1_prefix_class)) {
                     symbol_name_non_abi_mangled = symbol_name;
                     symbol_name = symbol_name + g_objc_v1_prefix_class.size();

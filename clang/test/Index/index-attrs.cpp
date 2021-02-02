@@ -47,3 +47,4 @@ void __attribute__((dllimport)) import_gnu_function(void);
 // CHECK: [indexDeclaration]: kind: function | name: import_gnu_function | {{.*}} | lang: C
 // CHECK: <attribute>: attribute(dllimport)
 }
+

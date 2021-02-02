@@ -50,8 +50,8 @@ struct RegisterPressure {
   std::vector<unsigned> MaxSetPressure;
 
   /// List of live in virtual registers or physical register units.
-  SmallVector<RegisterMaskPair, 8> LiveInRegs;
-  SmallVector<RegisterMaskPair, 8> LiveOutRegs;
+  SmallVector<RegisterMaskPair,8> LiveInRegs;
+  SmallVector<RegisterMaskPair,8> LiveOutRegs;
 
   void dump(const TargetRegisterInfo *TRI) const;
 };
@@ -106,7 +106,7 @@ class PressureChange {
 
 public:
   PressureChange() = default;
-  PressureChange(unsigned id) : PSetID(id + 1) {
+  PressureChange(unsigned id): PSetID(id + 1) {
     assert(id < std::numeric_limits<uint16_t>::max() && "PSetID overflow.");
   }
 
@@ -213,7 +213,7 @@ public:
     return PDiffArray[Idx];
   }
   const PressureDiff &operator[](unsigned Idx) const {
-    return const_cast<PressureDiffs *>(this)->operator[](Idx);
+    return const_cast<PressureDiffs*>(this)->operator[](Idx);
   }
 
   /// Record pressure difference induced by the given operand list to
@@ -244,8 +244,8 @@ struct RegPressureDelta {
   RegPressureDelta() = default;
 
   bool operator==(const RegPressureDelta &RHS) const {
-    return Excess == RHS.Excess && CriticalMax == RHS.CriticalMax &&
-           CurrentMax == RHS.CurrentMax;
+    return Excess == RHS.Excess && CriticalMax == RHS.CriticalMax
+      && CurrentMax == RHS.CurrentMax;
   }
   bool operator!=(const RegPressureDelta &RHS) const {
     return !operator==(RHS);
@@ -266,7 +266,9 @@ private:
     IndexMaskPair(unsigned Index, LaneBitmask LaneMask)
         : Index(Index), LaneMask(LaneMask) {}
 
-    unsigned getSparseSetIndex() const { return Index; }
+    unsigned getSparseSetIndex() const {
+      return Index;
+    }
   };
 
   using RegSet = SparseSet<IndexMaskPair>;
@@ -323,9 +325,12 @@ public:
     return PrevMask;
   }
 
-  size_t size() const { return Regs.size(); }
+  size_t size() const {
+    return Regs.size();
+  }
 
-  template <typename ContainerT> void appendTo(ContainerT &To) const {
+  template<typename ContainerT>
+  void appendTo(ContainerT &To) const {
     for (const IndexMaskPair &P : Regs) {
       Register Reg = getRegFromSparseIndex(P.Index);
       if (P.LaneMask.any())
@@ -397,8 +402,8 @@ public:
 
   void init(const MachineFunction *mf, const RegisterClassInfo *rci,
             const LiveIntervals *lis, const MachineBasicBlock *mbb,
-            MachineBasicBlock::const_iterator pos, bool TrackLaneMasks,
-            bool TrackUntiedDefs);
+            MachineBasicBlock::const_iterator pos,
+            bool TrackLaneMasks, bool TrackUntiedDefs);
 
   /// Force liveness of virtual registers or physical register
   /// units. Particularly useful to initialize the livein/out state of the
@@ -470,7 +475,8 @@ public:
   /// bottom-up. Find the pressure set with the most change beyond its pressure
   /// limit based on the tracker's current pressure, and record the number of
   /// excess register units of that pressure set introduced by this instruction.
-  void getMaxUpwardPressureDelta(const MachineInstr *MI, PressureDiff *PDiff,
+  void getMaxUpwardPressureDelta(const MachineInstr *MI,
+                                 PressureDiff *PDiff,
                                  RegPressureDelta &Delta,
                                  ArrayRef<PressureChange> CriticalPSets,
                                  ArrayRef<unsigned> MaxPressureLimit);
@@ -493,7 +499,8 @@ public:
   /// Find the pressure set with the most change beyond its pressure limit after
   /// traversing this instruction either upward or downward depending on the
   /// closed end of the current region.
-  void getMaxPressureDelta(const MachineInstr *MI, RegPressureDelta &Delta,
+  void getMaxPressureDelta(const MachineInstr *MI,
+                           RegPressureDelta &Delta,
                            ArrayRef<PressureChange> CriticalPSets,
                            ArrayRef<unsigned> MaxPressureLimit) {
     if (isTopClosed())

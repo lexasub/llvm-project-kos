@@ -3,15 +3,15 @@
 // RUN: %clangxx_msan -O3 %s -o %t && %run %t %p 2>&1 | FileCheck %s
 
 #include <assert.h>
-#include <errno.h>
 #include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
-#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <unistd.h>
 
 #include <sanitizer/msan_interface.h>
@@ -26,8 +26,7 @@ static struct dirent *my_gl_readdir(void *dir) {
   if (!dir)
     exit(1);
   struct dirent *d = readdir((DIR *)dir);
-  if (d)
-    __msan_poison(d, d->d_reclen); // hehe
+  if (d) __msan_poison(d, d->d_reclen); // hehe
   return d;
 }
 

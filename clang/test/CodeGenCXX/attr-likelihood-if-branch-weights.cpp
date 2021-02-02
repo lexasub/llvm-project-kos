@@ -10,9 +10,9 @@ bool f() {
   // CHECK-LABEL: define{{.*}} zeroext i1 @_Z1fv
   // CHECK: br {{.*}} !prof !7
   if (b)
-      [[likely]] {
-    return A();
-  }
+    [[likely]] {
+      return A();
+    }
   return B();
 }
 
@@ -20,9 +20,9 @@ bool g() {
   // CHECK-LABEL: define{{.*}} zeroext i1 @_Z1gv
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]] {
-    return A();
-  }
+    [[unlikely]] {
+      return A();
+    }
 
   return B();
 }
@@ -31,8 +31,7 @@ bool h() {
   // CHECK-LABEL: define{{.*}} zeroext i1 @_Z1hv
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    return A();
+    [[unlikely]] return A();
 
   return B();
 }
@@ -52,17 +51,13 @@ void IfStmt() {
   // CHECK-LABEL: define{{.*}}IfStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    if (B()) {
-    }
+    [[unlikely]] if (B()) {}
 
   // CHECK-NOT: br {{.*}} !prof
   // CHECK: br {{.*}} !prof
   if (b) {
     if (B())
-        [[unlikely]] {
-      b = false;
-    }
+      [[unlikely]] { b = false; }
   }
 }
 
@@ -70,9 +65,7 @@ void WhileStmt() {
   // CHECK-LABEL: define{{.*}}WhileStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    while (B()) {
-    }
+    [[unlikely]] while (B()) {}
 
   // CHECK-NOT: br {{.*}} %if.end{{.*}} !prof
   if (b)
@@ -85,9 +78,9 @@ void DoStmt() {
   // CHECK-LABEL: define{{.*}}DoStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    do {
-    } while (B());
+    [[unlikely]] do {}
+    while (B())
+      ;
 
   // CHECK-NOT: br {{.*}} %if.end{{.*}} !prof
   if (b)
@@ -100,9 +93,7 @@ void ForStmt() {
   // CHECK-LABEL: define{{.*}}ForStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    for (; B();) {
-    }
+    [[unlikely]] for (; B();) {}
 
   // CHECK-NOT: br {{.*}} %if.end{{.*}} !prof
   if (b)
@@ -115,8 +106,7 @@ void GotoStmt() {
   // CHECK-LABEL: define{{.*}}GotoStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    goto end;
+    [[unlikely]] goto end;
   else {
     // Make sure the branches aren't optimized away.
     b = true;
@@ -128,8 +118,7 @@ void ReturnStmt() {
   // CHECK-LABEL: define{{.*}}ReturnStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    return;
+    [[unlikely]] return;
   else {
     // Make sure the branches aren't optimized away.
     b = true;
@@ -140,8 +129,7 @@ void SwitchStmt() {
   // CHECK-LABEL: define{{.*}}SwitchStmt
   // CHECK: br {{.*}} !prof !8
   if (b)
-      [[unlikely]]
-    switch (i) {}
+    [[unlikely]] switch (i) {}
   else {
     // Make sure the branches aren't optimized away.
     b = true;

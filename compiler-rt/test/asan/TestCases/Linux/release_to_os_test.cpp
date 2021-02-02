@@ -32,7 +32,7 @@ void MallocReleaseStress() {
       if (chunks[i])
         assert(chunks[i][0] == (uintptr_t)chunks[i]);
       if (i < to_replace) {
-        delete[] chunks[i];
+        delete [] chunks[i];
         chunks[i] = new uintptr_t[kAllocSize];
         chunks[i][0] = (uintptr_t)chunks[i];
       }

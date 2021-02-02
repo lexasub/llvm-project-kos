@@ -19,40 +19,24 @@ Action::~Action() = default;
 
 const char *Action::getClassName(ActionClass AC) {
   switch (AC) {
-  case InputClass:
-    return "input";
-  case BindArchClass:
-    return "bind-arch";
+  case InputClass: return "input";
+  case BindArchClass: return "bind-arch";
   case OffloadClass:
     return "offload";
-  case PreprocessJobClass:
-    return "preprocessor";
-  case PrecompileJobClass:
-    return "precompiler";
-  case HeaderModulePrecompileJobClass:
-    return "header-module-precompiler";
-  case AnalyzeJobClass:
-    return "analyzer";
-  case MigrateJobClass:
-    return "migrator";
-  case CompileJobClass:
-    return "compiler";
-  case BackendJobClass:
-    return "backend";
-  case AssembleJobClass:
-    return "assembler";
-  case IfsMergeJobClass:
-    return "interface-stub-merger";
-  case LinkJobClass:
-    return "linker";
-  case LipoJobClass:
-    return "lipo";
-  case DsymutilJobClass:
-    return "dsymutil";
-  case VerifyDebugInfoJobClass:
-    return "verify-debug-info";
-  case VerifyPCHJobClass:
-    return "verify-pch";
+  case PreprocessJobClass: return "preprocessor";
+  case PrecompileJobClass: return "precompiler";
+  case HeaderModulePrecompileJobClass: return "header-module-precompiler";
+  case AnalyzeJobClass: return "analyzer";
+  case MigrateJobClass: return "migrator";
+  case CompileJobClass: return "compiler";
+  case BackendJobClass: return "backend";
+  case AssembleJobClass: return "assembler";
+  case IfsMergeJobClass: return "interface-stub-merger";
+  case LinkJobClass: return "linker";
+  case LipoJobClass: return "lipo";
+  case DsymutilJobClass: return "dsymutil";
+  case VerifyDebugInfoJobClass: return "verify-debug-info";
+  case VerifyPCHJobClass: return "verify-pch";
   case OffloadBundlingJobClass:
     return "clang-offload-bundler";
   case OffloadUnbundlingJobClass:
@@ -144,9 +128,10 @@ std::string Action::getOffloadingKindPrefix() const {
 
 /// Return a string that can be used as prefix in order to generate unique files
 /// for each offloading kind.
-std::string Action::GetOffloadingFileNamePrefix(OffloadKind Kind,
-                                                StringRef NormalizedTriple,
-                                                bool CreatePrefixForHost) {
+std::string
+Action::GetOffloadingFileNamePrefix(OffloadKind Kind,
+                                    StringRef NormalizedTriple,
+                                    bool CreatePrefixForHost) {
   // Don't generate prefix for host actions unless required.
   if (!CreatePrefixForHost && (Kind == OFK_None || Kind == OFK_Host))
     return {};
@@ -342,7 +327,7 @@ PrecompileJobAction::PrecompileJobAction(Action *Input, types::ID OutputType)
 PrecompileJobAction::PrecompileJobAction(ActionClass Kind, Action *Input,
                                          types::ID OutputType)
     : JobAction(Kind, Input, OutputType) {
-  assert(isa<PrecompileJobAction>((Action *)this) && "invalid action kind");
+  assert(isa<PrecompileJobAction>((Action*)this) && "invalid action kind");
 }
 
 void HeaderModulePrecompileJobAction::anchor() {}
@@ -431,7 +416,7 @@ void OffloadWrapperJobAction::anchor() {}
 
 OffloadWrapperJobAction::OffloadWrapperJobAction(ActionList &Inputs,
                                                  types::ID Type)
-    : JobAction(OffloadWrapperJobClass, Inputs, Type) {}
+  : JobAction(OffloadWrapperJobClass, Inputs, Type) {}
 
 void StaticLibJobAction::anchor() {}
 

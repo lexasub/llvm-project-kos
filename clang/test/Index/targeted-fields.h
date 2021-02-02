@@ -1,3 +1,3 @@
 
-int z;
-int w;
+  int z;
+  int w;

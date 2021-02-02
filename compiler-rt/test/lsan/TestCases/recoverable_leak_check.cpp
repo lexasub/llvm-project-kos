@@ -7,10 +7,10 @@
 // UNSUPPORTED: darwin
 
 #include <assert.h>
-#include <sanitizer/lsan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sanitizer/lsan_interface.h>
 
 void *p;
 
@@ -20,15 +20,15 @@ int main(int argc, char *argv[]) {
   assert(__lsan_do_recoverable_leak_check() == 0);
 
   fprintf(stderr, "Test alloc: %p.\n", malloc(1337));
-  // CHECK: Test alloc:
+// CHECK: Test alloc:
 
   assert(__lsan_do_recoverable_leak_check() == 1);
-  // CHECK: SUMMARY: {{(Leak|Address)}}Sanitizer: 1337 byte
+// CHECK: SUMMARY: {{(Leak|Address)}}Sanitizer: 1337 byte
 
   // Test that we correctly reset chunk tags.
   p = 0;
   assert(__lsan_do_recoverable_leak_check() == 1);
-  // CHECK: SUMMARY: {{(Leak|Address)}}Sanitizer: 1360 byte
+// CHECK: SUMMARY: {{(Leak|Address)}}Sanitizer: 1360 byte
 
   _exit(0);
 }

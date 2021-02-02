@@ -20,7 +20,6 @@ namespace llvm {
 
 class PPCInstPrinter : public MCInstPrinter {
   Triple TT;
-
 private:
   bool showRegistersWithPercentPrefix(const char *RegName) const;
   bool showRegistersWithPrefix() const;
@@ -30,7 +29,7 @@ private:
 public:
   PPCInstPrinter(const MCAsmInfo &MAI, const MCInstrInfo &MII,
                  const MCRegisterInfo &MRI, Triple T)
-      : MCInstPrinter(MAI, MII, MRI), TT(T) {}
+    : MCInstPrinter(MAI, MII, MRI), TT(T) {}
 
   void printRegName(raw_ostream &OS, unsigned RegNo) const override;
   void printInst(const MCInst *MI, uint64_t Address, StringRef Annot,

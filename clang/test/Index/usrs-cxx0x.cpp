@@ -1,12 +1,12 @@
-template <typename... Types>
-struct tuple {};
+template<typename ...Types>
+struct tuple { };
 
 void f(tuple<int, float, double>);
 
 class TestCls {
   void meth() &;
   void meth() &&;
-  void meth(int &&);
+  void meth(int&&);
 };
 
 // RUN: c-index-test -test-load-source-usrs all -std=c++11 %s | FileCheck %s

@@ -329,8 +329,8 @@ void DIEHash::hashAttribute(const DIEValue &Value, dwarf::Tag Tag) {
 void DIEHash::hashAttributes(const DIEAttrs &Attrs, dwarf::Tag Tag) {
 #define HANDLE_DIE_HASH_ATTR(NAME)                                             \
   {                                                                            \
-    if (Attrs.NAME)                                                            \
-      hashAttribute(Attrs.NAME, Tag);                                          \
+    if (Attrs.NAME)                                                           \
+      hashAttribute(Attrs.NAME, Tag);                                         \
   }
 #include "DIEHashAttributes.def"
   // FIXME: Add the extended attributes.
@@ -370,8 +370,7 @@ void DIEHash::computeHash(const DIE &Die) {
   for (auto &C : Die.children()) {
     // 7.27 Step 7
     // If C is a nested type entry or a member function entry, ...
-    if (isType(C.getTag()) || (C.getTag() == dwarf::DW_TAG_subprogram &&
-                               isType(C.getParent()->getTag()))) {
+    if (isType(C.getTag()) || (C.getTag() == dwarf::DW_TAG_subprogram && isType(C.getParent()->getTag()))) {
       StringRef Name = getDIEStringAttr(C, dwarf::DW_AT_name);
       // ... and has a DW_AT_name attribute
       if (!Name.empty()) {

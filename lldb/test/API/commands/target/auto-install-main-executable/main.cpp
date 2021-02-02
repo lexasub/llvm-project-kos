@@ -1,6 +1,6 @@
 #include <cstdio>
 
-const char *build = BUILD;
+const char* build = BUILD;
 
 int main(int argc, char **argv) {
   printf("argc: %d\n", argc);

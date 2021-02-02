@@ -4,25 +4,28 @@
 struct A {};
 
 struct B {
-  operator A *();
+	operator A*();
 };
 
 struct C : B {
+
 };
 
-void foo(C c, B b, int A::*pmf) {
-  int j = c->*pmf;
-  int i = b->*pmf;
+
+void foo(C c, B b, int A::* pmf) {
+	int j = c->*pmf; 
+	int i = b->*pmf;
 }
 
 struct D {
-  operator const D *();
+ operator const D *();
 };
 
 struct DPtr {
-  operator volatile int D::*();
+ operator volatile int D::*();
 };
 
 int test(D d, DPtr dptr) {
-  return d->*dptr;
+ return d->*dptr;
 }
+

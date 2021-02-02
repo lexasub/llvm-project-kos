@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/ADT/BitVector.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
-#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/CodeGen/TargetRegisterInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/Attributes.h"
@@ -30,8 +30,7 @@ using namespace llvm;
 
 TargetFrameLowering::~TargetFrameLowering() = default;
 
-bool TargetFrameLowering::enableCalleeSaveSkip(
-    const MachineFunction &MF) const {
+bool TargetFrameLowering::enableCalleeSaveSkip(const MachineFunction &MF) const {
   assert(MF.getFunction().hasFnAttribute(Attribute::NoReturn) &&
          MF.getFunction().hasFnAttribute(Attribute::NoUnwind) &&
          !MF.getFunction().hasFnAttribute(Attribute::UWTable));
@@ -112,9 +111,9 @@ void TargetFrameLowering::determineCalleeSaves(MachineFunction &MF,
   // execution we do not need the CSR spills either: setjmp stores all CSRs
   // it was called with into the jmp_buf, which longjmp then restores.
   if (MF.getFunction().hasFnAttribute(Attribute::NoReturn) &&
-      MF.getFunction().hasFnAttribute(Attribute::NoUnwind) &&
-      !MF.getFunction().hasFnAttribute(Attribute::UWTable) &&
-      enableCalleeSaveSkip(MF))
+        MF.getFunction().hasFnAttribute(Attribute::NoUnwind) &&
+        !MF.getFunction().hasFnAttribute(Attribute::UWTable) &&
+        enableCalleeSaveSkip(MF))
     return;
 
   // Functions which call __builtin_unwind_init get all their registers saved.
@@ -127,8 +126,8 @@ void TargetFrameLowering::determineCalleeSaves(MachineFunction &MF,
   }
 }
 
-unsigned
-TargetFrameLowering::getStackAlignmentSkew(const MachineFunction &MF) const {
+unsigned TargetFrameLowering::getStackAlignmentSkew(
+    const MachineFunction &MF) const {
   // When HHVM function is called, the stack is skewed as the return address
   // is removed from the stack before we enter the function.
   if (LLVM_UNLIKELY(MF.getFunction().getCallingConv() == CallingConv::HHVM))

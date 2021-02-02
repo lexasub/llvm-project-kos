@@ -2,20 +2,18 @@
 
 struct X {
   X(int value);
-  X(const X &x);
-
+  X(const X& x);
 protected:
   ~X();
-
 private:
-  operator X *();
+  operator X*();
 
   void constMemberFunction() const;
-  template <typename T>
+  template<typename T>
   void constMemberFunctionTemplate() const;
 
   static void staticMemberFunction();
-  template <typename T>
+  template<typename T>
   static void staticMemberFunctionTemplate();
 
   virtual void virtualMemberFunction();

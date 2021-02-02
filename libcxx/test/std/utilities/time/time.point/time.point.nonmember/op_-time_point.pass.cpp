@@ -19,21 +19,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  typedef std::chrono::system_clock Clock;
-  typedef std::chrono::milliseconds Duration1;
-  typedef std::chrono::microseconds Duration2;
-  {
+int main(int, char**)
+{
+    typedef std::chrono::system_clock Clock;
+    typedef std::chrono::milliseconds Duration1;
+    typedef std::chrono::microseconds Duration2;
+    {
     std::chrono::time_point<Clock, Duration1> t1(Duration1(3));
     std::chrono::time_point<Clock, Duration2> t2(Duration2(5));
     assert((t1 - t2) == Duration2(2995));
-  }
+    }
 #if TEST_STD_VER > 11
-  {
+    {
     constexpr std::chrono::time_point<Clock, Duration1> t1(Duration1(3));
     constexpr std::chrono::time_point<Clock, Duration2> t2(Duration2(5));
     static_assert((t1 - t2) == Duration2(2995), "");
-  }
+    }
 #endif
 
   return 0;

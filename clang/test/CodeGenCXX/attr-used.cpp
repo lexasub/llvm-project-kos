@@ -20,7 +20,7 @@ struct X2 {
   // We must delay emission of bar() until foo() has had its body parsed,
   // otherwise foo() would not be emitted.
   void __attribute__((used)) bar() { foo(); }
-  void foo() {}
+  void foo() { }
 
   // CHECK-DAG: define linkonce_odr {{.*}} @_ZN2X23barEv
   // CHECK-DAG: define linkonce_odr {{.*}} @_ZN2X23fooEv

@@ -19,8 +19,7 @@ struct CC {
   int x;
 };
 
-template <typename T>
-struct CT {
+template <typename T> struct CT {
   static T foo();
   static T x;
   int nsx;
@@ -58,8 +57,7 @@ void f(C c) {
   if ([c]() {
         c.ns();
         return c;
-      }()
-          .x == 15)
+      }().x == 15)
     ;
   // CHECK-MESSAGES: :[[@LINE-5]]:7: warning: static member
   // CHECK-FIXES: {{^}}  if ([c]() {{{$}}
@@ -76,7 +74,7 @@ struct V {
     };
   };
 };
-} // namespace N
+}
 
 void f(N::V::T::U u) {
   N::V v;
@@ -102,11 +100,9 @@ void f(N::V::T::U u) {
 }
 
 // Templates
-template <typename T>
-T CT<T>::x;
+template <typename T> T CT<T>::x;
 
-template <typename T>
-struct CCT {
+template <typename T> struct CCT {
   T foo();
   T x;
 };
@@ -118,22 +114,18 @@ using E = D;
 #define FOO(c) c.foo()
 #define X(c) c.x
 
-template <typename T>
-void f(T t, C c) {
+template <typename T> void f(T t, C c) {
   t.x; // OK, t is a template parameter.
   c.x;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: static member
   // CHECK-FIXES: {{^}}  C::x;{{$}}
 }
 
-template <int N>
-struct S { static int x; };
+template <int N> struct S { static int x; };
 
-template <>
-struct S<0> { int x; };
+template <> struct S<0> { int x; };
 
-template <int N>
-void h() {
+template <int N> void h() {
   S<N> sN;
   sN.x; // OK, value of N affects whether x is static or not.
 
@@ -230,10 +222,10 @@ int func(Qptr qp) {
 }
 
 namespace {
-struct Anonymous {
-  static int I;
-};
-} // namespace
+  struct Anonymous {
+    static int I;
+  };
+}
 
 void use_anonymous() {
   Anonymous Anon;
@@ -243,12 +235,12 @@ void use_anonymous() {
 }
 
 namespace Outer {
-inline namespace Inline {
-struct S {
-  static int I;
-};
-} // namespace Inline
-} // namespace Outer
+  inline namespace Inline {
+    struct S {
+      static int I;
+    };
+  }
+}
 
 void use_inline() {
   Outer::S V;

@@ -21,12 +21,12 @@
 #include "min_allocator.h"
 
 template <class charT>
-void test(std::basic_string_view<charT> sv) {
-  typedef std::basic_string<charT, std::char_traits<charT>,
-                            test_allocator<charT> >
-      S;
-  typedef typename S::traits_type T;
-  typedef typename S::allocator_type A;
+void
+test(std::basic_string_view<charT> sv)
+{
+    typedef std::basic_string<charT, std::char_traits<charT>, test_allocator<charT> > S;
+    typedef typename S::traits_type T;
+    typedef typename S::allocator_type A;
   {
     S s2(sv);
     LIBCPP_ASSERT(s2.__invariants());
@@ -47,9 +47,11 @@ void test(std::basic_string_view<charT> sv) {
 }
 
 template <class charT, class A>
-void test(std::basic_string_view<charT> sv, const A& a) {
-  typedef std::basic_string<charT, std::char_traits<charT>, A> S;
-  typedef typename S::traits_type T;
+void
+test(std::basic_string_view<charT> sv, const A& a)
+{
+    typedef std::basic_string<charT, std::char_traits<charT>, A> S;
+    typedef typename S::traits_type T;
   {
     S s2(sv, a);
     LIBCPP_ASSERT(s2.__invariants());
@@ -69,8 +71,9 @@ void test(std::basic_string_view<charT> sv, const A& a) {
   }
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef test_allocator<char> A;
     typedef std::basic_string_view<char, std::char_traits<char> > SV;
 
@@ -78,17 +81,16 @@ int main(int, char**) {
     test(SV(""), A(2));
 
     test(SV("1"));
-    test(SV("1"), A(2));
+    test(SV("1") ,A(2));
 
     test(SV("1234567980"));
     test(SV("1234567980"), A(2));
 
     test(SV("123456798012345679801234567980123456798012345679801234567980"));
-    test(SV("123456798012345679801234567980123456798012345679801234567980"),
-         A(2));
-  }
+    test(SV("123456798012345679801234567980123456798012345679801234567980"), A(2));
+    }
 #if TEST_STD_VER >= 11
-  {
+    {
     typedef min_allocator<char> A;
     typedef std::basic_string_view<char, std::char_traits<char> > SV;
 
@@ -96,15 +98,14 @@ int main(int, char**) {
     test(SV(""), A());
 
     test(SV("1"));
-    test(SV("1"), A());
+    test(SV("1") ,A());
 
     test(SV("1234567980"));
     test(SV("1234567980"), A());
 
     test(SV("123456798012345679801234567980123456798012345679801234567980"));
-    test(SV("123456798012345679801234567980123456798012345679801234567980"),
-         A());
-  }
+    test(SV("123456798012345679801234567980123456798012345679801234567980"), A());
+    }
 #endif
 
   return 0;

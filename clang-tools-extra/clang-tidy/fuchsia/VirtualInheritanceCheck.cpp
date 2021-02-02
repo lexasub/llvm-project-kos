@@ -18,13 +18,10 @@ namespace fuchsia {
 
 namespace {
 AST_MATCHER(CXXRecordDecl, hasDirectVirtualBaseClass) {
-  if (!Node.hasDefinition())
-    return false;
-  if (!Node.getNumVBases())
-    return false;
+  if (!Node.hasDefinition()) return false;
+  if (!Node.getNumVBases()) return false;
   for (const CXXBaseSpecifier &Base : Node.bases())
-    if (Base.isVirtual())
-      return true;
+    if (Base.isVirtual()) return true;
   return false;
 }
 } // namespace
@@ -40,6 +37,6 @@ void VirtualInheritanceCheck::check(const MatchFinder::MatchResult &Result) {
     diag(D->getBeginLoc(), "direct virtual inheritance is disallowed");
 }
 
-} // namespace fuchsia
-} // namespace tidy
-} // namespace clang
+}  // namespace fuchsia
+}  // namespace tidy
+}  // namespace clang

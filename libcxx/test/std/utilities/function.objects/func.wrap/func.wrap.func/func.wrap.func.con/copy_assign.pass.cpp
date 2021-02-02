@@ -33,7 +33,7 @@ public:
       data_[i] = i;
   }
 
-  A(const A&) { ++count; }
+  A(const A &) { ++count; }
 
   ~A() { --count; }
 
@@ -95,30 +95,30 @@ int main(int, char**) {
   {
     typedef std::function<int()> Func;
     Func f = g0;
-    Func& fr = (f = (Func&)f);
+    Func& fr = (f = (Func &)f);
     assert(&fr == &f);
-    RTTI_ASSERT(*f.target<int (*)()>() == g0);
+    RTTI_ASSERT(*f.target<int(*)()>() == g0);
   }
   {
     typedef std::function<int(int)> Func;
     Func f = g;
-    Func& fr = (f = (Func&)f);
+    Func& fr = (f = (Func &)f);
     assert(&fr == &f);
-    RTTI_ASSERT(*f.target<int (*)(int)>() == g);
+    RTTI_ASSERT(*f.target<int(*)(int)>() == g);
   }
   {
     typedef std::function<int(int, int)> Func;
     Func f = g2;
-    Func& fr = (f = (Func&)f);
+    Func& fr = (f = (Func &)f);
     assert(&fr == &f);
-    RTTI_ASSERT(*f.target<int (*)(int, int)>() == g2);
+    RTTI_ASSERT(*f.target<int(*)(int, int)>() == g2);
   }
   {
     typedef std::function<int(int, int, int)> Func;
     Func f = g3;
-    Func& fr = (f = (Func&)f);
+    Func& fr = (f = (Func &)f);
     assert(&fr == &f);
-    RTTI_ASSERT(*f.target<int (*)(int, int, int)>() == g3);
+    RTTI_ASSERT(*f.target<int(*)(int, int, int)>() == g3);
   }
 #if TEST_STD_VER >= 11
   assert(globalMemCounter.checkOutstandingNewEq(0));

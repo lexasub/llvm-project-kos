@@ -8,14 +8,14 @@
 #define OS_RETURNS_NOT_RETAINED __attribute__((os_returns_not_retained))
 #define OS_CONSUMES_THIS __attribute__((os_consumes_this))
 
-#define OSTypeID(type) (type::metaClass)
+#define OSTypeID(type)   (type::metaClass)
 
-#define OSDynamicCast(type, inst) \
-  ((type *)OSMetaClassBase::safeMetaCast((inst), OSTypeID(type)))
-#define OSRequiredCast(type, inst) \
-  ((type *)OSMetaClassBase::requiredMetaCast((inst), OSTypeID(type)))
+#define OSDynamicCast(type, inst)   \
+    ((type *) OSMetaClassBase::safeMetaCast((inst), OSTypeID(type)))
+#define OSRequiredCast(type, inst)   \
+    ((type *) OSMetaClassBase::requiredMetaCast((inst), OSTypeID(type)))
 
-#define OSTypeAlloc(type) ((type *)((type::metaClass)->alloc()))
+#define OSTypeAlloc(type)   ((type *) ((type::metaClass)->alloc()))
 
 using size_t = decltype(sizeof(int));
 
@@ -35,8 +35,8 @@ struct OSMetaClassBase {
   virtual void retain() const;
   virtual void release() const;
 
-  virtual void taggedRetain(const void *tag = nullptr) const;
-  virtual void taggedRelease(const void *tag = nullptr) const;
+  virtual void taggedRetain(const void * tag = nullptr) const;
+  virtual void taggedRelease(const void * tag = nullptr) const;
 
   virtual void free();
   virtual ~OSMetaClassBase(){};
@@ -48,7 +48,7 @@ typedef kern_return_t (*OSDispatchMethod)(OSMetaClassBase *self,
                                           const IORPC rpc);
 
 struct OSObject : public OSMetaClassBase {
-  virtual ~OSObject() {}
+  virtual ~OSObject(){}
 
   unsigned int foo() { return 42; }
 
@@ -59,14 +59,14 @@ struct OSObject : public OSMetaClassBase {
   static OSObject *getObject();
   static OSObject *GetObject();
 
-  static void *operator new(size_t size);
+  static void * operator new(size_t size);
 
-  static const OSMetaClass *const metaClass;
+  static const OSMetaClass * const metaClass;
 };
 
 struct OSMetaClass : public OSMetaClassBase {
-  virtual OSObject *alloc() const;
-  virtual ~OSMetaClass() {}
+  virtual OSObject * alloc() const;
+  virtual ~OSMetaClass(){}
 };
 
 #endif /* _OS_BASE_H */

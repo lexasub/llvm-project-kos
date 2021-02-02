@@ -20,13 +20,16 @@
 #include "test_macros.h"
 
 template <class S>
-void test(const std::string& lhs, S rhs, bool x) {
-  assert((lhs == rhs) == x);
-  assert((rhs == lhs) == x);
+void
+test(const std::string &lhs, S rhs, bool x)
+{
+    assert((lhs == rhs) == x);
+    assert((rhs == lhs) == x);
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string_view S;
     test("", S(""), true);
     test("", S("abcde"), false);
@@ -44,7 +47,7 @@ int main(int, char**) {
     test("abcdefghijklmnopqrst", S("abcde"), false);
     test("abcdefghijklmnopqrst", S("abcdefghij"), false);
     test("abcdefghijklmnopqrst", S("abcdefghijklmnopqrst"), true);
-  }
+    }
 
   return 0;
 }

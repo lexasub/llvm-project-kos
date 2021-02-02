@@ -5,11 +5,11 @@ template <class F> void parallel_loop(F &&f) { f(0); }
 
 //CHECK-LABEL: @main
 int main() {
-  // CHECK: [[X_ADDR:%.+]] = alloca i32,
+// CHECK: [[X_ADDR:%.+]] = alloca i32,
   int x;
-  // CHECK: getelementptr inbounds
-  // CHECK: store i32* [[X_ADDR]], i32** %
-  // CHECK: call
+// CHECK: getelementptr inbounds
+// CHECK: store i32* [[X_ADDR]], i32** %
+// CHECK: call
   parallel_loop([&](auto y) {
 #pragma clang __debug captured
     {

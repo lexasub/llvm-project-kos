@@ -21,13 +21,13 @@
 
 //  Test that mismatches between strings and wide streams are diagnosed
 
-void round_trip(const char* p) {
-  std::wstringstream ss;
-  ss << std::quoted(
-      p); // expected-error {{invalid operands to binary expression}}
-  std::string s;
-  ss >> std::quoted(
-            s); // expected-error {{invalid operands to binary expression}}
+void round_trip ( const char *p ) {
+    std::wstringstream ss;
+    ss << std::quoted(p); // expected-error {{invalid operands to binary expression}}
+    std::string s;
+    ss >> std::quoted(s); // expected-error {{invalid operands to binary expression}}
 }
 
-int main(int, char**) { round_trip("Hi Mom"); }
+int main(int, char**) {
+    round_trip("Hi Mom");
+}

@@ -7,26 +7,26 @@ namespace std {
 
 template <class T>
 class basic_string {
-public:
-  using size_type = unsigned;
-  using value_type = T;
-  using reference = value_type &;
-  using const_reference = const value_type &;
+ public:
+   using size_type = unsigned;
+   using value_type = T;
+   using reference = value_type&;
+   using const_reference = const value_type&;
 
-  reference operator[](size_type);
-  const_reference operator[](size_type) const;
-  T *data();
-  const T *data() const;
+   reference operator[](size_type);
+   const_reference operator[](size_type) const;
+   T* data();
+   const T* data() const;
 };
 
 using string = basic_string<char>;
 
 template <class T>
 class basic_string_view {
-public:
+ public:
   using size_type = unsigned;
-  using const_reference = const T &;
-  using const_pointer = const T *;
+  using const_reference = const T&;
+  using const_pointer = const T*;
 
   constexpr const_reference operator[](size_type) const;
   constexpr const_pointer data() const noexcept;
@@ -34,34 +34,30 @@ public:
 
 using string_view = basic_string_view<char>;
 
-} // namespace std
+}
 
 template <class T>
 class MyVector {
-public:
+ public:
   using size_type = unsigned;
-  using const_reference = const T &;
-  using const_pointer = const T *;
+  using const_reference = const T&;
+  using const_pointer = const T*;
 
   const_reference operator[](size_type) const;
-  const T *data() const noexcept;
+  const T* data() const noexcept;
 };
 
-#define DO(x) \
-  do {        \
-    x;        \
-  } while (false)
+#define DO(x) do { x; } while (false)
 #define ACCESS(x) (x)
 #define GET(x, i) (x).data()[i]
 
 template <class T>
 class Foo {
-public:
+ public:
   char bar(int i) {
     return x.data()[i];
   }
-
-private:
+ private:
   T x;
 };
 
@@ -81,7 +77,7 @@ void f(int i) {
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: accessing an element
   // CHECK-FIXES: char c2 = sv[i];
 
-  std::string *ps = &s;
+  std::string* ps = &s;
   char c3 = ps->data()[i];
   // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: accessing an element
   // CHECK-FIXES: char c3 = (*ps)[i];

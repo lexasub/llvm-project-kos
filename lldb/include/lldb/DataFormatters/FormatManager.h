@@ -55,8 +55,8 @@ public:
     EnableCategory(category_name, pos, {});
   }
 
-  void EnableCategory(ConstString category_name, TypeCategoryMap::Position pos,
-                      lldb::LanguageType lang) {
+  void EnableCategory(ConstString category_name,
+                      TypeCategoryMap::Position pos, lldb::LanguageType lang) {
     TypeCategoryMap::ValueSP category_sp;
     if (m_categories_map.Get(category_name, category_sp) && category_sp) {
       m_categories_map.Enable(category_sp, pos);
@@ -162,8 +162,8 @@ public:
   static FormattersMatchVector
   GetPossibleMatches(ValueObject &valobj, lldb::DynamicValueType use_dynamic) {
     FormattersMatchVector matches;
-    GetPossibleMatches(valobj, valobj.GetCompilerType(), use_dynamic, matches,
-                       false, false, false, true);
+    GetPossibleMatches(valobj, valobj.GetCompilerType(),
+                       use_dynamic, matches, false, false, false, true);
     return matches;
   }
 

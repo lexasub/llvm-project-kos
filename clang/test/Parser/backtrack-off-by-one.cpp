@@ -21,6 +21,6 @@ template <typename T> class B : T // not ',' or '{'
 #else
 // expected-error@+3 {{expected unqualified-id}}
 #endif
-                                    // expected-error@+1 {{expected ';' after class}}
-                                    A<int> {
+// expected-error@+1 {{expected ';' after class}}
+A<int> {
 };

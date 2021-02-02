@@ -174,7 +174,8 @@ unsigned clang_InlineCommandComment_getNumArgs(CXComment CXC) {
   return ICC->getNumArgs();
 }
 
-CXString clang_InlineCommandComment_getArgText(CXComment CXC, unsigned ArgIdx) {
+CXString clang_InlineCommandComment_getArgText(CXComment CXC,
+                                               unsigned ArgIdx) {
   const InlineCommandComment *ICC = getASTNodeAs<InlineCommandComment>(CXC);
   if (!ICC || ArgIdx >= ICC->getNumArgs())
     return cxstring::createNull();
@@ -239,7 +240,8 @@ unsigned clang_BlockCommandComment_getNumArgs(CXComment CXC) {
   return BCC->getNumArgs();
 }
 
-CXString clang_BlockCommandComment_getArgText(CXComment CXC, unsigned ArgIdx) {
+CXString clang_BlockCommandComment_getArgText(CXComment CXC,
+                                              unsigned ArgIdx) {
   const BlockCommandComment *BCC = getASTNodeAs<BlockCommandComment>(CXC);
   if (!BCC || ArgIdx >= BCC->getNumArgs())
     return cxstring::createNull();
@@ -287,8 +289,8 @@ unsigned clang_ParamCommandComment_isDirectionExplicit(CXComment CXC) {
   return PCC->isDirectionExplicit();
 }
 
-enum CXCommentParamPassDirection
-clang_ParamCommandComment_getDirection(CXComment CXC) {
+enum CXCommentParamPassDirection clang_ParamCommandComment_getDirection(
+                                                            CXComment CXC) {
   const ParamCommandComment *PCC = getASTNodeAs<ParamCommandComment>(CXC);
   if (!PCC)
     return CXCommentParamPassDirection_In;
@@ -384,8 +386,8 @@ CXString clang_FullComment_getAsHTML(CXComment CXC) {
     TU->CommentToXML = new clang::index::CommentToXMLConverter();
 
   SmallString<1024> HTML;
-  TU->CommentToXML->convertCommentToHTML(FC, HTML,
-                                         cxtu::getASTUnit(TU)->getASTContext());
+  TU->CommentToXML
+      ->convertCommentToHTML(FC, HTML, cxtu::getASTUnit(TU)->getASTContext());
   return cxstring::createDup(HTML.str());
 }
 
@@ -399,7 +401,8 @@ CXString clang_FullComment_getAsXML(CXComment CXC) {
     TU->CommentToXML = new clang::index::CommentToXMLConverter();
 
   SmallString<1024> XML;
-  TU->CommentToXML->convertCommentToXML(FC, XML,
-                                        cxtu::getASTUnit(TU)->getASTContext());
+  TU->CommentToXML
+      ->convertCommentToXML(FC, XML, cxtu::getASTUnit(TU)->getASTContext());
   return cxstring::createDup(XML.str());
 }
+

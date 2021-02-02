@@ -595,8 +595,8 @@ bool FastISel::selectGetElementPtr(const User *I) {
   // FIXME: What's a good SWAG number for MaxOffs?
   uint64_t MaxOffs = 2048;
   MVT VT = TLI.getPointerTy(DL);
-  for (gep_type_iterator GTI = gep_type_begin(I), E = gep_type_end(I); GTI != E;
-       ++GTI) {
+  for (gep_type_iterator GTI = gep_type_begin(I), E = gep_type_end(I);
+       GTI != E; ++GTI) {
     const Value *Idx = GTI.getOperand();
     if (StructType *StTy = GTI.getStructTypeOrNull()) {
       uint64_t Field = cast<ConstantInt>(Idx)->getZExtValue();
@@ -820,8 +820,7 @@ bool FastISel::selectPatchpoint(const CallInst *I) {
   CallingConv::ID CC = I->getCallingConv();
   bool IsAnyRegCC = CC == CallingConv::AnyReg;
   bool HasDef = !I->getType()->isVoidTy();
-  Value *Callee =
-      I->getOperand(PatchPointOpers::TargetPos)->stripPointerCasts();
+  Value *Callee = I->getOperand(PatchPointOpers::TargetPos)->stripPointerCasts();
 
   // Get the real number of arguments participating in the call <numArgs>
   assert(isa<ConstantInt>(I->getOperand(PatchPointOpers::NArgPos)) &&
@@ -870,12 +869,12 @@ bool FastISel::selectPatchpoint(const CallInst *I) {
   // Add the call target.
   if (const auto *C = dyn_cast<IntToPtrInst>(Callee)) {
     uint64_t CalleeConstAddr =
-        cast<ConstantInt>(C->getOperand(0))->getZExtValue();
+      cast<ConstantInt>(C->getOperand(0))->getZExtValue();
     Ops.push_back(MachineOperand::CreateImm(CalleeConstAddr));
   } else if (const auto *C = dyn_cast<ConstantExpr>(Callee)) {
     if (C->getOpcode() == Instruction::IntToPtr) {
       uint64_t CalleeConstAddr =
-          cast<ConstantInt>(C->getOperand(0))->getZExtValue();
+        cast<ConstantInt>(C->getOperand(0))->getZExtValue();
       Ops.push_back(MachineOperand::CreateImm(CalleeConstAddr));
     } else
       llvm_unreachable("Unsupported ConstantExpr.");
@@ -985,8 +984,7 @@ bool FastISel::selectXRayTypedEvent(const CallInst *I) {
   for (auto &MO : Ops)
     MIB.add(MO);
 
-  // Insert the Patchable Typed Event Call instruction, that gets lowered
-  // properly.
+  // Insert the Patchable Typed Event Call instruction, that gets lowered properly.
   return true;
 }
 
@@ -1307,8 +1305,8 @@ bool FastISel::selectIntrinsicCall(const IntrinsicInst *II) {
       // A dbg.declare describes the address of a source variable, so lower it
       // into an indirect DBG_VALUE.
       BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-              TII.get(TargetOpcode::DBG_VALUE), /*IsIndirect*/ true, *Op,
-              DI->getVariable(), DI->getExpression());
+              TII.get(TargetOpcode::DBG_VALUE), /*IsIndirect*/ true,
+              *Op, DI->getVariable(), DI->getExpression());
     } else {
       // We can't yet handle anything else here because it would require
       // generating code, thus altering codegen because of debug info.
@@ -1368,8 +1366,7 @@ bool FastISel::selectIntrinsicCall(const IntrinsicInst *II) {
     }
 
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::DBG_LABEL))
-        .addMetadata(DI->getLabel());
+            TII.get(TargetOpcode::DBG_LABEL)).addMetadata(DI->getLabel());
     return true;
   }
   case Intrinsic::objectsize:
@@ -1469,8 +1466,7 @@ bool FastISel::selectBitCast(const User *I) {
     if (SrcClass == DstClass) {
       ResultReg = createResultReg(DstClass);
       BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-              TII.get(TargetOpcode::COPY), ResultReg)
-          .addReg(Op0);
+              TII.get(TargetOpcode::COPY), ResultReg).addReg(Op0);
     }
   }
 
@@ -1499,9 +1495,8 @@ bool FastISel::selectFreeze(const User *I) {
   MVT Ty = ETy.getSimpleVT();
   const TargetRegisterClass *TyRegClass = TLI.getRegClassFor(Ty);
   Register ResultReg = createResultReg(TyRegClass);
-  BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, TII.get(TargetOpcode::COPY),
-          ResultReg)
-      .addReg(Reg);
+  BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
+          TII.get(TargetOpcode::COPY), ResultReg).addReg(Reg);
 
   updateValueMap(I, ResultReg);
   return true;
@@ -1509,7 +1504,8 @@ bool FastISel::selectFreeze(const User *I) {
 
 // Remove local value instructions starting from the instruction after
 // SavedLastLocalValue to the current function insert point.
-void FastISel::removeDeadLocalValueCode(MachineInstr *SavedLastLocalValue) {
+void FastISel::removeDeadLocalValueCode(MachineInstr *SavedLastLocalValue)
+{
   MachineInstr *CurLastLocalValue = getLastLocalValue();
   if (CurLastLocalValue != SavedLastLocalValue) {
     // Find the first local value instruction to be deleted.
@@ -1969,8 +1965,7 @@ Register FastISel::constrainOperandRegClass(const MCInstrDesc &II, Register Op,
       // has gone very wrong before we got here.
       Register NewOp = createResultReg(RegClass);
       BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-              TII.get(TargetOpcode::COPY), NewOp)
-          .addReg(Op);
+              TII.get(TargetOpcode::COPY), NewOp).addReg(Op);
       return NewOp;
     }
   }
@@ -2001,8 +1996,7 @@ Register FastISel::fastEmitInst_r(unsigned MachineInstOpcode,
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II)
         .addReg(Op0, getKillRegState(Op0IsKill));
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
 
   return ResultReg;
@@ -2027,8 +2021,7 @@ Register FastISel::fastEmitInst_rr(unsigned MachineInstOpcode,
         .addReg(Op0, getKillRegState(Op0IsKill))
         .addReg(Op1, getKillRegState(Op1IsKill));
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2056,8 +2049,7 @@ Register FastISel::fastEmitInst_rrr(unsigned MachineInstOpcode,
         .addReg(Op1, getKillRegState(Op1IsKill))
         .addReg(Op2, getKillRegState(Op2IsKill));
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2079,8 +2071,7 @@ Register FastISel::fastEmitInst_ri(unsigned MachineInstOpcode,
         .addReg(Op0, getKillRegState(Op0IsKill))
         .addImm(Imm);
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2105,8 +2096,7 @@ Register FastISel::fastEmitInst_rii(unsigned MachineInstOpcode,
         .addImm(Imm1)
         .addImm(Imm2);
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2122,10 +2112,10 @@ Register FastISel::fastEmitInst_f(unsigned MachineInstOpcode,
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II, ResultReg)
         .addFPImm(FPImm);
   else {
-    BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II).addFPImm(FPImm);
+    BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II)
+        .addFPImm(FPImm);
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2151,8 +2141,7 @@ Register FastISel::fastEmitInst_rri(unsigned MachineInstOpcode,
         .addReg(Op1, getKillRegState(Op1IsKill))
         .addImm(Imm);
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2168,8 +2157,7 @@ Register FastISel::fastEmitInst_i(unsigned MachineInstOpcode,
   else {
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, II).addImm(Imm);
     BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc,
-            TII.get(TargetOpcode::COPY), ResultReg)
-        .addReg(II.ImplicitDefs[0]);
+            TII.get(TargetOpcode::COPY), ResultReg).addReg(II.ImplicitDefs[0]);
   }
   return ResultReg;
 }
@@ -2182,8 +2170,7 @@ Register FastISel::fastEmitInst_extractsubreg(MVT RetVT, unsigned Op0,
   const TargetRegisterClass *RC = MRI.getRegClass(Op0);
   MRI.constrainRegClass(Op0, TRI.getSubClassWithSubReg(RC, Idx));
   BuildMI(*FuncInfo.MBB, FuncInfo.InsertPt, DbgLoc, TII.get(TargetOpcode::COPY),
-          ResultReg)
-      .addReg(Op0, getKillRegState(Op0IsKill), Idx);
+          ResultReg).addReg(Op0, getKillRegState(Op0IsKill), Idx);
   return ResultReg;
 }
 
@@ -2274,7 +2261,7 @@ bool FastISel::tryToFoldLoad(const LoadInst *LI, const Instruction *FoldInst) {
 
   const Instruction *TheUser = LI->user_back();
   while (TheUser != FoldInst && // Scan up until we find FoldInst.
-                                // Stay in the right block.
+         // Stay in the right block.
          TheUser->getParent() == FoldInst->getParent() &&
          --MaxUsers) { // Don't scan too far.
     // If there are multiple or no uses of this instruction, then bail out.
@@ -2392,87 +2379,34 @@ CmpInst::Predicate FastISel::optimizeCmpPredicate(const CmpInst *CI) const {
     return Predicate;
 
   switch (Predicate) {
-  default:
-    llvm_unreachable("Invalid predicate!");
-  case CmpInst::FCMP_FALSE:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::FCMP_OEQ:
-    Predicate = CmpInst::FCMP_ORD;
-    break;
-  case CmpInst::FCMP_OGT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::FCMP_OGE:
-    Predicate = CmpInst::FCMP_ORD;
-    break;
-  case CmpInst::FCMP_OLT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::FCMP_OLE:
-    Predicate = CmpInst::FCMP_ORD;
-    break;
-  case CmpInst::FCMP_ONE:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::FCMP_ORD:
-    Predicate = CmpInst::FCMP_ORD;
-    break;
-  case CmpInst::FCMP_UNO:
-    Predicate = CmpInst::FCMP_UNO;
-    break;
-  case CmpInst::FCMP_UEQ:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::FCMP_UGT:
-    Predicate = CmpInst::FCMP_UNO;
-    break;
-  case CmpInst::FCMP_UGE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::FCMP_ULT:
-    Predicate = CmpInst::FCMP_UNO;
-    break;
-  case CmpInst::FCMP_ULE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::FCMP_UNE:
-    Predicate = CmpInst::FCMP_UNO;
-    break;
-  case CmpInst::FCMP_TRUE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
+  default: llvm_unreachable("Invalid predicate!");
+  case CmpInst::FCMP_FALSE: Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::FCMP_OEQ:   Predicate = CmpInst::FCMP_ORD;   break;
+  case CmpInst::FCMP_OGT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::FCMP_OGE:   Predicate = CmpInst::FCMP_ORD;   break;
+  case CmpInst::FCMP_OLT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::FCMP_OLE:   Predicate = CmpInst::FCMP_ORD;   break;
+  case CmpInst::FCMP_ONE:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::FCMP_ORD:   Predicate = CmpInst::FCMP_ORD;   break;
+  case CmpInst::FCMP_UNO:   Predicate = CmpInst::FCMP_UNO;   break;
+  case CmpInst::FCMP_UEQ:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::FCMP_UGT:   Predicate = CmpInst::FCMP_UNO;   break;
+  case CmpInst::FCMP_UGE:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::FCMP_ULT:   Predicate = CmpInst::FCMP_UNO;   break;
+  case CmpInst::FCMP_ULE:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::FCMP_UNE:   Predicate = CmpInst::FCMP_UNO;   break;
+  case CmpInst::FCMP_TRUE:  Predicate = CmpInst::FCMP_TRUE;  break;
 
-  case CmpInst::ICMP_EQ:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::ICMP_NE:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::ICMP_UGT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::ICMP_UGE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::ICMP_ULT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::ICMP_ULE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::ICMP_SGT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::ICMP_SGE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
-  case CmpInst::ICMP_SLT:
-    Predicate = CmpInst::FCMP_FALSE;
-    break;
-  case CmpInst::ICMP_SLE:
-    Predicate = CmpInst::FCMP_TRUE;
-    break;
+  case CmpInst::ICMP_EQ:    Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::ICMP_NE:    Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::ICMP_UGT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::ICMP_UGE:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::ICMP_ULT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::ICMP_ULE:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::ICMP_SGT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::ICMP_SGE:   Predicate = CmpInst::FCMP_TRUE;  break;
+  case CmpInst::ICMP_SLT:   Predicate = CmpInst::FCMP_FALSE; break;
+  case CmpInst::ICMP_SLE:   Predicate = CmpInst::FCMP_TRUE;  break;
   }
 
   return Predicate;

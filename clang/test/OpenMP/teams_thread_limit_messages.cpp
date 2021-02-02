@@ -43,7 +43,7 @@ T tmain(T argc) {
 #pragma omp teams thread_limit(argc + argc + z)
   foo();
 #pragma omp target
-#pragma omp teams thread_limit(argc), thread_limit(argc + 1) // expected-error {{directive '#pragma omp teams' cannot contain more than one 'thread_limit' clause}}
+#pragma omp teams thread_limit(argc), thread_limit (argc+1) // expected-error {{directive '#pragma omp teams' cannot contain more than one 'thread_limit' clause}}
   foo();
 #pragma omp target
 #pragma omp teams thread_limit(S1) // expected-error {{'S1' does not refer to a value}}
@@ -68,47 +68,47 @@ int main(int argc, char **argv) {
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp teams thread_limit ( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit() // expected-error {{expected expression}}
+#pragma omp teams thread_limit () // expected-error {{expected expression}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp teams thread_limit (argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(argc)) // expected-warning {{extra tokens at the end of '#pragma omp teams' are ignored}}
+#pragma omp teams thread_limit (argc)) // expected-warning {{extra tokens at the end of '#pragma omp teams' are ignored}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(argc > 0 ? argv[1] : argv[2]) // expected-error {{expression must have integral or unscoped enumeration type, not 'char *'}}
+#pragma omp teams thread_limit (argc > 0 ? argv[1] : argv[2]) // expected-error {{expression must have integral or unscoped enumeration type, not 'char *'}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(argc + argc - z)
+#pragma omp teams thread_limit (argc + argc - z)
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(argc), thread_limit(argc + 1) // expected-error {{directive '#pragma omp teams' cannot contain more than one 'thread_limit' clause}}
+#pragma omp teams thread_limit (argc), thread_limit (argc+1) // expected-error {{directive '#pragma omp teams' cannot contain more than one 'thread_limit' clause}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(S1) // expected-error {{'S1' does not refer to a value}}
+#pragma omp teams thread_limit (S1) // expected-error {{'S1' does not refer to a value}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(-2) // expected-error {{argument to 'thread_limit' clause must be a strictly positive integer value}}
+#pragma omp teams thread_limit (-2) // expected-error {{argument to 'thread_limit' clause must be a strictly positive integer value}}
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(-10u)
+#pragma omp teams thread_limit (-10u)
   foo();
 
 #pragma omp target
-#pragma omp teams thread_limit(3.14) // expected-error {{expression must have integral or unscoped enumeration type, not 'double'}}
+#pragma omp teams thread_limit (3.14) // expected-error {{expression must have integral or unscoped enumeration type, not 'double'}}
   foo();
 
   return tmain<int, 10>(argc); // expected-note {{in instantiation of function template specialization 'tmain<int, 10>' requested here}}

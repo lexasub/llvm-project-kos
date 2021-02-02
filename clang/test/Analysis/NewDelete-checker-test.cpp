@@ -31,7 +31,7 @@
 
 typedef __typeof__(sizeof(int)) size_t;
 extern "C" void *malloc(size_t);
-extern "C" void free(void *ptr);
+extern "C" void free (void* ptr);
 int *global;
 
 //------------------
@@ -61,7 +61,7 @@ void testGlobalNoThrowPlacementOpNewBeforeOverload() {
 } // leak-warning{{Potential leak of memory pointed to by 'p'}}
 
 void testGlobalNoThrowPlacementExprNewBeforeOverload() {
-  int *p = new (std::nothrow) int;
+  int *p = new(std::nothrow) int;
 } // leak-warning{{Potential leak of memory pointed to by 'p'}}
 
 //----- Standard pointer placement operators
@@ -72,17 +72,17 @@ void testGlobalPointerPlacementNew() {
 
   void *p2 = operator new[](0, &i); // no warn
 
-  int *p3 = new (&i) int; // no warn
+  int *p3 = new(&i) int; // no warn
 
-  int *p4 = new (&i) int[0]; // no warn
+  int *p4 = new(&i) int[0]; // no warn
 }
 
 //----- Other cases
 void testNewMemoryIsInHeap() {
   int *p = new int;
-  if (global != p) // condition is always true as 'p' wraps a heap region that
+  if (global != p) // condition is always true as 'p' wraps a heap region that 
                    // is different from a region wrapped by 'global'
-    global = p;    // pointer escapes
+    global = p; // pointer escapes
 }
 
 struct PtrWrapper {
@@ -194,8 +194,8 @@ void testExprDeleteArrArg() {
 }
 
 void testAllocDeallocNames() {
-  int *p = new (std::nothrow) int[1];
-  delete[](++p);
+  int *p = new(std::nothrow) int[1];
+  delete[] (++p);
   // newdelete-warning@-1{{Argument to 'delete[]' is offset by 4 bytes from the start of memory allocated by 'new[]'}}
 }
 
@@ -240,14 +240,14 @@ void testConstEscapePlacementNew() {
 //============== Test Uninitialized delete delete[]========================
 void testUninitDelete() {
   int *x;
-  int *y = new int;
+  int * y = new int;
   delete y;
   delete x; // expected-warning{{Argument to 'delete' is uninitialized}}
 }
 
 void testUninitDeleteArray() {
   int *x;
-  int *y = new int[5];
+  int * y = new int[5];
   delete[] y;
   delete[] x; // expected-warning{{Argument to 'delete[]' is uninitialized}}
 }
@@ -259,116 +259,115 @@ void testUninitFree() {
 
 void testUninitDeleteSink() {
   int *x;
-  delete x;                 // expected-warning{{Argument to 'delete' is uninitialized}}
+  delete x; // expected-warning{{Argument to 'delete' is uninitialized}}
   (*(volatile int *)0 = 1); // no warn
 }
 
 void testUninitDeleteArraySink() {
   int *x;
-  delete[] x;               // expected-warning{{Argument to 'delete[]' is uninitialized}}
+  delete[] x; // expected-warning{{Argument to 'delete[]' is uninitialized}}
   (*(volatile int *)0 = 1); // no warn
 }
 
 namespace reference_count {
-class control_block {
-  unsigned count;
+  class control_block {
+    unsigned count;
+  public:
+    control_block() : count(0) {}
+    void retain() { ++count; }
+    int release() { return --count; }
+  };
 
-public:
-  control_block() : count(0) {}
-  void retain() { ++count; }
-  int release() { return --count; }
-};
+  template <typename T>
+  class shared_ptr {
+    T *p;
+    control_block *control;
 
-template <typename T>
-class shared_ptr {
-  T *p;
-  control_block *control;
-
-public:
-  shared_ptr() : p(0), control(0) {}
-  explicit shared_ptr(T *p) : p(p), control(new control_block) {
-    control->retain();
-  }
-  shared_ptr(shared_ptr &other) : p(other.p), control(other.control) {
-    if (control)
+  public:
+    shared_ptr() : p(0), control(0) {}
+    explicit shared_ptr(T *p) : p(p), control(new control_block) {
       control->retain();
-  }
-  ~shared_ptr() {
-    if (control && control->release() == 0) {
-      delete p;
-      delete control;
+    }
+    shared_ptr(shared_ptr &other) : p(other.p), control(other.control) {
+      if (control)
+          control->retain();
+    }
+    ~shared_ptr() {
+      if (control && control->release() == 0) {
+        delete p;
+        delete control;
+      }
+    };
+
+    T &operator *() {
+      return *p;
+    };
+
+    void swap(shared_ptr &other) {
+      T *tmp = p;
+      p = other.p;
+      other.p = tmp;
+
+      control_block *ctrlTmp = control;
+      control = other.control;
+      other.control = ctrlTmp;
     }
   };
 
-  T &operator*() {
-    return *p;
-  };
-
-  void swap(shared_ptr &other) {
-    T *tmp = p;
-    p = other.p;
-    other.p = tmp;
-
-    control_block *ctrlTmp = control;
-    control = other.control;
-    other.control = ctrlTmp;
+  void testSingle() {
+    shared_ptr<int> a(new int);
+    *a = 1;
   }
-};
 
-void testSingle() {
-  shared_ptr<int> a(new int);
-  *a = 1;
-}
-
-void testDouble() {
-  shared_ptr<int> a(new int);
-  shared_ptr<int> b = a;
-  *a = 1;
-}
-
-void testInvalidated() {
-  shared_ptr<int> a(new int);
-  shared_ptr<int> b = a;
-  *a = 1;
-
-  extern void use(shared_ptr<int> &);
-  use(b);
-}
-
-void testNestedScope() {
-  shared_ptr<int> a(new int);
-  {
+  void testDouble() {
+    shared_ptr<int> a(new int);
     shared_ptr<int> b = a;
+    *a = 1;
   }
-  *a = 1;
-}
 
-void testSwap() {
-  shared_ptr<int> a(new int);
-  shared_ptr<int> b;
-  shared_ptr<int> c = a;
-  shared_ptr<int>(c).swap(b);
-}
-
-void testUseAfterFree() {
-  int *p = new int;
-  {
-    shared_ptr<int> a(p);
+  void testInvalidated() {
+    shared_ptr<int> a(new int);
     shared_ptr<int> b = a;
+    *a = 1;
+
+    extern void use(shared_ptr<int> &);
+    use(b);
   }
 
-  // FIXME: We should get a warning here, but we don't because we've
-  // conservatively modeled ~shared_ptr.
-  *p = 1;
+  void testNestedScope() {
+    shared_ptr<int> a(new int);
+    {
+      shared_ptr<int> b = a;
+    }
+    *a = 1;
+  }
+
+  void testSwap() {
+    shared_ptr<int> a(new int);
+    shared_ptr<int> b;
+    shared_ptr<int> c = a;
+    shared_ptr<int>(c).swap(b);
+  }
+
+  void testUseAfterFree() {
+    int *p = new int;
+    {
+      shared_ptr<int> a(p);
+      shared_ptr<int> b = a;
+    }
+
+    // FIXME: We should get a warning here, but we don't because we've
+    // conservatively modeled ~shared_ptr.
+    *p = 1;
+  }
 }
-} // namespace reference_count
 
 // Test double delete
-class DerefClass {
+class DerefClass{
 public:
   int *x;
   DerefClass() {}
-  ~DerefClass() { *x = 1; }
+  ~DerefClass() {*x = 1;}
 };
 
 void testDoubleDeleteClassInstance() {
@@ -377,7 +376,7 @@ void testDoubleDeleteClassInstance() {
   delete foo; // newdelete-warning {{Attempt to delete released memory}}
 }
 
-class EmptyClass {
+class EmptyClass{
 public:
   EmptyClass() {}
   ~EmptyClass() {}

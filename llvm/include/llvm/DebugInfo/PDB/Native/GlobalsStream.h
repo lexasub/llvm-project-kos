@@ -81,7 +81,7 @@ private:
   GSIHashTable GlobalsTable;
   std::unique_ptr<msf::MappedBlockStream> Stream;
 };
-} // namespace pdb
-} // namespace llvm
+}
+}
 
 #endif

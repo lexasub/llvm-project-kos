@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited %s -o - | FileCheck %s
 
 struct vec {
-  using itr = int *;
+  using itr = int*;
   itr begin() { return nullptr; }
   itr end() { return nullptr; }
 };

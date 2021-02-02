@@ -20,10 +20,10 @@
 #include "lldb/Utility/Scalar.h"
 #include "llvm/Support/Compiler.h"
 
-#include "RegisterContextFreeBSD_mips64.h"
-#include "RegisterContextLinux_mips.h"
-#include "RegisterContextLinux_mips64.h"
 #include "RegisterContextPOSIX_mips64.h"
+#include "RegisterContextFreeBSD_mips64.h"
+#include "RegisterContextLinux_mips64.h"
+#include "RegisterContextLinux_mips.h"
 
 using namespace lldb_private;
 using namespace lldb;
@@ -35,8 +35,8 @@ bool RegisterContextPOSIX_mips64::IsGPR(unsigned reg) {
 bool RegisterContextPOSIX_mips64::IsFPR(unsigned reg) {
   int set = GetRegisterSetCount();
   if (set > 1)
-    return reg < (m_registers_count[fpr_registers_count] +
-                  m_registers_count[gpr_registers_count]);
+    return reg < (m_registers_count[fpr_registers_count]
+                  + m_registers_count[gpr_registers_count]);
   return false;
 }
 
@@ -49,9 +49,9 @@ RegisterContextPOSIX_mips64::RegisterContextPOSIX_mips64(
   int set = GetRegisterSetCount();
 
   const RegisterSet *reg_set_ptr;
-  for (int i = 0; i < set; ++i) {
-    reg_set_ptr = GetRegisterSet(i);
-    m_registers_count[i] = reg_set_ptr->num_registers;
+  for(int i = 0; i < set; ++i) {
+      reg_set_ptr = GetRegisterSet(i);
+      m_registers_count[i] = reg_set_ptr->num_registers;
   }
 
   assert(m_num_registers ==
@@ -104,7 +104,7 @@ size_t RegisterContextPOSIX_mips64::GetRegisterSetCount() {
   switch (target_arch.GetTriple().getOS()) {
   case llvm::Triple::Linux: {
     if ((target_arch.GetMachine() == llvm::Triple::mipsel) ||
-        (target_arch.GetMachine() == llvm::Triple::mips)) {
+         (target_arch.GetMachine() == llvm::Triple::mips)) {
       const auto *context = static_cast<const RegisterContextLinux_mips *>(
           m_register_info_up.get());
       return context->GetRegisterSetCount();
@@ -118,6 +118,7 @@ size_t RegisterContextPOSIX_mips64::GetRegisterSetCount() {
         m_register_info_up.get());
     return context->GetRegisterSetCount();
   }
+                       
   }
 }
 
@@ -126,7 +127,7 @@ const RegisterSet *RegisterContextPOSIX_mips64::GetRegisterSet(size_t set) {
   switch (target_arch.GetTriple().getOS()) {
   case llvm::Triple::Linux: {
     if ((target_arch.GetMachine() == llvm::Triple::mipsel) ||
-        (target_arch.GetMachine() == llvm::Triple::mips)) {
+         (target_arch.GetMachine() == llvm::Triple::mips)) {
       const auto *context = static_cast<const RegisterContextLinux_mips *>(
           m_register_info_up.get());
       return context->GetRegisterSet(set);

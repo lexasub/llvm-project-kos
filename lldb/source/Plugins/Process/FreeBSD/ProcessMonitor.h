@@ -22,7 +22,7 @@ namespace lldb_private {
 class Status;
 class Module;
 class Scalar;
-} // namespace lldb_private
+} // End lldb_private namespace.
 
 class ProcessFreeBSD;
 class Operation;
@@ -203,8 +203,8 @@ private:
 
     ~OperationArgs();
 
-    ProcessMonitor *m_monitor;    // The monitor performing the attach.
-    sem_t m_semaphore;            // Posted to once operation complete.
+    ProcessMonitor *m_monitor;   // The monitor performing the attach.
+    sem_t m_semaphore;           // Posted to once operation complete.
     lldb_private::Status m_error; // Set if process operation failed.
   };
 
@@ -222,9 +222,9 @@ private:
 
     ~LaunchArgs();
 
-    lldb_private::Module *m_module;  // The executable image to launch.
-    char const **m_argv;             // Process arguments.
-    lldb_private::Environment m_env; // Process environment.
+    lldb_private::Module *m_module; // The executable image to launch.
+    char const **m_argv;            // Process arguments.
+    lldb_private::Environment m_env;                // Process environment.
     const lldb_private::FileSpec m_stdin_file_spec; // Redirect stdin or empty.
     const lldb_private::FileSpec
         m_stdout_file_spec; // Redirect stdout or empty.

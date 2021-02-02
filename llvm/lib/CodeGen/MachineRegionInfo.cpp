@@ -20,7 +20,7 @@
 
 using namespace llvm;
 
-STATISTIC(numMachineRegions, "The # of machine regions");
+STATISTIC(numMachineRegions,       "The # of machine regions");
 STATISTIC(numMachineSimpleRegions, "The # of simple machine regions");
 
 namespace llvm {
@@ -35,9 +35,9 @@ template class RegionInfoBase<RegionTraits<MachineFunction>>;
 // MachineRegion implementation
 
 MachineRegion::MachineRegion(MachineBasicBlock *Entry, MachineBasicBlock *Exit,
-                             MachineRegionInfo *RI, MachineDominatorTree *DT,
-                             MachineRegion *Parent)
-    : RegionBase<RegionTraits<MachineFunction>>(Entry, Exit, RI, DT, Parent) {}
+                             MachineRegionInfo* RI,
+                             MachineDominatorTree *DT, MachineRegion *Parent) :
+  RegionBase<RegionTraits<MachineFunction>>(Entry, Exit, RI, DT, Parent) {}
 
 MachineRegion::~MachineRegion() = default;
 
@@ -64,7 +64,7 @@ void MachineRegionInfo::recalculate(MachineFunction &F,
   PDT = PDT_;
   DF = DF_;
 
-  MachineBasicBlock *Entry = GraphTraits<MachineFunction *>::getEntryNode(&F);
+  MachineBasicBlock *Entry = GraphTraits<MachineFunction*>::getEntryNode(&F);
 
   TopLevelRegion = new MachineRegion(Entry, nullptr, this, DT, nullptr);
   updateStatistics(TopLevelRegion);
@@ -95,7 +95,9 @@ bool MachineRegionInfoPass::runOnMachineFunction(MachineFunction &F) {
   return false;
 }
 
-void MachineRegionInfoPass::releaseMemory() { RI.releaseMemory(); }
+void MachineRegionInfoPass::releaseMemory() {
+  RI.releaseMemory();
+}
 
 void MachineRegionInfoPass::verifyAnalysis() const {
   // Only do verification when user wants to, otherwise this expensive check
@@ -118,7 +120,9 @@ void MachineRegionInfoPass::print(raw_ostream &OS, const Module *) const {
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-LLVM_DUMP_METHOD void MachineRegionInfoPass::dump() const { RI.dump(); }
+LLVM_DUMP_METHOD void MachineRegionInfoPass::dump() const {
+  RI.dump();
+}
 #endif
 
 char MachineRegionInfoPass::ID = 0;

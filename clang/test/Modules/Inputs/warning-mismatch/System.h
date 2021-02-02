@@ -1,4 +1,2 @@
 #import "Mismatch.h"
-struct System {
-  int i;
-};
+struct System { int i; };

@@ -35,7 +35,7 @@ struct dim3;
   }
 
 #if __cplusplus >= 201103L
-#define __DELETE = delete
+#define __DELETE =delete
 #else
 #define __DELETE
 #endif
@@ -50,9 +50,9 @@ struct dim3;
   __attribute__((device)) TypeName *operator&() const __DELETE
 
 struct __cuda_builtin_threadIdx_t {
-  __CUDA_DEVICE_BUILTIN(x, __nvvm_read_ptx_sreg_tid_x());
-  __CUDA_DEVICE_BUILTIN(y, __nvvm_read_ptx_sreg_tid_y());
-  __CUDA_DEVICE_BUILTIN(z, __nvvm_read_ptx_sreg_tid_z());
+  __CUDA_DEVICE_BUILTIN(x,__nvvm_read_ptx_sreg_tid_x());
+  __CUDA_DEVICE_BUILTIN(y,__nvvm_read_ptx_sreg_tid_y());
+  __CUDA_DEVICE_BUILTIN(z,__nvvm_read_ptx_sreg_tid_z());
   // threadIdx should be convertible to uint3 (in fact in nvcc, it *is* a
   // uint3).  This function is defined after we pull in vector_types.h.
   __attribute__((device)) operator dim3() const;
@@ -63,9 +63,9 @@ private:
 };
 
 struct __cuda_builtin_blockIdx_t {
-  __CUDA_DEVICE_BUILTIN(x, __nvvm_read_ptx_sreg_ctaid_x());
-  __CUDA_DEVICE_BUILTIN(y, __nvvm_read_ptx_sreg_ctaid_y());
-  __CUDA_DEVICE_BUILTIN(z, __nvvm_read_ptx_sreg_ctaid_z());
+  __CUDA_DEVICE_BUILTIN(x,__nvvm_read_ptx_sreg_ctaid_x());
+  __CUDA_DEVICE_BUILTIN(y,__nvvm_read_ptx_sreg_ctaid_y());
+  __CUDA_DEVICE_BUILTIN(z,__nvvm_read_ptx_sreg_ctaid_z());
   // blockIdx should be convertible to uint3 (in fact in nvcc, it *is* a
   // uint3).  This function is defined after we pull in vector_types.h.
   __attribute__((device)) operator dim3() const;
@@ -76,9 +76,9 @@ private:
 };
 
 struct __cuda_builtin_blockDim_t {
-  __CUDA_DEVICE_BUILTIN(x, __nvvm_read_ptx_sreg_ntid_x());
-  __CUDA_DEVICE_BUILTIN(y, __nvvm_read_ptx_sreg_ntid_y());
-  __CUDA_DEVICE_BUILTIN(z, __nvvm_read_ptx_sreg_ntid_z());
+  __CUDA_DEVICE_BUILTIN(x,__nvvm_read_ptx_sreg_ntid_x());
+  __CUDA_DEVICE_BUILTIN(y,__nvvm_read_ptx_sreg_ntid_y());
+  __CUDA_DEVICE_BUILTIN(z,__nvvm_read_ptx_sreg_ntid_z());
   // blockDim should be convertible to dim3 (in fact in nvcc, it *is* a
   // dim3).  This function is defined after we pull in vector_types.h.
   __attribute__((device)) operator dim3() const;
@@ -89,9 +89,9 @@ private:
 };
 
 struct __cuda_builtin_gridDim_t {
-  __CUDA_DEVICE_BUILTIN(x, __nvvm_read_ptx_sreg_nctaid_x());
-  __CUDA_DEVICE_BUILTIN(y, __nvvm_read_ptx_sreg_nctaid_y());
-  __CUDA_DEVICE_BUILTIN(z, __nvvm_read_ptx_sreg_nctaid_z());
+  __CUDA_DEVICE_BUILTIN(x,__nvvm_read_ptx_sreg_nctaid_x());
+  __CUDA_DEVICE_BUILTIN(y,__nvvm_read_ptx_sreg_nctaid_y());
+  __CUDA_DEVICE_BUILTIN(z,__nvvm_read_ptx_sreg_nctaid_z());
   // gridDim should be convertible to dim3 (in fact in nvcc, it *is* a
   // dim3).  This function is defined after we pull in vector_types.h.
   __attribute__((device)) operator dim3() const;

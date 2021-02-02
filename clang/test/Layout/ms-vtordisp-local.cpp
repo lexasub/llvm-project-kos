@@ -9,7 +9,7 @@ struct Base {
 
 struct Container {
   static void f() try {
-#pragma vtordisp(2)
+    #pragma vtordisp(2)
     struct HasVtorDisp : virtual Base {
       virtual ~HasVtorDisp() {}
       virtual void Func() {}
@@ -53,8 +53,8 @@ int x1[sizeof(NoVtorDisp1)];
 
 struct Container2 {
   static void f1() {
-// Local pragma #1 - must be disabled on exit from f1().
-#pragma vtordisp(push, 2)
+    // Local pragma #1 - must be disabled on exit from f1().
+    #pragma vtordisp(push, 2)
     struct HasVtorDisp1 : virtual Base {
       virtual ~HasVtorDisp1() {}
       virtual void Func() {}
@@ -83,20 +83,20 @@ struct Container2 {
 
         int x3[sizeof(HasVtorDisp2)];
 
-// HasVtorDisp2: vtordisp because of vtordisp(2) in f1().
-//
-// CHECK: *** Dumping AST Record Layout
-// CHECK-NEXT:          0 | struct HasVtorDisp2
-// CHECK-NEXT:          0 |   (HasVtorDisp2 vftable pointer)
-// CHECK-NEXT:          8 |   (HasVtorDisp2 vbtable pointer)
-// CHECK-NEXT:         20 |   (vtordisp for vbase Base)
-// CHECK-NEXT:         24 |   struct Base (virtual base)
-// CHECK-NEXT:         24 |     (Base vftable pointer)
-// CHECK-NEXT:            | [sizeof=32, align=8,
-// CHECK-NEXT:            |  nvsize=16, nvalign=8]
+        // HasVtorDisp2: vtordisp because of vtordisp(2) in f1().
+        //
+        // CHECK: *** Dumping AST Record Layout
+        // CHECK-NEXT:          0 | struct HasVtorDisp2
+        // CHECK-NEXT:          0 |   (HasVtorDisp2 vftable pointer)
+        // CHECK-NEXT:          8 |   (HasVtorDisp2 vbtable pointer)
+        // CHECK-NEXT:         20 |   (vtordisp for vbase Base)
+        // CHECK-NEXT:         24 |   struct Base (virtual base)
+        // CHECK-NEXT:         24 |     (Base vftable pointer)
+        // CHECK-NEXT:            | [sizeof=32, align=8,
+        // CHECK-NEXT:            |  nvsize=16, nvalign=8]
 
-// Local pragma #2 - must be disabled on exit from g1().
-#pragma vtordisp(push, 0)
+        // Local pragma #2 - must be disabled on exit from g1().
+        #pragma vtordisp(push, 0)
         struct NoVtorDisp2 : virtual Base {
           virtual ~NoVtorDisp2() {}
           virtual void Func() {}
@@ -187,7 +187,7 @@ struct Container2 {
 };
 
 struct Container3 {
-#pragma vtordisp(2)
+  #pragma vtordisp(2)
   struct HasVtorDisp5 : virtual Base {
     virtual ~HasVtorDisp5() {}
     virtual void Func() {}

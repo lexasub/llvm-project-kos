@@ -157,8 +157,7 @@ ComparisonCategories::lookupInfoForType(QualType Ty) const {
   return nullptr;
 }
 
-const ComparisonCategoryInfo &
-ComparisonCategories::getInfoForType(QualType Ty) const {
+const ComparisonCategoryInfo &ComparisonCategories::getInfoForType(QualType Ty) const {
   const ComparisonCategoryInfo *Info = lookupInfoForType(Ty);
   assert(Info && "info for comparison category not found");
   return *Info;

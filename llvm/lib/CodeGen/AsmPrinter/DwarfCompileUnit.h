@@ -104,7 +104,7 @@ class DwarfCompileUnit final : public DwarfUnit {
     return DU->getAbstractEntities();
   }
 
-  void finishNonUnitTypeDIE(DIE &D, const DICompositeType *CTy) override;
+  void finishNonUnitTypeDIE(DIE& D, const DICompositeType *CTy) override;
 
 public:
   DwarfCompileUnit(unsigned UID, const DICompileUnit *Node, AsmPrinter *A,
@@ -114,7 +114,9 @@ public:
   bool hasRangeLists() const { return HasRangeLists; }
   unsigned getUniqueID() const { return UniqueID; }
 
-  DwarfCompileUnit *getSkeleton() const { return Skeleton; }
+  DwarfCompileUnit *getSkeleton() const {
+    return Skeleton;
+  }
 
   bool includeMinimalInlineScopes() const;
 
@@ -133,8 +135,8 @@ public:
   };
 
   struct BaseTypeRef {
-    BaseTypeRef(unsigned BitSize, dwarf::TypeKind Encoding)
-        : BitSize(BitSize), Encoding(Encoding) {}
+    BaseTypeRef(unsigned BitSize, dwarf::TypeKind Encoding) :
+      BitSize(BitSize), Encoding(Encoding) {}
     unsigned BitSize;
     dwarf::TypeKind Encoding;
     DIE *Die = nullptr;
@@ -143,8 +145,9 @@ public:
   std::vector<BaseTypeRef> ExprRefedBaseTypes;
 
   /// Get or create global variable DIE.
-  DIE *getOrCreateGlobalVariableDIE(const DIGlobalVariable *GV,
-                                    ArrayRef<GlobalExpr> GlobalExprs);
+  DIE *
+  getOrCreateGlobalVariableDIE(const DIGlobalVariable *GV,
+                               ArrayRef<GlobalExpr> GlobalExprs);
 
   DIE *getOrCreateCommonBlock(const DICommonBlock *CB,
                               ArrayRef<GlobalExpr> GlobalExprs);
@@ -166,7 +169,7 @@ public:
 
   unsigned getOrCreateSourceID(const DIFile *File) override;
 
-  void addImportedEntity(const DIImportedEntity *IE) {
+  void addImportedEntity(const DIImportedEntity* IE) {
     DIScope *Scope = IE->getScope();
     assert(Scope && "Invalid Scope encoding!");
     if (!isa<DILocalScope>(Scope))
@@ -280,9 +283,9 @@ public:
 
   unsigned getHeaderSize() const override {
     // DWARF v5 added the DWO ID to the header for split/skeleton units.
-    unsigned DWOIdSize = DD->getDwarfVersion() >= 5 && DD->useSplitDwarf()
-                             ? sizeof(uint64_t)
-                             : 0;
+    unsigned DWOIdSize =
+        DD->getDwarfVersion() >= 5 && DD->useSplitDwarf() ? sizeof(uint64_t)
+                                                          : 0;
     return DwarfUnit::getHeaderSize() + DWOIdSize;
   }
   unsigned getLength() {
@@ -300,7 +303,9 @@ public:
     return LabelBegin;
   }
 
-  MCSymbol *getMacroLabelBegin() const { return MacroLabelBegin; }
+  MCSymbol *getMacroLabelBegin() const {
+    return MacroLabelBegin;
+  }
 
   /// Add a new global name to the compile unit.
   void addGlobalName(StringRef Name, const DIE &Die,

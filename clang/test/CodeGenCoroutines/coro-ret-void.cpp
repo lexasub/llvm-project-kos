@@ -27,7 +27,7 @@ struct A {
 };
 
 coro1 f2() {
-  co_return(void) A{};
+  co_return (void) A{};
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z2f2v(

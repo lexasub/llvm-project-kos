@@ -30,20 +30,19 @@ struct PatchableFunction : public MachineFunctionPass {
   }
 
   bool runOnMachineFunction(MachineFunction &F) override;
-  MachineFunctionProperties getRequiredProperties() const override {
+   MachineFunctionProperties getRequiredProperties() const override {
     return MachineFunctionProperties().set(
         MachineFunctionProperties::Property::NoVRegs);
   }
 };
-} // namespace
+}
 
 /// Returns true if instruction \p MI will not result in actual machine code
 /// instructions.
 static bool doesNotGeneratecode(const MachineInstr &MI) {
   // TODO: Introduce an MCInstrDesc flag for this
   switch (MI.getOpcode()) {
-  default:
-    return false;
+  default: return false;
   case TargetOpcode::IMPLICIT_DEF:
   case TargetOpcode::KILL:
   case TargetOpcode::CFI_INSTRUCTION:

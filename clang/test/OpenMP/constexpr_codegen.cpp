@@ -26,3 +26,4 @@ void Test() { F(Foo::bar); }
 // Section C - Define the data member.
 constexpr int Foo::bar;
 #endif
+

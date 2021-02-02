@@ -77,7 +77,8 @@ class InMemoryBuffer : public FileOutputBuffer {
 public:
   InMemoryBuffer(StringRef Path, MemoryBlock Buf, std::size_t BufSize,
                  unsigned Mode)
-      : FileOutputBuffer(Path), Buffer(Buf), BufferSize(BufSize), Mode(Mode) {}
+      : FileOutputBuffer(Path), Buffer(Buf), BufferSize(BufSize),
+        Mode(Mode) {}
 
   uint8_t *getBufferStart() const override { return (uint8_t *)Buffer.base(); }
 
@@ -157,7 +158,7 @@ createOnDiskBuffer(StringRef Path, size_t Size, unsigned Mode) {
   }
 
   return std::make_unique<OnDiskBuffer>(Path, std::move(File),
-                                        std::move(MappedFile));
+                                         std::move(MappedFile));
 }
 
 // Create an instance of FileOutputBuffer.

@@ -42,6 +42,7 @@ void g() {
 // CHECK: _tlv_atexit{{.*}}_ZN10NonTrivialD1Ev
 [[clang::always_destroy]] thread_local NonTrivial nt4;
 
+
 struct NonTrivial3 {
   NonTrivial3();
   ~NonTrivial3();

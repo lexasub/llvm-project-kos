@@ -36,8 +36,8 @@ Macros:
 
 #ifdef ELAST
 
-static const int __elast1 = ELAST + 1;
-static const int __elast2 = ELAST + 2;
+static const int __elast1 = ELAST+1;
+static const int __elast2 = ELAST+2;
 
 #else
 
@@ -63,7 +63,7 @@ static const int __elast2 = 105;
 #define ELAST ENOTRECOVERABLE
 #endif
 
-#else // defined(EOWNERDEAD)
+#else  // defined(EOWNERDEAD)
 
 #define EOWNERDEAD __elast1
 #define ENOTRECOVERABLE __elast2
@@ -72,9 +72,9 @@ static const int __elast2 = 105;
 #define ELAST ENOTRECOVERABLE
 #endif
 
-#endif // defined(EOWNERDEAD)
+#endif  // defined(EOWNERDEAD)
 
-#endif // !defined(EOWNERDEAD) || !defined(ENOTRECOVERABLE)
+#endif  // !defined(EOWNERDEAD) || !defined(ENOTRECOVERABLE)
 
 //  supply errno values likely to be missing, particularly on Windows
 
@@ -199,7 +199,7 @@ static const int __elast2 = 105;
 #endif
 
 #ifndef EOWNERDEAD
-#define EOWNERDEAD 9931
+#define EOWNERDEAD  9931
 #endif
 
 #ifndef EPROTO
@@ -394,4 +394,4 @@ static const int __elast2 = 105;
 
 #endif // __cplusplus
 
-#endif // _LIBCPP_ERRNO_H
+#endif  // _LIBCPP_ERRNO_H

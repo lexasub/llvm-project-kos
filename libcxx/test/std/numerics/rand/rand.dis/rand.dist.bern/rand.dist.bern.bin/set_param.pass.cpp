@@ -18,15 +18,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::binomial_distribution<> D;
-    typedef D::param_type P;
-    P p(10, 0.25);
-    D d(8, 0.75);
-    d.param(p);
-    assert(d.param() == p);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::binomial_distribution<> D;
+        typedef D::param_type P;
+        P p(10, 0.25);
+        D d(8, 0.75);
+        d.param(p);
+        assert(d.param() == p);
+    }
 
   return 0;
 }

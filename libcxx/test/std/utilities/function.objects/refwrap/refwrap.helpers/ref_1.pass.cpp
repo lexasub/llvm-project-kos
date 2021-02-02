@@ -17,10 +17,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  int i = 0;
-  std::reference_wrapper<int> r = std::ref(i);
-  assert(&r.get() == &i);
+int main(int, char**)
+{
+    int i = 0;
+    std::reference_wrapper<int> r = std::ref(i);
+    assert(&r.get() == &i);
 
   return 0;
 }

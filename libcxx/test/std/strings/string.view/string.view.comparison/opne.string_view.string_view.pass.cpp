@@ -19,13 +19,16 @@
 #include "constexpr_char_traits.h"
 
 template <class S>
-void test(S lhs, S rhs, bool x) {
-  assert((lhs != rhs) == x);
-  assert((rhs != lhs) == x);
+void
+test(S lhs, S rhs, bool x)
+{
+    assert((lhs != rhs) == x);
+    assert((rhs != lhs) == x);
 }
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     typedef std::string_view S;
     test(S(""), S(""), false);
     test(S(""), S("abcde"), true);
@@ -43,17 +46,17 @@ int main(int, char**) {
     test(S("abcdefghijklmnopqrst"), S("abcde"), true);
     test(S("abcdefghijklmnopqrst"), S("abcdefghij"), true);
     test(S("abcdefghijklmnopqrst"), S("abcdefghijklmnopqrst"), false);
-  }
+    }
 
 #if TEST_STD_VER > 11
-  {
-    typedef std::basic_string_view<char, constexpr_char_traits<char> > SV;
-    constexpr SV sv1;
-    constexpr SV sv2;
-    constexpr SV sv3{"abcde", 5};
-    static_assert(!(sv1 != sv2), "");
-    static_assert(sv1 != sv3, "");
-  }
+    {
+    typedef std::basic_string_view<char, constexpr_char_traits<char>> SV;
+    constexpr SV  sv1;
+    constexpr SV  sv2;
+    constexpr SV  sv3 { "abcde", 5 };
+    static_assert (!( sv1 != sv2), "" );
+    static_assert (   sv1 != sv3,  "" );
+    }
 #endif
 
   return 0;

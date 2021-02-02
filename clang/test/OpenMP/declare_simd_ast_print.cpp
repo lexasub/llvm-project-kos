@@ -10,7 +10,7 @@
 #ifndef HEADER
 #define HEADER
 
-#pragma omp declare simd linear(d : 8)
+#pragma omp declare simd linear(d: 8)
 #pragma omp declare simd inbranch simdlen(32)
 #pragma omp declare simd notinbranch
 void add_1(float *d) __attribute__((cold));
@@ -21,10 +21,8 @@ void add_1(float *d) __attribute__((cold));
 // CHECK-NEXT: void add_1(float *d) __attribute__((cold));
 //
 
-#pragma omp declare simd aligned(hp, hp2 \
-                                 : V)
-#pragma omp declare simd aligned(hp, hp2 \
-                                 : V)
+#pragma omp declare simd aligned(hp, hp2:V)
+#pragma omp declare simd aligned(hp, hp2:V)
 template <class C, int V> void h(C *hp, C *hp2, C *hq, C *lin) {
 }
 // CHECK-NEXT: #pragma omp declare simd aligned(hp: V) aligned(hp2: V)
@@ -52,36 +50,36 @@ template <class C> void h(C *hp, C *hp2, C *hq, C *lin) {
 // Pragmas need to be same, otherwise standard says that's undefined behavior.
 #pragma omp declare simd aligned(hp, hp2)
 template <>
-void h(int *hp, int *hp2, int *hq, int *lin) {
+void h(int *hp, int *hp2, int *hq, int *lin)
+{
   // Implicit specialization with <C=float>.
   // This is special case where the directive is stored by Sema and is
   // generated together with the (pending) function instatiation.
-  h((float *)hp, (float *)hp2, (float *)hq, (float *)lin);
+  h((float*) hp, (float*) hp2, (float*) hq, (float*) lin);
 }
 
 class VV {
-// CHECK: #pragma omp declare simd uniform(this, a) linear(val(b): a)
-// CHECK-NEXT: int add(int a, int b) __attribute__((cold))    {
-// CHECK-NEXT: return a + b;
-// CHECK-NEXT: }
-#pragma omp declare simd uniform(this, a) linear(val(b) \
-                                                 : a)
+  // CHECK: #pragma omp declare simd uniform(this, a) linear(val(b): a)
+  // CHECK-NEXT: int add(int a, int b) __attribute__((cold))    {
+  // CHECK-NEXT: return a + b;
+  // CHECK-NEXT: }
+  #pragma omp declare simd uniform(this, a) linear(val(b): a)
   int add(int a, int b) __attribute__((cold)) { return a + b; }
 
-// CHECK: #pragma omp declare simd aligned(b: 4) aligned(a) linear(ref(b): 4) linear(val(this)) linear(val(a))
-// CHECK-NEXT: float taddpf(float *a, float *&b)     {
-// CHECK-NEXT: return *a + *b;
-// CHECK-NEXT: }
-#pragma omp declare simd aligned(b : 4) aligned(a) linear(ref(b) : 4) linear(this, a)
+  // CHECK: #pragma omp declare simd aligned(b: 4) aligned(a) linear(ref(b): 4) linear(val(this)) linear(val(a))
+  // CHECK-NEXT: float taddpf(float *a, float *&b)     {
+  // CHECK-NEXT: return *a + *b;
+  // CHECK-NEXT: }
+  #pragma omp declare simd aligned (b: 4) aligned(a) linear(ref(b): 4) linear(this, a)
   float taddpf(float *a, float *&b) { return *a + *b; }
 
-  // CHECK: #pragma omp declare simd aligned(b: 8)
-  // CHECK-NEXT: #pragma omp declare simd linear(uval(c): 8)
-  // CHECK-NEXT: int tadd(int (&b)[], int &c) {
-  // CHECK-NEXT: return this->x[b[0]] + b[0];
-  // CHECK-NEXT: }
-#pragma omp declare simd linear(uval(c) : 8)
-#pragma omp declare simd aligned(b : 8)
+// CHECK: #pragma omp declare simd aligned(b: 8)
+// CHECK-NEXT: #pragma omp declare simd linear(uval(c): 8)
+// CHECK-NEXT: int tadd(int (&b)[], int &c) {
+// CHECK-NEXT: return this->x[b[0]] + b[0];
+// CHECK-NEXT: }
+  #pragma omp declare simd linear(uval(c): 8)
+  #pragma omp declare simd aligned(b : 8)
   int tadd(int (&b)[], int &c) { return x[b[0]] + b[0]; }
 
 private:
@@ -104,32 +102,30 @@ private:
 template <int X, typename T>
 class TVV {
 public:
-  // CHECK: template<> class TVV<16, float> {
-#pragma omp declare simd simdlen(X)
+// CHECK: template<> class TVV<16, float> {
+  #pragma omp declare simd simdlen(X)
   int tadd(int a, int b) { return a + b; }
 
-  // CHECK: #pragma omp declare simd simdlen(16)
-  // CHECK-NEXT: int tadd(int a, int b);
+// CHECK: #pragma omp declare simd simdlen(16)
+// CHECK-NEXT: int tadd(int a, int b);
 
-#pragma omp declare simd aligned(a                                 \
-                                 : X * 2) aligned(b) linear(ref(b) \
-                                                            : X)
+  #pragma omp declare simd aligned(a : X * 2) aligned(b) linear(ref(b): X)
   float taddpf(float *a, T *&b) { return *a + *b; }
 
-  // CHECK: #pragma omp declare simd aligned(a: 16 * 2) aligned(b) linear(ref(b): 16)
-  // CHECK-NEXT: float taddpf(float *a, float *&b) {
-  // CHECK-NEXT: return *a + *b;
-  // CHECK-NEXT: }
+// CHECK: #pragma omp declare simd aligned(a: 16 * 2) aligned(b) linear(ref(b): 16)
+// CHECK-NEXT: float taddpf(float *a, float *&b) {
+// CHECK-NEXT: return *a + *b;
+// CHECK-NEXT: }
 
-#pragma omp declare simd
-#pragma omp declare simd uniform(this, b)
+  #pragma omp declare simd
+  #pragma omp declare simd uniform(this, b)
   int tadd(int b) { return x[b] + b; }
 
-  // CHECK: #pragma omp declare simd uniform(this, b)
-  // CHECK-NEXT: #pragma omp declare simd
-  // CHECK-NEXT: int tadd(int b) {
-  // CHECK-NEXT: return this->x[b] + b;
-  // CHECK-NEXT: }
+// CHECK: #pragma omp declare simd uniform(this, b)
+// CHECK-NEXT: #pragma omp declare simd
+// CHECK-NEXT: int tadd(int b) {
+// CHECK-NEXT: return this->x[b] + b;
+// CHECK-NEXT: }
 
 private:
   int x[X];
@@ -140,9 +136,7 @@ private:
 // CHECK: template <int N> void foo(int (&b)[N], float *&c)
 // CHECK: #pragma omp declare simd simdlen(64) aligned(b: 64 * 2) linear(uval(c): 64)
 // CHECK: template<> void foo<64>(int (&b)[64], float *&c)
-#pragma omp declare simd simdlen(N) aligned(b                       \
-                                            : N * 2) linear(uval(c) \
-                                                            : N)
+#pragma omp declare simd simdlen(N) aligned(b : N * 2) linear(uval(c): N)
 template <int N>
 void foo(int (&b)[N], float *&c);
 

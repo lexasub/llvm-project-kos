@@ -15,18 +15,20 @@
 
 #include "test_macros.h"
 
-struct X {
-  X() {}
+struct X
+{
+    X() {}
 
-  template <class T>
-  X(T);
+    template <class T>
+    X(T);
 
-  void operator()() {}
+    void operator()() {}
 };
 
-int main(int, char**) {
-  X x;
-  std::function<void()> f(x);
+int main(int, char**)
+{
+    X x;
+    std::function<void()> f(x);
 
   return 0;
 }

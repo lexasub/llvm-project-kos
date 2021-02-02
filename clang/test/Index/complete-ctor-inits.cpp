@@ -1,13 +1,13 @@
 // The run lines are below, because this test is line- and
 // column-number sensitive.
 
-template <typename T>
+template<typename T>
 struct X {
   X(T);
 };
 
-struct Virt {};
-struct Y : virtual Virt {};
+struct Virt { };
+struct Y : virtual Virt { };
 
 struct Z : public X<int>, public Y {
   Z();
@@ -15,14 +15,16 @@ struct Z : public X<int>, public Y {
   int a, b, c;
 };
 
-Z::Z() : ::X<int>(0), Virt(), b(), c() {}
+Z::Z() : ::X<int>(0), Virt(), b(), c() { }
 
 struct PR23948 {
-  template <class size> PR23948()
-      : {}
+  template<class size> PR23948()
+        :
+  {}
 
-  template <class size> void invalid()
-      : {}
+  template<class size> void invalid()
+        :
+  {}
 
   int a;
 };

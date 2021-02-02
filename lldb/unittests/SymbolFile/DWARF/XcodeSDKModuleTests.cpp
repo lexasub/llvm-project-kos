@@ -32,6 +32,7 @@ class XcodeSDKModuleTests : public testing::Test {
 };
 } // namespace
 
+
 TEST_F(XcodeSDKModuleTests, TestModuleGetXcodeSDK) {
   const char *yamldata = R"(
 --- !ELF

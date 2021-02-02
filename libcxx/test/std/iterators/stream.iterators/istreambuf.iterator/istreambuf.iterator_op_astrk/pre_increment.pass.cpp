@@ -19,23 +19,24 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::istringstream inf("abc");
-    std::istreambuf_iterator<char> i(inf);
-    assert(*i == 'a');
-    assert(*++i == 'b');
-    assert(*++i == 'c');
-    assert(++i == std::istreambuf_iterator<char>());
-  }
-  {
-    std::wistringstream inf(L"abc");
-    std::istreambuf_iterator<wchar_t> i(inf);
-    assert(*i == L'a');
-    assert(*++i == L'b');
-    assert(*++i == L'c');
-    assert(++i == std::istreambuf_iterator<wchar_t>());
-  }
+int main(int, char**)
+{
+    {
+        std::istringstream inf("abc");
+        std::istreambuf_iterator<char> i(inf);
+        assert(*i == 'a');
+        assert(*++i == 'b');
+        assert(*++i == 'c');
+        assert(++i == std::istreambuf_iterator<char>());
+    }
+    {
+        std::wistringstream inf(L"abc");
+        std::istreambuf_iterator<wchar_t> i(inf);
+        assert(*i == L'a');
+        assert(*++i == L'b');
+        assert(*++i == L'c');
+        assert(++i == std::istreambuf_iterator<wchar_t>());
+    }
 
   return 0;
 }

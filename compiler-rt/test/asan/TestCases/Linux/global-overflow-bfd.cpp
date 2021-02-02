@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
   memset(XXX, 0, 10);
   memset(YYY, 0, 10);
   memset(ZZZ, 0, 10);
-  int res = YYY[argc * 10]; // BOOOM
+  int res = YYY[argc * 10];  // BOOOM
   // CHECK: {{READ of size 1 at}}
   // CHECK: {{located 0 bytes to the right of global variable}}
   res += XXX[argc] + ZZZ[argc];

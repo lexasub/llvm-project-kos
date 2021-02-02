@@ -53,6 +53,6 @@ public:
                               InternalizeCallback = {});
 };
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

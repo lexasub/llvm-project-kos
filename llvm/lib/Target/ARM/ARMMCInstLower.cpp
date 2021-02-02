@@ -49,25 +49,30 @@ MCOperand ARMAsmPrinter::GetSymbolRef(const MachineOperand &MO,
   case ARMII::MO_NO_FLAG:
     break;
   case ARMII::MO_LO16:
-    Expr = MCSymbolRefExpr::create(Symbol, SymbolVariant, OutContext);
+    Expr =
+        MCSymbolRefExpr::create(Symbol, SymbolVariant, OutContext);
     Expr = ARMMCExpr::createLower16(Expr, OutContext);
     break;
   case ARMII::MO_HI16:
-    Expr = MCSymbolRefExpr::create(Symbol, SymbolVariant, OutContext);
+    Expr =
+        MCSymbolRefExpr::create(Symbol, SymbolVariant, OutContext);
     Expr = ARMMCExpr::createUpper16(Expr, OutContext);
     break;
   }
 
   if (!MO.isJTI() && MO.getOffset())
-    Expr = MCBinaryExpr::createAdd(
-        Expr, MCConstantExpr::create(MO.getOffset(), OutContext), OutContext);
+    Expr = MCBinaryExpr::createAdd(Expr,
+                                   MCConstantExpr::create(MO.getOffset(),
+                                                          OutContext),
+                                   OutContext);
   return MCOperand::createExpr(Expr);
+
 }
 
-bool ARMAsmPrinter::lowerOperand(const MachineOperand &MO, MCOperand &MCOp) {
+bool ARMAsmPrinter::lowerOperand(const MachineOperand &MO,
+                                 MCOperand &MCOp) {
   switch (MO.getType()) {
-  default:
-    llvm_unreachable("unknown operand type");
+  default: llvm_unreachable("unknown operand type");
   case MachineOperand::MO_Register:
     // Ignore all implicit register operands.
     if (MO.isImplicit())
@@ -79,15 +84,16 @@ bool ARMAsmPrinter::lowerOperand(const MachineOperand &MO, MCOperand &MCOp) {
     MCOp = MCOperand::createImm(MO.getImm());
     break;
   case MachineOperand::MO_MachineBasicBlock:
-    MCOp = MCOperand::createExpr(
-        MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), OutContext));
+    MCOp = MCOperand::createExpr(MCSymbolRefExpr::create(
+        MO.getMBB()->getSymbol(), OutContext));
     break;
   case MachineOperand::MO_GlobalAddress:
-    MCOp =
-        GetSymbolRef(MO, GetARMGVSymbol(MO.getGlobal(), MO.getTargetFlags()));
+    MCOp = GetSymbolRef(MO,
+                        GetARMGVSymbol(MO.getGlobal(), MO.getTargetFlags()));
     break;
   case MachineOperand::MO_ExternalSymbol:
-    MCOp = GetSymbolRef(MO, GetExternalSymbolSymbol(MO.getSymbolName()));
+    MCOp = GetSymbolRef(MO,
+                        GetExternalSymbolSymbol(MO.getSymbolName()));
     break;
   case MachineOperand::MO_JumpTableIndex:
     MCOp = GetSymbolRef(MO, GetJTISymbol(MO.getIndex()));
@@ -121,8 +127,7 @@ void llvm::LowerARMMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
   // In the MC layer, we keep modified immediates in their encoded form
   bool EncodeImms = false;
   switch (MI->getOpcode()) {
-  default:
-    break;
+  default: break;
   case ARM::MOVi:
   case ARM::MVNi:
   case ARM::CMPri:
@@ -160,14 +165,13 @@ void llvm::LowerARMMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
   }
 }
 
-void ARMAsmPrinter::EmitSled(const MachineInstr &MI, SledKind Kind) {
-  if (MI.getParent()
-          ->getParent()
-          ->getInfo<ARMFunctionInfo>()
-          ->isThumbFunction()) {
-    MI.emitError(
-        "An attempt to perform XRay instrumentation for a"
-        " Thumb function (not supported). Detected when emitting a sled.");
+void ARMAsmPrinter::EmitSled(const MachineInstr &MI, SledKind Kind)
+{
+  if (MI.getParent()->getParent()->getInfo<ARMFunctionInfo>()
+    ->isThumbFunction())
+  {
+    MI.emitError("An attempt to perform XRay instrumentation for a"
+      " Thumb function (not supported). Detected when emitting a sled.");
     return;
   }
   static const int8_t NoopsInSledCount = 6;
@@ -200,9 +204,8 @@ void ARMAsmPrinter::EmitSled(const MachineInstr &MI, SledKind Kind) {
   // is executing it).
   // By analogy to ARMAsmPrinter::emitPseudoExpansionLowering() |case ARM::B|.
   // It is not clear why |addReg(0)| is needed (the last operand).
-  EmitToStreamer(
-      *OutStreamer,
-      MCInstBuilder(ARM::Bcc).addImm(20).addImm(ARMCC::AL).addReg(0));
+  EmitToStreamer(*OutStreamer, MCInstBuilder(ARM::Bcc).addImm(20)
+    .addImm(ARMCC::AL).addReg(0));
 
   emitNops(NoopsInSledCount);
 
@@ -210,14 +213,17 @@ void ARMAsmPrinter::EmitSled(const MachineInstr &MI, SledKind Kind) {
   recordSled(CurSled, MI, Kind, 2);
 }
 
-void ARMAsmPrinter::LowerPATCHABLE_FUNCTION_ENTER(const MachineInstr &MI) {
+void ARMAsmPrinter::LowerPATCHABLE_FUNCTION_ENTER(const MachineInstr &MI)
+{
   EmitSled(MI, SledKind::FUNCTION_ENTER);
 }
 
-void ARMAsmPrinter::LowerPATCHABLE_FUNCTION_EXIT(const MachineInstr &MI) {
+void ARMAsmPrinter::LowerPATCHABLE_FUNCTION_EXIT(const MachineInstr &MI)
+{
   EmitSled(MI, SledKind::FUNCTION_EXIT);
 }
 
-void ARMAsmPrinter::LowerPATCHABLE_TAIL_CALL(const MachineInstr &MI) {
+void ARMAsmPrinter::LowerPATCHABLE_TAIL_CALL(const MachineInstr &MI)
+{
   EmitSled(MI, SledKind::TAIL_CALL);
 }

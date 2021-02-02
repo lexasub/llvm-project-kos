@@ -11,11 +11,12 @@
 #include "test_macros.h"
 
 template <class T>
-struct UserDefinedIntegral {
-  TEST_CONSTEXPR_CXX14 UserDefinedIntegral() : value(0) {}
-  TEST_CONSTEXPR_CXX14 UserDefinedIntegral(T v) : value(v) {}
-  TEST_CONSTEXPR_CXX14 operator T() const { return value; }
-  T value;
+struct UserDefinedIntegral
+{
+    TEST_CONSTEXPR_CXX14 UserDefinedIntegral() : value(0) {}
+    TEST_CONSTEXPR_CXX14 UserDefinedIntegral(T v) : value(v) {}
+    TEST_CONSTEXPR_CXX14 operator T() const { return value; }
+    T value;
 };
 
 // Poison the arithmetic and comparison operations

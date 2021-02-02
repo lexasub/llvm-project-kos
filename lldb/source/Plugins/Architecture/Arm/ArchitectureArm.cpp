@@ -139,8 +139,7 @@ addr_t ArchitectureArm::GetCallableLoadAddress(addr_t code_addr,
   case AddressClass::eCodeAlternateISA:
     is_alternate_isa = true;
     break;
-  default:
-    break;
+  default: break;
   }
 
   if ((code_addr & 2u) || is_alternate_isa)
@@ -154,8 +153,7 @@ addr_t ArchitectureArm::GetOpcodeLoadAddress(addr_t opcode_addr,
   case AddressClass::eData:
   case AddressClass::eDebug:
     return LLDB_INVALID_ADDRESS;
-  default:
-    break;
+  default: break;
   }
   return opcode_addr & ~(1ull);
 }

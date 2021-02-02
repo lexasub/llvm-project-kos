@@ -58,7 +58,8 @@ void PPCMCExpr::printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const {
   }
 }
 
-bool PPCMCExpr::evaluateAsConstant(int64_t &Res) const {
+bool
+PPCMCExpr::evaluateAsConstant(int64_t &Res) const {
   MCValue Value;
 
   if (!getSubExpr()->evaluateAsRelocatable(Value, nullptr, nullptr))
@@ -71,35 +72,37 @@ bool PPCMCExpr::evaluateAsConstant(int64_t &Res) const {
   return true;
 }
 
-int64_t PPCMCExpr::evaluateAsInt64(int64_t Value) const {
+int64_t
+PPCMCExpr::evaluateAsInt64(int64_t Value) const {
   switch (Kind) {
-  case VK_PPC_LO:
-    return Value & 0xffff;
-  case VK_PPC_HI:
-    return (Value >> 16) & 0xffff;
-  case VK_PPC_HA:
-    return ((Value + 0x8000) >> 16) & 0xffff;
-  case VK_PPC_HIGH:
-    return (Value >> 16) & 0xffff;
-  case VK_PPC_HIGHA:
-    return ((Value + 0x8000) >> 16) & 0xffff;
-  case VK_PPC_HIGHER:
-    return (Value >> 32) & 0xffff;
-  case VK_PPC_HIGHERA:
-    return ((Value + 0x8000) >> 32) & 0xffff;
-  case VK_PPC_HIGHEST:
-    return (Value >> 48) & 0xffff;
-  case VK_PPC_HIGHESTA:
-    return ((Value + 0x8000) >> 48) & 0xffff;
-  case VK_PPC_None:
-    break;
+    case VK_PPC_LO:
+      return Value & 0xffff;
+    case VK_PPC_HI:
+      return (Value >> 16) & 0xffff;
+    case VK_PPC_HA:
+      return ((Value + 0x8000) >> 16) & 0xffff;
+    case VK_PPC_HIGH:
+      return (Value >> 16) & 0xffff;
+    case VK_PPC_HIGHA:
+      return ((Value + 0x8000) >> 16) & 0xffff;
+    case VK_PPC_HIGHER:
+      return (Value >> 32) & 0xffff;
+    case VK_PPC_HIGHERA:
+      return ((Value + 0x8000) >> 32) & 0xffff;
+    case VK_PPC_HIGHEST:
+      return (Value >> 48) & 0xffff;
+    case VK_PPC_HIGHESTA:
+      return ((Value + 0x8000) >> 48) & 0xffff;
+    case VK_PPC_None:
+      break;
   }
   llvm_unreachable("Invalid kind!");
 }
 
-bool PPCMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
-                                          const MCAsmLayout *Layout,
-                                          const MCFixup *Fixup) const {
+bool
+PPCMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
+                                     const MCAsmLayout *Layout,
+                                     const MCFixup *Fixup) const {
   MCValue Value;
 
   if (!getSubExpr()->evaluateAsRelocatable(Value, Layout, Fixup))
@@ -107,8 +110,7 @@ bool PPCMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
 
   if (Value.isAbsolute()) {
     int64_t Result = evaluateAsInt64(Value.getConstant());
-    if ((Fixup == nullptr ||
-         (unsigned)Fixup->getKind() != PPC::fixup_ppc_half16) &&
+    if ((Fixup == nullptr || (unsigned)Fixup->getKind() != PPC::fixup_ppc_half16) &&
         (Result >= 0x8000))
       return false;
     Res = MCValue::get(Result);
@@ -122,35 +124,35 @@ bool PPCMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
     if (Modifier != MCSymbolRefExpr::VK_None)
       return false;
     switch (Kind) {
-    default:
-      llvm_unreachable("Invalid kind!");
-    case VK_PPC_LO:
-      Modifier = MCSymbolRefExpr::VK_PPC_LO;
-      break;
-    case VK_PPC_HI:
-      Modifier = MCSymbolRefExpr::VK_PPC_HI;
-      break;
-    case VK_PPC_HA:
-      Modifier = MCSymbolRefExpr::VK_PPC_HA;
-      break;
-    case VK_PPC_HIGH:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGH;
-      break;
-    case VK_PPC_HIGHA:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGHA;
-      break;
-    case VK_PPC_HIGHERA:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGHERA;
-      break;
-    case VK_PPC_HIGHER:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGHER;
-      break;
-    case VK_PPC_HIGHEST:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGHEST;
-      break;
-    case VK_PPC_HIGHESTA:
-      Modifier = MCSymbolRefExpr::VK_PPC_HIGHESTA;
-      break;
+      default:
+        llvm_unreachable("Invalid kind!");
+      case VK_PPC_LO:
+        Modifier = MCSymbolRefExpr::VK_PPC_LO;
+        break;
+      case VK_PPC_HI:
+        Modifier = MCSymbolRefExpr::VK_PPC_HI;
+        break;
+      case VK_PPC_HA:
+        Modifier = MCSymbolRefExpr::VK_PPC_HA;
+        break;
+      case VK_PPC_HIGH:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGH;
+        break;
+      case VK_PPC_HIGHA:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGHA;
+        break;
+      case VK_PPC_HIGHERA:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGHERA;
+        break;
+      case VK_PPC_HIGHER:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGHER;
+        break;
+      case VK_PPC_HIGHEST:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGHEST;
+        break;
+      case VK_PPC_HIGHESTA:
+        Modifier = MCSymbolRefExpr::VK_PPC_HIGHESTA;
+        break;
     }
     Sym = MCSymbolRefExpr::create(&Sym->getSymbol(), Modifier, Context);
     Res = MCValue::get(Sym, Value.getSymB(), Value.getConstant());

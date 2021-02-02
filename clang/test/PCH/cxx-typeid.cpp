@@ -7,5 +7,5 @@
 // expected-no-diagnostics
 
 void f() {
-  (void)typeid(int);
+    (void)typeid(int);
 }

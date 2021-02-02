@@ -133,8 +133,7 @@ static StringRef GetNthLineOfFile(llvm::Optional<llvm::MemoryBufferRef> Buffer,
   return *LI;
 }
 
-static std::string NormalizeLine(const SourceManager &SM,
-                                 const FullSourceLoc &L,
+static std::string NormalizeLine(const SourceManager &SM, const FullSourceLoc &L,
                                  const LangOptions &LangOpts) {
   static StringRef Whitespaces = " \t\n";
 
@@ -192,8 +191,8 @@ std::string clang::getIssueString(const FullSourceLoc &IssueLoc,
   return (llvm::Twine(CheckerName) + Delimiter +
           GetEnclosingDeclContextSignature(IssueDecl) + Delimiter +
           Twine(IssueLoc.getExpansionColumnNumber()) + Delimiter +
-          NormalizeLine(IssueLoc.getManager(), IssueLoc, LangOpts) + Delimiter +
-          WarningMessage)
+          NormalizeLine(IssueLoc.getManager(), IssueLoc, LangOpts) +
+          Delimiter + WarningMessage)
       .str();
 }
 

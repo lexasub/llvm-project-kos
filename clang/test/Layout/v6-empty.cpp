@@ -3,12 +3,8 @@
 
 // In Clang 6 and before, we determined that Nonempty was empty, so we
 // applied EBO to it.
-struct Nonempty {
-  int : 4;
-};
-struct A : Nonempty {
-  int n;
-};
+struct Nonempty { int : 4; };
+struct A : Nonempty { int n; };
 int k = sizeof(A);
 
 // CHECK:*** Dumping AST Record Layout

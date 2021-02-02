@@ -10,8 +10,8 @@
 #include "SBReproducerPrivate.h"
 
 #include "lldb/API/SBAddress.h"
-#include "lldb/API/SBFile.h"
 #include "lldb/API/SBFrame.h"
+#include "lldb/API/SBFile.h"
 
 #include "lldb/API/SBInstruction.h"
 #include "lldb/API/SBStream.h"
@@ -80,8 +80,9 @@ SBInstruction::SBInstruction(const SBInstruction &rhs)
 }
 
 const SBInstruction &SBInstruction::operator=(const SBInstruction &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBInstruction &, SBInstruction, operator=,
-                     (const lldb::SBInstruction &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBInstruction &,
+                     SBInstruction, operator=,(const lldb::SBInstruction &),
+                     rhs);
 
   if (this != &rhs)
     m_opaque_sp = rhs.m_opaque_sp;
@@ -344,11 +345,13 @@ bool SBInstruction::TestEmulation(lldb::SBStream &output_stream,
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBInstruction>(Registry &R) {
+template <>
+void RegisterMethods<SBInstruction>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBInstruction, ());
   LLDB_REGISTER_CONSTRUCTOR(SBInstruction, (const lldb::SBInstruction &));
-  LLDB_REGISTER_METHOD(const lldb::SBInstruction &, SBInstruction, operator=,
-                       (const lldb::SBInstruction &));
+  LLDB_REGISTER_METHOD(
+      const lldb::SBInstruction &,
+      SBInstruction, operator=,(const lldb::SBInstruction &));
   LLDB_REGISTER_METHOD(bool, SBInstruction, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBInstruction, operator bool, ());
   LLDB_REGISTER_METHOD(lldb::SBAddress, SBInstruction, GetAddress, ());
@@ -359,11 +362,13 @@ template <> void RegisterMethods<SBInstruction>(Registry &R) {
   LLDB_REGISTER_METHOD(const char *, SBInstruction, GetComment,
                        (lldb::SBTarget));
   LLDB_REGISTER_METHOD(size_t, SBInstruction, GetByteSize, ());
-  LLDB_REGISTER_METHOD(lldb::SBData, SBInstruction, GetData, (lldb::SBTarget));
+  LLDB_REGISTER_METHOD(lldb::SBData, SBInstruction, GetData,
+                       (lldb::SBTarget));
   LLDB_REGISTER_METHOD(bool, SBInstruction, DoesBranch, ());
   LLDB_REGISTER_METHOD(bool, SBInstruction, HasDelaySlot, ());
   LLDB_REGISTER_METHOD(bool, SBInstruction, CanSetBreakpoint, ());
-  LLDB_REGISTER_METHOD(bool, SBInstruction, GetDescription, (lldb::SBStream &));
+  LLDB_REGISTER_METHOD(bool, SBInstruction, GetDescription,
+                       (lldb::SBStream &));
   LLDB_REGISTER_METHOD(void, SBInstruction, Print, (FILE *));
   LLDB_REGISTER_METHOD(void, SBInstruction, Print, (SBFile));
   LLDB_REGISTER_METHOD(void, SBInstruction, Print, (FileSP));
@@ -374,5 +379,5 @@ template <> void RegisterMethods<SBInstruction>(Registry &R) {
                        (lldb::SBStream &, const char *));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

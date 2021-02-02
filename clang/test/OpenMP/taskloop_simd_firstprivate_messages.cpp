@@ -21,7 +21,7 @@ bool foobool(int argc) {
 }
 
 void xxx(int argc) {
-  int fp;                                  // expected-note {{initialize the variable 'fp' to silence this warning}}
+  int fp; // expected-note {{initialize the variable 'fp' to silence this warning}}
 #pragma omp taskloop simd firstprivate(fp) // expected-warning {{variable 'fp' is uninitialized when used here}}
   for (int i = 0; i < 10; ++i)
     ;
@@ -46,7 +46,7 @@ class S3 {
   S3 &operator=(const S3 &s3);
 
 public:
-  S3() : a(0) {}          // expected-note 2 {{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
+  S3() : a(0) {} // expected-note 2 {{candidate constructor not viable: requires 0 arguments, but 1 was provided}}
   S3(S3 &s3) : a(s3.a) {} // expected-note 2 {{candidate constructor not viable: 1st argument ('const S3') would lose const qualifier}}
 };
 const S3 c;
@@ -111,10 +111,7 @@ int foomain(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp taskloop simd firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
-                                                                                                                                                                  : argc, allocate(omp_default_mem_alloc \
-                                                                                                                                                                                   : argv),              \
-                                                                                                                                                                    allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp taskloop simd firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
@@ -141,8 +138,7 @@ int foomain(int argc, char **argv) {
   {
     int v = 0;
     int i;
-#pragma omp taskloop simd allocate(omp_thread_mem_alloc \
-                                   : i) firstprivate(i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'taskloop simd' directive}}
+#pragma omp taskloop simd allocate(omp_thread_mem_alloc: i) firstprivate(i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'taskloop simd' directive}}
     for (int k = 0; k < argc; ++k) {
       i = k;
       v += i;
@@ -165,8 +161,7 @@ int foomain(int argc, char **argv) {
 #pragma omp taskloop simd firstprivate(i) // expected-note 2 {{defined as firstprivate}}
   for (i = 0; i < argc; ++i) // expected-error 2 {{loop iteration variable in the associated loop of 'omp taskloop simd' directive may not be firstprivate, predetermined as linear}}
     foo();
-#pragma omp parallel reduction(+ \
-                               : i) // expected-note {{defined as reduction}}
+#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
 #pragma omp taskloop simd firstprivate(i) // expected-note {{defined as firstprivate}} expected-error {{argument of a reduction clause of a parallel construct must not appear in a firstprivate clause on a task construct}}
   for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp taskloop simd' directive may not be firstprivate, predetermined as linear}}
     foo();
@@ -183,7 +178,7 @@ void bar(S4 a[2]) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-} // namespace A
+}
 namespace B {
 using A::x;
 }
@@ -288,7 +283,7 @@ int main(int argc, char **argv) {
     foo();
 #pragma omp parallel
 #pragma omp taskloop simd firstprivate(i) // expected-note {{defined as firstprivate}}
-  for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp taskloop simd' directive may not be firstprivate, predetermined as linear}}
+  for (i = 0; i < argc; ++i)    // expected-error {{loop iteration variable in the associated loop of 'omp taskloop simd' directive may not be firstprivate, predetermined as linear}}
     foo();
 #pragma omp parallel shared(xa)
 #pragma omp taskloop simd firstprivate(xa) // OK: may be firstprivate
@@ -320,8 +315,7 @@ int main(int argc, char **argv) {
 #pragma omp taskloop simd firstprivate(i) // expected-note {{defined as firstprivate}}
   for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp taskloop simd' directive may not be firstprivate, predetermined as linear}}
     foo();
-#pragma omp parallel reduction(+ \
-                               : i) // expected-note {{defined as reduction}}
+#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
 #pragma omp taskloop simd firstprivate(i) // expected-error {{argument of a reduction clause of a parallel construct must not appear in a firstprivate clause on a task construct}}
   for (i = 0; i < argc; ++i)
     foo();
@@ -339,3 +333,4 @@ int main(int argc, char **argv) {
 
   return foomain<S4, S5>(argc, argv); // expected-note {{in instantiation of function template specialization 'foomain<S4, S5>' requested here}}
 }
+

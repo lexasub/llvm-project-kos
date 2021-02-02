@@ -3,7 +3,7 @@
 // Test that indirect field decls are handled gracefully.
 // rdar://problem/16348575
 //
-template <class T, int T::*ptr> class Foo {};
+template <class T, int T::*ptr> class Foo {  };
 
 struct Bar {
   int i1;

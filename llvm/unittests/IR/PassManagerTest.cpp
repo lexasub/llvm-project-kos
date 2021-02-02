@@ -692,8 +692,7 @@ private:
 AnalysisKey TestDoublyIndirectFunctionAnalysis::Key;
 
 struct LambdaPass : public PassInfoMixin<LambdaPass> {
-  using FuncT =
-      std::function<PreservedAnalyses(Function &, FunctionAnalysisManager &)>;
+  using FuncT = std::function<PreservedAnalyses(Function &, FunctionAnalysisManager &)>;
 
   LambdaPass(FuncT Func) : Func(std::move(Func)) {}
 
@@ -951,4 +950,4 @@ TEST_F(PassManagerTest, FunctionPassCFGCheckerWrapped) {
   FPM.addPass(TestSimplifyCFGWrapperPass(InnerFPM));
   FPM.run(*F, FAM);
 }
-} // namespace
+}

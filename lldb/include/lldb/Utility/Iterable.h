@@ -11,6 +11,7 @@
 
 #include <utility>
 
+
 namespace lldb_private {
 
 template <typename I, typename E> E map_adapter(I &iter) {

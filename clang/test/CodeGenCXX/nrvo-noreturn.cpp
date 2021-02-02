@@ -14,3 +14,4 @@ CoinModelLink CoinModel::firstInQuadraticColumn() {
   CoinModelLink x;
   return x;
 }
+

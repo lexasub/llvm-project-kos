@@ -36,11 +36,12 @@ using namespace llvm;
 
 #define DEBUG_TYPE "pre-RA-sched"
 
-STATISTIC(NumNoops, "Number of noops inserted");
+STATISTIC(NumNoops , "Number of noops inserted");
 STATISTIC(NumStalls, "Number of pipeline stalls");
 
-static RegisterScheduler VLIWScheduler("vliw-td", "VLIW scheduler",
-                                       createVLIWDAGScheduler);
+static RegisterScheduler
+  VLIWScheduler("vliw-td", "VLIW scheduler",
+                createVLIWDAGScheduler);
 
 namespace {
 //===----------------------------------------------------------------------===//
@@ -57,7 +58,7 @@ private:
   /// been issued, but their results are not ready yet (due to the latency of
   /// the operation).  Once the operands become available, the instruction is
   /// added to the AvailableQueue.
-  std::vector<SUnit *> PendingQueue;
+  std::vector<SUnit*> PendingQueue;
 
   /// HazardRec - The hazard recognizer to use.
   ScheduleHazardRecognizer *HazardRec;
@@ -86,7 +87,7 @@ private:
   void scheduleNodeTopDown(SUnit *SU, unsigned CurCycle);
   void listScheduleTopDown();
 };
-} // end anonymous namespace
+}  // end anonymous namespace
 
 /// Schedule - Schedule the DAG using list scheduling.
 void ScheduleDAGVLIW::Schedule() {
@@ -135,8 +136,8 @@ void ScheduleDAGVLIW::releaseSucc(SUnit *SU, const SDep &D) {
 
 void ScheduleDAGVLIW::releaseSuccessors(SUnit *SU) {
   // Top down: release successors.
-  for (SUnit::succ_iterator I = SU->Succs.begin(), E = SU->Succs.end(); I != E;
-       ++I) {
+  for (SUnit::succ_iterator I = SU->Succs.begin(), E = SU->Succs.end();
+       I != E; ++I) {
     assert(!I->isAssignedRegDep() &&
            "The list-td scheduler doesn't yet support physreg dependencies!");
 
@@ -179,7 +180,7 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
 
   // While AvailableQueue is not empty, grab the node with the highest
   // priority. If it is not ready put it back.  Schedule the node.
-  std::vector<SUnit *> NotReady;
+  std::vector<SUnit*> NotReady;
   Sequence.reserve(SUnits.size());
   while (!AvailableQueue->empty() || !PendingQueue.empty()) {
     // Check to see if any of the pending instructions are ready to issue.  If
@@ -190,9 +191,9 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
         PendingQueue[i]->isAvailable = true;
         PendingQueue[i] = PendingQueue.back();
         PendingQueue.pop_back();
-        --i;
-        --e;
-      } else {
+        --i; --e;
+      }
+      else {
         assert(PendingQueue[i]->getDepth() > CurCycle && "Negative latency?");
       }
     }
@@ -213,7 +214,7 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
       SUnit *CurSUnit = AvailableQueue->pop();
 
       ScheduleHazardRecognizer::HazardType HT =
-          HazardRec->getHazardType(CurSUnit, 0 /*no stalls*/);
+        HazardRec->getHazardType(CurSUnit, 0/*no stalls*/);
       if (HT == ScheduleHazardRecognizer::NoHazard) {
         FoundSUnit = CurSUnit;
         break;
@@ -238,7 +239,7 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
 
       // If this is a pseudo-op node, we don't want to increment the current
       // cycle.
-      if (FoundSUnit->Latency) // Don't increment CurCycle for pseudo-ops!
+      if (FoundSUnit->Latency)  // Don't increment CurCycle for pseudo-ops!
         ++CurCycle;
     } else if (!HasNoopHazards) {
       // Otherwise, we have a pipeline stall, but no other problem, just advance
@@ -253,7 +254,7 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
       // processors without pipeline interlocks and other cases.
       LLVM_DEBUG(dbgs() << "*** Emitting noop\n");
       HazardRec->EmitNoop();
-      Sequence.push_back(nullptr); // NULL here means noop
+      Sequence.push_back(nullptr);   // NULL here means noop
       ++NumNoops;
       ++CurCycle;
     }
@@ -269,7 +270,7 @@ void ScheduleDAGVLIW::listScheduleTopDown() {
 //===----------------------------------------------------------------------===//
 
 /// createVLIWDAGScheduler - This creates a top-down list scheduler.
-ScheduleDAGSDNodes *llvm::createVLIWDAGScheduler(SelectionDAGISel *IS,
-                                                 CodeGenOpt::Level) {
+ScheduleDAGSDNodes *
+llvm::createVLIWDAGScheduler(SelectionDAGISel *IS, CodeGenOpt::Level) {
   return new ScheduleDAGVLIW(*IS->MF, IS->AA, new ResourcePriorityQueue(IS));
 }

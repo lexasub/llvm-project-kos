@@ -60,6 +60,7 @@ void __fastcall fastcall_receive_vec(__m128 x, __m128 y, __m128 z, __m128 w, int
 // CHECK-SAME: i32 inreg %edx,
 // CHECK-SAME: <{ <4 x float>*, %struct.NonTrivial }>* inalloca %1)
 
+
 void __vectorcall vectorcall_receive_vec(double xmm0, double xmm1, double xmm2,
                                          __m128 x, __m128 y, __m128 z,
                                          __m128 w, int edx, __m128 q, NonTrivial nt) {

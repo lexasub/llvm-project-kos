@@ -22,7 +22,8 @@ class GCNILPScheduler {
   struct Candidate : ilist_node<Candidate> {
     SUnit *SU;
 
-    Candidate(SUnit *SU_) : SU(SU_) {}
+    Candidate(SUnit *SU_)
+      : SU(SU_) {}
   };
 
   SpecificBumpPtrAllocator<Candidate> Alloc;
@@ -39,36 +40,36 @@ class GCNILPScheduler {
   unsigned getNodePriority(const SUnit *SU) const;
 
   const SUnit *pickBest(const SUnit *left, const SUnit *right);
-  Candidate *pickCandidate();
+  Candidate* pickCandidate();
 
   void releasePending();
   void advanceToCycle(unsigned NextCycle);
-  void releasePredecessors(const SUnit *SU);
+  void releasePredecessors(const SUnit* SU);
 
 public:
-  std::vector<const SUnit *> schedule(ArrayRef<const SUnit *> TopRoots,
-                                      const ScheduleDAG &DAG);
+  std::vector<const SUnit*> schedule(ArrayRef<const SUnit*> TopRoots,
+                                     const ScheduleDAG &DAG);
 };
 } // namespace
 
 /// CalcNodeSethiUllmanNumber - Compute Sethi Ullman number.
 /// Smaller number is the higher priority.
-static unsigned CalcNodeSethiUllmanNumber(const SUnit *SU,
-                                          std::vector<unsigned> &SUNumbers) {
+static unsigned
+CalcNodeSethiUllmanNumber(const SUnit *SU, std::vector<unsigned> &SUNumbers) {
   unsigned &SethiUllmanNumber = SUNumbers[SU->NodeNum];
   if (SethiUllmanNumber != 0)
     return SethiUllmanNumber;
 
   unsigned Extra = 0;
   for (const SDep &Pred : SU->Preds) {
-    if (Pred.isCtrl())
-      continue; // ignore chain preds
+    if (Pred.isCtrl()) continue;  // ignore chain preds
     SUnit *PredSU = Pred.getSUnit();
     unsigned PredSethiUllman = CalcNodeSethiUllmanNumber(PredSU, SUNumbers);
     if (PredSethiUllman > SethiUllmanNumber) {
       SethiUllmanNumber = PredSethiUllman;
       Extra = 0;
-    } else if (PredSethiUllman == SethiUllmanNumber)
+    }
+    else if (PredSethiUllman == SethiUllmanNumber)
       ++Extra;
   }
 
@@ -105,8 +106,7 @@ unsigned GCNILPScheduler::getNodePriority(const SUnit *SU) const {
 static unsigned closestSucc(const SUnit *SU) {
   unsigned MaxHeight = 0;
   for (const SDep &Succ : SU->Succs) {
-    if (Succ.isCtrl())
-      continue; // ignore chain succs
+    if (Succ.isCtrl()) continue;  // ignore chain succs
     unsigned Height = Succ.getSUnit()->getHeight();
     // If there are bunch of CopyToRegs stacked up, they should be considered
     // to be at the same position.
@@ -121,8 +121,7 @@ static unsigned closestSucc(const SUnit *SU) {
 static unsigned calcMaxScratches(const SUnit *SU) {
   unsigned Scratches = 0;
   for (const SDep &Pred : SU->Preds) {
-    if (Pred.isCtrl())
-      continue; // ignore chain preds
+    if (Pred.isCtrl()) continue;  // ignore chain preds
     Scratches++;
   }
   return Scratches;
@@ -160,7 +159,8 @@ static int BUCompareLatency(const SUnit *left, const SUnit *right) {
   return 0;
 }
 
-const SUnit *GCNILPScheduler::pickBest(const SUnit *left, const SUnit *right) {
+const SUnit *GCNILPScheduler::pickBest(const SUnit *left, const SUnit *right)
+{
   // TODO: add register pressure lowering checks
 
   bool const DisableSchedCriticalPath = false;
@@ -223,7 +223,8 @@ const SUnit *GCNILPScheduler::pickBest(const SUnit *left, const SUnit *right) {
     if (result != 0)
       return result > 0 ? right : left;
     return left;
-  } else {
+  }
+  else {
     if (left->getHeight() != right->getHeight())
       return (left->getHeight() > right->getHeight()) ? right : left;
 
@@ -232,16 +233,15 @@ const SUnit *GCNILPScheduler::pickBest(const SUnit *left, const SUnit *right) {
   }
 
   assert(left->NodeQueueId && right->NodeQueueId &&
-         "NodeQueueId cannot be zero");
+        "NodeQueueId cannot be zero");
   return (left->NodeQueueId > right->NodeQueueId) ? right : left;
 }
 
-GCNILPScheduler::Candidate *GCNILPScheduler::pickCandidate() {
+GCNILPScheduler::Candidate* GCNILPScheduler::pickCandidate() {
   if (AvailQueue.empty())
     return nullptr;
   auto Best = AvailQueue.begin();
-  for (auto I = std::next(AvailQueue.begin()), E = AvailQueue.end(); I != E;
-       ++I) {
+  for (auto I = std::next(AvailQueue.begin()), E = AvailQueue.end(); I != E; ++I) {
     auto NewBestSU = pickBest(Best->SU, I->SU);
     if (NewBestSU != Best->SU) {
       assert(NewBestSU == I->SU);
@@ -254,7 +254,7 @@ GCNILPScheduler::Candidate *GCNILPScheduler::pickCandidate() {
 void GCNILPScheduler::releasePending() {
   // Check to see if any of the pending instructions are ready to issue.  If
   // so, add them to the available queue.
-  for (auto I = PendingQueue.begin(), E = PendingQueue.end(); I != E;) {
+  for(auto I = PendingQueue.begin(), E = PendingQueue.end(); I != E;) {
     auto &C = *I++;
     if (C.SU->getHeight() <= CurCycle) {
       PendingQueue.remove(C);
@@ -272,7 +272,7 @@ void GCNILPScheduler::advanceToCycle(unsigned NextCycle) {
   releasePending();
 }
 
-void GCNILPScheduler::releasePredecessors(const SUnit *SU) {
+void GCNILPScheduler::releasePredecessors(const SUnit* SU) {
   for (const auto &PredEdge : SU->Preds) {
     auto PredSU = PredEdge.getSUnit();
     if (PredEdge.isWeak())
@@ -286,10 +286,10 @@ void GCNILPScheduler::releasePredecessors(const SUnit *SU) {
   }
 }
 
-std::vector<const SUnit *>
-GCNILPScheduler::schedule(ArrayRef<const SUnit *> BotRoots,
+std::vector<const SUnit*>
+GCNILPScheduler::schedule(ArrayRef<const SUnit*> BotRoots,
                           const ScheduleDAG &DAG) {
-  auto &SUnits = const_cast<ScheduleDAG &>(DAG).SUnits;
+  auto &SUnits = const_cast<ScheduleDAG&>(DAG).SUnits;
 
   std::vector<SUnit> SUSavedCopy;
   SUSavedCopy.resize(SUnits.size());
@@ -304,21 +304,20 @@ GCNILPScheduler::schedule(ArrayRef<const SUnit *> BotRoots,
     CalcNodeSethiUllmanNumber(&SU, SUNumbers);
 
   for (auto SU : BotRoots) {
-    AvailQueue.push_back(*new (Alloc.Allocate())
-                             Candidate(const_cast<SUnit *>(SU)));
+    AvailQueue.push_back(
+      *new (Alloc.Allocate()) Candidate(const_cast<SUnit*>(SU)));
   }
   releasePredecessors(&DAG.ExitSU);
 
-  std::vector<const SUnit *> Schedule;
+  std::vector<const SUnit*> Schedule;
   Schedule.reserve(SUnits.size());
   while (true) {
     if (AvailQueue.empty() && !PendingQueue.empty()) {
-      auto EarliestSU =
-          std::min_element(PendingQueue.begin(), PendingQueue.end(),
-                           [=](const Candidate &C1, const Candidate &C2) {
-                             return C1.SU->getHeight() < C2.SU->getHeight();
-                           })
-              ->SU;
+      auto EarliestSU = std::min_element(
+        PendingQueue.begin(), PendingQueue.end(),
+        [=](const Candidate& C1, const Candidate& C2) {
+        return C1.SU->getHeight() < C2.SU->getHeight();
+      })->SU;
       advanceToCycle(std::max(CurCycle + 1, EarliestSU->getHeight()));
     }
     if (AvailQueue.empty())
@@ -355,9 +354,9 @@ GCNILPScheduler::schedule(ArrayRef<const SUnit *> BotRoots,
 }
 
 namespace llvm {
-std::vector<const SUnit *> makeGCNILPScheduler(ArrayRef<const SUnit *> BotRoots,
-                                               const ScheduleDAG &DAG) {
+std::vector<const SUnit*> makeGCNILPScheduler(ArrayRef<const SUnit*> BotRoots,
+                                              const ScheduleDAG &DAG) {
   GCNILPScheduler S;
   return S.schedule(BotRoots, DAG);
 }
-} // namespace llvm
+}

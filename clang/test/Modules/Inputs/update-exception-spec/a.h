@@ -1,6 +1,2 @@
-struct A {
-  ~A() throw(int);
-};
-struct B {
-  A a;
-};
+struct A { ~A() throw(int); };
+struct B { A a; };

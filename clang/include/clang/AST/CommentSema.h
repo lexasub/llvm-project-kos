@@ -70,19 +70,21 @@ class Sema {
 
 public:
   Sema(llvm::BumpPtrAllocator &Allocator, const SourceManager &SourceMgr,
-       DiagnosticsEngine &Diags, CommandTraits &Traits, const Preprocessor *PP);
+       DiagnosticsEngine &Diags, CommandTraits &Traits,
+       const Preprocessor *PP);
 
   void setDecl(const Decl *D);
 
   /// Returns a copy of array, owned by Sema's allocator.
-  template <typename T> ArrayRef<T> copyArray(ArrayRef<T> Source) {
+  template<typename T>
+  ArrayRef<T> copyArray(ArrayRef<T> Source) {
     if (!Source.empty())
       return Source.copy(Allocator);
     return None;
   }
 
-  ParagraphComment *
-  actOnParagraphComment(ArrayRef<InlineContentComment *> Content);
+  ParagraphComment *actOnParagraphComment(
+      ArrayRef<InlineContentComment *> Content);
 
   BlockCommandComment *actOnBlockCommandStart(SourceLocation LocBegin,
                                               SourceLocation LocEnd,
@@ -102,22 +104,26 @@ public:
 
   void actOnParamCommandDirectionArg(ParamCommandComment *Command,
                                      SourceLocation ArgLocBegin,
-                                     SourceLocation ArgLocEnd, StringRef Arg);
+                                     SourceLocation ArgLocEnd,
+                                     StringRef Arg);
 
   void actOnParamCommandParamNameArg(ParamCommandComment *Command,
                                      SourceLocation ArgLocBegin,
-                                     SourceLocation ArgLocEnd, StringRef Arg);
+                                     SourceLocation ArgLocEnd,
+                                     StringRef Arg);
 
   void actOnParamCommandFinish(ParamCommandComment *Command,
                                ParagraphComment *Paragraph);
 
-  TParamCommandComment *
-  actOnTParamCommandStart(SourceLocation LocBegin, SourceLocation LocEnd,
-                          unsigned CommandID, CommandMarkerKind CommandMarker);
+  TParamCommandComment *actOnTParamCommandStart(SourceLocation LocBegin,
+                                                SourceLocation LocEnd,
+                                                unsigned CommandID,
+                                                CommandMarkerKind CommandMarker);
 
   void actOnTParamCommandParamNameArg(TParamCommandComment *Command,
                                       SourceLocation ArgLocBegin,
-                                      SourceLocation ArgLocEnd, StringRef Arg);
+                                      SourceLocation ArgLocEnd,
+                                      StringRef Arg);
 
   void actOnTParamCommandFinish(TParamCommandComment *Command,
                                 ParagraphComment *Paragraph);
@@ -141,7 +147,8 @@ public:
                                             SourceLocation LocEnd,
                                             unsigned CommandID);
 
-  TextComment *actOnText(SourceLocation LocBegin, SourceLocation LocEnd,
+  TextComment *actOnText(SourceLocation LocBegin,
+                         SourceLocation LocEnd,
                          StringRef Text);
 
   VerbatimBlockComment *actOnVerbatimBlockStart(SourceLocation Loc,
@@ -165,10 +172,12 @@ public:
 
   void actOnHTMLStartTagFinish(HTMLStartTagComment *Tag,
                                ArrayRef<HTMLStartTagComment::Attribute> Attrs,
-                               SourceLocation GreaterLoc, bool IsSelfClosing);
+                               SourceLocation GreaterLoc,
+                               bool IsSelfClosing);
 
   HTMLEndTagComment *actOnHTMLEndTag(SourceLocation LocBegin,
-                                     SourceLocation LocEnd, StringRef TagName);
+                                     SourceLocation LocEnd,
+                                     StringRef TagName);
 
   FullComment *actOnFullComment(ArrayRef<BlockContentComment *> Blocks);
 
@@ -229,17 +238,16 @@ public:
 
   /// Returns index of a function parameter with the name closest to a given
   /// typo.
-  unsigned
-  correctTypoInParmVarReference(StringRef Typo,
-                                ArrayRef<const ParmVarDecl *> ParamVars);
+  unsigned correctTypoInParmVarReference(StringRef Typo,
+                                         ArrayRef<const ParmVarDecl *> ParamVars);
 
   bool resolveTParamReference(StringRef Name,
                               const TemplateParameterList *TemplateParameters,
                               SmallVectorImpl<unsigned> *Position);
 
-  StringRef
-  correctTypoInTParamReference(StringRef Typo,
-                               const TemplateParameterList *TemplateParameters);
+  StringRef correctTypoInTParamReference(
+                              StringRef Typo,
+                              const TemplateParameterList *TemplateParameters);
 
   InlineCommandComment::RenderKind
   getInlineCommandRenderKind(StringRef Name) const;
@@ -249,3 +257,4 @@ public:
 } // end namespace clang
 
 #endif
+

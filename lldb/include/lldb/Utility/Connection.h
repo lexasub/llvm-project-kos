@@ -23,7 +23,7 @@
 namespace lldb_private {
 class Status;
 template <typename Ratio> class Timeout;
-} // namespace lldb_private
+}
 
 namespace lldb_private {
 

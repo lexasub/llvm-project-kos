@@ -1,8 +1,8 @@
-@interface Foo (RightSub) <P2>
+@interface Foo(RightSub) <P2>
 @property id right_sub_prop;
 @end
 
-@interface Foo () {
+@interface Foo() {
 @public
   int right_sub_ivar;
 }
@@ -10,13 +10,13 @@
 
 @protocol P4
 - (void)p4_method;
-@property(retain) id p4_prop;
+@property (retain) id p4_prop;
 @end
 
-@interface Foo (LeftP4) <P4>
+@interface Foo(LeftP4) <P4>
 @end
 
 // A hidden extension
 @interface Foo ()
-@property(assign) int hiddenPropertyFromExtension;
+@property (assign) int hiddenPropertyFromExtension;
 @end

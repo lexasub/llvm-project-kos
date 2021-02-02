@@ -304,6 +304,6 @@ std::unique_ptr<Module>
 SplitFunctionsOutOfModule(Module *M, const std::vector<Function *> &F,
                           ValueToValueMapTy &VMap);
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

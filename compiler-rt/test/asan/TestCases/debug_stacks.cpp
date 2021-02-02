@@ -36,7 +36,8 @@ int main() {
   int thread_id;
   num_frames = __asan_get_alloc_stack(mem, trace, num_frames, &thread_id);
 
-  fprintf(stderr, "alloc stack retval %s\n", (num_frames > 0 && num_frames < 10) ? "ok" : "");
+  fprintf(stderr, "alloc stack retval %s\n", (num_frames > 0 && num_frames < 10)
+          ? "ok" : "");
   // CHECK: alloc stack retval ok
   fprintf(stderr, "thread id = %d\n", thread_id);
   // CHECK: thread id = 0
@@ -48,7 +49,8 @@ int main() {
   num_frames = 100;
   num_frames = __asan_get_free_stack(mem, trace, num_frames, &thread_id);
 
-  fprintf(stderr, "free stack retval %s\n", (num_frames > 0 && num_frames < 10) ? "ok" : "");
+  fprintf(stderr, "free stack retval %s\n", (num_frames > 0 && num_frames < 10)
+          ? "ok" : "");
   // CHECK: free stack retval ok
   fprintf(stderr, "thread id = %d\n", thread_id);
   // CHECK: thread id = 0

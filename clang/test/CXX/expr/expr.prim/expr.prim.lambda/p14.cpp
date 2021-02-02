@@ -1,24 +1,23 @@
 // RUN: %clang_cc1 -fsyntax-only -std=c++11 %s -verify
 
-template <typename T> void capture(const T &);
+template<typename T> void capture(const T&);
 
 class NonCopyable {
-  NonCopyable(const NonCopyable &); // expected-note 2 {{implicitly declared private here}}
+  NonCopyable(const NonCopyable&); // expected-note 2 {{implicitly declared private here}}
 public:
   void foo() const;
 };
 
 class NonConstCopy {
 public:
-  NonConstCopy(NonConstCopy &); // expected-note{{would lose const}}
+  NonConstCopy(NonConstCopy&); // expected-note{{would lose const}}
 };
 
 void capture_by_copy(NonCopyable nc, NonCopyable &ncr, const NonConstCopy nco) {
-  (void)[nc]{}; // expected-error{{capture of variable 'nc' as type 'NonCopyable' calls private copy constructor}}
-  (void)[=] {   // expected-error{{capture of variable 'ncr' as type 'NonCopyable' calls private copy constructor}}
+  (void)[nc] { }; // expected-error{{capture of variable 'nc' as type 'NonCopyable' calls private copy constructor}}
+  (void)[=] { // expected-error{{capture of variable 'ncr' as type 'NonCopyable' calls private copy constructor}}
     ncr.foo();
-  }
-  ();
+  }();
 
   [nco] {}(); // expected-error{{no matching constructor for initialization of 'const NonConstCopy'}}
 }
@@ -31,13 +30,13 @@ struct NonTrivial {
 
 struct CopyCtorDefault {
   CopyCtorDefault();
-  CopyCtorDefault(const CopyCtorDefault &, NonTrivial nt = NonTrivial());
+  CopyCtorDefault(const CopyCtorDefault&, NonTrivial nt = NonTrivial());
 
   void foo() const;
 };
 
 void capture_with_default_args(CopyCtorDefault cct) {
-  (void)[=]()->void { cct.foo(); };
+  (void)[=] () -> void { cct.foo(); };
 }
 
 struct ExpectedArrayLayout {
@@ -60,7 +59,7 @@ struct ExpectedLayout {
 };
 
 void test_layout(char a, short b) {
-  auto x = [=]() -> void {
+  auto x = [=] () -> void {
     capture(a);
     capture(b);
   };
@@ -68,7 +67,7 @@ void test_layout(char a, short b) {
 }
 
 struct ExpectedThisLayout {
-  ExpectedThisLayout *a;
+  ExpectedThisLayout* a;
   void f() {
     auto x = [this]() -> void {};
     static_assert(sizeof(x) == sizeof(ExpectedThisLayout), "Layout mismatch!");
@@ -90,23 +89,23 @@ struct CaptureArrayAndThis {
 };
 
 namespace rdar14468891 {
-class X {
-public:
-  virtual ~X() = 0; // expected-note{{unimplemented pure virtual method '~X' in 'X'}}
-};
+  class X {
+  public:
+    virtual ~X() = 0; // expected-note{{unimplemented pure virtual method '~X' in 'X'}}
+  };
 
-class Y : public X {};
+  class Y : public X { };
 
-void capture(X &x) {
-  [x]() {}(); // expected-error{{by-copy capture of value of abstract type 'rdar14468891::X'}}
+  void capture(X &x) {
+    [x]() {}(); // expected-error{{by-copy capture of value of abstract type 'rdar14468891::X'}}
+  }
 }
-} // namespace rdar14468891
 
 namespace rdar15560464 {
-struct X; // expected-note{{forward declaration of 'rdar15560464::X'}}
-void foo(const X &param) {
-  auto x = ([=]() {
-    auto &y = param; // expected-error{{by-copy capture of variable 'param' with incomplete type 'const rdar15560464::X'}}
-  });
+  struct X; // expected-note{{forward declaration of 'rdar15560464::X'}}
+  void foo(const X& param) {
+    auto x = ([=]() {
+        auto& y = param; // expected-error{{by-copy capture of variable 'param' with incomplete type 'const rdar15560464::X'}}
+      });
+  }
 }
-} // namespace rdar15560464

@@ -11,7 +11,7 @@ struct B {
   B(A);
 };
 
-int main() {
+int main () {
   (B)10;
   B(10);
   static_cast<B>(10);

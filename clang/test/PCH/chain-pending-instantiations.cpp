@@ -5,7 +5,7 @@
 
 template <typename Derived>
 struct A {
-  Derived *get() { return 0; }
+  Derived* get() { return 0; }
 };
 
 struct B : A<B> {

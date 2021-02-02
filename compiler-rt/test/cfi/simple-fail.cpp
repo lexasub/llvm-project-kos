@@ -61,8 +61,8 @@
 
 // REQUIRES: cxxabi
 
-#include "utils.h"
 #include <stdio.h>
+#include "utils.h"
 
 struct A {
   virtual void f();
@@ -79,8 +79,7 @@ void B::f() {}
 #if defined(CHECK_NO_SANITIZE_CFI)
 __attribute__((no_sanitize("cfi")))
 #endif
-int
-main() {
+int main() {
   create_derivers<B>();
 
   A *a = new A;

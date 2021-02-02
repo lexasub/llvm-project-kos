@@ -38,6 +38,7 @@ LLDB_PLUGIN_DEFINE(PlatformLinux)
 
 static uint32_t g_initialize_count = 0;
 
+
 PlatformSP PlatformLinux::CreateInstance(bool force, const ArchSpec *arch) {
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
   LLDB_LOG(log, "force = {0}, arch=({1}, {2})", force,
@@ -280,3 +281,4 @@ MmapArgList PlatformLinux::GetMmapArgumentList(const ArchSpec &arch,
   MmapArgList args({addr, length, prot, flags_platform, fd, offset});
   return args;
 }
+

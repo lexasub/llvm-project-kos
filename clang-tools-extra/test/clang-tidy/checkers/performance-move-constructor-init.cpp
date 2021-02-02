@@ -7,26 +7,23 @@
 
 // CHECK-FIXES: #include <utility>
 
-template <class T>
-struct remove_reference { typedef T type; };
-template <class T>
-struct remove_reference<T &> { typedef T type; };
-template <class T>
-struct remove_reference<T &&> { typedef T type; };
+template <class T> struct remove_reference      {typedef T type;};
+template <class T> struct remove_reference<T&>  {typedef T type;};
+template <class T> struct remove_reference<T&&> {typedef T type;};
 
 template <typename T>
-typename remove_reference<T>::type &&move(T &&arg) {
-  return static_cast<typename remove_reference<T>::type &&>(arg);
+typename remove_reference<T>::type&& move(T&& arg) {
+  return static_cast<typename remove_reference<T>::type&&>(arg);
 }
 
 struct C {
   C() = default;
-  C(const C &) = default;
+  C(const C&) = default;
 };
 
 struct B {
   B() {}
-  B(const B &) {}
+  B(const B&) {}
   B(B &&) {}
 };
 
@@ -53,13 +50,13 @@ struct F {
 
 struct G {
   G() = default;
-  G(const G &) = default;
-  G(G &&) = delete;
+  G(const G&) = default;
+  G(G&&) = delete;
 };
 
 struct H : G {
   H() = default;
-  H(const H &) = default;
+  H(const H&) = default;
   H(H &&RHS) : G(RHS) {} // ok
 };
 
@@ -90,12 +87,12 @@ struct N {
 };
 
 struct O {
-  O(O &&other) : b(other.b) {} // ok
+  O(O&& other) : b(other.b) {} // ok
   const B b;
 };
 
 struct P {
-  P(O &&other) : b(other.b) {} // ok
+  P(O&& other) : b(other.b) {} // ok
   B b;
 };
 

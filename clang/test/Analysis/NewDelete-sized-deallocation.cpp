@@ -29,7 +29,7 @@
 void leak() {
   int *x = new int; // expected-note{{Memory is allocated}}
 } // expected-warning{{Potential leak of memory pointed to by 'x'}}
-// expected-note@-1{{Potential leak of memory pointed to by 'x'}}
+  // expected-note@-1{{Potential leak of memory pointed to by 'x'}}
 
 // This function was incorrectly diagnosed as leak under -fsized-deallocation
 // because the sized operator delete was mistaken for a custom delete.

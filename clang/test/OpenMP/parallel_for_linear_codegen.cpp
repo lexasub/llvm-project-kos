@@ -52,45 +52,45 @@ int main() {
   [&]() {
   // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
   // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* [[G]])
-#pragma omp parallel for linear(g : 5)
-    for (int i = 0; i < 2; ++i) {
-      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: [[G_START_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: alloca i{{[0-9]+}},
-      // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // LAMBDA: store i32 0,
-      // LAMBDA: [[GTID_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}
-      // LAMBDA: [[GTID:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_REF]]
-      // LAMBDA: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
-      // LAMBDA: [[VAL:%.+]] = load i32, i32* [[G_START_ADDR]]
-      // LAMBDA: [[CNT:%.+]] = load i32, i32*
-      // LAMBDA: [[MUL:%.+]] = mul nsw i32 [[CNT]], 5
-      // LAMBDA: [[ADD:%.+]] = add nsw i32 [[VAL]], [[MUL]]
-      // LAMBDA: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
-      // LAMBDA: [[VAL:%.+]] = load i32, i32* [[G_PRIVATE_ADDR]],
-      // LAMBDA: [[ADD:%.+]] = add nsw i32 [[VAL]], 5
-      // LAMBDA: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
-      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
-      // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-      // LAMBDA: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID]])
-      g += 5;
-      [&]() {
-        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-        g = 2;
-        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
-      }();
-    }
+#pragma omp parallel for linear(g:5)
+  for (int i = 0; i < 2; ++i) {
+    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: [[G_START_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: alloca i{{[0-9]+}},
+    // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // LAMBDA: store i32 0,
+    // LAMBDA: [[GTID_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}
+    // LAMBDA: [[GTID:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_REF]]
+    // LAMBDA: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
+    // LAMBDA: [[VAL:%.+]] = load i32, i32* [[G_START_ADDR]]
+    // LAMBDA: [[CNT:%.+]] = load i32, i32*
+    // LAMBDA: [[MUL:%.+]] = mul nsw i32 [[CNT]], 5
+    // LAMBDA: [[ADD:%.+]] = add nsw i32 [[VAL]], [[MUL]]
+    // LAMBDA: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
+    // LAMBDA: [[VAL:%.+]] = load i32, i32* [[G_PRIVATE_ADDR]],
+    // LAMBDA: [[ADD:%.+]] = add nsw i32 [[VAL]], 5
+    // LAMBDA: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
+    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+    // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
+    // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+    // LAMBDA: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID]])
+    g += 5;
+    [&]() {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      g = 2;
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
+    }();
+  }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -100,46 +100,46 @@ int main() {
   ^{
   // BLOCKS: define{{.*}} internal{{.*}} void {{.+}}(i8*
   // BLOCKS: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* [[G]])
-#pragma omp parallel for linear(g : 5)
-    for (int i = 0; i < 2; ++i) {
-      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: [[G_START_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: alloca i{{[0-9]+}},
-      // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-      // BLOCKS: store i32 0,
-      // BLOCKS: [[GTID_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}
-      // BLOCKS: [[GTID:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_REF]]
-      // BLOCKS: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
-      // BLOCKS: [[VAL:%.+]] = load i32, i32* [[G_START_ADDR]]
-      // BLOCKS: [[CNT:%.+]] = load i32, i32*
-      // BLOCKS: [[MUL:%.+]] = mul nsw i32 [[CNT]], 5
-      // BLOCKS: [[ADD:%.+]] = add nsw i32 [[VAL]], [[MUL]]
-      // BLOCKS: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
-      // BLOCKS: [[VAL:%.+]] = load i32, i32* [[G_PRIVATE_ADDR]],
-      // BLOCKS: [[ADD:%.+]] = add nsw i32 [[VAL]], 5
-      // BLOCKS: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
+#pragma omp parallel for linear(g:5)
+  for (int i = 0; i < 2; ++i) {
+    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: [[G_START_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: alloca i{{[0-9]+}},
+    // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+    // BLOCKS: store i32 0,
+    // BLOCKS: [[GTID_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}
+    // BLOCKS: [[GTID:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_REF]]
+    // BLOCKS: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
+    // BLOCKS: [[VAL:%.+]] = load i32, i32* [[G_START_ADDR]]
+    // BLOCKS: [[CNT:%.+]] = load i32, i32*
+    // BLOCKS: [[MUL:%.+]] = mul nsw i32 [[CNT]], 5
+    // BLOCKS: [[ADD:%.+]] = add nsw i32 [[VAL]], [[MUL]]
+    // BLOCKS: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
+    // BLOCKS: [[VAL:%.+]] = load i32, i32* [[G_PRIVATE_ADDR]],
+    // BLOCKS: [[ADD:%.+]] = add nsw i32 [[VAL]], 5
+    // BLOCKS: store i32 [[ADD]], i32* [[G_PRIVATE_ADDR]],
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
+    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+    // BLOCKS: call void {{%.+}}(i8
+    // BLOCKS: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID]])
+    g += 5;
+    g = 1;
+    ^{
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      g = 2;
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
+      // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
       // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: call void {{%.+}}(i8
-      // BLOCKS: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID]])
-      g += 5;
-      g = 1;
-      ^{
-        // BLOCKS: define {{.+}} void {{@.+}}(i8*
-        g = 2;
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
-        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-        // BLOCKS: ret
-      }();
-    }
+      // BLOCKS: ret
+    }();
+  }
   }();
   return 0;
 #else
@@ -254,3 +254,4 @@ int main() {
 // CHECK: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 %{{.+}})
 // CHECK: ret void
 #endif
+

@@ -125,7 +125,7 @@ class JSONNodeDumper
   friend class JSONDumper;
 
   const SourceManager &SM;
-  ASTContext &Ctx;
+  ASTContext& Ctx;
   ASTNameGenerator ASTNameGen;
   PrintingPolicy PrintPolicy;
   const comments::CommandTraits *Traits;

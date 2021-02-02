@@ -17,11 +17,9 @@ namespace cppcoreguidelines {
 
 /// Flags slicing (incomplete copying of an object's state) of member variables
 /// or vtable. See:
-///   -
-///   https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#es63-dont-slice
+///   - https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#es63-dont-slice
 ///     for the former, and
-///   -
-///   https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#c145-access-polymorphic-objects-through-pointers-and-references
+///   - https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#c145-access-polymorphic-objects-through-pointers-and-references
 ///     for the latter
 ///
 /// For the user-facing documentation see:

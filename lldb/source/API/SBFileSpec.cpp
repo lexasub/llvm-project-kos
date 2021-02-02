@@ -54,8 +54,8 @@ SBFileSpec::SBFileSpec(const char *path, bool resolve)
 SBFileSpec::~SBFileSpec() = default;
 
 const SBFileSpec &SBFileSpec::operator=(const SBFileSpec &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBFileSpec &, SBFileSpec, operator=,
-                     (const lldb::SBFileSpec &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBFileSpec &,
+                     SBFileSpec, operator=,(const lldb::SBFileSpec &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -63,15 +63,15 @@ const SBFileSpec &SBFileSpec::operator=(const SBFileSpec &rhs) {
 }
 
 bool SBFileSpec::operator==(const SBFileSpec &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFileSpec, operator==,
-                           (const SBFileSpec &rhs), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBFileSpec, operator==,(const SBFileSpec &rhs),
+                           rhs);
 
   return ref() == rhs.ref();
 }
 
 bool SBFileSpec::operator!=(const SBFileSpec &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBFileSpec, operator!=,
-                           (const SBFileSpec &rhs), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBFileSpec, operator!=,(const SBFileSpec &rhs),
+                           rhs);
 
   return !(*this == rhs);
 }
@@ -191,17 +191,18 @@ void SBFileSpec::AppendPathComponent(const char *fn) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBFileSpec>(Registry &R) {
+template <>
+void RegisterMethods<SBFileSpec>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpec, ());
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpec, (const lldb::SBFileSpec &));
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpec, (const char *));
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpec, (const char *, bool));
-  LLDB_REGISTER_METHOD(const lldb::SBFileSpec &, SBFileSpec, operator=,
-                       (const lldb::SBFileSpec &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBFileSpec, operator==,
-                             (const lldb::SBFileSpec &));
-  LLDB_REGISTER_METHOD_CONST(bool, SBFileSpec, operator!=,
-                             (const lldb::SBFileSpec &));
+  LLDB_REGISTER_METHOD(const lldb::SBFileSpec &,
+                       SBFileSpec, operator=,(const lldb::SBFileSpec &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBFileSpec, operator==,(const lldb::SBFileSpec &));
+  LLDB_REGISTER_METHOD_CONST(bool,
+                             SBFileSpec, operator!=,(const lldb::SBFileSpec &));
   LLDB_REGISTER_METHOD_CONST(bool, SBFileSpec, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBFileSpec, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBFileSpec, Exists, ());
@@ -218,5 +219,5 @@ template <> void RegisterMethods<SBFileSpec>(Registry &R) {
   LLDB_REGISTER_CHAR_PTR_METHOD_CONST(uint32_t, SBFileSpec, GetPath);
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

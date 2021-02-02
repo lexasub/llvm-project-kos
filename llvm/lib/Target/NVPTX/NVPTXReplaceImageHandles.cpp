@@ -12,11 +12,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "NVPTX.h"
 #include "NVPTXMachineFunctionInfo.h"
 #include "NVPTXSubtarget.h"
 #include "NVPTXTargetMachine.h"
+#include "MCTargetDesc/NVPTXBaseInfo.h"
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
@@ -39,19 +39,18 @@ public:
   StringRef getPassName() const override {
     return "NVPTX Replace Image Handles";
   }
-
 private:
   bool processInstr(MachineInstr &MI);
   void replaceImageHandle(MachineOperand &Op, MachineFunction &MF);
   bool findIndexForHandle(MachineOperand &Op, MachineFunction &MF,
                           unsigned &Idx);
 };
-} // namespace
+}
 
 char NVPTXReplaceImageHandles::ID = 0;
 
 NVPTXReplaceImageHandles::NVPTXReplaceImageHandles()
-    : MachineFunctionPass(ID) {}
+  : MachineFunctionPass(ID) {}
 
 bool NVPTXReplaceImageHandles::runOnMachineFunction(MachineFunction &MF) {
   bool Changed = false;
@@ -59,8 +58,8 @@ bool NVPTXReplaceImageHandles::runOnMachineFunction(MachineFunction &MF) {
 
   for (MachineFunction::iterator BI = MF.begin(), BE = MF.end(); BI != BE;
        ++BI) {
-    for (MachineBasicBlock::iterator I = (*BI).begin(), E = (*BI).end(); I != E;
-         ++I) {
+    for (MachineBasicBlock::iterator I = (*BI).begin(), E = (*BI).end();
+         I != E; ++I) {
       MachineInstr &MI = *I;
       Changed |= processInstr(MI);
     }
@@ -71,8 +70,7 @@ bool NVPTXReplaceImageHandles::runOnMachineFunction(MachineFunction &MF) {
   // but we need the handle access to be eliminated because they are not
   // valid instructions when image handles are disabled.
   for (DenseSet<MachineInstr *>::iterator I = InstrsToRemove.begin(),
-                                          E = InstrsToRemove.end();
-       I != E; ++I) {
+       E = InstrsToRemove.end(); I != E; ++I) {
     (*I)->eraseFromParent();
   }
   return Changed;
@@ -96,8 +94,7 @@ bool NVPTXReplaceImageHandles::processInstr(MachineInstr &MI) {
     return true;
   } else if (MCID.TSFlags & NVPTXII::IsSuldMask) {
     unsigned VecSize =
-        1 << (((MCID.TSFlags & NVPTXII::IsSuldMask) >> NVPTXII::IsSuldShift) -
-              1);
+      1 << (((MCID.TSFlags & NVPTXII::IsSuldMask) >> NVPTXII::IsSuldShift) - 1);
 
     // For a surface load of vector size N, the Nth operand will be the surfref
     MachineOperand &SurfHandle = MI.getOperand(VecSize);
@@ -124,17 +121,16 @@ bool NVPTXReplaceImageHandles::processInstr(MachineInstr &MI) {
   return false;
 }
 
-void NVPTXReplaceImageHandles::replaceImageHandle(MachineOperand &Op,
-                                                  MachineFunction &MF) {
+void NVPTXReplaceImageHandles::
+replaceImageHandle(MachineOperand &Op, MachineFunction &MF) {
   unsigned Idx;
   if (findIndexForHandle(Op, MF, Idx)) {
     Op.ChangeToImmediate(Idx);
   }
 }
 
-bool NVPTXReplaceImageHandles::findIndexForHandle(MachineOperand &Op,
-                                                  MachineFunction &MF,
-                                                  unsigned &Idx) {
+bool NVPTXReplaceImageHandles::
+findIndexForHandle(MachineOperand &Op, MachineFunction &MF, unsigned &Idx) {
   const MachineRegisterInfo &MRI = MF.getRegInfo();
   NVPTXMachineFunctionInfo *MFI = MF.getInfo<NVPTXMachineFunctionInfo>();
 
@@ -159,7 +155,7 @@ bool NVPTXReplaceImageHandles::findIndexForHandle(MachineOperand &Op,
     std::string ParamBaseName = std::string(MF.getName());
     ParamBaseName += "_param_";
     assert(Sym.startswith(ParamBaseName) && "Invalid symbol reference");
-    unsigned Param = atoi(Sym.data() + ParamBaseName.size());
+    unsigned Param = atoi(Sym.data()+ParamBaseName.size());
     std::string NewSym;
     raw_string_ostream NewSymStr(NewSym);
     NewSymStr << MF.getName() << "_param_" << Param;

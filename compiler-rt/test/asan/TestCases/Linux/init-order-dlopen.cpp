@@ -19,7 +19,7 @@ struct Bar {
 
 int get_foo_val();
 Bar global_bar(get_foo_val());
-#else // SHARED LIB
+#else  // SHARED LIB
 #include <dlfcn.h>
 #include <stdio.h>
 #include <string>
@@ -44,4 +44,4 @@ int main(int argc, char *argv[]) {
   printf("%d\n", get_foo_val());
   return 0;
 }
-#endif // SHARED_LIB
+#endif  // SHARED_LIB

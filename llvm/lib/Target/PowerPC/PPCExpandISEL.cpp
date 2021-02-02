@@ -253,10 +253,10 @@ void PPCExpandISEL::expandAndMergeISELs() {
 
         expandMergeableISELs(SubISELList);
       } else { // Normal cases expansion disabled
-        I++;   // leave the ISEL as it is
+        I++; // leave the ISEL as it is
       }
     } // end while
-  }   // end for
+  } // end for
 }
 
 void PPCExpandISEL::handleSpecialCases(BlockISELList &BIL,
@@ -427,9 +427,9 @@ void PPCExpandISEL::populateBlocks(BlockISELList &BIL) {
 
     MachineOperand &Dest = MI->getOperand(0);       // location to store to
     MachineOperand &TrueValue = MI->getOperand(1);  // Value to store if
-                                                    // condition is true
+                                                       // condition is true
     MachineOperand &FalseValue = MI->getOperand(2); // Value to store if
-                                                    // condition is false
+                                                       // condition is false
 
     LLVM_DEBUG(dbgs() << "Dest: " << Dest << "\n");
     LLVM_DEBUG(dbgs() << "TrueValue: " << TrueValue << "\n");

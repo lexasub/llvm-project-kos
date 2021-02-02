@@ -16,26 +16,28 @@ int main() {
     uint64_t i64[64];
   } fxsave;
 
-  asm volatile("finit\n\t"
-               "int3\n\t"
+  asm volatile(
+    "finit\n\t"
+    "int3\n\t"
 #if defined(__x86_64__)
-               "fxsave64 %2\n\t"
+    "fxsave64 %2\n\t"
 #else
-               "fxsave %2\n\t"
+    "fxsave %2\n\t"
 #endif
-               "fnstenv %1\n\t"
-               "fnclex\n\t"
-               "fstpt 0x00(%0)\n\t"
-               "fstpt 0x10(%0)\n\t"
-               "fstpt 0x20(%0)\n\t"
-               "fstpt 0x30(%0)\n\t"
-               "fstpt 0x40(%0)\n\t"
-               "fstpt 0x50(%0)\n\t"
-               "fstpt 0x60(%0)\n\t"
-               "fstpt 0x70(%0)\n\t"
-               :
-               : "a"(st), "m"(env), "m"(fxsave)
-               : "st");
+    "fnstenv %1\n\t"
+    "fnclex\n\t"
+    "fstpt 0x00(%0)\n\t"
+    "fstpt 0x10(%0)\n\t"
+    "fstpt 0x20(%0)\n\t"
+    "fstpt 0x30(%0)\n\t"
+    "fstpt 0x40(%0)\n\t"
+    "fstpt 0x50(%0)\n\t"
+    "fstpt 0x60(%0)\n\t"
+    "fstpt 0x70(%0)\n\t"
+    :
+    : "a"(st), "m"(env), "m"(fxsave)
+    : "st"
+  );
 
   assert(env[0] == fxsave.i16[0]);
   assert(env[2] == fxsave.i16[1]);

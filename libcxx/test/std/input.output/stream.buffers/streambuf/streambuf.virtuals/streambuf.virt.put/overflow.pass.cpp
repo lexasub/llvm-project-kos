@@ -18,13 +18,16 @@
 
 #include "test_macros.h"
 
-struct test : public std::basic_streambuf<char> {
-  test() {}
+struct test
+    : public std::basic_streambuf<char>
+{
+    test() {}
 };
 
-int main(int, char**) {
-  test t;
-  assert(t.sputc('A') == -1);
+int main(int, char**)
+{
+    test t;
+    assert(t.sputc('A') == -1);
 
   return 0;
 }

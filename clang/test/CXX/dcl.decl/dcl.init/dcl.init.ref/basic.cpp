@@ -3,15 +3,15 @@
 
 // PR5787
 class C {
-public:
+ public:
   ~C() {}
 };
 
 template <typename T>
 class E {
-public:
-  E &Foo(const C &);
-  E &Bar() { return Foo(C()); }
+ public:
+  E& Foo(const C&);
+  E& Bar() { return Foo(C()); }
 };
 
 void Test() {

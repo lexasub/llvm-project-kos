@@ -95,8 +95,8 @@ static DecodeStatus DecodeCRRCRegisterClass(MCInst &Inst, uint64_t RegNo,
 }
 
 static DecodeStatus DecodeCRBITRCRegisterClass(MCInst &Inst, uint64_t RegNo,
-                                               uint64_t Address,
-                                               const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, CRBITRegs);
 }
 
@@ -131,14 +131,14 @@ static DecodeStatus DecodeVSRCRegisterClass(MCInst &Inst, uint64_t RegNo,
 }
 
 static DecodeStatus DecodeVSFRCRegisterClass(MCInst &Inst, uint64_t RegNo,
-                                             uint64_t Address,
-                                             const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, VSFRegs);
 }
 
 static DecodeStatus DecodeVSSRCRegisterClass(MCInst &Inst, uint64_t RegNo,
-                                             uint64_t Address,
-                                             const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, VSSRegs);
 }
 
@@ -149,8 +149,8 @@ static DecodeStatus DecodeGPRCRegisterClass(MCInst &Inst, uint64_t RegNo,
 }
 
 static DecodeStatus DecodeGPRC_NOR0RegisterClass(MCInst &Inst, uint64_t RegNo,
-                                                 uint64_t Address,
-                                                 const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, RRegsNoR0);
 }
 
@@ -161,8 +161,8 @@ static DecodeStatus DecodeG8RCRegisterClass(MCInst &Inst, uint64_t RegNo,
 }
 
 static DecodeStatus DecodeG8RC_NOX0RegisterClass(MCInst &Inst, uint64_t RegNo,
-                                                 uint64_t Address,
-                                                 const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, XRegsNoX0);
 }
 
@@ -170,8 +170,8 @@ static DecodeStatus DecodeG8RC_NOX0RegisterClass(MCInst &Inst, uint64_t RegNo,
 #define DecodePointerLikeRegClass1 DecodeGPRC_NOR0RegisterClass
 
 static DecodeStatus DecodeSPERCRegisterClass(MCInst &Inst, uint64_t RegNo,
-                                             uint64_t Address,
-                                             const void *Decoder) {
+                                            uint64_t Address,
+                                            const void *Decoder) {
   return decodeRegisterClass(Inst, RegNo, SPERegs);
 }
 
@@ -190,7 +190,7 @@ static DecodeStatus DecodeVSRpRCRegisterClass(MCInst &Inst, uint64_t RegNo,
 #define DecodeQSRCRegisterClass DecodeQFRCRegisterClass
 #define DecodeQBRCRegisterClass DecodeQFRCRegisterClass
 
-template <unsigned N>
+template<unsigned N>
 static DecodeStatus decodeUImmOperand(MCInst &Inst, uint64_t Imm,
                                       int64_t Address, const void *Decoder) {
   assert(isUInt<N>(Imm) && "Invalid immediate");
@@ -198,7 +198,7 @@ static DecodeStatus decodeUImmOperand(MCInst &Inst, uint64_t Imm,
   return MCDisassembler::Success;
 }
 
-template <unsigned N>
+template<unsigned N>
 static DecodeStatus decodeSImmOperand(MCInst &Inst, uint64_t Imm,
                                       int64_t Address, const void *Decoder) {
   assert(isUInt<N>(Imm) && "Invalid immediate");
@@ -234,8 +234,7 @@ static DecodeStatus decodeMemRIOperands(MCInst &Inst, uint64_t Imm,
   assert(Base < 32 && "Invalid base register");
 
   switch (Inst.getOpcode()) {
-  default:
-    break;
+  default: break;
   case PPC::LBZU:
   case PPC::LHAU:
   case PPC::LHZU:
@@ -281,8 +280,7 @@ static DecodeStatus decodeMemRIXOperands(MCInst &Inst, uint64_t Imm,
 }
 
 static DecodeStatus decodeMemRIX16Operands(MCInst &Inst, uint64_t Imm,
-                                           int64_t Address,
-                                           const void *Decoder) {
+                                         int64_t Address, const void *Decoder) {
   // Decode the memrix16 field (imm, reg), which has the low 12-bits as the
   // displacement with 16-byte aligned, and the next 5 bits as the register #.
 
@@ -326,7 +324,7 @@ static DecodeStatus decodeMemRI34Operands(MCInst &Inst, uint64_t Imm,
 }
 
 static DecodeStatus decodeSPE8Operands(MCInst &Inst, uint64_t Imm,
-                                       int64_t Address, const void *Decoder) {
+                                         int64_t Address, const void *Decoder) {
   // Decode the spe8disp field (imm, reg), which has the low 5-bits as the
   // displacement with 8-byte aligned, and the next 5 bits as the register #.
 
@@ -341,7 +339,7 @@ static DecodeStatus decodeSPE8Operands(MCInst &Inst, uint64_t Imm,
 }
 
 static DecodeStatus decodeSPE4Operands(MCInst &Inst, uint64_t Imm,
-                                       int64_t Address, const void *Decoder) {
+                                         int64_t Address, const void *Decoder) {
   // Decode the spe4disp field (imm, reg), which has the low 5-bits as the
   // displacement with 4-byte aligned, and the next 5 bits as the register #.
 
@@ -356,7 +354,7 @@ static DecodeStatus decodeSPE4Operands(MCInst &Inst, uint64_t Imm,
 }
 
 static DecodeStatus decodeSPE2Operands(MCInst &Inst, uint64_t Imm,
-                                       int64_t Address, const void *Decoder) {
+                                         int64_t Address, const void *Decoder) {
   // Decode the spe2disp field (imm, reg), which has the low 5-bits as the
   // displacement with 2-byte aligned, and the next 5 bits as the register #.
 
@@ -387,8 +385,8 @@ DecodeStatus PPCDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
                                              ArrayRef<uint8_t> Bytes,
                                              uint64_t Address,
                                              raw_ostream &CS) const {
-  auto *ReadFunc =
-      IsLittleEndian ? support::endian::read32le : support::endian::read32be;
+  auto *ReadFunc = IsLittleEndian ? support::endian::read32le
+                                  : support::endian::read32be;
 
   // If this is an 8-byte prefixed instruction, handle it here.
   // Note: prefixed instructions aren't technically 8-byte entities - the prefix
@@ -402,8 +400,8 @@ DecodeStatus PPCDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
     uint32_t Prefix = ReadFunc(Bytes.data());
     uint32_t BaseInst = ReadFunc(Bytes.data() + 4);
     uint64_t Inst = BaseInst | (uint64_t)Prefix << 32;
-    DecodeStatus result =
-        decodeInstruction(DecoderTable64, MI, Inst, Address, this, STI);
+    DecodeStatus result = decodeInstruction(DecoderTable64, MI, Inst, Address,
+                                            this, STI);
     if (result != MCDisassembler::Fail) {
       Size = 8;
       return result;

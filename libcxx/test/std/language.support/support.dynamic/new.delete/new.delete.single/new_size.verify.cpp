@@ -17,9 +17,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  ::operator new(
-      4); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+int main(int, char**)
+{
+    ::operator new(4); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
 
-  return 0;
+    return 0;
 }

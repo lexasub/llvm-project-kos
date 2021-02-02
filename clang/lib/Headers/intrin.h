@@ -238,9 +238,10 @@ unsigned __int64 _shlx_u64(unsigned __int64, unsigned int);
 unsigned __int64 _shrx_u64(unsigned __int64, unsigned int);
 __int64 __mulh(__int64, __int64);
 unsigned __int64 __umulh(unsigned __int64, unsigned __int64);
-__int64 _mul128(__int64, __int64, __int64 *);
-unsigned __int64 _umul128(unsigned __int64, unsigned __int64,
-                          unsigned __int64 *);
+__int64 _mul128(__int64, __int64, __int64*);
+unsigned __int64 _umul128(unsigned __int64,
+                          unsigned __int64,
+                          unsigned __int64*);
 
 #endif /* __x86_64__ */
 
@@ -251,8 +252,7 @@ unsigned char _BitScanReverse64(unsigned long *_Index, unsigned __int64 _Mask);
 
 #endif
 
-#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) ||            \
-    defined(__aarch64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)
 __int64 _InterlockedDecrement64(__int64 volatile *_Addend);
 __int64 _InterlockedExchange64(__int64 volatile *_Target, __int64 _Value);
 __int64 _InterlockedExchangeAdd64(__int64 volatile *_Addend, __int64 _Value);
@@ -277,11 +277,9 @@ short _InterlockedExchangeAdd16_rel(short volatile *_Addend, short _Value);
 long _InterlockedExchangeAdd_acq(long volatile *_Addend, long _Value);
 long _InterlockedExchangeAdd_nf(long volatile *_Addend, long _Value);
 long _InterlockedExchangeAdd_rel(long volatile *_Addend, long _Value);
-__int64 _InterlockedExchangeAdd64_acq(__int64 volatile *_Addend,
-                                      __int64 _Value);
+__int64 _InterlockedExchangeAdd64_acq(__int64 volatile *_Addend, __int64 _Value);
 __int64 _InterlockedExchangeAdd64_nf(__int64 volatile *_Addend, __int64 _Value);
-__int64 _InterlockedExchangeAdd64_rel(__int64 volatile *_Addend,
-                                      __int64 _Value);
+__int64 _InterlockedExchangeAdd64_rel(__int64 volatile *_Addend, __int64 _Value);
 #endif
 /*----------------------------------------------------------------------------*\
 |* Interlocked Increment
@@ -401,31 +399,29 @@ __int64 _InterlockedExchange64_rel(__int64 volatile *_Target, __int64 _Value);
 \*----------------------------------------------------------------------------*/
 #if defined(__arm__) || defined(__aarch64__)
 char _InterlockedCompareExchange8_acq(char volatile *_Destination,
-                                      char _Exchange, char _Comparand);
+                             char _Exchange, char _Comparand);
 char _InterlockedCompareExchange8_nf(char volatile *_Destination,
-                                     char _Exchange, char _Comparand);
+                             char _Exchange, char _Comparand);
 char _InterlockedCompareExchange8_rel(char volatile *_Destination,
-                                      char _Exchange, char _Comparand);
+                             char _Exchange, char _Comparand);
 short _InterlockedCompareExchange16_acq(short volatile *_Destination,
-                                        short _Exchange, short _Comparand);
+                              short _Exchange, short _Comparand);
 short _InterlockedCompareExchange16_nf(short volatile *_Destination,
-                                       short _Exchange, short _Comparand);
+                              short _Exchange, short _Comparand);
 short _InterlockedCompareExchange16_rel(short volatile *_Destination,
-                                        short _Exchange, short _Comparand);
+                              short _Exchange, short _Comparand);
 long _InterlockedCompareExchange_acq(long volatile *_Destination,
-                                     long _Exchange, long _Comparand);
-long _InterlockedCompareExchange_nf(long volatile *_Destination, long _Exchange,
-                                    long _Comparand);
+                              long _Exchange, long _Comparand);
+long _InterlockedCompareExchange_nf(long volatile *_Destination,
+                              long _Exchange, long _Comparand);
 long _InterlockedCompareExchange_rel(long volatile *_Destination,
-                                     long _Exchange, long _Comparand);
+                              long _Exchange, long _Comparand);
 __int64 _InterlockedCompareExchange64_acq(__int64 volatile *_Destination,
-                                          __int64 _Exchange,
-                                          __int64 _Comparand);
+                              __int64 _Exchange, __int64 _Comparand);
 __int64 _InterlockedCompareExchange64_nf(__int64 volatile *_Destination,
-                                         __int64 _Exchange, __int64 _Comparand);
+                              __int64 _Exchange, __int64 _Comparand);
 __int64 _InterlockedCompareExchange64_rel(__int64 volatile *_Destination,
-                                          __int64 _Exchange,
-                                          __int64 _Comparand);
+                              __int64 _Exchange, __int64 _Comparand);
 #endif
 #if defined(__x86_64__) || defined(__aarch64__)
 unsigned char _InterlockedCompareExchange128(__int64 volatile *_Destination,
@@ -455,10 +451,8 @@ unsigned char _InterlockedCompareExchange128_rel(__int64 volatile *_Destination,
 static __inline__ void __DEFAULT_FN_ATTRS __movsb(unsigned char *__dst,
                                                   unsigned char const *__src,
                                                   size_t __n) {
-  __asm__ __volatile__("rep movsb"
-                       : "+D"(__dst), "+S"(__src), "+c"(__n)
-                       :
-                       : "memory");
+  __asm__ __volatile__("rep movsb" : "+D"(__dst), "+S"(__src), "+c"(__n)
+                       : : "memory");
 }
 static __inline__ void __DEFAULT_FN_ATTRS __movsd(unsigned long *__dst,
                                                   unsigned long const *__src,
@@ -504,9 +498,7 @@ static __inline__ void __DEFAULT_FN_ATTRS __movsq(
 static __inline__ void __DEFAULT_FN_ATTRS __stosq(unsigned __int64 *__dst,
                                                   unsigned __int64 __x,
                                                   size_t __n) {
-  __asm__ __volatile__("rep stosq"
-                       : "+D"(__dst), "+c"(__n)
-                       : "a"(__x)
+  __asm__ __volatile__("rep stosq" : "+D"(__dst), "+c"(__n) : "a"(__x)
                        : "memory");
 }
 #endif
@@ -547,7 +539,7 @@ __int64 _ReadStatusReg(int);
 void _WriteStatusReg(int, __int64);
 
 unsigned short __cdecl _byteswap_ushort(unsigned short val);
-unsigned long __cdecl _byteswap_ulong(unsigned long val);
+unsigned long __cdecl _byteswap_ulong (unsigned long val);
 unsigned __int64 __cdecl _byteswap_uint64(unsigned __int64 val);
 #endif
 
@@ -565,20 +557,20 @@ __readmsr(unsigned long __register) {
   // undefined.
   unsigned long __edx;
   unsigned long __eax;
-  __asm__("rdmsr" : "=d"(__edx), "=a"(__eax) : "c"(__register));
+  __asm__ ("rdmsr" : "=d"(__edx), "=a"(__eax) : "c"(__register));
   return (((unsigned __int64)__edx) << 32) | (unsigned __int64)__eax;
 }
 #endif
 
 static __inline__ unsigned __LPTRINT_TYPE__ __DEFAULT_FN_ATTRS __readcr3(void) {
   unsigned __LPTRINT_TYPE__ __cr3_val;
-  __asm__ __volatile__("mov %%cr3, %0" : "=r"(__cr3_val) : : "memory");
+  __asm__ __volatile__ ("mov %%cr3, %0" : "=r"(__cr3_val) : : "memory");
   return __cr3_val;
 }
 
 static __inline__ void __DEFAULT_FN_ATTRS
 __writecr3(unsigned __INTPTR_TYPE__ __cr3_val) {
-  __asm__("mov %0, %%cr3" : : "r"(__cr3_val) : "memory");
+  __asm__ ("mov %0, %%cr3" : : "r"(__cr3_val) : "memory");
 }
 
 #ifdef __cplusplus

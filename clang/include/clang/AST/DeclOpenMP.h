@@ -1,5 +1,4 @@
-//===- DeclOpenMP.h - Classes for representing OpenMP directives -*- C++
-//-*-===//
+//===- DeclOpenMP.h - Classes for representing OpenMP directives -*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -45,12 +44,12 @@ protected:
 
   /// Build instance of directive.
   template <typename... Params>
-  OMPDeclarativeDirective(Params &&...P) : U(std::forward<Params>(P)...) {}
+  OMPDeclarativeDirective(Params &&... P) : U(std::forward<Params>(P)...) {}
 
   template <typename T, typename... Params>
   static T *createDirective(const ASTContext &C, DeclContext *DC,
                             ArrayRef<OMPClause *> Clauses, unsigned NumChildren,
-                            Params &&...P) {
+                            Params &&... P) {
     auto *Inst = new (C, DC, size(Clauses.size(), NumChildren))
         T(DC, std::forward<Params>(P)...);
     Inst->Data = OMPChildren::Create(Inst + 1, Clauses,
@@ -62,7 +61,7 @@ protected:
   template <typename T, typename... Params>
   static T *createEmptyDirective(const ASTContext &C, unsigned ID,
                                  unsigned NumClauses, unsigned NumChildren,
-                                 Params &&...P) {
+                                 Params &&... P) {
     auto *Inst = new (C, ID, size(NumClauses, NumChildren))
         T(nullptr, std::forward<Params>(P)...);
     Inst->Data = OMPChildren::CreateEmpty(
@@ -131,9 +130,10 @@ class OMPThreadPrivateDecl final : public OMPDeclarativeDirective<Decl> {
 
 public:
   static OMPThreadPrivateDecl *Create(ASTContext &C, DeclContext *DC,
-                                      SourceLocation L, ArrayRef<Expr *> VL);
-  static OMPThreadPrivateDecl *CreateDeserialized(ASTContext &C, unsigned ID,
-                                                  unsigned N);
+                                      SourceLocation L,
+                                      ArrayRef<Expr *> VL);
+  static OMPThreadPrivateDecl *CreateDeserialized(ASTContext &C,
+                                                  unsigned ID, unsigned N);
 
   typedef MutableArrayRef<Expr *>::iterator varlist_iterator;
   typedef ArrayRef<const Expr *>::iterator varlist_const_iterator;
@@ -433,8 +433,7 @@ public:
   using clauselist_iterator = MutableArrayRef<OMPClause *>::iterator;
   using clauselist_const_iterator = ArrayRef<const OMPClause *>::iterator;
   using clauselist_range = llvm::iterator_range<clauselist_iterator>;
-  using clauselist_const_range =
-      llvm::iterator_range<clauselist_const_iterator>;
+  using clauselist_const_range = llvm::iterator_range<clauselist_const_iterator>;
 
   unsigned clauselist_size() const { return Data->getNumClauses(); }
   bool clauselist_empty() const { return Data->getClauses().empty(); }
@@ -506,8 +505,7 @@ public:
   using clauselist_iterator = MutableArrayRef<OMPClause *>::iterator;
   using clauselist_const_iterator = ArrayRef<const OMPClause *>::iterator;
   using clauselist_range = llvm::iterator_range<clauselist_iterator>;
-  using clauselist_const_range =
-      llvm::iterator_range<clauselist_const_iterator>;
+  using clauselist_const_range = llvm::iterator_range<clauselist_const_iterator>;
 
   unsigned varlist_size() const { return Data->getNumChildren(); }
   bool varlist_empty() const { return Data->getChildren().empty(); }

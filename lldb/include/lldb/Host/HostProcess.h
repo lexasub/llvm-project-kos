@@ -52,6 +52,6 @@ public:
 private:
   std::shared_ptr<HostNativeProcessBase> m_native_process;
 };
-} // namespace lldb_private
+}
 
 #endif

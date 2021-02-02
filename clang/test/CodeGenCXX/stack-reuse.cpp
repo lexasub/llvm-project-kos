@@ -26,46 +26,46 @@ struct Combiner {
 
 extern S_small foo_small();
 extern S_large foo_large();
-extern void bar_small(S_small *);
-extern void bar_large(S_large *);
+extern void bar_small(S_small*);
+extern void bar_large(S_large*);
 
 // Prevent mangling of function names.
 extern "C" {
 
 void small_rvoed_unnamed_temporary_object() {
-  // CHECK-LABEL: define{{.*}} void @small_rvoed_unnamed_temporary_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_smallv
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_smallv
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @small_rvoed_unnamed_temporary_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_smallv
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_smallv
+// CHECK: call void @llvm.lifetime.end
 
   foo_small();
   foo_small();
 }
 
 void large_rvoed_unnamed_temporary_object() {
-  // CHECK-LABEL: define{{.*}} void @large_rvoed_unnamed_temporary_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_largev
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_largev
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @large_rvoed_unnamed_temporary_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_largev
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_largev
+// CHECK: call void @llvm.lifetime.end
 
   foo_large();
   foo_large();
 }
 
 void small_rvoed_named_temporary_object() {
-  // CHECK-LABEL: define{{.*}} void @small_rvoed_named_temporary_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_smallv
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_smallv
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @small_rvoed_named_temporary_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_smallv
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_smallv
+// CHECK: call void @llvm.lifetime.end
 
   {
     S_small s = foo_small();
@@ -76,13 +76,13 @@ void small_rvoed_named_temporary_object() {
 }
 
 void large_rvoed_named_temporary_object() {
-  // CHECK-LABEL: define{{.*}} void @large_rvoed_named_temporary_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_largev
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9foo_largev
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @large_rvoed_named_temporary_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_largev
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9foo_largev
+// CHECK: call void @llvm.lifetime.end
 
   {
     S_large s = foo_large();
@@ -93,13 +93,13 @@ void large_rvoed_named_temporary_object() {
 }
 
 void small_auto_object() {
-  // CHECK-LABEL: define{{.*}} void @small_auto_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9bar_smallP7S_small
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9bar_smallP7S_small
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @small_auto_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9bar_smallP7S_small
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9bar_smallP7S_small
+// CHECK: call void @llvm.lifetime.end
 
   {
     S_small s;
@@ -112,13 +112,13 @@ void small_auto_object() {
 }
 
 void large_auto_object() {
-  // CHECK-LABEL: define{{.*}} void @large_auto_object
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9bar_largeP7S_large
-  // CHECK: call void @llvm.lifetime.end
-  // CHECK: call void @llvm.lifetime.start
-  // CHECK: call void @_Z9bar_largeP7S_large
-  // CHECK: call void @llvm.lifetime.end
+// CHECK-LABEL: define{{.*}} void @large_auto_object
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9bar_largeP7S_large
+// CHECK: call void @llvm.lifetime.end
+// CHECK: call void @llvm.lifetime.start
+// CHECK: call void @_Z9bar_largeP7S_large
+// CHECK: call void @llvm.lifetime.end
 
   {
     S_large s;
@@ -131,15 +131,16 @@ void large_auto_object() {
 }
 
 int large_combiner_test(S_large s) {
-  // CHECK-LABEL: define{{.*}} i32 @large_combiner_test
-  // CHECK: [[T2:%.*]] = alloca %struct.Combiner
-  // CHECK: [[T1:%.*]] = alloca %struct.Combiner
-  // CHECK: [[T3:%.*]] = call %struct.Combiner* @_ZN8CombinerC1E7S_large(%struct.Combiner* {{[^,]*}} [[T1]], [9 x i32] %s.coerce)
-  // CHECK: call void @_ZN8Combiner1fEv(%struct.Combiner* nonnull sret(%struct.Combiner) align 4 [[T2]], %struct.Combiner* {{[^,]*}} [[T1]])
-  // CHECK: [[T4:%.*]] = getelementptr inbounds %struct.Combiner, %struct.Combiner* [[T2]], i32 0, i32 0, i32 0, i32 0
-  // CHECK: [[T5:%.*]] = load i32, i32* [[T4]]
-  // CHECK: ret i32 [[T5]]
+// CHECK-LABEL: define{{.*}} i32 @large_combiner_test
+// CHECK: [[T2:%.*]] = alloca %struct.Combiner
+// CHECK: [[T1:%.*]] = alloca %struct.Combiner
+// CHECK: [[T3:%.*]] = call %struct.Combiner* @_ZN8CombinerC1E7S_large(%struct.Combiner* {{[^,]*}} [[T1]], [9 x i32] %s.coerce)
+// CHECK: call void @_ZN8Combiner1fEv(%struct.Combiner* nonnull sret(%struct.Combiner) align 4 [[T2]], %struct.Combiner* {{[^,]*}} [[T1]])
+// CHECK: [[T4:%.*]] = getelementptr inbounds %struct.Combiner, %struct.Combiner* [[T2]], i32 0, i32 0, i32 0, i32 0
+// CHECK: [[T5:%.*]] = load i32, i32* [[T4]]
+// CHECK: ret i32 [[T5]]
 
   return Combiner(s).f().a.a[0];
 }
+
 }

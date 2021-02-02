@@ -51,7 +51,8 @@ void MCSectionXCOFF::PrintSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
       OS << "\t.toc\n";
       break;
     default:
-      report_fatal_error("Unhandled storage-mapping class for .data csect.");
+      report_fatal_error(
+          "Unhandled storage-mapping class for .data csect.");
     }
     return;
   }

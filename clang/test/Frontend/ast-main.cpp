@@ -4,17 +4,17 @@
 // RUN: diff %t1.ll %t2.ll
 
 // http://llvm.org/bugs/show_bug.cgi?id=15377
-template <typename T>
+template<typename T>
 struct S {
-  T *mf();
+    T *mf();
 };
-template <typename T>
+template<typename T>
 T *S<T>::mf() {
-  // warning: non-void function does not return a value [-Wreturn-type]
+    // warning: non-void function does not return a value [-Wreturn-type]
 }
 
 void f() {
-  S<int>().mf();
+    S<int>().mf();
 }
 
 int main() {

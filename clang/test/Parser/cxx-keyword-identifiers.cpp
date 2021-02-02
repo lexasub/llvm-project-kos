@@ -1,5 +1,6 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
+
 int foo1(int case, int throw, int y) { // expected-error {{invalid parameter name: 'case' is a keyword}} \
                                           expected-error {{invalid}}
   // Trailing parameters should be recovered.
@@ -7,7 +8,7 @@ int foo1(int case, int throw, int y) { // expected-error {{invalid parameter nam
 }
 
 int foo2(int case = 1); // expected-error {{invalid parameter}}
-int foo3(int const);    // ok: without parameter name.
+int foo3(int const); // ok: without parameter name.
 // ok: override has special meaning when used after method functions. it can be
 // used as name.
 int foo4(int override);

@@ -206,7 +206,9 @@ public:
 
   /// Target GOT "PC"-relative relocation supports encoding an additional
   /// binary expression with an offset?
-  bool supportGOTPCRelWithOffset() const { return SupportGOTPCRelWithOffset; }
+  bool supportGOTPCRelWithOffset() const {
+    return SupportGOTPCRelWithOffset;
+  }
 
   /// Target supports TLS offset relocation in debug section?
   bool supportDebugThreadLocalLocation() const {
@@ -214,15 +216,20 @@ public:
   }
 
   /// Get the target specific PC relative GOT entry relocation
-  virtual const MCExpr *getIndirectSymViaGOTPCRel(
-      const GlobalValue *GV, const MCSymbol *Sym, const MCValue &MV,
-      int64_t Offset, MachineModuleInfo *MMI, MCStreamer &Streamer) const {
+  virtual const MCExpr *getIndirectSymViaGOTPCRel(const GlobalValue *GV,
+                                                  const MCSymbol *Sym,
+                                                  const MCValue &MV,
+                                                  int64_t Offset,
+                                                  MachineModuleInfo *MMI,
+                                                  MCStreamer &Streamer) const {
     return nullptr;
   }
 
   /// If supported, return the section to use for the llvm.commandline
   /// metadata. Otherwise, return nullptr.
-  virtual MCSection *getSectionForCommandLines() const { return nullptr; }
+  virtual MCSection *getSectionForCommandLines() const {
+    return nullptr;
+  }
 
   /// On targets that use separate function descriptor symbols, return a section
   /// for the descriptor given its symbol. Use only with defined functions.

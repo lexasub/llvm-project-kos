@@ -3,14 +3,14 @@
 // RUN: %clang_cc1 -x c++ -fmodules -fimplicit-module-maps -fmodules-cache-path=%t -I %S/Inputs/redecl-templates %s -verify -std=c++14
 // expected-no-diagnostics
 
-template <int N> struct A {};
-template <int N> using X = A<N>;
+template<int N> struct A {};
+template<int N> using X = A<N>;
 
-template <int N> constexpr void f() {}
-template <int N> constexpr void g() { f<N>(); }
+template<int N> constexpr void f() {}
+template<int N> constexpr void g() { f<N>(); }
 
-template <int N> extern int v;
-template <int N> int &w = v<N>;
+template<int N> extern int v;
+template<int N> int &w = v<N>;
 
 #include "a.h"
 
@@ -27,6 +27,6 @@ int &x = w<1>;
 
 // This is OK: we declared the explicit specialization before we triggered
 // instantiation of this specialization.
-template <> struct A<1> {};
-template <> constexpr void f<1>() {}
-template <> int v<1>;
+template<> struct A<1> {};
+template<> constexpr void f<1>() {}
+template<> int v<1>;

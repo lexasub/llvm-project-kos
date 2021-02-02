@@ -21,12 +21,12 @@
 #include "llvm/IR/Metadata.h"
 
 namespace clang {
-class ASTContext;
-class CodeGenOptions;
-class LangOptions;
-class MangleContext;
-class QualType;
-class Type;
+  class ASTContext;
+  class CodeGenOptions;
+  class LangOptions;
+  class MangleContext;
+  class QualType;
+  class Type;
 
 namespace CodeGen {
 class CGRecordLayout;
@@ -42,19 +42,23 @@ enum class TBAAAccessKind : unsigned {
 struct TBAAAccessInfo {
   TBAAAccessInfo(TBAAAccessKind Kind, llvm::MDNode *BaseType,
                  llvm::MDNode *AccessType, uint64_t Offset, uint64_t Size)
-      : Kind(Kind), BaseType(BaseType), AccessType(AccessType), Offset(Offset),
-        Size(Size) {}
+    : Kind(Kind), BaseType(BaseType), AccessType(AccessType),
+      Offset(Offset), Size(Size)
+  {}
 
   TBAAAccessInfo(llvm::MDNode *BaseType, llvm::MDNode *AccessType,
                  uint64_t Offset, uint64_t Size)
-      : TBAAAccessInfo(TBAAAccessKind::Ordinary, BaseType, AccessType, Offset,
-                       Size) {}
+    : TBAAAccessInfo(TBAAAccessKind::Ordinary, BaseType, AccessType,
+                     Offset, Size)
+  {}
 
   explicit TBAAAccessInfo(llvm::MDNode *AccessType, uint64_t Size)
-      : TBAAAccessInfo(/* BaseType= */ nullptr, AccessType, /* Offset= */ 0,
-                       Size) {}
+    : TBAAAccessInfo(/* BaseType= */ nullptr, AccessType, /* Offset= */ 0, Size)
+  {}
 
-  TBAAAccessInfo() : TBAAAccessInfo(/* AccessType= */ nullptr, /* Size= */ 0) {}
+  TBAAAccessInfo()
+    : TBAAAccessInfo(/* AccessType= */ nullptr, /* Size= */ 0)
+  {}
 
   static TBAAAccessInfo getMayAliasInfo() {
     return TBAAAccessInfo(TBAAAccessKind::MayAlias,
@@ -73,8 +77,10 @@ struct TBAAAccessInfo {
   bool isIncomplete() const { return Kind == TBAAAccessKind::Incomplete; }
 
   bool operator==(const TBAAAccessInfo &Other) const {
-    return Kind == Other.Kind && BaseType == Other.BaseType &&
-           AccessType == Other.AccessType && Offset == Other.Offset &&
+    return Kind == Other.Kind &&
+           BaseType == Other.BaseType &&
+           AccessType == Other.AccessType &&
+           Offset == Other.Offset &&
            Size == Other.Size;
   }
 
@@ -82,7 +88,9 @@ struct TBAAAccessInfo {
     return !(*this == Other);
   }
 
-  explicit operator bool() const { return *this != TBAAAccessInfo(); }
+  explicit operator bool() const {
+    return *this != TBAAAccessInfo();
+  }
 
   /// Kind - The kind of the access descriptor.
   TBAAAccessKind Kind;
@@ -141,7 +149,8 @@ class CodeGenTBAA {
 
   /// CollectFields - Collect information about the fields of a type for
   /// !tbaa.struct metadata formation. Return false for an unsupported type.
-  bool CollectFields(uint64_t BaseOffset, QualType Ty,
+  bool CollectFields(uint64_t BaseOffset,
+                     QualType Ty,
                      SmallVectorImpl<llvm::MDBuilder::TBAAStructField> &Fields,
                      bool MayAlias);
 
@@ -202,30 +211,30 @@ public:
                                                 TBAAAccessInfo SrcInfo);
 };
 
-} // end namespace CodeGen
-} // end namespace clang
+}  // end namespace CodeGen
+}  // end namespace clang
 
 namespace llvm {
 
-template <> struct DenseMapInfo<clang::CodeGen::TBAAAccessInfo> {
+template<> struct DenseMapInfo<clang::CodeGen::TBAAAccessInfo> {
   static clang::CodeGen::TBAAAccessInfo getEmptyKey() {
     unsigned UnsignedKey = DenseMapInfo<unsigned>::getEmptyKey();
     return clang::CodeGen::TBAAAccessInfo(
-        static_cast<clang::CodeGen::TBAAAccessKind>(UnsignedKey),
-        DenseMapInfo<MDNode *>::getEmptyKey(),
-        DenseMapInfo<MDNode *>::getEmptyKey(),
-        DenseMapInfo<uint64_t>::getEmptyKey(),
-        DenseMapInfo<uint64_t>::getEmptyKey());
+      static_cast<clang::CodeGen::TBAAAccessKind>(UnsignedKey),
+      DenseMapInfo<MDNode *>::getEmptyKey(),
+      DenseMapInfo<MDNode *>::getEmptyKey(),
+      DenseMapInfo<uint64_t>::getEmptyKey(),
+      DenseMapInfo<uint64_t>::getEmptyKey());
   }
 
   static clang::CodeGen::TBAAAccessInfo getTombstoneKey() {
     unsigned UnsignedKey = DenseMapInfo<unsigned>::getTombstoneKey();
     return clang::CodeGen::TBAAAccessInfo(
-        static_cast<clang::CodeGen::TBAAAccessKind>(UnsignedKey),
-        DenseMapInfo<MDNode *>::getTombstoneKey(),
-        DenseMapInfo<MDNode *>::getTombstoneKey(),
-        DenseMapInfo<uint64_t>::getTombstoneKey(),
-        DenseMapInfo<uint64_t>::getTombstoneKey());
+      static_cast<clang::CodeGen::TBAAAccessKind>(UnsignedKey),
+      DenseMapInfo<MDNode *>::getTombstoneKey(),
+      DenseMapInfo<MDNode *>::getTombstoneKey(),
+      DenseMapInfo<uint64_t>::getTombstoneKey(),
+      DenseMapInfo<uint64_t>::getTombstoneKey());
   }
 
   static unsigned getHashValue(const clang::CodeGen::TBAAAccessInfo &Val) {
@@ -243,6 +252,6 @@ template <> struct DenseMapInfo<clang::CodeGen::TBAAAccessInfo> {
   }
 };
 
-} // end namespace llvm
+}  // end namespace llvm
 
 #endif

@@ -69,7 +69,6 @@ public:
 class BuiltinBug : public BugType {
   const std::string desc;
   void anchor() override;
-
 public:
   BuiltinBug(class CheckerNameRef checker, const char *name,
              const char *description)
@@ -90,5 +89,5 @@ public:
 
 } // namespace ento
 
-} // namespace clang
+} // end clang namespace
 #endif

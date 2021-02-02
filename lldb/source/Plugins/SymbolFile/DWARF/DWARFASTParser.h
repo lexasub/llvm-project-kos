@@ -11,15 +11,15 @@
 
 #include "DWARFDefines.h"
 #include "lldb/Core/PluginInterface.h"
+#include "lldb/Symbol/SymbolFile.h"
 #include "lldb/Symbol/CompilerDecl.h"
 #include "lldb/Symbol/CompilerDeclContext.h"
-#include "lldb/Symbol/SymbolFile.h"
 
 class DWARFDIE;
 namespace lldb_private {
 class CompileUnit;
 class ExecutionContext;
-} // namespace lldb_private
+}
 class SymbolFileDWARF;
 
 class DWARFASTParser {

@@ -41,7 +41,6 @@ public:
 
   // EmitLabel updates LastLabel and LastLabelLoc when a new label is emitted.
   void emitLabel(MCSymbol *Symbol, SMLoc Loc = SMLoc()) override;
-
 private:
   void emitPrefixedInstruction(const MCInst &Inst, const MCSubtargetInfo &STI);
   void emitGOTToPCRelReloc(const MCInst &Inst);

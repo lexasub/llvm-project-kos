@@ -6,15 +6,15 @@ struct A {
   void copyFrom(const A &src);
   void addRef(void);
 
-  A &operator=(int);
+  A& operator=(int);
 };
 
 void A::copyFrom(const A &src) {
   ((A &)src).addRef();
 }
-} // namespace PR5248
+}
 
 // reinterpret_cast to self
-void test(PR5248::A *a) {
-  reinterpret_cast<PR5248::A &>(*a) = 17;
+void test(PR5248::A* a) {
+  reinterpret_cast<PR5248::A&>(*a) = 17;
 }

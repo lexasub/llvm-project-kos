@@ -22,20 +22,20 @@ struct BufferedStackTrace;
 static const u32 kStackTraceMax = 256;
 
 #if SANITIZER_LINUX && defined(__mips__)
-#define SANITIZER_CAN_FAST_UNWIND 0
+# define SANITIZER_CAN_FAST_UNWIND 0
 #elif SANITIZER_WINDOWS
-#define SANITIZER_CAN_FAST_UNWIND 0
+# define SANITIZER_CAN_FAST_UNWIND 0
 #else
-#define SANITIZER_CAN_FAST_UNWIND 1
+# define SANITIZER_CAN_FAST_UNWIND 1
 #endif
 
 // Fast unwind is the only option on Mac for now; we will need to
 // revisit this macro when slow unwind works on Mac, see
 // https://github.com/google/sanitizers/issues/137
 #if SANITIZER_MAC || SANITIZER_RTEMS
-#define SANITIZER_CAN_SLOW_UNWIND 0
+# define SANITIZER_CAN_SLOW_UNWIND 0
 #else
-#define SANITIZER_CAN_SLOW_UNWIND 1
+# define SANITIZER_CAN_SLOW_UNWIND 1
 #endif
 
 struct StackTrace {
@@ -46,7 +46,7 @@ struct StackTrace {
   static const int TAG_UNKNOWN = 0;
   static const int TAG_ALLOC = 1;
   static const int TAG_DEALLOC = 2;
-  static const int TAG_CUSTOM = 100;  // Tool specific tags start here.
+  static const int TAG_CUSTOM = 100; // Tool specific tags start here.
 
   StackTrace() : trace(nullptr), size(0), tag(0) {}
   StackTrace(const uptr *trace, u32 size) : trace(trace), size(size), tag(0) {}
@@ -165,24 +165,25 @@ static inline bool IsValidFrame(uptr frame, uptr stack_top, uptr stack_bottom) {
 
 // Use this macro if you want to print stack trace with the caller
 // of the current function in the top frame.
-#define GET_CALLER_PC_BP         \
-  uptr bp = GET_CURRENT_FRAME(); \
+#define GET_CALLER_PC_BP \
+  uptr bp = GET_CURRENT_FRAME();              \
   uptr pc = GET_CALLER_PC();
 
 #define GET_CALLER_PC_BP_SP \
-  GET_CALLER_PC_BP;         \
-  uptr local_stack;         \
+  GET_CALLER_PC_BP;                           \
+  uptr local_stack;                           \
   uptr sp = (uptr)&local_stack
 
 // Use this macro if you want to print stack trace with the current
 // function in the top frame.
-#define GET_CURRENT_PC_BP        \
-  uptr bp = GET_CURRENT_FRAME(); \
+#define GET_CURRENT_PC_BP \
+  uptr bp = GET_CURRENT_FRAME();              \
   uptr pc = StackTrace::GetCurrentPc()
 
 #define GET_CURRENT_PC_BP_SP \
-  GET_CURRENT_PC_BP;         \
-  uptr local_stack;          \
+  GET_CURRENT_PC_BP;                          \
+  uptr local_stack;                           \
   uptr sp = (uptr)&local_stack
+
 
 #endif  // SANITIZER_STACKTRACE_H

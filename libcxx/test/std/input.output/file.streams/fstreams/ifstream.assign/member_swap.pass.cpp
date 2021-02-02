@@ -20,27 +20,28 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::ifstream fs1("test.dat");
-    std::ifstream fs2("test2.dat");
-    fs1.swap(fs2);
-    double x = 0;
-    fs1 >> x;
-    assert(x == 4.5);
-    fs2 >> x;
-    assert(x == 3.25);
-  }
-  {
-    std::wifstream fs1("test.dat");
-    std::wifstream fs2("test2.dat");
-    fs1.swap(fs2);
-    double x = 0;
-    fs1 >> x;
-    assert(x == 4.5);
-    fs2 >> x;
-    assert(x == 3.25);
-  }
+int main(int, char**)
+{
+    {
+        std::ifstream fs1("test.dat");
+        std::ifstream fs2("test2.dat");
+        fs1.swap(fs2);
+        double x = 0;
+        fs1 >> x;
+        assert(x == 4.5);
+        fs2 >> x;
+        assert(x == 3.25);
+    }
+    {
+        std::wifstream fs1("test.dat");
+        std::wifstream fs2("test2.dat");
+        fs1.swap(fs2);
+        double x = 0;
+        fs1 >> x;
+        assert(x == 4.5);
+        fs2 >> x;
+        assert(x == 3.25);
+    }
 
   return 0;
 }

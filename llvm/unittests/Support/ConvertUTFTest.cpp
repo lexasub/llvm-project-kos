@@ -93,7 +93,7 @@ TEST(ConvertUTFTest, ConvertUTF8toWide) {
   // Src is the look of disapproval.
   static const char Src[] = "\xe0\xb2\xa0_\xe0\xb2\xa0";
   std::wstring Result;
-  bool Success = ConvertUTF8toWide((const char *)Src, Result);
+  bool Success = ConvertUTF8toWide((const char*)Src, Result);
   EXPECT_TRUE(Success);
   std::wstring Expected(L"\x0ca0_\x0ca0");
   EXPECT_EQ(Expected, Result);
@@ -191,16 +191,15 @@ CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer Expected,
     std::tie(ErrorCode, Decoded) = ConvertUTF8ToUnicodeScalarsPartialLenient(S);
 
   if (Expected.ErrorCode != ErrorCode)
-    return ::testing::AssertionFailure()
-           << "Expected error code " << Expected.ErrorCode << ", actual "
-           << ErrorCode;
+    return ::testing::AssertionFailure() << "Expected error code "
+                                         << Expected.ErrorCode << ", actual "
+                                         << ErrorCode;
 
   if (Expected.UnicodeScalars != Decoded)
     return ::testing::AssertionFailure()
            << "Expected lenient decoded result:\n"
            << ::testing::PrintToString(Expected.UnicodeScalars) << "\n"
-           << "Actual result:\n"
-           << ::testing::PrintToString(Decoded);
+           << "Actual result:\n" << ::testing::PrintToString(Decoded);
 
   return ::testing::AssertionSuccess();
 }
@@ -221,7 +220,8 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   // U+0283 LATIN SMALL LETTER ESH
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(conversionOK).withScalars(0x0283), "\xca\x83"));
+      ConvertUTFResultContainer(conversionOK).withScalars(0x0283),
+      "\xca\x83"));
 
   // U+03BA GREEK SMALL LETTER KAPPA
   // U+1F79 GREEK SMALL LETTER OMICRON WITH OXIA
@@ -281,7 +281,8 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   // U+0080 PADDING CHARACTER
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(conversionOK).withScalars(0x0080), "\xc2\x80"));
+      ConvertUTFResultContainer(conversionOK).withScalars(0x0080),
+      "\xc2\x80"));
 
   // U+0800 SAMARITAN LETTER ALAF
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
@@ -315,7 +316,8 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   // U+07FF (unassigned)
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(conversionOK).withScalars(0x07ff), "\xdf\xbf"));
+      ConvertUTFResultContainer(conversionOK).withScalars(0x07ff),
+      "\xdf\xbf"));
 
   // U+FFFF (noncharacter)
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
@@ -390,10 +392,10 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xbf\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\x80\xbf\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\x80\xbf\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -414,22 +416,22 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // All continuation bytes (0x80--0xbf).
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd),
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f"
       "\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f"
       "\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf"
@@ -442,35 +444,35 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // Start bytes of 2-byte sequences (0xc0--0xdf).
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd),
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf"
       "\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf"));
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020),
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020),
       "\xc0\x20\xc1\x20\xc2\x20\xc3\x20\xc4\x20\xc5\x20\xc6\x20\xc7\x20"
       "\xc8\x20\xc9\x20\xca\x20\xcb\x20\xcc\x20\xcd\x20\xce\x20\xcf\x20"
       "\xd0\x20\xd1\x20\xd2\x20\xd3\x20\xd4\x20\xd5\x20\xd6\x20\xd7\x20"
@@ -479,38 +481,38 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // Start bytes of 3-byte sequences (0xe0--0xef).
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd),
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd)
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef"));
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020),
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020),
       "\xe0\x20\xe1\x20\xe2\x20\xe3\x20\xe4\x20\xe5\x20\xe6\x20\xe7\x20"
       "\xe8\x20\xe9\x20\xea\x20\xeb\x20\xec\x20\xed\x20\xee\x20\xef\x20"));
 
   // Start bytes of 4-byte sequences (0xf0--0xf7).
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd,
-                       0xfffd),
+          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd,
+                       0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7"));
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020),
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020)
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020),
       "\xf0\x20\xf1\x20\xf2\x20\xf3\x20\xf4\x20\xf5\x20\xf6\x20\xf7\x20"));
 
   // Start bytes of 5-byte sequences (0xf8--0xfb).
@@ -521,8 +523,8 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020),
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020),
       "\xf8\x20\xf9\x20\xfa\x20\xfb\x20"));
 
   // Start bytes of 6-byte sequences (0xfc--0xfd).
@@ -570,8 +572,8 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd, 0x0020, 0xfffd,
-                       0x0020),
+          .withScalars(0xfffd, 0x0020, 0xfffd, 0x0020,
+                       0xfffd, 0x0020, 0xfffd, 0x0020),
       "\xc0\x20\xc1\x20\xfe\x20\xff\x20"));
 
   //
@@ -627,23 +629,25 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 
   // Overlong sequences with one trailing byte missing.
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd), "\xc0"));
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd),
+      "\xc0"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd), "\xc1"));
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd),
+      "\xc1"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xe0\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xe0\x9f"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf0\x80\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf0\x8f\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf0\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf0\x8f\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -678,32 +682,32 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // Ill-formed 4-byte sequences.
   // 11110zzz 10zzyyyy 10yyyyxx 10xxxxxx
   // U+1100xx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf4\x90\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf4\x90\x80"));
   // U+13FBxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf4\xbf\xbf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf5\x80\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf6\x80\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf7\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf4\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf5\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf6\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf7\x80\x80"));
   // U+1FFBxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf7\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf7\xbf\xbf"));
 
   // Ill-formed 5-byte sequences.
   // 111110uu 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx
@@ -787,10 +791,10 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xf0\x8f"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf8\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf8\x80\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -827,51 +831,41 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // Ill-formed 5-byte sequences.
   // 111110uu 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx
   // U+200yxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf8\x88\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf8\xbf\xbf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xf9\x80\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfa\x80\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfb\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf8\x88\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf8\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xf9\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfa\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfb\x80\x80"));
   // U+3FFFyxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfb\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfb\xbf\xbf"));
 
   // Ill-formed 6-byte sequences.
   // 1111110u 10uuuuuu 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx
   // U+4000yxx (invalid)
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xfc\x84\x80\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xfc\xbf\xbf\xbf"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xfd\x80\x80\x80"));
   // U+7FFFFyxx (invalid)
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceIllegal)
-          .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
       "\xfd\xbf\xbf\xbf"));
 
   //
@@ -895,10 +889,9 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xf8\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfc\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfc\x80\x80"));
 
   // Ill-formed 4-byte sequences.
   // 11110zzz 10zzyyyy 10yyyyxx 10xxxxxx
@@ -937,23 +930,19 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // Ill-formed 6-byte sequences.
   // 1111110u 10uuuuuu 10zzzzzz 10zzyyyy 10yyyyxx 10xxxxxx
   // U+400yyxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfc\x84\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfc\xbf\xbf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfd\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfc\x84\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfc\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfd\x80\x80"));
   // U+7FFCyyxx (invalid)
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xfd\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xfd\xbf\xbf"));
 
   //
   // Sequences with four continuation bytes missing
@@ -1023,14 +1012,10 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
           .withScalars(0xfffd, /**/ 0xfffd, /**/ 0xfffd, 0xfffd, 0xfffd)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd, 0xfffd),
-      "\xc0"
-      "\xe0\x80"
-      "\xf0\x80\x80"
+      "\xc0" "\xe0\x80" "\xf0\x80\x80"
       "\xf8\x80\x80\x80"
       "\xfc\x80\x80\x80\x80"
-      "\xdf"
-      "\xef\xbf"
-      "\xf7\xbf\xbf"
+      "\xdf" "\xef\xbf" "\xf7\xbf\xbf"
       "\xfb\xbf\xbf\xbf"
       "\xfd\xbf\xbf\xbf\xbf"));
 
@@ -1046,10 +1031,10 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xc0\xaf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xe0\x80\xaf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xe0\x80\xaf"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -1072,10 +1057,10 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xc0\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xe0\x80\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xe0\x80\x80"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -1099,18 +1084,18 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal).withScalars(0xfffd, 0xfffd),
       "\xc1\xbf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xe0\x9f\xbf"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xa0\x80"));
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xe0\x9f\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xa0\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xbf\xbf"));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceIllegal)
           .withScalars(0xfffd, 0xfffd, 0xfffd, 0xfffd),
@@ -1145,42 +1130,42 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
   // High surrogates
 
   // U+D800
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xa0\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xa0\x80"));
 
   // U+DB40
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xac\xa0"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xac\xa0"));
 
   // U+DBFF
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xaf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xaf\xbf"));
 
   // Low surrogates
 
   // U+DC00
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xb0\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xb0\x80"));
 
   // U+DD00
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xb4\x80"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xb4\x80"));
 
   // U+DFFF
-  EXPECT_TRUE(
-      CheckConvertUTF8ToUnicodeScalars(ConvertUTFResultContainer(sourceIllegal)
-                                           .withScalars(0xfffd, 0xfffd, 0xfffd),
-                                       "\xed\xbf\xbf"));
+  EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
+      ConvertUTFResultContainer(sourceIllegal)
+          .withScalars(0xfffd, 0xfffd, 0xfffd),
+      "\xed\xbf\xbf"));
 
   // Surrogate pairs
 
@@ -1663,47 +1648,64 @@ TEST(ConvertUTFTest, UTF8ToUTF32Lenient) {
 TEST(ConvertUTFTest, UTF8ToUTF32PartialLenient) {
   // U+0041 LATIN CAPITAL LETTER A
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(conversionOK).withScalars(0x0041), "\x41",
-      true));
+      ConvertUTFResultContainer(conversionOK).withScalars(0x0041),
+      "\x41", true));
 
   //
   // Sequences with one continuation byte missing
   //
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xc2", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xc2", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xdf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xdf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xe0\xa0", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xe0\xa0", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xe0\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xe0\xbf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xe1\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xe1\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xec\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xec\xbf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xed\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xed\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xed\x9f", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xed\x9f", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xee\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xee\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xef\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xef\xbf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf0\x90\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf0\x90\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf0\xbf\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf0\xbf\xbf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf1\x80\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf1\x80\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf3\xbf\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf3\xbf\xbf", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf4\x80\x80", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf4\x80\x80", true));
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
-      ConvertUTFResultContainer(sourceExhausted), "\xf4\x8f\xbf", true));
+      ConvertUTFResultContainer(sourceExhausted),
+      "\xf4\x8f\xbf", true));
 
   EXPECT_TRUE(CheckConvertUTF8ToUnicodeScalars(
       ConvertUTFResultContainer(sourceExhausted).withScalars(0x0041),
       "\x41\xc2", true));
 }
+

@@ -26,7 +26,6 @@ class DeclMatcher : public MatchFinder::MatchCallback {
       Node = const_cast<NodeType *>(Result.Nodes.getNodeAs<NodeType>(""));
     }
   }
-
 public:
   // Returns the first/last matched node under the tree rooted in `D`.
   template <typename MatcherType>

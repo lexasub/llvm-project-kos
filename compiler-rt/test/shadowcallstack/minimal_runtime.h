@@ -10,7 +10,8 @@
 
 #include "libc_support.h"
 
-__attribute__((no_sanitize("shadow-call-stack"))) static void __shadowcallstack_init() {
+__attribute__((no_sanitize("shadow-call-stack")))
+static void __shadowcallstack_init() {
   void *stack = mmap(NULL, 8192, PROT_READ | PROT_WRITE,
                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (stack == MAP_FAILED)

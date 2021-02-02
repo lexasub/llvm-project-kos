@@ -28,7 +28,7 @@ class ArchHandler;
 class MachODylibFile;
 class MachOFile;
 class SectCreateFile;
-} // namespace mach_o
+}
 
 class MachOLinkingContext : public LinkingContext {
 public:
@@ -46,20 +46,30 @@ public:
     arch_arm64,
   };
 
-  enum class OS { unknown, macOSX, iOS, iOS_simulator };
+  enum class OS {
+    unknown,
+    macOSX,
+    iOS,
+    iOS_simulator
+  };
 
   enum class ExportMode {
-    globals,   // Default, all global symbols exported.
-    exported,  // -exported_symbol[s_list], only listed symbols exported.
-    unexported // -unexported_symbol[s_list], no listed symbol exported.
+    globals,    // Default, all global symbols exported.
+    exported,   // -exported_symbol[s_list], only listed symbols exported.
+    unexported  // -unexported_symbol[s_list], no listed symbol exported.
   };
 
   enum class DebugInfoMode {
-    addDebugMap, // Default
-    noDebugMap   // -S option
+    addDebugMap,    // Default
+    noDebugMap      // -S option
   };
 
-  enum class UndefinedMode { error, warning, suppress, dynamicLookup };
+  enum class UndefinedMode {
+    error,
+    warning,
+    suppress,
+    dynamicLookup
+  };
 
   enum ObjCConstraint {
     objc_unknown = 0,
@@ -87,7 +97,7 @@ public:
   /// the new file.
   template <class T, class... Args>
   typename std::enable_if<!std::is_array<T>::value, T *>::type
-  make_file(Args &&...args) const {
+  make_file(Args &&... args) const {
     auto file = std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     auto *filePtr = file.get();
     auto *ctx = const_cast<MachOLinkingContext *>(this);
@@ -121,7 +131,9 @@ public:
   bool exportSymbolNamed(StringRef sym) const;
 
   DebugInfoMode debugInfoMode() const { return _debugInfoMode; }
-  void setDebugInfoMode(DebugInfoMode mode) { _debugInfoMode = mode; }
+  void setDebugInfoMode(DebugInfoMode mode) {
+    _debugInfoMode = mode;
+  }
 
   void appendOrderedSymbol(StringRef symbol, StringRef filename);
 
@@ -304,9 +316,13 @@ public:
   }
 
   void setBundleLoader(StringRef loader) { _bundleLoader = loader; }
-  void setPrintAtoms(bool value = true) { _printAtoms = value; }
-  void setTestingFileUsage(bool value = true) { _testingFileUsage = value; }
-  void addExistingPathForDebug(StringRef path) { _existingPaths.insert(path); }
+  void setPrintAtoms(bool value=true) { _printAtoms = value; }
+  void setTestingFileUsage(bool value = true) {
+    _testingFileUsage = value;
+  }
+  void addExistingPathForDebug(StringRef path) {
+    _existingPaths.insert(path);
+  }
 
   void addRpath(StringRef rpath);
   const StringRefVector &rpaths() const { return _rpaths; }
@@ -354,13 +370,15 @@ public:
   /// Used to find indirect dylibs. Instantiates a MachODylibFile if one
   /// has not already been made for the requested dylib.  Uses -L and -F
   /// search paths to allow indirect dylibs to be overridden.
-  mach_o::MachODylibFile *findIndirectDylib(StringRef path);
+  mach_o::MachODylibFile* findIndirectDylib(StringRef path);
 
   uint32_t dylibCurrentVersion(StringRef installName) const;
 
   uint32_t dylibCompatVersion(StringRef installName) const;
 
-  ArrayRef<mach_o::MachODylibFile *> allDylibs() const { return _allDylibs; }
+  ArrayRef<mach_o::MachODylibFile*> allDylibs() const {
+    return _allDylibs;
+  }
 
   /// Creates a copy (owned by this MachOLinkingContext) of a string.
   StringRef copy(StringRef str) { return str.copy(_allocator); }
@@ -400,32 +418,32 @@ public:
   /// Return the 'flat namespace' file. This is the file that supplies
   /// atoms for otherwise undefined symbols when the -flat_namespace or
   /// -undefined dynamic_lookup options are used.
-  File *flatNamespaceFile() const { return _flatNamespaceFile; }
+  File* flatNamespaceFile() const { return _flatNamespaceFile; }
 
 private:
   Writer &writer() const override;
-  mach_o::MachODylibFile *loadIndirectDylib(StringRef path);
+  mach_o::MachODylibFile* loadIndirectDylib(StringRef path);
   struct ArchInfo {
-    StringRef archName;
+    StringRef                 archName;
     MachOLinkingContext::Arch arch;
-    bool littleEndian;
-    uint32_t cputype;
-    uint32_t cpusubtype;
+    bool                      littleEndian;
+    uint32_t                  cputype;
+    uint32_t                  cpusubtype;
   };
 
   struct SectionAlign {
     StringRef segmentName;
     StringRef sectionName;
-    uint16_t align;
+    uint16_t  align;
   };
 
   struct OrderFileNode {
     StringRef fileFilter;
-    unsigned order;
+    unsigned  order;
   };
 
   static bool findOrderOrdinal(const std::vector<OrderFileNode> &nodes,
-                               const DefinedAtom *atom, unsigned &ordinal);
+                             const DefinedAtom *atom, unsigned &ordinal);
 
   static ArchInfo _s_archInfos[];
 
@@ -467,9 +485,9 @@ private:
   mutable std::unique_ptr<mach_o::ArchHandler> _archHandler;
   mutable std::unique_ptr<Writer> _writer;
   std::vector<SectionAlign> _sectAligns;
-  mutable llvm::StringMap<mach_o::MachODylibFile *> _pathToDylibMap;
-  mutable std::vector<mach_o::MachODylibFile *> _allDylibs;
-  mutable std::set<mach_o::MachODylibFile *> _upwardDylibs;
+  mutable llvm::StringMap<mach_o::MachODylibFile*> _pathToDylibMap;
+  mutable std::vector<mach_o::MachODylibFile*> _allDylibs;
+  mutable std::set<mach_o::MachODylibFile*> _upwardDylibs;
   mutable std::vector<std::unique_ptr<File>> _indirectDylibs;
   mutable std::mutex _dylibsMutex;
   ExportMode _exportMode = ExportMode::globals;

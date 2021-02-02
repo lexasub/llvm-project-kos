@@ -1,1 +1,2 @@
 typedef WithoutDep BadType;
+

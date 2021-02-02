@@ -48,6 +48,7 @@
 // CHECK:       attributes [[attr5]]
 // CHECK-SAME:  "llvm.assume"="check_that_this_is_attached_to_included_functions_and_template_instantiations"
 
+
 template <typename T>
 void foo() {
   cos(T(0));

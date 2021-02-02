@@ -19,31 +19,32 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::stringbuf buf("testing");
-    assert(buf.str() == "testing");
-  }
-  {
-    std::stringbuf buf("testing", std::ios_base::in);
-    assert(buf.str() == "testing");
-  }
-  {
-    std::stringbuf buf("testing", std::ios_base::out);
-    assert(buf.str() == "testing");
-  }
-  {
-    std::wstringbuf buf(L"testing");
-    assert(buf.str() == L"testing");
-  }
-  {
-    std::wstringbuf buf(L"testing", std::ios_base::in);
-    assert(buf.str() == L"testing");
-  }
-  {
-    std::wstringbuf buf(L"testing", std::ios_base::out);
-    assert(buf.str() == L"testing");
-  }
+int main(int, char**)
+{
+    {
+        std::stringbuf buf("testing");
+        assert(buf.str() == "testing");
+    }
+    {
+        std::stringbuf buf("testing", std::ios_base::in);
+        assert(buf.str() == "testing");
+    }
+    {
+        std::stringbuf buf("testing", std::ios_base::out);
+        assert(buf.str() == "testing");
+    }
+    {
+        std::wstringbuf buf(L"testing");
+        assert(buf.str() == L"testing");
+    }
+    {
+        std::wstringbuf buf(L"testing", std::ios_base::in);
+        assert(buf.str() == L"testing");
+    }
+    {
+        std::wstringbuf buf(L"testing", std::ios_base::out);
+        assert(buf.str() == L"testing");
+    }
 
   return 0;
 }

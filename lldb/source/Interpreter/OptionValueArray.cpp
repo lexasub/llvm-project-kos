@@ -59,9 +59,8 @@ void OptionValueArray::DumpValue(const ExecutionContext *exe_ctx, Stream &strm,
       case eTypeUInt64:
       case eTypeUUID:
         // No need to show the type for dictionaries of simple items
-        m_values[i]->DumpValue(exe_ctx, strm,
-                               (dump_mask & (~eDumpOptionType)) |
-                                   extra_dump_options);
+        m_values[i]->DumpValue(exe_ctx, strm, (dump_mask & (~eDumpOptionType)) |
+                                                  extra_dump_options);
         break;
       }
 
@@ -92,9 +91,9 @@ OptionValueArray::GetSubValue(const ExecutionContext *exe_ctx,
                               Status &error) const {
   if (name.empty() || name.front() != '[') {
     error.SetErrorStringWithFormat(
-        "invalid value path '%s', %s values only support '[<index>]' subvalues "
-        "where <index> is a positive or negative array index",
-        name.str().c_str(), GetTypeAsCString());
+      "invalid value path '%s', %s values only support '[<index>]' subvalues "
+      "where <index> is a positive or negative array index",
+      name.str().c_str(), GetTypeAsCString());
     return nullptr;
   }
 
@@ -123,24 +122,24 @@ OptionValueArray::GetSubValue(const ExecutionContext *exe_ctx,
   if (new_idx < array_count) {
     if (m_values[new_idx]) {
       if (!sub_value.empty())
-        return m_values[new_idx]->GetSubValue(exe_ctx, sub_value, will_modify,
-                                              error);
+        return m_values[new_idx]->GetSubValue(exe_ctx, sub_value,
+                                              will_modify, error);
       else
         return m_values[new_idx];
     }
   } else {
     if (array_count == 0)
-      error.SetErrorStringWithFormat("index %i is not valid for an empty array",
-                                     idx);
+      error.SetErrorStringWithFormat(
+          "index %i is not valid for an empty array", idx);
     else if (idx > 0)
       error.SetErrorStringWithFormat(
-          "index %i out of range, valid values are 0 through %" PRIu64, idx,
-          (uint64_t)(array_count - 1));
+          "index %i out of range, valid values are 0 through %" PRIu64,
+          idx, (uint64_t)(array_count - 1));
     else
       error.SetErrorStringWithFormat("negative index %i out of range, "
-                                     "valid values are -1 through "
-                                     "-%" PRIu64,
-                                     idx, (uint64_t)array_count);
+                                      "valid values are -1 through "
+                                      "-%" PRIu64,
+                                      idx, (uint64_t)array_count);
   }
   return OptionValueSP();
 }

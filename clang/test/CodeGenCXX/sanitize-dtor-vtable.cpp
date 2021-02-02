@@ -2,7 +2,7 @@
 // RUN: %clang_cc1 -O1 -fsanitize=memory -fsanitize-memory-use-after-dtor -disable-llvm-passes -std=c++11 -triple=x86_64-pc-linux -emit-llvm -o - %s | FileCheck %s
 
 class A {
-public:
+ public:
   int x;
   A() {}
   virtual ~A() {}
@@ -10,7 +10,7 @@ public:
 A a;
 
 class B : virtual public A {
-public:
+ public:
   int y;
   B() {}
   ~B() {}

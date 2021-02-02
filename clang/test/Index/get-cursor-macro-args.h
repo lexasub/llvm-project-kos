@@ -1,5 +1,5 @@
 @interface MyClass
-+ (void)meth;
++(void)meth;
 @end
 
 #define MACRO2(x) (x)

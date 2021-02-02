@@ -150,8 +150,7 @@ static bool isSimpleEnoughPointerToCommit(Constant *C) {
 
       // The first index must be zero.
       ConstantInt *CI = dyn_cast<ConstantInt>(*std::next(CE->op_begin()));
-      if (!CI || !CI->isZero())
-        return false;
+      if (!CI || !CI->isZero()) return false;
 
       // The remaining indices must be compile-time known integers within the
       // notional bounds of the corresponding static array types.
@@ -160,9 +159,9 @@ static bool isSimpleEnoughPointerToCommit(Constant *C) {
 
       return ConstantFoldLoadThroughGEPConstantExpr(GV->getInitializer(), CE);
 
-      // A constantexpr bitcast from a pointer to another pointer is a no-op,
-      // and we know how to evaluate it by moving the bitcast from the pointer
-      // operand to the value operand.
+    // A constantexpr bitcast from a pointer to another pointer is a no-op,
+    // and we know how to evaluate it by moving the bitcast from the pointer
+    // operand to the value operand.
     } else if (CE->getOpcode() == Instruction::BitCast &&
                isa<GlobalVariable>(CE->getOperand(0))) {
       // Do not allow weak/*_odr/linkonce/dllimport/dllexport linkage or
@@ -247,7 +246,7 @@ Constant *Evaluator::ComputeLoadResult(Constant *P) {
     }
   }
 
-  return nullptr; // don't know how to evaluate.
+  return nullptr;  // don't know how to evaluate.
 }
 
 static Function *getFunction(Constant *C) {
@@ -331,7 +330,7 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
     if (StoreInst *SI = dyn_cast<StoreInst>(CurInst)) {
       if (!SI->isSimple()) {
         LLVM_DEBUG(dbgs() << "Store is not simple! Can not evaluate.\n");
-        return false; // no volatile/atomic accesses.
+        return false;  // no volatile/atomic accesses.
       }
       Constant *Ptr = getVal(SI->getOperand(1));
       Constant *FoldedPtr = ConstantFoldConstant(Ptr, DL, TLI);
@@ -392,7 +391,8 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
 
       MutatedMemory[Ptr] = Val;
     } else if (BinaryOperator *BO = dyn_cast<BinaryOperator>(CurInst)) {
-      InstResult = ConstantExpr::get(BO->getOpcode(), getVal(BO->getOperand(0)),
+      InstResult = ConstantExpr::get(BO->getOpcode(),
+                                     getVal(BO->getOperand(0)),
                                      getVal(BO->getOperand(1)));
       LLVM_DEBUG(dbgs() << "Found a BinaryOperator! Simplifying: "
                         << *InstResult << "\n");
@@ -403,8 +403,9 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
       LLVM_DEBUG(dbgs() << "Found a CmpInst! Simplifying: " << *InstResult
                         << "\n");
     } else if (CastInst *CI = dyn_cast<CastInst>(CurInst)) {
-      InstResult = ConstantExpr::getCast(
-          CI->getOpcode(), getVal(CI->getOperand(0)), CI->getType());
+      InstResult = ConstantExpr::getCast(CI->getOpcode(),
+                                         getVal(CI->getOperand(0)),
+                                         CI->getType());
       LLVM_DEBUG(dbgs() << "Found a Cast! Simplifying: " << *InstResult
                         << "\n");
     } else if (SelectInst *SI = dyn_cast<SelectInst>(CurInst)) {
@@ -426,9 +427,9 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
                         << *InstResult << "\n");
     } else if (GetElementPtrInst *GEP = dyn_cast<GetElementPtrInst>(CurInst)) {
       Constant *P = getVal(GEP->getOperand(0));
-      SmallVector<Constant *, 8> GEPOps;
-      for (User::op_iterator i = GEP->op_begin() + 1, e = GEP->op_end(); i != e;
-           ++i)
+      SmallVector<Constant*, 8> GEPOps;
+      for (User::op_iterator i = GEP->op_begin() + 1, e = GEP->op_end();
+           i != e; ++i)
         GEPOps.push_back(getVal(*i));
       InstResult =
           ConstantExpr::getGetElementPtr(GEP->getSourceElementType(), P, GEPOps,
@@ -438,7 +439,7 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
       if (!LI->isSimple()) {
         LLVM_DEBUG(
             dbgs() << "Found a Load! Not a simple load, can not evaluate.\n");
-        return false; // no volatile/atomic accesses.
+        return false;  // no volatile/atomic accesses.
       }
 
       Constant *Ptr = getVal(LI->getOperand(0));
@@ -461,7 +462,7 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
     } else if (AllocaInst *AI = dyn_cast<AllocaInst>(CurInst)) {
       if (AI->isArrayAllocation()) {
         LLVM_DEBUG(dbgs() << "Found an array alloca. Can not evaluate.\n");
-        return false; // Cannot handle array allocs.
+        return false;  // Cannot handle array allocs.
       }
       Type *Ty = AI->getAllocatedType();
       AllocaTmps.push_back(std::make_unique<GlobalVariable>(
@@ -523,8 +524,9 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
           Value *Ptr = PtrArg->stripPointerCasts();
           if (GlobalVariable *GV = dyn_cast<GlobalVariable>(Ptr)) {
             Type *ElemTy = GV->getValueType();
-            if (!Size->isMinusOne() && Size->getValue().getLimitedValue() >=
-                                           DL.getTypeStoreSize(ElemTy)) {
+            if (!Size->isMinusOne() &&
+                Size->getValue().getLimitedValue() >=
+                    DL.getTypeStoreSize(ElemTy)) {
               Invariants.insert(GV);
               LLVM_DEBUG(dbgs() << "Found a global var that is an invariant: "
                                 << *GV << "\n");
@@ -560,7 +562,7 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
       Function *Callee = getCalleeWithFormalArgs(CB, Formals);
       if (!Callee || Callee->isInterposable()) {
         LLVM_DEBUG(dbgs() << "Can not resolve function pointer.\n");
-        return false; // Cannot resolve.
+        return false;  // Cannot resolve.
       }
 
       if (Callee->isDeclaration()) {
@@ -608,29 +610,29 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
         if (BI->isUnconditional()) {
           NextBB = BI->getSuccessor(0);
         } else {
-          ConstantInt *Cond = dyn_cast<ConstantInt>(getVal(BI->getCondition()));
-          if (!Cond)
-            return false; // Cannot determine.
+          ConstantInt *Cond =
+            dyn_cast<ConstantInt>(getVal(BI->getCondition()));
+          if (!Cond) return false;  // Cannot determine.
 
           NextBB = BI->getSuccessor(!Cond->getZExtValue());
         }
       } else if (SwitchInst *SI = dyn_cast<SwitchInst>(CurInst)) {
-        ConstantInt *Val = dyn_cast<ConstantInt>(getVal(SI->getCondition()));
-        if (!Val)
-          return false; // Cannot determine.
+        ConstantInt *Val =
+          dyn_cast<ConstantInt>(getVal(SI->getCondition()));
+        if (!Val) return false;  // Cannot determine.
         NextBB = SI->findCaseValue(Val)->getCaseSuccessor();
       } else if (IndirectBrInst *IBI = dyn_cast<IndirectBrInst>(CurInst)) {
         Value *Val = getVal(IBI->getAddress())->stripPointerCasts();
         if (BlockAddress *BA = dyn_cast<BlockAddress>(Val))
           NextBB = BA->getBasicBlock();
         else
-          return false; // Cannot determine.
+          return false;  // Cannot determine.
       } else if (isa<ReturnInst>(CurInst)) {
         NextBB = nullptr;
       } else {
         // invoke, unwind, resume, unreachable.
         LLVM_DEBUG(dbgs() << "Can not handle terminator.");
-        return false; // Cannot handle this terminator.
+        return false;  // Cannot handle this terminator.
       }
 
       // We succeeded at evaluating this block!
@@ -664,9 +666,8 @@ bool Evaluator::EvaluateBlock(BasicBlock::iterator CurInst,
 /// Evaluate a call to function F, returning true if successful, false if we
 /// can't evaluate it.  ActualArgs contains the formal arguments for the
 /// function.
-bool Evaluator::EvaluateFunction(
-    Function *F, Constant *&RetVal,
-    const SmallVectorImpl<Constant *> &ActualArgs) {
+bool Evaluator::EvaluateFunction(Function *F, Constant *&RetVal,
+                                 const SmallVectorImpl<Constant*> &ActualArgs) {
   // Check to see if this function is already executing (recursion).  If so,
   // bail out.  TODO: we might want to accept limited recursion.
   if (is_contained(CallStack, F))
@@ -683,7 +684,7 @@ bool Evaluator::EvaluateFunction(
   // ExecutedBlocks - We only handle non-looping, non-recursive code.  As such,
   // we can only evaluate any one basic block at most once.  This set keeps
   // track of what we have executed so we can detect recursive cases etc.
-  SmallPtrSet<BasicBlock *, 32> ExecutedBlocks;
+  SmallPtrSet<BasicBlock*, 32> ExecutedBlocks;
 
   // CurBB - The current basic block we're evaluating.
   BasicBlock *CurBB = &F->front();
@@ -711,14 +712,14 @@ bool Evaluator::EvaluateFunction(
     // executed the new block before.  If so, we have a looping function,
     // which we cannot evaluate in reasonable time.
     if (!ExecutedBlocks.insert(NextBB).second)
-      return false; // looped!
+      return false;  // looped!
 
     // Okay, we have never been in this block before.  Check to see if there
     // are any PHI nodes.  If so, evaluate them with information about where
     // we came from.
     PHINode *PN = nullptr;
-    for (CurInst = NextBB->begin(); (PN = dyn_cast<PHINode>(CurInst));
-         ++CurInst)
+    for (CurInst = NextBB->begin();
+         (PN = dyn_cast<PHINode>(CurInst)); ++CurInst)
       setVal(PN, getVal(PN->getIncomingValueForBlock(CurBB)));
 
     // Advance to the next block.

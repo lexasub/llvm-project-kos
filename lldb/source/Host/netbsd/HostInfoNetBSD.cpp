@@ -77,10 +77,7 @@ FileSpec HostInfoNetBSD::GetProgramFileSpec() {
 
   if (!g_program_filespec) {
     static const int name[] = {
-        CTL_KERN,
-        KERN_PROC_ARGS,
-        -1,
-        KERN_PROC_PATHNAME,
+        CTL_KERN, KERN_PROC_ARGS, -1, KERN_PROC_PATHNAME,
     };
     char path[MAXPATHLEN];
     size_t len;

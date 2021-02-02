@@ -17,6 +17,7 @@
 //
 //     Returns: os << mdl.month() << "/last".
 
+
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -24,10 +25,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using month_day_last = std::chrono::month_day_last;
-  using month = std::chrono::month;
-  std::cout << month_day_last{month{1}};
+int main(int, char**)
+{
+    using month_day_last = std::chrono::month_day_last;
+    using month          = std::chrono::month;
+    std::cout << month_day_last{month{1}};
 
   return 0;
 }

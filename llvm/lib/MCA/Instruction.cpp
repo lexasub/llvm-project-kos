@@ -27,8 +27,7 @@ void WriteState::writeStartEvent(unsigned IID, MCPhysReg RegID,
   DependentWrite = nullptr;
 }
 
-void ReadState::writeStartEvent(unsigned IID, MCPhysReg RegID,
-                                unsigned Cycles) {
+void ReadState::writeStartEvent(unsigned IID, MCPhysReg RegID, unsigned Cycles) {
   assert(DependentWrites);
   assert(CyclesLeft == UNKNOWN_CYCLES);
 

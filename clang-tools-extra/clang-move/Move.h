@@ -158,7 +158,7 @@ private:
 
   void removeDeclsInOldFiles();
   void moveDeclsToNewFiles();
-  void moveAll(SourceManager &SM, StringRef OldFile, StringRef NewFile);
+  void moveAll(SourceManager& SM, StringRef OldFile, StringRef NewFile);
 
   // Stores all MatchCallbacks created by this tool.
   std::vector<std::unique_ptr<ast_matchers::MatchFinder::MatchCallback>>
@@ -179,7 +179,7 @@ private:
   // namespaces) in old.cc. saving in an AST-visited order.
   std::vector<const NamedDecl *> HelperDeclarations;
   // The unmoved named declarations in old header.
-  llvm::SmallPtrSet<const NamedDecl *, 8> UnremovedDeclsInOldHeader;
+  llvm::SmallPtrSet<const NamedDecl*, 8> UnremovedDeclsInOldHeader;
   /// The source range for the written file name in #include (i.e. "old.h" for
   /// #include "old.h") in old.cc,  including the enclosing quotes or angle
   /// brackets.

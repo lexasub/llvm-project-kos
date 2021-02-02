@@ -59,16 +59,16 @@ TEST(StaticAnalyzerOptions, SearchInParentPackageTests) {
   EXPECT_TRUE(Opts.getCheckerBooleanOption(&CheckerOne, "Option2", true));
   // No package option is specified and search in packages is turned off. We
   // should assert here, but we can't test that.
-  // Opts.getCheckerBooleanOption(&CheckerOne, "Option2");
-  // Opts.getCheckerBooleanOption(&CheckerOne, "Option2");
+  //Opts.getCheckerBooleanOption(&CheckerOne, "Option2");
+  //Opts.getCheckerBooleanOption(&CheckerOne, "Option2");
 
   // Checker true has no option specified. It should get false when search in
   // parents turned on.
   CheckerTwoMock CheckerTwo;
   EXPECT_FALSE(Opts.getCheckerBooleanOption(&CheckerTwo, "Option", true));
   // In any other case, we should assert, that we cannot test unfortunately.
-  // Opts.getCheckerBooleanOption(&CheckerTwo, "Option");
-  // Opts.getCheckerBooleanOption(&CheckerTwo, "Option");
+  //Opts.getCheckerBooleanOption(&CheckerTwo, "Option");
+  //Opts.getCheckerBooleanOption(&CheckerTwo, "Option");
 }
 
 TEST(StaticAnalyzerOptions, StringOptions) {
@@ -83,14 +83,14 @@ TEST(StaticAnalyzerOptions, StringOptions) {
 
   CheckerOneMock CheckerOne;
   EXPECT_TRUE("StringValue" ==
-              Opts.getCheckerStringOption(&CheckerOne, "Option"));
+            Opts.getCheckerStringOption(&CheckerOne, "Option"));
 }
 
 TEST(StaticAnalyzerOptions, SubCheckerOptions) {
   AnalyzerOptions Opts;
   Opts.Config["Outer.Inner.CheckerOne:Option"] = "StringValue";
-  EXPECT_TRUE("StringValue" ==
-              Opts.getCheckerStringOption("Outer.Inner.CheckerOne", "Option"));
+  EXPECT_TRUE("StringValue" == Opts.getCheckerStringOption(
+        "Outer.Inner.CheckerOne", "Option"));
 }
 
 } // end namespace ento

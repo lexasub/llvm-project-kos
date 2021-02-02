@@ -215,7 +215,7 @@ private:
   std::vector<lldb::QueueItemSP> m_pending_items; // items currently enqueued
   bool m_pending_items_fetched; // have we tried to fetch the item list already?
 };
-} // namespace lldb_private
+}
 
 SBQueue::SBQueue() : m_opaque_sp(new QueueImpl()) {
   LLDB_RECORD_CONSTRUCTOR_NO_ARGS(SBQueue);
@@ -236,8 +236,8 @@ SBQueue::SBQueue(const SBQueue &rhs) {
 }
 
 const lldb::SBQueue &SBQueue::operator=(const lldb::SBQueue &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBQueue &, SBQueue, operator=,
-                     (const lldb::SBQueue &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBQueue &,
+                     SBQueue, operator=,(const lldb::SBQueue &), rhs);
 
   m_opaque_sp = rhs.m_opaque_sp;
   return LLDB_RECORD_RESULT(*this);
@@ -332,12 +332,13 @@ lldb::QueueKind SBQueue::GetKind() {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBQueue>(Registry &R) {
+template <>
+void RegisterMethods<SBQueue>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBQueue, ());
   LLDB_REGISTER_CONSTRUCTOR(SBQueue, (const lldb::QueueSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBQueue, (const lldb::SBQueue &));
-  LLDB_REGISTER_METHOD(const lldb::SBQueue &, SBQueue, operator=,
-                       (const lldb::SBQueue &));
+  LLDB_REGISTER_METHOD(const lldb::SBQueue &,
+                       SBQueue, operator=,(const lldb::SBQueue &));
   LLDB_REGISTER_METHOD_CONST(bool, SBQueue, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBQueue, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBQueue, Clear, ());
@@ -354,5 +355,5 @@ template <> void RegisterMethods<SBQueue>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::QueueKind, SBQueue, GetKind, ());
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

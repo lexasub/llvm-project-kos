@@ -1,5 +1,4 @@
-//===----------- ImmutableSetTest.cpp - ImmutableSet unit tests
-//------------===//
+//===----------- ImmutableSetTest.cpp - ImmutableSet unit tests ------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -23,8 +22,7 @@ protected:
     char *ptr;
 
     MyIter() : counter(0), ptr(buffer) {
-      for (unsigned i = 0; i < sizeof(buffer); ++i)
-        buffer[i] = '\0';
+      for (unsigned i=0; i<sizeof(buffer);++i) buffer[i]='\0';
     }
     void operator()(char c) {
       *ptr++ = c;
@@ -33,6 +31,7 @@ protected:
   };
 };
 char ImmutableSetTest::buffer[10];
+
 
 TEST_F(ImmutableSetTest, EmptyIntSetTest) {
   ImmutableSet<int>::Factory f;
@@ -46,6 +45,7 @@ TEST_F(ImmutableSetTest, EmptyIntSetTest) {
   EXPECT_TRUE(S.begin() == S.end());
   EXPECT_FALSE(S.begin() != S.end());
 }
+
 
 TEST_F(ImmutableSetTest, OneElemIntSetTest) {
   ImmutableSet<int>::Factory f;
@@ -199,4 +199,4 @@ TEST_F(ImmutableSetTest, IterLongSetTest) {
   ASSERT_EQ(6, i);
 }
 
-} // namespace
+}

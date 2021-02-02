@@ -7,8 +7,8 @@
 #define HEADER_INCLUDED
 
 static inline void foo(int &x, int y) {
-// Capturing x and y
-#pragma clang __debug captured
+  // Capturing x and y
+  #pragma clang __debug captured
   {
     x += y;
   }
@@ -17,11 +17,11 @@ static inline void foo(int &x, int y) {
 struct C {
   int val;
 
-  explicit C(int v) : val(v) {}
+  explicit C(int v) : val(v) { }
 
   void bar(int &x) {
-// Capturing x and this
-#pragma clang __debug captured
+    // Capturing x and this
+    #pragma clang __debug captured
     {
       x += val;
     }

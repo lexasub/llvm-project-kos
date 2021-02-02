@@ -25,8 +25,8 @@ class PPCTargetMachine;
 
 inline static unsigned getCRFromCRBit(unsigned SrcReg) {
   unsigned Reg = 0;
-  if (SrcReg == PPC::CR0LT || SrcReg == PPC::CR0GT || SrcReg == PPC::CR0EQ ||
-      SrcReg == PPC::CR0UN)
+  if (SrcReg == PPC::CR0LT || SrcReg == PPC::CR0GT ||
+      SrcReg == PPC::CR0EQ || SrcReg == PPC::CR0UN)
     Reg = PPC::CR0;
   else if (SrcReg == PPC::CR1LT || SrcReg == PPC::CR1GT ||
            SrcReg == PPC::CR1EQ || SrcReg == PPC::CR1UN)
@@ -73,8 +73,7 @@ public:
   /// getPointerRegClass - Return the register class to use to hold pointers.
   /// This is used for addressing modes.
   const TargetRegisterClass *
-  getPointerRegClass(const MachineFunction &MF,
-                     unsigned Kind = 0) const override;
+  getPointerRegClass(const MachineFunction &MF, unsigned Kind=0) const override;
 
   unsigned getRegPressureLimit(const TargetRegisterClass *RC,
                                MachineFunction &MF) const override;
@@ -155,22 +154,20 @@ public:
   /// register name so that only the number is left.  Used by for linux asm.
   static const char *stripRegisterPrefix(const char *RegName) {
     switch (RegName[0]) {
-    case 'a':
-      if (RegName[1] == 'c' && RegName[2] == 'c')
-        return RegName + 3;
-      break;
-    case 'r':
-    case 'f':
-    case 'v':
-      if (RegName[1] == 's') {
-        if (RegName[2] == 'p')
+      case 'a':
+        if (RegName[1] == 'c' && RegName[2] == 'c')
           return RegName + 3;
-        return RegName + 2;
-      }
-      return RegName + 1;
-    case 'c':
-      if (RegName[1] == 'r')
-        return RegName + 2;
+      break;
+      case 'r':
+      case 'f':
+      case 'v':
+        if (RegName[1] == 's') {
+          if (RegName[2] == 'p')
+            return RegName + 3;
+          return RegName + 2;
+        }
+        return RegName + 1;
+      case 'c': if (RegName[1] == 'r') return RegName + 2;
     }
 
     return RegName;

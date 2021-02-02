@@ -58,6 +58,8 @@ bool InsertNOPLoad::runOnMachineFunction(MachineFunction &MF) {
   return Modified;
 }
 
+
+
 //*****************************************************************************
 //**** DetectRoundChange pass
 //*****************************************************************************

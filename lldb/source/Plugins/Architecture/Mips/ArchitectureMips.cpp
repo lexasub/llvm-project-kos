@@ -38,9 +38,8 @@ void ArchitectureMips::Terminate() {
 }
 
 std::unique_ptr<Architecture> ArchitectureMips::Create(const ArchSpec &arch) {
-  return arch.IsMIPS()
-             ? std::unique_ptr<Architecture>(new ArchitectureMips(arch))
-             : nullptr;
+  return arch.IsMIPS() ?
+      std::unique_ptr<Architecture>(new ArchitectureMips(arch)) : nullptr;
 }
 
 ConstString ArchitectureMips::GetPluginName() { return GetPluginNameStatic(); }
@@ -57,8 +56,7 @@ addr_t ArchitectureMips::GetCallableLoadAddress(addr_t code_addr,
   case AddressClass::eCodeAlternateISA:
     is_alternate_isa = true;
     break;
-  default:
-    break;
+  default: break;
   }
 
   if ((code_addr & 2ull) || is_alternate_isa)
@@ -72,8 +70,7 @@ addr_t ArchitectureMips::GetOpcodeLoadAddress(addr_t opcode_addr,
   case AddressClass::eData:
   case AddressClass::eDebug:
     return LLDB_INVALID_ADDRESS;
-  default:
-    break;
+  default: break;
   }
   return opcode_addr & ~(1ull);
 }
@@ -103,7 +100,7 @@ lldb::addr_t ArchitectureMips::GetBreakableLoadAddress(lldb::addr_t addr,
     SymbolContextItem resolve_scope =
         eSymbolContextFunction | eSymbolContextSymbol;
     temp_addr_module_sp->ResolveSymbolContextForAddress(resolved_addr,
-                                                        resolve_scope, sc);
+      resolve_scope, sc);
     Address sym_addr;
     if (sc.function)
       sym_addr = sc.function->GetAddressRange().GetBaseAddress();
@@ -159,7 +156,7 @@ Instruction *ArchitectureMips::GetInstructionAtAddress(
 
   // Create Disassembler Instance
   lldb::DisassemblerSP disasm_sp(
-      Disassembler::FindPlugin(m_arch, nullptr, nullptr));
+    Disassembler::FindPlugin(m_arch, nullptr, nullptr));
 
   InstructionList instruction_list;
   InstructionSP prev_insn;
@@ -186,7 +183,8 @@ Instruction *ArchitectureMips::GetInstructionAtAddress(
         // of upper 4 byte instruction).
         instruction_list.Append(prev_insn);
         inst_to_choose = 1;
-      } else if (i == 2) {
+      }
+      else if (i == 2) {
         // Here we may get one 4-byte instruction or two 2-byte instructions.
         if (num_insns == 2) {
           // Looks like there are two 2-byte instructions above our
@@ -197,14 +195,16 @@ Instruction *ArchitectureMips::GetInstructionAtAddress(
           // instruction and whatever i=1 iteration has found out is true.
           inst_to_choose = 1;
           break;
-        } else if (insn_size == 4) {
+        }
+        else if (insn_size == 4) {
           // This instruction claims its a valid 4-byte instruction. But it
           // could be a part of it's upper 4-byte instruction. Lets try
           // scanning upper 2 bytes to verify this.
           instruction_list.Append(prev_insn);
           inst_to_choose = 2;
         }
-      } else if (i == 3) {
+      }
+      else if (i == 3) {
         if (insn_size == 4)
           // FIXME: We reached here that means instruction at [target - 4] has
           // already claimed to be a 4-byte instruction, and now instruction
@@ -218,7 +218,8 @@ Instruction *ArchitectureMips::GetInstructionAtAddress(
           inst_to_choose = 2;
         break;
       }
-    } else {
+    }
+    else {
       // Decode failed, bytes do not form a valid instruction. So whatever
       // previous iteration has found out is true.
       if (i > 1) {

@@ -14,50 +14,58 @@
 #include "test_macros.h"
 
 template <class T>
-void test_has_nothrow_assign() {
-  static_assert(std::is_nothrow_move_assignable<T>::value, "");
+void test_has_nothrow_assign()
+{
+    static_assert( std::is_nothrow_move_assignable<T>::value, "");
 #if TEST_STD_VER > 14
-  static_assert(std::is_nothrow_move_assignable_v<T>, "");
+    static_assert( std::is_nothrow_move_assignable_v<T>, "");
 #endif
 }
 
 template <class T>
-void test_has_not_nothrow_assign() {
-  static_assert(!std::is_nothrow_move_assignable<T>::value, "");
+void test_has_not_nothrow_assign()
+{
+    static_assert(!std::is_nothrow_move_assignable<T>::value, "");
 #if TEST_STD_VER > 14
-  static_assert(!std::is_nothrow_move_assignable_v<T>, "");
+    static_assert(!std::is_nothrow_move_assignable_v<T>, "");
 #endif
 }
 
-class Empty {};
+class Empty
+{
+};
 
-struct NotEmpty {
-  virtual ~NotEmpty();
+struct NotEmpty
+{
+    virtual ~NotEmpty();
 };
 
 union Union {};
 
-struct bit_zero {
-  int : 0;
+struct bit_zero
+{
+    int :  0;
 };
 
-struct A {
-  A& operator=(const A&);
+struct A
+{
+    A& operator=(const A&);
 };
 
-int main(int, char**) {
-  test_has_nothrow_assign<int&>();
-  test_has_nothrow_assign<Union>();
-  test_has_nothrow_assign<Empty>();
-  test_has_nothrow_assign<int>();
-  test_has_nothrow_assign<double>();
-  test_has_nothrow_assign<int*>();
-  test_has_nothrow_assign<const int*>();
-  test_has_nothrow_assign<NotEmpty>();
-  test_has_nothrow_assign<bit_zero>();
+int main(int, char**)
+{
+    test_has_nothrow_assign<int&>();
+    test_has_nothrow_assign<Union>();
+    test_has_nothrow_assign<Empty>();
+    test_has_nothrow_assign<int>();
+    test_has_nothrow_assign<double>();
+    test_has_nothrow_assign<int*>();
+    test_has_nothrow_assign<const int*>();
+    test_has_nothrow_assign<NotEmpty>();
+    test_has_nothrow_assign<bit_zero>();
 
-  test_has_not_nothrow_assign<void>();
-  test_has_not_nothrow_assign<A>();
+    test_has_not_nothrow_assign<void>();
+    test_has_not_nothrow_assign<A>();
 
   return 0;
 }

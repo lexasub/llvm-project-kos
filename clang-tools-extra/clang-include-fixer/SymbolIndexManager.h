@@ -16,7 +16,7 @@
 #ifdef _MSC_VER
 // Disable warnings from ppltasks.h transitively included by <future>.
 #pragma warning(push)
-#pragma warning(disable : 4530)
+#pragma warning(disable:4530)
 #endif
 
 #include <future>

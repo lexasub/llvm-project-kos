@@ -11,17 +11,14 @@ class vector {
 public:
   explicit vector() {} // expected-warning 2 {{should not be explicit}}
 };
-} // namespace __debug
-} // namespace std
+}
+}
 #else
 
 #define BE_THE_HEADER
 #include __FILE__
 
-struct {
-  int a, b;
-  std::__debug::vector<int> c;
-} e[] = {{1, 1}}; // expected-note{{used in initialization here}}
+struct { int a, b; std::__debug::vector<int> c; } e[] = { {1, 1} }; // expected-note{{used in initialization here}}
 // expected-warning@+1 {{expression with side effects has no effect in an unevaluated context}}
-decltype(new std::__debug::vector<int>[1] {}) x; // expected-note{{used in initialization here}}
+decltype(new std::__debug::vector<int>[1]{}) x; // expected-note{{used in initialization here}}
 #endif

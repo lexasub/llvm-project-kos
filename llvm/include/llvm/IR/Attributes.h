@@ -36,7 +36,7 @@ class AttrBuilder;
 class AttributeImpl;
 class AttributeListImpl;
 class AttributeSetNode;
-template <typename T> struct DenseMapInfo;
+template<typename T> struct DenseMapInfo;
 class FoldingSetNodeID;
 class Function;
 class LLVMContext;
@@ -69,13 +69,13 @@ public:
 
   enum AttrKind {
     // IR-Level Attributes
-    None, ///< No attributes have been set
-#define GET_ATTR_NAMES
-#define ATTRIBUTE_ENUM(ENUM_NAME, OTHER) ENUM_NAME,
-#include "llvm/IR/Attributes.inc"
-    EndAttrKinds, ///< Sentinal value useful for loops
-    EmptyKey,     ///< Use as Empty key for DenseMap of AttrKind
-    TombstoneKey, ///< Use as Tombstone key for DenseMap of AttrKind
+    None,                  ///< No attributes have been set
+    #define GET_ATTR_NAMES
+    #define ATTRIBUTE_ENUM(ENUM_NAME, OTHER) ENUM_NAME,
+    #include "llvm/IR/Attributes.inc"
+    EndAttrKinds,          ///< Sentinal value useful for loops
+    EmptyKey,              ///< Use as Empty key for DenseMap of AttrKind
+    TombstoneKey,          ///< Use as Tombstone key for DenseMap of AttrKind
   };
 
 private:
@@ -101,7 +101,7 @@ public:
   static Attribute getWithAlignment(LLVMContext &Context, Align Alignment);
   static Attribute getWithStackAlignment(LLVMContext &Context, Align Alignment);
   static Attribute getWithDereferenceableBytes(LLVMContext &Context,
-                                               uint64_t Bytes);
+                                              uint64_t Bytes);
   static Attribute getWithDereferenceableOrNullBytes(LLVMContext &Context,
                                                      uint64_t Bytes);
   static Attribute getWithAllocSizeArgs(LLVMContext &Context,
@@ -210,11 +210,13 @@ public:
   void Profile(FoldingSetNodeID &ID) const;
 
   /// Return a raw pointer that uniquely identifies this attribute.
-  void *getRawPointer() const { return pImpl; }
+  void *getRawPointer() const {
+    return pImpl;
+  }
 
   /// Get an attribute from a raw pointer created by getRawPointer.
   static Attribute fromRawPointer(void *RawPtr) {
-    return Attribute(reinterpret_cast<AttributeImpl *>(RawPtr));
+    return Attribute(reinterpret_cast<AttributeImpl*>(RawPtr));
   }
 };
 
@@ -710,7 +712,9 @@ public:
   bool operator!=(const AttributeList &RHS) const { return pImpl != RHS.pImpl; }
 
   /// Return a raw pointer that uniquely identifies this attribute list.
-  void *getRawPointer() const { return pImpl; }
+  void *getRawPointer() const {
+    return pImpl;
+  }
 
   /// Return true if there are no attributes.
   bool isEmpty() const { return pImpl == nullptr; }
@@ -724,13 +728,13 @@ public:
 template <> struct DenseMapInfo<AttributeList> {
   static AttributeList getEmptyKey() {
     auto Val = static_cast<uintptr_t>(-1);
-    Val <<= PointerLikeTypeTraits<void *>::NumLowBitsAvailable;
+    Val <<= PointerLikeTypeTraits<void*>::NumLowBitsAvailable;
     return AttributeList(reinterpret_cast<AttributeListImpl *>(Val));
   }
 
   static AttributeList getTombstoneKey() {
     auto Val = static_cast<uintptr_t>(-2);
-    Val <<= PointerLikeTypeTraits<void *>::NumLowBitsAvailable;
+    Val <<= PointerLikeTypeTraits<void*>::NumLowBitsAvailable;
     return AttributeList(reinterpret_cast<AttributeListImpl *>(Val));
   }
 
@@ -766,7 +770,9 @@ class AttrBuilder {
 public:
   AttrBuilder() = default;
 
-  AttrBuilder(const Attribute &A) { addAttribute(A); }
+  AttrBuilder(const Attribute &A) {
+    addAttribute(A);
+  }
 
   AttrBuilder(AttributeList AS, unsigned Idx);
   AttrBuilder(AttributeSet AS);
@@ -947,6 +953,7 @@ AttrBuilder typeIncompatible(Type *Ty);
 /// \returns Return true if the two functions have compatible target-independent
 /// attributes for inlining purposes.
 bool areInlineCompatible(const Function &Caller, const Function &Callee);
+
 
 /// Checks  if there are any incompatible function attributes between
 /// \p A and \p B.

@@ -79,11 +79,11 @@ public:
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void e() override = 0;
 
-  virtual void f() = 0;
+  virtual void f()=0;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void f() override =0;
 
-  virtual void f2() const = 0;
+  virtual void f2() const=0;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void f2() const override =0;
 
@@ -95,7 +95,7 @@ public:
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void j() const override;
 
-  virtual MustUseResultObject k(); // Has an implicit attribute.
+  virtual MustUseResultObject k();  // Has an implicit attribute.
   // CHECK-MESSAGES: :[[@LINE-1]]:31: warning: prefer using
   // CHECK-FIXES: {{^}}  MustUseResultObject k() override;
 
@@ -184,7 +184,8 @@ public:
   // CHECK-MESSAGES-NOT: warning:
   // CHECK-FIXES: {{^}}  void b() override {}
 
-  virtual void c() {}
+  virtual void c()
+  {}
   // CHECK-MESSAGES: :[[@LINE-2]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void c() override
 
@@ -192,11 +193,12 @@ public:
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: 'virtual' is redundant
   // CHECK-FIXES: {{^}}  void d() override {}
 
-  virtual void j() const {}
+  virtual void j() const
+  {}
   // CHECK-MESSAGES: :[[@LINE-2]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void j() const override
 
-  virtual MustUseResultObject k() {} // Has an implicit attribute.
+  virtual MustUseResultObject k() {}  // Has an implicit attribute.
   // CHECK-MESSAGES: :[[@LINE-1]]:31: warning: prefer using
   // CHECK-FIXES: {{^}}  MustUseResultObject k() override {}
 
@@ -204,15 +206,18 @@ public:
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  bool l() override MUST_USE_RESULT UNUSED {}
 
-  virtual void r() & {}
+  virtual void r() &
+  {}
   // CHECK-MESSAGES: :[[@LINE-2]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void r() & override
 
-  virtual void rr() && {}
+  virtual void rr() &&
+  {}
   // CHECK-MESSAGES: :[[@LINE-2]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void rr() && override
 
-  virtual void cv() const volatile {}
+  virtual void cv() const volatile
+  {}
   // CHECK-MESSAGES: :[[@LINE-2]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void cv() const volatile override
 
@@ -255,22 +260,19 @@ struct Macros : public Base {
 
 #define F virtual void f();
   F
-      // CHECK-FIXES: {{^}}  F
+  // CHECK-FIXES: {{^}}  F
 
-      VIRTUAL void
-      g() OVERRIDE final;
+  VIRTUAL void g() OVERRIDE final;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: 'virtual' and 'override' are redundant
   // CHECK-FIXES: {{^}}  VIRTUAL void g() final;
 };
 
 // Tests for templates.
-template <typename T>
-struct TemplateBase {
+template <typename T> struct TemplateBase {
   virtual void f(T t);
 };
 
-template <typename T>
-struct DerivedFromTemplate : public TemplateBase<T> {
+template <typename T> struct DerivedFromTemplate : public TemplateBase<T> {
   virtual void f(T t);
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void f(T t) override;
@@ -298,8 +300,7 @@ struct MembersOfSpecializations : public Base2 {
   // CHECK-MESSAGES-NOT: warning:
   // CHECK-FIXES: {{^}}  void a() override;
 };
-template <>
-void MembersOfSpecializations<3>::a() {}
+template <> void MembersOfSpecializations<3>::a() {}
 void ff() { MembersOfSpecializations<3>().a(); };
 
 // In case try statement is used as a method body,
@@ -308,16 +309,10 @@ struct TryStmtAsBody : public Base {
   void a() try
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: annotate this
   // CHECK-FIXES: {{^}}  void a() override try
-  { b(); }
-  catch (...) {
-    c();
-  }
+  { b(); } catch(...) { c(); }
 
   virtual void d() try
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: prefer using
   // CHECK-FIXES: {{^}}  void d() override try
-  { e(); }
-  catch (...) {
-    f();
-  }
+  { e(); } catch(...) { f(); }
 };

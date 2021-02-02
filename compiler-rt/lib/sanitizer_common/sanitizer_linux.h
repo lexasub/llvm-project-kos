@@ -13,7 +13,7 @@
 #define SANITIZER_LINUX_H
 
 #include "sanitizer_platform.h"
-#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD || \
+#if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD ||                \
     SANITIZER_SOLARIS
 #include "sanitizer_common.h"
 #include "sanitizer_internal_defs.h"
@@ -46,9 +46,9 @@ void ReadProcMaps(ProcSelfMapsBuff *proc_maps);
 
 // Syscall wrappers.
 uptr internal_getdents(fd_t fd, struct linux_dirent *dirp, unsigned int count);
-uptr internal_sigaltstack(const void *ss, void *oss);
+uptr internal_sigaltstack(const void* ss, void* oss);
 uptr internal_sigprocmask(int how, __sanitizer_sigset_t *set,
-                          __sanitizer_sigset_t *oldset);
+    __sanitizer_sigset_t *oldset);
 uptr internal_clock_gettime(__sanitizer_clockid_t clk_id, void *tp);
 
 // Linux-only syscalls.
@@ -119,47 +119,27 @@ inline void ReleaseMemoryPagesToOSAndZeroFill(uptr beg, uptr end) {
 #if SANITIZER_ANDROID
 
 #if defined(__aarch64__)
-#define __get_tls()                           \
-  ({                                          \
-    void **__v;                               \
-    __asm__("mrs %0, tpidr_el0" : "=r"(__v)); \
-    __v;                                      \
-  })
+# define __get_tls() \
+    ({ void** __v; __asm__("mrs %0, tpidr_el0" : "=r"(__v)); __v; })
 #elif defined(__arm__)
-#define __get_tls()                                    \
-  ({                                                   \
-    void **__v;                                        \
-    __asm__("mrc p15, 0, %0, c13, c0, 3" : "=r"(__v)); \
-    __v;                                               \
-  })
+# define __get_tls() \
+    ({ void** __v; __asm__("mrc p15, 0, %0, c13, c0, 3" : "=r"(__v)); __v; })
 #elif defined(__mips__)
 // On mips32r1, this goes via a kernel illegal instruction trap that's
 // optimized for v1.
-#define __get_tls()                \
-  ({                               \
-    register void **__v asm("v1"); \
-    __asm__(                       \
-        ".set    push\n"           \
-        ".set    mips32r2\n"       \
-        "rdhwr   %0,$29\n"         \
-        ".set    pop\n"            \
-        : "=r"(__v));              \
-    __v;                           \
-  })
+# define __get_tls() \
+    ({ register void** __v asm("v1"); \
+       __asm__(".set    push\n" \
+               ".set    mips32r2\n" \
+               "rdhwr   %0,$29\n" \
+               ".set    pop\n" : "=r"(__v)); \
+       __v; })
 #elif defined(__i386__)
-#define __get_tls()                         \
-  ({                                        \
-    void **__v;                             \
-    __asm__("movl %%gs:0, %0" : "=r"(__v)); \
-    __v;                                    \
-  })
+# define __get_tls() \
+    ({ void** __v; __asm__("movl %%gs:0, %0" : "=r"(__v)); __v; })
 #elif defined(__x86_64__)
-#define __get_tls()                        \
-  ({                                       \
-    void **__v;                            \
-    __asm__("mov %%fs:0, %0" : "=r"(__v)); \
-    __v;                                   \
-  })
+# define __get_tls() \
+    ({ void** __v; __asm__("mov %%fs:0, %0" : "=r"(__v)); __v; })
 #else
 #error "Unsupported architecture."
 #endif

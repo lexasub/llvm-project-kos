@@ -74,8 +74,7 @@ public:
 
   static void Terminate();
 
-  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp,
-                                    const lldb_private::ArchSpec &arch);
+  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp, const lldb_private::ArchSpec &arch);
 
   static lldb_private::ConstString GetPluginNameStatic();
 

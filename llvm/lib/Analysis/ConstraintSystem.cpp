@@ -8,9 +8,9 @@
 
 #include "llvm/Analysis/ConstraintSystem.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/Support/MathExtras.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/Support/Debug.h"
-#include "llvm/Support/MathExtras.h"
 
 #include <algorithm>
 #include <string>
@@ -70,10 +70,10 @@ bool ConstraintSystem::eliminateUsingFM() {
 
         int64_t M1, M2, N;
         if (MulOverflow(Constraints[UpperR][I],
-                        ((-1) * Constraints[LowerR][1] / GCD), M1))
+                                   ((-1) * Constraints[LowerR][1] / GCD), M1))
           return false;
-        if (MulOverflow(Constraints[LowerR][I], (Constraints[UpperR][1] / GCD),
-                        M2))
+        if (MulOverflow(Constraints[LowerR][I],
+                                   (Constraints[UpperR][1] / GCD), M2))
           return false;
         if (AddOverflow(M1, M2, N))
           return false;

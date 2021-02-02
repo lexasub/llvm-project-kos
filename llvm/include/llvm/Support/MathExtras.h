@@ -55,47 +55,36 @@ enum ZeroBehavior {
 namespace numbers {
 // TODO: Track C++20 std::numbers.
 // TODO: Favor using the hexadecimal FP constants (requires C++17).
-constexpr double e = 2.7182818284590452354, // (0x1.5bf0a8b145749P+1)
-                                            // https://oeis.org/A001113
-    egamma = .57721566490153286061,         // (0x1.2788cfc6fb619P-1)
-                                            // https://oeis.org/A001620
-    ln2 = .69314718055994530942,            // (0x1.62e42fefa39efP-1)
-                                            // https://oeis.org/A002162
-    ln10 = 2.3025850929940456840,           // (0x1.24bb1bbb55516P+1)
-                                            // https://oeis.org/A002392
-    log2e = 1.4426950408889634074,          // (0x1.71547652b82feP+0)
-    log10e = .43429448190325182765,         // (0x1.bcb7b1526e50eP-2)
-    pi = 3.1415926535897932385,             // (0x1.921fb54442d18P+1)
-                                            // https://oeis.org/A000796
-    inv_pi = .31830988618379067154,         // (0x1.45f306bc9c883P-2)
-                                            // https://oeis.org/A049541
-    sqrtpi = 1.7724538509055160273,         // (0x1.c5bf891b4ef6bP+0)
-                                            // https://oeis.org/A002161
-    inv_sqrtpi = .56418958354775628695,     // (0x1.20dd750429b6dP-1)
-                                            // https://oeis.org/A087197
-    sqrt2 =
-        1.4142135623730950488, // (0x1.6a09e667f3bcdP+0) https://oeis.org/A00219
-    inv_sqrt2 = .70710678118654752440, // (0x1.6a09e667f3bcdP-1)
-    sqrt3 = 1.7320508075688772935,     // (0x1.bb67ae8584caaP+0)
-                                       // https://oeis.org/A002194
-    inv_sqrt3 = .57735026918962576451, // (0x1.279a74590331cP-1)
-    phi = 1.6180339887498948482;       // (0x1.9e3779b97f4a8P+0)
-                                       // https://oeis.org/A001622
-constexpr float ef = 2.71828183F, // (0x1.5bf0a8P+1) https://oeis.org/A001113
-    egammaf = .577215665F,        // (0x1.2788d0P-1) https://oeis.org/A001620
-    ln2f = .693147181F,           // (0x1.62e430P-1) https://oeis.org/A002162
-    ln10f = 2.30258509F,          // (0x1.26bb1cP+1) https://oeis.org/A002392
-    log2ef = 1.44269504F,         // (0x1.715476P+0)
-    log10ef = .434294482F,        // (0x1.bcb7b2P-2)
-    pif = 3.14159265F,            // (0x1.921fb6P+1) https://oeis.org/A000796
-    inv_pif = .318309886F,        // (0x1.45f306P-2) https://oeis.org/A049541
-    sqrtpif = 1.77245385F,        // (0x1.c5bf8aP+0) https://oeis.org/A002161
-    inv_sqrtpif = .564189584F,    // (0x1.20dd76P-1) https://oeis.org/A087197
-    sqrt2f = 1.41421356F,         // (0x1.6a09e6P+0) https://oeis.org/A002193
-    inv_sqrt2f = .707106781F,     // (0x1.6a09e6P-1)
-    sqrt3f = 1.73205081F,         // (0x1.bb67aeP+0) https://oeis.org/A002194
-    inv_sqrt3f = .577350269F,     // (0x1.279a74P-1)
-    phif = 1.61803399F;           // (0x1.9e377aP+0) https://oeis.org/A001622
+constexpr double e          = 2.7182818284590452354, // (0x1.5bf0a8b145749P+1) https://oeis.org/A001113
+                 egamma     = .57721566490153286061, // (0x1.2788cfc6fb619P-1) https://oeis.org/A001620
+                 ln2        = .69314718055994530942, // (0x1.62e42fefa39efP-1) https://oeis.org/A002162
+                 ln10       = 2.3025850929940456840, // (0x1.24bb1bbb55516P+1) https://oeis.org/A002392
+                 log2e      = 1.4426950408889634074, // (0x1.71547652b82feP+0)
+                 log10e     = .43429448190325182765, // (0x1.bcb7b1526e50eP-2)
+                 pi         = 3.1415926535897932385, // (0x1.921fb54442d18P+1) https://oeis.org/A000796
+                 inv_pi     = .31830988618379067154, // (0x1.45f306bc9c883P-2) https://oeis.org/A049541
+                 sqrtpi     = 1.7724538509055160273, // (0x1.c5bf891b4ef6bP+0) https://oeis.org/A002161
+                 inv_sqrtpi = .56418958354775628695, // (0x1.20dd750429b6dP-1) https://oeis.org/A087197
+                 sqrt2      = 1.4142135623730950488, // (0x1.6a09e667f3bcdP+0) https://oeis.org/A00219
+                 inv_sqrt2  = .70710678118654752440, // (0x1.6a09e667f3bcdP-1)
+                 sqrt3      = 1.7320508075688772935, // (0x1.bb67ae8584caaP+0) https://oeis.org/A002194
+                 inv_sqrt3  = .57735026918962576451, // (0x1.279a74590331cP-1)
+                 phi        = 1.6180339887498948482; // (0x1.9e3779b97f4a8P+0) https://oeis.org/A001622
+constexpr float ef          = 2.71828183F, // (0x1.5bf0a8P+1) https://oeis.org/A001113
+                egammaf     = .577215665F, // (0x1.2788d0P-1) https://oeis.org/A001620
+                ln2f        = .693147181F, // (0x1.62e430P-1) https://oeis.org/A002162
+                ln10f       = 2.30258509F, // (0x1.26bb1cP+1) https://oeis.org/A002392
+                log2ef      = 1.44269504F, // (0x1.715476P+0)
+                log10ef     = .434294482F, // (0x1.bcb7b2P-2)
+                pif         = 3.14159265F, // (0x1.921fb6P+1) https://oeis.org/A000796
+                inv_pif     = .318309886F, // (0x1.45f306P-2) https://oeis.org/A049541
+                sqrtpif     = 1.77245385F, // (0x1.c5bf8aP+0) https://oeis.org/A002161
+                inv_sqrtpif = .564189584F, // (0x1.20dd76P-1) https://oeis.org/A087197
+                sqrt2f      = 1.41421356F, // (0x1.6a09e6P+0) https://oeis.org/A002193
+                inv_sqrt2f  = .707106781F, // (0x1.6a09e6P-1)
+                sqrt3f      = 1.73205081F, // (0x1.bb67aeP+0) https://oeis.org/A002194
+                inv_sqrt3f  = .577350269F, // (0x1.279a74P-1)
+                phif        = 1.61803399F; // (0x1.9e377aP+0) https://oeis.org/A001622
 } // namespace numbers
 
 namespace detail {
@@ -306,14 +295,15 @@ static const unsigned char BitReverseTable256[256] = {
 #define R2(n) n, n + 2 * 64, n + 1 * 64, n + 3 * 64
 #define R4(n) R2(n), R2(n + 2 * 16), R2(n + 1 * 16), R2(n + 3 * 16)
 #define R6(n) R4(n), R4(n + 2 * 4), R4(n + 1 * 4), R4(n + 3 * 4)
-    R6(0), R6(2), R6(1), R6(3)
+  R6(0), R6(2), R6(1), R6(3)
 #undef R2
 #undef R4
 #undef R6
 };
 
 /// Reverse the bits in \p Val.
-template <typename T> T reverseBits(T Val) {
+template <typename T>
+T reverseBits(T Val) {
   unsigned char in[sizeof(Val)];
   unsigned char out[sizeof(Val)];
   std::memcpy(in, &Val, sizeof(Val));
@@ -324,25 +314,29 @@ template <typename T> T reverseBits(T Val) {
 }
 
 #if __has_builtin(__builtin_bitreverse8)
-template <> inline uint8_t reverseBits<uint8_t>(uint8_t Val) {
+template<>
+inline uint8_t reverseBits<uint8_t>(uint8_t Val) {
   return __builtin_bitreverse8(Val);
 }
 #endif
 
 #if __has_builtin(__builtin_bitreverse16)
-template <> inline uint16_t reverseBits<uint16_t>(uint16_t Val) {
+template<>
+inline uint16_t reverseBits<uint16_t>(uint16_t Val) {
   return __builtin_bitreverse16(Val);
 }
 #endif
 
 #if __has_builtin(__builtin_bitreverse32)
-template <> inline uint32_t reverseBits<uint32_t>(uint32_t Val) {
+template<>
+inline uint32_t reverseBits<uint32_t>(uint32_t Val) {
   return __builtin_bitreverse32(Val);
 }
 #endif
 
 #if __has_builtin(__builtin_bitreverse64)
-template <> inline uint64_t reverseBits<uint64_t>(uint64_t Val) {
+template<>
+inline uint64_t reverseBits<uint64_t>(uint64_t Val) {
   return __builtin_bitreverse64(Val);
 }
 #endif
@@ -368,8 +362,7 @@ constexpr inline uint64_t Make_64(uint32_t High, uint32_t Low) {
 
 /// Checks if an integer fits into the given bit width.
 template <unsigned N> constexpr inline bool isInt(int64_t x) {
-  return N >= 64 ||
-         (-(INT64_C(1) << (N - 1)) <= x && x < (INT64_C(1) << (N - 1)));
+  return N >= 64 || (-(INT64_C(1)<<(N-1)) <= x && x < (INT64_C(1)<<(N-1)));
 }
 // Template specializations to get better code for common cases.
 template <> constexpr inline bool isInt<8>(int64_t x) {
@@ -571,7 +564,8 @@ template <typename T> struct PopulationCounter<T, 8> {
 /// Count the number of set bits in a value.
 /// Ex. countPopulation(0xF000F000) = 8
 /// Returns 0 if the word is zero.
-template <typename T> inline unsigned countPopulation(T Value) {
+template <typename T>
+inline unsigned countPopulation(T Value) {
   static_assert(std::numeric_limits<T>::is_integer &&
                     !std::numeric_limits<T>::is_signed,
                 "Only unsigned integral types are allowed.");
@@ -624,7 +618,8 @@ inline unsigned Log2_64_Ceil(uint64_t Value) {
 }
 
 /// Return the greatest common divisor of the values using Euclid's algorithm.
-template <typename T> inline T greatestCommonDivisor(T A, T B) {
+template <typename T>
+inline T greatestCommonDivisor(T A, T B) {
   while (B) {
     T Tmp = B;
     B = A % B;
@@ -699,8 +694,7 @@ inline uint64_t NextPowerOf2(uint64_t A) {
 /// Returns the power of two which is less than or equal to the given value.
 /// Essentially, it is a floor operation across the domain of powers of two.
 inline uint64_t PowerOf2Floor(uint64_t A) {
-  if (!A)
-    return 0;
+  if (!A) return 0;
   return 1ull << (63 - countLeadingZeros(A, ZB_Undefined));
 }
 
@@ -884,6 +878,7 @@ SaturatingMultiplyAdd(T X, T Y, T A, bool *ResultOverflowed = nullptr) {
 /// Use this rather than HUGE_VALF; the latter causes warnings on MSVC.
 extern const float huge_valf;
 
+
 /// Add two signed integers, computing the two's complement truncated result,
 /// returning true if overflow occured.
 template <typename T>
@@ -963,6 +958,6 @@ std::enable_if_t<std::is_signed<T>::value, T> MulOverflow(T X, T Y, T &Result) {
     return UX > (static_cast<U>(std::numeric_limits<T>::max())) / UY;
 }
 
-} // namespace llvm
+} // End llvm namespace
 
 #endif

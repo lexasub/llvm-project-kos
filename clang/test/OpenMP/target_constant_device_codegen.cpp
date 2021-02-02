@@ -16,17 +16,13 @@ int foo(int n) {
   float b[10];
   double cn[5][n];
 
-#pragma omp target nowait depend(in                   \
-                                 : global) depend(out \
-                                                  : a, b, cn[4])
+  #pragma omp target nowait depend(in: global) depend(out: a, b, cn[4])
   {
   }
 
   // CHECK: call i8* @__kmpc_omp_target_task_alloc({{.*}}, i64 -1)
 
-#pragma omp target device(1) nowait depend(in                   \
-                                           : global) depend(out \
-                                                            : a, b, cn[4])
+  #pragma omp target device(1) nowait depend(in: global) depend(out: a, b, cn[4])
   {
   }
 

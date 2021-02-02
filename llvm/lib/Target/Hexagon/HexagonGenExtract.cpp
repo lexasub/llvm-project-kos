@@ -30,10 +30,9 @@
 
 using namespace llvm;
 
-static cl::opt<unsigned>
-    ExtractCutoff("extract-cutoff", cl::init(~0U), cl::Hidden,
-                  cl::desc("Cutoff for generating \"extract\""
-                           " instructions"));
+static cl::opt<unsigned> ExtractCutoff("extract-cutoff", cl::init(~0U),
+  cl::Hidden, cl::desc("Cutoff for generating \"extract\""
+  " instructions"));
 
 // This prevents generating extract instructions that have the offset of 0.
 // One of the reasons for "extract" is to put a sequence of bits in a regis-
@@ -42,61 +41,57 @@ static cl::opt<unsigned>
 // rate "extract", since logical bit operations can be merged into compound
 // instructions (as opposed to "extract").
 static cl::opt<bool> NoSR0("extract-nosr0", cl::init(true), cl::Hidden,
-                           cl::desc("No extract instruction with offset 0"));
+  cl::desc("No extract instruction with offset 0"));
 
 static cl::opt<bool> NeedAnd("extract-needand", cl::init(true), cl::Hidden,
-                             cl::desc("Require & in extract patterns"));
+  cl::desc("Require & in extract patterns"));
 
 namespace llvm {
 
-void initializeHexagonGenExtractPass(PassRegistry &);
+void initializeHexagonGenExtractPass(PassRegistry&);
 FunctionPass *createHexagonGenExtract();
 
 } // end namespace llvm
 
 namespace {
 
-class HexagonGenExtract : public FunctionPass {
-public:
-  static char ID;
+  class HexagonGenExtract : public FunctionPass {
+  public:
+    static char ID;
 
-  HexagonGenExtract() : FunctionPass(ID) {
-    initializeHexagonGenExtractPass(*PassRegistry::getPassRegistry());
-  }
+    HexagonGenExtract() : FunctionPass(ID) {
+      initializeHexagonGenExtractPass(*PassRegistry::getPassRegistry());
+    }
 
-  StringRef getPassName() const override {
-    return "Hexagon generate \"extract\" instructions";
-  }
+    StringRef getPassName() const override {
+      return "Hexagon generate \"extract\" instructions";
+    }
 
-  bool runOnFunction(Function &F) override;
+    bool runOnFunction(Function &F) override;
 
-  void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.addRequired<DominatorTreeWrapperPass>();
-    AU.addPreserved<DominatorTreeWrapperPass>();
-    FunctionPass::getAnalysisUsage(AU);
-  }
+    void getAnalysisUsage(AnalysisUsage &AU) const override {
+      AU.addRequired<DominatorTreeWrapperPass>();
+      AU.addPreserved<DominatorTreeWrapperPass>();
+      FunctionPass::getAnalysisUsage(AU);
+    }
 
-private:
-  bool visitBlock(BasicBlock *B);
-  bool convert(Instruction *In);
+  private:
+    bool visitBlock(BasicBlock *B);
+    bool convert(Instruction *In);
 
-  unsigned ExtractCount = 0;
-  DominatorTree *DT;
-};
+    unsigned ExtractCount = 0;
+    DominatorTree *DT;
+  };
 
 } // end anonymous namespace
 
 char HexagonGenExtract::ID = 0;
 
-INITIALIZE_PASS_BEGIN(HexagonGenExtract, "hextract",
-                      "Hexagon generate "
-                      "\"extract\" instructions",
-                      false, false)
+INITIALIZE_PASS_BEGIN(HexagonGenExtract, "hextract", "Hexagon generate "
+  "\"extract\" instructions", false, false)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
-INITIALIZE_PASS_END(HexagonGenExtract, "hextract",
-                    "Hexagon generate "
-                    "\"extract\" instructions",
-                    false, false)
+INITIALIZE_PASS_END(HexagonGenExtract, "hextract", "Hexagon generate "
+  "\"extract\" instructions", false, false)
 
 bool HexagonGenExtract::convert(Instruction *In) {
   using namespace PatternMatch;
@@ -110,22 +105,22 @@ bool HexagonGenExtract::convert(Instruction *In) {
   // (and (shl (lshr x, #sr), #sl), #m)
   LogicalSR = true;
   bool Match = match(In, m_And(m_Shl(m_LShr(m_Value(BF), m_ConstantInt(CSR)),
-                                     m_ConstantInt(CSL)),
-                               m_ConstantInt(CM)));
+                               m_ConstantInt(CSL)),
+                         m_ConstantInt(CM)));
 
   if (!Match) {
     // (and (shl (ashr x, #sr), #sl), #m)
     LogicalSR = false;
     Match = match(In, m_And(m_Shl(m_AShr(m_Value(BF), m_ConstantInt(CSR)),
-                                  m_ConstantInt(CSL)),
-                            m_ConstantInt(CM)));
+                            m_ConstantInt(CSL)),
+                      m_ConstantInt(CM)));
   }
   if (!Match) {
     // (and (shl x, #sl), #m)
     LogicalSR = true;
     CSR = ConstantInt::get(Type::getInt32Ty(Ctx), 0);
-    Match = match(
-        In, m_And(m_Shl(m_Value(BF), m_ConstantInt(CSL)), m_ConstantInt(CM)));
+    Match = match(In, m_And(m_Shl(m_Value(BF), m_ConstantInt(CSL)),
+                      m_ConstantInt(CM)));
     if (Match && NoSR0)
       return false;
   }
@@ -133,29 +128,29 @@ bool HexagonGenExtract::convert(Instruction *In) {
     // (and (lshr x, #sr), #m)
     LogicalSR = true;
     CSL = ConstantInt::get(Type::getInt32Ty(Ctx), 0);
-    Match = match(
-        In, m_And(m_LShr(m_Value(BF), m_ConstantInt(CSR)), m_ConstantInt(CM)));
+    Match = match(In, m_And(m_LShr(m_Value(BF), m_ConstantInt(CSR)),
+                            m_ConstantInt(CM)));
   }
   if (!Match) {
     // (and (ashr x, #sr), #m)
     LogicalSR = false;
     CSL = ConstantInt::get(Type::getInt32Ty(Ctx), 0);
-    Match = match(
-        In, m_And(m_AShr(m_Value(BF), m_ConstantInt(CSR)), m_ConstantInt(CM)));
+    Match = match(In, m_And(m_AShr(m_Value(BF), m_ConstantInt(CSR)),
+                            m_ConstantInt(CM)));
   }
   if (!Match) {
     CM = nullptr;
     // (shl (lshr x, #sr), #sl)
     LogicalSR = true;
-    Match = match(
-        In, m_Shl(m_LShr(m_Value(BF), m_ConstantInt(CSR)), m_ConstantInt(CSL)));
+    Match = match(In, m_Shl(m_LShr(m_Value(BF), m_ConstantInt(CSR)),
+                            m_ConstantInt(CSL)));
   }
   if (!Match) {
     CM = nullptr;
     // (shl (ashr x, #sr), #sl)
     LogicalSR = false;
-    Match = match(
-        In, m_Shl(m_AShr(m_Value(BF), m_ConstantInt(CSR)), m_ConstantInt(CSL)));
+    Match = match(In, m_Shl(m_AShr(m_Value(BF), m_ConstantInt(CSR)),
+                            m_ConstantInt(CSL)));
   }
   if (!Match)
     return false;
@@ -202,7 +197,7 @@ bool HexagonGenExtract::convert(Instruction *In) {
     // If the shift right was arithmetic, it could have included some 1 bits.
     // It is still ok to generate extract, but only if the mask eliminates
     // those bits (i.e. M does not have any bits set beyond U).
-    APInt C = APInt::getHighBitsSet(BW, BW - U);
+    APInt C = APInt::getHighBitsSet(BW, BW-U);
     if (M.intersects(C) || !M.isMask(W))
       return false;
   } else {
@@ -229,7 +224,7 @@ bool HexagonGenExtract::visitBlock(BasicBlock *B) {
   bool Changed = false;
 
   // Depth-first, bottom-up traversal.
-  for (auto *DTN : children<DomTreeNode *>(DT->getNode(B)))
+  for (auto *DTN : children<DomTreeNode*>(DT->getNode(B)))
     Changed |= visitBlock(DTN->getBlock());
 
   // Allow limiting the number of generated extracts for debugging purposes.
@@ -264,7 +259,7 @@ bool HexagonGenExtract::runOnFunction(Function &F) {
 
   // Traverse the function bottom-up, to see super-expressions before their
   // sub-expressions.
-  BasicBlock *Entry = GraphTraits<Function *>::getEntryNode(&F);
+  BasicBlock *Entry = GraphTraits<Function*>::getEntryNode(&F);
   Changed = visitBlock(Entry);
 
   return Changed;

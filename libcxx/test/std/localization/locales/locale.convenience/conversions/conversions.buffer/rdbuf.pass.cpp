@@ -19,15 +19,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  typedef std::wbuffer_convert<std::codecvt_utf8<wchar_t> > B;
-  {
-    std::stringstream s;
-    B b;
-    assert(b.rdbuf() == nullptr);
-    b.rdbuf(s.rdbuf());
-    assert(b.rdbuf() == s.rdbuf());
-  }
+int main(int, char**)
+{
+    typedef std::wbuffer_convert<std::codecvt_utf8<wchar_t> > B;
+    {
+        std::stringstream s;
+        B b;
+        assert(b.rdbuf() == nullptr);
+        b.rdbuf(s.rdbuf());
+        assert(b.rdbuf() == s.rdbuf());
+    }
 
   return 0;
 }

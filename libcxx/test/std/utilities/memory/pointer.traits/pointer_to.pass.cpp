@@ -22,25 +22,23 @@
 #if TEST_STD_VER > 17
 constexpr
 #endif
-    bool
-    check() {
-  {
-    int i = 0;
-    static_assert(
-        (std::is_same<int*, decltype(std::pointer_traits<int*>::pointer_to(
-                                i))>::value),
-        "");
-    int* a = std::pointer_traits<int*>::pointer_to(i);
-    assert(a == &i);
-  }
-  { (std::pointer_traits<void*>::element_type)0; }
-  return true;
+bool check() {
+    {
+        int i = 0;
+        static_assert((std::is_same<int *, decltype(std::pointer_traits<int*>::pointer_to(i))>::value), "");
+        int* a = std::pointer_traits<int*>::pointer_to(i);
+        assert(a == &i);
+    }
+    {
+        (std::pointer_traits<void*>::element_type)0;
+    }
+    return true;
 }
 
 int main(int, char**) {
-  check();
+    check();
 #if TEST_STD_VER > 17
-  static_assert(check(), "");
+    static_assert(check(), "");
 #endif
 
   return 0;

@@ -5,10 +5,10 @@
 template <typename Var>
 struct S {
   template <unsigned N>
-  struct Inner {};
+  struct Inner { };
 
   template <>
-  struct Inner<0> {};
+  struct Inner<0> { };
 };
 
 S<int>::Inner<1> I1;

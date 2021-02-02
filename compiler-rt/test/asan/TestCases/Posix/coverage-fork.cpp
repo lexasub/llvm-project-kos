@@ -14,11 +14,14 @@
 #include <string.h>
 #include <unistd.h>
 
-__attribute__((noinline)) void foo() { printf("foo\n"); }
+__attribute__((noinline))
+void foo() { printf("foo\n"); }
 
-__attribute__((noinline)) void bar() { printf("bar\n"); }
+__attribute__((noinline))
+void bar() { printf("bar\n"); }
 
-__attribute__((noinline)) void baz() { printf("baz\n"); }
+__attribute__((noinline))
+void baz() { printf("baz\n"); }
 
 int main(int argc, char **argv) {
   pid_t child_pid = fork();

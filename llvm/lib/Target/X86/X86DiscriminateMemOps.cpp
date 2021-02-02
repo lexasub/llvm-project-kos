@@ -142,17 +142,16 @@ bool X86DiscriminateMemOps::runOnMachineFunction(MachineFunction &MF) {
       if (!TryInsert.second || !HasDebug) {
         unsigned BF, DF, CI = 0;
         DILocation::decodeDiscriminator(DI->getDiscriminator(), BF, DF, CI);
-        Optional<unsigned> EncodedDiscriminator =
-            DILocation::encodeDiscriminator(MemOpDiscriminators[L] + 1, DF, CI);
+        Optional<unsigned> EncodedDiscriminator = DILocation::encodeDiscriminator(
+            MemOpDiscriminators[L] + 1, DF, CI);
 
         if (!EncodedDiscriminator) {
-          // FIXME(mtrofin): The assumption is that this scenario is
-          // infrequent/OK not to support. If evidence points otherwise, we can
-          // explore synthesizeing unique DIs by adding fake line numbers, or by
-          // constructing 64 bit discriminators.
-          LLVM_DEBUG(dbgs()
-                     << "Unable to create a unique discriminator "
-                        "for instruction with memory operand in: "
+          // FIXME(mtrofin): The assumption is that this scenario is infrequent/OK
+          // not to support. If evidence points otherwise, we can explore synthesizeing
+          // unique DIs by adding fake line numbers, or by constructing 64 bit
+          // discriminators.
+          LLVM_DEBUG(dbgs() << "Unable to create a unique discriminator "
+                     "for instruction with memory operand in: "
                      << DI->getFilename() << " Line: " << DI->getLine()
                      << " Column: " << DI->getColumn()
                      << ". This is likely due to a large macro expansion. \n");
@@ -167,8 +166,7 @@ bool X86DiscriminateMemOps::runOnMachineFunction(MachineFunction &MF) {
         std::pair<DenseSet<unsigned>::iterator, bool> MustInsert =
             Set.insert(DI->getBaseDiscriminator());
         (void)MustInsert; // Silence warning in release build.
-        assert(MustInsert.second &&
-               "New discriminator shouldn't be present in set");
+        assert(MustInsert.second && "New discriminator shouldn't be present in set");
       }
 
       // Bump the reference DI to avoid cramming discriminators on line 0.

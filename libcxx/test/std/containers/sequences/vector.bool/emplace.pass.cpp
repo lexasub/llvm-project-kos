@@ -17,52 +17,53 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**) {
-  {
-    typedef std::vector<bool> C;
-    C c;
+int main(int, char**)
+{
+    {
+        typedef std::vector<bool> C;
+        C c;
 
-    C::iterator i = c.emplace(c.cbegin());
-    assert(i == c.begin());
-    assert(c.size() == 1);
-    assert(c.front() == false);
+        C::iterator i = c.emplace(c.cbegin());
+        assert(i == c.begin());
+        assert(c.size() == 1);
+        assert(c.front() == false);
 
-    i = c.emplace(c.cend(), true);
-    assert(i == c.end() - 1);
-    assert(c.size() == 2);
-    assert(c.front() == false);
-    assert(c.back() == true);
+        i = c.emplace(c.cend(), true);
+        assert(i == c.end()-1);
+        assert(c.size() == 2);
+        assert(c.front() == false);
+        assert(c.back() == true);
 
-    i = c.emplace(c.cbegin() + 1, true);
-    assert(i == c.begin() + 1);
-    assert(c.size() == 3);
-    assert(c.front() == false);
-    assert(c[1] == true);
-    assert(c.back() == true);
-  }
-  {
-    typedef std::vector<bool, min_allocator<bool> > C;
-    C c;
+        i = c.emplace(c.cbegin()+1, true);
+        assert(i == c.begin()+1);
+        assert(c.size() == 3);
+        assert(c.front() == false);
+        assert(c[1] == true);
+        assert(c.back() == true);
+    }
+    {
+        typedef std::vector<bool, min_allocator<bool>> C;
+        C c;
 
-    C::iterator i = c.emplace(c.cbegin());
-    assert(i == c.begin());
-    assert(c.size() == 1);
-    assert(c.front() == false);
+        C::iterator i = c.emplace(c.cbegin());
+        assert(i == c.begin());
+        assert(c.size() == 1);
+        assert(c.front() == false);
 
-    i = c.emplace(c.cend(), true);
-    assert(i == c.end() - 1);
-    assert(c.size() == 2);
-    assert(c.front() == false);
-    assert(c.back() == true);
+        i = c.emplace(c.cend(), true);
+        assert(i == c.end()-1);
+        assert(c.size() == 2);
+        assert(c.front() == false);
+        assert(c.back() == true);
 
-    i = c.emplace(c.cbegin() + 1, true);
-    assert(i == c.begin() + 1);
-    assert(c.size() == 3);
-    assert(c.size() == 3);
-    assert(c.front() == false);
-    assert(c[1] == true);
-    assert(c.back() == true);
-  }
+        i = c.emplace(c.cbegin()+1, true);
+        assert(i == c.begin()+1);
+        assert(c.size() == 3);
+        assert(c.size() == 3);
+        assert(c.front() == false);
+        assert(c[1] == true);
+        assert(c.back() == true);
+    }
 
   return 0;
 }

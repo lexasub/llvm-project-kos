@@ -54,7 +54,7 @@ private:
   /// HasSectionLabel - map of which sections have already had a non-local
   /// label emitted to them. Used so we don't emit extraneous linker local
   /// labels in the middle of the section.
-  DenseMap<const MCSection *, bool> HasSectionLabel;
+  DenseMap<const MCSection*, bool> HasSectionLabel;
 
   void emitInstToData(const MCInst &Inst, const MCSubtargetInfo &STI) override;
 
@@ -139,8 +139,8 @@ static bool canGoAfterDWARF(const MCSectionMachO &MSec) {
   if (SegName == "__TEXT" && SecName == "__eh_frame")
     return true;
 
-  if (SegName == "__DATA" &&
-      (SecName == "__nl_symbol_ptr" || SecName == "__thread_ptr"))
+  if (SegName == "__DATA" && (SecName == "__nl_symbol_ptr" ||
+                              SecName == "__thread_ptr"))
     return true;
 
   return false;
@@ -155,10 +155,9 @@ void MCMachOStreamer::changeSection(MCSection *Section,
   if (SegName == "__DWARF")
     CreatedADWARFSection = true;
   else if (Created && DWARFMustBeAtTheEnd && !canGoAfterDWARF(MSec))
-    assert(
-        (!CreatedADWARFSection ||
-         Section == getContext().getObjectFileInfo()->getStackMapSection()) &&
-        "Creating regular section after DWARF");
+    assert((!CreatedADWARFSection ||
+            Section == getContext().getObjectFileInfo()->getStackMapSection())
+           && "Creating regular section after DWARF");
 
   // Output a linker-local symbol so we don't need section-relative local
   // relocations. The linker hates us when we do that.
@@ -217,7 +216,7 @@ void MCMachOStreamer::emitDataRegion(DataRegionData::KindTy Kind) {
   MCSymbol *Start = getContext().createTempSymbol();
   emitLabel(Start);
   // Record the region for the object writer to use.
-  DataRegionData Data = {Kind, Start, nullptr};
+  DataRegionData Data = { Kind, Start, nullptr };
   std::vector<DataRegionData> &Regions = getAssembler().getDataRegions();
   Regions.push_back(Data);
 }
@@ -237,14 +236,10 @@ void MCMachOStreamer::emitAssemblerFlag(MCAssemblerFlag Flag) {
   getAssembler().getBackend().handleAssemblerFlag(Flag);
   // Do any generic stuff we need to do.
   switch (Flag) {
-  case MCAF_SyntaxUnified:
-    return; // no-op here.
-  case MCAF_Code16:
-    return; // Change parsing mode; no-op here.
-  case MCAF_Code32:
-    return; // Change parsing mode; no-op here.
-  case MCAF_Code64:
-    return; // Change parsing mode; no-op here.
+  case MCAF_SyntaxUnified: return; // no-op here.
+  case MCAF_Code16: return; // Change parsing mode; no-op here.
+  case MCAF_Code32: return; // Change parsing mode; no-op here.
+  case MCAF_Code64: return; // Change parsing mode; no-op here.
   case MCAF_SubsectionsViaSymbols:
     getAssembler().setSubsectionsViaSymbols(true);
     return;

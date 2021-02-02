@@ -25,7 +25,6 @@ namespace {
 class DAGISelEmitter {
   RecordKeeper &Records; // Just so we can get at the timing functions.
   CodeGenDAGPatterns CGP;
-
 public:
   explicit DAGISelEmitter(RecordKeeper &R) : Records(R), CGP(R) {}
   void run(raw_ostream &OS);
@@ -41,8 +40,7 @@ public:
 /// latencies in this calculation.
 static unsigned getResultPatternCost(TreePatternNode *P,
                                      CodeGenDAGPatterns &CGP) {
-  if (P->isLeaf())
-    return 0;
+  if (P->isLeaf()) return 0;
 
   unsigned Cost = 0;
   Record *Op = P->getOperator();
@@ -61,8 +59,7 @@ static unsigned getResultPatternCost(TreePatternNode *P,
 /// pattern.
 static unsigned getResultPatternSize(TreePatternNode *P,
                                      CodeGenDAGPatterns &CGP) {
-  if (P->isLeaf())
-    return 0;
+  if (P->isLeaf()) return 0;
 
   unsigned Cost = 0;
   Record *Op = P->getOperator();
@@ -99,25 +96,19 @@ struct PatternSortingPredicate {
     // input over nodes that cover fewer.
     int LHSSize = LHS->getPatternComplexity(CGP);
     int RHSSize = RHS->getPatternComplexity(CGP);
-    if (LHSSize > RHSSize)
-      return true; // LHS -> bigger -> less cost
-    if (LHSSize < RHSSize)
-      return false;
+    if (LHSSize > RHSSize) return true;   // LHS -> bigger -> less cost
+    if (LHSSize < RHSSize) return false;
 
     // If the patterns have equal complexity, compare generated instruction cost
     unsigned LHSCost = getResultPatternCost(LHS->getDstPattern(), CGP);
     unsigned RHSCost = getResultPatternCost(RHS->getDstPattern(), CGP);
-    if (LHSCost < RHSCost)
-      return true;
-    if (LHSCost > RHSCost)
-      return false;
+    if (LHSCost < RHSCost) return true;
+    if (LHSCost > RHSCost) return false;
 
     unsigned LHSPatSize = getResultPatternSize(LHS->getDstPattern(), CGP);
     unsigned RHSPatSize = getResultPatternSize(RHS->getDstPattern(), CGP);
-    if (LHSPatSize < RHSPatSize)
-      return true;
-    if (LHSPatSize > RHSPatSize)
-      return false;
+    if (LHSPatSize < RHSPatSize) return true;
+    if (LHSPatSize > RHSPatSize) return false;
 
     // Sort based on the UID of the pattern, to reflect source order.
     // Note that this is not guaranteed to be unique, since a single source
@@ -129,10 +120,10 @@ struct PatternSortingPredicate {
 };
 } // End anonymous namespace
 
+
 void DAGISelEmitter::run(raw_ostream &OS) {
   emitSourceFileHeader("DAG Instruction Selector for the " +
-                           CGP.getTargetInfo().getName().str() + " target",
-                       OS);
+                       CGP.getTargetInfo().getName().str() + " target", OS);
 
   OS << "// *** NOTE: This file is #included into the middle of the target\n"
      << "// *** instruction selector class.  These functions are really "
@@ -161,7 +152,7 @@ void DAGISelEmitter::run(raw_ostream &OS) {
 
   // Add all the patterns to a temporary list so we can sort them.
   Records.startTimer("Sort patterns");
-  std::vector<const PatternToMatch *> Patterns;
+  std::vector<const PatternToMatch*> Patterns;
   for (CodeGenDAGPatterns::ptm_iterator I = CGP.ptm_begin(), E = CGP.ptm_end();
        I != E; ++I)
     Patterns.push_back(&*I);
@@ -172,9 +163,9 @@ void DAGISelEmitter::run(raw_ostream &OS) {
 
   // Convert each variant of each pattern into a Matcher.
   Records.startTimer("Convert to matchers");
-  std::vector<Matcher *> PatternMatchers;
+  std::vector<Matcher*> PatternMatchers;
   for (unsigned i = 0, e = Patterns.size(); i != e; ++i) {
-    for (unsigned Variant = 0;; ++Variant) {
+    for (unsigned Variant = 0; ; ++Variant) {
       if (Matcher *M = ConvertPatternToMatcher(*Patterns[i], Variant, CGP))
         PatternMatchers.push_back(M);
       else
@@ -183,12 +174,12 @@ void DAGISelEmitter::run(raw_ostream &OS) {
   }
 
   std::unique_ptr<Matcher> TheMatcher =
-      std::make_unique<ScopeMatcher>(PatternMatchers);
+    std::make_unique<ScopeMatcher>(PatternMatchers);
 
   Records.startTimer("Optimize matchers");
   OptimizeMatcher(TheMatcher, CGP);
 
-  // Matcher->dump();
+  //Matcher->dump();
 
   Records.startTimer("Emit matcher table");
   EmitMatcherTable(TheMatcher.get(), CGP, OS);
@@ -201,4 +192,4 @@ void EmitDAGISel(RecordKeeper &RK, raw_ostream &OS) {
   DAGISelEmitter(RK).run(OS);
 }
 
-} // namespace llvm
+} // End llvm namespace

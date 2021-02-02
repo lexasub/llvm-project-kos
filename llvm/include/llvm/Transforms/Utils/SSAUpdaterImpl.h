@@ -24,9 +24,10 @@
 
 namespace llvm {
 
-template <typename T> class SSAUpdaterTraits;
+template<typename T> class SSAUpdaterTraits;
 
-template <typename UpdaterT> class SSAUpdaterImpl {
+template<typename UpdaterT>
+class SSAUpdaterImpl {
 private:
   UpdaterT *Updater;
 
@@ -65,7 +66,7 @@ private:
     PhiT *PHITag = nullptr;
 
     BBInfo(BlkT *ThisBB, ValT V)
-        : BB(ThisBB), AvailableVal(V), DefBB(V ? this : nullptr) {}
+      : BB(ThisBB), AvailableVal(V), DefBB(V ? this : nullptr) {}
   };
 
   using AvailableValsTy = DenseMap<BlkT *, ValT>;
@@ -82,8 +83,8 @@ private:
 
 public:
   explicit SSAUpdaterImpl(UpdaterT *U, AvailableValsTy *A,
-                          SmallVectorImpl<PhiT *> *Ins)
-      : Updater(U), AvailableVals(A), InsertedPHIs(Ins) {}
+                          SmallVectorImpl<PhiT *> *Ins) :
+    Updater(U), AvailableVals(A), InsertedPHIs(Ins) {}
 
   /// GetValue - Check to see if AvailableVals has an entry for the specified
   /// BB and if so, return it.  If not, construct SSA form by first
@@ -138,7 +139,7 @@ public:
         BlkT *Pred = Preds[p];
         // Check if BBMap already has a BBInfo for the predecessor block.
         typename BBMapTy::value_type &BBMapBucket =
-            BBMap.FindAndConstruct(Pred);
+          BBMap.FindAndConstruct(Pred);
         if (BBMapBucket.second) {
           Info->Preds[p] = BBMapBucket.second;
           continue;
@@ -192,10 +193,9 @@ public:
       Info->BlkNum = -2;
 
       // Add unvisited successors to the work list.
-      for (typename Traits::BlkSucc_iterator
-               SI = Traits::BlkSucc_begin(Info->BB),
-               E = Traits::BlkSucc_end(Info->BB);
-           SI != E; ++SI) {
+      for (typename Traits::BlkSucc_iterator SI =
+             Traits::BlkSucc_begin(Info->BB),
+             E = Traits::BlkSucc_end(Info->BB); SI != E; ++SI) {
         BBInfo *SuccInfo = BBMap[*SI];
         if (!SuccInfo || SuccInfo->BlkNum)
           continue;
@@ -243,8 +243,7 @@ public:
       Changed = false;
       // Iterate over the list in reverse order, i.e., forward on CFG edges.
       for (typename BlockListTy::reverse_iterator I = BlockList->rbegin(),
-                                                  E = BlockList->rend();
-           I != E; ++I) {
+             E = BlockList->rend(); I != E; ++I) {
         BBInfo *Info = *I;
         BBInfo *NewIDom = nullptr;
 
@@ -298,8 +297,7 @@ public:
       Changed = false;
       // Iterate over the list in reverse order, i.e., forward on CFG edges.
       for (typename BlockListTy::reverse_iterator I = BlockList->rbegin(),
-                                                  E = BlockList->rend();
-           I != E; ++I) {
+             E = BlockList->rend(); I != E; ++I) {
         BBInfo *Info = *I;
 
         // If this block already needs a PHI, there is nothing to do here.
@@ -335,8 +333,7 @@ public:
     // and check if existing PHIs can be used.  If not, create empty PHIs where
     // they are needed.
     for (typename BlockListTy::iterator I = BlockList->begin(),
-                                        E = BlockList->end();
-         I != E; ++I) {
+           E = BlockList->end(); I != E; ++I) {
       BBInfo *Info = *I;
       // Check if there needs to be a PHI in BB.
       if (Info->DefBB != Info)
@@ -355,8 +352,7 @@ public:
     // Now go back through the worklist in reverse order to fill in the
     // arguments for any new PHIs added in the forward traversal.
     for (typename BlockListTy::reverse_iterator I = BlockList->rbegin(),
-                                                E = BlockList->rend();
-         I != E; ++I) {
+           E = BlockList->rend(); I != E; ++I) {
       BBInfo *Info = *I;
 
       if (Info->DefBB != Info) {
@@ -384,8 +380,7 @@ public:
       LLVM_DEBUG(dbgs() << "  Inserted PHI: " << *PHI << "\n");
 
       // If the client wants to know about all new instructions, tell it.
-      if (InsertedPHIs)
-        InsertedPHIs->push_back(PHI);
+      if (InsertedPHIs) InsertedPHIs->push_back(PHI);
     }
   }
 
@@ -399,8 +394,7 @@ public:
       }
       // Match failed: clear all the PHITag values.
       for (typename BlockListTy::iterator I = BlockList->begin(),
-                                          E = BlockList->end();
-           I != E; ++I)
+             E = BlockList->end(); I != E; ++I)
         (*I)->PHITag = nullptr;
     }
   }
@@ -419,8 +413,7 @@ public:
 
       // Iterate through the PHI's incoming values.
       for (typename Traits::PHI_iterator I = Traits::PHI_begin(PHI),
-                                         E = Traits::PHI_end(PHI);
-           I != E; ++I) {
+             E = Traits::PHI_end(PHI); I != E; ++I) {
         ValT IncomingVal = I.getIncomingValue();
         BBInfo *PredInfo = BBMap[I.getIncomingBlock()];
         // Skip to the nearest preceding definition.
@@ -457,8 +450,7 @@ public:
   /// the BBMap and the AvailableVals mapping.
   void RecordMatchingPHIs(BlockListTy *BlockList) {
     for (typename BlockListTy::iterator I = BlockList->begin(),
-                                        E = BlockList->end();
-         I != E; ++I)
+           E = BlockList->end(); I != E; ++I)
       if (PhiT *PHI = (*I)->PHITag) {
         BlkT *BB = PHI->getParent();
         ValT PHIVal = Traits::GetPHIValue(PHI);

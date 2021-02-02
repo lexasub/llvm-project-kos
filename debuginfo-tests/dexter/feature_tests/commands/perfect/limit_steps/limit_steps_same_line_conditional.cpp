@@ -10,12 +10,12 @@ int main() {
   int val1 = 0;
 
   int placeholder;
-  for (int ix = 0; ix != 4; ++ix) {
+  for(int ix = 0; ix != 4; ++ix) {
     val1 = ix;
-    placeholder = ix; // DexLabel('from')
+    placeholder = ix;    // DexLabel('from')
     placeholder = ix;
-    val1 += 2;        // DexLabel('to')
-    placeholder = ix; // DexLabel('extended_to')
+    val1 += 2;           // DexLabel('to')
+    placeholder = ix;    // DexLabel('extended_to')
   }
   return val1 + placeholder;
 }

@@ -3,11 +3,11 @@
 // RUN: %clang_cc1 -verify -std=c++2a -fsyntax-only -triple aarch64_be-linux-gnu %s
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define LITTLE_END 1
+#  define LITTLE_END 1
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#define LITTLE_END 0
+#  define LITTLE_END 0
 #else
-#error "huh?"
+#  error "huh?"
 #endif
 
 template <class T, class V> struct is_same {
@@ -194,7 +194,7 @@ void bad_types() {
   constexpr unsigned long ptr = __builtin_bit_cast(unsigned long, has_pointer{0});
   // expected-error@+2 {{constexpr variable 'hptr' must be initialized by a constant expression}}
   // expected-note@+1 {{bit_cast to a pointer type is not allowed in a constant expression}}
-  constexpr has_pointer hptr = __builtin_bit_cast(has_pointer, 0ul);
+  constexpr has_pointer hptr =  __builtin_bit_cast(has_pointer, 0ul);
 }
 
 void backtrace() {
@@ -278,7 +278,7 @@ constexpr int test_indeterminate(bool read_indet) {
 
   int tmp = np.a + np.b;
 
-  unsigned char &indet_ref = np.p1;
+  unsigned char& indet_ref = np.p1;
 
   if (read_indet) {
     // expected-note@+1 {{read of uninitialized object is not allowed in a constant expression}}
@@ -329,13 +329,8 @@ struct mem_ptr {
 // expected-note@+1 {{bit_cast from a member pointer type is not allowed in a constant expression}}
 constexpr int run_mem_ptr = __builtin_bit_cast(unsigned long, mem_ptr{nullptr});
 
-struct A {
-  char c; /* char padding : 8; */
-  short s;
-};
-struct B {
-  unsigned char x[4];
-};
+struct A { char c; /* char padding : 8; */ short s; };
+struct B { unsigned char x[4]; };
 
 constexpr B one() {
   A a = {1, 2};
@@ -380,11 +375,9 @@ constexpr int bad_my_byte = (__builtin_bit_cast(my_byte[8], pad{1, 2}), 0);
 // expected-error@+3 {{constexpr variable 'bad_char' must be initialized by a constant expression}}
 // expected-note@+2 {{indeterminate value can only initialize an object of type 'unsigned char' or 'std::byte'; 'char' is invalid}}
 #endif
-constexpr int bad_char = (__builtin_bit_cast(char[8], pad{1, 2}), 0);
+constexpr int bad_char =  (__builtin_bit_cast(char[8], pad{1, 2}), 0);
 
-struct pad_buffer {
-  unsigned char data[sizeof(pad)];
-};
+struct pad_buffer { unsigned char data[sizeof(pad)]; };
 constexpr bool test_pad_buffer() {
   pad x = {1, 2};
   pad_buffer y = __builtin_bit_cast(pad_buffer, x);
@@ -419,7 +412,7 @@ static_assert(round_trip<bool>(false), "");
 
 static_assert(round_trip<bool>((char)0), "");
 static_assert(round_trip<bool>((char)1), "");
-} // namespace test_bool
+}
 
 namespace test_long_double {
 #ifdef __x86_64
@@ -438,16 +431,8 @@ static_assert(round_trip<long double>(10.0L));
 constexpr bool f(bool read_uninit) {
   bytes b = bit_cast<bytes>(ld);
   unsigned char ld_bytes[10] = {
-      0x0,
-      0x48,
-      0x9f,
-      0x49,
-      0xf0,
-      0x3c,
-      0x20,
-      0xc9,
-      0x0,
-      0x40,
+    0x0,  0x48, 0x9f, 0x49, 0xf0,
+    0x3c, 0x20, 0xc9, 0x0,  0x40,
   };
 
   for (int i = 0; i != 10; ++i)
@@ -464,22 +449,10 @@ static_assert(f(/*read_uninit=*/false), "");
 static_assert(f(/*read_uninit=*/true), ""); // expected-error{{static_assert expression is not an integral constant expression}} expected-note{{in call to 'f(true)'}}
 
 constexpr bytes ld539 = {
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0xc0,
-    0x86,
-    0x8,
-    0x40,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
+  0x0, 0x0,  0x0,  0x0,
+  0x0, 0x0,  0xc0, 0x86,
+  0x8, 0x40, 0x0,  0x0,
+  0x0, 0x0,  0x0,  0x0,
 };
 
 constexpr long double fivehundredandthirtynine = 539.0;
@@ -489,4 +462,4 @@ static_assert(bit_cast<long double>(ld539) == fivehundredandthirtynine, "");
 #else
 static_assert(round_trip<__int128_t>(34.0L));
 #endif
-} // namespace test_long_double
+}

@@ -37,7 +37,7 @@ public:
 
   bool GetIncludeRecognizedArguments(const lldb::TargetSP &target_sp) const {
     if (m_include_recognized_arguments != eLazyBoolCalculate)
-      return m_include_recognized_arguments;
+        return m_include_recognized_arguments;
     return target_sp ? target_sp->GetDisplayRecognizedArguments() : false;
   }
 
@@ -90,10 +90,12 @@ SBVariablesOptions::SBVariablesOptions(const SBVariablesOptions &options)
                           (const lldb::SBVariablesOptions &), options);
 }
 
-SBVariablesOptions &
-SBVariablesOptions::operator=(const SBVariablesOptions &options) {
-  LLDB_RECORD_METHOD(lldb::SBVariablesOptions &, SBVariablesOptions, operator=,
-                     (const lldb::SBVariablesOptions &), options);
+SBVariablesOptions &SBVariablesOptions::
+operator=(const SBVariablesOptions &options) {
+  LLDB_RECORD_METHOD(
+      lldb::SBVariablesOptions &,
+      SBVariablesOptions, operator=,(const lldb::SBVariablesOptions &),
+      options);
 
   m_opaque_up = std::make_unique<VariablesOptionsImpl>(options.ref());
   return LLDB_RECORD_RESULT(*this);
@@ -235,22 +237,24 @@ void SBVariablesOptions::SetOptions(VariablesOptionsImpl *lldb_object_ptr) {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBVariablesOptions>(Registry &R) {
+template <>
+void RegisterMethods<SBVariablesOptions>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBVariablesOptions, ());
   LLDB_REGISTER_CONSTRUCTOR(SBVariablesOptions,
                             (const lldb::SBVariablesOptions &));
-  LLDB_REGISTER_METHOD(lldb::SBVariablesOptions &,
-                       SBVariablesOptions, operator=,
-                       (const lldb::SBVariablesOptions &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBVariablesOptions &,
+      SBVariablesOptions, operator=,(const lldb::SBVariablesOptions &));
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, operator bool, ());
-  LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, GetIncludeArguments, ());
+  LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, GetIncludeArguments,
+                             ());
   LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetIncludeArguments, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions,
                              GetIncludeRecognizedArguments,
                              (const lldb::SBTarget &));
-  LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetIncludeRecognizedArguments,
-                       (bool));
+  LLDB_REGISTER_METHOD(void, SBVariablesOptions,
+                       SetIncludeRecognizedArguments, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, GetIncludeLocals, ());
   LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetIncludeLocals, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions, GetIncludeStatics, ());
@@ -259,13 +263,13 @@ template <> void RegisterMethods<SBVariablesOptions>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetInScopeOnly, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBVariablesOptions,
                              GetIncludeRuntimeSupportValues, ());
-  LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetIncludeRuntimeSupportValues,
-                       (bool));
+  LLDB_REGISTER_METHOD(void, SBVariablesOptions,
+                       SetIncludeRuntimeSupportValues, (bool));
   LLDB_REGISTER_METHOD_CONST(lldb::DynamicValueType, SBVariablesOptions,
                              GetUseDynamic, ());
   LLDB_REGISTER_METHOD(void, SBVariablesOptions, SetUseDynamic,
                        (lldb::DynamicValueType));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

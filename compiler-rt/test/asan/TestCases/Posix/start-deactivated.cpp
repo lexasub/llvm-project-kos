@@ -20,6 +20,7 @@
 // RUN: %env_asan_opts=start_deactivated=1 \
 // RUN:   ASAN_ACTIVATION_OPTIONS=help=1,handle_segv=0,verbosity=1 not %run %t 2>&1 | FileCheck %s --check-prefix=CHECK-UNSUPPORTED
 
+
 // END.
 
 #if !defined(SHARED_LIB)
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-#else // SHARED_LIB
+#else  // SHARED_LIB
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -130,7 +131,7 @@ extern "C" void do_another_bad_thing() {
   printf("%hhx\n", p[105]);
 }
 
-#endif // SHARED_LIB
+#endif  // SHARED_LIB
 
 // help=1 in activation flags lists only flags are are supported at activation
 // CHECK-HELP: Available flags for {{.*}}Sanitizer:

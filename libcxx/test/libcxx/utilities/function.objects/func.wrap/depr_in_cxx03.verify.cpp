@@ -17,23 +17,13 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  // Note:
-  // We use sizeof() to require it to be a complete type. We don't create a
-  // variable because otherwise we get two warnings for each variable (the
-  // second warning is when the destructor is implicitly called).
-  (void)sizeof(
-      std::function<
-          void()>); // expected-warning {{'function<void ()>' is deprecated}}
-  (void)sizeof(
-      std::function<void(
-          int)>); // expected-warning {{'function<void (int)>' is deprecated}}
-  (void)sizeof(
-      std::function<void(
-          int,
-          int)>); // expected-warning {{'function<void (int, int)>' is deprecated}}
-  (void)sizeof(
-      std::function<void(
-          int, int,
-          int)>); // expected-warning {{'function<void (int, int, int)>' is deprecated}}
-  return 0;
+    // Note:
+    // We use sizeof() to require it to be a complete type. We don't create a
+    // variable because otherwise we get two warnings for each variable (the
+    // second warning is when the destructor is implicitly called).
+    (void)sizeof(std::function<void ()>); // expected-warning {{'function<void ()>' is deprecated}}
+    (void)sizeof(std::function<void (int)>); // expected-warning {{'function<void (int)>' is deprecated}}
+    (void)sizeof(std::function<void (int, int)>); // expected-warning {{'function<void (int, int)>' is deprecated}}
+    (void)sizeof(std::function<void (int, int, int)>); // expected-warning {{'function<void (int, int, int)>' is deprecated}}
+    return 0;
 }

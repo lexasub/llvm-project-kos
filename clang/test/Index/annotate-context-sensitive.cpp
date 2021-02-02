@@ -6,7 +6,7 @@ public:
 class Derived final : public Base {
   virtual void f() override final;
 
-  struct final {};
+  struct final { };
 };
 
 typedef int override;

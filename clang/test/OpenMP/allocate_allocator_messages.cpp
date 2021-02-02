@@ -2,18 +2,18 @@
 
 // RUN: %clang_cc1 -triple x86_64-apple-macos10.7.0 -verify -fopenmp-simd -ferror-limit 100 -o - %s -Wuninitialized
 
-struct St {
-  int a;
+struct St{
+ int a;
 };
 
 int sss;
 #pragma omp allocate(sss) allocat // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 #pragma omp allocate(sss) allocate(sss) // expected-error {{unexpected OpenMP clause 'allocate' in directive '#pragma omp allocate'}}
 #pragma omp allocate(sss) allocator // expected-error {{expected '(' after 'allocator'}}
-#pragma omp allocate(sss) allocator(0, // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
-#pragma omp allocate(sss) allocator(0, sss // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
-#pragma omp allocate(sss) allocator(0, sss) // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
-#pragma omp allocate(sss) allocator(sss) // expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}}
+#pragma omp allocate(sss) allocator(0,  // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
+#pragma omp allocate(sss) allocator(0,sss  // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
+#pragma omp allocate(sss) allocator(0,sss)  // expected-error {{expected ')'}} expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}} expected-note {{to match this '('}}
+#pragma omp allocate(sss) allocator(sss)  // expected-error {{'omp_allocator_handle_t' type not found; include <omp.h>}}
 
 typedef void **omp_allocator_handle_t;
 extern const omp_allocator_handle_t omp_null_allocator;
@@ -26,9 +26,9 @@ extern const omp_allocator_handle_t omp_cgroup_mem_alloc;
 extern const omp_allocator_handle_t omp_pteam_mem_alloc;
 extern const omp_allocator_handle_t omp_thread_mem_alloc;
 
-struct St1 {
-  int a;
-  static int b;
+struct St1{
+ int a;
+ static int b;
 #pragma omp allocate(b) allocator(sss) // expected-error {{incompatible integer to pointer conversion initializing 'const omp_allocator_handle_t' (aka 'void **const') with an expression of type 'int'}} expected-note {{previous allocator is specified here}}
 #pragma omp allocate(b)
 #pragma omp allocate(b) allocator(omp_thread_mem_alloc) // expected-warning {{allocate directive specifies 'omp_thread_mem_alloc' allocator while previously used default}}
@@ -45,3 +45,4 @@ extern void **allocator;
 int c;
 #pragma omp allocate(c) allocator(omp_thread_mem_alloc) // expected-note {{previous allocator is specified here}}
 #pragma omp allocate(c) allocator(omp_high_bw_mem_alloc) // expected-warning {{allocate directive specifies 'omp_high_bw_mem_alloc' allocator while previously used 'omp_thread_mem_alloc'}}
+

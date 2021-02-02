@@ -6,12 +6,12 @@
 
 inline void test(int i) {
   switch (i) {
-  case 1:
-    // Notice that the NullStmt has two attributes.
-    // CHECK: {{\[\[clang::fallthrough\]\] \[\[clang::fallthrough\]\]}}
-    [[clang::fallthrough]] [[clang::fallthrough]];
-  case 2:
-    break;
+    case 1:
+      // Notice that the NullStmt has two attributes.
+      // CHECK: {{\[\[clang::fallthrough\]\] \[\[clang::fallthrough\]\]}}
+      [[clang::fallthrough]] [[clang::fallthrough]];
+    case 2:
+      break;
   }
 }
 

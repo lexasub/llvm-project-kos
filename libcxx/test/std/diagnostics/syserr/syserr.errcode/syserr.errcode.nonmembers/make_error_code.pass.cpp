@@ -17,12 +17,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::error_code ec = make_error_code(std::errc::operation_canceled);
-    assert(ec.value() == static_cast<int>(std::errc::operation_canceled));
-    assert(ec.category() == std::generic_category());
-  }
+int main(int, char**)
+{
+    {
+        std::error_code ec = make_error_code(std::errc::operation_canceled);
+        assert(ec.value() == static_cast<int>(std::errc::operation_canceled));
+        assert(ec.category() == std::generic_category());
+    }
 
   return 0;
 }

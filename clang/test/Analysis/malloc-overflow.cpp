@@ -3,7 +3,7 @@
 
 class A {
 public:
-  A &operator<<(const A &a);
+  A& operator<<(const A &a);
 };
 
 void f() {

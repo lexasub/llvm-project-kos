@@ -256,9 +256,8 @@ uint32_t
 MachThreadList::UpdateThreadList(MachProcess *process, bool update,
                                  MachThreadList::collection *new_threads) {
   // locker will keep a mutex locked until it goes out of scope
-  DNBLogThreadedIf(LOG_THREAD,
-                   "MachThreadList::UpdateThreadList (pid = %4.4x, "
-                   "update = %u) process stop count = %u",
+  DNBLogThreadedIf(LOG_THREAD, "MachThreadList::UpdateThreadList (pid = %4.4x, "
+                               "update = %u) process stop count = %u",
                    process->ProcessID(), update, process->StopCount());
   PTHREAD_MUTEX_LOCKER(locker, m_threads_mutex);
 
@@ -437,13 +436,12 @@ void MachThreadList::ProcessWillResume(
 
   if (new_threads.size()) {
     for (uint32_t idx = 0; idx < num_new_threads; ++idx) {
-      DNBLogThreadedIf(LOG_THREAD,
-                       "MachThreadList::ProcessWillResume (pid = %4.4x) "
-                       "stop-id=%u, resuming newly discovered thread: "
-                       "0x%8.8" PRIx64 ", thread-is-user-ready=%i)",
-                       process->ProcessID(), process->StopCount(),
-                       new_threads[idx]->ThreadID(),
-                       new_threads[idx]->IsUserReady());
+      DNBLogThreadedIf(
+          LOG_THREAD, "MachThreadList::ProcessWillResume (pid = %4.4x) "
+                      "stop-id=%u, resuming newly discovered thread: "
+                      "0x%8.8" PRIx64 ", thread-is-user-ready=%i)",
+          process->ProcessID(), process->StopCount(),
+          new_threads[idx]->ThreadID(), new_threads[idx]->IsUserReady());
     }
   }
 }

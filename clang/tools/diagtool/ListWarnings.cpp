@@ -18,7 +18,8 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/Format.h"
 
-DEF_DIAGTOOL("list-warnings", "List warnings and their corresponding flags",
+DEF_DIAGTOOL("list-warnings",
+             "List warnings and their corresponding flags",
              ListWarnings)
 
 using namespace clang;
@@ -30,11 +31,11 @@ struct Entry {
   llvm::StringRef Flag;
 
   Entry(llvm::StringRef diagN, llvm::StringRef flag)
-      : DiagName(diagN), Flag(flag) {}
+    : DiagName(diagN), Flag(flag) {}
 
   bool operator<(const Entry &x) const { return DiagName < x.DiagName; }
 };
-} // namespace
+}
 
 static void printEntries(std::vector<Entry> &entries, llvm::raw_ostream &out) {
   for (const Entry &E : entries) {
@@ -47,7 +48,7 @@ static void printEntries(std::vector<Entry> &entries, llvm::raw_ostream &out) {
 
 int ListWarnings::run(unsigned int argc, char **argv, llvm::raw_ostream &out) {
   std::vector<Entry> Flagged, Unflagged;
-  llvm::StringMap<std::vector<unsigned>> flagHistogram;
+  llvm::StringMap<std::vector<unsigned> > flagHistogram;
 
   for (const DiagnosticRecord &DR : getBuiltinDiagnosticsByName()) {
     const unsigned diagID = DR.DiagID;
@@ -82,9 +83,10 @@ int ListWarnings::run(unsigned int argc, char **argv, llvm::raw_ostream &out) {
   out << "  Percentage of warnings with flags: "
       << llvm::format("%.4g", percentFlagged) << "%\n";
 
-  out << "  Number of unique flags: " << flagHistogram.size() << '\n';
+  out << "  Number of unique flags: "
+      << flagHistogram.size() << '\n';
 
-  double avgDiagsPerFlag = (double)Flagged.size() / flagHistogram.size();
+  double avgDiagsPerFlag = (double) Flagged.size() / flagHistogram.size();
   out << "  Average number of diagnostics per flag: "
       << llvm::format("%.4g", avgDiagsPerFlag) << '\n';
 
@@ -95,3 +97,4 @@ int ListWarnings::run(unsigned int argc, char **argv, llvm::raw_ostream &out) {
 
   return 0;
 }
+

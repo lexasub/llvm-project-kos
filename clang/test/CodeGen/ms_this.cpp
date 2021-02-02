@@ -23,8 +23,7 @@ void t2::runc() {
       // CHECK: call void asm sideeffect inteldialect "mov rax,qword ptr $1{{.*}}%class.t2* [[THIS1_T2]]
       mov rbx,[rax]
       mov num, rbx
-  }
-  ;
+	   };
 }
 
 // CHECK: define dso_local void @"?runc@t1@@
@@ -32,13 +31,12 @@ void t1::runc() {
   double num = 0;
   __asm {
        mov rax,[this]
-      // CHECK: [[THIS_ADDR_T1:%.+]] = alloca %class.t1*
-      // CHECK: [[THIS1_T1:%.+]] = load %class.t1*, %class.t1** [[THIS_ADDR_T1]],
-      // CHECK: call void asm sideeffect inteldialect "mov rax,qword ptr $1{{.*}}%class.t1* [[THIS1_T1]]
+       // CHECK: [[THIS_ADDR_T1:%.+]] = alloca %class.t1*
+       // CHECK: [[THIS1_T1:%.+]] = load %class.t1*, %class.t1** [[THIS_ADDR_T1]],
+       // CHECK: call void asm sideeffect inteldialect "mov rax,qword ptr $1{{.*}}%class.t1* [[THIS1_T1]]
         mov rbx,[rax]
         mov num, rbx
-  }
-  ;
+	   };
 }
 
 struct s {
@@ -54,6 +52,6 @@ struct s {
 
 int main() {
   f3.func();
-  f3.a = 1;
+  f3.a=1;
   return 0;
 }

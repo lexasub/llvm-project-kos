@@ -1,9 +1,7 @@
 // RUN: %clang_cc1 -fsyntax-only -Wuninitialized -Wno-uninitialized-const-reference -fsyntax-only -fcxx-exceptions %s -verify -std=c++1y
 
 // Stub out types for 'typeid' to work.
-namespace std {
-class type_info {};
-} // namespace std
+namespace std { class type_info {}; }
 
 int test1_aux(int &x);
 int test1() {
@@ -26,11 +24,9 @@ void unevaluated_tests() {
 }
 
 // Warn for glvalue arguments to typeid whose type is polymorphic.
-struct A {
-  virtual ~A() {}
-};
+struct A { virtual ~A() {} };
 void polymorphic_test() {
-  A *a;             // expected-note{{initialize the variable 'a' to silence this warning}}
+  A *a; // expected-note{{initialize the variable 'a' to silence this warning}}
   (void)typeid(*a); // expected-warning{{variable 'a' is uninitialized when used here}}
 }
 
@@ -46,7 +42,7 @@ unsigned test3() {
   return x;
 }
 unsigned test3_b() {
-  unsigned x;
+  unsigned x ;
   const bool flag = true;
   if (flag && (x = test3_aux()) == 0) {
     x = 1;
@@ -63,12 +59,11 @@ unsigned test3_c() {
 }
 
 enum test4_A {
-  test4_A_a,
-  test_4_A_b
+ test4_A_a, test_4_A_b
 };
 test4_A test4() {
-  test4_A a; // expected-note{{variable 'a' is declared here}}
-  return a;  // expected-warning{{variable 'a' is uninitialized when used here}}
+ test4_A a; // expected-note{{variable 'a' is declared here}}
+ return a; // expected-warning{{variable 'a' is uninitialized when used here}}
 }
 
 // Test variables getting invalidated by function calls with reference arguments
@@ -83,15 +78,16 @@ int test5() {
 
 // This test previously crashed Sema.
 class Rdar9188004A {
-public:
+public: 
   virtual ~Rdar9188004A();
 };
 
-template <typename T> class Rdar9188004B : public Rdar9188004A {
-  virtual double *foo(Rdar9188004B *next) const {
+template< typename T > class Rdar9188004B : public Rdar9188004A {
+virtual double *foo(Rdar9188004B *next) const  {
     double *values = next->foo(0);
     try {
-    } catch (double e) {
+    }
+    catch(double e) {
       values[0] = e;
     }
     return 0;
@@ -116,20 +112,22 @@ void RDar9251392_bar(const char *msg);
 void RDar9251392() {
   try {
     throw "hi";
-  } catch (const char *msg) {
+  }
+  catch (const char* msg) {
     RDar9251392_bar(msg); // no-warning
   }
 }
 
 // Test handling of "no-op" casts.
-void test_noop_cast() {
-  int x = 1;
-  int y = (int &)x; // no-warning
+void test_noop_cast()
+{
+    int x = 1;
+    int y = (int&)x; // no-warning
 }
 
 void test_noop_cast2() {
-  int x;            // expected-note {{initialize the variable 'x' to silence this warning}}
-  int y = (int &)x; // expected-warning {{uninitialized when used here}}
+    int x; // expected-note {{initialize the variable 'x' to silence this warning}}
+    int y = (int&)x; // expected-warning {{uninitialized when used here}}
 }
 
 // Test handling of bit casts.
@@ -139,7 +137,7 @@ void test_bitcasts() {
 }
 
 void test_bitcasts_2() {
-  int x;              // expected-note {{initialize the variable 'x' to silence this warning}}
+  int x;  // expected-note {{initialize the variable 'x' to silence this warning}}
   int y = (float &)x; // expected-warning {{uninitialized when used here}}
 }
 
@@ -151,4 +149,4 @@ int test_const_ref() {
 }
 
 // Don't crash here.
-auto PR19996 = [a = 0] {int t; return a; };
+auto PR19996 = [a=0]{int t; return a;};

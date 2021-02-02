@@ -28,6 +28,6 @@ private:
   std::string BaseDir;
   StringSet<> Files;
 };
-} // namespace llvm
+}
 
 #endif

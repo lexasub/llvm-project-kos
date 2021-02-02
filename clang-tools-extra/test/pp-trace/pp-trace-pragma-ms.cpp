@@ -14,7 +14,7 @@
 
 #pragma warning(push, 1)
 #pragma warning(pop)
-#pragma warning(disable : 1 2 3; error : 4 5 6; suppress : 7 8 9)
+#pragma warning(disable : 1 2 3 ; error : 4 5 6 ; suppress : 7 8 9)
 
 // CHECK: ---
 // CHECK-NEXT: - Callback: PragmaDirective
@@ -67,7 +67,7 @@
 // CHECK-NEXT:   Introducer: PIK_HashPragma
 // CHECK-NEXT: - Callback: PragmaMessage
 // CHECK-NEXT:   Loc: "{{.*}}{{[/\\]}}pp-trace-pragma-ms.cpp:13:9"
-// CHECK-NEXT:   Namespace:
+// CHECK-NEXT:   Namespace: 
 // CHECK-NEXT:   Kind: PMK_Message
 // CHECK-NEXT:   Str: message argument
 // CHECK-NEXT: - Callback: PragmaDirective

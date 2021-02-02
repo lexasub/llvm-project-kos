@@ -50,7 +50,9 @@ uptr StackTrace::GetNextInstructionPc(uptr pc) {
 #endif
 }
 
-uptr StackTrace::GetCurrentPc() { return GET_CALLER_PC(); }
+uptr StackTrace::GetCurrentPc() {
+  return GET_CALLER_PC();
+}
 
 void BufferedStackTrace::Init(const uptr *pcs, uptr cnt, uptr extra_top_pc) {
   size = cnt + !!extra_top_pc;
@@ -67,15 +69,14 @@ void BufferedStackTrace::Init(const uptr *pcs, uptr cnt, uptr extra_top_pc) {
 // In GCC on ARM bp points to saved lr, not fp, so we should check the next
 // cell in stack to be a saved frame pointer. GetCanonicFrame returns the
 // pointer to saved frame pointer in any case.
-static inline uhwptr *GetCanonicFrame(uptr bp, uptr stack_top,
+static inline uhwptr *GetCanonicFrame(uptr bp,
+                                      uptr stack_top,
                                       uptr stack_bottom) {
   CHECK_GT(stack_top, stack_bottom);
 #ifdef __arm__
-  if (!IsValidFrame(bp, stack_top, stack_bottom))
-    return 0;
+  if (!IsValidFrame(bp, stack_top, stack_bottom)) return 0;
   uhwptr *bp_prev = (uhwptr *)bp;
-  if (IsValidFrame((uptr)bp_prev[0], stack_top, stack_bottom))
-    return bp_prev;
+  if (IsValidFrame((uptr)bp_prev[0], stack_top, stack_bottom)) return bp_prev;
   // The next frame pointer does not look right. This could be a GCC frame, step
   // back by 1 word and try again.
   if (IsValidFrame((uptr)bp_prev[-1], stack_top, stack_bottom))
@@ -86,7 +87,7 @@ static inline uhwptr *GetCanonicFrame(uptr bp, uptr stack_top,
   // layouts. Assume LLVM.
   return bp_prev;
 #else
-  return (uhwptr *)bp;
+  return (uhwptr*)bp;
 #endif
 }
 
@@ -97,20 +98,20 @@ void BufferedStackTrace::UnwindFast(uptr pc, uptr bp, uptr stack_top,
   const uptr kPageSize = GetPageSizeCached();
   trace_buffer[0] = pc;
   size = 1;
-  if (stack_top < 4096)
-    return;  // Sanity check for stack top.
+  if (stack_top < 4096) return;  // Sanity check for stack top.
   uhwptr *frame = GetCanonicFrame(bp, stack_top, stack_bottom);
   // Lowest possible address that makes sense as the next frame pointer.
   // Goes up as we walk the stack.
   uptr bottom = stack_bottom;
   // Avoid infinite loop when frame == frame[0] by using frame > prev_frame.
   while (IsValidFrame((uptr)frame, stack_top, bottom) &&
-         IsAligned((uptr)frame, sizeof(*frame)) && size < max_depth) {
+         IsAligned((uptr)frame, sizeof(*frame)) &&
+         size < max_depth) {
 #ifdef __powerpc__
     // PowerPC ABIs specify that the return address is saved at offset
     // 16 of the *caller's* stack frame.  Thus we must dereference the
     // back chain to find the caller frame before extracting it.
-    uhwptr *caller_frame = (uhwptr *)frame[0];
+    uhwptr *caller_frame = (uhwptr*)frame[0];
     if (!IsValidFrame((uptr)caller_frame, stack_top, bottom) ||
         !IsAligned((uptr)caller_frame, sizeof(uhwptr)))
       break;
@@ -129,7 +130,7 @@ void BufferedStackTrace::UnwindFast(uptr pc, uptr bp, uptr stack_top,
     if (pc1 < kPageSize)
       break;
     if (pc1 != pc) {
-      trace_buffer[size++] = (uptr)pc1;
+      trace_buffer[size++] = (uptr) pc1;
     }
     bottom = (uptr)frame;
 #if defined(__riscv)
@@ -157,8 +158,7 @@ static uptr Distance(uptr a, uptr b) { return a < b ? b - a : a - b; }
 uptr BufferedStackTrace::LocatePcInTrace(uptr pc) {
   uptr best = 0;
   for (uptr i = 1; i < size; ++i) {
-    if (Distance(trace[i], pc) < Distance(trace[best], pc))
-      best = i;
+    if (Distance(trace[i], pc) < Distance(trace[best], pc)) best = i;
   }
   return best;
 }

@@ -4,7 +4,7 @@ struct Y {
 } y2;
 enum E { e2 };
 
-template <typename T>
+template<typename T>
 struct F {
   int n;
   friend bool operator==(const F &a, const F &b) { return a.n == b.n; }

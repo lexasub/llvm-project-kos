@@ -18,8 +18,8 @@
 // Tests that the CFI enforcement distinguishes between non-overriding siblings.
 // XFAILed as not implemented yet.
 
-#include "utils.h"
 #include <stdio.h>
+#include "utils.h"
 
 struct A {
   virtual void f();

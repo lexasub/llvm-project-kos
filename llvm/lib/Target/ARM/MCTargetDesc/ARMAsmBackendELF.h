@@ -28,6 +28,6 @@ public:
     return createARMELFObjectWriter(OSABI);
   }
 };
-} // namespace
+}
 
 #endif

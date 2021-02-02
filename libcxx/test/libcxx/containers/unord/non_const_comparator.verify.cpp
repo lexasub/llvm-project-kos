@@ -30,8 +30,7 @@ struct BadEqual {
 };
 
 int main(int, char**) {
-  static_assert(
-      !std::__invokable<BadEqual const&, int const&, int const&>::value, "");
+  static_assert(!std::__invokable<BadEqual const&, int const&, int const&>::value, "");
   static_assert(std::__invokable<BadEqual&, int const&, int const&>::value, "");
 
   // expected-warning@unordered_set:* 2 {{the specified comparator type does not provide a viable const call operator}}

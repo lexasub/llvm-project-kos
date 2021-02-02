@@ -44,31 +44,33 @@ namespace options {
 
 static cl::OptionCategory IndexTestCoreCategory("index-test-core options");
 
-static cl::opt<ActionType> Action(
-    cl::desc("Action:"), cl::init(ActionType::None),
-    cl::values(clEnumValN(ActionType::PrintSourceSymbols,
-                          "print-source-symbols", "Print symbols from source")),
-    cl::cat(IndexTestCoreCategory));
+static cl::opt<ActionType>
+Action(cl::desc("Action:"), cl::init(ActionType::None),
+       cl::values(
+          clEnumValN(ActionType::PrintSourceSymbols,
+                     "print-source-symbols", "Print symbols from source")),
+       cl::cat(IndexTestCoreCategory));
 
 static cl::extrahelp MoreHelp(
-    "\nAdd \"-- <compiler arguments>\" at the end to setup the compiler "
-    "invocation\n");
+  "\nAdd \"-- <compiler arguments>\" at the end to setup the compiler "
+  "invocation\n"
+);
 
-static cl::opt<bool> DumpModuleImports(
-    "dump-imported-module-files",
-    cl::desc("Print symbols and input files from imported modules"));
+static cl::opt<bool>
+DumpModuleImports("dump-imported-module-files",
+               cl::desc("Print symbols and input files from imported modules"));
 
-static cl::opt<bool> IncludeLocals("include-locals",
-                                   cl::desc("Print local symbols"));
+static cl::opt<bool>
+IncludeLocals("include-locals", cl::desc("Print local symbols"));
 
 static cl::opt<std::string>
-    ModuleFilePath("module-file",
-                   cl::desc("Path to module file to print symbols from"));
-static cl::opt<std::string> ModuleFormat(
-    "fmodule-format", cl::init("raw"),
-    cl::desc("Container format for clang modules and PCH, 'raw' or 'obj'"));
+ModuleFilePath("module-file",
+               cl::desc("Path to module file to print symbols from"));
+static cl::opt<std::string>
+  ModuleFormat("fmodule-format", cl::init("raw"),
+        cl::desc("Container format for clang modules and PCH, 'raw' or 'obj'"));
 
-} // namespace options
+}
 } // anonymous namespace
 
 static void printSymbolInfo(SymbolInfo SymInfo, raw_ostream &OS);
@@ -84,7 +86,8 @@ class PrintIndexDataConsumer : public IndexDataConsumer {
   std::shared_ptr<Preprocessor> PP;
 
 public:
-  PrintIndexDataConsumer(raw_ostream &OS) : OS(OS) {}
+  PrintIndexDataConsumer(raw_ostream &OS) : OS(OS) {
+  }
 
   void initialize(ASTContext &Ctx) override {
     ASTNameGen.reset(new ASTNameGenerator(Ctx));
@@ -195,14 +198,14 @@ public:
 //===----------------------------------------------------------------------===//
 
 static void dumpModuleFileInputs(serialization::ModuleFile &Mod,
-                                 ASTReader &Reader, raw_ostream &OS) {
+                                 ASTReader &Reader,
+                                 raw_ostream &OS) {
   OS << "---- Module Inputs ----\n";
-  Reader.visitInputFiles(
-      Mod, /*IncludeSystem=*/true, /*Complain=*/false,
-      [&](const serialization::InputFile &IF, bool isSystem) {
-        OS << (isSystem ? "system" : "user") << " | ";
-        OS << IF.getFile()->getName() << '\n';
-      });
+  Reader.visitInputFiles(Mod, /*IncludeSystem=*/true, /*Complain=*/false,
+                        [&](const serialization::InputFile &IF, bool isSystem) {
+    OS << (isSystem ? "system" : "user") << " | ";
+    OS << IF.getFile()->getName() << '\n';
+  });
 }
 
 static bool printSourceSymbols(const char *Executable,
@@ -211,8 +214,8 @@ static bool printSourceSymbols(const char *Executable,
   SmallVector<const char *, 4> ArgsWithProgName;
   ArgsWithProgName.push_back(Executable);
   ArgsWithProgName.append(Args.begin(), Args.end());
-  IntrusiveRefCntPtr<DiagnosticsEngine> Diags(
-      CompilerInstance::createDiagnostics(new DiagnosticOptions));
+  IntrusiveRefCntPtr<DiagnosticsEngine>
+    Diags(CompilerInstance::createDiagnostics(new DiagnosticOptions));
   auto CInvok = createInvocationFromCommandLine(ArgsWithProgName, Diags);
   if (!CInvok)
     return true;
@@ -233,13 +236,12 @@ static bool printSourceSymbols(const char *Executable,
 
   if (dumpModuleImports) {
     if (auto Reader = Unit->getASTReader()) {
-      Reader->getModuleManager().visit(
-          [&](serialization::ModuleFile &Mod) -> bool {
-            OS << "==== Module " << Mod.ModuleName << " ====\n";
-            indexModuleFile(Mod, *Reader, *DataConsumer, IndexOpts);
-            dumpModuleFileInputs(Mod, *Reader, OS);
-            return true; // skip module dependencies.
-          });
+      Reader->getModuleManager().visit([&](serialization::ModuleFile &Mod) -> bool {
+        OS << "==== Module " << Mod.ModuleName << " ====\n";
+        indexModuleFile(Mod, *Reader, *DataConsumer, IndexOpts);
+        dumpModuleFileInputs(Mod, *Reader, OS);
+        return true; // skip module dependencies.
+      });
     }
   }
 
@@ -322,7 +324,7 @@ static void printSymbolNameAndUSR(const clang::Module *Mod, raw_ostream &OS) {
 int indextest_core_main(int argc, const char **argv) {
   sys::PrintStackTraceOnErrorSignal(argv[0]);
   PrettyStackTraceProgram X(argc, argv);
-  void *MainAddr = (void *)(intptr_t)indextest_core_main;
+  void *MainAddr = (void*) (intptr_t) indextest_core_main;
   std::string Executable = llvm::sys::fs::getMainExecutable(argv[0], MainAddr);
 
   assert(argv[1] == StringRef("core"));
@@ -350,8 +352,7 @@ int indextest_core_main(int argc, const char **argv) {
                                           options::ModuleFormat);
     }
     if (CompArgs.empty()) {
-      errs()
-          << "error: missing compiler args; pass '-- <compiler arguments>'\n";
+      errs() << "error: missing compiler args; pass '-- <compiler arguments>'\n";
       return 1;
     }
     return printSourceSymbols(Executable.c_str(), CompArgs,

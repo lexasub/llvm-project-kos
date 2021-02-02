@@ -22,7 +22,6 @@ namespace clang {
 
 class MacroBuilder {
   raw_ostream &Out;
-
 public:
   MacroBuilder(raw_ostream &Output) : Out(Output) {}
 
@@ -33,12 +32,16 @@ public:
 
   /// Append a \#undef line for Name.  Name should be of the form XXX
   /// and we emit "\#undef XXX".
-  void undefineMacro(const Twine &Name) { Out << "#undef " << Name << '\n'; }
+  void undefineMacro(const Twine &Name) {
+    Out << "#undef " << Name << '\n';
+  }
 
   /// Directly append Str and a newline to the underlying buffer.
-  void append(const Twine &Str) { Out << Str << '\n'; }
+  void append(const Twine &Str) {
+    Out << Str << '\n';
+  }
 };
 
-} // end namespace clang
+}  // end namespace clang
 
 #endif

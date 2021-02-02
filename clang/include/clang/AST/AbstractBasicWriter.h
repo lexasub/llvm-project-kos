@@ -17,12 +17,14 @@ namespace serialization {
 
 template <class T>
 inline llvm::Optional<T> makeOptionalFromNullable(const T &value) {
-  return (value.isNull() ? llvm::Optional<T>() : llvm::Optional<T>(value));
+  return (value.isNull()
+            ? llvm::Optional<T>()
+            : llvm::Optional<T>(value));
 }
 
 template <class T>
-inline llvm::Optional<T *> makeOptionalFromPointer(T *value) {
-  return (value ? llvm::Optional<T *>(value) : llvm::Optional<T *>());
+inline llvm::Optional<T*> makeOptionalFromPointer(T *value) {
+  return (value ? llvm::Optional<T*>(value) : llvm::Optional<T*>());
 }
 
 // PropertyWriter is a class concept that requires the following method:
@@ -125,24 +127,29 @@ protected:
 public:
   /// Implement property-find by ignoring it.  We rely on properties being
   /// serialized and deserialized in a reliable order instead.
-  Impl &find(const char *propertyName) { return asImpl(); }
+  Impl &find(const char *propertyName) {
+    return asImpl();
+  }
 
   // Implement object writing by forwarding to this, collapsing the
   // structure into a single data stream.
   Impl &writeObject() { return asImpl(); }
 
-  template <class T> void writeEnum(T value) {
+  template <class T>
+  void writeEnum(T value) {
     asImpl().writeUInt32(uint32_t(value));
   }
 
-  template <class T> void writeArray(llvm::ArrayRef<T> array) {
+  template <class T>
+  void writeArray(llvm::ArrayRef<T> array) {
     asImpl().writeUInt32(array.size());
     for (const T &elt : array) {
       WriteDispatcher<T>::write(asImpl(), elt);
     }
   }
 
-  template <class T> void writeOptional(llvm::Optional<T> value) {
+  template <class T>
+  void writeOptional(llvm::Optional<T> value) {
     WriteDispatcher<T>::write(asImpl(), PackOptionalValue<T>::pack(value));
   }
 
@@ -197,7 +204,8 @@ public:
     asImpl().writeUInt32(value.getAsOpaqueValue());
   }
 
-  void writeExceptionSpecInfo(const FunctionProtoType::ExceptionSpecInfo &esi) {
+  void writeExceptionSpecInfo(
+                        const FunctionProtoType::ExceptionSpecInfo &esi) {
     asImpl().writeUInt32(uint32_t(esi.Type));
     if (esi.Type == EST_Dynamic) {
       asImpl().writeArray(esi.Exceptions);

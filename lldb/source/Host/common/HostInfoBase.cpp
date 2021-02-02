@@ -73,7 +73,7 @@ struct HostInfoBaseFields {
 };
 
 HostInfoBaseFields *g_fields = nullptr;
-} // namespace
+}
 
 void HostInfoBase::Initialize() { g_fields = new HostInfoBaseFields(); }
 
@@ -84,7 +84,8 @@ void HostInfoBase::Terminate() {
 
 llvm::Triple HostInfoBase::GetTargetTriple() {
   llvm::call_once(g_fields->m_host_triple_once, []() {
-    g_fields->m_host_triple = HostInfo::GetArchitecture().GetTriple();
+    g_fields->m_host_triple =
+        HostInfo::GetArchitecture().GetTriple();
   });
   return g_fields->m_host_triple;
 }
@@ -106,8 +107,7 @@ const ArchSpec &HostInfoBase::GetArchitecture(ArchitectureKind arch_kind) {
                                               : g_fields->m_host_arch_32;
 }
 
-llvm::Optional<HostInfoBase::ArchitectureKind>
-HostInfoBase::ParseArchitectureKind(llvm::StringRef kind) {
+llvm::Optional<HostInfoBase::ArchitectureKind> HostInfoBase::ParseArchitectureKind(llvm::StringRef kind) {
   return llvm::StringSwitch<llvm::Optional<ArchitectureKind>>(kind)
       .Case(LLDB_ARCH_DEFAULT, eArchKindDefault)
       .Case(LLDB_ARCH_DEFAULT_32BIT, eArchKind32)
@@ -147,8 +147,7 @@ FileSpec HostInfoBase::GetHeaderDir() {
 
 FileSpec HostInfoBase::GetSystemPluginDir() {
   llvm::call_once(g_fields->m_lldb_system_plugin_dir_once, []() {
-    if (!HostInfo::ComputeSystemPluginsDirectory(
-            g_fields->m_lldb_system_plugin_dir))
+    if (!HostInfo::ComputeSystemPluginsDirectory(g_fields->m_lldb_system_plugin_dir))
       g_fields->m_lldb_system_plugin_dir = FileSpec();
     Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
     LLDB_LOG(log, "system plugin dir -> `{0}`",
@@ -159,8 +158,7 @@ FileSpec HostInfoBase::GetSystemPluginDir() {
 
 FileSpec HostInfoBase::GetUserPluginDir() {
   llvm::call_once(g_fields->m_lldb_user_plugin_dir_once, []() {
-    if (!HostInfo::ComputeUserPluginsDirectory(
-            g_fields->m_lldb_user_plugin_dir))
+    if (!HostInfo::ComputeUserPluginsDirectory(g_fields->m_lldb_user_plugin_dir))
       g_fields->m_lldb_user_plugin_dir = FileSpec();
     Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
     LLDB_LOG(log, "user plugin dir -> `{0}`", g_fields->m_lldb_user_plugin_dir);
@@ -170,8 +168,7 @@ FileSpec HostInfoBase::GetUserPluginDir() {
 
 FileSpec HostInfoBase::GetProcessTempDir() {
   llvm::call_once(g_fields->m_lldb_process_tmp_dir_once, []() {
-    if (!HostInfo::ComputeProcessTempFileDirectory(
-            g_fields->m_lldb_process_tmp_dir))
+    if (!HostInfo::ComputeProcessTempFileDirectory( g_fields->m_lldb_process_tmp_dir))
       g_fields->m_lldb_process_tmp_dir = FileSpec();
     Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
     LLDB_LOG(log, "process temp dir -> `{0}`",
@@ -182,8 +179,7 @@ FileSpec HostInfoBase::GetProcessTempDir() {
 
 FileSpec HostInfoBase::GetGlobalTempDir() {
   llvm::call_once(g_fields->m_lldb_global_tmp_dir_once, []() {
-    if (!HostInfo::ComputeGlobalTempFileDirectory(
-            g_fields->m_lldb_global_tmp_dir))
+    if (!HostInfo::ComputeGlobalTempFileDirectory( g_fields->m_lldb_global_tmp_dir))
       g_fields->m_lldb_global_tmp_dir = FileSpec();
 
     Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
@@ -250,7 +246,8 @@ bool HostInfoBase::ComputeSharedLibraryDirectory(FileSpec &file_spec) {
   // On other posix systems, we will get .../lib(64|32)?/liblldb.so.
 
   FileSpec lldb_file_spec(Host::GetModuleFileSpecForHostAddress(
-      reinterpret_cast<void *>(HostInfoBase::ComputeSharedLibraryDirectory)));
+      reinterpret_cast<void *>(
+          HostInfoBase::ComputeSharedLibraryDirectory)));
 
   // This is necessary because when running the testsuite the shlib might be a
   // symbolic link inside the Python resource dir.

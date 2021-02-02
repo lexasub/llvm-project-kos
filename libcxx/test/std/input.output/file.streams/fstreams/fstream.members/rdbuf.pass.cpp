@@ -18,15 +18,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    std::fstream fs;
-    assert(fs.rdbuf());
-  }
-  {
-    std::wfstream fs;
-    assert(fs.rdbuf());
-  }
+int main(int, char**)
+{
+    {
+        std::fstream fs;
+        assert(fs.rdbuf());
+    }
+    {
+        std::wfstream fs;
+        assert(fs.rdbuf());
+    }
 
   return 0;
 }

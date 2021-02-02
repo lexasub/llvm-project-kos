@@ -67,13 +67,13 @@ public:
   bool ExceptionBreakpointsExplainStop(lldb::StopInfoSP stop_reason) override;
 
   lldb::BreakpointResolverSP
-  CreateExceptionResolver(const lldb::BreakpointSP &bkpt, bool catch_bp,
-                          bool throw_bp) override;
+  CreateExceptionResolver(const lldb::BreakpointSP &bkpt,
+                          bool catch_bp, bool throw_bp) override;
 
   lldb::SearchFilterSP CreateExceptionSearchFilter() override;
-
-  lldb::ValueObjectSP
-  GetExceptionObjectForThread(lldb::ThreadSP thread_sp) override;
+  
+  lldb::ValueObjectSP GetExceptionObjectForThread(
+      lldb::ThreadSP thread_sp) override;
 
   // PluginInterface protocol
   lldb_private::ConstString GetPluginName() override;
@@ -82,8 +82,8 @@ public:
 
 protected:
   lldb::BreakpointResolverSP
-  CreateExceptionResolver(const lldb::BreakpointSP &bkpt, bool catch_bp,
-                          bool throw_bp, bool for_expressions);
+  CreateExceptionResolver(const lldb::BreakpointSP &bkpt,
+                          bool catch_bp, bool throw_bp, bool for_expressions);
 
   lldb::BreakpointSP CreateExceptionBreakpoint(bool catch_bp, bool throw_bp,
                                                bool for_expressions,

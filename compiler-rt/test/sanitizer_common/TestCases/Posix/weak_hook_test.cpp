@@ -25,27 +25,27 @@ void __sanitizer_weak_hook_strncmp(void *called_pc, const char *s1,
   seen_strncmp = true;
 }
 void __sanitizer_weak_hook_strncasecmp(void *called_pc, const char *s1,
-                                       const char *s2, size_t n, int result) {
+                                       const char *s2, size_t n, int result){
   seen_strncasecmp = true;
 }
 void __sanitizer_weak_hook_strcmp(void *called_pc, const char *s1,
-                                  const char *s2, int result) {
+                                  const char *s2, int result){
   seen_strcmp = true;
 }
 void __sanitizer_weak_hook_strcasecmp(void *called_pc, const char *s1,
-                                      const char *s2, int result) {
+                                      const char *s2, int result){
   seen_strcasecmp = true;
 }
 void __sanitizer_weak_hook_strstr(void *called_pc, const char *s1,
-                                  const char *s2, char *result) {
+                                  const char *s2, char *result){
   seen_strstr = true;
 }
 void __sanitizer_weak_hook_strcasestr(void *called_pc, const char *s1,
-                                      const char *s2, char *result) {
+                                      const char *s2, char *result){
   seen_strcasestr = true;
 }
 void __sanitizer_weak_hook_memmem(void *called_pc, const void *s1, size_t len1,
-                                  const void *s2, size_t len2, void *result) {
+                                  const void *s2, size_t len2, void *result){
   seen_memmem = true;
 }
 } // extern "C"

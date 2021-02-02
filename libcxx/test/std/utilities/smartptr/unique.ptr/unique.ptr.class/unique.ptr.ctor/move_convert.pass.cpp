@@ -44,7 +44,9 @@ struct is_specialization<Templ<ID1>, Templ<ID2> > : std::true_type {};
 
 template <class Templ, class Other>
 using EnableIfSpecialization = typename std::enable_if<
-    is_specialization<Templ, typename std::decay<Other>::type>::value>::type;
+    is_specialization<Templ, typename std::decay<Other>::type >::value
+  >::type;
+
 
 template <int ID>
 struct TrackingDeleter {
@@ -54,7 +56,7 @@ struct TrackingDeleter {
       : arg_type(&makeArgumentID<TrackingDeleter const&>()) {}
 
   TrackingDeleter(TrackingDeleter&&)
-      : arg_type(&makeArgumentID<TrackingDeleter&&>()) {}
+      : arg_type(&makeArgumentID<TrackingDeleter &&>()) {}
 
   template <class T, class = EnableIfSpecialization<TrackingDeleter, T> >
   TrackingDeleter(T&&) : arg_type(&makeArgumentID<T&&>()) {}
@@ -64,8 +66,8 @@ struct TrackingDeleter {
     return *this;
   }
 
-  TrackingDeleter& operator=(TrackingDeleter&&) {
-    arg_type = &makeArgumentID<TrackingDeleter&&>();
+  TrackingDeleter& operator=(TrackingDeleter &&) {
+    arg_type = &makeArgumentID<TrackingDeleter &&>();
     return *this;
   }
 
@@ -87,10 +89,12 @@ public:
   mutable TypeID const* arg_type;
 };
 
+
 template <class ExpectT, int ID>
 bool checkArg(TrackingDeleter<ID> const& d) {
   return d.arg_type && *d.arg_type == makeArgumentID<ExpectT>();
 }
+
 
 template <bool IsArray>
 void test_sfinae() {
@@ -110,9 +114,9 @@ void test_sfinae() {
   }
   { // Test that if the destination deleter is a reference type then only
     // exact matches are allowed.
-    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> const&>;
+    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> const& >;
     using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0> >;
-    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
+    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> &>;
     using U4 = std::unique_ptr<VT, GenericConvertingDeleter<1> >;
     using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1> const&>;
     static_assert(!std::is_constructible<U1, U2&&>::value, "");
@@ -127,10 +131,10 @@ void test_sfinae() {
     // from any source deleter type with a suitable conversion. Including
     // reference types.
     using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> >;
-    using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
-    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> const&>;
+    using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0> &>;
+    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> const &>;
     using U4 = std::unique_ptr<VT, GenericConvertingDeleter<1> >;
-    using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1>&>;
+    using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1> &>;
     using U6 = std::unique_ptr<VT, GenericConvertingDeleter<1> const&>;
     static_assert(std::is_constructible<U1, U2&&>::value, "");
     static_assert(std::is_constructible<U1, U3&&>::value, "");
@@ -139,6 +143,7 @@ void test_sfinae() {
     static_assert(std::is_constructible<U1, U6&&>::value, "");
   }
 }
+
 
 template <bool IsArray>
 void test_noexcept() {
@@ -165,6 +170,7 @@ void test_noexcept() {
   }
 }
 
+
 template <bool IsArray>
 void test_deleter_value_category() {
   typedef typename std::conditional<IsArray, A[], A>::type VT;
@@ -174,37 +180,38 @@ void test_deleter_value_category() {
   TD2 d2;
 
   { // Test non-reference deleter conversions
-    using U1 = std::unique_ptr<VT, TD1>;
-    using U2 = std::unique_ptr<VT, TD2>;
+    using U1 = std::unique_ptr<VT, TD1 >;
+    using U2 = std::unique_ptr<VT, TD2 >;
     U2 u2;
     u2.get_deleter().reset();
     U1 u1(std::move(u2));
     assert(checkArg<TD2&&>(u1.get_deleter()));
   }
   { // Test assignment from non-const ref
-    using U1 = std::unique_ptr<VT, TD1>;
-    using U2 = std::unique_ptr<VT, TD2&>;
+    using U1 = std::unique_ptr<VT, TD1 >;
+    using U2 = std::unique_ptr<VT, TD2& >;
     U2 u2(nullptr, d2);
     U1 u1(std::move(u2));
     assert(checkArg<TD2&>(u1.get_deleter()));
   }
   { // Test assignment from const ref
-    using U1 = std::unique_ptr<VT, TD1>;
-    using U2 = std::unique_ptr<VT, TD2 const&>;
+    using U1 = std::unique_ptr<VT, TD1 >;
+    using U2 = std::unique_ptr<VT, TD2 const& >;
     U2 u2(nullptr, d2);
     U1 u1(std::move(u2));
     assert(checkArg<TD2 const&>(u1.get_deleter()));
   }
 }
 
+
 int main(int, char**) {
   {
-    test_sfinae</*IsArray*/ false>();
+    test_sfinae</*IsArray*/false>();
     test_noexcept<false>();
     test_deleter_value_category<false>();
   }
   {
-    test_sfinae</*IsArray*/ true>();
+    test_sfinae</*IsArray*/true>();
     test_noexcept<true>();
     test_deleter_value_category<true>();
   }

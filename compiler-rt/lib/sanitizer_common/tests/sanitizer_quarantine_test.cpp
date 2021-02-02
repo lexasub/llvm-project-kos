@@ -9,30 +9,34 @@
 // This file is a part of ThreadSanitizer/AddressSanitizer runtime.
 //
 //===----------------------------------------------------------------------===//
+#include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_quarantine.h"
+#include "gtest/gtest.h"
 
 #include <stdlib.h>
-
-#include "gtest/gtest.h"
-#include "sanitizer_common/sanitizer_common.h"
 
 namespace __sanitizer {
 
 struct QuarantineCallback {
   void Recycle(void *m) {}
-  void *Allocate(uptr size) { return malloc(size); }
-  void Deallocate(void *p) { free(p); }
+  void *Allocate(uptr size) {
+    return malloc(size);
+  }
+  void Deallocate(void *p) {
+    free(p);
+  }
 };
 
 typedef QuarantineCache<QuarantineCallback> Cache;
 
-static void *kFakePtr = reinterpret_cast<void *>(0xFA83FA83);
+static void* kFakePtr = reinterpret_cast<void*>(0xFA83FA83);
 static const size_t kBlockSize = 8;
 
 static QuarantineCallback cb;
 
 static void DeallocateCache(Cache *cache) {
-  while (QuarantineBatch *batch = cache->DequeueBatch()) cb.Deallocate(batch);
+  while (QuarantineBatch *batch = cache->DequeueBatch())
+    cb.Deallocate(batch);
 }
 
 TEST(SanitizerCommon, QuarantineBatchMerge) {
@@ -127,15 +131,15 @@ TEST(SanitizerCommon, QuarantineCacheMergeBatchesTooBigToMerge) {
     cache.Enqueue(cb, kFakePtr, kBlockSize);
   }
   cache.Transfer(&from);
-  ASSERT_EQ(kBlockSize * kNumBlocks * 2 + sizeof(QuarantineBatch) * 2,
-            cache.Size());
+  ASSERT_EQ(kBlockSize * kNumBlocks * 2 +
+            sizeof(QuarantineBatch) * 2, cache.Size());
 
   Cache to_deallocate;
   cache.MergeBatches(&to_deallocate);
 
   // Batches cannot be merged.
-  ASSERT_EQ(kBlockSize * kNumBlocks * 2 + sizeof(QuarantineBatch) * 2,
-            cache.Size());
+  ASSERT_EQ(kBlockSize * kNumBlocks * 2 +
+            sizeof(QuarantineBatch) * 2, cache.Size());
   ASSERT_EQ(to_deallocate.Size(), 0UL);
 
   DeallocateCache(&cache);
@@ -155,16 +159,14 @@ TEST(SanitizerCommon, QuarantineCacheMergeBatchesALotOfBatches) {
   }
 
   ASSERT_EQ(kBlockSize * kNumBlocks +
-                sizeof(QuarantineBatch) * kNumBatchesBeforeMerge,
-            cache.Size());
+            sizeof(QuarantineBatch) * kNumBatchesBeforeMerge, cache.Size());
 
   Cache to_deallocate;
   cache.MergeBatches(&to_deallocate);
 
   // All blocks should fit into 3 batches.
-  ASSERT_EQ(
-      kBlockSize * kNumBlocks + sizeof(QuarantineBatch) * kNumBatchesAfterMerge,
-      cache.Size());
+  ASSERT_EQ(kBlockSize * kNumBlocks +
+            sizeof(QuarantineBatch) * kNumBatchesAfterMerge, cache.Size());
 
   ASSERT_EQ(to_deallocate.Size(),
             sizeof(QuarantineBatch) *

@@ -42,16 +42,16 @@ class Reference {
 public:
   /// Which universe defines the kindValue().
   enum class KindNamespace {
-    all = 0,
+    all     = 0,
     testing = 1,
-    mach_o = 2,
+    mach_o  = 2,
   };
 
   KindNamespace kindNamespace() const { return (KindNamespace)_kindNamespace; }
   void setKindNamespace(KindNamespace ns) { _kindNamespace = (uint8_t)ns; }
 
   // Which architecture the kind value is for.
-  enum class KindArch { all, AArch64, ARM, x86, x86_64 };
+  enum class KindArch { all, AArch64, ARM, x86, x86_64};
 
   KindArch kindArch() const { return (KindArch)_kindArch; }
   void setKindArch(KindArch a) { _kindArch = (uint8_t)a; }
@@ -62,7 +62,9 @@ public:
 
   /// setKindValue() is needed because during linking, some optimizations may
   /// change the codegen and hence the reference kind.
-  void setKindValue(KindValue value) { _kindValue = value; }
+  void setKindValue(KindValue value) {
+    _kindValue = value;
+  }
 
   /// KindValues used with KindNamespace::all and KindArch::all.
   enum {
@@ -106,9 +108,9 @@ protected:
   /// an array of References, so they cannot be individually deleted by anyone.
   virtual ~Reference() = default;
 
-  KindValue _kindValue;
-  uint8_t _kindNamespace;
-  uint8_t _kindArch;
+  KindValue  _kindValue;
+  uint8_t    _kindNamespace;
+  uint8_t    _kindArch;
 };
 
 } // end namespace lld

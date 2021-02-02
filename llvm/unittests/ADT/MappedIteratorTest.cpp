@@ -28,9 +28,9 @@ TEST(MappedIteratorTest, ApplyFunctionOnArrow) {
 
   std::vector<int> V({0});
   S Y;
-  S *P = &Y;
+  S* P = &Y;
 
-  auto I = map_iterator(V.begin(), [&](int X) -> S & { return *(P + X); });
+  auto I = map_iterator(V.begin(), [&](int X) -> S& { return *(P + X); });
 
   I->Z = 42;
 
@@ -39,9 +39,9 @@ TEST(MappedIteratorTest, ApplyFunctionOnArrow) {
 
 TEST(MappedIteratorTest, FunctionPreservesReferences) {
   std::vector<int> V({1});
-  std::map<int, int> M({{1, 1}});
+  std::map<int, int> M({ {1, 1} });
 
-  auto I = map_iterator(V.begin(), [&](int X) -> int & { return M[X]; });
+  auto I = map_iterator(V.begin(), [&](int X) -> int& { return M[X]; });
   *I = 42;
 
   EXPECT_EQ(M[1], 42) << "assignment should have modified M";

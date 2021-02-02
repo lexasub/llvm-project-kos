@@ -5,10 +5,10 @@
 
 void *SubWorker(void *arg) {
   (void)arg;
-  const int kMmapSize = 65536;
+  const int kMmapSize =  65536;
   for (int i = 0; i < 500; i++) {
-    int *ptr = (int *)mmap(0, kMmapSize, PROT_READ | PROT_WRITE,
-                           MAP_PRIVATE | MAP_ANON, -1, 0);
+    int *ptr = (int*)mmap(0, kMmapSize, PROT_READ | PROT_WRITE,
+                          MAP_PRIVATE | MAP_ANON, -1, 0);
     if (ptr == MAP_FAILED)
       exit(printf("mmap failed: %d\n", errno));
     *ptr = 42;

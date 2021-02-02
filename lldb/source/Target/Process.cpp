@@ -321,8 +321,8 @@ ProcessSP Process::FindPlugin(lldb::TargetSP target_sp,
     create_callback =
         PluginManager::GetProcessCreateCallbackForPluginName(const_plugin_name);
     if (create_callback) {
-      process_sp =
-          create_callback(target_sp, listener_sp, crash_file_path, can_connect);
+      process_sp = create_callback(target_sp, listener_sp, crash_file_path,
+                                   can_connect);
       if (process_sp) {
         if (process_sp->CanDebug(target_sp, true)) {
           process_sp->m_process_unique_id = ++g_process_unique_id;
@@ -335,8 +335,8 @@ ProcessSP Process::FindPlugin(lldb::TargetSP target_sp,
          (create_callback =
               PluginManager::GetProcessCreateCallbackAtIndex(idx)) != nullptr;
          ++idx) {
-      process_sp =
-          create_callback(target_sp, listener_sp, crash_file_path, can_connect);
+      process_sp = create_callback(target_sp, listener_sp, crash_file_path,
+                                   can_connect);
       if (process_sp) {
         if (process_sp->CanDebug(target_sp, false)) {
           process_sp->m_process_unique_id = ++g_process_unique_id;
@@ -852,7 +852,8 @@ bool Process::HandleProcessStateChangedEvent(const EventSP &event_sp,
           process_sp->GetStatus(*stream);
           process_sp->GetThreadStatus(*stream, only_threads_with_stop_reason,
                                       start_frame, num_frames,
-                                      num_frames_with_source, stop_format);
+                                      num_frames_with_source,
+                                      stop_format);
           if (curr_thread_stop_info_sp) {
             lldb::addr_t crashing_address;
             ValueObjectSP valobj_sp = StopInfo::GetCrashingDereference(
@@ -1054,7 +1055,7 @@ bool Process::SetProcessExitStatus(
     lldb::pid_t pid, bool exited,
     int signo,      // Zero for no signal
     int exit_status // Exit value of process if signal is zero
-) {
+    ) {
   Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_PROCESS));
   LLDB_LOGF(log,
             "Process::SetProcessExitStatus (pid=%" PRIu64
@@ -1240,7 +1241,9 @@ uint32_t Process::AssignIndexIDToThread(uint64_t thread_id) {
   return result;
 }
 
-StateType Process::GetState() { return m_public_state.GetValue(); }
+StateType Process::GetState() {
+  return m_public_state.GetValue();
+}
 
 void Process::SetPublicState(StateType new_state, bool restarted) {
   Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_STATE |
@@ -1302,7 +1305,8 @@ Status Process::ResumeSynchronous(Stream *stream) {
     return error;
   }
 
-  ListenerSP listener_sp(Listener::MakeListener(g_resume_sync_name));
+  ListenerSP listener_sp(
+      Listener::MakeListener(g_resume_sync_name));
   HijackProcessEvents(listener_sp);
 
   Status error = PrivateResume();
@@ -1329,7 +1333,8 @@ Status Process::ResumeSynchronous(Stream *stream) {
 bool Process::StateChangedIsExternallyHijacked() {
   if (IsHijackedForEvent(eBroadcastBitStateChanged)) {
     const char *hijacking_name = GetHijackingListenerName();
-    if (hijacking_name && strcmp(hijacking_name, g_resume_sync_name))
+    if (hijacking_name &&
+        strcmp(hijacking_name, g_resume_sync_name))
       return true;
   }
   return false;
@@ -1338,7 +1343,8 @@ bool Process::StateChangedIsExternallyHijacked() {
 bool Process::StateChangedIsHijackedForSynchronousResume() {
   if (IsHijackedForEvent(eBroadcastBitStateChanged)) {
     const char *hijacking_name = GetHijackingListenerName();
-    if (hijacking_name && strcmp(hijacking_name, g_resume_sync_name) == 0)
+    if (hijacking_name &&
+        strcmp(hijacking_name, g_resume_sync_name) == 0)
       return true;
   }
   return false;
@@ -1417,8 +1423,7 @@ addr_t Process::GetImageInfoAddress() { return LLDB_INVALID_ADDRESS; }
 
 const lldb::ABISP &Process::GetABI() {
   if (!m_abi_sp)
-    m_abi_sp =
-        ABI::FindPlugin(shared_from_this(), GetTarget().GetArchitecture());
+    m_abi_sp = ABI::FindPlugin(shared_from_this(), GetTarget().GetArchitecture());
   return m_abi_sp;
 }
 
@@ -1465,8 +1470,7 @@ LanguageRuntime *Process::GetLanguageRuntime(lldb::LanguageType language) {
     // for example, CPPLanguageRuntime will support eLanguageTypeC_plus_plus,
     // eLanguageTypeC_plus_plus_03, etc. Because of this, we should get the
     // primary language type and make sure that our runtime supports it.
-    assert(runtime->GetLanguageType() ==
-           Language::GetPrimaryLanguage(language));
+    assert(runtime->GetLanguageType() == Language::GetPrimaryLanguage(language));
 
   return runtime;
 }
@@ -1885,7 +1889,7 @@ size_t Process::ReadMemory(addr_t addr, void *buf, size_t size, Status &error) {
       return cache_bytes_read;
     }
     return 0;
-#else // !defined(VERIFY_MEMORY_READS)
+#else  // !defined(VERIFY_MEMORY_READS)
     // Memory caching is enabled, without debug verification
 
     return m_memory_cache.Read(addr, buf, size, error);
@@ -3524,8 +3528,8 @@ void Process::ControlPrivateStateThread(uint32_t signal) {
       while (!receipt_received) {
         // Check for a receipt for n seconds and then check if the private
         // state thread is still around.
-        receipt_received = event_receipt_sp->WaitForEventReceived(
-            GetUtilityExpressionTimeout());
+        receipt_received =
+          event_receipt_sp->WaitForEventReceived(GetUtilityExpressionTimeout());
         if (!receipt_received) {
           // Check if the private state thread is still around. If it isn't
           // then we are done waiting
@@ -4557,8 +4561,7 @@ HandleStoppedEvent(lldb::tid_t thread_id, const ThreadPlanSP &thread_plan_sp,
   StopInfoSP stop_info_sp = thread_sp->GetStopInfo();
   if (stop_info_sp && stop_info_sp->GetStopReason() == eStopReasonBreakpoint &&
       stop_info_sp->ShouldNotify(event_sp.get())) {
-    LLDB_LOG(log, "stopped for breakpoint: {0}.",
-             stop_info_sp->GetDescription());
+    LLDB_LOG(log, "stopped for breakpoint: {0}.", stop_info_sp->GetDescription());
     if (!options.DoesIgnoreBreakpoints()) {
       // Restore the plan state and then force Private to false.  We are going
       // to stop because of this plan so we need it to become a public plan or
@@ -4809,8 +4812,8 @@ Process::RunThreadPlan(ExecutionContext &exe_ctx,
     // coalescing to cause us to lose OUR running event...
     ForceNextEventDelivery();
 
-    // This while loop must exit out the bottom, there's cleanup that we need to
-    // do when we are done. So don't call return anywhere within it.
+// This while loop must exit out the bottom, there's cleanup that we need to do
+// when we are done. So don't call return anywhere within it.
 
 #ifdef LLDB_RUN_THREAD_HALT_WITH_EVENT
     // It's pretty much impossible to write test cases for things like: One
@@ -5034,14 +5037,12 @@ Process::RunThreadPlan(ExecutionContext &exe_ctx,
               LLDB_LOG(log,
                        "Running function with one thread timeout timed out.");
             } else
-              LLDB_LOG(log,
-                       "Restarting function with all threads enabled and "
-                       "timeout: {0} timed out, abandoning execution.",
+              LLDB_LOG(log, "Restarting function with all threads enabled and "
+                            "timeout: {0} timed out, abandoning execution.",
                        timeout);
           } else
-            LLDB_LOG(log,
-                     "Running function with timeout: {0} timed out, "
-                     "abandoning execution.",
+            LLDB_LOG(log, "Running function with timeout: {0} timed out, "
+                          "abandoning execution.",
                      timeout);
         }
 
@@ -5464,7 +5465,8 @@ size_t Process::GetThreadStatus(Stream &strm,
           continue;
       }
       thread_sp->GetStatus(strm, start_frame, num_frames,
-                           num_frames_with_source, stop_format);
+                           num_frames_with_source,
+                           stop_format);
       ++num_thread_infos_dumped;
     } else {
       Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_PROCESS));
@@ -5503,14 +5505,14 @@ bool Process::RunPreResumeActions() {
 
 void Process::ClearPreResumeActions() { m_pre_resume_actions.clear(); }
 
-void Process::ClearPreResumeAction(PreResumeActionCallback callback,
-                                   void *baton) {
-  PreResumeCallbackAndBaton element(callback, baton);
-  auto found_iter = std::find(m_pre_resume_actions.begin(),
-                              m_pre_resume_actions.end(), element);
-  if (found_iter != m_pre_resume_actions.end()) {
-    m_pre_resume_actions.erase(found_iter);
-  }
+void Process::ClearPreResumeAction(PreResumeActionCallback callback, void *baton)
+{
+    PreResumeCallbackAndBaton element(callback, baton);
+    auto found_iter = std::find(m_pre_resume_actions.begin(), m_pre_resume_actions.end(), element);
+    if (found_iter != m_pre_resume_actions.end())
+    {
+        m_pre_resume_actions.erase(found_iter);
+    }
 }
 
 ProcessRunLock &Process::GetRunLock() {
@@ -5520,9 +5522,11 @@ ProcessRunLock &Process::GetRunLock() {
     return m_public_run_lock;
 }
 
-bool Process::CurrentThreadIsPrivateStateThread() {
+bool Process::CurrentThreadIsPrivateStateThread()
+{
   return m_private_state_thread.EqualsThread(Host::GetCurrentThread());
 }
+
 
 void Process::Flush() {
   m_thread_list.Flush();
@@ -5800,7 +5804,8 @@ Process::AdvanceAddressToNextBranchInstruction(Address default_stop_addr,
   return retval;
 }
 
-Status Process::GetMemoryRegions(lldb_private::MemoryRegionInfos &region_list) {
+Status
+Process::GetMemoryRegions(lldb_private::MemoryRegionInfos &region_list) {
 
   Status error;
 
@@ -5878,8 +5883,8 @@ void Process::MapSupportedStructuredDataPlugins(
   // supports?
   for (uint32_t plugin_index = 0; !const_type_names.empty(); plugin_index++) {
     auto create_instance =
-        PluginManager::GetStructuredDataPluginCreateCallbackAtIndex(
-            plugin_index);
+           PluginManager::GetStructuredDataPluginCreateCallbackAtIndex(
+               plugin_index);
     if (!create_instance)
       break;
 

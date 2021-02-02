@@ -1,5 +1,4 @@
-//===- llvm/unittest/CodeGen/AArch64SelectionDAGTest.cpp
-//-------------------------===//
+//===- llvm/unittest/CodeGen/AArch64SelectionDAGTest.cpp -------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -59,8 +58,8 @@ protected:
 
     MachineModuleInfo MMI(TM.get());
 
-    MF = std::make_unique<MachineFunction>(*F, *TM, *TM->getSubtargetImpl(*F),
-                                           0, MMI);
+    MF = std::make_unique<MachineFunction>(*F, *TM, *TM->getSubtargetImpl(*F), 0,
+                                      MMI);
 
     DAG = std::make_unique<SelectionDAG>(*TM, CodeGenOpt::None);
     if (!DAG)
@@ -148,8 +147,7 @@ TEST_F(AArch64SelectionDAGTest, ComputeNumSignBits_SIGN_EXTEND_VECTOR_INREG) {
   EXPECT_EQ(DAG->ComputeNumSignBits(Op, DemandedElts), 15u);
 }
 
-TEST_F(AArch64SelectionDAGTest,
-       ComputeNumSignBitsSVE_SIGN_EXTEND_VECTOR_INREG) {
+TEST_F(AArch64SelectionDAGTest, ComputeNumSignBitsSVE_SIGN_EXTEND_VECTOR_INREG) {
   if (!TM)
     return;
   SDLoc Loc;
@@ -414,8 +412,7 @@ TEST_F(AArch64SelectionDAGTest, getSplatSourceVector_Fixed_BUILD_VECTOR) {
   EXPECT_EQ(SplatIdx, 0);
 }
 
-TEST_F(AArch64SelectionDAGTest,
-       getSplatSourceVector_Fixed_ADD_of_BUILD_VECTOR) {
+TEST_F(AArch64SelectionDAGTest, getSplatSourceVector_Fixed_ADD_of_BUILD_VECTOR) {
   if (!TM)
     return;
 
@@ -454,8 +451,7 @@ TEST_F(AArch64SelectionDAGTest, getSplatSourceVector_Scalable_SPLAT_VECTOR) {
   EXPECT_EQ(SplatIdx, 0);
 }
 
-TEST_F(AArch64SelectionDAGTest,
-       getSplatSourceVector_Scalable_ADD_of_SPLAT_VECTOR) {
+TEST_F(AArch64SelectionDAGTest, getSplatSourceVector_Scalable_ADD_of_SPLAT_VECTOR) {
   if (!TM)
     return;
 
@@ -496,7 +492,7 @@ TEST_F(AArch64SelectionDAGTest, getRepeatedSequence_Patterns) {
 
   // Build some repeating sequences.
   SmallVector<SDValue, 16> Pattern1111, Pattern1133, Pattern0123;
-  for (int I = 0; I != 4; ++I) {
+  for(int I = 0; I != 4; ++I) {
     Pattern1111.append(4, Val1);
     Pattern1133.append(2, Val1);
     Pattern1133.append(2, Val3);
@@ -533,7 +529,7 @@ TEST_F(AArch64SelectionDAGTest, getRepeatedSequence_Patterns) {
       cast<BuildVectorSDNode>(DAG->getBuildVector(VecVT, Loc, Pattern1111));
   auto *BV1133 =
       cast<BuildVectorSDNode>(DAG->getBuildVector(VecVT, Loc, Pattern1133));
-  auto *BV0123 =
+  auto *BV0123=
       cast<BuildVectorSDNode>(DAG->getBuildVector(VecVT, Loc, Pattern0123));
   auto *BV022 =
       cast<BuildVectorSDNode>(DAG->getBuildVector(VecVT, Loc, Pattern022));

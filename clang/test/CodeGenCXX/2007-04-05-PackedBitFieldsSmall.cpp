@@ -1,5 +1,6 @@
 // RUN: %clang_cc1 -emit-llvm %s -o -
 
+
 #ifdef PACKED
 // This is an example where size of Packed struct is smaller then
 // the size of bit field type.
@@ -9,18 +10,18 @@
 #endif
 
 struct P M_Packed {
-  unsigned long long X : 50;
-  unsigned Y : 2;
+  unsigned long long X:50;
+  unsigned Y:2;
 };
 
 struct M_Packed sM_Packed;
 
-int testM_Packed(void) {
+int testM_Packed (void) {
   struct M_Packed x;
   return (0 != x.Y);
 }
 
-int testM_Packed2(void) {
+int testM_Packed2 (void) {
   struct M_Packed x;
   return (0 != x.X);
 }

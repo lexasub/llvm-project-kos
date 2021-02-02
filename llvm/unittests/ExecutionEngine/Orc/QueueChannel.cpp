@@ -10,3 +10,4 @@
 
 char llvm::QueueChannelError::ID;
 char llvm::QueueChannelClosedError::ID;
+

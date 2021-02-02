@@ -52,29 +52,26 @@
 
 struct X {};
 
-int main(int, char**) {
-  const std::shared_ptr<int> p1(new int);
-  const std::shared_ptr<int> p2 = p1;
-  const std::shared_ptr<int> p3(new int);
-  const std::weak_ptr<int> w1(p1);
-  const std::weak_ptr<int> w2(p2);
-  const std::weak_ptr<int> w3(p3);
+int main(int, char**)
+{
+    const std::shared_ptr<int> p1(new int);
+    const std::shared_ptr<int> p2 = p1;
+    const std::shared_ptr<int> p3(new int);
+    const std::weak_ptr<int> w1(p1);
+    const std::weak_ptr<int> w2(p2);
+    const std::weak_ptr<int> w3(p3);
 
-  {
+    {
     typedef std::owner_less<std::shared_ptr<int> > CS;
     CS cs;
 
-    static_assert(
-        (std::is_same<std::shared_ptr<int>, CS::first_argument_type>::value),
-        "");
-    static_assert(
-        (std::is_same<std::shared_ptr<int>, CS::second_argument_type>::value),
-        "");
-    static_assert((std::is_same<bool, CS::result_type>::value), "");
+    static_assert((std::is_same<std::shared_ptr<int>, CS::first_argument_type>::value), "" );
+    static_assert((std::is_same<std::shared_ptr<int>, CS::second_argument_type>::value), "" );
+    static_assert((std::is_same<bool, CS::result_type>::value), "" );
 
     assert(!cs(p1, p2));
     assert(!cs(p2, p1));
-    assert(cs(p1, p3) || cs(p3, p1));
+    assert(cs(p1 ,p3) || cs(p3, p1));
     assert(cs(p3, p1) == cs(p3, p2));
     ASSERT_NOEXCEPT(cs(p1, p1));
 
@@ -84,17 +81,14 @@ int main(int, char**) {
     assert(cs(p3, w1) == cs(p3, w2));
     ASSERT_NOEXCEPT(cs(p1, w1));
     ASSERT_NOEXCEPT(cs(w1, p1));
-  }
-  {
+    }
+    {
     typedef std::owner_less<std::weak_ptr<int> > CS;
     CS cs;
 
-    static_assert(
-        (std::is_same<std::weak_ptr<int>, CS::first_argument_type>::value), "");
-    static_assert(
-        (std::is_same<std::weak_ptr<int>, CS::second_argument_type>::value),
-        "");
-    static_assert((std::is_same<bool, CS::result_type>::value), "");
+    static_assert((std::is_same<std::weak_ptr<int>, CS::first_argument_type>::value), "" );
+    static_assert((std::is_same<std::weak_ptr<int>, CS::second_argument_type>::value), "" );
+    static_assert((std::is_same<bool, CS::result_type>::value), "" );
 
     assert(!cs(w1, w2));
     assert(!cs(w2, w1));
@@ -108,9 +102,9 @@ int main(int, char**) {
     assert(cs(w3, p1) == cs(w3, p2));
     ASSERT_NOEXCEPT(cs(w1, p1));
     ASSERT_NOEXCEPT(cs(p1, w1));
-  }
+    }
 #if TEST_STD_VER > 14
-  {
+    {
     std::shared_ptr<int> sp1;
     std::shared_ptr<void> sp2;
     std::shared_ptr<long> sp3;
@@ -126,13 +120,13 @@ int main(int, char**) {
     ASSERT_NOEXCEPT(cmp(sp1, wp1));
     ASSERT_NOEXCEPT(cmp(wp1, sp1));
     ASSERT_NOEXCEPT(cmp(wp1, wp1));
-  }
-  {
+    }
+    {
     // test heterogeneous lookups
-    std::set<std::shared_ptr<X>, std::owner_less<> > s;
+    std::set<std::shared_ptr<X>, std::owner_less<>> s;
     std::shared_ptr<void> vp;
     assert(s.find(vp) == s.end());
-  }
+    }
 #endif
 
   return 0;

@@ -289,9 +289,9 @@ void cleared_through_method() {
   S x;
   const char *c = x.name(); // expected-note {{Calling 'S::name'}}
                             // expected-note@-1 {{Returning from 'S::name'}}
-  x.clear();                // expected-note {{Calling 'S::clear'}}
-                            // expected-note@-1 {{Returning; inner buffer was reallocated}}
-  consume(c);               // expected-warning {{Inner pointer of container used after re/deallocation}}
+  x.clear(); // expected-note {{Calling 'S::clear'}}
+             // expected-note@-1 {{Returning; inner buffer was reallocated}}
+  consume(c); // expected-warning {{Inner pointer of container used after re/deallocation}}
   // expected-note@-1 {{Inner pointer of container used after re/deallocation}}
 }
 
@@ -299,9 +299,9 @@ void destroyed_through_method() {
   S y;
   const char *c = y.name(); // expected-note {{Calling 'S::name'}}
                             // expected-note@-1 {{Returning from 'S::name'}}
-  y.~S();                   // expected-note {{Calling '~S'}}
-                            // expected-note@-1 {{Returning; inner buffer was deallocated}}
-  consume(c);               // expected-warning {{Inner pointer of container used after re/deallocation}}
+  y.~S(); // expected-note {{Calling '~S'}}
+          // expected-note@-1 {{Returning; inner buffer was deallocated}}
+  consume(c); // expected-warning {{Inner pointer of container used after re/deallocation}}
   // expected-note@-1 {{Inner pointer of container used after re/deallocation}}
 }
 
@@ -363,7 +363,6 @@ void func_default_arg() {
 
 struct T {
   std::string to_string() { return s; }
-
 private:
   std::string s;
 };
@@ -383,6 +382,7 @@ const char *escape_via_return_local() {
                     // expected-warning@-2 {{Inner pointer of container used after re/deallocation}}
                     // expected-note@-3 {{Inner pointer of container used after re/deallocation}}
 }
+
 
 char *c();
 class A {};

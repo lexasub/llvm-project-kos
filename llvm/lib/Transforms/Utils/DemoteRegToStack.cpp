@@ -8,11 +8,11 @@
 
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/Analysis/CFG.h"
+#include "llvm/Transforms/Utils/Local.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Type.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
-#include "llvm/Transforms/Utils/Local.h"
 using namespace llvm;
 
 /// DemoteRegToStack - This function takes a virtual register computed by an
@@ -34,11 +34,10 @@ AllocaInst *llvm::DemoteRegToStack(Instruction &I, bool VolatileLoads,
   AllocaInst *Slot;
   if (AllocaPoint) {
     Slot = new AllocaInst(I.getType(), DL.getAllocaAddrSpace(), nullptr,
-                          I.getName() + ".reg2mem", AllocaPoint);
+                          I.getName()+".reg2mem", AllocaPoint);
   } else {
-    Slot =
-        new AllocaInst(I.getType(), DL.getAllocaAddrSpace(), nullptr,
-                       I.getName() + ".reg2mem", &F->getEntryBlock().front());
+    Slot = new AllocaInst(I.getType(), DL.getAllocaAddrSpace(), nullptr,
+                          I.getName() + ".reg2mem", &F->getEntryBlock().front());
   }
 
   // We cannot demote invoke instructions to the stack if their normal edge
@@ -46,8 +45,7 @@ AllocaInst *llvm::DemoteRegToStack(Instruction &I, bool VolatileLoads,
   // into which the store can be inserted.
   if (InvokeInst *II = dyn_cast<InvokeInst>(&I)) {
     if (!II->getNormalDest()->getSinglePredecessor()) {
-      unsigned SuccNum =
-          GetSuccessorNumber(II->getParent(), II->getNormalDest());
+      unsigned SuccNum = GetSuccessorNumber(II->getParent(), II->getNormalDest());
       assert(isCriticalEdge(II, SuccNum) && "Expected a critical edge!");
       BasicBlock *BB = SplitCriticalEdge(II, SuccNum);
       assert(BB && "Unable to split critical edge.");
@@ -68,7 +66,7 @@ AllocaInst *llvm::DemoteRegToStack(Instruction &I, bool VolatileLoads,
       // resulting PHI node will have multiple values (from each load) coming in
       // from the same block, which is illegal SSA form. For this reason, we
       // keep track of and reuse loads we insert.
-      DenseMap<BasicBlock *, Value *> Loads;
+      DenseMap<BasicBlock*, Value*> Loads;
       for (unsigned i = 0, e = PN->getNumIncomingValues(); i != e; ++i)
         if (PN->getIncomingValue(i) == &I) {
           Value *&V = Loads[PN->getIncomingBlock(i)];
@@ -96,7 +94,7 @@ AllocaInst *llvm::DemoteRegToStack(Instruction &I, bool VolatileLoads,
   if (!I.isTerminator()) {
     InsertPt = ++I.getIterator();
     for (; isa<PHINode>(InsertPt) || InsertPt->isEHPad(); ++InsertPt)
-      /* empty */; // Don't insert before PHI nodes or landingpad instrs.
+      /* empty */;   // Don't insert before PHI nodes or landingpad instrs.
   } else {
     InvokeInst &II = cast<InvokeInst>(I);
     InsertPt = II.getNormalDest()->getFirstInsertionPt();
@@ -121,20 +119,19 @@ AllocaInst *llvm::DemotePHIToStack(PHINode *P, Instruction *AllocaPoint) {
   AllocaInst *Slot;
   if (AllocaPoint) {
     Slot = new AllocaInst(P->getType(), DL.getAllocaAddrSpace(), nullptr,
-                          P->getName() + ".reg2mem", AllocaPoint);
+                          P->getName()+".reg2mem", AllocaPoint);
   } else {
     Function *F = P->getParent()->getParent();
-    Slot =
-        new AllocaInst(P->getType(), DL.getAllocaAddrSpace(), nullptr,
-                       P->getName() + ".reg2mem", &F->getEntryBlock().front());
+    Slot = new AllocaInst(P->getType(), DL.getAllocaAddrSpace(), nullptr,
+                          P->getName() + ".reg2mem",
+                          &F->getEntryBlock().front());
   }
 
   // Iterate over each operand inserting a store in each predecessor.
   for (unsigned i = 0, e = P->getNumIncomingValues(); i < e; ++i) {
     if (InvokeInst *II = dyn_cast<InvokeInst>(P->getIncomingValue(i))) {
       assert(II->getParent() != P->getIncomingBlock(i) &&
-             "Invoke edge not supported yet");
-      (void)II;
+             "Invoke edge not supported yet"); (void)II;
     }
     new StoreInst(P->getIncomingValue(i), Slot,
                   P->getIncomingBlock(i)->getTerminator());
@@ -144,7 +141,7 @@ AllocaInst *llvm::DemotePHIToStack(PHINode *P, Instruction *AllocaPoint) {
   BasicBlock::iterator InsertPt = P->getIterator();
 
   for (; isa<PHINode>(InsertPt) || InsertPt->isEHPad(); ++InsertPt)
-    /* empty */; // Don't insert before PHI nodes or landingpad instrs.
+    /* empty */;   // Don't insert before PHI nodes or landingpad instrs.
 
   Value *V =
       new LoadInst(P->getType(), Slot, P->getName() + ".reload", &*InsertPt);

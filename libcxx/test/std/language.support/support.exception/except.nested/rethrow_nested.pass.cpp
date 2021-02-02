@@ -19,43 +19,56 @@
 
 #include "test_macros.h"
 
-class A {
-  int data_;
-
+class A
+{
+    int data_;
 public:
-  explicit A(int data) : data_(data) {}
+    explicit A(int data) : data_(data) {}
 
-  friend bool operator==(const A& x, const A& y) { return x.data_ == y.data_; }
+    friend bool operator==(const A& x, const A& y) {return x.data_ == y.data_;}
 };
 
-void go_quietly() { std::exit(0); }
+void go_quietly()
+{
+    std::exit(0);
+}
 
-int main(int, char**) {
-  {
-    try {
-      throw A(2);
-      assert(false);
-    } catch (const A&) {
-      const std::nested_exception e;
-      assert(e.nested_ptr() != nullptr);
-      try {
-        e.rethrow_nested();
-        assert(false);
-      } catch (const A& a) {
-        assert(a == A(2));
-      }
+int main(int, char**)
+{
+    {
+        try
+        {
+            throw A(2);
+            assert(false);
+        }
+        catch (const A&)
+        {
+            const std::nested_exception e;
+            assert(e.nested_ptr() != nullptr);
+            try
+            {
+                e.rethrow_nested();
+                assert(false);
+            }
+            catch (const A& a)
+            {
+                assert(a == A(2));
+            }
+        }
     }
-  }
-  {
-    try {
-      std::set_terminate(go_quietly);
-      const std::nested_exception e;
-      e.rethrow_nested();
-      assert(false);
-    } catch (...) {
-      assert(false);
+    {
+        try
+        {
+            std::set_terminate(go_quietly);
+            const std::nested_exception e;
+            e.rethrow_nested();
+            assert(false);
+        }
+        catch (...)
+        {
+            assert(false);
+        }
     }
-  }
 
   return 0;
 }

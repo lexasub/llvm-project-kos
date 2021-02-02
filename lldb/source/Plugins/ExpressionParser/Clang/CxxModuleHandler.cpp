@@ -173,7 +173,7 @@ static bool templateArgsAreSupported(ArrayRef<TemplateArgument> a) {
 /// Constructor function for Clang declarations. Ensures that the created
 /// declaration is registered with the ASTImporter.
 template <typename T, typename... Args>
-T *createDecl(ASTImporter &importer, Decl *from_d, Args &&...args) {
+T *createDecl(ASTImporter &importer, Decl *from_d, Args &&... args) {
   T *to_d = T::Create(std::forward<Args>(args)...);
   importer.RegisterImportedDecl(from_d, to_d);
   return to_d;
@@ -242,7 +242,8 @@ llvm::Optional<Decl *> CxxModuleHandler::tryInstantiateStdTemplate(Decl *d) {
     }
     case TemplateArgument::Integral: {
       llvm::APSInt integral = arg.getAsIntegral();
-      llvm::Expected<QualType> type = m_importer->Import(arg.getIntegralType());
+      llvm::Expected<QualType> type =
+          m_importer->Import(arg.getIntegralType());
       if (!type) {
         LLDB_LOG_ERROR(log, type.takeError(), "Couldn't import type: {0}");
         return llvm::None;
@@ -280,7 +281,8 @@ llvm::Optional<Decl *> CxxModuleHandler::tryInstantiateStdTemplate(Decl *d) {
 
   new_class_template->AddSpecialization(result, InsertPos);
   if (new_class_template->isOutOfLine())
-    result->setLexicalDeclContext(new_class_template->getLexicalDeclContext());
+    result->setLexicalDeclContext(
+        new_class_template->getLexicalDeclContext());
   return result;
 }
 

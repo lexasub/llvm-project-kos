@@ -7,24 +7,23 @@
 #include <stdio.h>
 static volatile int zero = 0;
 inline void pretend_to_do_something(void *x) {
-  __asm__ __volatile__(""
-                       :
-                       : "r"(x)
-                       : "memory");
+  __asm__ __volatile__("" : : "r" (x) : "memory");
 }
 
-__attribute__((noinline)) void ReallyThrow() {
+__attribute__((noinline))
+void ReallyThrow() {
   fprintf(stderr, "ReallyThrow\n");
   try {
     if (zero == 0)
       throw 42;
     else if (zero == 1)
       throw 1.;
-  } catch (double x) {
+  } catch(double x) {
   }
 }
 
-__attribute__((noinline)) void Throw() {
+__attribute__((noinline))
+void Throw() {
   int a, b, c, d, e;
   pretend_to_do_something(&a);
   pretend_to_do_something(&b);
@@ -35,7 +34,8 @@ __attribute__((noinline)) void Throw() {
   ReallyThrow();
 }
 
-__attribute__((noinline)) void CheckStack() {
+__attribute__((noinline))
+void CheckStack() {
   int ar[100];
   pretend_to_do_something(ar);
   for (int i = 0; i < 100; i++)
@@ -43,11 +43,12 @@ __attribute__((noinline)) void CheckStack() {
   fprintf(stderr, "CheckStack stack = %p, %p\n", ar, ar + 100);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   try {
     Throw();
-  } catch (int a) {
+  } catch(int a) {
     fprintf(stderr, "a = %d\n", a);
   }
   CheckStack();
 }
+

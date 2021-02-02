@@ -621,9 +621,9 @@ bool GDBRemoteCommunicationClient::GetLoadedDynamicLibrariesInfosSupported() {
   if (m_supports_jLoadedDynamicLibrariesInfos == eLazyBoolCalculate) {
     StringExtractorGDBRemote response;
     m_supports_jLoadedDynamicLibrariesInfos = eLazyBoolNo;
-    if (SendPacketAndWaitForResponse(
-            "jGetLoadedDynamicLibrariesInfos:", response, false) ==
-        PacketResult::Success) {
+    if (SendPacketAndWaitForResponse("jGetLoadedDynamicLibrariesInfos:",
+                                     response,
+                                     false) == PacketResult::Success) {
       if (response.IsOKResponse()) {
         m_supports_jLoadedDynamicLibrariesInfos = eLazyBoolYes;
       }
@@ -1149,8 +1149,8 @@ bool GDBRemoteCommunicationClient::GetHostInfo(bool force) {
   Log *log(ProcessGDBRemoteLog::GetLogIfAnyCategoryIsSet(GDBR_LOG_PROCESS));
 
   if (force || m_qHostInfo_is_valid == eLazyBoolCalculate) {
-    // host info computation can require DNS traffic and shelling out to
-    // external processes. Increase the timeout to account for that.
+    // host info computation can require DNS traffic and shelling out to external processes.
+    // Increase the timeout to account for that.
     ScopedTimeout timeout(*this, seconds(10));
     m_qHostInfo_is_valid = eLazyBoolNo;
     StringExtractorGDBRemote response;
@@ -1220,9 +1220,10 @@ bool GDBRemoteCommunicationClient::GetHostInfo(bool force) {
             if (!value.getAsInteger(0, pointer_byte_size))
               ++num_keys_decoded;
           } else if (name.equals("os_version") ||
-                     name.equals("version")) // Older debugserver binaries used
-                                             // the "version" key instead of
-                                             // "os_version"...
+                     name.equals(
+                         "version")) // Older debugserver binaries used the
+                                     // "version" key instead of
+                                     // "os_version"...
           {
             if (!m_os_version.tryParse(value))
               ++num_keys_decoded;
@@ -2115,7 +2116,7 @@ bool GDBRemoteCommunicationClient::GetCurrentProcessInfo(bool allow_lazy) {
                  !vendor_name.empty()) {
         llvm::Triple triple(llvm::Twine("-") + vendor_name + "-" + os_name);
         if (!environment.empty())
-          triple.setEnvironmentName(environment);
+            triple.setEnvironmentName(environment);
 
         assert(triple.getObjectFormat() != llvm::Triple::UnknownObjectFormat);
         assert(triple.getObjectFormat() != llvm::Triple::Wasm);
@@ -2148,12 +2149,10 @@ bool GDBRemoteCommunicationClient::GetCurrentProcessInfo(bool allow_lazy) {
         }
         m_process_arch.GetTriple().setVendorName(llvm::StringRef(vendor_name));
         m_process_arch.GetTriple().setOSName(llvm::StringRef(os_name));
-        m_process_arch.GetTriple().setEnvironmentName(
-            llvm::StringRef(environment));
+        m_process_arch.GetTriple().setEnvironmentName(llvm::StringRef(environment));
         m_host_arch.GetTriple().setVendorName(llvm::StringRef(vendor_name));
         m_host_arch.GetTriple().setOSName(llvm::StringRef(os_name));
-        m_host_arch.GetTriple().setEnvironmentName(
-            llvm::StringRef(environment));
+        m_host_arch.GetTriple().setEnvironmentName(llvm::StringRef(environment));
       }
       return true;
     }
@@ -2631,7 +2630,7 @@ bool GDBRemoteCommunicationClient::SetCurrentThread(uint64_t tid) {
      * The reply from '?' packet could be as simple as 'S05'. There is no packet
      * which can
      * give us pid and/or tid. Assume pid=tid=1 in such cases.
-     */
+    */
     if (response.IsUnsupportedResponse() && IsConnected()) {
       m_curr_tid = 1;
       return true;
@@ -2667,7 +2666,7 @@ bool GDBRemoteCommunicationClient::SetCurrentThreadForRun(uint64_t tid) {
      * The reply from '?' packet could be as simple as 'S05'. There is no packet
      * which can
      * give us pid and/or tid. Assume pid=tid=1 in such cases.
-     */
+    */
     if (response.IsUnsupportedResponse() && IsConnected()) {
       m_curr_tid_run = 1;
       return true;
@@ -2804,7 +2803,7 @@ size_t GDBRemoteCommunicationClient::GetCurrentThreadIDs(
      * be as simple as 'S05'. There is no packet which can give us pid and/or
      * tid.
      * Assume pid=tid=1 in such cases.
-     */
+    */
     if ((response.IsUnsupportedResponse() || response.IsNormalResponse()) &&
         thread_ids.size() == 0 && IsConnected()) {
       thread_ids.push_back(1);

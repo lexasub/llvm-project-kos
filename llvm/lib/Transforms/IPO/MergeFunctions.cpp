@@ -88,7 +88,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Transforms/IPO/MergeFunctions.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
@@ -122,6 +121,7 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO.h"
+#include "llvm/Transforms/IPO/MergeFunctions.h"
 #include "llvm/Transforms/Utils/FunctionComparator.h"
 #include <algorithm>
 #include <cassert>
@@ -167,7 +167,8 @@ static cl::opt<bool>
                                "transformations are made."));
 
 static cl::opt<bool>
-    MergeFunctionsAliases("mergefunc-use-aliases", cl::Hidden, cl::init(false),
+    MergeFunctionsAliases("mergefunc-use-aliases", cl::Hidden,
+                          cl::init(false),
                           cl::desc("Allow mergefunc to create aliases"));
 
 namespace {
@@ -179,14 +180,16 @@ class FunctionNode {
 public:
   // Note the hash is recalculated potentially multiple times, but it is cheap.
   FunctionNode(Function *F)
-      : F(F), Hash(FunctionComparator::functionHash(*F)) {}
+    : F(F), Hash(FunctionComparator::functionHash(*F))  {}
 
   Function *getFunc() const { return F; }
   FunctionComparator::FunctionHash getHash() const { return Hash; }
 
   /// Replace the reference to the function F by the function G, assuming their
   /// implementations are equal.
-  void replaceBy(Function *G) const { F = G; }
+  void replaceBy(Function *G) const {
+    F = G;
+  }
 };
 
 /// MergeFunctions finds functions which will generate identical machine code,
@@ -195,7 +198,8 @@ public:
 /// bitcast of the other.
 class MergeFunctions {
 public:
-  MergeFunctions() : FnTree(FunctionNodeCmp(&GlobalNumbers)) {}
+  MergeFunctions() : FnTree(FunctionNodeCmp(&GlobalNumbers)) {
+  }
 
   bool runOnModule(Module &M);
 
@@ -203,10 +207,10 @@ private:
   // The function comparison operator is provided here so that FunctionNodes do
   // not need to become larger with another pointer.
   class FunctionNodeCmp {
-    GlobalNumberState *GlobalNumbers;
+    GlobalNumberState* GlobalNumbers;
 
   public:
-    FunctionNodeCmp(GlobalNumberState *GN) : GlobalNumbers(GN) {}
+    FunctionNodeCmp(GlobalNumberState* GN) : GlobalNumbers(GN) {}
 
     bool operator()(const FunctionNode &LHS, const FunctionNode &RHS) const {
       // Order first by hashes, then full function comparison.
@@ -294,7 +298,7 @@ class MergeFunctionsLegacyPass : public ModulePass {
 public:
   static char ID;
 
-  MergeFunctionsLegacyPass() : ModulePass(ID) {
+  MergeFunctionsLegacyPass(): ModulePass(ID) {
     initializeMergeFunctionsLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 
@@ -310,8 +314,8 @@ public:
 } // end anonymous namespace
 
 char MergeFunctionsLegacyPass::ID = 0;
-INITIALIZE_PASS(MergeFunctionsLegacyPass, "mergefunc", "Merge Functions", false,
-                false)
+INITIALIZE_PASS(MergeFunctionsLegacyPass, "mergefunc",
+                "Merge Functions", false, false)
 
 ModulePass *llvm::createMergeFunctionsPass() {
   return new MergeFunctionsLegacyPass();
@@ -409,7 +413,7 @@ bool MergeFunctions::runOnModule(Module &M) {
   // All functions in the module, ordered by hash. Functions with a unique
   // hash value are easily eliminated.
   std::vector<std::pair<FunctionComparator::FunctionHash, Function *>>
-      HashedFuncs;
+    HashedFuncs;
   for (Function &Func : M) {
     if (isEligibleForMerging(Func)) {
       HashedFuncs.push_back({FunctionComparator::functionHash(Func), &Func});
@@ -423,7 +427,7 @@ bool MergeFunctions::runOnModule(Module &M) {
     // If the hash value matches the previous value or the next one, we must
     // consider merging it. Otherwise it is dropped and never considered again.
     if ((I != S && std::prev(I)->first == I->first) ||
-        (std::next(I) != IE && std::next(I)->first == I->first)) {
+        (std::next(I) != IE && std::next(I)->first == I->first) ) {
       Deferred.push_back(WeakTrackingVH(I->second));
     }
   }
@@ -484,11 +488,12 @@ static Value *createCast(IRBuilder<> &Builder, Value *V, Type *DestTy) {
     assert(SrcTy->getStructNumElements() == DestTy->getStructNumElements());
     Value *Result = UndefValue::get(DestTy);
     for (unsigned int I = 0, E = SrcTy->getStructNumElements(); I < E; ++I) {
-      Value *Element =
-          createCast(Builder, Builder.CreateExtractValue(V, makeArrayRef(I)),
-                     DestTy->getStructElementType(I));
+      Value *Element = createCast(
+          Builder, Builder.CreateExtractValue(V, makeArrayRef(I)),
+          DestTy->getStructElementType(I));
 
-      Result = Builder.CreateInsertValue(Result, Element, makeArrayRef(I));
+      Result =
+          Builder.CreateInsertValue(Result, Element, makeArrayRef(I));
     }
     return Result;
   }
@@ -754,8 +759,8 @@ static bool canCreateAliasFor(Function *F) {
     return false;
 
   // We should only see linkages supported by aliases here
-  assert(F->hasLocalLinkage() || F->hasExternalLinkage() ||
-         F->hasWeakLinkage() || F->hasLinkOnceLinkage());
+  assert(F->hasLocalLinkage() || F->hasExternalLinkage()
+      || F->hasWeakLinkage() || F->hasLinkOnceLinkage());
   return true;
 }
 
@@ -763,9 +768,9 @@ static bool canCreateAliasFor(Function *F) {
 void MergeFunctions::writeAlias(Function *F, Function *G) {
   Constant *BitcastF = ConstantExpr::getBitCast(F, G->getType());
   PointerType *PtrType = G->getType();
-  auto *GA =
-      GlobalAlias::create(PtrType->getElementType(), PtrType->getAddressSpace(),
-                          G->getLinkage(), "", BitcastF, G->getParent());
+  auto *GA = GlobalAlias::create(
+      PtrType->getElementType(), PtrType->getAddressSpace(),
+      G->getLinkage(), "", BitcastF, G->getParent());
 
   F->setAlignment(MaybeAlign(std::max(F->getAlignment(), G->getAlignment())));
   GA->takeName(G);

@@ -78,14 +78,14 @@ protected:
                       // at the beginning of the function that uniquely
                       // identifies this frame (along with m_symbol_scope
                       // below)
-  SymbolContextScope
-      *m_symbol_scope; // If nullptr, there is no block or symbol for this
-                       // frame. If not nullptr, this will either be the scope
-                       // for the lexical block for the frame, or the scope for
-                       // the symbol. Symbol context scopes are always be unique
-                       // pointers since the are part of the Block and Symbol
-                       // objects and can easily be used to tell if a stack ID
-                       // is the same as another.
+  SymbolContextScope *
+      m_symbol_scope; // If nullptr, there is no block or symbol for this frame.
+                      // If not nullptr, this will either be the scope for the
+                      // lexical block for the frame, or the scope for the
+                      // symbol. Symbol context scopes are always be unique
+                      // pointers since the are part of the Block and Symbol
+                      // objects and can easily be used to tell if a stack ID
+                      // is the same as another.
 };
 
 bool operator==(const StackID &lhs, const StackID &rhs);

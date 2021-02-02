@@ -24,6 +24,6 @@ public:
 protected:
   HANDLE GetStdioHandle(const ProcessLaunchInfo &launch_info, int fd);
 };
-} // namespace lldb_private
+}
 
 #endif

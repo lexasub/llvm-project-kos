@@ -1,6 +1,7 @@
 // RUN: %clang_cc1 -emit-llvm %s -o -
 
-template <typename Ty>
+
+template<typename Ty>
 struct normal_iterator {
   int FIELD;
 };
@@ -13,5 +14,5 @@ void bar() {
 }
 
 void *bar2() {
-  return (void *)foo;
+  return (void*)foo;
 }

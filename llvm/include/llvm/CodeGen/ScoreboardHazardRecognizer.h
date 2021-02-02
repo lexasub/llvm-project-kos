@@ -50,16 +50,18 @@ class ScoreboardHazardRecognizer : public ScheduleHazardRecognizer {
   public:
     Scoreboard() = default;
 
-    ~Scoreboard() { delete[] Data; }
+    ~Scoreboard() {
+      delete[] Data;
+    }
 
     size_t getDepth() const { return Depth; }
 
-    InstrStage::FuncUnits &operator[](size_t idx) const {
+    InstrStage::FuncUnits& operator[](size_t idx) const {
       // Depth is expected to be a power-of-2.
       assert(Depth && !(Depth & (Depth - 1)) &&
              "Scoreboard was not initialized properly!");
 
-      return Data[(Head + idx) & (Depth - 1)];
+      return Data[(Head + idx) & (Depth-1)];
     }
 
     void reset(size_t d = 1) {
@@ -72,9 +74,13 @@ class ScoreboardHazardRecognizer : public ScheduleHazardRecognizer {
       Head = 0;
     }
 
-    void advance() { Head = (Head + 1) & (Depth - 1); }
+    void advance() {
+      Head = (Head + 1) & (Depth-1);
+    }
 
-    void recede() { Head = (Head - 1) & (Depth - 1); }
+    void recede() {
+      Head = (Head - 1) & (Depth-1);
+    }
 
     // Print the scoreboard.
     void dump() const;

@@ -10,8 +10,8 @@ void clang_analyzer_eval(int);
 
 // expected-no-diagnostics
 
-int &invalidate_static_on_unknown_lambda() {
-  static int *z;
+int& invalidate_static_on_unknown_lambda() {
+  static int* z;
   auto f = [] {
     z = nullptr;
   }; // should invalidate "z" when inlining is disabled.
@@ -21,10 +21,9 @@ int &invalidate_static_on_unknown_lambda() {
 
 #else
 
-struct X {
-  X(const X &);
-};
-void f(X x) { (void)[x]{}; }
+struct X { X(const X&); };
+void f(X x) { (void) [x]{}; }
+
 
 // Lambda semantics tests.
 
@@ -100,7 +99,7 @@ void multipleCaptures() {
 
 void testReturnValue() {
   int i = 5;
-  auto l = [i](int a) {
+  auto l = [i] (int a) {
     return i + a;
   };
   int b = l(3);
@@ -150,6 +149,7 @@ class RandomClass {
   }
 };
 
+
 // Nested this capture.
 
 class RandomClass2 {
@@ -173,6 +173,7 @@ class RandomClass2 {
   }
 };
 
+
 // Captured function pointers.
 
 void inc(int &x) {
@@ -195,7 +196,7 @@ void testVariableLengthArrayCaptured() {
   int array[n];
   array[0] = 7;
 
-  int i = [&] {
+  int i = [&]{
     return array[0];
   }();
 
@@ -211,11 +212,12 @@ void inlineDefensiveChecks() {
     if (i == 0)
       ;
   }();
-  int p = 5 / i;
+  int p = 5/i;
   (void)p;
 }
 
-template <typename T>
+
+template<typename T>
 void callLambda(T t) {
   t();
 }
@@ -223,15 +225,16 @@ void callLambda(T t) {
 struct DontCrash {
   int x;
   void f() {
-    callLambda([&]() { ++x; });
-    callLambdaFromStatic([&]() { ++x; });
+    callLambda([&](){ ++x; });
+    callLambdaFromStatic([&](){ ++x; });
   }
 
-  template <typename T>
+  template<typename T>
   static void callLambdaFromStatic(T t) {
     t();
   }
 };
+
 
 // Capture constants
 
@@ -252,7 +255,7 @@ void captureReferenceByCopy(int &p) {
   p = 8;
 
   // p is a reference captured by copy
-  [&v, p]() mutable {
+  [&v,p]() mutable {
     v = p;
     p = 22;
   }();
@@ -266,12 +269,12 @@ void captureReferenceByReference(int &p) {
   p = 8;
 
   // p is a reference captured by reference
-  [&v, &p]() {
+  [&v,&p]() {
     v = p;
     p = 22;
   }();
 
-  clang_analyzer_eval(v == 8);  // expected-warning{{TRUE}}
+  clang_analyzer_eval(v == 8); // expected-warning{{TRUE}}
   clang_analyzer_eval(p == 22); // expected-warning{{TRUE}}
 }
 
@@ -296,12 +299,12 @@ void callMutableLambdaMultipleTimes(int &p) {
 }
 
 // PR 24914
-struct StructPR24914 {
+struct StructPR24914{
   int x;
 };
 
-void takesConstStructArgument(const StructPR24914 &);
-void captureStructReference(const StructPR24914 &s) {
+void takesConstStructArgument(const StructPR24914&);
+void captureStructReference(const StructPR24914& s) {
   [s]() {
     takesConstStructArgument(s);
   }();
@@ -316,7 +319,7 @@ void captureByCopyCausesUse() {
   int local2 = returnsValue(); // no-warning
   int local3 = returnsValue(); // expected-warning{{Value stored to 'local3' during its initialization is never read}}
 
-  (void)[ local1, local2 ](){}; // Explicit capture by copy counts as use.
+  (void)[local1, local2]() { }; // Explicit capture by copy counts as use.
 
   int local4 = returnsValue(); // no-warning
   int local5 = returnsValue(); // expected-warning{{Value stored to 'local5' during its initialization is never read}}
@@ -352,7 +355,7 @@ void captureByReference() {
 
 void testCapturedConstExprFloat() {
   constexpr float localConstant = 4.0;
-  auto lambda = [] {
+  auto lambda = []{
     // Don't treat localConstant as containing a garbage value
     float copy = localConstant; // no-warning
     (void)copy;
@@ -361,10 +364,10 @@ void testCapturedConstExprFloat() {
   lambda();
 }
 
-void escape(void *);
+void escape(void*);
 
-int &invalidate_static_on_unknown_lambda() {
-  static int *z;
+int& invalidate_static_on_unknown_lambda() {
+  static int* z;
   auto lambda = [] {
     static float zz;
     z = new int(120);
@@ -372,6 +375,7 @@ int &invalidate_static_on_unknown_lambda() {
   escape(&lambda);
   return *z; // no-warning
 }
+
 
 static int b = 0;
 
@@ -404,3 +408,4 @@ int f() {
 // CHECK:   Succs (1): B0
 // CHECK: [B0 (EXIT)]
 // CHECK:   Preds (1): B1
+

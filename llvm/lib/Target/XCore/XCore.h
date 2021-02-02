@@ -18,18 +18,18 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-class FunctionPass;
-class ModulePass;
-class TargetMachine;
-class XCoreTargetMachine;
+  class FunctionPass;
+  class ModulePass;
+  class TargetMachine;
+  class XCoreTargetMachine;
 
-void initializeXCoreLowerThreadLocalPass(PassRegistry &p);
+  void initializeXCoreLowerThreadLocalPass(PassRegistry &p);
 
-FunctionPass *createXCoreFrameToArgsOffsetEliminationPass();
-FunctionPass *createXCoreISelDag(XCoreTargetMachine &TM,
-                                 CodeGenOpt::Level OptLevel);
-ModulePass *createXCoreLowerThreadLocalPass();
+  FunctionPass *createXCoreFrameToArgsOffsetEliminationPass();
+  FunctionPass *createXCoreISelDag(XCoreTargetMachine &TM,
+                                   CodeGenOpt::Level OptLevel);
+  ModulePass *createXCoreLowerThreadLocalPass();
 
-} // namespace llvm
+} // end namespace llvm;
 
 #endif

@@ -22,31 +22,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
 #ifdef _LIBCPP_HAS_NO_STRONG_ENUMS
-  LIBCPP_STATIC_ASSERT(static_cast<int>(std::launch::any) ==
-                           (static_cast<int>(std::launch::async) |
-                            static_cast<int>(std::launch::deferred)),
-                       "");
+   LIBCPP_STATIC_ASSERT(static_cast<int>(std::launch::any) ==
+                 (static_cast<int>(std::launch::async) | static_cast<int>(std::launch::deferred)), "");
 #else
-  LIBCPP_STATIC_ASSERT(
-      std::launch::any == (std::launch::async | std::launch::deferred), "");
-  static_assert(std::launch(0) == (std::launch::async & std::launch::deferred),
-                "");
-  LIBCPP_STATIC_ASSERT(
-      std::launch::any == (std::launch::async ^ std::launch::deferred), "");
-  LIBCPP_STATIC_ASSERT(std::launch::deferred == ~std::launch::async, "");
-  std::launch x = std::launch::async;
-  x &= std::launch::deferred;
-  assert(x == std::launch(0));
-  x = std::launch::async;
-  x |= std::launch::deferred;
-  LIBCPP_ASSERT(x == std::launch::any);
-  x ^= std::launch::deferred;
-  assert(x == std::launch::async);
+    LIBCPP_STATIC_ASSERT(std::launch::any == (std::launch::async | std::launch::deferred), "");
+    static_assert(std::launch(0) == (std::launch::async & std::launch::deferred), "");
+    LIBCPP_STATIC_ASSERT(std::launch::any == (std::launch::async ^ std::launch::deferred), "");
+    LIBCPP_STATIC_ASSERT(std::launch::deferred == ~std::launch::async, "");
+    std::launch x = std::launch::async;
+    x &= std::launch::deferred;
+    assert(x == std::launch(0));
+    x = std::launch::async;
+    x |= std::launch::deferred;
+    LIBCPP_ASSERT(x == std::launch::any);
+    x ^= std::launch::deferred;
+    assert(x == std::launch::async);
 #endif
-  static_assert(static_cast<int>(std::launch::async) == 1, "");
-  static_assert(static_cast<int>(std::launch::deferred) == 2, "");
+    static_assert(static_cast<int>(std::launch::async) == 1, "");
+    static_assert(static_cast<int>(std::launch::deferred) == 2, "");
 
   return 0;
 }

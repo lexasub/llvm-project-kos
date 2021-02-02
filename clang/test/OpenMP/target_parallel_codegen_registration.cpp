@@ -242,7 +242,7 @@ struct SB {
   int arr[8];
   void foo() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 4;
     *R = a;
   }
@@ -267,7 +267,7 @@ struct SC {
   }
   SC() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 8;
     *R = a;
   }
@@ -292,7 +292,7 @@ struct SD {
   }
   ~SD() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 12;
     *R = a;
   }
@@ -302,19 +302,19 @@ struct SE {
   int arr[64];
   void foo() {
     int a = *R;
-#pragma omp target parallel if (target : 0)
+    #pragma omp target parallel if(target: 0)
     a += 13;
     *R = a;
   }
   SE() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 14;
     *R = a;
   }
   ~SE() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 15;
     *R = a;
   }
@@ -325,19 +325,19 @@ struct ST {
   int arr[128 + x];
   void foo() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 16 + x;
     *R = a;
   }
   ST() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 17 + x;
     *R = a;
   }
   ~ST() {
     int a = *R;
-#pragma omp target parallel
+    #pragma omp target parallel
     a += 18 + x;
     *R = a;
   }
@@ -420,7 +420,8 @@ SE e1;
 ST<100> t1;
 ST<1000> t2;
 
-int bar(int a) {
+
+int bar(int a){
   int r = a;
 
   a1.foo();
@@ -433,7 +434,7 @@ int bar(int a) {
   t1.foo();
   t2.foo();
 
-#pragma omp target parallel
+  #pragma omp target parallel
   ++r;
 
   return r + *R;

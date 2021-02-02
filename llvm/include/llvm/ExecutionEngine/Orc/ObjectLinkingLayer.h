@@ -193,6 +193,7 @@ public:
                                    ResourceKey SrcKey) override;
 
 private:
+
   struct EHFrameRange {
     JITTargetAddress Addr = 0;
     size_t Size;

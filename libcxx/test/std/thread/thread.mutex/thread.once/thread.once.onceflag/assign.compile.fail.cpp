@@ -14,10 +14,11 @@
 
 #include <mutex>
 
-int main(int, char**) {
-  std::once_flag f;
-  std::once_flag f2;
-  f2 = f;
+int main(int, char**)
+{
+    std::once_flag f;
+    std::once_flag f2;
+    f2 = f;
 
   return 0;
 }

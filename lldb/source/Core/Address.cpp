@@ -261,17 +261,16 @@ bool Address::ResolveAddressUsingFileSections(addr_t file_addr,
   return false; // Failed to resolve this address to a section offset value
 }
 
-/// if "addr_range_ptr" is not NULL, then fill in with the address range of the
-/// function.
+/// if "addr_range_ptr" is not NULL, then fill in with the address range of the function.
 bool Address::ResolveFunctionScope(SymbolContext &sym_ctx,
                                    AddressRange *addr_range_ptr) {
   constexpr SymbolContextItem resolve_scope =
-      eSymbolContextFunction | eSymbolContextSymbol;
+    eSymbolContextFunction | eSymbolContextSymbol;
 
   if (!(CalculateSymbolContext(&sym_ctx, resolve_scope) & resolve_scope)) {
     if (addr_range_ptr)
       addr_range_ptr->Clear();
-    return false;
+   return false;
   }
 
   if (!addr_range_ptr)
@@ -457,7 +456,7 @@ bool Address::Dump(Stream *s, ExecutionContextScope *exe_scope, DumpStyle style,
      * MIPS:
      * Display address in compressed form for MIPS16 or microMIPS
      * if the address belongs to AddressClass::eCodeAlternateISA.
-     */
+    */
     if (target) {
       const llvm::Triple::ArchType llvm_arch =
           target->GetArchitecture().GetMachine();
@@ -708,10 +707,10 @@ bool Address::Dump(Stream *s, ExecutionContextScope *exe_scope, DumpStyle style,
           bool get_parent_variables = true;
           bool stop_if_block_is_inlined_function = false;
           VariableList variable_list;
-          sc.block->AppendVariables(
-              can_create, get_parent_variables,
-              stop_if_block_is_inlined_function,
-              [](Variable *) { return true; }, &variable_list);
+          sc.block->AppendVariables(can_create, get_parent_variables,
+                                    stop_if_block_is_inlined_function,
+                                    [](Variable *) { return true; },
+                                    &variable_list);
 
           for (const VariableSP &var_sp : variable_list) {
             if (var_sp && var_sp->LocationIsValidForAddress(*this)) {

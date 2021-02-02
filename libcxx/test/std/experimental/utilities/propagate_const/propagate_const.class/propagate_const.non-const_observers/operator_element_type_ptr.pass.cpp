@@ -27,11 +27,11 @@ int main(int, char**) {
 
   int* ptr_1 = p;
 
-  assert(*ptr_1 == 1);
+  assert(*ptr_1==1);
 
   *ptr_1 = 2;
 
-  assert(*ptr_1 == 2);
+  assert(*ptr_1==2);
 
   return 0;
 }

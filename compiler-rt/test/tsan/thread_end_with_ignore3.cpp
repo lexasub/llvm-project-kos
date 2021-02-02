@@ -19,3 +19,4 @@ int main() {
 // CHECK:   Ignore was enabled at:
 // CHECK:     #0 AnnotateIgnoreReadsBegin
 // CHECK:     #1 main {{.*}}thread_end_with_ignore3.cpp:11
+

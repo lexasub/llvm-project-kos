@@ -8,13 +8,13 @@ consteval int f1(int i) {
   return i;
 }
 
-consteval constexpr int f2(int i) {
+consteval constexpr int f2(int i) { 
   //expected-error@-1 {{cannot combine}}
   return i;
 }
 
 constexpr auto l_eval = [](int i) consteval {
-  // expected-note@-1+ {{declared here}}
+// expected-note@-1+ {{declared here}}
 
   return i;
 };
@@ -26,7 +26,7 @@ constexpr consteval int f3(int i) {
 
 struct A {
   consteval int f1(int i) const {
-    // expected-note@-1 {{declared here}}
+// expected-note@-1 {{declared here}}
     return i;
   }
   consteval A(int i);
@@ -38,8 +38,8 @@ consteval struct B {}; // expected-error {{struct cannot be marked consteval}}
 
 consteval typedef B b; // expected-error {{typedef cannot be consteval}}
 
-consteval int redecl() { return 0; } // expected-note {{previous declaration is here}}
-constexpr int redecl() { return 0; } // expected-error {{constexpr declaration of 'redecl' follows consteval declaration}}
+consteval int redecl() {return 0;} // expected-note {{previous declaration is here}}
+constexpr int redecl() {return 0;} // expected-error {{constexpr declaration of 'redecl' follows consteval declaration}}
 
 consteval int i = 0; // expected-error {{consteval can only be used in function declarations}}
 
@@ -54,21 +54,21 @@ struct C {
 
 struct D {
   C c;
-  consteval D() = default;  // expected-error {{cannot be consteval}}
+  consteval D() = default; // expected-error {{cannot be consteval}}
   consteval ~D() = default; // expected-error {{destructor cannot be declared consteval}}
 };
 
 struct E : C {
   consteval ~E() {} // expected-error {{cannot be declared consteval}}
 };
-} // namespace basic_sema
+}
 
 consteval int main() { // expected-error {{'main' is not allowed to be declared consteval}}
   return 0;
 }
 
 consteval int f_eval(int i) {
-  // expected-note@-1+ {{declared here}}
+// expected-note@-1+ {{declared here}}
   return i;
 }
 
@@ -76,9 +76,9 @@ namespace taking_address {
 
 using func_type = int(int);
 
-func_type *p1 = (&f_eval);
+func_type* p1 = (&f_eval);
 // expected-error@-1 {{take address}}
-func_type *p7 = __builtin_addressof(f_eval);
+func_type* p7 = __builtin_addressof(f_eval);
 // expected-error@-1 {{take address}}
 
 auto p = f_eval;
@@ -90,7 +90,7 @@ auto l1 = &decltype(basic_sema::l_eval)::operator();
 // expected-error@-1 {{take address}}
 
 consteval int f(int i) {
-  // expected-note@-1+ {{declared here}}
+// expected-note@-1+ {{declared here}}
   return i;
 }
 
@@ -99,10 +99,10 @@ auto ptr = &f;
 
 auto f1() {
   return &f;
-  // expected-error@-1 {{take address}}
+// expected-error@-1 {{take address}}
 }
 
-} // namespace taking_address
+}
 
 namespace invalid_function {
 
@@ -111,15 +111,15 @@ struct A {
   // expected-error@-1 {{'operator new' cannot be declared consteval}}
   consteval void *operator new[](size_t count);
   // expected-error@-1 {{'operator new[]' cannot be declared consteval}}
-  consteval void operator delete(void *ptr);
+  consteval void operator delete(void* ptr);
   // expected-error@-1 {{'operator delete' cannot be declared consteval}}
-  consteval void operator delete[](void *ptr);
+  consteval void operator delete[](void* ptr);
   // expected-error@-1 {{'operator delete[]' cannot be declared consteval}}
   consteval ~A() {}
   // expected-error@-1 {{destructor cannot be declared consteval}}
 };
 
-} // namespace invalid_function
+}
 
 namespace nested {
 consteval int f() {
@@ -132,9 +132,9 @@ consteval int f1(...) {
 
 enum E {};
 
-using T = int (&)();
+using T = int(&)();
 
-consteval auto operator+(E, int (*a)()) {
+consteval auto operator+ (E, int(*a)()) {
   return 0;
 }
 
@@ -154,12 +154,12 @@ int i2 = f1(&f1, &f1, &f1, &f1, &f1, &f1, &f1);
 
 int i3 = f1(f1(f1(&f1, &f1), f1(&f1, &f1), f1(f1(&f1, &f1), &f1)));
 
-} // namespace nested
+}
 
 namespace user_defined_literal {
 
 consteval int operator"" _test(unsigned long long i) {
-  // expected-note@-1+ {{declared here}}
+// expected-note@-1+ {{declared here}}
   return 0;
 }
 
@@ -175,16 +175,16 @@ consteval auto operator"" _test1(unsigned long long i) {
 auto i1 = 0_test1; // expected-error {{is not a constant expression}}
 // expected-note@-1 {{is not a constant expression}}
 
-} // namespace user_defined_literal
+}
 
 namespace return_address {
 
 consteval int f() {
-  // expected-note@-1 {{declared here}}
+// expected-note@-1 {{declared here}}
   return 0;
 }
 
-consteval int (*ret1(int i))() {
+consteval int(*ret1(int i))() {
   return &f;
 }
 
@@ -195,13 +195,13 @@ auto ptr = ret1(0);
 struct A {
   consteval int f(int) {
     // expected-note@-1+ {{declared here}}
-    return 0;
+    return 0;    
   }
 };
 
 using mem_ptr_type = int (A::*)(int);
 
-template <mem_ptr_type ptr>
+template<mem_ptr_type ptr>
 struct C {};
 
 C<&A::f> c;
@@ -216,7 +216,7 @@ C<ret2()> c1;
 // expected-error@-1 {{is not a constant expression}}
 // expected-note@-2 {{pointer to a consteval}}
 
-} // namespace return_address
+}
 
 namespace context {
 
@@ -235,11 +235,11 @@ int t1 = f(g_i);
 int t3 = f(c_i);
 
 constexpr int f_c(int i) {
-  // expected-note@-1 {{declared here}}
+// expected-note@-1 {{declared here}}
   int t = f(i);
-  // expected-error@-1 {{is not a constant expression}}
-  // expected-note@-2 {{function parameter}}
-  return f(0);
+// expected-error@-1 {{is not a constant expression}}
+// expected-note@-2 {{function parameter}}
+  return f(0);  
 }
 
 consteval int f_eval(int i) {
@@ -251,14 +251,14 @@ auto l0 = [](int i) consteval {
 };
 
 auto l1 = [](int i) constexpr {
-  // expected-note@-1 {{declared here}}
+// expected-note@-1 {{declared here}}
   int t = f(i);
-  // expected-error@-1 {{is not a constant expression}}
-  // expected-note@-2 {{function parameter}}
-  return f(0);
+// expected-error@-1 {{is not a constant expression}}
+// expected-note@-2 {{function parameter}}
+  return f(0);  
 };
 
-} // namespace context
+}
 
 namespace std {
 
@@ -267,18 +267,18 @@ template <typename T> struct remove_reference<T &> { using type = T; };
 template <typename T> struct remove_reference<T &&> { using type = T; };
 
 template <typename T>
-constexpr typename std::remove_reference<T>::type &&move(T &&t) noexcept {
+constexpr typename std::remove_reference<T>::type&& move(T &&t) noexcept {
   return static_cast<typename std::remove_reference<T>::type &&>(t);
 }
 
-} // namespace std
+}
 
 namespace temporaries {
 
 struct A {
   consteval int ret_i() const { return 0; }
   consteval A ret_a() const { return A{}; }
-  constexpr ~A() {}
+  constexpr ~A() { }
 };
 
 consteval int by_value_a(A a) { return a.ret_i(); }
@@ -296,10 +296,10 @@ consteval const A &to_lvalue_ref(const A &&a) {
 }
 
 void test() {
-  constexpr A a{};
+  constexpr A a {};
   { int k = A().ret_i(); }
   { A k = A().ret_a(); }
-  { A k = to_lvalue_ref(A()); } // expected-error {{is not a constant expression}}
+  { A k = to_lvalue_ref(A()); }// expected-error {{is not a constant expression}}
   // expected-note@-1 {{is not a constant expression}} expected-note@-1 {{temporary created here}}
   { A k = to_lvalue_ref(A().ret_a()); } // expected-error {{is not a constant expression}}
   // expected-note@-1 {{is not a constant expression}} expected-note@-1 {{temporary created here}}
@@ -315,23 +315,23 @@ void test() {
   { int k = by_value_a(A().ret_a()); }
   { int k = by_value_a(to_lvalue_ref(std::move(a))); }
   { int k = (A().ret_a(), A().ret_i()); }
-  { int k = (const_a_ref(A().ret_a()), A().ret_i()); } //
+  { int k = (const_a_ref(A().ret_a()), A().ret_i()); }//
 }
 
-} // namespace temporaries
+}
 
 namespace alloc {
 
 consteval int f() {
   int *A = new int(0);
-  // expected-note@-1+ {{allocation performed here was not deallocated}}
+// expected-note@-1+ {{allocation performed here was not deallocated}}
   return *A;
 }
 
 int i1 = f(); // expected-error {{is not a constant expression}}
 
 struct A {
-  int *p = new int(42);
+  int* p = new int(42);
   // expected-note@-1+ {{heap allocation performed here}}
   consteval int ret_i() const { return p ? *p : 0; }
   consteval A ret_a() const { return A{}; }
@@ -353,7 +353,7 @@ consteval const A &to_lvalue_ref(const A &&a) {
 }
 
 void test() {
-  constexpr A a{nullptr};
+  constexpr A a{ nullptr };
   { int k = A().ret_i(); }
   { A k = A().ret_a(); } // expected-error {{is not a constant expression}}
   // expected-note@-1 {{is not a constant expression}}
@@ -371,18 +371,18 @@ void test() {
   { int k = const_a_ref(to_lvalue_ref(A().ret_a())); }
   { int k = const_a_ref(to_lvalue_ref(std::move(a))); }
   { int k = by_value_a(A().ret_a()); }
-  { int k = by_value_a(to_lvalue_ref(static_cast<const A &&>(a))); }
-  { int k = (A().ret_a(), A().ret_i()); } // expected-error {{is not a constant expression}}
+  { int k = by_value_a(to_lvalue_ref(static_cast<const A&&>(a))); }
+  { int k = (A().ret_a(), A().ret_i()); }// expected-error {{is not a constant expression}}
   // expected-note@-1 {{is not a constant expression}}
   { int k = (const_a_ref(A().ret_a()), A().ret_i()); }
 }
 
-} // namespace alloc
+}
 
 namespace self_referencing {
 
 struct S {
-  S *ptr = nullptr;
+  S* ptr = nullptr;
   constexpr S(int i) : ptr(this) {
     if (this == ptr && i)
       ptr = nullptr;
@@ -402,7 +402,7 @@ void test() {
 }
 
 struct S1 {
-  S1 *ptr = nullptr;
+  S1* ptr = nullptr;
   consteval S1(int i) : ptr(this) {
     if (this == ptr && i)
       ptr = nullptr;
@@ -417,7 +417,7 @@ void test1() {
   // expected-note@-1 {{is not a constant expression}} expected-note@-1 {{temporary created here}}
 }
 
-} // namespace self_referencing
+}
 namespace ctor {
 
 consteval int f_eval() { // expected-note+ {{declared here}}
@@ -425,85 +425,85 @@ consteval int f_eval() { // expected-note+ {{declared here}}
 }
 
 namespace std {
-struct strong_ordering {
-  int n;
-  static const strong_ordering less, equal, greater;
-};
-constexpr strong_ordering strong_ordering::less = {-1};
-constexpr strong_ordering strong_ordering::equal = {0};
-constexpr strong_ordering strong_ordering::greater = {1};
-constexpr bool operator!=(strong_ordering, int);
-} // namespace std
+  struct strong_ordering {
+    int n;
+    static const strong_ordering less, equal, greater;
+  };
+  constexpr strong_ordering strong_ordering::less = {-1};
+  constexpr strong_ordering strong_ordering::equal = {0};
+  constexpr strong_ordering strong_ordering::greater = {1};
+  constexpr bool operator!=(strong_ordering, int);
+}
 
 namespace override {
-struct A {
-  virtual consteval void f(); // expected-note {{overridden}}
-  virtual void g();           // expected-note {{overridden}}
-};
-struct B : A {
-  consteval void f();
-  void g();
-};
-struct C : A {
-  void f();           // expected-error {{non-consteval function 'f' cannot override a consteval function}}
-  consteval void g(); // expected-error {{consteval function 'g' cannot override a non-consteval function}}
-};
+  struct A {
+    virtual consteval void f(); // expected-note {{overridden}}
+    virtual void g(); // expected-note {{overridden}}
+  };
+  struct B : A {
+    consteval void f();
+    void g();
+  };
+  struct C : A {
+    void f(); // expected-error {{non-consteval function 'f' cannot override a consteval function}}
+    consteval void g(); // expected-error {{consteval function 'g' cannot override a non-consteval function}}
+  };
 
-namespace implicit_equals_1 {
-struct Y;
-struct X {
-  std::strong_ordering operator<=>(const X &) const;
-  constexpr bool operator==(const X &) const;
-  virtual consteval bool operator==(const Y &) const; // expected-note {{here}}
-};
-struct Y : X {
-  std::strong_ordering operator<=>(const Y &) const = default;
-  // expected-error@-1 {{non-consteval function 'operator==' cannot override a consteval function}}
-};
-} // namespace implicit_equals_1
+  namespace implicit_equals_1 {
+    struct Y;
+    struct X {
+      std::strong_ordering operator<=>(const X&) const;
+      constexpr bool operator==(const X&) const;
+      virtual consteval bool operator==(const Y&) const; // expected-note {{here}}
+    };
+    struct Y : X {
+      std::strong_ordering operator<=>(const Y&) const = default;
+      // expected-error@-1 {{non-consteval function 'operator==' cannot override a consteval function}}
+    };
+  }
 
-namespace implicit_equals_2 {
-struct Y;
-struct X {
-  constexpr std::strong_ordering operator<=>(const X &) const;
-  constexpr bool operator==(const X &) const;
-  virtual bool operator==(const Y &) const; // expected-note {{here}}
-};
-struct Y : X {
-  consteval std::strong_ordering operator<=>(const Y &) const = default;
-  // expected-error@-1 {{consteval function 'operator==' cannot override a non-consteval function}}
-};
-} // namespace implicit_equals_2
-} // namespace override
+  namespace implicit_equals_2 {
+    struct Y;
+    struct X {
+      constexpr std::strong_ordering operator<=>(const X&) const;
+      constexpr bool operator==(const X&) const;
+      virtual bool operator==(const Y&) const; // expected-note {{here}}
+    };
+    struct Y : X {
+      consteval std::strong_ordering operator<=>(const Y&) const = default;
+      // expected-error@-1 {{consteval function 'operator==' cannot override a non-consteval function}}
+    };
+  }
+}
 
 namespace operator_rewrite {
-struct A {
-  friend consteval int operator<=>(const A &, const A &) { return 0; }
-};
-const bool k = A() < A();
-static_assert(!k);
+  struct A {
+    friend consteval int operator<=>(const A&, const A&) { return 0; }
+  };
+  const bool k = A() < A();
+  static_assert(!k);
 
-A a;
-bool k2 = A() < a; // OK, does not access 'a'.
+  A a;
+  bool k2 = A() < a; // OK, does not access 'a'.
+
+  struct B {
+    friend consteval int operator<=>(const B &l, const B &r) { return r.n - l.n; } // expected-note {{read of }}
+    int n;
+  };
+  static_assert(B() >= B());
+  B b; // expected-note {{here}}
+  bool k3 = B() < b; // expected-error-re {{call to consteval function '{{.*}}::operator<=>' is not a constant expression}} expected-note {{in call}}
+}
+
+struct A {
+  int(*ptr)();
+  consteval A(int(*p)() = nullptr) : ptr(p) {}
+};
 
 struct B {
-  friend consteval int operator<=>(const B &l, const B &r) { return r.n - l.n; } // expected-note {{read of }}
-  int n;
-};
-static_assert(B() >= B());
-B b;               // expected-note {{here}}
-bool k3 = B() < b; // expected-error-re {{call to consteval function '{{.*}}::operator<=>' is not a constant expression}} expected-note {{in call}}
-} // namespace operator_rewrite
-
-struct A {
-  int (*ptr)();
-  consteval A(int (*p)() = nullptr) : ptr(p) {}
-};
-
-struct B {
-  int (*ptr)();
+  int(*ptr)();
   B() : ptr(nullptr) {}
-  consteval B(int (*p)(), int) : ptr(p) {}
+  consteval B(int(*p)(), int) : ptr(p) {}
 };
 
 void test() {
@@ -523,73 +523,25 @@ void test() {
   { A a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
   { B b = B{nullptr, 0}; }
   { B b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    A a;
-    a = A();
-  }
-  {
-    A a;
-    a = A(&f_eval);
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    B b;
-    b = B(nullptr, 0);
-  }
-  {
-    B b;
-    b = B(&f_eval, 0);
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    A a;
-    a = A{};
-  }
-  {
-    A a;
-    a = A{&f_eval};
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    B b;
-    b = B{nullptr, 0};
-  }
-  {
-    B b;
-    b = B{&f_eval, 0};
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    A *a;
-    a = new A();
-  }
-  {
-    A *a;
-    a = new A(&f_eval);
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    B *b;
-    b = new B(nullptr, 0);
-  }
-  {
-    B *b;
-    b = new B(&f_eval, 0);
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    A *a;
-    a = new A{};
-  }
-  {
-    A *a;
-    a = new A{&f_eval};
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    B *b;
-    b = new B{nullptr, 0};
-  }
-  {
-    B *b;
-    b = new B{&f_eval, 0};
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { A a; a = A(); }
+  { A a; a = A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { B b; b = B(nullptr, 0); }
+  { B b; b = B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { A a; a = A{}; }
+  { A a; a = A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { B b; b = B{nullptr, 0}; }
+  { B b; b = B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { A* a; a = new A(); }
+  { A* a; a = new A(&f_eval); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { B* b; b = new B(nullptr, 0); }
+  { B* b; b = new B(&f_eval, 0); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { A* a; a = new A{}; }
+  { A* a; a = new A{&f_eval}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { B* b; b = new B{nullptr, 0}; }
+  { B* b; b = new B{&f_eval, 0}; } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
 }
 
-} // namespace ctor
+}
 
 namespace copy_ctor {
 
@@ -598,9 +550,9 @@ consteval int f_eval() { // expected-note+ {{declared here}}
 }
 
 struct Copy {
-  int (*ptr)();
-  constexpr Copy(int (*p)() = nullptr) : ptr(p) {}
-  consteval Copy(const Copy &) = default;
+  int(*ptr)();
+  constexpr Copy(int(*p)() = nullptr) : ptr(p) {}
+  consteval Copy(const Copy&) = default;
 };
 
 constexpr const Copy &to_lvalue_ref(const Copy &&a) {
@@ -612,75 +564,33 @@ void test() {
   // there is no the copy constructor call when its argument is a prvalue because of garanteed copy elision.
   // so we need to test with both prvalue and xvalues.
   { Copy c(C); }
-  { Copy c((Copy(&f_eval))); } // expected-error {{cannot take address of consteval}}
+  { Copy c((Copy(&f_eval))); }// expected-error {{cannot take address of consteval}}
   { Copy c(std::move(C)); }
-  { Copy c(std::move(Copy(&f_eval))); }       // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  { Copy c(to_lvalue_ref((Copy(&f_eval)))); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c(to_lvalue_ref((Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
   { Copy c(to_lvalue_ref(std::move(C))); }
-  { Copy c(to_lvalue_ref(std::move(Copy(&f_eval)))); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
   { Copy c = Copy(C); }
-  { Copy c = Copy(Copy(&f_eval)); } // expected-error {{cannot take address of consteval}}
+  { Copy c = Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
   { Copy c = Copy(std::move(C)); }
-  { Copy c = Copy(std::move(Copy(&f_eval))); }     // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  { Copy c = Copy(to_lvalue_ref(Copy(&f_eval))); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c = Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c = Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
   { Copy c = Copy(to_lvalue_ref(std::move(C))); }
-  { Copy c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy c;
-    c = Copy(C);
-  }
-  {
-    Copy c;
-    c = Copy(Copy(&f_eval));
-  } // expected-error {{cannot take address of consteval}}
-  {
-    Copy c;
-    c = Copy(std::move(C));
-  }
-  {
-    Copy c;
-    c = Copy(std::move(Copy(&f_eval)));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy c;
-    c = Copy(to_lvalue_ref(Copy(&f_eval)));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy c;
-    c = Copy(to_lvalue_ref(std::move(C)));
-  }
-  {
-    Copy c;
-    c = Copy(to_lvalue_ref(std::move(Copy(&f_eval))));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy *c;
-    c = new Copy(C);
-  }
-  {
-    Copy *c;
-    c = new Copy(Copy(&f_eval));
-  } // expected-error {{cannot take address of consteval}}
-  {
-    Copy *c;
-    c = new Copy(std::move(C));
-  }
-  {
-    Copy *c;
-    c = new Copy(std::move(Copy(&f_eval)));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy *c;
-    c = new Copy(to_lvalue_ref(Copy(&f_eval)));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
-  {
-    Copy *c;
-    c = new Copy(to_lvalue_ref(std::move(C)));
-  }
-  {
-    Copy *c;
-    c = new Copy(to_lvalue_ref(std::move(Copy(&f_eval))));
-  } // expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c; c = Copy(C); }
+  { Copy c; c = Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+  { Copy c; c = Copy(std::move(C)); }
+  { Copy c; c = Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c; c = Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy c; c = Copy(to_lvalue_ref(std::move(C))); }
+  { Copy c; c = Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy* c; c = new Copy(C); }
+  { Copy* c; c = new Copy(Copy(&f_eval)); }// expected-error {{cannot take address of consteval}}
+  { Copy* c; c = new Copy(std::move(C)); }
+  { Copy* c; c = new Copy(std::move(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy* c; c = new Copy(to_lvalue_ref(Copy(&f_eval))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
+  { Copy* c; c = new Copy(to_lvalue_ref(std::move(C))); }
+  { Copy* c; c = new Copy(to_lvalue_ref(std::move(Copy(&f_eval)))); }// expected-error {{is not a constant expression}} expected-note {{to a consteval}}
 }
 
-} // namespace copy_ctor
+} // namespace special_ctor

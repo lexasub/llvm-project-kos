@@ -16,13 +16,16 @@
 #include <functional>
 #include <cassert>
 
-struct A {
-  double data_;
+struct A
+{
+    double data_;
 };
 
 template <class F>
-void test(F f) {
-  {
+void
+test(F f)
+{
+    {
     A a;
     f(a) = 5;
     assert(a.data_ == 5);
@@ -32,11 +35,12 @@ void test(F f) {
     const A* cap = ap;
     assert(f(cap) == f(ap));
     f(cap) = 7;
-  }
+    }
 }
 
-int main(int, char**) {
-  test(std::mem_fn(&A::data_));
+int main(int, char**)
+{
+    test(std::mem_fn(&A::data_));
 
   return 0;
 }

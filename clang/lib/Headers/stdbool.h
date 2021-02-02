@@ -20,9 +20,9 @@
 #define _Bool bool
 #if __cplusplus < 201103L
 /* For C++98, define bool, false, true as a GNU extension. */
-#define bool bool
+#define bool  bool
 #define false false
-#define true true
+#define true  true
 #endif
 #endif
 

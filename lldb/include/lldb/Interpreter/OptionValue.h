@@ -97,8 +97,7 @@ public:
                                           llvm::StringRef name,
                                           bool will_modify,
                                           Status &error) const {
-    error.SetErrorStringWithFormat("'%s' is not a value subvalue",
-                                   name.str().c_str());
+    error.SetErrorStringWithFormat("'%s' is not a value subvalue", name.str().c_str());
     return lldb::OptionValueSP();
   }
 
@@ -287,9 +286,7 @@ public:
   bool SetSInt64Value(int64_t new_value);
 
   llvm::StringRef GetStringValue(llvm::StringRef fail_value) const;
-  llvm::StringRef GetStringValue() const {
-    return GetStringValue(llvm::StringRef());
-  }
+  llvm::StringRef GetStringValue() const { return GetStringValue(llvm::StringRef()); }
 
   bool SetStringValue(llvm::StringRef new_value);
 

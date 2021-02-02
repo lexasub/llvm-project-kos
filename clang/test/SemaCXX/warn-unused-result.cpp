@@ -10,7 +10,7 @@ S *g2() __attribute__((warn_unused_result));
 S &g3() __attribute__((warn_unused_result));
 
 void test() {
-  f();  // expected-warning {{ignoring return value}}
+  f(); // expected-warning {{ignoring return value}}
   g1(); // expected-warning {{ignoring return value}}
   g2(); // expected-warning {{ignoring return value}}
   g3(); // expected-warning {{ignoring return value}}
@@ -20,8 +20,7 @@ void test() {
   (void)g2();
   (void)g3();
 
-  if (f() == 0)
-    return;
+  if (f() == 0) return;
 
   g1().t();
   g2()->t();
@@ -57,56 +56,52 @@ void testSubstmts(int i) {
   for (f(); // expected-warning {{ignoring return value}}
        ;
        f() // expected-warning {{ignoring return value}}
-  )
+      )
     f(); // expected-warning {{ignoring return value}}
 
-  f(), // expected-warning {{ignoring return value}}
-      (void)f();
+  f(),  // expected-warning {{ignoring return value}}
+  (void)f();
 }
 
 struct X {
-  int foo() __attribute__((warn_unused_result));
+ int foo() __attribute__((warn_unused_result));
 };
 
 void bah() {
   X x, *x2;
-  x.foo();   // expected-warning {{ignoring return value}}
+  x.foo(); // expected-warning {{ignoring return value}}
   x2->foo(); // expected-warning {{ignoring return value}}
 }
 
 namespace warn_unused_CXX11 {
 class Status;
 class Foo {
-public:
+ public:
   Status doStuff();
 };
 
 struct [[clang::warn_unused_result]] Status {
   bool ok() const;
-  Status &operator=(const Status &x);
-  inline void Update(const Status &new_status) {
+  Status& operator=(const Status& x);
+  inline void Update(const Status& new_status) {
     if (ok()) {
       *this = new_status; //no-warning
     }
   }
 };
 Status DoSomething();
-Status &DoSomethingElse();
-Status *DoAnotherThing();
-Status **DoYetAnotherThing();
+Status& DoSomethingElse();
+Status* DoAnotherThing();
+Status** DoYetAnotherThing();
 void lazy() {
   Status s = DoSomething();
-  if (!s.ok())
-    return;
+  if (!s.ok()) return;
   Status &rs = DoSomethingElse();
-  if (!rs.ok())
-    return;
+  if (!rs.ok()) return;
   Status *ps = DoAnotherThing();
-  if (!ps->ok())
-    return;
+  if (!ps->ok()) return;
   Status **pps = DoYetAnotherThing();
-  if (!(*pps)->ok())
-    return;
+  if (!(*pps)->ok()) return;
 
   (void)DoSomething();
   (void)DoSomethingElse();
@@ -126,12 +121,12 @@ StatusOr<int> doit();
 void test() {
   Foo f;
   f.doStuff(); // expected-warning {{ignoring return value}}
-  doit();      // expected-warning {{ignoring return value}}
+  doit(); // expected-warning {{ignoring return value}}
 
   auto func = []() { return Status(); };
   func(); // expected-warning {{ignoring return value}}
 }
-} // namespace warn_unused_CXX11
+}
 
 namespace PR17587 {
 struct [[clang::warn_unused_result]] Status;
@@ -147,7 +142,7 @@ void Bar() {
   f.Bar(); // expected-warning {{ignoring return value}}
 };
 
-} // namespace PR17587
+}
 
 namespace PR18571 {
 // Unevaluated contexts should not trigger unused result warnings.
@@ -159,11 +154,11 @@ auto foo(T) -> decltype(f(), bool()) { // Should not warn.
 void g() {
   foo(1);
 }
-} // namespace PR18571
+}
 
 namespace std {
-class type_info {};
-} // namespace std
+class type_info { };
+}
 
 namespace {
 // The typeid expression operand is evaluated only when the expression type is
@@ -191,10 +186,10 @@ void g() {
   // The sizeof expression operand is never evaluated.
   (void)sizeof(f(), c); // Should not warn.
 
-  // The noexcept expression operand is never evaluated.
-  (void) noexcept(f(), false); // Should not warn.
+   // The noexcept expression operand is never evaluated.
+  (void)noexcept(f(), false); // Should not warn.
 }
-} // namespace
+}
 
 namespace {
 // C++ Methods should warn even in their own class.
@@ -258,4 +253,4 @@ namespace PR45520 {
 __attribute__((warn_unused_result)) bool (*h)();
 
 void i([[nodiscard]] bool (*fp)()); // expected-warning {{'nodiscard' attribute only applies to functions, classes, or enumerations}}
-} // namespace PR45520
+}

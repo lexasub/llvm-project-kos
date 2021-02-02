@@ -14,16 +14,9 @@
 typedef decltype(sizeof(0)) size_t;
 
 typedef int A;
-struct B {
-  int n;
-};
-struct C {
-  ~C() {}
-};
-struct D {
-  D();
-  virtual ~D() {}
-};
+struct B { int n; };
+struct C { ~C() {} };
+struct D { D(); virtual ~D() {} };
 struct E {
   void *operator new(size_t);
   void *operator new[](size_t);
@@ -37,14 +30,14 @@ struct F {
   void operator delete[](void *, size_t) noexcept;
 };
 
-template <typename T> T get();
+template<typename T> T get();
 
-template <typename T>
+template<typename T>
 void del() {
-  ::delete get<T *>();
-  ::delete[] get<T *>();
-  delete get<T *>();
-  delete[] get<T *>();
+  ::delete get<T*>();
+  ::delete[] get<T*>();
+  delete get<T*>();
+  delete[] get<T*>();
 }
 
 template void del<A>();
@@ -115,6 +108,7 @@ D::D() {}
 // CHECK: mul i64 1, %{{[^ ]*}}
 // CHECK: add i64 %{{[^ ]*}}, 8
 // CHECK: call void @_ZN1FdaEPvm(i8* %{{[^ ]*}}, i64 %{{[^ ]*}})
+
 
 // CHECK-LABEL: define linkonce_odr void @_ZN1DD0Ev(%{{[^ ]*}}* {{[^,]*}} %this)
 // CHECK: call void @_ZdlPvm(i8* %{{[^ ]*}}, i64 8)

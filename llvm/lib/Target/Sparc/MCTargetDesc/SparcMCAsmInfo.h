@@ -25,11 +25,13 @@ class SparcELFMCAsmInfo : public MCAsmInfoELF {
 public:
   explicit SparcELFMCAsmInfo(const Triple &TheTriple);
 
-  const MCExpr *
+  const MCExpr*
   getExprForPersonalitySymbol(const MCSymbol *Sym, unsigned Encoding,
                               MCStreamer &Streamer) const override;
-  const MCExpr *getExprForFDESymbol(const MCSymbol *Sym, unsigned Encoding,
+  const MCExpr* getExprForFDESymbol(const MCSymbol *Sym,
+                                    unsigned Encoding,
                                     MCStreamer &Streamer) const override;
+
 };
 
 } // end namespace llvm

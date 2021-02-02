@@ -24,7 +24,8 @@
 #include <stdarg.h>
 #include <string.h>
 
-__attribute__((noinline)) int sum(int n, ...) {
+__attribute__((noinline))
+int sum(int n, ...) {
   va_list args;
   int i, sum = 0, arg;
   volatile int temp;
@@ -48,7 +49,8 @@ int main(int argc, char *argv[]) {
     // Shadow/origin of |uninit| will be passed via overflow area.
     if (strcmp(argv[1], "overflow") == 0) {
       return sum(7,
-                 a, a, a, a, a, a, uninit);
+        a, a, a, a, a, a, uninit
+      );
     }
   }
   return 0;

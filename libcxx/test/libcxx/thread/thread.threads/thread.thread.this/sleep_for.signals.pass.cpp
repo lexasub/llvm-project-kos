@@ -38,7 +38,8 @@
 
 void sig_action(int) {}
 
-int main(int, char**) {
+int main(int, char**)
+{
   int ec;
   struct sigaction action;
   action.sa_handler = &sig_action;

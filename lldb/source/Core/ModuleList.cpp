@@ -703,8 +703,9 @@ struct SharedModuleListInfo {
   ModuleList module_list;
   ModuleListProperties module_list_properties;
 };
-} // namespace
-static SharedModuleListInfo &GetSharedModuleListInfo() {
+}
+static SharedModuleListInfo &GetSharedModuleListInfo()
+{
   static SharedModuleListInfo *g_shared_module_list_info = nullptr;
   static llvm::once_flag g_once_flag;
   llvm::call_once(g_once_flag, []() {
@@ -812,8 +813,9 @@ ModuleList::GetSharedModule(const ModuleSpec &module_spec, ModuleSP &module_sp,
     if (uuid_ptr && *uuid_ptr != module_sp->GetUUID()) {
       module_sp.reset();
     } else {
-      if (module_sp->GetObjectFile() && module_sp->GetObjectFile()->GetType() ==
-                                            ObjectFile::eTypeStubLibrary) {
+      if (module_sp->GetObjectFile() &&
+          module_sp->GetObjectFile()->GetType() ==
+              ObjectFile::eTypeStubLibrary) {
         module_sp.reset();
       } else {
         if (did_create_ptr) {

@@ -25,7 +25,7 @@ namespace {
 #include "AMDGPUGenGlobalISel.inc"
 #undef GET_GLOBALISEL_PREDICATE_BITSET
 #undef AMDGPUSubtarget
-} // namespace
+}
 
 namespace llvm {
 
@@ -69,7 +69,7 @@ private:
     SmallVector<unsigned, 2> SgprParts;
     SmallVector<unsigned, 2> VgprParts;
     int64_t Imm;
-    GEPInfo(const MachineInstr &GEP) : GEP(GEP), Imm(0) {}
+    GEPInfo(const MachineInstr &GEP) : GEP(GEP), Imm(0) { }
   };
 
   bool isSGPR(Register Reg) const;
@@ -77,9 +77,9 @@ private:
   bool isInstrUniform(const MachineInstr &MI) const;
   bool isVCC(Register Reg, const MachineRegisterInfo &MRI) const;
 
-  const RegisterBank *getArtifactRegBank(Register Reg,
-                                         const MachineRegisterInfo &MRI,
-                                         const TargetRegisterInfo &TRI) const;
+  const RegisterBank *getArtifactRegBank(
+    Register Reg, const MachineRegisterInfo &MRI,
+    const TargetRegisterInfo &TRI) const;
 
   /// tblgen-erated 'select' implementation.
   bool selectImpl(MachineInstr &I, CodeGenCoverage &CoverageInfo) const;
@@ -189,7 +189,8 @@ private:
   selectSmrdSgpr(MachineOperand &Root) const;
 
   template <bool Signed>
-  std::pair<Register, int> selectFlatOffsetImpl(MachineOperand &Root) const;
+  std::pair<Register, int>
+  selectFlatOffsetImpl(MachineOperand &Root) const;
 
   InstructionSelector::ComplexRendererFns
   selectFlatOffset(MachineOperand &Root) const;
@@ -241,8 +242,8 @@ private:
 
   bool shouldUseAddr64(MUBUFAddressData AddrData) const;
 
-  void splitIllegalMUBUFOffset(MachineIRBuilder &B, Register &SOffset,
-                               int64_t &ImmOffset) const;
+  void splitIllegalMUBUFOffset(MachineIRBuilder &B,
+                               Register &SOffset, int64_t &ImmOffset) const;
 
   MUBUFAddressData parseMUBUFAddress(Register Src) const;
 
@@ -285,12 +286,12 @@ private:
   }
 
   void renderTruncTImm16(MachineInstrBuilder &MIB, const MachineInstr &MI,
-                         int OpIdx) const {
+                        int OpIdx) const {
     renderTruncTImm(MIB, MI, OpIdx);
   }
 
   void renderTruncTImm32(MachineInstrBuilder &MIB, const MachineInstr &MI,
-                         int OpIdx) const {
+                        int OpIdx) const {
     renderTruncTImm(MIB, MI, OpIdx);
   }
 
@@ -335,5 +336,5 @@ private:
 #undef GET_GLOBALISEL_TEMPORARIES_DECL
 };
 
-} // namespace llvm
+} // End llvm namespace.
 #endif

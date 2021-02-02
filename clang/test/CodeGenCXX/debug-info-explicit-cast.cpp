@@ -18,7 +18,7 @@ struct Baz {
 
 struct Qux {
   int d() { return 4; }
-  Qux(){};
+  Qux() {};
 };
 
 struct Quux {
@@ -26,8 +26,8 @@ struct Quux {
   Quux() : E(5){};
 };
 
-typedef int (Qux::*TD)();
-typedef int (Qux::*TD1)();
+typedef int(Qux::*TD)();
+typedef int(Qux::*TD1)();
 int Val = reinterpret_cast<Baz *>(0)->C;
 int main() {
   Bar *PB = new Bar;

@@ -69,9 +69,10 @@ static cl::opt<bool> UserHoistCommonInsts(
     "hoist-common-insts", cl::Hidden, cl::init(false),
     cl::desc("hoist common instructions (default = false)"));
 
-static cl::opt<bool>
-    UserSinkCommonInsts("sink-common-insts", cl::Hidden, cl::init(false),
-                        cl::desc("Sink common instructions (default = false)"));
+static cl::opt<bool> UserSinkCommonInsts(
+    "sink-common-insts", cl::Hidden, cl::init(false),
+    cl::desc("Sink common instructions (default = false)"));
+
 
 STATISTIC(NumSimpl, "Number of blocks simplified");
 
@@ -92,8 +93,7 @@ static bool mergeEmptyReturnBlocks(Function &F, DomTreeUpdater *DTU) {
 
     // Only look at return blocks.
     ReturnInst *Ret = dyn_cast<ReturnInst>(BB.getTerminator());
-    if (!Ret)
-      continue;
+    if (!Ret) continue;
 
     // Only look at the block if it is empty or the only other thing in it is a
     // single PHI node that is the operand to the return.
@@ -139,7 +139,7 @@ static bool mergeEmptyReturnBlocks(Function &F, DomTreeUpdater *DTU) {
     // blocks.
     if (Ret->getNumOperands() == 0 ||
         Ret->getOperand(0) ==
-            cast<ReturnInst>(RetBlock->getTerminator())->getOperand(0)) {
+          cast<ReturnInst>(RetBlock->getTerminator())->getOperand(0)) {
       // All predecessors of BB should now branch to RetBlock instead.
       if (DTU) {
         for (auto *Predecessor : predecessors(&BB)) {
@@ -160,9 +160,9 @@ static bool mergeEmptyReturnBlocks(Function &F, DomTreeUpdater *DTU) {
     if (!RetBlockPHI) {
       Value *InVal = cast<ReturnInst>(RetBlock->getTerminator())->getOperand(0);
       pred_iterator PB = pred_begin(RetBlock), PE = pred_end(RetBlock);
-      RetBlockPHI =
-          PHINode::Create(Ret->getOperand(0)->getType(), std::distance(PB, PE),
-                          "merge", &RetBlock->front());
+      RetBlockPHI = PHINode::Create(Ret->getOperand(0)->getType(),
+                                    std::distance(PB, PE), "merge",
+                                    &RetBlock->front());
 
       for (pred_iterator PI = PB; PI != PE; ++PI)
         RetBlockPHI->addIncoming(InVal, *PI);
@@ -212,7 +212,7 @@ static bool iterativelySimplifyCFG(Function &F, const TargetTransformInfo &TTI,
     LocalChange = false;
 
     // Loop over all of the basic blocks and remove them if they are unneeded.
-    for (Function::iterator BBIt = F.begin(); BBIt != F.end();) {
+    for (Function::iterator BBIt = F.begin(); BBIt != F.end(); ) {
       BasicBlock &BB = *BBIt++;
       if (DTU) {
         assert(
@@ -243,8 +243,7 @@ static bool simplifyFunctionCFGImpl(Function &F, const TargetTransformInfo &TTI,
   EverChanged |= iterativelySimplifyCFG(F, TTI, DT ? &DTU : nullptr, Options);
 
   // If neither pass changed anything, we're done.
-  if (!EverChanged)
-    return false;
+  if (!EverChanged) return false;
 
   // iterativelySimplifyCFG can (rarely) make some loops dead.  If this happens,
   // removeUnreachableBlocks is needed to nuke them, which means we should
@@ -349,9 +348,11 @@ struct CFGSimplifyPass : public FunctionPass {
     if (RequireAndPreserveDomTree)
       DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree();
     if (F.hasFnAttribute(Attribute::OptForFuzzing)) {
-      Options.setSimplifyCondBranch(false).setFoldTwoEntryPHINode(false);
+      Options.setSimplifyCondBranch(false)
+             .setFoldTwoEntryPHINode(false);
     } else {
-      Options.setSimplifyCondBranch(true).setFoldTwoEntryPHINode(true);
+      Options.setSimplifyCondBranch(true)
+             .setFoldTwoEntryPHINode(true);
     }
 
     auto &TTI = getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
@@ -367,7 +368,7 @@ struct CFGSimplifyPass : public FunctionPass {
     AU.addPreserved<GlobalsAAWrapperPass>();
   }
 };
-} // namespace
+}
 
 char CFGSimplifyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(CFGSimplifyPass, "simplifycfg", "Simplify the CFG", false,

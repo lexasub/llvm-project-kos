@@ -2,14 +2,15 @@
 
 template <typename T>
 struct A {
-  typedef int iterator; // expected-note{{declared here}}
+  typedef int iterator;  // expected-note{{declared here}}
 };
 
 template <typename T>
 void f() {
-  class A<T>::iterator foo; // expected-error{{typedef 'iterator' cannot be referenced with a class specifier}}
+  class A <T> ::iterator foo;  // expected-error{{typedef 'iterator' cannot be referenced with a class specifier}}
 }
 
 void g() {
-  f<int>(); // expected-note{{in instantiation of function template}}
+  f<int>();  // expected-note{{in instantiation of function template}}
 }
+

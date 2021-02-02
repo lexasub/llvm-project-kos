@@ -27,7 +27,9 @@ class Pass;
 /// and validate/satisfy pass dependencies.
 class PassManager {
 public:
-  void add(std::unique_ptr<Pass> pass) { _passes.push_back(std::move(pass)); }
+  void add(std::unique_ptr<Pass> pass) {
+    _passes.push_back(std::move(pass));
+  }
 
   llvm::Error runOnFile(SimpleFile &file) {
     for (std::unique_ptr<Pass> &pass : _passes)

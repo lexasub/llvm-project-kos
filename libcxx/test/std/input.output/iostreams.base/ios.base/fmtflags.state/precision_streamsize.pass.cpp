@@ -17,17 +17,23 @@
 
 #include "test_macros.h"
 
-class test : public std::ios {
+class test
+    : public std::ios
+{
 public:
-  test() { init(0); }
+    test()
+    {
+        init(0);
+    }
 };
 
-int main(int, char**) {
-  test t;
-  assert(t.precision() == 6);
-  std::streamsize p = t.precision(10);
-  assert(p == 6);
-  assert(t.precision() == 10);
+int main(int, char**)
+{
+    test t;
+    assert(t.precision() == 6);
+    std::streamsize p = t.precision(10);
+    assert(p == 6);
+    assert(t.precision() == 10);
 
   return 0;
 }

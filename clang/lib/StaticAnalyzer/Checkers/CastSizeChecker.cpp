@@ -23,13 +23,13 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class CastSizeChecker : public Checker<check::PreStmt<CastExpr>> {
+class CastSizeChecker : public Checker< check::PreStmt<CastExpr> > {
   mutable std::unique_ptr<BuiltinBug> BT;
 
 public:
   void checkPreStmt(const CastExpr *CE, CheckerContext &C) const;
 };
-} // namespace
+}
 
 /// Check if we are casting to a struct with a flexible array at the end.
 /// \code
@@ -64,7 +64,7 @@ static bool evenFlexibleArraySize(ASTContext &Ctx, CharUnits RegionSize,
   const Type *ElemType = Last->getType()->getArrayElementTypeNoTypeQual();
   CharUnits FlexSize;
   if (const ConstantArrayType *ArrayTy =
-          Ctx.getAsConstantArrayType(Last->getType())) {
+        Ctx.getAsConstantArrayType(Last->getType())) {
     FlexSize = Ctx.getTypeSizeInChars(ElemType);
     if (ArrayTy->getSize() == 1 && TypeSize > FlexSize)
       TypeSize -= FlexSize;
@@ -86,8 +86,7 @@ static bool evenFlexibleArraySize(ASTContext &Ctx, CharUnits RegionSize,
   return Left % FlexSize == 0;
 }
 
-void CastSizeChecker::checkPreStmt(const CastExpr *CE,
-                                   CheckerContext &C) const {
+void CastSizeChecker::checkPreStmt(const CastExpr *CE,CheckerContext &C) const {
   const Expr *E = CE->getSubExpr();
   ASTContext &Ctx = C.getASTContext();
   QualType ToTy = Ctx.getCanonicalType(CE->getType());
@@ -134,8 +133,8 @@ void CastSizeChecker::checkPreStmt(const CastExpr *CE,
   if (ExplodedNode *errorNode = C.generateErrorNode()) {
     if (!BT)
       BT.reset(new BuiltinBug(this, "Cast region with wrong size.",
-                              "Cast a region whose size is not a multiple"
-                              " of the destination type size."));
+                                    "Cast a region whose size is not a multiple"
+                                    " of the destination type size."));
     auto R = std::make_unique<PathSensitiveBugReport>(*BT, BT->getDescription(),
                                                       errorNode);
     R->addRange(CE->getSourceRange());

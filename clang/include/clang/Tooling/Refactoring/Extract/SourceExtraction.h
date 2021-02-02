@@ -48,4 +48,4 @@ private:
 } // end namespace tooling
 } // end namespace clang
 
-#endif // LLVM_CLANG_TOOLING_REFACTORING_EXTRACT_SOURCE_EXTRACTION_H
+#endif //LLVM_CLANG_TOOLING_REFACTORING_EXTRACT_SOURCE_EXTRACTION_H

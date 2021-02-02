@@ -17,12 +17,8 @@ T tmain(T argc) {
   T b = argc, c, d, e, f, g;
   static T a;
 // CHECK: static T a;
-#pragma omp taskgroup allocate(d) task_reduction(+ \
-                                                 : d)
-#pragma omp master taskloop if (taskloop                                                                                  \
-                                : argc > N) default(shared) untied priority(N) grainsize(N) reduction(+                   \
-                                                                                                      : g) in_reduction(+ \
-                                                                                                                        : d) allocate(d)
+#pragma omp taskgroup allocate(d) task_reduction(+: d)
+#pragma omp master taskloop if(taskloop: argc > N) default(shared) untied priority(N) grainsize(N) reduction(+:g) in_reduction(+: d) allocate(d)
   // CHECK-NEXT: #pragma omp taskgroup allocate(d) task_reduction(+: d)
   // CHECK-NEXT: #pragma omp master taskloop if(taskloop: argc > N) default(shared) untied priority(N) grainsize(N) reduction(+: g) in_reduction(+: d) allocate(d){{$}}
   for (int i = 0; i < 2; ++i)
@@ -36,15 +32,15 @@ T tmain(T argc) {
       for (int j = 0; j < 2; ++j)
         for (int j = 0; j < 2; ++j)
           for (int j = 0; j < 2; ++j)
-            for (int i = 0; i < 2; ++i)
-              for (int j = 0; j < 2; ++j)
-                for (int j = 0; j < 2; ++j)
-                  for (int j = 0; j < 2; ++j)
-                    for (int j = 0; j < 2; ++j) {
+  for (int i = 0; i < 2; ++i)
+    for (int j = 0; j < 2; ++j)
+      for (int j = 0; j < 2; ++j)
+        for (int j = 0; j < 2; ++j)
+          for (int j = 0; j < 2; ++j) {
 #pragma omp cancel taskgroup
 #pragma omp cancellation point taskgroup
-                      foo();
-                    }
+            foo();
+          }
   // CHECK-NEXT: #pragma omp parallel
   // CHECK-NEXT: #pragma omp master taskloop private(argc,b) firstprivate(c,d) lastprivate(d,f) collapse(N) shared(g) if(c) final(d) mergeable priority(f) nogroup num_tasks(N)
   // CHECK-NEXT: for (int i = 0; i < 2; ++i)
@@ -68,12 +64,8 @@ int main(int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   static int a;
 // CHECK: static int a;
-#pragma omp taskgroup task_reduction(+ \
-                                     : d)
-#pragma omp master taskloop if (taskloop                                                                                        \
-                                : a) default(none) shared(a) final(b) priority(5) num_tasks(argc) reduction(*                   \
-                                                                                                            : g) in_reduction(+ \
-                                                                                                                              : d)
+#pragma omp taskgroup task_reduction(+: d)
+#pragma omp master taskloop if(taskloop: a) default(none) shared(a) final(b) priority(5) num_tasks(argc) reduction(*: g) in_reduction(+:d)
   // CHECK-NEXT: #pragma omp taskgroup task_reduction(+: d)
   // CHECK-NEXT: #pragma omp master taskloop if(taskloop: a) default(none) shared(a) final(b) priority(5) num_tasks(argc) reduction(*: g) in_reduction(+: d)
   for (int i = 0; i < 2; ++i)
@@ -81,8 +73,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: for (int i = 0; i < 2; ++i)
 // CHECK-NEXT: a = 2;
 #pragma omp parallel
-#pragma omp master taskloop private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) shared(g) if (argc) mergeable priority(argc) grainsize(argc) reduction(max \
-                                                                                                                                                                          : a, e)
+#pragma omp master taskloop private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) shared(g) if(argc) mergeable priority(argc) grainsize(argc) reduction(max: a, e)
   for (int i = 0; i < 10; ++i)
     for (int j = 0; j < 10; ++j) {
 #pragma omp cancel taskgroup

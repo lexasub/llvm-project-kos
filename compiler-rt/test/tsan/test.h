@@ -1,12 +1,12 @@
-#include "sanitizer_common/print_address.h"
-#include <dlfcn.h>
 #include <pthread.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <dlfcn.h>
+#include <stddef.h>
 #include <sched.h>
 #include <stdarg.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "sanitizer_common/print_address.h"
 
 #include <sanitizer/tsan_interface.h>
 
@@ -23,7 +23,7 @@ typedef unsigned long long invisible_barrier_t;
 extern "C" {
 #endif
 void __tsan_testonly_barrier_init(invisible_barrier_t *barrier,
-                                  unsigned count);
+    unsigned count);
 void __tsan_testonly_barrier_wait(invisible_barrier_t *barrier);
 unsigned long __tsan_testonly_shadow_stack_current_size();
 #ifdef __cplusplus
@@ -44,8 +44,7 @@ invisible_barrier_t barrier;
 #ifdef __APPLE__
 unsigned long long monotonic_clock_ns() {
   static mach_timebase_info_data_t timebase_info;
-  if (timebase_info.denom == 0)
-    mach_timebase_info(&timebase_info);
+  if (timebase_info.denom == 0) mach_timebase_info(&timebase_info);
   return (mach_absolute_time() * timebase_info.numer) / timebase_info.denom;
 }
 #else
@@ -86,15 +85,15 @@ void AnnotateIgnoreWritesEnd(const char *f, int l);
 #endif
 
 #define ANNOTATE_RWLOCK_CREATE(m) \
-  AnnotateRWLockCreate(__FILE__, __LINE__, m)
+    AnnotateRWLockCreate(__FILE__, __LINE__, m)
 #define ANNOTATE_RWLOCK_CREATE_STATIC(m) \
-  AnnotateRWLockCreateStatic(__FILE__, __LINE__, m)
+    AnnotateRWLockCreateStatic(__FILE__, __LINE__, m)
 #define ANNOTATE_RWLOCK_DESTROY(m) \
-  AnnotateRWLockDestroy(__FILE__, __LINE__, m)
+    AnnotateRWLockDestroy(__FILE__, __LINE__, m)
 #define ANNOTATE_RWLOCK_ACQUIRED(m, is_w) \
-  AnnotateRWLockAcquired(__FILE__, __LINE__, m, is_w)
+    AnnotateRWLockAcquired(__FILE__, __LINE__, m, is_w)
 #define ANNOTATE_RWLOCK_RELEASED(m, is_w) \
-  AnnotateRWLockReleased(__FILE__, __LINE__, m, is_w)
+    AnnotateRWLockReleased(__FILE__, __LINE__, m, is_w)
 
 #ifdef __APPLE__
 #define ASM_SYMBOL(symbol) "_" #symbol

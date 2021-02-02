@@ -1,4 +1,2 @@
 #include "a.h"
-namespace llvm {
-void f();
-}
+namespace llvm { void f(); }

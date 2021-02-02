@@ -9,8 +9,8 @@
 #include "lldb/Interpreter/OptionValueLanguage.h"
 
 #include "lldb/DataFormatters/FormatManager.h"
-#include "lldb/Symbol/TypeSystem.h"
 #include "lldb/Target/Language.h"
+#include "lldb/Symbol/TypeSystem.h"
 #include "lldb/Utility/Args.h"
 #include "lldb/Utility/Stream.h"
 
@@ -40,8 +40,7 @@ Status OptionValueLanguage::SetValueFromString(llvm::StringRef value,
   case eVarSetOperationReplace:
   case eVarSetOperationAssign: {
     ConstString lang_name(value.trim());
-    LanguageSet languages_for_types =
-        Language::GetLanguagesSupportingTypeSystems();
+    LanguageSet languages_for_types = Language::GetLanguagesSupportingTypeSystems();
     LanguageType new_type =
         Language::GetLanguageTypeFromString(lang_name.GetStringRef());
     if (new_type && languages_for_types[new_type]) {

@@ -29,9 +29,7 @@
 // CHECK-ITANIUM-SAME:             identifier: "_ZTS9tmpl_guidIXadL_Z42_GUID_12345678_1234_1234_1234_1234567890abEEE"
 
 struct _GUID {
-  __UINT32_TYPE__ a;
-  __UINT16_TYPE__ b, c;
-  __UINT8_TYPE__ d[8];
+  __UINT32_TYPE__ a; __UINT16_TYPE__ b, c; __UINT8_TYPE__ d[8];
 };
 template <const _GUID *>
 struct tmpl_guid {

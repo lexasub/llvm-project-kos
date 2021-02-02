@@ -49,7 +49,8 @@ private:
   std::string getInstructionCaseForEncoding(Record *R, Record *EncodingDef,
                                             CodeGenTarget &Target);
   void AddCodeToMergeInOperand(Record *R, BitsInit *BI,
-                               const std::string &VarName, unsigned &NumberedOp,
+                               const std::string &VarName,
+                               unsigned &NumberedOp,
                                std::set<unsigned> &NamedOpIndices,
                                std::string &Case, CodeGenTarget &Target);
 
@@ -62,8 +63,8 @@ private:
 
 // If the VarBitInit at position 'bit' matches the specified variable then
 // return the variable bit position.  Otherwise return -1.
-int CodeEmitterGen::getVariableBit(const std::string &VarName, BitsInit *BI,
-                                   int bit) {
+int CodeEmitterGen::getVariableBit(const std::string &VarName,
+                                   BitsInit *BI, int bit) {
   if (VarBitInit *VBI = dyn_cast<VarBitInit>(BI->getBit(bit))) {
     if (VarInit *VI = dyn_cast<VarInit>(VBI->getBitVar()))
       if (VI->getName() == VarName)
@@ -76,30 +77,28 @@ int CodeEmitterGen::getVariableBit(const std::string &VarName, BitsInit *BI,
   return -1;
 }
 
-void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
-                                             const std::string &VarName,
-                                             unsigned &NumberedOp,
-                                             std::set<unsigned> &NamedOpIndices,
-                                             std::string &Case,
-                                             CodeGenTarget &Target) {
+void CodeEmitterGen::
+AddCodeToMergeInOperand(Record *R, BitsInit *BI, const std::string &VarName,
+                        unsigned &NumberedOp,
+                        std::set<unsigned> &NamedOpIndices,
+                        std::string &Case, CodeGenTarget &Target) {
   CodeGenInstruction &CGI = Target.getInstruction(R);
 
   // Determine if VarName actually contributes to the Inst encoding.
-  int bit = BI->getNumBits() - 1;
+  int bit = BI->getNumBits()-1;
 
   // Scan for a bit that this contributed to.
-  for (; bit >= 0;) {
+  for (; bit >= 0; ) {
     if (getVariableBit(VarName, BI, bit) != -1)
       break;
-
+    
     --bit;
   }
-
+  
   // If we found no bits, ignore this value, otherwise emit the call to get the
   // operand encoding.
-  if (bit < 0)
-    return;
-
+  if (bit < 0) return;
+  
   // If the operand matches by name, reference according to that
   // operand number. Non-matching operands are assumed to be in
   // order.
@@ -115,15 +114,14 @@ void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
     /// generated emitter, skip it.
     while (NumberedOp < NumberOps &&
            (CGI.Operands.isFlatOperandNotEmitted(NumberedOp) ||
-            (!NamedOpIndices.empty() &&
-             NamedOpIndices.count(
-                 CGI.Operands.getSubOperandNumber(NumberedOp).first)))) {
+              (!NamedOpIndices.empty() && NamedOpIndices.count(
+                CGI.Operands.getSubOperandNumber(NumberedOp).first)))) {
       ++NumberedOp;
 
-      if (NumberedOp >=
-          CGI.Operands.back().MIOperandNo + CGI.Operands.back().MINumOperands) {
-        errs() << "Too few operands in record " << R->getName()
-               << " (no match for variable " << VarName << "):\n";
+      if (NumberedOp >= CGI.Operands.back().MIOperandNo +
+                        CGI.Operands.back().MINumOperands) {
+        errs() << "Too few operands in record " << R->getName() <<
+                  " (no match for variable " << VarName << "):\n";
         errs() << *R;
         errs() << '\n';
 
@@ -133,7 +131,7 @@ void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
 
     OpIdx = NumberedOp++;
   }
-
+  
   std::pair<unsigned, unsigned> SO = CGI.Operands.getSubOperandNumber(OpIdx);
   std::string &EncoderMethodName = CGI.Operands[SO.first].EncoderMethodName;
 
@@ -159,12 +157,10 @@ void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
   } else {
     Case += "      // op: " + VarName + "\n";
     if (UseAPInt) {
-      Case +=
-          "      getMachineOpValue(MI, MI.getOperand(" + utostr(OpIdx) + ")";
+      Case += "      getMachineOpValue(MI, MI.getOperand(" + utostr(OpIdx) + ")";
       Case += ", op, Fixups, STI";
     } else {
-      Case += "      op = getMachineOpValue(MI, MI.getOperand(" +
-              utostr(OpIdx) + ")";
+      Case += "      op = getMachineOpValue(MI, MI.getOperand(" + utostr(OpIdx) + ")";
       Case += ", Fixups, STI";
     }
     Case += ");\n";
@@ -197,15 +193,15 @@ void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
     ++numOperandLits;
   }
 
-  for (; bit >= 0;) {
+  for (; bit >= 0; ) {
     int varBit = getVariableBit(VarName, BI, bit);
-
+    
     // If this bit isn't from a variable, skip it.
     if (varBit == -1) {
       --bit;
       continue;
     }
-
+    
     // Figure out the consecutive range of bits covered by this operand, in
     // order to generate better encoding code.
     int beginInstBit = bit;
@@ -213,8 +209,7 @@ void CodeEmitterGen::AddCodeToMergeInOperand(Record *R, BitsInit *BI,
     int N = 1;
     for (--bit; bit >= 0;) {
       varBit = getVariableBit(VarName, BI, bit);
-      if (varBit == -1 || varBit != (beginVarBit - N))
-        break;
+      if (varBit == -1 || varBit != (beginVarBit - N)) break;
       ++N;
       --bit;
     }
@@ -290,9 +285,8 @@ std::string CodeEmitterGen::getInstructionCase(Record *R,
   return getInstructionCaseForEncoding(R, R, Target);
 }
 
-std::string
-CodeEmitterGen::getInstructionCaseForEncoding(Record *R, Record *EncodingDef,
-                                              CodeGenTarget &Target) {
+std::string CodeEmitterGen::getInstructionCaseForEncoding(Record *R, Record *EncodingDef,
+                                                          CodeGenTarget &Target) {
   std::string Case;
   BitsInit *BI = EncodingDef->getValueAsBitsInit("Inst");
   unsigned NumberedOp = 0;
@@ -300,8 +294,8 @@ CodeEmitterGen::getInstructionCaseForEncoding(Record *R, Record *EncodingDef,
 
   // Collect the set of operand indices that might correspond to named
   // operand, and skip these when assigning operands based on position.
-  if (Target.getInstructionSet()->getValueAsBit(
-          "noNamedPositionallyEncodedOperands")) {
+  if (Target.getInstructionSet()->
+       getValueAsBit("noNamedPositionallyEncodedOperands")) {
     CodeGenInstruction &CGI = Target.getInstruction(R);
     for (const RecordVal &RV : R->getValues()) {
       unsigned OpIdx;
@@ -332,7 +326,7 @@ CodeEmitterGen::getInstructionCaseForEncoding(Record *R, Record *EncodingDef,
     Case += ", STI";
     Case += ");\n";
   }
-
+  
   return Case;
 }
 
@@ -365,9 +359,7 @@ void CodeEmitterGen::emitInstructionBaseValues(
 
     if (R->getValueAsString("Namespace") == "TargetOpcode" ||
         R->getValueAsBit("isPseudo")) {
-      o << "    ";
-      emitInstBits(o, APInt(BitWidth, 0));
-      o << ",\n";
+      o << "    "; emitInstBits(o, APInt(BitWidth, 0)); o << ",\n";
       continue;
     }
 
@@ -396,13 +388,13 @@ void CodeEmitterGen::emitInstructionBaseValues(
 
 void CodeEmitterGen::run(raw_ostream &o) {
   CodeGenTarget Target(Records);
-  std::vector<Record *> Insts = Records.getAllDerivedDefinitions("Instruction");
+  std::vector<Record*> Insts = Records.getAllDerivedDefinitions("Instruction");
 
   // For little-endian instruction bit encodings, reverse the bit order
   Target.reverseBitsForLittleEndianEncoding();
 
-  ArrayRef<const CodeGenInstruction *> NumberedInstructions =
-      Target.getInstructionsByEnumValue();
+  ArrayRef<const CodeGenInstruction*> NumberedInstructions =
+    Target.getInstructionsByEnumValue();
 
   const CodeGenHwModes &HWM = Target.getHwModes();
   // The set of HwModes used by instruction encodings.
@@ -429,7 +421,7 @@ void CodeEmitterGen::run(raw_ostream &o) {
     BitWidth = std::max(BitWidth, BI->getNumBits());
   }
   UseAPInt = BitWidth > 64;
-
+  
   // Emit function declaration
   if (UseAPInt) {
     o << "void " << Target.getName()
@@ -444,7 +436,7 @@ void CodeEmitterGen::run(raw_ostream &o) {
       << "    SmallVectorImpl<MCFixup> &Fixups,\n"
       << "    const MCSubtargetInfo &STI) const {\n";
   }
-
+  
   // Emit instruction base values
   if (HwModes.empty()) {
     emitInstructionBaseValues(o, NumberedInstructions, Target, -1);
@@ -469,8 +461,8 @@ void CodeEmitterGen::run(raw_ostream &o) {
   std::map<std::string, std::vector<std::string>> CaseMap;
 
   // Construct all cases statement for each opcode
-  for (std::vector<Record *>::iterator IC = Insts.begin(), EC = Insts.end();
-       IC != EC; ++IC) {
+  for (std::vector<Record*>::iterator IC = Insts.begin(), EC = Insts.end();
+        IC != EC; ++IC) {
     Record *R = *IC;
     if (R->getValueAsString("Namespace") == "TargetOpcode" ||
         R->getValueAsBit("isPseudo"))
@@ -511,9 +503,8 @@ void CodeEmitterGen::run(raw_ostream &o) {
     std::vector<std::string> &InstList = IE->second;
 
     for (int i = 0, N = InstList.size(); i < N; i++) {
-      if (i)
-        o << "\n";
-      o << "    case " << InstList[i] << ":";
+      if (i) o << "\n";
+      o << "    case " << InstList[i]  << ":";
     }
     o << " {\n";
     o << Case;
@@ -609,11 +600,11 @@ void CodeEmitterGen::run(raw_ostream &o) {
   o << "};\n"
     << "#endif // NDEBUG\n\n";
 
+
   // Emit the predicate verifier.
   o << "void " << Target.getName()
     << "MCCodeEmitter::verifyInstructionPredicates(\n"
-    << "    const MCInst &Inst, const FeatureBitset &AvailableFeatures) const "
-       "{\n"
+    << "    const MCInst &Inst, const FeatureBitset &AvailableFeatures) const {\n"
     << "#ifndef NDEBUG\n"
     << "  static " << getMinimalTypeForRange(FeatureBitsets.size())
     << " RequiredFeaturesRefs[] = {\n";
@@ -652,8 +643,7 @@ void CodeEmitterGen::run(raw_ostream &o) {
     << "    report_fatal_error(Msg.str());\n"
     << "  }\n"
     << "#else\n"
-    << "  // Silence unused variable warning on targets that don't use MCII "
-       "for "
+    << "  // Silence unused variable warning on targets that don't use MCII for "
        "other purposes (e.g. BPF).\n"
     << "  (void)MCII;\n"
     << "#endif // NDEBUG\n";

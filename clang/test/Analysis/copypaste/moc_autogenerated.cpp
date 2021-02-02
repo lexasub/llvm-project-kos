@@ -9,11 +9,11 @@ void f1() {
   int *p1 = new int[1];
   int *p2 = new int[1];
   if (p1) {
-    delete[] p1;
+    delete [] p1;
     p1 = nullptr;
   }
   if (p2) {
-    delete[] p1; // no-warning
+    delete [] p1; // no-warning
     p2 = nullptr;
   }
 }

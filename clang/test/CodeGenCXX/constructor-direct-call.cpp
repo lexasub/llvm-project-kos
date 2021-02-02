@@ -3,7 +3,7 @@
 
 class Test1 {
 public:
-  int a;
+   int a;
 };
 
 void f1() {
@@ -17,12 +17,9 @@ void f1() {
 
 class Test2 {
 public:
-  Test2() {
-    a = 10;
-    b = 10;
-  }
-  int a;
-  int b;
+  Test2() { a = 10; b = 10; }
+   int a;
+   int b;
 };
 
 void f2() {
@@ -40,21 +37,16 @@ void f2() {
   var.Test2::Test2(var);
 }
 
+
+
+
 class Test3 {
 public:
-  Test3() {
-    a = 10;
-    b = 15;
-    c = 20;
-  }
-  Test3(const Test3 &that) {
-    a = that.a;
-    b = that.b;
-    c = that.c;
-  }
-  int a;
-  int b;
-  int c;
+  Test3() { a = 10; b = 15; c = 20; }
+  Test3(const Test3& that) { a = that.a; b = that.b; c = that.c; }
+   int a;
+   int b;
+   int c;
 };
 
 void f3() {

@@ -8,16 +8,12 @@ int zex;
 // CHECK: @zex = {{(dso_local )?}}global i32
 
 #pragma weak foo
-struct S {
-  void foo();
-};
+struct S {  void foo(); };
 void S::foo() {}
 // CHECK-LABEL: define {{.*}}void @_ZN1S3fooEv(
 
 #pragma weak zed
-namespace bar {
-void zed() {}
-} // namespace bar
+namespace bar {  void zed() {} }
 // CHECK-LABEL: define {{.*}}void @_ZN3bar3zedEv(
 
 #pragma weak bah

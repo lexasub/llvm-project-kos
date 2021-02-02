@@ -15,23 +15,24 @@
 
 class A1 {
 public:
-  virtual void f1() = 0;
+    virtual void f1() = 0;
 };
 
 class A2 {
 public:
-  virtual void f2() = 0;
+    virtual void f2() = 0;
 };
+
 
 class B : public A1, public A2 {
 public:
-  void f2() final { fprintf(stderr, "In f2\n"); }
-  void f1() final { fprintf(stderr, "In f1\n"); }
+    void f2() final { fprintf(stderr, "In f2\n"); }
+    void f1() final { fprintf(stderr, "In f1\n"); }
 };
 
 int main() {
-  B b;
+    B b;
 
-  static_cast<A1 *>(&b)->f1();
-  static_cast<A2 *>(&b)->f2();
+    static_cast<A1*>(&b)->f1();
+    static_cast<A2*>(&b)->f2();
 }

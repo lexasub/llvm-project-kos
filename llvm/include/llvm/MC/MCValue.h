@@ -58,8 +58,8 @@ public:
   MCSymbolRefExpr::VariantKind getAccessVariant() const;
 
   static MCValue get(const MCSymbolRefExpr *SymA,
-                     const MCSymbolRefExpr *SymB = nullptr, int64_t Val = 0,
-                     uint32_t RefKind = 0) {
+                     const MCSymbolRefExpr *SymB = nullptr,
+                     int64_t Val = 0, uint32_t RefKind = 0) {
     MCValue R;
     R.Cst = Val;
     R.SymA = SymA;
@@ -76,6 +76,7 @@ public:
     R.RefKind = 0;
     return R;
   }
+
 };
 
 } // end namespace llvm

@@ -114,12 +114,12 @@ Macros:
    are defined
 */
 #if defined(__cplusplus) && !defined(__STDC_LIMIT_MACROS)
-#define __STDC_LIMIT_MACROS
+#   define __STDC_LIMIT_MACROS
 #endif
 #if defined(__cplusplus) && !defined(__STDC_CONSTANT_MACROS)
-#define __STDC_CONSTANT_MACROS
+#   define __STDC_CONSTANT_MACROS
 #endif
 
 #include_next <stdint.h>
 
-#endif // _LIBCPP_STDINT_H
+#endif  // _LIBCPP_STDINT_H

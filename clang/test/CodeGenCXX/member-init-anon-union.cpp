@@ -15,6 +15,7 @@ int f() { return a; }
 // CHECK-NOT: }
 // CHECK: call {{.*}}@"[[CONSTRUCT_GLOBAL:.*]]C1Ev"
 
+
 int g() {
   union {
     int a;

@@ -11,6 +11,6 @@ struct Y;
 // Ensure that we can't use the definitions of X and Y, since we've not imported module a.
 Y *yp;
 X *xp = yp; // expected-error {{cannot initialize}}
-_Static_assert(!__is_convertible(Y *, X *), "");
-X &xr = *yp;          // expected-error {{unrelated type}}
+_Static_assert(!__is_convertible(Y*, X*), "");
+X &xr = *yp; // expected-error {{unrelated type}}
 int g(Y &y) { f(y); } // expected-error {{undeclared identifier 'f'}}

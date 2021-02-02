@@ -14,13 +14,10 @@
 #include "test_macros.h"
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
-#error "TEST_HAS_NO_EXCEPTIONS should be defined"
+#  error "TEST_HAS_NO_EXCEPTIONS should be defined"
 #endif
 
 int main(int, char**) {
-  try {
-    (void)0;
-  } catch (...) {
-  } // expected-error {{exceptions disabled}}
-  return 0;
+    try { (void)0; } catch (...) { } // expected-error {{exceptions disabled}}
+    return 0;
 }

@@ -11,7 +11,8 @@
 namespace NS {
 
 template <class _Tp, _Tp __v>
-struct TS {
+struct TS
+{
   static const _Tp value = __v;
 };
 
@@ -20,7 +21,7 @@ const _Tp TS<_Tp, __v>::value;
 
 TS<int, 2> g1;
 
-} // namespace NS
+}
 
 //===----------------------------------------------------------------------===//
 #elif not defined(HEADER2)

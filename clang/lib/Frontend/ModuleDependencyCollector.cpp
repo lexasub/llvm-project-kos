@@ -26,7 +26,6 @@ namespace {
 /// Private implementations for ModuleDependencyCollector
 class ModuleDependencyListener : public ASTReaderListener {
   ModuleDependencyCollector &Collector;
-
 public:
   ModuleDependencyListener(ModuleDependencyCollector &Collector)
       : Collector(Collector) {}
@@ -97,7 +96,7 @@ struct ModuleDependencyMMCallbacks : public ModuleMapCallbacks {
   }
 };
 
-} // namespace
+}
 
 void ModuleDependencyCollector::attachToASTReader(ASTReader &R) {
   R.addListener(std::make_unique<ModuleDependencyListener>(*this));

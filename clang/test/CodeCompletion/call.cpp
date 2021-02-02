@@ -2,16 +2,16 @@
 // matter in this test.
 void f(float x, float y);
 void f(int i, int j, int k);
-struct X {};
+struct X { };
 void f(X);
 namespace N {
-struct Y {
-  Y(int = 0);
-
-  operator int() const;
-};
-void f(Y y, int ZZ);
-} // namespace N
+  struct Y { 
+    Y(int = 0); 
+    
+    operator int() const;
+  };
+  void f(Y y, int ZZ);
+}
 typedef N::Y Y;
 void f();
 

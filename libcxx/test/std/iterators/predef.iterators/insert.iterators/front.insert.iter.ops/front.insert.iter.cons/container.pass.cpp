@@ -19,13 +19,16 @@
 #include "test_macros.h"
 
 template <class C>
-void test(C c) {
-  std::front_insert_iterator<C> i(c);
+void
+test(C c)
+{
+    std::front_insert_iterator<C> i(c);
 }
 
-int main(int, char**) {
-  test(std::list<int>());
-  test(nasty_list<int>());
+int main(int, char**)
+{
+    test(std::list<int>());
+    test(nasty_list<int>());
 
   return 0;
 }

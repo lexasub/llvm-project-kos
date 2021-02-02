@@ -25,8 +25,7 @@ void lambdas() {
   auto f = [&i](int k) {
     // LMBGEN: store {{.*}} @[[LFC]], i64 0, i64 1
     // LMBUSE: br {{.*}} !prof ![[LF1:[0-9]+]]
-    if (i > 0) {
-    }
+    if (i > 0) {}
     // LMBGEN: store {{.*}} @[[LFC]], i64 0, i64 2
     // LMBUSE: br {{.*}} !prof ![[LF2:[0-9]+]]
     return k && i;
@@ -34,8 +33,7 @@ void lambdas() {
 
   // PGOGEN: store {{.*}} @[[LWC]], i64 0, i64 1
   // PGOUSE: br {{.*}} !prof ![[LW1:[0-9]+]]
-  if (i) {
-  }
+  if (i) {}
 
   // PGOGEN: store {{.*}} @[[LWC]], i64 0, i64 2
   // PGOUSE: br {{.*}} !prof ![[LW2:[0-9]+]]
@@ -44,8 +42,7 @@ void lambdas() {
 
   // PGOGEN: store {{.*}} @[[LWC]], i64 0, i64 3
   // PGOUSE: br {{.*}} !prof ![[LW3:[0-9]+]]
-  if (i) {
-  }
+  if (i) {}
 }
 
 // PGOUSE-DAG: ![[LW1]] = !{!"branch_weights", i32 2, i32 1}

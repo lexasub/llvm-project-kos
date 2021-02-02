@@ -10,6 +10,7 @@
 #ifndef liblldb_ProcessPOSIXLog_h_
 #define liblldb_ProcessPOSIXLog_h_
 
+
 #include "lldb/Utility/Log.h"
 
 #define POSIX_LOG_PROCESS (1u << 1)
@@ -33,6 +34,6 @@ public:
     return g_channel.GetLogIfAll(mask);
   }
 };
-} // namespace lldb_private
+}
 
 #endif // liblldb_ProcessPOSIXLog_h_

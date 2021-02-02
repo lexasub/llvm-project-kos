@@ -21,6 +21,7 @@
 _LIBCPP_PUSH_MACROS
 #include <__undef_macros>
 
+
 _LIBCPP_BEGIN_NAMESPACE_STD
 
 // Helper class to allocate memory using an Allocator in an exception safe
@@ -42,46 +43,46 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 //
 // This is similar to a unique_ptr, except it's easier to use with a
 // custom allocator.
-template <class _Alloc>
+template<class _Alloc>
 struct __allocation_guard {
-  using _Pointer = typename allocator_traits<_Alloc>::pointer;
-  using _Size = typename allocator_traits<_Alloc>::size_type;
+    using _Pointer = typename allocator_traits<_Alloc>::pointer;
+    using _Size = typename allocator_traits<_Alloc>::size_type;
 
-  template <
-      class
-      _AllocT> // we perform the allocator conversion inside the constructor
-  _LIBCPP_HIDE_FROM_ABI explicit __allocation_guard(_AllocT __alloc, _Size __n)
-      : __alloc_(_VSTD::move(__alloc)), __n_(__n),
-        __ptr_(allocator_traits<_Alloc>::allocate(
-            __alloc_, __n_)) // initialization order is important
-  {}
+    template<class _AllocT> // we perform the allocator conversion inside the constructor
+    _LIBCPP_HIDE_FROM_ABI
+    explicit __allocation_guard(_AllocT __alloc, _Size __n)
+        : __alloc_(_VSTD::move(__alloc))
+        , __n_(__n)
+        , __ptr_(allocator_traits<_Alloc>::allocate(__alloc_, __n_)) // initialization order is important
+    { }
 
-  _LIBCPP_HIDE_FROM_ABI
-  ~__allocation_guard() _NOEXCEPT {
-    if (__ptr_ != nullptr) {
-      allocator_traits<_Alloc>::deallocate(__alloc_, __ptr_, __n_);
+    _LIBCPP_HIDE_FROM_ABI
+    ~__allocation_guard() _NOEXCEPT {
+        if (__ptr_ != nullptr) {
+            allocator_traits<_Alloc>::deallocate(__alloc_, __ptr_, __n_);
+        }
     }
-  }
 
-  _LIBCPP_HIDE_FROM_ABI
-  _Pointer __release_ptr()
-      _NOEXCEPT { // not called __release() because it's a keyword in objective-c++
-    _Pointer __tmp = __ptr_;
-    __ptr_ = nullptr;
-    return __tmp;
-  }
+    _LIBCPP_HIDE_FROM_ABI
+    _Pointer __release_ptr() _NOEXCEPT { // not called __release() because it's a keyword in objective-c++
+        _Pointer __tmp = __ptr_;
+        __ptr_ = nullptr;
+        return __tmp;
+    }
 
-  _LIBCPP_HIDE_FROM_ABI
-  _Pointer __get() const _NOEXCEPT { return __ptr_; }
+    _LIBCPP_HIDE_FROM_ABI
+    _Pointer __get() const _NOEXCEPT {
+        return __ptr_;
+    }
 
 private:
-  _Alloc __alloc_;
-  _Size __n_;
-  _Pointer __ptr_;
+    _Alloc __alloc_;
+    _Size __n_;
+    _Pointer __ptr_;
 };
 
 _LIBCPP_END_NAMESPACE_STD
 
 _LIBCPP_POP_MACROS
 
-#endif // _LIBCPP___MEMORY_UTILITIES_H
+#endif  // _LIBCPP___MEMORY_UTILITIES_H

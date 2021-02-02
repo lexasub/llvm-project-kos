@@ -13,10 +13,10 @@
 // Oftentimes on Windows there are open handles, and deletion will fail.
 // REQUIRES: can-remove-opened-file
 
-void qq(S *) {}
+void qq(S*) {}
 
 #ifdef REDECL
-float foo() { return 0f; }
+float foo() {return 0f;}
 #endif
 
 #ifdef INSTANTIATION

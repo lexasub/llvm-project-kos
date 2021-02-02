@@ -78,8 +78,9 @@ public:
 };
 
 TEST(ParamRegion, ParamRegionTest) {
-  EXPECT_TRUE(tooling::runToolOnCode(std::make_unique<ParamRegionTestAction>(),
-                                     R"(void foo(int n);
+  EXPECT_TRUE(
+      tooling::runToolOnCode(std::make_unique<ParamRegionTestAction>(),
+                             R"(void foo(int n);
                                 void baz(int p);
 
                                 void foo(int n) {
@@ -105,8 +106,9 @@ TEST(ParamRegion, ParamRegionTest) {
 
                                 void bar(int l);
                                 void baz(int p);)"));
-  EXPECT_TRUE(tooling::runToolOnCode(std::make_unique<ParamRegionTestAction>(),
-                                     R"(@interface O
+  EXPECT_TRUE(
+      tooling::runToolOnCode(std::make_unique<ParamRegionTestAction>(),
+                             R"(@interface O
                                 + alloc;
                                 - initWithInt:(int)q;
                                 @end
@@ -114,7 +116,7 @@ TEST(ParamRegion, ParamRegionTest) {
                                 void qix(int r) {
                                   O *o = [[O alloc] initWithInt:r];
                                 })",
-                                     "input.m"));
+                             "input.m"));
 }
 
 } // namespace

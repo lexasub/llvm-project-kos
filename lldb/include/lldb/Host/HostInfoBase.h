@@ -58,8 +58,7 @@ public:
   static const ArchSpec &
   GetArchitecture(ArchitectureKind arch_kind = eArchKindDefault);
 
-  static llvm::Optional<ArchitectureKind>
-  ParseArchitectureKind(llvm::StringRef kind);
+  static llvm::Optional<ArchitectureKind> ParseArchitectureKind(llvm::StringRef kind);
 
   /// Returns the directory containing the lldb shared library. Only the
   /// directory member of the FileSpec is filled in.
@@ -101,7 +100,7 @@ public:
 
   static FileSpec GetXcodeContentsDirectory() { return {}; }
   static FileSpec GetXcodeDeveloperDirectory() { return {}; }
-
+  
   /// Return the directory containing a specific Xcode SDK.
   static llvm::StringRef GetXcodeSDKPath(XcodeSDK sdk) { return {}; }
 
@@ -125,6 +124,6 @@ protected:
   static void ComputeHostArchitectureSupport(ArchSpec &arch_32,
                                              ArchSpec &arch_64);
 };
-} // namespace lldb_private
+}
 
 #endif

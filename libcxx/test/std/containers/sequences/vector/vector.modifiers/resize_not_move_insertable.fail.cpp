@@ -22,7 +22,7 @@
 template <int>
 class BadUserNoCookie {
 public:
-  BadUserNoCookie() {}
+  BadUserNoCookie() { }
 
   BadUserNoCookie(BadUserNoCookie&&) = delete;
   BadUserNoCookie& operator=(BadUserNoCookie&&) = delete;
@@ -43,7 +43,7 @@ int main(int, char**) {
     x.emplace_back();
   }
   {
-    std::vector<BadUserNoCookie<2> > x;
+    std::vector<BadUserNoCookie<2>> x;
     BadUserNoCookie<2> c;
     x.push_back(c);
   }

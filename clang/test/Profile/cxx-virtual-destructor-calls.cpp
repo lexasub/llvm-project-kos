@@ -25,4 +25,4 @@ struct B : A {
 // CHECK-NOT: @__profc__ZN1BD0Ev = {{(private|internal)}} global [1 x i64] zeroinitializer
 // CHECK-NOT: @__profd__ZN1BD0Ev =
 
-B::~B() {}
+B::~B() { }

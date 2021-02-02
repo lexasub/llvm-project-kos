@@ -14,10 +14,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  using namespace std::literals::string_literals;
+int main(int, char**)
+{
+    using namespace std::literals::string_literals;
 
-  std::string foo = "" s;
+    std::string foo  =   ""s;
 
   return 0;
 }

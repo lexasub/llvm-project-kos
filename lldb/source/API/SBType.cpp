@@ -51,7 +51,7 @@ SBType::SBType(const SBType &rhs) : m_opaque_sp() {
 //{}
 //
 bool SBType::operator==(SBType &rhs) {
-  LLDB_RECORD_METHOD(bool, SBType, operator==, (lldb::SBType &), rhs);
+  LLDB_RECORD_METHOD(bool, SBType, operator==,(lldb::SBType &), rhs);
 
   if (!IsValid())
     return !rhs.IsValid();
@@ -63,7 +63,7 @@ bool SBType::operator==(SBType &rhs) {
 }
 
 bool SBType::operator!=(SBType &rhs) {
-  LLDB_RECORD_METHOD(bool, SBType, operator!=, (lldb::SBType &), rhs);
+  LLDB_RECORD_METHOD(bool, SBType, operator!=,(lldb::SBType &), rhs);
 
   if (!IsValid())
     return rhs.IsValid();
@@ -81,7 +81,7 @@ void SBType::SetSP(const lldb::TypeImplSP &type_impl_sp) {
 }
 
 SBType &SBType::operator=(const SBType &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBType &, SBType, operator=, (const lldb::SBType &),
+  LLDB_RECORD_METHOD(lldb::SBType &, SBType, operator=,(const lldb::SBType &),
                      rhs);
 
   if (this != &rhs) {
@@ -563,17 +563,17 @@ lldb::SBType SBType::GetTemplateArgumentType(uint32_t idx) {
     return LLDB_RECORD_RESULT(SBType());
 
   CompilerType type;
-  switch (GetTemplateArgumentKind(idx)) {
-  case eTemplateArgumentKindType:
-    type = m_opaque_sp->GetCompilerType(false).GetTypeTemplateArgument(idx);
-    break;
-  case eTemplateArgumentKindIntegral:
-    type = m_opaque_sp->GetCompilerType(false)
-               .GetIntegralTemplateArgument(idx)
-               ->type;
-    break;
-  default:
-    break;
+  switch(GetTemplateArgumentKind(idx)) {
+    case eTemplateArgumentKindType:
+      type = m_opaque_sp->GetCompilerType(false).GetTypeTemplateArgument(idx);
+      break;
+    case eTemplateArgumentKindIntegral:
+      type = m_opaque_sp->GetCompilerType(false)
+                 .GetIntegralTemplateArgument(idx)
+                 ->type;
+      break;
+    default:
+      break;
   }
   if (type.IsValid())
     return LLDB_RECORD_RESULT(SBType(type));
@@ -613,8 +613,8 @@ SBTypeList::operator bool() const {
 }
 
 SBTypeList &SBTypeList::operator=(const SBTypeList &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeList &, SBTypeList, operator=,
-                     (const lldb::SBTypeList &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBTypeList &,
+                     SBTypeList, operator=,(const lldb::SBTypeList &), rhs);
 
   if (this != &rhs) {
     m_opaque_up = std::make_unique<TypeListImpl>();
@@ -665,8 +665,8 @@ SBTypeMember::SBTypeMember(const SBTypeMember &rhs) : m_opaque_up() {
 }
 
 lldb::SBTypeMember &SBTypeMember::operator=(const lldb::SBTypeMember &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeMember &, SBTypeMember, operator=,
-                     (const lldb::SBTypeMember &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBTypeMember &,
+                     SBTypeMember, operator=,(const lldb::SBTypeMember &), rhs);
 
   if (this != &rhs) {
     if (rhs.IsValid())
@@ -792,11 +792,12 @@ SBTypeMemberFunction::SBTypeMemberFunction(const SBTypeMemberFunction &rhs)
                           (const lldb::SBTypeMemberFunction &), rhs);
 }
 
-lldb::SBTypeMemberFunction &
-SBTypeMemberFunction::operator=(const lldb::SBTypeMemberFunction &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeMemberFunction &,
-                     SBTypeMemberFunction, operator=,
-                     (const lldb::SBTypeMemberFunction &), rhs);
+lldb::SBTypeMemberFunction &SBTypeMemberFunction::
+operator=(const lldb::SBTypeMemberFunction &rhs) {
+  LLDB_RECORD_METHOD(
+      lldb::SBTypeMemberFunction &,
+      SBTypeMemberFunction, operator=,(const lldb::SBTypeMemberFunction &),
+      rhs);
 
   if (this != &rhs)
     m_opaque_sp = rhs.m_opaque_sp;
@@ -925,13 +926,14 @@ const TypeMemberFunctionImpl &SBTypeMemberFunction::ref() const {
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBType>(Registry &R) {
+template <>
+void RegisterMethods<SBType>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBType, ());
   LLDB_REGISTER_CONSTRUCTOR(SBType, (const lldb::SBType &));
-  LLDB_REGISTER_METHOD(bool, SBType, operator==, (lldb::SBType &));
-  LLDB_REGISTER_METHOD(bool, SBType, operator!=, (lldb::SBType &));
-  LLDB_REGISTER_METHOD(lldb::SBType &, SBType, operator=,
-                       (const lldb::SBType &));
+  LLDB_REGISTER_METHOD(bool, SBType, operator==,(lldb::SBType &));
+  LLDB_REGISTER_METHOD(bool, SBType, operator!=,(lldb::SBType &));
+  LLDB_REGISTER_METHOD(lldb::SBType &,
+                       SBType, operator=,(const lldb::SBType &));
   LLDB_REGISTER_METHOD_CONST(bool, SBType, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBType, operator bool, ());
   LLDB_REGISTER_METHOD(uint64_t, SBType, GetByteSize, ());
@@ -953,7 +955,8 @@ template <> void RegisterMethods<SBType>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBType, IsAnonymousType, ());
   LLDB_REGISTER_METHOD(bool, SBType, IsScopedEnumerationType, ());
   LLDB_REGISTER_METHOD(lldb::SBType, SBType, GetFunctionReturnType, ());
-  LLDB_REGISTER_METHOD(lldb::SBTypeList, SBType, GetFunctionArgumentTypes, ());
+  LLDB_REGISTER_METHOD(lldb::SBTypeList, SBType, GetFunctionArgumentTypes,
+                       ());
   LLDB_REGISTER_METHOD(uint32_t, SBType, GetNumberOfMemberFunctions, ());
   LLDB_REGISTER_METHOD(lldb::SBTypeMemberFunction, SBType,
                        GetMemberFunctionAtIndex, (uint32_t));
@@ -971,8 +974,10 @@ template <> void RegisterMethods<SBType>(Registry &R) {
                        (uint32_t));
   LLDB_REGISTER_METHOD(lldb::SBTypeMember, SBType, GetVirtualBaseClassAtIndex,
                        (uint32_t));
-  LLDB_REGISTER_METHOD(lldb::SBTypeEnumMemberList, SBType, GetEnumMembers, ());
-  LLDB_REGISTER_METHOD(lldb::SBTypeMember, SBType, GetFieldAtIndex, (uint32_t));
+  LLDB_REGISTER_METHOD(lldb::SBTypeEnumMemberList, SBType, GetEnumMembers,
+                       ());
+  LLDB_REGISTER_METHOD(lldb::SBTypeMember, SBType, GetFieldAtIndex,
+                       (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBType, IsTypeComplete, ());
   LLDB_REGISTER_METHOD(uint32_t, SBType, GetTypeFlags, ());
   LLDB_REGISTER_METHOD(lldb::SBModule, SBType, GetModule, ());
@@ -988,15 +993,15 @@ template <> void RegisterMethods<SBType>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeList, (const lldb::SBTypeList &));
   LLDB_REGISTER_METHOD(bool, SBTypeList, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeList, operator bool, ());
-  LLDB_REGISTER_METHOD(lldb::SBTypeList &, SBTypeList, operator=,
-                       (const lldb::SBTypeList &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeList &,
+                       SBTypeList, operator=,(const lldb::SBTypeList &));
   LLDB_REGISTER_METHOD(void, SBTypeList, Append, (lldb::SBType));
   LLDB_REGISTER_METHOD(lldb::SBType, SBTypeList, GetTypeAtIndex, (uint32_t));
   LLDB_REGISTER_METHOD(uint32_t, SBTypeList, GetSize, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeMember, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeMember, (const lldb::SBTypeMember &));
-  LLDB_REGISTER_METHOD(lldb::SBTypeMember &, SBTypeMember, operator=,
-                       (const lldb::SBTypeMember &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeMember &,
+                       SBTypeMember, operator=,(const lldb::SBTypeMember &));
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeMember, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeMember, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBTypeMember, GetName, ());
@@ -1010,26 +1015,27 @@ template <> void RegisterMethods<SBType>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeMemberFunction, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeMemberFunction,
                             (const lldb::SBTypeMemberFunction &));
-  LLDB_REGISTER_METHOD(lldb::SBTypeMemberFunction &,
-                       SBTypeMemberFunction, operator=,
-                       (const lldb::SBTypeMemberFunction &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBTypeMemberFunction &,
+      SBTypeMemberFunction, operator=,(const lldb::SBTypeMemberFunction &));
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeMemberFunction, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeMemberFunction, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBTypeMemberFunction, GetName, ());
   LLDB_REGISTER_METHOD(const char *, SBTypeMemberFunction, GetDemangledName,
                        ());
-  LLDB_REGISTER_METHOD(const char *, SBTypeMemberFunction, GetMangledName, ());
+  LLDB_REGISTER_METHOD(const char *, SBTypeMemberFunction, GetMangledName,
+                       ());
   LLDB_REGISTER_METHOD(lldb::SBType, SBTypeMemberFunction, GetType, ());
   LLDB_REGISTER_METHOD(lldb::SBType, SBTypeMemberFunction, GetReturnType, ());
   LLDB_REGISTER_METHOD(uint32_t, SBTypeMemberFunction, GetNumberOfArguments,
                        ());
   LLDB_REGISTER_METHOD(lldb::SBType, SBTypeMemberFunction,
                        GetArgumentTypeAtIndex, (uint32_t));
-  LLDB_REGISTER_METHOD(lldb::MemberFunctionKind, SBTypeMemberFunction, GetKind,
-                       ());
+  LLDB_REGISTER_METHOD(lldb::MemberFunctionKind, SBTypeMemberFunction,
+                       GetKind, ());
   LLDB_REGISTER_METHOD(bool, SBTypeMemberFunction, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

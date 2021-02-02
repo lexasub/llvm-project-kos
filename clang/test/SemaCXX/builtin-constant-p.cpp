@@ -5,22 +5,22 @@ using intptr_t = __INTPTR_TYPE__;
 
 // Test interaction of constexpr and __builtin_constant_p.
 
-template <typename T> constexpr bool bcp(T t) {
+template<typename T> constexpr bool bcp(T t) {
   return __builtin_constant_p(t);
 }
-template <typename T> constexpr bool bcp_fold(T t) {
+template<typename T> constexpr bool bcp_fold(T t) {
   return __builtin_constant_p(((void)(intptr_t)&t, t));
 }
 
 constexpr intptr_t ensure_fold_is_generally_not_enabled = // expected-error {{constant expression}}
-    (intptr_t)&ensure_fold_is_generally_not_enabled;      // expected-note {{cast}}
+    (intptr_t)&ensure_fold_is_generally_not_enabled; // expected-note {{cast}}
 
 constexpr intptr_t ptr_to_int(const void *p) {
   return __builtin_constant_p(1) ? (intptr_t)p : (intptr_t)p;
 }
 
 constexpr int *int_to_ptr(intptr_t n) {
-  return __builtin_constant_p(1) ? (int *)n : (int *)n;
+  return __builtin_constant_p(1) ? (int*)n : (int*)n;
 }
 
 int x;
@@ -39,10 +39,10 @@ static_assert(bcp("foo"));
 static_assert(bcp_fold("foo"));
 
 // Null pointers are considered constant.
-static_assert(bcp<int *>(nullptr));
-static_assert(bcp_fold<int *>(nullptr));
-static_assert(bcp<const char *>(nullptr));
-static_assert(bcp_fold<const char *>(nullptr));
+static_assert(bcp<int*>(nullptr));
+static_assert(bcp_fold<int*>(nullptr));
+static_assert(bcp<const char*>(nullptr));
+static_assert(bcp_fold<const char*>(nullptr));
 
 // Other pointers are not.
 static_assert(!bcp(&x));
@@ -57,9 +57,9 @@ static_assert(!bcp_fold(ptr_to_int(&x)));
 // Integers cast to pointers follow the integer rules.
 static_assert(bcp(int_to_ptr(0)));
 static_assert(bcp_fold(int_to_ptr(0)));
-static_assert(bcp(int_to_ptr(123)));             // GCC rejects these due to not recognizing
-static_assert(bcp_fold(int_to_ptr(123)));        // the bcp conditional in 'int_to_ptr' ...
-static_assert(__builtin_constant_p((int *)123)); // ... but GCC accepts this
+static_assert(bcp(int_to_ptr(123)));      // GCC rejects these due to not recognizing
+static_assert(bcp_fold(int_to_ptr(123))); // the bcp conditional in 'int_to_ptr' ...
+static_assert(__builtin_constant_p((int*)123)); // ... but GCC accepts this
 
 // State mutations in the operand are not permitted.
 //
@@ -134,9 +134,7 @@ static_assert(mutate6(true) == 10);
 
 // GCC strangely returns true for the address of a type_info object, despite it
 // not being a pointer to the start of a string literal.
-namespace std {
-struct type_info;
-}
+namespace std { struct type_info; }
 static_assert(__builtin_constant_p(&typeid(int)));
 
 void mutate_as_side_effect() {
@@ -145,29 +143,26 @@ void mutate_as_side_effect() {
 }
 
 namespace dtor_side_effect {
-struct A {
-  constexpr A() {}
-  ~A();
-};
-static_assert(!__builtin_constant_p((A{}, 123)));
-} // namespace dtor_side_effect
+  struct A {
+    constexpr A() {}
+    ~A();
+  };
+  static_assert(!__builtin_constant_p((A{}, 123)));
+}
 
 #if __cplusplus >= 202002L
 namespace constexpr_dtor {
-struct A {
-  int *p;
-  constexpr ~A() { *p = 0; }
-};
-struct Q {
-  int n;
-  constexpr int *get() { return &n; }
-};
-static_assert(!__builtin_constant_p((A{}, 123)));
-// FIXME: We should probably accept this. GCC does.
-// However, GCC appears to do so by running the destructors at the end of the
-// enclosing full-expression, which seems broken; running them at the end of
-// the evaluation of the __builtin_constant_p argument would be more
-// defensible.
-static_assert(!__builtin_constant_p((A{Q().get()}, 123)));
-} // namespace constexpr_dtor
+  struct A {
+    int *p;
+    constexpr ~A() { *p = 0; }
+  };
+  struct Q { int n; constexpr int *get() { return &n; } };
+  static_assert(!__builtin_constant_p((A{}, 123)));
+  // FIXME: We should probably accept this. GCC does.
+  // However, GCC appears to do so by running the destructors at the end of the
+  // enclosing full-expression, which seems broken; running them at the end of
+  // the evaluation of the __builtin_constant_p argument would be more
+  // defensible.
+  static_assert(!__builtin_constant_p((A{Q().get()}, 123)));
+}
 #endif

@@ -11,20 +11,21 @@
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_thread_registry.h"
 
-#include <vector>
+#include "sanitizer_pthread_wrappers.h"
 
 #include "gtest/gtest.h"
-#include "sanitizer_pthread_wrappers.h"
+
+#include <vector>
 
 namespace __sanitizer {
 
 static BlockingMutex tctx_allocator_lock(LINKER_INITIALIZED);
 static LowLevelAllocator tctx_allocator;
 
-template <typename TCTX>
+template<typename TCTX>
 static ThreadContextBase *GetThreadContext(u32 tid) {
   BlockingMutexLock l(&tctx_allocator_lock);
-  return new (tctx_allocator) TCTX(tid);
+  return new(tctx_allocator) TCTX(tid);
 }
 
 static const u32 kMaxRegistryThreads = 1000;
@@ -39,12 +40,16 @@ static void CheckThreadQuantity(ThreadRegistry *registry, uptr exp_total,
   EXPECT_EQ(exp_alive, alive);
 }
 
-static bool is_detached(u32 tid) { return (tid % 2 == 0); }
+static bool is_detached(u32 tid) {
+  return (tid % 2 == 0);
+}
 
-static uptr get_uid(u32 tid) { return tid * 2; }
+static uptr get_uid(u32 tid) {
+  return tid * 2;
+}
 
 static bool HasName(ThreadContextBase *tctx, void *arg) {
-  char *name = (char *)arg;
+  char *name = (char*)arg;
   return (0 == internal_strcmp(tctx->name, name));
 }
 
@@ -54,7 +59,7 @@ static bool HasUid(ThreadContextBase *tctx, void *arg) {
 }
 
 static void MarkUidAsPresent(ThreadContextBase *tctx, void *arg) {
-  bool *arr = (bool *)arg;
+  bool *arr = (bool*)arg;
   arr[tctx->tid] = true;
 }
 
@@ -87,18 +92,18 @@ static void TestRegistry(ThreadRegistry *registry, bool has_quarantine) {
         registry->CreateThread(get_uid(i), is_detached(i), 0, 0));
   }
   ASSERT_LE(kRegistryQuarantine, 5U);
-  u32 exp_total = 16 - (has_quarantine ? 5 - kRegistryQuarantine : 0);
+  u32 exp_total = 16 - (has_quarantine ? 5 - kRegistryQuarantine  : 0);
   CheckThreadQuantity(registry, exp_total, 6, 11);
   // Test SetThreadName and FindThread.
   registry->SetThreadName(6, "six");
   registry->SetThreadName(7, "seven");
-  EXPECT_EQ(7U, registry->FindThread(HasName, (void *)"seven"));
+  EXPECT_EQ(7U, registry->FindThread(HasName, (void*)"seven"));
   EXPECT_EQ(ThreadRegistry::kUnknownTid,
-            registry->FindThread(HasName, (void *)"none"));
-  EXPECT_EQ(0U, registry->FindThread(HasUid, (void *)get_uid(0)));
-  EXPECT_EQ(10U, registry->FindThread(HasUid, (void *)get_uid(10)));
+            registry->FindThread(HasName, (void*)"none"));
+  EXPECT_EQ(0U, registry->FindThread(HasUid, (void*)get_uid(0)));
+  EXPECT_EQ(10U, registry->FindThread(HasUid, (void*)get_uid(10)));
   EXPECT_EQ(ThreadRegistry::kUnknownTid,
-            registry->FindThread(HasUid, (void *)0x1234));
+            registry->FindThread(HasUid, (void*)0x1234));
   // Detach and finish and join remaining threads.
   for (u32 i = 6; i <= 10; i++) {
     registry->DetachThread(i, 0);
@@ -125,15 +130,16 @@ static void TestRegistry(ThreadRegistry *registry, bool has_quarantine) {
     ThreadRegistryLock l(registry);
     registry->CheckLocked();
     ThreadContextBase *main_thread = registry->GetThreadLocked(0);
-    EXPECT_EQ(main_thread,
-              registry->FindThreadContextLocked(HasUid, (void *)get_uid(0)));
+    EXPECT_EQ(main_thread, registry->FindThreadContextLocked(
+        HasUid, (void*)get_uid(0)));
   }
   EXPECT_EQ(11U, registry->GetMaxAliveThreads());
 }
 
 TEST(SanitizerCommon, ThreadRegistryTest) {
   ThreadRegistry quarantine_registry(GetThreadContext<ThreadContextBase>,
-                                     kMaxRegistryThreads, kRegistryQuarantine);
+                                     kMaxRegistryThreads,
+                                     kRegistryQuarantine);
   TestRegistry(&quarantine_registry, true);
 
   ThreadRegistry no_quarantine_registry(GetThreadContext<ThreadContextBase>,
@@ -176,18 +182,18 @@ class TestThreadContext final : public ThreadContextBase {
 }  // namespace
 
 void *RunThread(void *arg) {
-  RunThreadArgs *args = static_cast<RunThreadArgs *>(arg);
+  RunThreadArgs *args = static_cast<RunThreadArgs*>(arg);
   std::vector<int> tids;
   for (int i = 0; i < kThreadsPerShard; i++)
     tids.push_back(
-        args->registry->CreateThread(0, false, 0, (void *)args->shard));
+        args->registry->CreateThread(0, false, 0, (void*)args->shard));
   for (int i = 0; i < kThreadsPerShard; i++)
     args->registry->StartThread(tids[i], 0, ThreadType::Regular,
-                                (void *)args->shard);
+        (void*)args->shard);
   for (int i = 0; i < kThreadsPerShard; i++)
     args->registry->FinishThread(tids[i]);
   for (int i = 0; i < kThreadsPerShard; i++)
-    args->registry->JoinThread(tids[i], (void *)args->shard);
+    args->registry->JoinThread(tids[i], (void*)args->shard);
   return 0;
 }
 

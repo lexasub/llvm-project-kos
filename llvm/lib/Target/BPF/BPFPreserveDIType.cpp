@@ -91,8 +91,8 @@ static bool BPFPreserveDITypeImpl(Function &F) {
 
     BasicBlock *BB = Call->getParent();
     IntegerType *VarType = Type::getInt64Ty(BB->getContext());
-    std::string GVName =
-        BaseName + std::to_string(Count) + "$" + std::to_string(Reloc);
+    std::string GVName = BaseName + std::to_string(Count) + "$" +
+        std::to_string(Reloc);
     GlobalVariable *GV = new GlobalVariable(
         *M, VarType, false, GlobalVariable::ExternalLinkage, NULL, GVName);
     GV->addAttribute(BPFCoreSharedInfo::TypeIdAttr);

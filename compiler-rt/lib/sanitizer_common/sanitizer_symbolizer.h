@@ -166,7 +166,7 @@ class Symbolizer final {
 
    private:
     static const uptr kInitialCapacity = 1000;
-    InternalMmapVector<const char *> storage_;
+    InternalMmapVector<const char*> storage_;
     const char *last_match_;
 
     BlockingMutex *mu_;
@@ -206,7 +206,6 @@ class Symbolizer final {
    public:
     explicit SymbolizerScope(const Symbolizer *sym);
     ~SymbolizerScope();
-
    private:
     const Symbolizer *sym_;
   };

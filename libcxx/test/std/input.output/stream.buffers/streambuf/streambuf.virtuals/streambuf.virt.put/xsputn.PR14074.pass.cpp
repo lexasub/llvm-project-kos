@@ -26,38 +26,39 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
+
 // Count the number of bytes in a file -- make sure to use only functionality
 // provided by the C library to avoid relying on the C++ library, which we're
 // trying to test.
 static std::size_t count_bytes(char const* filename) {
-  std::FILE* f = std::fopen(filename, "rb");
-  std::size_t count = 0;
-  while (std::fgetc(f) != EOF)
-    ++count;
-  std::fclose(f);
-  return count;
+    std::FILE* f = std::fopen(filename, "rb");
+    std::size_t count = 0;
+    while (std::fgetc(f) != EOF)
+        ++count;
+    std::fclose(f);
+    return count;
 }
 
 int main(int, char**) {
-  {
-    // with basic_stringbuf
-    std::basic_stringbuf<char> buf;
-    std::streamsize sz = buf.sputn("\xFF", 1);
-    assert(sz == 1);
-    assert(buf.str().size() == 1);
-  }
-  {
-    // with basic_filebuf
-    std::string temp = get_temp_file_name();
     {
-      std::basic_filebuf<char> buf;
-      buf.open(temp.c_str(), std::ios_base::out);
-      std::streamsize sz = buf.sputn("\xFF", 1);
-      assert(sz == 1);
+        // with basic_stringbuf
+        std::basic_stringbuf<char> buf;
+        std::streamsize sz = buf.sputn("\xFF", 1);
+        assert(sz == 1);
+        assert(buf.str().size() == 1);
     }
-    assert(count_bytes(temp.c_str()) == 1);
-    std::remove(temp.c_str());
-  }
+    {
+        // with basic_filebuf
+        std::string temp = get_temp_file_name();
+        {
+            std::basic_filebuf<char> buf;
+            buf.open(temp.c_str(), std::ios_base::out);
+            std::streamsize sz = buf.sputn("\xFF", 1);
+            assert(sz == 1);
+        }
+        assert(count_bytes(temp.c_str()) == 1);
+        std::remove(temp.c_str());
+    }
 
-  return 0;
+    return 0;
 }

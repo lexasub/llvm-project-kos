@@ -1250,28 +1250,27 @@ protected:
                                          // the stop info was checked against
                                          // the stop info override
   const uint32_t m_index_id; ///< A unique 1 based index assigned to each thread
-                             /// for easy UI/command line access.
+                             ///for easy UI/command line access.
   lldb::RegisterContextSP m_reg_context_sp; ///< The register context for this
-                                            /// thread's current register state.
+                                            ///thread's current register state.
   lldb::StateType m_state;                  ///< The state of our process.
   mutable std::recursive_mutex
-      m_state_mutex; ///< Multithreaded protection for m_state.
+      m_state_mutex;       ///< Multithreaded protection for m_state.
   mutable std::recursive_mutex
       m_frame_mutex; ///< Multithreaded protection for m_state.
   lldb::StackFrameListSP m_curr_frames_sp; ///< The stack frames that get lazily
-                                           /// populated after a thread stops.
-  lldb::StackFrameListSP
-      m_prev_frames_sp; ///< The previous stack frames from
-                        /// the last time this thread stopped.
-  int m_resume_signal;  ///< The signal that should be used when continuing this
-                        /// thread.
+                                           ///populated after a thread stops.
+  lldb::StackFrameListSP m_prev_frames_sp; ///< The previous stack frames from
+                                           ///the last time this thread stopped.
+  int m_resume_signal; ///< The signal that should be used when continuing this
+                       ///thread.
   lldb::StateType m_resume_state; ///< This state is used to force a thread to
-                                  /// be suspended from outside the ThreadPlan
-                                  /// logic.
+                                  ///be suspended from outside the ThreadPlan
+                                  ///logic.
   lldb::StateType m_temporary_resume_state; ///< This state records what the
-                                            /// thread was told to do by the
-                                            /// thread plan logic for the
-                                            /// current resume.
+                                            ///thread was told to do by the
+                                            ///thread plan logic for the current
+                                            ///resume.
   /// It gets set in Thread::ShouldResume.
   std::unique_ptr<lldb_private::Unwind> m_unwinder_up;
   bool m_destroy_called; // This is used internally to make sure derived Thread

@@ -77,8 +77,7 @@ L1:
   goto L2; // expected-error {{use of undeclared label 'L2'}}
 #pragma omp target teams distribute parallel for
   for (int i = 0; i < argc; ++i)
-  L2:
-    foo();
+  L2: foo();
 
 #pragma omp target teams distribute parallel for
   for (int i = 0; i < argc; ++i) {
@@ -91,8 +90,7 @@ L1:
   }
 
 #pragma omp target teams distribute parallel for copyin(pvt) // expected-error {{unexpected OpenMP clause 'copyin' in directive '#pragma omp target teams distribute parallel for'}}
-  for (int n = 0; n < 100; ++n) {
-  }
+  for (int n = 0; n < 100; ++n) {}
 
   return 0;
 }
@@ -117,3 +115,4 @@ void test_ordered() {
   for (int i = 0; i < 10; ++i)
     ;
 }
+

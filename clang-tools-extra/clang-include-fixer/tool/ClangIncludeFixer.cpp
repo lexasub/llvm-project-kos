@@ -100,9 +100,9 @@ cl::opt<std::string> Input("input",
 
 cl::opt<std::string>
     QuerySymbol("query-symbol",
-                cl::desc("Query a given symbol (e.g. \"a::b::foo\") in\n"
-                         "database directly without parsing the file."),
-                cl::cat(IncludeFixerCategory));
+                 cl::desc("Query a given symbol (e.g. \"a::b::foo\") in\n"
+                          "database directly without parsing the file."),
+                 cl::cat(IncludeFixerCategory));
 
 cl::opt<bool>
     MinimizeIncludePaths("minimize-paths",
@@ -235,10 +235,10 @@ createSymbolIndexManager(StringRef FilePath) {
   return SymbolIndexMgr;
 }
 
-void writeToJson(llvm::raw_ostream &OS, const IncludeFixerContext &Context) {
+void writeToJson(llvm::raw_ostream &OS, const IncludeFixerContext& Context) {
   OS << "{\n"
-     << "  \"FilePath\": \"" << llvm::yaml::escape(Context.getFilePath())
-     << "\",\n"
+     << "  \"FilePath\": \""
+     << llvm::yaml::escape(Context.getFilePath()) << "\",\n"
      << "  \"QuerySymbolInfos\": [\n";
   for (const auto &Info : Context.getQuerySymbolInfos()) {
     OS << "     {\"RawIdentifier\": \"" << Info.RawIdentifier << "\",\n";
@@ -289,7 +289,7 @@ int includeFixerMain(int argc, const char **argv) {
     }
     Code = std::move(CodeOrErr.get());
     if (Code->getBufferSize() == 0)
-      return 0; // Skip empty files.
+      return 0;  // Skip empty files.
 
     tool.mapVirtualFile(SourceFilePath, Code->getBuffer());
   }
@@ -309,7 +309,7 @@ int includeFixerMain(int argc, const char **argv) {
     // We only accept one unique header.
     // Check all elements in HeaderInfos have the same header.
     bool IsUniqueHeader = std::equal(
-        HeaderInfos.begin() + 1, HeaderInfos.end(), HeaderInfos.begin(),
+        HeaderInfos.begin()+1, HeaderInfos.end(), HeaderInfos.begin(),
         [](const IncludeFixerContext::HeaderInfo &LHS,
            const IncludeFixerContext::HeaderInfo &RHS) {
           return LHS.Header == RHS.Header;
@@ -474,4 +474,6 @@ int includeFixerMain(int argc, const char **argv) {
 
 } // namespace
 
-int main(int argc, const char **argv) { return includeFixerMain(argc, argv); }
+int main(int argc, const char **argv) {
+  return includeFixerMain(argc, argv);
+}

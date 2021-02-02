@@ -16,7 +16,7 @@ char *sink[1000];
 int main() {
 
   for (int i = 0; i < 3; i++) {
-    const size_t kSize = 13000000;
+    const size_t  kSize = 13000000;
     char *x = new char[kSize];
     memset(x, 0, kSize);
     sink[i] = x;

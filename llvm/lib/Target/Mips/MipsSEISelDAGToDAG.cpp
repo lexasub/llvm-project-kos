@@ -81,18 +81,20 @@ unsigned MipsSEDAGToDAGISel::getMSACtrlReg(const SDValue RegIdx) const {
 }
 
 bool MipsSEDAGToDAGISel::replaceUsesWithZeroReg(MachineRegisterInfo *MRI,
-                                                const MachineInstr &MI) {
+                                                const MachineInstr& MI) {
   unsigned DstReg = 0, ZeroReg = 0;
 
   // Check if MI is "addiu $dst, $zero, 0" or "daddiu $dst, $zero, 0".
   if ((MI.getOpcode() == Mips::ADDiu) &&
-      (MI.getOperand(1).getReg() == Mips::ZERO) && (MI.getOperand(2).isImm()) &&
+      (MI.getOperand(1).getReg() == Mips::ZERO) &&
+      (MI.getOperand(2).isImm()) &&
       (MI.getOperand(2).getImm() == 0)) {
     DstReg = MI.getOperand(0).getReg();
     ZeroReg = Mips::ZERO;
   } else if ((MI.getOpcode() == Mips::DADDiu) &&
              (MI.getOperand(1).getReg() == Mips::ZERO_64) &&
-             (MI.getOperand(2).isImm()) && (MI.getOperand(2).getImm() == 0)) {
+             (MI.getOperand(2).isImm()) &&
+             (MI.getOperand(2).getImm() == 0)) {
     DstReg = MI.getOperand(0).getReg();
     ZeroReg = Mips::ZERO_64;
   }
@@ -102,8 +104,7 @@ bool MipsSEDAGToDAGISel::replaceUsesWithZeroReg(MachineRegisterInfo *MRI,
 
   // Replace uses with ZeroReg.
   for (MachineRegisterInfo::use_iterator U = MRI->use_begin(DstReg),
-                                         E = MRI->use_end();
-       U != E;) {
+       E = MRI->use_end(); U != E;) {
     MachineOperand &MO = *U;
     unsigned OpNo = U.getOperandNo();
     MachineInstr *MI = MO.getParent();
@@ -135,7 +136,7 @@ void MipsSEDAGToDAGISel::emitMCountABI(MachineInstr &MI, MachineBasicBlock &MBB,
         .addUse(Mips::ZERO_64);
     // Stops instruction above from being removed later on.
     MIB.addUse(Mips::AT_64, RegState::Implicit);
-  } else { // O32
+  } else {  // O32
     // Save current return address.
     BuildMI(MBB, &MI, MI.getDebugLoc(), TII->get(Mips::OR))
         .addDef(Mips::AT)
@@ -156,8 +157,8 @@ void MipsSEDAGToDAGISel::processFunctionAfterISel(MachineFunction &MF) {
 
   MachineRegisterInfo *MRI = &MF.getRegInfo();
 
-  for (auto &MBB : MF) {
-    for (auto &MI : MBB) {
+  for (auto &MBB: MF) {
+    for (auto &MI: MBB) {
       switch (MI.getOpcode()) {
       case Mips::RDDSP:
         addDSPCtrlRegOperands(false, MI, MF);
@@ -269,7 +270,7 @@ bool MipsSEDAGToDAGISel::selectAddrFrameIndex(SDValue Addr, SDValue &Base,
   if (FrameIndexSDNode *FIN = dyn_cast<FrameIndexSDNode>(Addr)) {
     EVT ValTy = Addr.getValueType();
 
-    Base = CurDAG->getTargetFrameIndex(FIN->getIndex(), ValTy);
+    Base   = CurDAG->getTargetFrameIndex(FIN->getIndex(), ValTy);
     Offset = CurDAG->getTargetConstant(0, SDLoc(Addr), ValTy);
     return true;
   }
@@ -298,8 +299,8 @@ bool MipsSEDAGToDAGISel::selectAddrFrameIndexOffset(
           return false;
       }
 
-      Offset =
-          CurDAG->getTargetConstant(CN->getZExtValue(), SDLoc(Addr), ValTy);
+      Offset = CurDAG->getTargetConstant(CN->getZExtValue(), SDLoc(Addr),
+                                         ValTy);
       return true;
     }
   }
@@ -316,14 +317,14 @@ bool MipsSEDAGToDAGISel::selectAddrRegImm(SDValue Addr, SDValue &Base,
 
   // on PIC code Load GA
   if (Addr.getOpcode() == MipsISD::Wrapper) {
-    Base = Addr.getOperand(0);
+    Base   = Addr.getOperand(0);
     Offset = Addr.getOperand(1);
     return true;
   }
 
   if (!TM.isPositionIndependent()) {
     if ((Addr.getOpcode() == ISD::TargetExternalSymbol ||
-         Addr.getOpcode() == ISD::TargetGlobalAddress))
+        Addr.getOpcode() == ISD::TargetGlobalAddress))
       return false;
   }
 
@@ -368,7 +369,7 @@ bool MipsSEDAGToDAGISel::selectAddrDefault(SDValue Addr, SDValue &Base,
 bool MipsSEDAGToDAGISel::selectIntAddr(SDValue Addr, SDValue &Base,
                                        SDValue &Offset) const {
   return selectAddrRegImm(Addr, Base, Offset) ||
-         selectAddrDefault(Addr, Base, Offset);
+    selectAddrDefault(Addr, Base, Offset);
 }
 
 bool MipsSEDAGToDAGISel::selectAddrRegImm9(SDValue Addr, SDValue &Base,
@@ -418,21 +419,21 @@ bool MipsSEDAGToDAGISel::selectAddrRegImm16(SDValue Addr, SDValue &Base,
 }
 
 bool MipsSEDAGToDAGISel::selectIntAddr11MM(SDValue Addr, SDValue &Base,
-                                           SDValue &Offset) const {
+                                         SDValue &Offset) const {
   return selectAddrRegImm11(Addr, Base, Offset) ||
-         selectAddrDefault(Addr, Base, Offset);
+    selectAddrDefault(Addr, Base, Offset);
 }
 
 bool MipsSEDAGToDAGISel::selectIntAddr12MM(SDValue Addr, SDValue &Base,
-                                           SDValue &Offset) const {
+                                         SDValue &Offset) const {
   return selectAddrRegImm12(Addr, Base, Offset) ||
-         selectAddrDefault(Addr, Base, Offset);
+    selectAddrDefault(Addr, Base, Offset);
 }
 
 bool MipsSEDAGToDAGISel::selectIntAddr16MM(SDValue Addr, SDValue &Base,
-                                           SDValue &Offset) const {
+                                         SDValue &Offset) const {
   return selectAddrRegImm16(Addr, Base, Offset) ||
-         selectAddrDefault(Addr, Base, Offset);
+    selectAddrDefault(Addr, Base, Offset);
 }
 
 bool MipsSEDAGToDAGISel::selectIntAddrLSL2MM(SDValue Addr, SDValue &Base,
@@ -546,9 +547,9 @@ bool MipsSEDAGToDAGISel::selectVSplat(SDNode *N, APInt &Imm,
 // of ldi.[bhwd] since it does not permit using the wrong-typed ldi.[bhwd]
 // instruction to achieve the desired bit pattern. ldi.[bhwd] is selected in
 // MipsSEDAGToDAGISel::selectNode.
-bool MipsSEDAGToDAGISel::selectVSplatCommon(SDValue N, SDValue &Imm,
-                                            bool Signed,
-                                            unsigned ImmBitSize) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatCommon(SDValue N, SDValue &Imm, bool Signed,
+                   unsigned ImmBitSize) const {
   APInt ImmValue;
   EVT EltTy = N->getValueType(0).getVectorElementType();
 
@@ -558,7 +559,7 @@ bool MipsSEDAGToDAGISel::selectVSplatCommon(SDValue N, SDValue &Imm,
   if (selectVSplat(N.getNode(), ImmValue, EltTy.getSizeInBits()) &&
       ImmValue.getBitWidth() == EltTy.getSizeInBits()) {
 
-    if ((Signed && ImmValue.isSignedIntN(ImmBitSize)) ||
+    if (( Signed && ImmValue.isSignedIntN(ImmBitSize)) ||
         (!Signed && ImmValue.isIntN(ImmBitSize))) {
       Imm = CurDAG->getTargetConstant(ImmValue, SDLoc(N), EltTy);
       return true;
@@ -569,40 +570,48 @@ bool MipsSEDAGToDAGISel::selectVSplatCommon(SDValue N, SDValue &Imm,
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatUimm1(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm1(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 1);
 }
 
-bool MipsSEDAGToDAGISel::selectVSplatUimm2(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm2(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 2);
 }
 
-bool MipsSEDAGToDAGISel::selectVSplatUimm3(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm3(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 3);
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatUimm4(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm4(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 4);
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatUimm5(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm5(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 5);
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatUimm6(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm6(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 6);
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatUimm8(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatUimm8(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, false, 8);
 }
 
 // Select constant vector splats.
-bool MipsSEDAGToDAGISel::selectVSplatSimm5(SDValue N, SDValue &Imm) const {
+bool MipsSEDAGToDAGISel::
+selectVSplatSimm5(SDValue N, SDValue &Imm) const {
   return selectVSplatCommon(N, Imm, true, 5);
 }
 
@@ -731,9 +740,8 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
   // Instruction Selection not handled by the auto-generated
   // tablegen selection should be handled here.
   ///
-  switch (Opcode) {
-  default:
-    break;
+  switch(Opcode) {
+  default: break;
 
   case Mips::PseudoD_SELECT_I:
   case Mips::PseudoD_SELECT_I64: {
@@ -793,7 +801,7 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
     MipsAnalyzeImmediate AnalyzeImm;
 
     const MipsAnalyzeImmediate::InstSeq &Seq =
-        AnalyzeImm.Analyze(Imm, Size, false);
+      AnalyzeImm.Analyze(Imm, Size, false);
 
     MipsAnalyzeImmediate::InstSeq::const_iterator Inst = Seq.begin();
     SDLoc DL(CN);
@@ -807,9 +815,10 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
     if (Inst->Opc == Mips::LUi64)
       RegOpnd = CurDAG->getMachineNode(Inst->Opc, DL, MVT::i64, ImmOpnd);
     else
-      RegOpnd = CurDAG->getMachineNode(
-          Inst->Opc, DL, MVT::i64, CurDAG->getRegister(Mips::ZERO_64, MVT::i64),
-          ImmOpnd);
+      RegOpnd =
+        CurDAG->getMachineNode(Inst->Opc, DL, MVT::i64,
+                               CurDAG->getRegister(Mips::ZERO_64, MVT::i64),
+                               ImmOpnd);
 
     // The remaining instructions in the sequence are handled here.
     for (++Inst; Inst != Seq.end(); ++Inst) {
@@ -833,8 +842,8 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
     case Intrinsic::mips_cfcmsa: {
       SDValue ChainIn = Node->getOperand(0);
       SDValue RegIdx = Node->getOperand(2);
-      SDValue Reg =
-          CurDAG->getCopyFromReg(ChainIn, DL, getMSACtrlReg(RegIdx), MVT::i32);
+      SDValue Reg = CurDAG->getCopyFromReg(ChainIn, DL,
+                                           getMSACtrlReg(RegIdx), MVT::i32);
       ReplaceNode(Node, Reg.getNode());
       return true;
     }
@@ -902,10 +911,10 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
 
     case Intrinsic::mips_ctcmsa: {
       SDValue ChainIn = Node->getOperand(0);
-      SDValue RegIdx = Node->getOperand(2);
-      SDValue Value = Node->getOperand(3);
-      SDValue ChainOut =
-          CurDAG->getCopyToReg(ChainIn, DL, getMSACtrlReg(RegIdx), Value);
+      SDValue RegIdx  = Node->getOperand(2);
+      SDValue Value   = Node->getOperand(3);
+      SDValue ChainOut = CurDAG->getCopyToReg(ChainIn, DL,
+                                              getMSACtrlReg(RegIdx), Value);
       ReplaceNode(Node, ChainOut.getNode());
       return true;
     }
@@ -1056,7 +1065,8 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
       return false;
 
     if (!BVN->isConstantSplat(SplatValue, SplatUndef, SplatBitSize,
-                              HasAnyUndefs, 8, !Subtarget->isLittle()))
+                              HasAnyUndefs, 8,
+                              !Subtarget->isLittle()))
       return false;
 
     switch (SplatBitSize) {
@@ -1162,10 +1172,10 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
                                      Hi ? SDValue(Res, 0) : ZeroVal, LoVal);
 
       Res = CurDAG->getMachineNode(
-          Mips::SUBREG_TO_REG, DL, MVT::i64,
-          CurDAG->getTargetConstant(((Hi >> 15) & 0x1), DL, MVT::i64),
-          SDValue(Res, 0),
-          CurDAG->getTargetConstant(Mips::sub_32, DL, MVT::i64));
+              Mips::SUBREG_TO_REG, DL, MVT::i64,
+              CurDAG->getTargetConstant(((Hi >> 15) & 0x1), DL, MVT::i64),
+              SDValue(Res, 0),
+              CurDAG->getTargetConstant(Mips::sub_32, DL, MVT::i64));
 
       Res =
           CurDAG->getMachineNode(Mips::FILL_D, DL, MVT::v2i64, SDValue(Res, 0));
@@ -1238,6 +1248,7 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
         HiRes = CurDAG->getMachineNode(Mips::ORi, DL, MVT::i32,
                                        Highest ? SDValue(HiRes, 0) : ZeroVal,
                                        HigherVal);
+
 
       if (ABI.IsO32()) {
         Res = CurDAG->getMachineNode(Mips::FILL_W, DL, MVT::v4i32,
@@ -1320,24 +1331,27 @@ bool MipsSEDAGToDAGISel::trySelect(SDNode *Node) {
       const TargetLowering *TLI = getTargetLowering();
       MVT ResVecTySimple = ResVecTy.getSimpleVT();
       const TargetRegisterClass *RC = TLI->getRegClassFor(ResVecTySimple);
-      Res = CurDAG->getMachineNode(
-          Mips::COPY_TO_REGCLASS, DL, ResVecTy, SDValue(Res, 0),
-          CurDAG->getTargetConstant(RC->getID(), DL, MVT::i32));
+      Res = CurDAG->getMachineNode(Mips::COPY_TO_REGCLASS, DL,
+                                   ResVecTy, SDValue(Res, 0),
+                                   CurDAG->getTargetConstant(RC->getID(), DL,
+                                                             MVT::i32));
     }
 
     ReplaceNode(Node, Res);
     return true;
   }
+
   }
 
   return false;
 }
 
-bool MipsSEDAGToDAGISel::SelectInlineAsmMemoryOperand(
-    const SDValue &Op, unsigned ConstraintID, std::vector<SDValue> &OutOps) {
+bool MipsSEDAGToDAGISel::
+SelectInlineAsmMemoryOperand(const SDValue &Op, unsigned ConstraintID,
+                             std::vector<SDValue> &OutOps) {
   SDValue Base, Offset;
 
-  switch (ConstraintID) {
+  switch(ConstraintID) {
   default:
     llvm_unreachable("Unexpected asm memory constraint");
   // All memory constraints can at least accept raw pointers.

@@ -17,7 +17,8 @@ void f2(struct notpod);
 // CHECK-LABEL: caller
 // CHECK: call void @_Z2f13pod(i64
 // CHECK: call void @_Z2f26notpod(%struct.notpod*
-void caller() {
+void caller()
+{
   pod p1;
   notpod p2;
   f1(p1);

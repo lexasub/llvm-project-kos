@@ -2,15 +2,15 @@
 
 struct non_trivial {
   non_trivial();
-  non_trivial(const non_trivial &);
-  non_trivial &operator=(const non_trivial &);
+  non_trivial(const non_trivial&);
+  non_trivial& operator = (const non_trivial&);
   ~non_trivial();
 };
 
 union bad_union {
   non_trivial nt; // expected-note {{non-trivial default constructor}}
 };
-bad_union u;       // expected-error {{call to implicitly-deleted default constructor}}
+bad_union u; // expected-error {{call to implicitly-deleted default constructor}}
 union bad_union2 { // expected-note {{all data members are const-qualified}}
   const int i;
 };
@@ -68,7 +68,7 @@ struct no_dtor {
 struct bad_field_default {
   no_default nd; // expected-note {{field 'nd' has a deleted default constructor}}
 };
-bad_field_default bfd;                 // expected-error {{call to implicitly-deleted default constructor}}
+bad_field_default bfd; // expected-error {{call to implicitly-deleted default constructor}}
 struct bad_base_default : no_default { // expected-note {{base class 'no_default' has a deleted default constructor}}
 };
 bad_base_default bbd; // expected-error {{call to implicitly-deleted default constructor}}
@@ -76,7 +76,7 @@ bad_base_default bbd; // expected-error {{call to implicitly-deleted default con
 struct bad_field_dtor {
   no_dtor nd; // expected-note {{field 'nd' has a deleted destructor}}
 };
-bad_field_dtor bfx;              // expected-error {{call to implicitly-deleted default constructor}}
+bad_field_dtor bfx; // expected-error {{call to implicitly-deleted default constructor}}
 struct bad_base_dtor : no_dtor { // expected-note {{base class 'no_dtor' has a deleted destructor}}
 };
 bad_base_dtor bbx; // expected-error {{call to implicitly-deleted default constructor}}
@@ -108,7 +108,7 @@ struct has_friend {
 has_friend hf;
 
 struct defaulted_delete {
-  no_default nd;                // expected-note 2{{because field 'nd' has a deleted default constructor}}
+  no_default nd; // expected-note 2{{because field 'nd' has a deleted default constructor}}
   defaulted_delete() = default; // expected-note{{implicitly deleted here}} expected-warning {{implicitly deleted}}
 };
 defaulted_delete dd; // expected-error {{call to implicitly-deleted default constructor}}
@@ -121,31 +121,11 @@ late_delete::late_delete() = default; // expected-error {{would delete it}}
 
 // See also rdar://problem/8125400.
 namespace empty {
-static union {}; // expected-warning {{does not declare anything}}
-static union {
-  union {};
-}; // expected-warning {{does not declare anything}}
-static union {
-  struct {};
-}; // expected-warning {{does not declare anything}}
-static union {
-  union {
-    union {};
-  };
-}; // expected-warning {{does not declare anything}}
-static union {
-  union {
-    struct {};
-  };
-}; // expected-warning {{does not declare anything}}
-static union {
-  struct {
-    union {};
-  };
-}; // expected-warning {{does not declare anything}}
-static union {
-  struct {
-    struct {};
-  };
-}; // expected-warning {{does not declare anything}}
-} // namespace empty
+  static union {}; // expected-warning {{does not declare anything}}
+  static union { union {}; }; // expected-warning {{does not declare anything}}
+  static union { struct {}; }; // expected-warning {{does not declare anything}}
+  static union { union { union {}; }; }; // expected-warning {{does not declare anything}}
+  static union { union { struct {}; }; }; // expected-warning {{does not declare anything}}
+  static union { struct { union {}; }; }; // expected-warning {{does not declare anything}}
+  static union { struct { struct {}; }; }; // expected-warning {{does not declare anything}}
+}

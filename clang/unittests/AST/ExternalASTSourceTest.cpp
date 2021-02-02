@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/ExternalASTSource.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/ExternalASTSource.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/FrontendActions.h"
@@ -22,6 +22,7 @@
 using namespace clang;
 using namespace llvm;
 
+
 class TestFrontendAction : public ASTFrontendAction {
 public:
   TestFrontendAction(ExternalASTSource *Source) : Source(Source) {}
@@ -29,9 +30,7 @@ public:
 private:
   void ExecuteAction() override {
     getCompilerInstance().getASTContext().setExternalSource(Source);
-    getCompilerInstance()
-        .getASTContext()
-        .getTranslationUnitDecl()
+    getCompilerInstance().getASTContext().getTranslationUnitDecl()
         ->setHasExternalVisibleStorage();
     return ASTFrontendAction::ExecuteAction();
   }
@@ -44,14 +43,15 @@ private:
   IntrusiveRefCntPtr<ExternalASTSource> Source;
 };
 
-bool testExternalASTSource(ExternalASTSource *Source, StringRef FileContents) {
+bool testExternalASTSource(ExternalASTSource *Source,
+                           StringRef FileContents) {
   CompilerInstance Compiler;
   Compiler.createDiagnostics();
 
   auto Invocation = std::make_shared<CompilerInvocation>();
   Invocation->getPreprocessorOpts().addRemappedFile(
       "test.cc", MemoryBuffer::getMemBuffer(FileContents).release());
-  const char *Args[] = {"test.cc"};
+  const char *Args[] = { "test.cc" };
   CompilerInvocation::CreateFromArgs(*Invocation, Args,
                                      Compiler.getDiagnostics());
   Compiler.setInvocation(std::move(Invocation));
@@ -59,6 +59,7 @@ bool testExternalASTSource(ExternalASTSource *Source, StringRef FileContents) {
   TestFrontendAction Action(Source);
   return Compiler.ExecuteAction(Action);
 }
+
 
 // Ensure that a failed name lookup into an external source only occurs once.
 TEST(ExternalASTSourceTest, FailedLookupOccursOnce) {

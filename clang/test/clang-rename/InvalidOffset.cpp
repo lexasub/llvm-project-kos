@@ -2,7 +2,7 @@
 #define FOO int bar;
 FOO
 
-    int foo;
+int foo;
 
 // RUN: not clang-rename -new-name=qux -offset=259 %s -- 2>&1 | FileCheck %s
 // CHECK-NOT: CHECK

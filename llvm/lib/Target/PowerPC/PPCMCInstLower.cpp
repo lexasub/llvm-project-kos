@@ -58,26 +58,26 @@ static MCOperand GetSymbolRef(const MachineOperand &MO, const MCSymbol *Symbol,
   unsigned access = MO.getTargetFlags() & PPCII::MO_ACCESS_MASK;
 
   switch (access) {
-  case PPCII::MO_TPREL_LO:
-    RefKind = MCSymbolRefExpr::VK_PPC_TPREL_LO;
-    break;
-  case PPCII::MO_TPREL_HA:
-    RefKind = MCSymbolRefExpr::VK_PPC_TPREL_HA;
-    break;
-  case PPCII::MO_DTPREL_LO:
-    RefKind = MCSymbolRefExpr::VK_PPC_DTPREL_LO;
-    break;
-  case PPCII::MO_TLSLD_LO:
-    RefKind = MCSymbolRefExpr::VK_PPC_GOT_TLSLD_LO;
-    break;
-  case PPCII::MO_TOC_LO:
-    RefKind = MCSymbolRefExpr::VK_PPC_TOC_LO;
-    break;
-  case PPCII::MO_TLS:
-    bool IsPCRel = (MO.getTargetFlags() & ~access) == PPCII::MO_PCREL_FLAG;
-    RefKind = IsPCRel ? MCSymbolRefExpr::VK_PPC_TLS_PCREL
-                      : MCSymbolRefExpr::VK_PPC_TLS;
-    break;
+    case PPCII::MO_TPREL_LO:
+      RefKind = MCSymbolRefExpr::VK_PPC_TPREL_LO;
+      break;
+    case PPCII::MO_TPREL_HA:
+      RefKind = MCSymbolRefExpr::VK_PPC_TPREL_HA;
+      break;
+    case PPCII::MO_DTPREL_LO:
+      RefKind = MCSymbolRefExpr::VK_PPC_DTPREL_LO;
+      break;
+    case PPCII::MO_TLSLD_LO:
+      RefKind = MCSymbolRefExpr::VK_PPC_GOT_TLSLD_LO;
+      break;
+    case PPCII::MO_TOC_LO:
+      RefKind = MCSymbolRefExpr::VK_PPC_TOC_LO;
+      break;
+    case PPCII::MO_TLS:
+      bool IsPCRel = (MO.getTargetFlags() & ~access) == PPCII::MO_PCREL_FLAG;
+      RefKind = IsPCRel ? MCSymbolRefExpr::VK_PPC_TLS_PCREL
+                        : MCSymbolRefExpr::VK_PPC_TLS;
+      break;
   }
 
   if (MO.getTargetFlags() == PPCII::MO_PLT)
@@ -123,8 +123,9 @@ static MCOperand GetSymbolRef(const MachineOperand &MO, const MCSymbol *Symbol,
         MCBinaryExpr::createAdd(Expr, MCConstantExpr::create(32768, Ctx), Ctx);
 
   if (!MO.isJTI() && MO.getOffset())
-    Expr = MCBinaryExpr::createAdd(
-        Expr, MCConstantExpr::create(MO.getOffset(), Ctx), Ctx);
+    Expr = MCBinaryExpr::createAdd(Expr,
+                                   MCConstantExpr::create(MO.getOffset(), Ctx),
+                                   Ctx);
 
   // Subtract off the PIC base if required.
   if (MO.getTargetFlags() & PPCII::MO_PIC_FLAG) {
@@ -136,12 +137,12 @@ static MCOperand GetSymbolRef(const MachineOperand &MO, const MCSymbol *Symbol,
 
   // Add ha16() / lo16() markers if required.
   switch (access) {
-  case PPCII::MO_LO:
-    Expr = PPCMCExpr::createLo(Expr, Ctx);
-    break;
-  case PPCII::MO_HA:
-    Expr = PPCMCExpr::createHa(Expr, Ctx);
-    break;
+    case PPCII::MO_LO:
+      Expr = PPCMCExpr::createLo(Expr, Ctx);
+      break;
+    case PPCII::MO_HA:
+      Expr = PPCMCExpr::createHa(Expr, Ctx);
+      break;
   }
 
   return MCOperand::createExpr(Expr);

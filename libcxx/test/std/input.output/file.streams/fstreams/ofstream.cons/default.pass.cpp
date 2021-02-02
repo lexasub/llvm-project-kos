@@ -18,9 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  { std::ofstream fs; }
-  { std::wofstream fs; }
+int main(int, char**)
+{
+    {
+        std::ofstream fs;
+    }
+    {
+        std::wofstream fs;
+    }
 
   return 0;
 }

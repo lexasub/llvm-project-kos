@@ -31,27 +31,13 @@ std::string ObjCRuntime::getAsString() const {
 
 raw_ostream &clang::operator<<(raw_ostream &out, const ObjCRuntime &value) {
   switch (value.getKind()) {
-  case ObjCRuntime::MacOSX:
-    out << "macosx";
-    break;
-  case ObjCRuntime::FragileMacOSX:
-    out << "macosx-fragile";
-    break;
-  case ObjCRuntime::iOS:
-    out << "ios";
-    break;
-  case ObjCRuntime::WatchOS:
-    out << "watchos";
-    break;
-  case ObjCRuntime::GNUstep:
-    out << "gnustep";
-    break;
-  case ObjCRuntime::GCC:
-    out << "gcc";
-    break;
-  case ObjCRuntime::ObjFW:
-    out << "objfw";
-    break;
+  case ObjCRuntime::MacOSX: out << "macosx"; break;
+  case ObjCRuntime::FragileMacOSX: out << "macosx-fragile"; break;
+  case ObjCRuntime::iOS: out << "ios"; break;
+  case ObjCRuntime::WatchOS: out << "watchos"; break;
+  case ObjCRuntime::GNUstep: out << "gnustep"; break;
+  case ObjCRuntime::GCC: out << "gcc"; break;
+  case ObjCRuntime::ObjFW: out << "objfw"; break;
   }
   if (value.getVersion() > VersionTuple(0)) {
     out << '-' << value.getVersion();
@@ -67,7 +53,7 @@ bool ObjCRuntime::tryParse(StringRef input) {
   // version to be omitted, so if we see a dash not followed by a
   // digit then we need to ignore it.
   if (dash != StringRef::npos && dash + 1 != input.size() &&
-      (input[dash + 1] < '0' || input[dash + 1] > '9')) {
+      (input[dash+1] < '0' || input[dash+1] > '9')) {
     dash = StringRef::npos;
   }
 

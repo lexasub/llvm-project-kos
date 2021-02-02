@@ -1,3 +1,3 @@
 #pragma omp declare target
-void zyx();
+  void zyx();
 #pragma omp end declare target

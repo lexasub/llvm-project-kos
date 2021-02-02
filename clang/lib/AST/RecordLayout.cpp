@@ -76,16 +76,16 @@ ASTRecordLayout::ASTRecordLayout(
   CXXInfo->LeadsWithZeroSizedBase = LeadsWithZeroSizedBase;
 
 #ifndef NDEBUG
-  if (const CXXRecordDecl *PrimaryBase = getPrimaryBase()) {
-    if (isPrimaryBaseVirtual()) {
-      if (Ctx.getTargetInfo().getCXXABI().hasPrimaryVBases()) {
-        assert(getVBaseClassOffset(PrimaryBase).isZero() &&
-               "Primary virtual base must be at offset 0!");
+    if (const CXXRecordDecl *PrimaryBase = getPrimaryBase()) {
+      if (isPrimaryBaseVirtual()) {
+        if (Ctx.getTargetInfo().getCXXABI().hasPrimaryVBases()) {
+          assert(getVBaseClassOffset(PrimaryBase).isZero() &&
+                 "Primary virtual base must be at offset 0!");
+        }
+      } else {
+        assert(getBaseClassOffset(PrimaryBase).isZero() &&
+               "Primary base must be at offset 0!");
       }
-    } else {
-      assert(getBaseClassOffset(PrimaryBase).isZero() &&
-             "Primary base must be at offset 0!");
     }
-  }
 #endif
 }

@@ -15,7 +15,9 @@
 
 using namespace llvm;
 
-DWARFAbbreviationDeclarationSet::DWARFAbbreviationDeclarationSet() { clear(); }
+DWARFAbbreviationDeclarationSet::DWARFAbbreviationDeclarationSet() {
+  clear();
+}
 
 void DWARFAbbreviationDeclarationSet::clear() {
   Offset = 0;
@@ -108,7 +110,7 @@ void DWARFDebugAbbrev::dump(raw_ostream &OS) const {
   }
 }
 
-const DWARFAbbreviationDeclarationSet *
+const DWARFAbbreviationDeclarationSet*
 DWARFDebugAbbrev::getAbbreviationDeclarationSet(uint64_t CUAbbrOffset) const {
   const auto End = AbbrDeclSets.end();
   if (PrevAbbrOffsetPos != End && PrevAbbrOffsetPos->first == CUAbbrOffset) {

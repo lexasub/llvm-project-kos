@@ -1,7 +1,7 @@
 ///===- MachineOptimizationRemarkEmitter.h - Opt Diagnostics -*- C++ -*----===//
 ///
-/// Part of the LLVM Project, under the Apache License v2.0 with LLVM
-/// Exceptions. See https://llvm.org/LICENSE.txt for license information.
+/// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+/// See https://llvm.org/LICENSE.txt for license information.
 /// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 ///
 ///===---------------------------------------------------------------------===//
@@ -182,7 +182,9 @@ public:
     }
   }
 
-  MachineBlockFrequencyInfo *getBFI() { return MBFI; }
+  MachineBlockFrequencyInfo *getBFI() {
+    return MBFI;
+  }
 
 private:
   MachineFunction &MF;
@@ -224,6 +226,6 @@ public:
 
   static char ID;
 };
-} // namespace llvm
+}
 
 #endif

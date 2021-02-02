@@ -1,17 +1,17 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10 -emit-llvm -o - %s | FileCheck %s
 
 // PR6141
-template <typename T>
+template<typename T>
 struct X {
   X();
-  template <typename U> X(X<U>);
-  X(const X<T> &);
+  template<typename U> X(X<U>);
+  X(const X<T>&);
 };
 
-void f(X<int>) {}
+void f(X<int>) { }
 
-struct Y : X<int> {};
-struct Z : X<float> {};
+struct Y : X<int> { };
+struct Z : X<float> { };
 
 // CHECK: define{{.*}} i32 @main()
 int main() {

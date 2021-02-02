@@ -26,7 +26,6 @@ class MSP430Subtarget;
 class MSP430InstrInfo : public MSP430GenInstrInfo {
   const MSP430RegisterInfo RI;
   virtual void anchor();
-
 public:
   explicit MSP430InstrInfo(MSP430Subtarget &STI);
 
@@ -41,13 +40,15 @@ public:
                    bool KillSrc) const override;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MI, Register SrcReg,
-                           bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MI,
+                           Register SrcReg, bool isKill,
+                           int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MI, Register DestReg,
-                            int FrameIdx, const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MI,
+                            Register DestReg, int FrameIdx,
+                            const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
   unsigned getInstSizeInBytes(const MachineInstr &MI) const override;
@@ -74,6 +75,6 @@ public:
   }
 };
 
-} // namespace llvm
+}
 
 #endif

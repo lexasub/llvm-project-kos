@@ -32,7 +32,7 @@ public:
   unsigned getRelocType(MCContext &Ctx, MCValue const &Target,
                         MCFixup const &Fixup, bool IsPCRel) const override;
 };
-} // namespace
+}
 
 HexagonELFObjectWriter::HexagonELFObjectWriter(uint8_t OSABI, StringRef C)
     : MCELFObjectTargetWriter(/*Is64bit*/ false, OSABI, ELF::EM_HEXAGON,
@@ -49,7 +49,7 @@ unsigned HexagonELFObjectWriter::getRelocType(MCContext &Ctx,
     report_fatal_error("Unrecognized relocation type");
     break;
   case FK_Data_4:
-    switch (Variant) {
+    switch(Variant) {
     case MCSymbolRefExpr::VariantKind::VK_DTPREL:
       return ELF::R_HEX_DTPREL_32;
     case MCSymbolRefExpr::VariantKind::VK_GOT:
@@ -76,7 +76,7 @@ unsigned HexagonELFObjectWriter::getRelocType(MCContext &Ctx,
   case FK_PCRel_4:
     return ELF::R_HEX_32_PCREL;
   case FK_Data_2:
-    switch (Variant) {
+    switch(Variant) {
     case MCSymbolRefExpr::VariantKind::VK_DTPREL:
       return ELF::R_HEX_DTPREL_16;
     case MCSymbolRefExpr::VariantKind::VK_GOT:

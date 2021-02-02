@@ -19,28 +19,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef std::normal_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p;
-    assert(p.mean() == 0);
-    assert(p.stddev() == 1);
-  }
-  {
-    typedef std::normal_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10);
-    assert(p.mean() == 10);
-    assert(p.stddev() == 1);
-  }
-  {
-    typedef std::normal_distribution<> D;
-    typedef D::param_type param_type;
-    param_type p(10, 5);
-    assert(p.mean() == 10);
-    assert(p.stddev() == 5);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::normal_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p;
+        assert(p.mean() == 0);
+        assert(p.stddev() == 1);
+    }
+    {
+        typedef std::normal_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10);
+        assert(p.mean() == 10);
+        assert(p.stddev() == 1);
+    }
+    {
+        typedef std::normal_distribution<> D;
+        typedef D::param_type param_type;
+        param_type p(10, 5);
+        assert(p.mean() == 10);
+        assert(p.stddev() == 5);
+    }
 
   return 0;
 }

@@ -46,8 +46,7 @@ class DeadlockDetectorTLS {
   bool empty() const { return bv_.empty(); }
 
   void ensureCurrentEpoch(uptr current_epoch) {
-    if (epoch_ == current_epoch)
-      return;
+    if (epoch_ == current_epoch) return;
     bv_.clear();
     epoch_ = current_epoch;
     n_recursive_locks = 0;
@@ -248,7 +247,8 @@ class DeadlockDetector {
     for (uptr i = 0; i < n_added_edges; i++) {
       if (n_edges_ < ARRAY_SIZE(edges_)) {
         Edge e = {(u16)added_edges[i], (u16)cur_idx,
-                  dtls->findLockContext(added_edges[i]), stk, unique_tid};
+                  dtls->findLockContext(added_edges[i]), stk,
+                  unique_tid};
         edges_[n_edges_++] = e;
       }
     }
@@ -296,8 +296,7 @@ class DeadlockDetector {
   // add the node to the currently held locks w/o chanding the global state.
   // This operation is thread-safe as it only touches the dtls.
   bool onFirstLock(DeadlockDetectorTLS<BV> *dtls, uptr node, u32 stk = 0) {
-    if (!dtls->empty())
-      return false;
+    if (!dtls->empty()) return false;
     if (dtls->getEpoch() && dtls->getEpoch() == nodeToEpoch(node)) {
       dtls->addLock(nodeToIndexUnchecked(node), nodeToEpoch(node), stk);
       return true;
@@ -314,7 +313,8 @@ class DeadlockDetector {
     uptr idx = nodeToIndex(cur_node);
     CHECK(!tmp_bv_.getBit(idx));
     uptr res = g_.findShortestPath(idx, tmp_bv_, path, path_size);
-    for (uptr i = 0; i < res; i++) path[i] = indexToNode(path[i]);
+    for (uptr i = 0; i < res; i++)
+      path[i] = indexToNode(path[i]);
     if (res)
       CHECK_EQ(path[0], cur_node);
     return res;
@@ -405,6 +405,6 @@ class DeadlockDetector {
   uptr n_edges_;
 };
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
-#endif  // SANITIZER_DEADLOCK_DETECTOR_H
+#endif // SANITIZER_DEADLOCK_DETECTOR_H

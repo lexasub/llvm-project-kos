@@ -114,3 +114,4 @@ inline void atomic_store(volatile atomic_uint64_t *ptr, atomic_uint64_t::Type v,
 }  // namespace __sanitizer
 
 #endif  // SANITIZER_ATOMIC_CLANG_MIPS_H
+

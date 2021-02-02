@@ -60,7 +60,7 @@ struct RegisterSanStats {
   }
 } reg;
 
-} // namespace
+}
 
 extern "C" void __sanitizer_stat_init(StatModule *mod) {
   mod->next = list;

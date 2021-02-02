@@ -1,7 +1,7 @@
 template <typename T>
-class Foo { /* Test 1 */ // CHECK: class Bar { /* Test 1 */
+class Foo { /* Test 1 */   // CHECK: class Bar { /* Test 1 */
 public:
-  T foo(T arg, T &ref, T *ptr) {
+  T foo(T arg, T& ref, T* ptr) {
     T value;
     int number = 42;
     value = (T)number;
@@ -14,19 +14,19 @@ public:
 
 template <typename T>
 void func() {
-  Foo<T> obj; /* Test 2 */ // CHECK: Bar<T> obj;
+  Foo<T> obj; /* Test 2 */  // CHECK: Bar<T> obj;
   obj.member = T();
-  Foo<T>::foo(); // CHECK: Bar<T>::foo();
+  Foo<T>::foo();            // CHECK: Bar<T>::foo();
 }
 
 int main() {
-  Foo<int> i; /* Test 3 */ // CHECK: Bar<int> i;
+  Foo<int> i; /* Test 3 */  // CHECK: Bar<int> i;
   i.member = 0;
-  Foo<int>::foo(0); // CHECK: Bar<int>::foo(0);
+  Foo<int>::foo(0);         // CHECK: Bar<int>::foo(0);
 
-  Foo<bool> b; // CHECK: Bar<bool> b;
+  Foo<bool> b;              // CHECK: Bar<bool> b;
   b.member = false;
-  Foo<bool>::foo(false); // CHECK: Bar<bool>::foo(false);
+  Foo<bool>::foo(false);    // CHECK: Bar<bool>::foo(false);
 
   return 0;
 }

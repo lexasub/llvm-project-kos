@@ -29,7 +29,7 @@ class Pass;
 ///
 class PassInfo {
 public:
-  using NormalCtor_t = Pass *(*)();
+  using NormalCtor_t = Pass* (*)();
 
 private:
   StringRef PassName;     // Nice name for Pass
@@ -85,8 +85,12 @@ public:
   /// getNormalCtor - Return a pointer to a function, that when called, creates
   /// an instance of the pass and returns it.  This pointer may be null if there
   /// is no default constructor for the pass.
-  NormalCtor_t getNormalCtor() const { return NormalCtor; }
-  void setNormalCtor(NormalCtor_t Ctor) { NormalCtor = Ctor; }
+  NormalCtor_t getNormalCtor() const {
+    return NormalCtor;
+  }
+  void setNormalCtor(NormalCtor_t Ctor) {
+    NormalCtor = Ctor;
+  }
 
   /// createPass() - Use this method to create an instance of this pass.
   Pass *createPass() const {
@@ -106,7 +110,7 @@ public:
 
   /// getInterfacesImplemented - Return a list of all of the analysis group
   /// interfaces implemented by this pass.
-  const std::vector<const PassInfo *> &getInterfacesImplemented() const {
+  const std::vector<const PassInfo*> &getInterfacesImplemented() const {
     return ItfImpl;
   }
 };

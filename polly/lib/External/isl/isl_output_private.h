@@ -1,5 +1,5 @@
-#include <isl/printer.h>
 #include <isl/space.h>
+#include <isl/printer.h>
 
 /* Internal data structure for isl_print_space.
  *
@@ -13,16 +13,15 @@
  *	This field is set by print_space.
  */
 struct isl_print_space_data {
-  int latex;
-  __isl_give isl_printer *(*print_dim)(__isl_take isl_printer *p,
-                                       struct isl_print_space_data *data,
-                                       unsigned pos);
-  void *user;
+	int latex;
+	__isl_give isl_printer *(*print_dim)(__isl_take isl_printer *p,
+		struct isl_print_space_data *data, unsigned pos);
+	void *user;
 
-  isl_space *space;
-  enum isl_dim_type type;
+	isl_space *space;
+	enum isl_dim_type type;
 };
 
 __isl_give isl_printer *isl_print_space(__isl_keep isl_space *space,
-                                        __isl_take isl_printer *p, int rational,
-                                        struct isl_print_space_data *data);
+	__isl_take isl_printer *p, int rational,
+	struct isl_print_space_data *data);

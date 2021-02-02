@@ -40,7 +40,7 @@ public:
 
   /// Create a virtual file \p FileName, with content \p Code.
   void mapFile(llvm::StringRef FileName, llvm::StringRef Code) {
-    VirtualFile VF = {FileName, Code};
+    VirtualFile VF = { FileName, Code };
     VirtualFiles.push_back(VF);
   }
 

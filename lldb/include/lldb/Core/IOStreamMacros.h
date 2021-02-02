@@ -31,7 +31,7 @@
 #define DECIMAL std::dec << std::setfill(' ')
 #define DECIMAL_WIDTH(w) DECIMAL << std::setw(w)
 //#define FLOAT(n, d)       std::setfill(' ') << std::setw((n)+(d)+1) <<
-// std::setprecision(d) << std::showpoint << std::fixed
+//std::setprecision(d) << std::showpoint << std::fixed
 #define INDENT_WITH_SPACES(iword_idx)                                          \
   std::setfill(' ') << std::setw((iword_idx)) << ""
 #define INDENT_WITH_TABS(iword_idx)                                            \

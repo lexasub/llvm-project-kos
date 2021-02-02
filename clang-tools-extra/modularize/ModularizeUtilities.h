@@ -78,10 +78,10 @@ public:
   /// \param Prefix The headear path prefix.
   /// \param ProblemFilesListPath The problem header list path.
   /// \returns Initialized ModularizeUtilities object.
-  static ModularizeUtilities *
-  createModularizeUtilities(std::vector<std::string> &InputPaths,
-                            llvm::StringRef Prefix,
-                            llvm::StringRef ProblemFilesListPath);
+  static ModularizeUtilities *createModularizeUtilities(
+      std::vector<std::string> &InputPaths,
+      llvm::StringRef Prefix,
+      llvm::StringRef ProblemFilesListPath);
 
   /// Load header list and dependencies.
   /// \returns std::error_code.
@@ -127,21 +127,24 @@ public:
   // Internal.
 
 protected:
+
   /// Load single header list and dependencies.
   /// \param InputPath The input file path.
   /// \returns std::error_code.
-  std::error_code
-  loadSingleHeaderListsAndDependencies(llvm::StringRef InputPath);
+  std::error_code loadSingleHeaderListsAndDependencies(
+      llvm::StringRef InputPath);
 
   /// Load problem header list.
   /// \param InputPath The input file path.
   /// \returns std::error_code.
-  std::error_code loadProblemHeaderList(llvm::StringRef InputPath);
+  std::error_code loadProblemHeaderList(
+    llvm::StringRef InputPath);
 
   /// Load single module map and extract header file list.
   /// \param InputPath The input file path.
   /// \returns std::error_code.
-  std::error_code loadModuleMap(llvm::StringRef InputPath);
+  std::error_code loadModuleMap(
+    llvm::StringRef InputPath);
 
   /// Collect module Map headers.
   /// Walks the modules and collects referenced headers into
@@ -161,9 +164,10 @@ protected:
   /// \param UmbrellaDirName The umbrella directory name.
   /// \return True if no errors.
   bool collectUmbrellaHeaders(llvm::StringRef UmbrellaDirName,
-                              DependentsVector &Dependents);
+    DependentsVector &Dependents);
 
 public:
+
   // Utility functions.
 
   /// Convert header path to canonical form.

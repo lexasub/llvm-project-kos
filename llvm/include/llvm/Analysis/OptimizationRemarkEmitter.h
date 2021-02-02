@@ -39,8 +39,8 @@ public:
   /// analysis pass).
   ///
   /// Note that this ctor has a very different cost depending on whether
-  /// F->getContext().getDiagnosticsHotnessRequested() is on or not.  If it's
-  /// off the operation is free.
+  /// F->getContext().getDiagnosticsHotnessRequested() is on or not.  If it's off
+  /// the operation is free.
   ///
   /// Whereas if DiagnosticsHotnessRequested is on, it is fairly expensive
   /// operation since BFI and all its required analyses are computed.  This is
@@ -128,7 +128,7 @@ namespace ore {
 using NV = DiagnosticInfoOptimizationBase::Argument;
 using setIsVerbose = DiagnosticInfoOptimizationBase::setIsVerbose;
 using setExtraArgs = DiagnosticInfoOptimizationBase::setExtraArgs;
-} // namespace ore
+}
 
 /// OptimizationRemarkEmitter legacy analysis pass
 ///
@@ -165,5 +165,5 @@ public:
   /// Run the analysis pass over a function and produce BFI.
   Result run(Function &F, FunctionAnalysisManager &AM);
 };
-} // namespace llvm
+}
 #endif // LLVM_IR_OPTIMIZATIONDIAGNOSTICINFO_H

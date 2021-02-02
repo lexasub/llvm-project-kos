@@ -88,7 +88,9 @@ public:
   virtual ~ModuleLoader();
 
   /// Returns true if this instance is building a module.
-  bool buildingModule() const { return BuildingModule; }
+  bool buildingModule() const {
+    return BuildingModule;
+  }
 
   /// Flag indicating whether this instance is building a module.
   void setBuildingModule(bool BuildingModuleFlag) {
@@ -145,8 +147,8 @@ public:
   /// associated fixit messages.
   /// \param TriggerLoc The location for what triggered the load.
   /// \returns Returns null if load failed.
-  virtual GlobalModuleIndex *
-  loadGlobalModuleIndex(SourceLocation TriggerLoc) = 0;
+  virtual GlobalModuleIndex *loadGlobalModuleIndex(
+                                                SourceLocation TriggerLoc) = 0;
 
   /// Check global module index for missing imports.
   /// \param Name The symbol name to look for.

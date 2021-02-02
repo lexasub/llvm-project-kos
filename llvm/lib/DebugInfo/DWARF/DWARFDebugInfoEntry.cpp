@@ -18,7 +18,8 @@
 using namespace llvm;
 using namespace dwarf;
 
-bool DWARFDebugInfoEntry::extractFast(const DWARFUnit &U, uint64_t *OffsetPtr) {
+bool DWARFDebugInfoEntry::extractFast(const DWARFUnit &U,
+                                             uint64_t *OffsetPtr) {
   DWARFDataExtractor DebugInfoData = U.getDebugInfoExtractor();
   const uint64_t UEndOffset = U.getNextUnitOffset();
   return extractFast(U, OffsetPtr, DebugInfoData, UEndOffset, 0);

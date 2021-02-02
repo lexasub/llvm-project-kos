@@ -35,28 +35,29 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**) {
-  {
-    typedef std::binomial_distribution<> D;
-    D d;
-    assert(d.t() == 1);
-    assert(d.p() == 0.5);
-  }
-  {
-    typedef std::binomial_distribution<> D;
-    D d(3);
-    assert(d.t() == 3);
-    assert(d.p() == 0.5);
-  }
-  {
-    typedef std::binomial_distribution<> D;
-    D d(3, 0.75);
-    assert(d.t() == 3);
-    assert(d.p() == 0.75);
-  }
+int main(int, char**)
+{
+    {
+        typedef std::binomial_distribution<> D;
+        D d;
+        assert(d.t() == 1);
+        assert(d.p() == 0.5);
+    }
+    {
+        typedef std::binomial_distribution<> D;
+        D d(3);
+        assert(d.t() == 3);
+        assert(d.p() == 0.5);
+    }
+    {
+        typedef std::binomial_distribution<> D;
+        D d(3, 0.75);
+        assert(d.t() == 3);
+        assert(d.p() == 0.75);
+    }
 
-  test_implicit<int>();
-  test_implicit<long>();
+    test_implicit<int>();
+    test_implicit<long>();
 
-  return 0;
+    return 0;
 }

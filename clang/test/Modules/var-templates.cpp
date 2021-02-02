@@ -4,7 +4,7 @@
 module A {}
 #pragma clang module contents
 #pragma clang module begin A
-template <int> int n = 42;
+template<int> int n = 42;
 decltype(n<0>) f();
 #pragma clang module end
 #pragma clang module endbuild

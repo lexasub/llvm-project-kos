@@ -1,8 +1,7 @@
 // RUN: %clang_cc1 %s -triple x86_64-apple-darwin10 -emit-llvm -o - -std=c++11 |FileCheck %s
 
 class x {
-public:
-  int operator=(int);
+public: int operator=(int);
 };
 void a() {
   x a;
@@ -21,23 +20,23 @@ void f(int i, int j) {
 
 // Taken from g++.old-deja/g++.jason/net.C
 namespace test1 {
-template <class T> void fn(T t) {}
-template <class T> struct A {
-  void (*p)(T);
-  A() { p = fn; }
-};
+  template <class T> void fn (T t) { }
+  template <class T> struct A {
+    void (*p)(T);
+    A() { p = fn; }
+  };
 
-A<int> a;
-} // namespace test1
+  A<int> a;
+}
 
 // Ensure that we use memcpy when we would have selected a trivial assignment
 // operator, even for a non-trivially-copyable type.
 struct A {
-  A &operator=(const A &);
+  A &operator=(const A&);
 };
 struct B {
-  B(const B &);
-  B &operator=(const B &) = default;
+  B(const B&);
+  B &operator=(const B&) = default;
   int n;
 };
 struct C {

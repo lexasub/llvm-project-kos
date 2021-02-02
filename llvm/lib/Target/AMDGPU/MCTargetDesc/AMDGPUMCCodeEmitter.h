@@ -34,6 +34,7 @@ protected:
   AMDGPUMCCodeEmitter(const MCInstrInfo &mcii) : MCII(mcii) {}
 
 public:
+
   uint64_t getBinaryCodeForInstr(const MCInst &MI,
                                  SmallVectorImpl<MCFixup> &Fixups,
                                  const MCSubtargetInfo &STI) const;

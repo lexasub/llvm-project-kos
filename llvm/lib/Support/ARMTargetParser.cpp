@@ -174,36 +174,34 @@ bool ARM::getFPUFeatures(unsigned FPUKind, std::vector<StringRef> &Features) {
     FPUVersion MinVersion;
     FPURestriction MaxRestriction;
   } FPUFeatureInfoList[] = {
-      // We have to specify the + and - versions of the name in full so
-      // that we can return them as static StringRefs.
-      //
-      // Also, the SubtargetFeatures ending in just "sp" are listed here
-      // under FPURestriction::None, which is the only FPURestriction in
-      // which they would be valid (since FPURestriction::SP doesn't
-      // exist).
-      {"+vfp2", "-vfp2", FPUVersion::VFPV2, FPURestriction::D16},
-      {"+vfp2sp", "-vfp2sp", FPUVersion::VFPV2, FPURestriction::SP_D16},
-      {"+vfp3", "-vfp3", FPUVersion::VFPV3, FPURestriction::None},
-      {"+vfp3d16", "-vfp3d16", FPUVersion::VFPV3, FPURestriction::D16},
-      {"+vfp3d16sp", "-vfp3d16sp", FPUVersion::VFPV3, FPURestriction::SP_D16},
-      {"+vfp3sp", "-vfp3sp", FPUVersion::VFPV3, FPURestriction::None},
-      {"+fp16", "-fp16", FPUVersion::VFPV3_FP16, FPURestriction::SP_D16},
-      {"+vfp4", "-vfp4", FPUVersion::VFPV4, FPURestriction::None},
-      {"+vfp4d16", "-vfp4d16", FPUVersion::VFPV4, FPURestriction::D16},
-      {"+vfp4d16sp", "-vfp4d16sp", FPUVersion::VFPV4, FPURestriction::SP_D16},
-      {"+vfp4sp", "-vfp4sp", FPUVersion::VFPV4, FPURestriction::None},
-      {"+fp-armv8", "-fp-armv8", FPUVersion::VFPV5, FPURestriction::None},
-      {"+fp-armv8d16", "-fp-armv8d16", FPUVersion::VFPV5, FPURestriction::D16},
-      {"+fp-armv8d16sp", "-fp-armv8d16sp", FPUVersion::VFPV5,
-       FPURestriction::SP_D16},
-      {"+fp-armv8sp", "-fp-armv8sp", FPUVersion::VFPV5, FPURestriction::None},
-      {"+fullfp16", "-fullfp16", FPUVersion::VFPV5_FULLFP16,
-       FPURestriction::SP_D16},
-      {"+fp64", "-fp64", FPUVersion::VFPV2, FPURestriction::D16},
-      {"+d32", "-d32", FPUVersion::VFPV3, FPURestriction::None},
+    // We have to specify the + and - versions of the name in full so
+    // that we can return them as static StringRefs.
+    //
+    // Also, the SubtargetFeatures ending in just "sp" are listed here
+    // under FPURestriction::None, which is the only FPURestriction in
+    // which they would be valid (since FPURestriction::SP doesn't
+    // exist).
+    {"+vfp2", "-vfp2", FPUVersion::VFPV2, FPURestriction::D16},
+    {"+vfp2sp", "-vfp2sp", FPUVersion::VFPV2, FPURestriction::SP_D16},
+    {"+vfp3", "-vfp3", FPUVersion::VFPV3, FPURestriction::None},
+    {"+vfp3d16", "-vfp3d16", FPUVersion::VFPV3, FPURestriction::D16},
+    {"+vfp3d16sp", "-vfp3d16sp", FPUVersion::VFPV3, FPURestriction::SP_D16},
+    {"+vfp3sp", "-vfp3sp", FPUVersion::VFPV3, FPURestriction::None},
+    {"+fp16", "-fp16", FPUVersion::VFPV3_FP16, FPURestriction::SP_D16},
+    {"+vfp4", "-vfp4", FPUVersion::VFPV4, FPURestriction::None},
+    {"+vfp4d16", "-vfp4d16", FPUVersion::VFPV4, FPURestriction::D16},
+    {"+vfp4d16sp", "-vfp4d16sp", FPUVersion::VFPV4, FPURestriction::SP_D16},
+    {"+vfp4sp", "-vfp4sp", FPUVersion::VFPV4, FPURestriction::None},
+    {"+fp-armv8", "-fp-armv8", FPUVersion::VFPV5, FPURestriction::None},
+    {"+fp-armv8d16", "-fp-armv8d16", FPUVersion::VFPV5, FPURestriction::D16},
+    {"+fp-armv8d16sp", "-fp-armv8d16sp", FPUVersion::VFPV5, FPURestriction::SP_D16},
+    {"+fp-armv8sp", "-fp-armv8sp", FPUVersion::VFPV5, FPURestriction::None},
+    {"+fullfp16", "-fullfp16", FPUVersion::VFPV5_FULLFP16, FPURestriction::SP_D16},
+    {"+fp64", "-fp64", FPUVersion::VFPV2, FPURestriction::D16},
+    {"+d32", "-d32", FPUVersion::VFPV3, FPURestriction::None},
   };
 
-  for (const auto &Info : FPUFeatureInfoList) {
+  for (const auto &Info: FPUFeatureInfoList) {
     if (FPUNames[FPUKind].FPUVer >= Info.MinVersion &&
         FPUNames[FPUKind].Restriction <= Info.MaxRestriction)
       Features.push_back(Info.PlusName);
@@ -215,11 +213,11 @@ bool ARM::getFPUFeatures(unsigned FPUKind, std::vector<StringRef> &Features) {
     const char *PlusName, *MinusName;
     NeonSupportLevel MinSupportLevel;
   } NeonFeatureInfoList[] = {
-      {"+neon", "-neon", NeonSupportLevel::Neon},
-      {"+crypto", "-crypto", NeonSupportLevel::Crypto},
+    {"+neon", "-neon", NeonSupportLevel::Neon},
+    {"+crypto", "-crypto", NeonSupportLevel::Crypto},
   };
 
-  for (const auto &Info : NeonFeatureInfoList) {
+  for (const auto &Info: NeonFeatureInfoList) {
     if (FPUNames[FPUKind].NeonSupport >= Info.MinSupportLevel)
       Features.push_back(Info.PlusName);
     else
@@ -375,7 +373,7 @@ unsigned ARM::getDefaultFPU(StringRef CPU, ARM::ArchKind AK) {
 #define ARM_CPU_NAME(NAME, ID, DEFAULT_FPU, IS_DEFAULT, DEFAULT_EXT)           \
   .Case(NAME, DEFAULT_FPU)
 #include "llvm/Support/ARMTargetParser.def"
-      .Default(ARM::FK_INVALID);
+   .Default(ARM::FK_INVALID);
 }
 
 uint64_t ARM::getDefaultExtensions(StringRef CPU, ARM::ArchKind AK) {
@@ -388,7 +386,7 @@ uint64_t ARM::getDefaultExtensions(StringRef CPU, ARM::ArchKind AK) {
         ARCHNames[static_cast<unsigned>(ArchKind::ID)].ArchBaseExtensions |    \
             DEFAULT_EXT)
 #include "llvm/Support/ARMTargetParser.def"
-      .Default(ARM::AEK_INVALID);
+  .Default(ARM::AEK_INVALID);
 }
 
 bool ARM::getHWDivFeatures(uint64_t HWDivKind,

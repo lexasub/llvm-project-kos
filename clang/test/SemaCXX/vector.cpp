@@ -4,10 +4,10 @@
 // RUN: %clang_cc1 -flax-vector-conversions=integer -triple x86_64-apple-darwin10 -fsyntax-only -verify %s -DNO_LAX_FLOAT
 // RUN: %clang_cc1 -flax-vector-conversions=none -triple x86_64-apple-darwin10 -fsyntax-only -verify %s -DNO_LAX_FLOAT -DNO_LAX_INT
 
-typedef char char16 __attribute__((__vector_size__(16)));
-typedef long long longlong16 __attribute__((__vector_size__(16)));
-typedef char char16_e __attribute__((__ext_vector_type__(16)));
-typedef long long longlong16_e __attribute__((__ext_vector_type__(2)));
+typedef char char16 __attribute__ ((__vector_size__ (16)));
+typedef long long longlong16 __attribute__ ((__vector_size__ (16)));
+typedef char char16_e __attribute__ ((__ext_vector_type__ (16)));
+typedef long long longlong16_e __attribute__ ((__ext_vector_type__ (2)));
 
 // Test overloading and function calls with vector types.
 void f0(char16); // expected-note 0+{{candidate}}
@@ -53,21 +53,21 @@ void f2_test(char16 c16, longlong16 ll16, char16_e c16e, longlong16_e ll16e) {
 void conditional(bool Cond, char16 c16, longlong16 ll16, char16_e c16e,
                  longlong16_e ll16e) {
   // Conditional operators with the same type.
-  __typeof__(Cond ? c16 : c16) *c16p1 = &c16;
-  __typeof__(Cond ? ll16 : ll16) *ll16p1 = &ll16;
-  __typeof__(Cond ? c16e : c16e) *c16ep1 = &c16e;
-  __typeof__(Cond ? ll16e : ll16e) *ll16ep1 = &ll16e;
+  __typeof__(Cond? c16 : c16) *c16p1 = &c16;
+  __typeof__(Cond? ll16 : ll16) *ll16p1 = &ll16;
+  __typeof__(Cond? c16e : c16e) *c16ep1 = &c16e;
+  __typeof__(Cond? ll16e : ll16e) *ll16ep1 = &ll16e;
 
   // Conditional operators with similar types.
-  __typeof__(Cond ? c16 : c16e) *c16ep2 = &c16e;
-  __typeof__(Cond ? c16e : c16) *c16ep3 = &c16e;
-  __typeof__(Cond ? ll16 : ll16e) *ll16ep2 = &ll16e;
-  __typeof__(Cond ? ll16e : ll16) *ll16ep3 = &ll16e;
+  __typeof__(Cond? c16 : c16e) *c16ep2 = &c16e;
+  __typeof__(Cond? c16e : c16) *c16ep3 = &c16e;
+  __typeof__(Cond? ll16 : ll16e) *ll16ep2 = &ll16e;
+  __typeof__(Cond? ll16e : ll16) *ll16ep3 = &ll16e;
 
   // Conditional operators with compatible types under -flax-vector-conversions (default)
-  (void)(Cond ? c16 : ll16);
-  (void)(Cond ? ll16e : c16e);
-  (void)(Cond ? ll16e : c16);
+  (void)(Cond? c16 : ll16);
+  (void)(Cond? ll16e : c16e);
+  (void)(Cond? ll16e : c16);
 #ifdef NO_LAX_INT
   // expected-error@-4 {{cannot convert}}
   // expected-error@-4 {{cannot convert}}
@@ -78,14 +78,14 @@ void conditional(bool Cond, char16 c16, longlong16 ll16, char16_e c16e,
 // Test C++ cast'ing of vector types.
 void casts(longlong16 ll16, longlong16_e ll16e) {
   // C-style casts.
-  (void)(char16) ll16;
-  (void)(char16_e) ll16;
-  (void)(longlong16) ll16;
-  (void)(longlong16_e) ll16;
-  (void)(char16) ll16e;
-  (void)(char16_e) ll16e;
-  (void)(longlong16) ll16e;
-  (void)(longlong16_e) ll16e;
+  (void)(char16)ll16;
+  (void)(char16_e)ll16;
+  (void)(longlong16)ll16;
+  (void)(longlong16_e)ll16;
+  (void)(char16)ll16e;
+  (void)(char16_e)ll16e;
+  (void)(longlong16)ll16e;
+  (void)(longlong16_e)ll16e;
 
   // Function-style casts.
   (void)char16(ll16);
@@ -125,8 +125,8 @@ void casts(longlong16 ll16, longlong16_e ll16e) {
   (void)reinterpret_cast<longlong16_e>(ll16e);
 }
 
-template <typename T>
-struct convertible_to {    // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
+template<typename T>
+struct convertible_to { // expected-note 3 {{candidate function (the implicit copy assignment operator) not viable}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 3 {{candidate function (the implicit move assignment operator) not viable}}
 #endif
@@ -139,8 +139,8 @@ void test_implicit_conversions(bool Cond, char16 c16, longlong16 ll16,
                                convertible_to<longlong16> to_ll16,
                                convertible_to<char16_e> to_c16e,
                                convertible_to<longlong16_e> to_ll16e,
-                               convertible_to<char16 &> rto_c16,
-                               convertible_to<char16_e &> rto_c16e) {
+                               convertible_to<char16&> rto_c16,
+                               convertible_to<char16_e&> rto_c16e) {
   f0(to_c16);
   f0(to_ll16);
 #ifdef NO_LAX_INT
@@ -166,9 +166,9 @@ void test_implicit_conversions(bool Cond, char16 c16, longlong16 ll16,
   (void)~to_c16;
   (void)(to_c16 == to_c16e);
   (void)(to_c16 != to_c16e);
-  (void)(to_c16 < to_c16e);
+  (void)(to_c16 <  to_c16e);
   (void)(to_c16 <= to_c16e);
-  (void)(to_c16 > to_c16e);
+  (void)(to_c16 >  to_c16e);
   (void)(to_c16 >= to_c16e);
   (void)(to_c16 + to_c16);
   (void)(to_c16 - to_c16);
@@ -185,9 +185,9 @@ void test_implicit_conversions(bool Cond, char16 c16, longlong16 ll16,
   (void)~to_c16e;
   (void)(to_c16e == to_c16e);
   (void)(to_c16e != to_c16e);
-  (void)(to_c16e < to_c16e);
+  (void)(to_c16e <  to_c16e);
   (void)(to_c16e <= to_c16e);
-  (void)(to_c16e > to_c16e);
+  (void)(to_c16e >  to_c16e);
   (void)(to_c16e >= to_c16e);
   (void)(to_c16e + to_c16);
   (void)(to_c16e - to_c16);
@@ -204,9 +204,9 @@ void test_implicit_conversions(bool Cond, char16 c16, longlong16 ll16,
   (void)~to_c16;
   (void)(to_c16 == to_c16e);
   (void)(to_c16 != to_c16e);
-  (void)(to_c16 < to_c16e);
+  (void)(to_c16 <  to_c16e);
   (void)(to_c16 <= to_c16e);
-  (void)(to_c16 > to_c16e);
+  (void)(to_c16 >  to_c16e);
   (void)(to_c16 >= to_c16e);
   (void)(to_c16 + to_c16e);
   (void)(to_c16 - to_c16e);
@@ -218,12 +218,12 @@ void test_implicit_conversions(bool Cond, char16 c16, longlong16 ll16,
   (void)(rto_c16 *= to_c16e);
   (void)(rto_c16 /= to_c16e);
 
-  (void)(Cond ? to_c16 : to_c16e);
-  (void)(Cond ? to_ll16e : to_ll16);
+  (void)(Cond? to_c16 : to_c16e);
+  (void)(Cond? to_ll16e : to_ll16);
 
   // These 2 are convertible with -flax-vector-conversions (default)
-  (void)(Cond ? to_c16 : to_ll16);
-  (void)(Cond ? to_c16e : to_ll16e);
+  (void)(Cond? to_c16 : to_ll16);
+  (void)(Cond? to_c16e : to_ll16e);
 #ifdef NO_LAX_INT
   // expected-error@-3 {{cannot convert}}
   // expected-error@-3 {{cannot convert}}
@@ -292,6 +292,7 @@ void test_mixed_vector_types(fltx4 f, intx4 n, flte4 g, inte4 m) {
   (void)(f *= g);
   (void)(f /= g);
 
+
   (void)(n == m);
   (void)(m != n);
   (void)(n <= m);
@@ -315,7 +316,7 @@ void test_mixed_vector_types(fltx4 f, intx4 n, flte4 g, inte4 m) {
   (void)(n /= m);
 }
 
-template <typename T> void test_pseudo_dtor_tmpl(T *ptr) {
+template<typename T> void test_pseudo_dtor_tmpl(T *ptr) {
   ptr->~T();
   (*ptr).~T();
 }
@@ -331,7 +332,7 @@ typedef __attribute__((ext_vector_type(4))) int vi4;
 const int &reference_to_vec_element = vi4(1).x;
 
 // PR12649
-typedef bool bad __attribute__((__vector_size__(16))); // expected-error {{invalid vector element type 'bool'}}
+typedef bool bad __attribute__((__vector_size__(16)));  // expected-error {{invalid vector element type 'bool'}}
 
 namespace Templates {
 template <typename Elt, unsigned long long Size>
@@ -343,7 +344,7 @@ template <int N, typename T>
 struct PR15730 {
   typedef T __attribute__((vector_size(N * sizeof(T)))) type;
   typedef T __attribute__((vector_size(0x1000000000))) type2; // #2
-  typedef T __attribute__((vector_size(3))) type3;            // #3
+  typedef T __attribute__((vector_size(3))) type3; // #3
 };
 
 void Init() {
@@ -388,18 +389,18 @@ typedef __attribute__((__ext_vector_type__(4))) float vector_float4;
 typedef __attribute__((__ext_vector_type__(4))) int vector_int4;
 
 namespace swizzle_template_confusion {
-template <typename T> struct xyzw {};
-vector_int4 foo123(vector_float4 &A, vector_float4 &B) {
-  return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+  template<typename T> struct xyzw {};
+  vector_int4 foo123(vector_float4 &A, vector_float4 &B) {
+    return A.xyzw < B.x && B.y > A.y; // OK, not a template-id
+  }
 }
-} // namespace swizzle_template_confusion
 
 namespace swizzle_typo_correction {
-template <typename T> struct xyzv {};
-vector_int4 foo123(vector_float4 &A, vector_float4 &B) {
-  return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+  template<typename T> struct xyzv {};
+  vector_int4 foo123(vector_float4 &A, vector_float4 &B) {
+    return A.xyzw < B.x && B.y > A.y; // OK, not a typo for 'xyzv'
+  }
 }
-} // namespace swizzle_typo_correction
 
 namespace PR45299 {
 typedef float float4 __attribute__((vector_size(16)));
@@ -462,7 +463,7 @@ struct DiagTruncDependentType {
 
 template <typename T>
 struct PR45298 {
-  T k1 = T(0);
+    T k1 = T(0);
 };
 
 // Ensure this no longer asserts.
@@ -490,7 +491,7 @@ void use() {
   PR45298Consumer<double>().f(theFloat4);
 #endif // __cplusplus >= 201103L
 }
-} // namespace PR45299
+}
 
 namespace rdar60092165 {
 template <class T> void f() {
@@ -499,7 +500,7 @@ template <class T> void f() {
 
   second_type st;
 }
-} // namespace rdar60092165
+}
 
 namespace PR45780 {
 enum E { Value = 15 };
@@ -516,13 +517,13 @@ void use(char16 c) {
 namespace PR48540 {
 // The below used to cause an OOM error, or an assert, make sure it is still
 //  valid.
-int(__attribute__((vector_size(16))) a);
+int (__attribute__((vector_size(16))) a);
 
 template <typename T, int I>
 struct S {
-  T(__attribute__((vector_size(16))) a);
-  int(__attribute__((vector_size(I))) b);
-  T(__attribute__((vector_size(I))) c);
+  T (__attribute__((vector_size(16))) a);
+  int (__attribute__((vector_size(I))) b);
+  T (__attribute__((vector_size(I))) c);
 };
 
 void use() {

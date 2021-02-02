@@ -43,12 +43,12 @@ int pre_use_dx = use_dx(pre_dx); // ignored; pre_dx is invalid
 int pre_e = E(0); // expected-error {{must be declared}}
 // expected-note@defs.h:32 +{{here}}
 
-int pre_ff = F<int>().f();      // expected-error +{{must be declared}}
+int pre_ff = F<int>().f(); // expected-error +{{must be declared}}
 int pre_fg = F<int>().g<int>(); // expected-error +{{must be declared}}
 // expected-note@defs.h:34 +{{here}}
 
 G::A pre_ga // expected-error +{{must be declared}}
-    = G::a; // expected-error +{{must be declared}}
+  = G::a; // expected-error +{{must be declared}}
 // expected-note@defs.h:49 +{{here}}
 // expected-note@defs.h:50 +{{here}}
 decltype(G::h) pre_gh = G::h; // expected-error +{{must be declared}} expected-error +{{must be defined}}
@@ -97,7 +97,7 @@ decltype(G::h) post_gh = G::h;
 int post_h = H();
 using post_i = I<>;
 J<> post_j;
-template <typename T, int N, template <typename> class K> struct J;
+template<typename T, int N, template<typename> class K> struct J;
 J<> post_j2;
 FriendDefArg::Y<int> friend_def_arg;
 FriendDefArg::D<> friend_def_arg_d;

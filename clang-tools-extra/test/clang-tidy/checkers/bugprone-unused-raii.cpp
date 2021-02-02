@@ -48,21 +48,21 @@ void neverInstantiated() {
 
 void test() {
   Foo(42);
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
-  // CHECK-FIXES: Foo give_me_a_name(42);
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
+// CHECK-FIXES: Foo give_me_a_name(42);
   Foo(23, 42);
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
-  // CHECK-FIXES: Foo give_me_a_name(23, 42);
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
+// CHECK-FIXES: Foo give_me_a_name(23, 42);
   Foo();
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
-  // CHECK-FIXES: Foo give_me_a_name;
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
+// CHECK-FIXES: Foo give_me_a_name;
   TFoo<int>(23);
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
-  // CHECK-FIXES: TFoo<int> give_me_a_name(23);
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
+// CHECK-FIXES: TFoo<int> give_me_a_name(23);
 
   FooBar();
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
-  // CHECK-FIXES: FooBar give_me_a_name;
+// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: object destroyed immediately after creation; did you mean to name the object?
+// CHECK-FIXES: FooBar give_me_a_name;
 
   templ<FooBar>();
   templ<Bar>();

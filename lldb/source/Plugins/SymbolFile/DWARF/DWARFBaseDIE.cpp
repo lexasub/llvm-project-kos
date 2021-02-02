@@ -8,8 +8,8 @@
 
 #include "DWARFBaseDIE.h"
 
-#include "DWARFDebugInfoEntry.h"
 #include "DWARFUnit.h"
+#include "DWARFDebugInfoEntry.h"
 #include "SymbolFileDWARF.h"
 
 #include "lldb/Core/Module.h"
@@ -37,9 +37,8 @@ const char *DWARFBaseDIE::GetTagAsCString() const {
   return lldb_private::DW_TAG_value_to_name(Tag());
 }
 
-const char *
-DWARFBaseDIE::GetAttributeValueAsString(const dw_attr_t attr,
-                                        const char *fail_value) const {
+const char *DWARFBaseDIE::GetAttributeValueAsString(const dw_attr_t attr,
+                                                const char *fail_value) const {
   if (IsValid())
     return m_die->GetAttributeValueAsString(GetCU(), attr, fail_value);
   else
@@ -47,7 +46,7 @@ DWARFBaseDIE::GetAttributeValueAsString(const dw_attr_t attr,
 }
 
 uint64_t DWARFBaseDIE::GetAttributeValueAsUnsigned(const dw_attr_t attr,
-                                                   uint64_t fail_value) const {
+                                               uint64_t fail_value) const {
   if (IsValid())
     return m_die->GetAttributeValueAsUnsigned(GetCU(), attr, fail_value);
   else
@@ -55,7 +54,7 @@ uint64_t DWARFBaseDIE::GetAttributeValueAsUnsigned(const dw_attr_t attr,
 }
 
 uint64_t DWARFBaseDIE::GetAttributeValueAsAddress(const dw_attr_t attr,
-                                                  uint64_t fail_value) const {
+                                              uint64_t fail_value) const {
   if (IsValid())
     return m_die->GetAttributeValueAsAddress(GetCU(), attr, fail_value);
   else
@@ -97,7 +96,9 @@ SymbolFileDWARF *DWARFBaseDIE::GetDWARF() const {
     return nullptr;
 }
 
-bool DWARFBaseDIE::HasChildren() const { return m_die && m_die->HasChildren(); }
+bool DWARFBaseDIE::HasChildren() const {
+  return m_die && m_die->HasChildren();
+}
 
 bool DWARFBaseDIE::Supports_DW_AT_APPLE_objc_complete_type() const {
   return IsValid() && GetDWARF()->Supports_DW_AT_APPLE_objc_complete_type(m_cu);

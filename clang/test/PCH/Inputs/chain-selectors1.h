@@ -1,8 +1,8 @@
 @interface X
-- (void)f;
-- (void)f2;
-- (void)g:(int)p;
-- (void)h:(int)p1 foo:(int)p2;
+  -(void)f;
+  -(void)f2;
+  -(void)g:(int)p;
+  -(void)h:(int)p1 foo:(int)p2;
 @end
 
 void foo1() {

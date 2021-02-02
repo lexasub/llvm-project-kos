@@ -197,7 +197,7 @@ public:
 
   // From a fully qualified typename, split the type into the type basename and
   // the remaining type scope (namespaces/classes).
-  static bool GetTypeScopeAndBasename(const llvm::StringRef &name,
+  static bool GetTypeScopeAndBasename(const llvm::StringRef& name,
                                       llvm::StringRef &scope,
                                       llvm::StringRef &basename,
                                       lldb::TypeClass &type_class);
@@ -477,8 +477,8 @@ public:
   TypeEnumMemberImpl()
       : m_integer_type_sp(), m_name("<invalid>"), m_value(), m_valid(false) {}
 
-  TypeEnumMemberImpl(const lldb::TypeImplSP &integer_type_sp, ConstString name,
-                     const llvm::APSInt &value);
+  TypeEnumMemberImpl(const lldb::TypeImplSP &integer_type_sp,
+                     ConstString name, const llvm::APSInt &value);
 
   TypeEnumMemberImpl(const TypeEnumMemberImpl &rhs) = default;
 

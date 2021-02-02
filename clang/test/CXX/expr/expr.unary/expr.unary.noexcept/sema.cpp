@@ -84,12 +84,11 @@ void callmemptr() {
 
 struct S2 {
   S2();
-  S2(int, int)
-  throw();
-  void operator+();
-  void operator-() throw();
-  void operator+(int);
-  void operator-(int) throw();
+  S2(int, int) throw();
+  void operator +();
+  void operator -() throw();
+  void operator +(int);
+  void operator -(int) throw();
   operator int();
   operator float() throw();
 };
@@ -102,7 +101,7 @@ struct Bad1 {
   ~Bad1() throw(int);
 };
 struct Bad2 {
-  void operator delete(void *) throw(int);
+  void operator delete(void*) throw(int);
 };
 
 typedef int X;
@@ -110,10 +109,10 @@ typedef int X;
 void implicits() {
   N(new int);
   P(new (0) int);
-  P(delete (int *)0);
-  P(delete (IncompleteStruct *)0);
-  N(delete (Bad1 *)0);
-  N(delete (Bad2 *)0);
+  P(delete (int*)0);
+  P(delete (IncompleteStruct*)0);
+  N(delete (Bad1*)0);
+  N(delete (Bad2*)0);
   N(S2());
   P(S2(0, 0));
   S2 s;
@@ -135,35 +134,31 @@ struct D : V {};
 void dyncast() {
   V *pv = 0;
   D *pd = 0;
-  P(dynamic_cast<V &>(*pd));
-  P(dynamic_cast<V *>(pd));
-  N(dynamic_cast<D &>(*pv));
-  P(dynamic_cast<D *>(pv));
+  P(dynamic_cast<V&>(*pd));
+  P(dynamic_cast<V*>(pd));
+  N(dynamic_cast<D&>(*pv));
+  P(dynamic_cast<D*>(pv));
 }
 
 namespace std {
-struct type_info {};
-} // namespace std
+  struct type_info {};
+}
 
 void idtype() {
   P(typeid(V));
-  P(typeid((V *)0));
-  P(typeid(*(S1 *)0));
-  N(typeid(*(V *)0));
+  P(typeid((V*)0));
+  P(typeid(*(S1*)0));
+  N(typeid(*(V*)0));
 }
 
 void uneval() {
-  P(sizeof(typeid(*(V *)0)));
-  P(typeid(typeid(*(V *)0)));
+  P(sizeof(typeid(*(V*)0)));
+  P(typeid(typeid(*(V*)0)));
 }
 
 struct G1 {};
-struct G2 {
-  int i;
-};
-struct G3 {
-  S2 s;
-};
+struct G2 { int i; };
+struct G3 { S2 s; };
 
 void gencon() {
   P(G1());
@@ -171,31 +166,30 @@ void gencon() {
   N(G3());
 }
 
-template <class T> void f(T &&) noexcept;
+template <class T> void f(T&&) noexcept;
 template <typename T, bool b>
 void late() {
-  B(b, typeid(*(T *)0));
+  B(b, typeid(*(T*)0));
   B(b, T(1));
   B(b, static_cast<T>(S2(0, 0)));
   B(b, S1() + T());
   P(f(T()));
   P(new (0) T);
-  P(delete (T *)0);
+  P(delete (T*)0);
 }
 struct S3 {
   virtual ~S3() throw();
-  S3()
-  throw();
+  S3() throw();
   explicit S3(int);
-  S3(const S2 &);
+  S3(const S2&);
 };
-template <class T> T &&f2() noexcept;
+template <class T> T&& f2() noexcept;
 template <typename T>
 void late2() {
-  P(dynamic_cast<S3 &>(f2<T &>()));
+  P(dynamic_cast<S3&>(f2<T&>()));
 }
-void operator+(const S1 &, float) throw();
-void operator+(const S1 &, const S3 &);
+void operator +(const S1&, float) throw();
+void operator +(const S1&, const S3&);
 void tlate() {
   late<float, true>();
   late<S3, false>();

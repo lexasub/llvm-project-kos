@@ -20,13 +20,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
+int main(int, char**)
+{
   {
     static_assert(std::is_enum<std::pointer_safety>::value, "");
     static_assert(!std::is_convertible<std::pointer_safety, int>::value, "");
-    static_assert(std::is_same<std::underlying_type<std::pointer_safety>::type,
-                               unsigned char>::value,
-                  "");
+    static_assert(std::is_same<
+        std::underlying_type<std::pointer_safety>::type,
+        unsigned char
+    >::value, "");
   }
   {
     std::pointer_safety r = std::get_pointer_safety();

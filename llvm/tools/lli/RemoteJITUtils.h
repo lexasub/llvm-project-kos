@@ -70,7 +70,9 @@ public:
     MemMgr->registerEHFrames(Addr, LoadAddr, Size);
   }
 
-  void deregisterEHFrames() override { MemMgr->deregisterEHFrames(); }
+  void deregisterEHFrames() override {
+    MemMgr->deregisterEHFrames();
+  }
 
   bool finalizeMemory(std::string *ErrMsg = nullptr) override {
     return MemMgr->finalizeMemory(ErrMsg);
@@ -88,7 +90,8 @@ public:
     return Resolver->findSymbol(Name);
   }
 
-  JITSymbol findSymbolInLogicalDylib(const std::string &Name) override {
+  JITSymbol
+  findSymbolInLogicalDylib(const std::string &Name) override {
     return Resolver->findSymbolInLogicalDylib(Name);
   }
 
@@ -100,6 +103,7 @@ private:
 template <typename RemoteT>
 class RemoteResolver : public LegacyJITSymbolResolver {
 public:
+
   RemoteResolver(RemoteT &R) : R(R) {}
 
   JITSymbol findSymbol(const std::string &Name) override {
@@ -116,6 +120,6 @@ public:
 public:
   RemoteT &R;
 };
-} // namespace llvm
+}
 
 #endif

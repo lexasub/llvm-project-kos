@@ -62,7 +62,7 @@ void isdoxy14(void);
 /// Doxygen comment.  IS_DOXYGEN_END
 void isdoxy15(void);
 
-/** Blah-blah-blah. isdoxy16 IS_DOXYGEN_START */ /** Blah */
+/** Blah-blah-blah. isdoxy16 IS_DOXYGEN_START *//** Blah */
 /// Doxygen comment.  IS_DOXYGEN_END
 void isdoxy16(void);
 
@@ -72,13 +72,12 @@ void isdoxy16(void);
 void isdoxy17(void);
 
 unsigned
-    // NOT_DOXYGEN
-    /// NOT_DOXYGEN
-    // NOT_DOXYGEN
-    /// isdoxy18 IS_DOXYGEN_START IS_DOXYGEN_END
-    // NOT_DOXYGEN
-    int
-    isdoxy18(void);
+// NOT_DOXYGEN
+/// NOT_DOXYGEN
+// NOT_DOXYGEN
+/// isdoxy18 IS_DOXYGEN_START IS_DOXYGEN_END
+// NOT_DOXYGEN
+int isdoxy18(void);
 
 //! It all starts here. isdoxy19 IS_DOXYGEN_START
 /*! It's a little odd to continue line this,
@@ -132,23 +131,21 @@ namespace isdoxy31 {
 };
 
 namespace notdoxy32 {
-}; // namespace notdoxy32
+}; ///< IS_DOXYGEN_NOT_ATTACHED
 
 class test33 {
-  ///< IS_DOXYGEN_NOT_ATTACHED
+                ///< IS_DOXYGEN_NOT_ATTACHED
   int isdoxy33; ///< isdoxy33 IS_DOXYGEN_SINGLE
   int isdoxy34; ///< isdoxy34 IS_DOXYGEN_SINGLE
 
-  ///< IS_DOXYGEN_NOT_ATTACHED
+                ///< IS_DOXYGEN_NOT_ATTACHED
   int isdoxy35, ///< isdoxy35 IS_DOXYGEN_SINGLE
       isdoxy36; ///< isdoxy36 IS_DOXYGEN_SINGLE
 
-  ///< IS_DOXYGEN_NOT_ATTACHED
-  int isdoxy37 ///< isdoxy37 IS_DOXYGEN_SINGLE
-      ,
-      isdoxy38 ///< isdoxy38 IS_DOXYGEN_SINGLE
-      ,
-      isdoxy39; ///< isdoxy39 IS_DOXYGEN_SINGLE
+                ///< IS_DOXYGEN_NOT_ATTACHED
+  int isdoxy37  ///< isdoxy37 IS_DOXYGEN_SINGLE
+    , isdoxy38  ///< isdoxy38 IS_DOXYGEN_SINGLE
+    , isdoxy39; ///< isdoxy39 IS_DOXYGEN_SINGLE
 };
 
 // Verified that Doxygen attaches these.
@@ -158,10 +155,9 @@ class test33 {
 void isdoxy40(int);
 
 unsigned
-    /// isdoxy41 IS_DOXYGEN_SINGLE
-    // NOT_DOXYGEN
-    int
-    isdoxy41(int);
+/// isdoxy41 IS_DOXYGEN_SINGLE
+// NOT_DOXYGEN
+int isdoxy41(int);
 
 class test42 {
   int isdoxy42; /* NOT_DOXYGEN */ ///< isdoxy42 IS_DOXYGEN_SINGLE
@@ -251,11 +247,11 @@ void isdoxy52(int);
  */
 void isdoxy53(int);
 
-#define MYMAC(x, y)
+#define MYMAC(x,y)
 /**
  * Aaa. IS_DOXYGEN_START IS_DOXYGEN_END
  */
-MYMAC(0, 0)
+MYMAC(0,0)
 void isdoxy54(int);
 
 #endif

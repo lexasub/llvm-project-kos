@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     untag_printf("%02x", x[i]);
   }
   untag_printf("-\n");
-  delete[] x;
+  delete [] x;
 }
 
 // CHECK-0: -000000000000000000000000000000000000000000000000000000000000000000-

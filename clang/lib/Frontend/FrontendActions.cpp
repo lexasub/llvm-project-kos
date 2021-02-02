@@ -9,8 +9,8 @@
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/FileManager.h"
-#include "clang/Basic/LangStandard.h"
 #include "clang/Basic/TargetInfo.h"
+#include "clang/Basic/LangStandard.h"
 #include "clang/Frontend/ASTConsumers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendDiagnostic.h"
@@ -59,7 +59,8 @@ InitOnlyAction::CreateASTConsumer(CompilerInstance &CI, StringRef InFile) {
   return std::make_unique<ASTConsumer>();
 }
 
-void InitOnlyAction::ExecuteAction() {}
+void InitOnlyAction::ExecuteAction() {
+}
 
 //===----------------------------------------------------------------------===//
 // AST Consumer Actions
@@ -209,8 +210,9 @@ GenerateModuleFromModuleMapAction::CreateOutputFile(CompilerInstance &CI,
       ModuleMapFile = InFile;
 
     HeaderSearch &HS = CI.getPreprocessor().getHeaderSearchInfo();
-    CI.getFrontendOpts().OutputFile = HS.getCachedModuleFileName(
-        CI.getLangOpts().CurrentModule, ModuleMapFile);
+    CI.getFrontendOpts().OutputFile =
+        HS.getCachedModuleFileName(CI.getLangOpts().CurrentModule,
+                                   ModuleMapFile);
   }
 
   // Because this is exposed via libclang we must disable RemoveFileOnSignal.
@@ -237,7 +239,8 @@ GenerateModuleInterfaceAction::CreateOutputFile(CompilerInstance &CI,
   return CI.createDefaultOutputFile(/*Binary=*/true, InFile, "pcm");
 }
 
-bool GenerateHeaderModuleAction::PrepareToExecuteAction(CompilerInstance &CI) {
+bool GenerateHeaderModuleAction::PrepareToExecuteAction(
+    CompilerInstance &CI) {
   if (!CI.getLangOpts().Modules) {
     CI.getDiagnostics().Report(diag::err_header_module_requires_modules);
     return false;
@@ -277,7 +280,8 @@ bool GenerateHeaderModuleAction::PrepareToExecuteAction(CompilerInstance &CI) {
   return GenerateModuleAction::PrepareToExecuteAction(CI);
 }
 
-bool GenerateHeaderModuleAction::BeginSourceFileAction(CompilerInstance &CI) {
+bool GenerateHeaderModuleAction::BeginSourceFileAction(
+    CompilerInstance &CI) {
   CI.getLangOpts().setCompilingModule(LangOptions::CMK_HeaderModule);
 
   // Synthesize a Module object for the given headers.
@@ -290,7 +294,7 @@ bool GenerateHeaderModuleAction::BeginSourceFileAction(CompilerInstance &CI) {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
     if (!FE) {
       CI.getDiagnostics().Report(diag::err_module_header_file_not_found)
-          << Name;
+        << Name;
       continue;
     }
     Headers.push_back({std::string(Name), *FE});
@@ -306,7 +310,8 @@ GenerateHeaderModuleAction::CreateOutputFile(CompilerInstance &CI,
   return CI.createDefaultOutputFile(/*Binary=*/true, InFile, "pcm");
 }
 
-SyntaxOnlyAction::~SyntaxOnlyAction() {}
+SyntaxOnlyAction::~SyntaxOnlyAction() {
+}
 
 std::unique_ptr<ASTConsumer>
 SyntaxOnlyAction::CreateASTConsumer(CompilerInstance &CI, StringRef InFile) {
@@ -338,8 +343,10 @@ void VerifyPCHAction::ExecuteAction() {
       /*ValidateSystemInputs*/ true));
 
   Reader->ReadAST(getCurrentFile(),
-                  Preamble ? serialization::MK_Preamble : serialization::MK_PCH,
-                  SourceLocation(), ASTReader::ARR_ConfigurationMismatch);
+                  Preamble ? serialization::MK_Preamble
+                           : serialization::MK_PCH,
+                  SourceLocation(),
+                  ASTReader::ARR_ConfigurationMismatch);
 }
 
 namespace {
@@ -464,8 +471,8 @@ private:
       Policy.SuppressDefaultTemplateArgs = false;
       NamedTemplate->getNameForDiagnostic(OS, Policy, true);
       const PresumedLoc DefLoc =
-          TheSema.getSourceManager().getPresumedLoc(Inst.Entity->getLocation());
-      if (!DefLoc.isInvalid())
+        TheSema.getSourceManager().getPresumedLoc(Inst.Entity->getLocation());
+      if(!DefLoc.isInvalid())
         Entry.DefinitionLocation = std::string(DefLoc.getFilename()) + ":" +
                                    std::to_string(DefLoc.getLine()) + ":" +
                                    std::to_string(DefLoc.getColumn());
@@ -502,204 +509,204 @@ void TemplightDumpAction::ExecuteAction() {
 }
 
 namespace {
-/// AST reader listener that dumps module information for a module
-/// file.
-class DumpModuleInfoListener : public ASTReaderListener {
-  llvm::raw_ostream &Out;
+  /// AST reader listener that dumps module information for a module
+  /// file.
+  class DumpModuleInfoListener : public ASTReaderListener {
+    llvm::raw_ostream &Out;
 
-public:
-  DumpModuleInfoListener(llvm::raw_ostream &Out) : Out(Out) {}
+  public:
+    DumpModuleInfoListener(llvm::raw_ostream &Out) : Out(Out) { }
 
-#define DUMP_BOOLEAN(Value, Text)                                              \
-  Out.indent(4) << Text << ": " << (Value ? "Yes" : "No") << "\n"
+#define DUMP_BOOLEAN(Value, Text)                       \
+    Out.indent(4) << Text << ": " << (Value? "Yes" : "No") << "\n"
 
-  bool ReadFullVersionInformation(StringRef FullVersion) override {
-    Out.indent(2) << "Generated by "
-                  << (FullVersion == getClangFullRepositoryVersion()
-                          ? "this"
-                          : "a different")
-                  << " Clang: " << FullVersion << "\n";
-    return ASTReaderListener::ReadFullVersionInformation(FullVersion);
-  }
+    bool ReadFullVersionInformation(StringRef FullVersion) override {
+      Out.indent(2)
+        << "Generated by "
+        << (FullVersion == getClangFullRepositoryVersion()? "this"
+                                                          : "a different")
+        << " Clang: " << FullVersion << "\n";
+      return ASTReaderListener::ReadFullVersionInformation(FullVersion);
+    }
 
-  void ReadModuleName(StringRef ModuleName) override {
-    Out.indent(2) << "Module name: " << ModuleName << "\n";
-  }
-  void ReadModuleMapFile(StringRef ModuleMapPath) override {
-    Out.indent(2) << "Module map file: " << ModuleMapPath << "\n";
-  }
+    void ReadModuleName(StringRef ModuleName) override {
+      Out.indent(2) << "Module name: " << ModuleName << "\n";
+    }
+    void ReadModuleMapFile(StringRef ModuleMapPath) override {
+      Out.indent(2) << "Module map file: " << ModuleMapPath << "\n";
+    }
 
-  bool ReadLanguageOptions(const LangOptions &LangOpts, bool Complain,
-                           bool AllowCompatibleDifferences) override {
-    Out.indent(2) << "Language options:\n";
-#define LANGOPT(Name, Bits, Default, Description)                              \
-  DUMP_BOOLEAN(LangOpts.Name, Description);
-#define ENUM_LANGOPT(Name, Type, Bits, Default, Description)                   \
-  Out.indent(4) << Description << ": "                                         \
-                << static_cast<unsigned>(LangOpts.get##Name()) << "\n";
-#define VALUE_LANGOPT(Name, Bits, Default, Description)                        \
-  Out.indent(4) << Description << ": " << LangOpts.Name << "\n";
+    bool ReadLanguageOptions(const LangOptions &LangOpts, bool Complain,
+                             bool AllowCompatibleDifferences) override {
+      Out.indent(2) << "Language options:\n";
+#define LANGOPT(Name, Bits, Default, Description) \
+      DUMP_BOOLEAN(LangOpts.Name, Description);
+#define ENUM_LANGOPT(Name, Type, Bits, Default, Description) \
+      Out.indent(4) << Description << ": "                   \
+                    << static_cast<unsigned>(LangOpts.get##Name()) << "\n";
+#define VALUE_LANGOPT(Name, Bits, Default, Description) \
+      Out.indent(4) << Description << ": " << LangOpts.Name << "\n";
 #define BENIGN_LANGOPT(Name, Bits, Default, Description)
 #define BENIGN_ENUM_LANGOPT(Name, Type, Bits, Default, Description)
 #include "clang/Basic/LangOptions.def"
 
-    if (!LangOpts.ModuleFeatures.empty()) {
-      Out.indent(4) << "Module features:\n";
-      for (StringRef Feature : LangOpts.ModuleFeatures)
-        Out.indent(6) << Feature << "\n";
-    }
-
-    return false;
-  }
-
-  bool ReadTargetOptions(const TargetOptions &TargetOpts, bool Complain,
-                         bool AllowCompatibleDifferences) override {
-    Out.indent(2) << "Target options:\n";
-    Out.indent(4) << "  Triple: " << TargetOpts.Triple << "\n";
-    Out.indent(4) << "  CPU: " << TargetOpts.CPU << "\n";
-    Out.indent(4) << "  TuneCPU: " << TargetOpts.TuneCPU << "\n";
-    Out.indent(4) << "  ABI: " << TargetOpts.ABI << "\n";
-
-    if (!TargetOpts.FeaturesAsWritten.empty()) {
-      Out.indent(4) << "Target features:\n";
-      for (unsigned I = 0, N = TargetOpts.FeaturesAsWritten.size(); I != N;
-           ++I) {
-        Out.indent(6) << TargetOpts.FeaturesAsWritten[I] << "\n";
+      if (!LangOpts.ModuleFeatures.empty()) {
+        Out.indent(4) << "Module features:\n";
+        for (StringRef Feature : LangOpts.ModuleFeatures)
+          Out.indent(6) << Feature << "\n";
       }
+
+      return false;
     }
 
-    return false;
-  }
+    bool ReadTargetOptions(const TargetOptions &TargetOpts, bool Complain,
+                           bool AllowCompatibleDifferences) override {
+      Out.indent(2) << "Target options:\n";
+      Out.indent(4) << "  Triple: " << TargetOpts.Triple << "\n";
+      Out.indent(4) << "  CPU: " << TargetOpts.CPU << "\n";
+      Out.indent(4) << "  TuneCPU: " << TargetOpts.TuneCPU << "\n";
+      Out.indent(4) << "  ABI: " << TargetOpts.ABI << "\n";
 
-  bool ReadDiagnosticOptions(IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts,
-                             bool Complain) override {
-    Out.indent(2) << "Diagnostic options:\n";
+      if (!TargetOpts.FeaturesAsWritten.empty()) {
+        Out.indent(4) << "Target features:\n";
+        for (unsigned I = 0, N = TargetOpts.FeaturesAsWritten.size();
+             I != N; ++I) {
+          Out.indent(6) << TargetOpts.FeaturesAsWritten[I] << "\n";
+        }
+      }
+
+      return false;
+    }
+
+    bool ReadDiagnosticOptions(IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts,
+                               bool Complain) override {
+      Out.indent(2) << "Diagnostic options:\n";
 #define DIAGOPT(Name, Bits, Default) DUMP_BOOLEAN(DiagOpts->Name, #Name);
-#define ENUM_DIAGOPT(Name, Type, Bits, Default)                                \
-  Out.indent(4) << #Name << ": " << DiagOpts->get##Name() << "\n";
-#define VALUE_DIAGOPT(Name, Bits, Default)                                     \
-  Out.indent(4) << #Name << ": " << DiagOpts->Name << "\n";
+#define ENUM_DIAGOPT(Name, Type, Bits, Default) \
+      Out.indent(4) << #Name << ": " << DiagOpts->get##Name() << "\n";
+#define VALUE_DIAGOPT(Name, Bits, Default) \
+      Out.indent(4) << #Name << ": " << DiagOpts->Name << "\n";
 #include "clang/Basic/DiagnosticOptions.def"
 
-    Out.indent(4) << "Diagnostic flags:\n";
-    for (const std::string &Warning : DiagOpts->Warnings)
-      Out.indent(6) << "-W" << Warning << "\n";
-    for (const std::string &Remark : DiagOpts->Remarks)
-      Out.indent(6) << "-R" << Remark << "\n";
+      Out.indent(4) << "Diagnostic flags:\n";
+      for (const std::string &Warning : DiagOpts->Warnings)
+        Out.indent(6) << "-W" << Warning << "\n";
+      for (const std::string &Remark : DiagOpts->Remarks)
+        Out.indent(6) << "-R" << Remark << "\n";
 
-    return false;
-  }
-
-  bool ReadHeaderSearchOptions(const HeaderSearchOptions &HSOpts,
-                               StringRef SpecificModuleCachePath,
-                               bool Complain) override {
-    Out.indent(2) << "Header search options:\n";
-    Out.indent(4) << "System root [-isysroot=]: '" << HSOpts.Sysroot << "'\n";
-    Out.indent(4) << "Resource dir [ -resource-dir=]: '" << HSOpts.ResourceDir
-                  << "'\n";
-    Out.indent(4) << "Module Cache: '" << SpecificModuleCachePath << "'\n";
-    DUMP_BOOLEAN(HSOpts.UseBuiltinIncludes,
-                 "Use builtin include directories [-nobuiltininc]");
-    DUMP_BOOLEAN(HSOpts.UseStandardSystemIncludes,
-                 "Use standard system include directories [-nostdinc]");
-    DUMP_BOOLEAN(HSOpts.UseStandardCXXIncludes,
-                 "Use standard C++ include directories [-nostdinc++]");
-    DUMP_BOOLEAN(HSOpts.UseLibcxx,
-                 "Use libc++ (rather than libstdc++) [-stdlib=]");
-    return false;
-  }
-
-  bool ReadPreprocessorOptions(const PreprocessorOptions &PPOpts, bool Complain,
-                               std::string &SuggestedPredefines) override {
-    Out.indent(2) << "Preprocessor options:\n";
-    DUMP_BOOLEAN(PPOpts.UsePredefines,
-                 "Uses compiler/target-specific predefines [-undef]");
-    DUMP_BOOLEAN(PPOpts.DetailedRecord,
-                 "Uses detailed preprocessing record (for indexing)");
-
-    if (!PPOpts.Macros.empty()) {
-      Out.indent(4) << "Predefined macros:\n";
+      return false;
     }
 
-    for (std::vector<std::pair<std::string, bool /*isUndef*/>>::const_iterator
-             I = PPOpts.Macros.begin(),
-             IEnd = PPOpts.Macros.end();
-         I != IEnd; ++I) {
-      Out.indent(6);
-      if (I->second)
-        Out << "-U";
-      else
-        Out << "-D";
-      Out << I->first << "\n";
-    }
-    return false;
-  }
-
-  /// Indicates that a particular module file extension has been read.
-  void readModuleFileExtension(
-      const ModuleFileExtensionMetadata &Metadata) override {
-    Out.indent(2) << "Module file extension '" << Metadata.BlockName << "' "
-                  << Metadata.MajorVersion << "." << Metadata.MinorVersion;
-    if (!Metadata.UserInfo.empty()) {
-      Out << ": ";
-      Out.write_escaped(Metadata.UserInfo);
+    bool ReadHeaderSearchOptions(const HeaderSearchOptions &HSOpts,
+                                 StringRef SpecificModuleCachePath,
+                                 bool Complain) override {
+      Out.indent(2) << "Header search options:\n";
+      Out.indent(4) << "System root [-isysroot=]: '" << HSOpts.Sysroot << "'\n";
+      Out.indent(4) << "Resource dir [ -resource-dir=]: '" << HSOpts.ResourceDir << "'\n";
+      Out.indent(4) << "Module Cache: '" << SpecificModuleCachePath << "'\n";
+      DUMP_BOOLEAN(HSOpts.UseBuiltinIncludes,
+                   "Use builtin include directories [-nobuiltininc]");
+      DUMP_BOOLEAN(HSOpts.UseStandardSystemIncludes,
+                   "Use standard system include directories [-nostdinc]");
+      DUMP_BOOLEAN(HSOpts.UseStandardCXXIncludes,
+                   "Use standard C++ include directories [-nostdinc++]");
+      DUMP_BOOLEAN(HSOpts.UseLibcxx,
+                   "Use libc++ (rather than libstdc++) [-stdlib=]");
+      return false;
     }
 
-    Out << "\n";
-  }
+    bool ReadPreprocessorOptions(const PreprocessorOptions &PPOpts,
+                                 bool Complain,
+                                 std::string &SuggestedPredefines) override {
+      Out.indent(2) << "Preprocessor options:\n";
+      DUMP_BOOLEAN(PPOpts.UsePredefines,
+                   "Uses compiler/target-specific predefines [-undef]");
+      DUMP_BOOLEAN(PPOpts.DetailedRecord,
+                   "Uses detailed preprocessing record (for indexing)");
 
-  /// Tells the \c ASTReaderListener that we want to receive the
-  /// input files of the AST file via \c visitInputFile.
-  bool needsInputFileVisitation() override { return true; }
-
-  /// Tells the \c ASTReaderListener that we want to receive the
-  /// input files of the AST file via \c visitInputFile.
-  bool needsSystemInputFileVisitation() override { return true; }
-
-  /// Indicates that the AST file contains particular input file.
-  ///
-  /// \returns true to continue receiving the next input file, false to stop.
-  bool visitInputFile(StringRef Filename, bool isSystem, bool isOverridden,
-                      bool isExplicitModule) override {
-
-    Out.indent(2) << "Input file: " << Filename;
-
-    if (isSystem || isOverridden || isExplicitModule) {
-      Out << " [";
-      if (isSystem) {
-        Out << "System";
-        if (isOverridden || isExplicitModule)
-          Out << ", ";
+      if (!PPOpts.Macros.empty()) {
+        Out.indent(4) << "Predefined macros:\n";
       }
-      if (isOverridden) {
-        Out << "Overridden";
+
+      for (std::vector<std::pair<std::string, bool/*isUndef*/> >::const_iterator
+             I = PPOpts.Macros.begin(), IEnd = PPOpts.Macros.end();
+           I != IEnd; ++I) {
+        Out.indent(6);
+        if (I->second)
+          Out << "-U";
+        else
+          Out << "-D";
+        Out << I->first << "\n";
+      }
+      return false;
+    }
+
+    /// Indicates that a particular module file extension has been read.
+    void readModuleFileExtension(
+           const ModuleFileExtensionMetadata &Metadata) override {
+      Out.indent(2) << "Module file extension '"
+                    << Metadata.BlockName << "' " << Metadata.MajorVersion
+                    << "." << Metadata.MinorVersion;
+      if (!Metadata.UserInfo.empty()) {
+        Out << ": ";
+        Out.write_escaped(Metadata.UserInfo);
+      }
+
+      Out << "\n";
+    }
+
+    /// Tells the \c ASTReaderListener that we want to receive the
+    /// input files of the AST file via \c visitInputFile.
+    bool needsInputFileVisitation() override { return true; }
+
+    /// Tells the \c ASTReaderListener that we want to receive the
+    /// input files of the AST file via \c visitInputFile.
+    bool needsSystemInputFileVisitation() override { return true; }
+
+    /// Indicates that the AST file contains particular input file.
+    ///
+    /// \returns true to continue receiving the next input file, false to stop.
+    bool visitInputFile(StringRef Filename, bool isSystem,
+                        bool isOverridden, bool isExplicitModule) override {
+
+      Out.indent(2) << "Input file: " << Filename;
+
+      if (isSystem || isOverridden || isExplicitModule) {
+        Out << " [";
+        if (isSystem) {
+          Out << "System";
+          if (isOverridden || isExplicitModule)
+            Out << ", ";
+        }
+        if (isOverridden) {
+          Out << "Overridden";
+          if (isExplicitModule)
+            Out << ", ";
+        }
         if (isExplicitModule)
-          Out << ", ";
-      }
-      if (isExplicitModule)
-        Out << "ExplicitModule";
+          Out << "ExplicitModule";
 
-      Out << "]";
+        Out << "]";
+      }
+
+      Out << "\n";
+
+      return true;
     }
 
-    Out << "\n";
+    /// Returns true if this \c ASTReaderListener wants to receive the
+    /// imports of the AST file via \c visitImport, false otherwise.
+    bool needsImportVisitation() const override { return true; }
 
-    return true;
-  }
-
-  /// Returns true if this \c ASTReaderListener wants to receive the
-  /// imports of the AST file via \c visitImport, false otherwise.
-  bool needsImportVisitation() const override { return true; }
-
-  /// If needsImportVisitation returns \c true, this is called for each
-  /// AST file imported by this AST file.
-  void visitImport(StringRef ModuleName, StringRef Filename) override {
-    Out.indent(2) << "Imports module '" << ModuleName << "': " << Filename.str()
-                  << "\n";
-  }
+    /// If needsImportVisitation returns \c true, this is called for each
+    /// AST file imported by this AST file.
+    void visitImport(StringRef ModuleName, StringRef Filename) override {
+      Out.indent(2) << "Imports module '" << ModuleName
+                    << "': " << Filename.str() << "\n";
+    }
 #undef DUMP_BOOLEAN
-};
-} // namespace
+  };
+}
 
 bool DumpModuleInfoAction::BeginInvocation(CompilerInstance &CI) {
   // The Object file reader also supports raw ast files and there is no point in
@@ -717,7 +724,7 @@ void DumpModuleInfoAction::ExecuteAction() {
     OutFile.reset(new llvm::raw_fd_ostream(OutputFileName.str(), EC,
                                            llvm::sys::fs::OF_Text));
   }
-  llvm::raw_ostream &Out = OutFile.get() ? *OutFile.get() : llvm::outs();
+  llvm::raw_ostream &Out = OutFile.get()? *OutFile.get() : llvm::outs();
 
   Out << "Information for module file '" << getCurrentFile() << "':\n";
   auto &FileMgr = getCompilerInstance().getFileManager();
@@ -729,7 +736,8 @@ void DumpModuleInfoAction::ExecuteAction() {
 
   Preprocessor &PP = getCompilerInstance().getPreprocessor();
   DumpModuleInfoListener Listener(Out);
-  HeaderSearchOptions &HSOpts = PP.getHeaderSearchInfo().getHeaderSearchOpts();
+  HeaderSearchOptions &HSOpts =
+      PP.getHeaderSearchInfo().getHeaderSearchOpts();
   ASTReader::readASTFileControlBlock(
       getCurrentFile(), FileMgr, getCompilerInstance().getPCHContainerReader(),
       /*FindModuleFileExtensions=*/true, Listener,
@@ -800,7 +808,7 @@ void PrintPreprocessedAction::ExecuteAction() {
   // concern, so if we scan for too long, we'll just assume the file should
   // be opened in binary mode.
   bool BinaryMode = true;
-  const SourceManager &SM = CI.getSourceManager();
+  const SourceManager& SM = CI.getSourceManager();
   if (llvm::Optional<llvm::MemoryBufferRef> Buffer =
           SM.getBufferOrNone(SM.getMainFileID())) {
     const char *cur = Buffer->getBufferStart();
@@ -810,16 +818,15 @@ void PrintPreprocessedAction::ExecuteAction() {
     // Limit ourselves to only scanning 256 characters into the source
     // file.  This is mostly a sanity check in case the file has no
     // newlines whatsoever.
-    if (end - cur > 256)
-      end = cur + 256;
+    if (end - cur > 256) end = cur + 256;
 
     while (next < end) {
       if (*cur == 0x0D) {  // CR
-        if (*next == 0x0A) // CRLF
+        if (*next == 0x0A)  // CRLF
           BinaryMode = false;
 
         break;
-      } else if (*cur == 0x0A) // LF
+      } else if (*cur == 0x0A)  // LF
         break;
 
       ++cur;
@@ -829,8 +836,7 @@ void PrintPreprocessedAction::ExecuteAction() {
 
   std::unique_ptr<raw_ostream> OS =
       CI.createDefaultOutputFile(BinaryMode, getCurrentFileOrBufferName());
-  if (!OS)
-    return;
+  if (!OS) return;
 
   // If we're preprocessing a module map, start by dumping the contents of the
   // module itself before switching to the input buffer.

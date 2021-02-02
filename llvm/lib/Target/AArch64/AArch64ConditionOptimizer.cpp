@@ -143,8 +143,8 @@ void AArch64ConditionOptimizer::getAnalysisUsage(AnalysisUsage &AU) const {
 // Finds compare instruction that corresponds to supported types of branching.
 // Returns the instruction or nullptr on failures or detecting unsupported
 // instructions.
-MachineInstr *
-AArch64ConditionOptimizer::findSuitableCompare(MachineBasicBlock *MBB) {
+MachineInstr *AArch64ConditionOptimizer::findSuitableCompare(
+    MachineBasicBlock *MBB) {
   MachineBasicBlock::iterator Term = MBB->getFirstTerminator();
   if (Term == MBB->end())
     return nullptr;
@@ -217,14 +217,10 @@ AArch64ConditionOptimizer::findSuitableCompare(MachineBasicBlock *MBB) {
 // Changes opcode adds <-> subs considering register operand width.
 static int getComplementOpc(int Opc) {
   switch (Opc) {
-  case AArch64::ADDSWri:
-    return AArch64::SUBSWri;
-  case AArch64::ADDSXri:
-    return AArch64::SUBSXri;
-  case AArch64::SUBSWri:
-    return AArch64::ADDSWri;
-  case AArch64::SUBSXri:
-    return AArch64::ADDSXri;
+  case AArch64::ADDSWri: return AArch64::SUBSWri;
+  case AArch64::ADDSXri: return AArch64::SUBSXri;
+  case AArch64::SUBSWri: return AArch64::ADDSWri;
+  case AArch64::SUBSXri: return AArch64::ADDSXri;
   default:
     llvm_unreachable("Unexpected opcode");
   }
@@ -233,14 +229,10 @@ static int getComplementOpc(int Opc) {
 // Changes form of comparison inclusive <-> exclusive.
 static AArch64CC::CondCode getAdjustedCmp(AArch64CC::CondCode Cmp) {
   switch (Cmp) {
-  case AArch64CC::GT:
-    return AArch64CC::GE;
-  case AArch64CC::GE:
-    return AArch64CC::GT;
-  case AArch64CC::LT:
-    return AArch64CC::LE;
-  case AArch64CC::LE:
-    return AArch64CC::LT;
+  case AArch64CC::GT: return AArch64CC::GE;
+  case AArch64CC::GE: return AArch64CC::GT;
+  case AArch64CC::LT: return AArch64CC::LE;
+  case AArch64CC::LE: return AArch64CC::LT;
   default:
     llvm_unreachable("Unexpected condition code");
   }
@@ -248,9 +240,8 @@ static AArch64CC::CondCode getAdjustedCmp(AArch64CC::CondCode Cmp) {
 
 // Transforms GT -> GE, GE -> GT, LT -> LE, LE -> LT by updating comparison
 // operator and condition code.
-AArch64ConditionOptimizer::CmpInfo
-AArch64ConditionOptimizer::adjustCmp(MachineInstr *CmpMI,
-                                     AArch64CC::CondCode Cmp) {
+AArch64ConditionOptimizer::CmpInfo AArch64ConditionOptimizer::adjustCmp(
+    MachineInstr *CmpMI, AArch64CC::CondCode Cmp) {
   unsigned Opc = CmpMI->getOpcode();
 
   // CMN (compare with negative immediate) is an alias to ADDS (as
@@ -268,8 +259,8 @@ AArch64ConditionOptimizer::adjustCmp(MachineInstr *CmpMI,
 
   // Handle +0 -> -1 and -0 -> +1 (CMN with 0 immediate) transitions by
   // adjusting compare instruction opcode.
-  if (OldImm == 0 &&
-      ((Negative && Correction == 1) || (!Negative && Correction == -1))) {
+  if (OldImm == 0 && ((Negative && Correction == 1) ||
+                      (!Negative && Correction == -1))) {
     Opc = getComplementOpc(Opc);
   }
 
@@ -278,7 +269,7 @@ AArch64ConditionOptimizer::adjustCmp(MachineInstr *CmpMI,
 
 // Applies changes to comparison instruction suggested by adjustCmp().
 void AArch64ConditionOptimizer::modifyCmp(MachineInstr *CmpMI,
-                                          const CmpInfo &Info) {
+    const CmpInfo &Info) {
   int Imm;
   unsigned Opc;
   AArch64CC::CondCode Cmp;
@@ -324,8 +315,8 @@ static bool parseCond(ArrayRef<MachineOperand> Cond, AArch64CC::CondCode &CC) {
 // CSE.  Returns true if compare instruction was changed, otherwise false is
 // returned.
 bool AArch64ConditionOptimizer::adjustTo(MachineInstr *CmpMI,
-                                         AArch64CC::CondCode Cmp,
-                                         MachineInstr *To, int ToImm) {
+  AArch64CC::CondCode Cmp, MachineInstr *To, int ToImm)
+{
   CmpInfo Info = adjustCmp(CmpMI, Cmp);
   if (std::get<0>(Info) == ToImm && std::get<1>(Info) == To->getOpcode()) {
     modifyCmp(CmpMI, Info);
@@ -427,7 +418,7 @@ bool AArch64ConditionOptimizer::runOnMachineFunction(MachineFunction &MF) {
       }
     } else if (((HeadCmp == AArch64CC::GT && TrueCmp == AArch64CC::GT) ||
                 (HeadCmp == AArch64CC::LT && TrueCmp == AArch64CC::LT)) &&
-               std::abs(TrueImm - HeadImm) == 1) {
+                std::abs(TrueImm - HeadImm) == 1) {
       // This branch transforms machine instructions that correspond to
       //
       // 1) (a > {TrueImm} && ...) || (a > {HeadImm} && ...)
@@ -442,7 +433,7 @@ bool AArch64ConditionOptimizer::runOnMachineFunction(MachineFunction &MF) {
       // smaller one; LT -> LE decreases immediate value so invert the choice.
       bool adjustHeadCond = (HeadImm < TrueImm);
       if (HeadCmp == AArch64CC::LT) {
-        adjustHeadCond = !adjustHeadCond;
+          adjustHeadCond = !adjustHeadCond;
       }
 
       if (adjustHeadCond) {

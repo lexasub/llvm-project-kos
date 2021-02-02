@@ -17,17 +17,23 @@
 
 #include "test_macros.h"
 
-class test : public std::ios {
+class test
+    : public std::ios
+{
 public:
-  test() { init(0); }
+    test()
+    {
+        init(0);
+    }
 };
 
-int main(int, char**) {
-  test t;
-  assert(t.flags() == (test::skipws | test::dec));
-  test::fmtflags f = t.flags(test::hex | test::right);
-  assert(f == (test::skipws | test::dec));
-  assert(t.flags() == (test::hex | test::right));
+int main(int, char**)
+{
+    test t;
+    assert(t.flags() == (test::skipws | test::dec));
+    test::fmtflags f = t.flags(test::hex | test::right);
+    assert(f == (test::skipws | test::dec));
+    assert(t.flags() == (test::hex | test::right));
 
   return 0;
 }

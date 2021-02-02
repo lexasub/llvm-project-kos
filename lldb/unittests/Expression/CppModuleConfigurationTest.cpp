@@ -58,6 +58,7 @@ static std::string ResourceInc() {
   return std::string(resource_dir);
 }
 
+
 TEST_F(CppModuleConfigurationTest, Linux) {
   // Test the average Linux configuration.
 

@@ -115,8 +115,8 @@ public:
 
 protected:
   lldb::BreakpointResolverSP
-  CreateExceptionResolver(const lldb::BreakpointSP &bkpt, bool catch_bp,
-                          bool throw_bp) override;
+  CreateExceptionResolver(const lldb::BreakpointSP &bkpt,
+                          bool catch_bp, bool throw_bp) override;
 
   class HashTableSignature {
   public:

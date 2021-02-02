@@ -112,7 +112,7 @@ public:
         public OptionBase {
   public:
     template <typename... Args>
-    Option(PassOptions &parent, StringRef arg, Args &&...args)
+    Option(PassOptions &parent, StringRef arg, Args &&... args)
         : llvm::cl::opt<DataType, /*ExternalStorage=*/false, OptionParser>(
               arg, llvm::cl::sub(parent), std::forward<Args>(args)...) {
       assert(!this->isPositional() && !this->isSink() &&
@@ -156,7 +156,7 @@ public:
         public OptionBase {
   public:
     template <typename... Args>
-    ListOption(PassOptions &parent, StringRef arg, Args &&...args)
+    ListOption(PassOptions &parent, StringRef arg, Args &&... args)
         : llvm::cl::list<DataType, /*StorageClass=*/bool, OptionParser>(
               arg, llvm::cl::sub(parent), std::forward<Args>(args)...) {
       assert(!this->isPositional() && !this->isSink() &&
@@ -248,8 +248,7 @@ private:
 ///        *this, "flag-name", llvm::cl::MiscFlags::CommaSeparated,
 ///        llvm::cl::desc("...")};
 /// };
-template <typename T>
-class PassPipelineOptions : public detail::PassOptions {
+template <typename T> class PassPipelineOptions : public detail::PassOptions {
 public:
   /// Factory that parses the provided options and returns a unique_ptr to the
   /// struct.
@@ -269,3 +268,4 @@ struct EmptyPipelineOptions : public PassPipelineOptions<EmptyPipelineOptions> {
 } // end namespace mlir
 
 #endif // MLIR_PASS_PASSOPTIONS_H_
+

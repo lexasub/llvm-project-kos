@@ -23,14 +23,17 @@
 #include "test_macros.h"
 
 template <class C>
-void test(C c) {
-  std::front_insert_iterator<C> i(c);
-  i = typename C::value_type();
-  assert(c.front() == typename C::value_type());
+void
+test(C c)
+{
+    std::front_insert_iterator<C> i(c);
+    i = typename C::value_type();
+    assert(c.front() == typename C::value_type());
 }
 
-int main(int, char**) {
-  test(std::list<std::unique_ptr<int> >());
+int main(int, char**)
+{
+    test(std::list<std::unique_ptr<int> >());
 
   return 0;
 }

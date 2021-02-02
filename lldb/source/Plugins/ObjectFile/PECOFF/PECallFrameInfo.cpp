@@ -439,7 +439,7 @@ PECallFrameInfo::PECallFrameInfo(ObjectFilePECOFF &object_file,
                                  uint32_t exception_dir_size)
     : m_object_file(object_file),
       m_exception_dir(object_file.ReadImageDataByRVA(exception_dir_rva,
-                                                     exception_dir_size)) {}
+                                                      exception_dir_size)) {}
 
 bool PECallFrameInfo::GetAddressRange(Address addr, AddressRange &range) {
   range.Clear();

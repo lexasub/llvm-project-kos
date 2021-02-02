@@ -21,12 +21,11 @@
 
 #include "test_macros.h"
 
+
 template <typename T, typename Expected>
 void check_equal() {
-  static_assert(
-      std::is_same_v<typename std::unwrap_reference<T>::type, Expected>);
-  static_assert(std::is_same_v<typename std::unwrap_reference<T>::type,
-                               std::unwrap_reference_t<T> >);
+  static_assert(std::is_same_v<typename std::unwrap_reference<T>::type, Expected>);
+  static_assert(std::is_same_v<typename std::unwrap_reference<T>::type, std::unwrap_reference_t<T>>);
 }
 
 template <typename T>
@@ -40,7 +39,7 @@ void check() {
   check_equal<std::reference_wrapper<T const>, T const&>();
 }
 
-struct T {};
+struct T { };
 
 int main(int, char**) {
   check<T>();

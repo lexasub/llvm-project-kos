@@ -855,28 +855,28 @@ void deref_end_after_pop_back(std::vector<int> &V) {
       // expected-note@-1{{Past-the-end iterator dereferenced}}
 }
 
-template <typename T>
+template<typename T>
 struct cont_with_ptr_iterator {
-  T *begin() const;
-  T *end() const;
+  T* begin() const;
+  T* end() const;
 };
 
 void deref_end_ptr_iterator(const cont_with_ptr_iterator<S> &c) {
   auto i = c.end();
-  (void)*i; // expected-warning{{Past-the-end iterator dereferenced}}
-            // expected-note@-1{{Past-the-end iterator dereferenced}}
+  (void) *i; // expected-warning{{Past-the-end iterator dereferenced}}
+             // expected-note@-1{{Past-the-end iterator dereferenced}}
 }
 
 void array_deref_end_ptr_iterator(const cont_with_ptr_iterator<S> &c) {
   auto i = c.end();
-  (void)i[0]; // expected-warning{{Past-the-end iterator dereferenced}}
-              // expected-note@-1{{Past-the-end iterator dereferenced}}
+  (void) i[0]; // expected-warning{{Past-the-end iterator dereferenced}}
+               // expected-note@-1{{Past-the-end iterator dereferenced}}
 }
 
 void arrow_deref_end_ptr_iterator(const cont_with_ptr_iterator<S> &c) {
   auto i = c.end();
-  (void)i->n; // expected-warning{{Past-the-end iterator dereferenced}}
-              // expected-note@-1{{Past-the-end iterator dereferenced}}
+  (void) i->n; // expected-warning{{Past-the-end iterator dereferenced}}
+               // expected-note@-1{{Past-the-end iterator dereferenced}}
 }
 
 void arrow_star_deref_end_ptr_iterator(const cont_with_ptr_iterator<S> &c,

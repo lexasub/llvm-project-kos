@@ -1,3 +1,1 @@
-namespace N {
-int f(int);
-}
+namespace N { int f(int); }

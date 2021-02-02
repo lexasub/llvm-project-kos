@@ -21,6 +21,7 @@
 #include "llvm/Support/Format.h"
 #include "llvm/Support/raw_ostream.h"
 
+
 namespace lldb_private {
 
 namespace minidump {
@@ -79,8 +80,8 @@ public:
   Status GetMemoryRegionInfo(lldb::addr_t load_addr,
                              MemoryRegionInfo &range_info) override;
 
-  Status
-  GetMemoryRegions(lldb_private::MemoryRegionInfos &region_list) override;
+  Status GetMemoryRegions(
+      lldb_private::MemoryRegionInfos &region_list) override;
 
   bool GetProcessInfo(ProcessInstanceInfo &info) override;
 

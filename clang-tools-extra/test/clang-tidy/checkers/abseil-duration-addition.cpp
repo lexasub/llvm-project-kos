@@ -67,8 +67,7 @@ void f() {
 #undef THIRTY
 
   // Some other contexts
-  if (absl::ToUnixSeconds(t) + 1.0 > 10) {
-  }
+  if (absl::ToUnixSeconds(t) + 1.0 > 10) {}
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: perform addition in the duration domain [abseil-duration-addition]
   // CHECK-FIXES: absl::ToUnixSeconds(t + absl::Seconds(1))
 
@@ -85,7 +84,7 @@ void f() {
 }
 
 // Within a templated function
-template <typename T>
+template<typename T>
 void foo(absl::Time t) {
   int i = absl::ToUnixNanos(t) + T{};
   // CHECK-MESSAGES: [[@LINE-1]]:11: warning: perform addition in the duration domain [abseil-duration-addition]

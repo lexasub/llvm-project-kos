@@ -98,11 +98,11 @@ bool SBTypeNameSpecifier::GetDescription(
   return true;
 }
 
-lldb::SBTypeNameSpecifier &
-SBTypeNameSpecifier::operator=(const lldb::SBTypeNameSpecifier &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeNameSpecifier &,
-                     SBTypeNameSpecifier, operator=,
-                     (const lldb::SBTypeNameSpecifier &), rhs);
+lldb::SBTypeNameSpecifier &SBTypeNameSpecifier::
+operator=(const lldb::SBTypeNameSpecifier &rhs) {
+  LLDB_RECORD_METHOD(
+      lldb::SBTypeNameSpecifier &,
+      SBTypeNameSpecifier, operator=,(const lldb::SBTypeNameSpecifier &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -111,8 +111,8 @@ SBTypeNameSpecifier::operator=(const lldb::SBTypeNameSpecifier &rhs) {
 }
 
 bool SBTypeNameSpecifier::operator==(lldb::SBTypeNameSpecifier &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeNameSpecifier, operator==,
-                     (lldb::SBTypeNameSpecifier &), rhs);
+  LLDB_RECORD_METHOD(
+      bool, SBTypeNameSpecifier, operator==,(lldb::SBTypeNameSpecifier &), rhs);
 
   if (!IsValid())
     return !rhs.IsValid();
@@ -135,8 +135,8 @@ bool SBTypeNameSpecifier::IsEqualTo(lldb::SBTypeNameSpecifier &rhs) {
 }
 
 bool SBTypeNameSpecifier::operator!=(lldb::SBTypeNameSpecifier &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeNameSpecifier, operator!=,
-                     (lldb::SBTypeNameSpecifier &), rhs);
+  LLDB_RECORD_METHOD(
+      bool, SBTypeNameSpecifier, operator!=,(lldb::SBTypeNameSpecifier &), rhs);
 
   if (!IsValid())
     return !rhs.IsValid();
@@ -159,7 +159,8 @@ SBTypeNameSpecifier::SBTypeNameSpecifier(
 namespace lldb_private {
 namespace repro {
 
-template <> void RegisterMethods<SBTypeNameSpecifier>(Registry &R) {
+template <>
+void RegisterMethods<SBTypeNameSpecifier>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeNameSpecifier, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeNameSpecifier, (const char *, bool));
   LLDB_REGISTER_CONSTRUCTOR(SBTypeNameSpecifier, (lldb::SBType));
@@ -172,16 +173,16 @@ template <> void RegisterMethods<SBTypeNameSpecifier>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBTypeNameSpecifier, IsRegex, ());
   LLDB_REGISTER_METHOD(bool, SBTypeNameSpecifier, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
-  LLDB_REGISTER_METHOD(lldb::SBTypeNameSpecifier &,
-                       SBTypeNameSpecifier, operator=,
-                       (const lldb::SBTypeNameSpecifier &));
-  LLDB_REGISTER_METHOD(bool, SBTypeNameSpecifier, operator==,
-                       (lldb::SBTypeNameSpecifier &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBTypeNameSpecifier &,
+      SBTypeNameSpecifier, operator=,(const lldb::SBTypeNameSpecifier &));
+  LLDB_REGISTER_METHOD(
+      bool, SBTypeNameSpecifier, operator==,(lldb::SBTypeNameSpecifier &));
   LLDB_REGISTER_METHOD(bool, SBTypeNameSpecifier, IsEqualTo,
                        (lldb::SBTypeNameSpecifier &));
-  LLDB_REGISTER_METHOD(bool, SBTypeNameSpecifier, operator!=,
-                       (lldb::SBTypeNameSpecifier &));
+  LLDB_REGISTER_METHOD(
+      bool, SBTypeNameSpecifier, operator!=,(lldb::SBTypeNameSpecifier &));
 }
 
-} // namespace repro
-} // namespace lldb_private
+}
+}

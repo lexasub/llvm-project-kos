@@ -1,5 +1,7 @@
 #include "def-include.h"
 
+
+
 @interface A {
 @public
   int ivar;
@@ -17,9 +19,9 @@ public:
 };
 
 namespace Def3NS {
-class Def3 {
-public:
-  void func();
-};
+  class Def3 {
+  public:
+   void func();
+  };
 }
 #endif

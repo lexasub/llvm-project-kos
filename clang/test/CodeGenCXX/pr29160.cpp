@@ -15,10 +15,11 @@ struct Base {
   ~Base();
 };
 
-#define STAMP(thiz, prev) using thiz = Foo<                                                           \
-                              prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, \
-                              prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, \
-                              prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev>;
+#define STAMP(thiz, prev) using thiz = Foo< \
+  prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, \
+  prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, \
+  prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev, prev \
+  >;
 STAMP(A, Base);
 STAMP(B, A);
 STAMP(C, B);

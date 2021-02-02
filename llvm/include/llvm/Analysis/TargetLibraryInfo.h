@@ -31,13 +31,13 @@ struct VecDesc {
   unsigned VectorizationFactor;
 };
 
-enum LibFunc : unsigned {
+  enum LibFunc : unsigned {
 #define TLI_DEFINE_ENUM
 #include "llvm/Analysis/TargetLibraryInfo.def"
 
-  NumLibFuncs,
-  NotLibFunc
-};
+    NumLibFuncs,
+    NotLibFunc
+  };
 
 /// Implementation of the target library information.
 ///
@@ -48,7 +48,7 @@ enum LibFunc : unsigned {
 class TargetLibraryInfoImpl {
   friend class TargetLibraryInfo;
 
-  unsigned char AvailableArray[(NumLibFuncs + 3) / 4];
+  unsigned char AvailableArray[(NumLibFuncs+3)/4];
   llvm::DenseMap<unsigned, std::string> CustomNames;
   static StringLiteral const StandardNames[NumLibFuncs];
   bool ShouldExtI32Param, ShouldExtI32Return, ShouldSignExtI32Param;
@@ -56,15 +56,14 @@ class TargetLibraryInfoImpl {
   enum AvailabilityState {
     StandardName = 3, // (memset to all ones)
     CustomName = 1,
-    Unavailable = 0 // (memset to all zeros)
+    Unavailable = 0  // (memset to all zeros)
   };
   void setState(LibFunc F, AvailabilityState State) {
-    AvailableArray[F / 4] &= ~(3 << 2 * (F & 3));
-    AvailableArray[F / 4] |= State << 2 * (F & 3);
+    AvailableArray[F/4] &= ~(3 << 2*(F&3));
+    AvailableArray[F/4] |= State << 2*(F&3);
   }
   AvailabilityState getState(LibFunc F) const {
-    return static_cast<AvailabilityState>(
-        (AvailableArray[F / 4] >> 2 * (F & 3)) & 3);
+    return static_cast<AvailabilityState>((AvailableArray[F/4] >> 2*(F&3)) & 3);
   }
 
   /// Vectorization descriptors - sorted by ScalarFnName.
@@ -87,11 +86,11 @@ public:
   /// addVectorizableFunctionsFromVecLib for filling up the tables of
   /// vectorizable functions.
   enum VectorLibrary {
-    NoLibrary,   // Don't use any vector library.
-    Accelerate,  // Use Accelerate framework.
-    LIBMVEC_X86, // GLIBC Vector Math library.
-    MASSV,       // IBM MASS vector library.
-    SVML         // Intel short vector math library.
+    NoLibrary,  // Don't use any vector library.
+    Accelerate, // Use Accelerate framework.
+    LIBMVEC_X86,// GLIBC Vector Math library.
+    MASSV,      // IBM MASS vector library.
+    SVML        // Intel short vector math library.
   };
 
   TargetLibraryInfoImpl();
@@ -117,10 +116,14 @@ public:
   bool getLibFunc(const Function &FDecl, LibFunc &F) const;
 
   /// Forces a function to be marked as unavailable.
-  void setUnavailable(LibFunc F) { setState(F, Unavailable); }
+  void setUnavailable(LibFunc F) {
+    setState(F, Unavailable);
+  }
 
   /// Forces a function to be marked as available.
-  void setAvailable(LibFunc F) { setState(F, StandardName); }
+  void setAvailable(LibFunc F) {
+    setState(F, StandardName);
+  }
 
   /// Forces a function to be marked as available and provide an alternate name
   /// that must be used.
@@ -176,16 +179,22 @@ public:
   /// Set to true iff i32 parameters to library functions should have signext
   /// or zeroext attributes if they correspond to C-level int or unsigned int,
   /// respectively.
-  void setShouldExtI32Param(bool Val) { ShouldExtI32Param = Val; }
+  void setShouldExtI32Param(bool Val) {
+    ShouldExtI32Param = Val;
+  }
 
   /// Set to true iff i32 results from library functions should have signext
   /// or zeroext attributes if they correspond to C-level int or unsigned int,
   /// respectively.
-  void setShouldExtI32Return(bool Val) { ShouldExtI32Return = Val; }
+  void setShouldExtI32Return(bool Val) {
+    ShouldExtI32Return = Val;
+  }
 
   /// Set to true iff i32 parameters to library functions should have signext
   /// attribute if they correspond to C-level int or unsigned int.
-  void setShouldSignExtI32Param(bool Val) { ShouldSignExtI32Param = Val; }
+  void setShouldSignExtI32Param(bool Val) {
+    ShouldSignExtI32Param = Val;
+  }
 
   /// Returns the size of the wchar_t type in bytes or 0 if the size is unknown.
   /// This queries the 'wchar_size' metadata.
@@ -324,68 +333,28 @@ public:
     if (getState(F) == TargetLibraryInfoImpl::Unavailable)
       return false;
     switch (F) {
-    default:
-      break;
-    case LibFunc_copysign:
-    case LibFunc_copysignf:
-    case LibFunc_copysignl:
-    case LibFunc_fabs:
-    case LibFunc_fabsf:
-    case LibFunc_fabsl:
-    case LibFunc_sin:
-    case LibFunc_sinf:
-    case LibFunc_sinl:
-    case LibFunc_cos:
-    case LibFunc_cosf:
-    case LibFunc_cosl:
-    case LibFunc_sqrt:
-    case LibFunc_sqrtf:
-    case LibFunc_sqrtl:
-    case LibFunc_sqrt_finite:
-    case LibFunc_sqrtf_finite:
-    case LibFunc_sqrtl_finite:
-    case LibFunc_fmax:
-    case LibFunc_fmaxf:
-    case LibFunc_fmaxl:
-    case LibFunc_fmin:
-    case LibFunc_fminf:
-    case LibFunc_fminl:
-    case LibFunc_floor:
-    case LibFunc_floorf:
-    case LibFunc_floorl:
-    case LibFunc_nearbyint:
-    case LibFunc_nearbyintf:
-    case LibFunc_nearbyintl:
-    case LibFunc_ceil:
-    case LibFunc_ceilf:
-    case LibFunc_ceill:
-    case LibFunc_rint:
-    case LibFunc_rintf:
-    case LibFunc_rintl:
-    case LibFunc_round:
-    case LibFunc_roundf:
-    case LibFunc_roundl:
-    case LibFunc_trunc:
-    case LibFunc_truncf:
-    case LibFunc_truncl:
-    case LibFunc_log2:
-    case LibFunc_log2f:
-    case LibFunc_log2l:
-    case LibFunc_exp2:
-    case LibFunc_exp2f:
-    case LibFunc_exp2l:
-    case LibFunc_memcpy:
-    case LibFunc_memset:
-    case LibFunc_memmove:
-    case LibFunc_memcmp:
-    case LibFunc_bcmp:
-    case LibFunc_strcmp:
-    case LibFunc_strcpy:
-    case LibFunc_stpcpy:
-    case LibFunc_strlen:
-    case LibFunc_strnlen:
-    case LibFunc_memchr:
-    case LibFunc_mempcpy:
+    default: break;
+    case LibFunc_copysign:     case LibFunc_copysignf:  case LibFunc_copysignl:
+    case LibFunc_fabs:         case LibFunc_fabsf:      case LibFunc_fabsl:
+    case LibFunc_sin:          case LibFunc_sinf:       case LibFunc_sinl:
+    case LibFunc_cos:          case LibFunc_cosf:       case LibFunc_cosl:
+    case LibFunc_sqrt:         case LibFunc_sqrtf:      case LibFunc_sqrtl:
+    case LibFunc_sqrt_finite:  case LibFunc_sqrtf_finite:
+                                                   case LibFunc_sqrtl_finite:
+    case LibFunc_fmax:         case LibFunc_fmaxf:      case LibFunc_fmaxl:
+    case LibFunc_fmin:         case LibFunc_fminf:      case LibFunc_fminl:
+    case LibFunc_floor:        case LibFunc_floorf:     case LibFunc_floorl:
+    case LibFunc_nearbyint:    case LibFunc_nearbyintf: case LibFunc_nearbyintl:
+    case LibFunc_ceil:         case LibFunc_ceilf:      case LibFunc_ceill:
+    case LibFunc_rint:         case LibFunc_rintf:      case LibFunc_rintl:
+    case LibFunc_round:        case LibFunc_roundf:     case LibFunc_roundl:
+    case LibFunc_trunc:        case LibFunc_truncf:     case LibFunc_truncl:
+    case LibFunc_log2:         case LibFunc_log2f:      case LibFunc_log2l:
+    case LibFunc_exp2:         case LibFunc_exp2f:      case LibFunc_exp2l:
+    case LibFunc_memcpy:       case LibFunc_memset:     case LibFunc_memmove:
+    case LibFunc_memcmp:       case LibFunc_bcmp:       case LibFunc_strcmp:
+    case LibFunc_strcpy:       case LibFunc_stpcpy:     case LibFunc_strlen:
+    case LibFunc_strnlen:      case LibFunc_memchr:     case LibFunc_mempcpy:
       return true;
     }
     return false;
@@ -422,7 +391,9 @@ public:
   }
 
   /// \copydoc TargetLibraryInfoImpl::getWCharSize()
-  unsigned getWCharSize(const Module &M) const { return Impl->getWCharSize(M); }
+  unsigned getWCharSize(const Module &M) const {
+    return Impl->getWCharSize(M);
+  }
 
   /// Handle invalidation from the pass manager.
   ///

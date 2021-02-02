@@ -128,7 +128,8 @@ For example, rename "A::Foo" to "B::Bar":
 
     namespace bar {
     void f(B b) {}
-    })"};
+    })"
+  };
   return Descriptor;
 }
 
@@ -267,7 +268,7 @@ private:
 
 std::unique_ptr<ASTConsumer> RenamingAction::newASTConsumer() {
   return std::make_unique<RenamingASTConsumer>(NewNames, PrevNames, USRList,
-                                               FileToReplaces, PrintLocations);
+                                                FileToReplaces, PrintLocations);
 }
 
 std::unique_ptr<ASTConsumer> QualifiedRenamingAction::newASTConsumer() {

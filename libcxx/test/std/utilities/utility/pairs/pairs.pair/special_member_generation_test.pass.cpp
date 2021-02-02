@@ -31,8 +31,7 @@ using namespace ImplicitTypes; // Get implicitly archetypes
 
 namespace ConstructorTest {
 
-template <class T1, bool CanCopy = true, bool CanMove = CanCopy>
-void test() {
+template <class T1, bool CanCopy = true, bool CanMove = CanCopy> void test() {
   using P1 = std::pair<T1, int>;
   using P2 = std::pair<int, T1>;
   static_assert(std::is_copy_constructible<P1>::value == CanCopy, "");
@@ -47,41 +46,40 @@ void test_constructors_exist() {
   using namespace ConstructorTest;
   {
     test<int>();
-    test<int&>();
-    test<int&&, false, true>();
+    test<int &>();
+    test<int &&, false, true>();
     test<const int>();
-    test<const int&>();
-    test<const int&&, false, true>();
+    test<const int &>();
+    test<const int &&, false, true>();
   }
   {
     test<Copyable>();
-    test<Copyable&>();
-    test<Copyable&&, false, true>();
+    test<Copyable &>();
+    test<Copyable &&, false, true>();
   }
   {
     test<NonCopyable, false>();
-    test<NonCopyable&, true>();
-    test<NonCopyable&&, false, true>();
+    test<NonCopyable &, true>();
+    test<NonCopyable &&, false, true>();
   }
   {
     // Even though CopyOnly has an explicitly deleted move constructor
     // pair's move constructor is only implicitly deleted and therefore
     // it doesn't participate in overload resolution.
     test<CopyOnly, true, true>();
-    test<CopyOnly&, true>();
-    test<CopyOnly&&, false, true>();
+    test<CopyOnly &, true>();
+    test<CopyOnly &&, false, true>();
   }
   {
     test<MoveOnly, false, true>();
-    test<MoveOnly&, true>();
-    test<MoveOnly&&, false, true>();
+    test<MoveOnly &, true>();
+    test<MoveOnly &&, false, true>();
   }
 }
 
 namespace AssignmentOperatorTest {
 
-template <class T1, bool CanCopy = true, bool CanMove = CanCopy>
-void test() {
+template <class T1, bool CanCopy = true, bool CanMove = CanCopy> void test() {
   using P1 = std::pair<T1, int>;
   using P2 = std::pair<int, T1>;
   static_assert(std::is_copy_assignable<P1>::value == CanCopy, "");
@@ -96,31 +94,31 @@ void test_assignment_operator_exists() {
   using namespace AssignmentOperatorTest;
   {
     test<int>();
-    test<int&>();
-    test<int&&>();
+    test<int &>();
+    test<int &&>();
     test<const int, false>();
-    test<const int&, false>();
-    test<const int&&, false>();
+    test<const int &, false>();
+    test<const int &&, false>();
   }
   {
     test<Copyable>();
-    test<Copyable&>();
-    test<Copyable&&>();
+    test<Copyable &>();
+    test<Copyable &&>();
   }
   {
     test<NonCopyable, false>();
-    test<NonCopyable&, false>();
-    test<NonCopyable&&, false>();
+    test<NonCopyable &, false>();
+    test<NonCopyable &&, false>();
   }
   {
     test<CopyOnly, true>();
-    test<CopyOnly&, true>();
-    test<CopyOnly&&, true>();
+    test<CopyOnly &, true>();
+    test<CopyOnly &&, true>();
   }
   {
     test<MoveOnly, false, true>();
-    test<MoveOnly&, false, false>();
-    test<MoveOnly&&, false, true>();
+    test<MoveOnly &, false, false>();
+    test<MoveOnly &&, false, true>();
   }
 }
 

@@ -47,7 +47,7 @@ cl::opt<std::string> RemoteUser("remote-user",
 cl::opt<std::string>
     RemoteExtra("remote-extra-options",
                 cl::desc("Remote execution (rsh/ssh) extra options"));
-} // namespace
+}
 
 /// RunProgramWithTimeout - This function provides an alternate interface
 /// to the sys::Program::ExecuteAndWait interface.
@@ -160,7 +160,7 @@ public:
       const std::vector<std::string> &SharedLibs = std::vector<std::string>(),
       unsigned Timeout = 0, unsigned MemoryLimit = 0) override;
 };
-} // namespace
+}
 
 Expected<int> LLI::ExecuteProgram(const std::string &Bitcode,
                                   const std::vector<std::string> &Args,
@@ -221,7 +221,7 @@ AbstractInterpreter *
 AbstractInterpreter::createLLI(const char *Argv0, std::string &Message,
                                const std::vector<std::string> *ToolArgs) {
   if (ErrorOr<std::string> LLIPath =
-          FindProgramByName("lli", Argv0, (void *)(intptr_t)&createLLI)) {
+      FindProgramByName("lli", Argv0, (void *)(intptr_t)&createLLI)) {
     Message = "Found lli: " + *LLIPath + "\n";
     return new LLI(*LLIPath, ToolArgs);
   } else {
@@ -260,7 +260,7 @@ public:
         inconvertibleErrorCode());
   }
 };
-} // namespace
+}
 
 Error CustomCompiler::compileProgram(const std::string &Bitcode,
                                      unsigned Timeout, unsigned MemoryLimit) {
@@ -305,7 +305,7 @@ public:
       const std::vector<std::string> &SharedLibs = std::vector<std::string>(),
       unsigned Timeout = 0, unsigned MemoryLimit = 0) override;
 };
-} // namespace
+}
 
 Expected<int> CustomExecutor::ExecuteProgram(
     const std::string &Bitcode, const std::vector<std::string> &Args,
@@ -548,7 +548,7 @@ public:
       const std::vector<std::string> &SharedLibs = std::vector<std::string>(),
       unsigned Timeout = 0, unsigned MemoryLimit = 0) override;
 };
-} // namespace
+}
 
 Expected<int> JIT::ExecuteProgram(const std::string &Bitcode,
                                   const std::vector<std::string> &Args,
@@ -816,8 +816,8 @@ Error CC::MakeSharedObject(const std::string &InputFile, FileType fileType,
     CCArgs.push_back("-mcpu=v9");
 
   CCArgs.push_back("-o");
-  CCArgs.push_back(OutputFile); // Output to the right filename.
-  CCArgs.push_back("-O2");      // Optimize the program a bit.
+  CCArgs.push_back(OutputFile);         // Output to the right filename.
+  CCArgs.push_back("-O2");              // Optimize the program a bit.
 
   // Add any arguments intended for CC. We locate them here because this is
   // most likely -L and -l options that need to come before other libraries but
@@ -844,8 +844,8 @@ CC *CC::create(const char *Argv0, std::string &Message,
                const std::vector<std::string> *Args) {
   auto CCPath = FindProgramByName(CCBinary, Argv0, (void *)(intptr_t)&create);
   if (!CCPath) {
-    Message = "Cannot find `" + CCBinary +
-              "' in PATH: " + CCPath.getError().message() + "\n";
+    Message = "Cannot find `" + CCBinary + "' in PATH: " +
+              CCPath.getError().message() + "\n";
     return nullptr;
   }
 
@@ -853,8 +853,8 @@ CC *CC::create(const char *Argv0, std::string &Message,
   if (!RemoteClient.empty()) {
     auto Path = sys::findProgramByName(RemoteClient);
     if (!Path) {
-      Message = "Cannot find `" + RemoteClient +
-                "' in PATH: " + Path.getError().message() + "\n";
+      Message = "Cannot find `" + RemoteClient + "' in PATH: " +
+                Path.getError().message() + "\n";
       return nullptr;
     }
     RemoteClientPath = *Path;

@@ -6,12 +6,12 @@
 namespace std {
 inline namespace foo {
 template <class T> struct remove_reference { typedef T type; };
-template <class T> struct remove_reference<T &> { typedef T type; };
-template <class T> struct remove_reference<T &&> { typedef T type; };
+template <class T> struct remove_reference<T&> { typedef T type; };
+template <class T> struct remove_reference<T&&> { typedef T type; };
 
 template <class T> typename remove_reference<T>::type &&move(T &&t);
-} // namespace foo
-} // namespace std
+}
+}
 
 struct A {
 #ifdef USER_DEFINED
@@ -79,6 +79,7 @@ A test3() {
   static A static_a;
   return static_a;
   return std::move(static_a);
+
 }
 
 A test4() {
@@ -223,9 +224,8 @@ test9
 
 #define return_a return std::move(a)
 
-    // Macro test.  The std::call is inside the macro, so no fix-it is suggested.
-    A
-    test10() {
+// Macro test.  The std::call is inside the macro, so no fix-it is suggested.
+A test10() {
   A a;
   return_a;
   // expected-warning@-1{{prevents copy elision}}
@@ -233,34 +233,32 @@ test9
 }
 
 namespace templates {
-struct A {};
-struct B {
-  B(A);
-};
+  struct A {};
+  struct B { B(A); };
 
-// Warn once here since the type is not dependent.
-template <typename T>
-A test1() {
-  A a;
-  return std::move(a);
-  // expected-warning@-1{{prevents copy elision}}
-  // expected-note@-2{{remove std::move call}}
-  // CHECK: fix-it:"{{.*}}":{[[@LINE-3]]:12-[[@LINE-3]]:22}:""
-  // CHECK: fix-it:"{{.*}}":{[[@LINE-4]]:23-[[@LINE-4]]:24}:""
-}
-void run_test1() {
-  test1<A>();
-  test1<B>();
-}
+  // Warn once here since the type is not dependent.
+  template <typename T>
+  A test1() {
+    A a;
+    return std::move(a);
+    // expected-warning@-1{{prevents copy elision}}
+    // expected-note@-2{{remove std::move call}}
+    // CHECK: fix-it:"{{.*}}":{[[@LINE-3]]:12-[[@LINE-3]]:22}:""
+    // CHECK: fix-it:"{{.*}}":{[[@LINE-4]]:23-[[@LINE-4]]:24}:""
+  }
+  void run_test1() {
+    test1<A>();
+    test1<B>();
+  }
 
-// T1 and T2 may not be the same, the warning may not always apply.
-template <typename T1, typename T2>
-T1 test2() {
-  T2 t;
-  return std::move(t);
+  // T1 and T2 may not be the same, the warning may not always apply.
+  template <typename T1, typename T2>
+  T1 test2() {
+    T2 t;
+    return std::move(t);
+  }
+  void run_test2() {
+    test2<A, A>();
+    test2<B, A>();
+  }
 }
-void run_test2() {
-  test2<A, A>();
-  test2<B, A>();
-}
-} // namespace templates

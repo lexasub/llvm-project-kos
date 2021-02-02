@@ -31,7 +31,6 @@ namespace llvm {
 class LLVM_LIBRARY_VISIBILITY DAGTypeLegalizer {
   const TargetLowering &TLI;
   SelectionDAG &DAG;
-
 public:
   /// This pass uses the NodeId on the SDNodes to hold information about the
   /// state of the node. The enum has all the values.
@@ -52,8 +51,8 @@ public:
 
     // 1+ - This is a node which has this many unprocessed operands.
   };
-
 private:
+
   /// This is a bitvector that contains two bits for each simple value type,
   /// where the two bits correspond to the LegalizeAction enum from
   /// TargetLowering. This can be queried with "getTypeAction(VT)".
@@ -66,8 +65,7 @@ private:
 
   /// Return true if this type is legal on this target.
   bool isTypeLegal(EVT VT) const {
-    return TLI.getTypeAction(*DAG.getContext(), VT) ==
-           TargetLowering::TypeLegal;
+    return TLI.getTypeAction(*DAG.getContext(), VT) == TargetLowering::TypeLegal;
   }
 
   /// Return true if this is a simple legal type.
@@ -137,7 +135,7 @@ private:
 
   /// This defines a worklist of nodes to process. In order to be pushed onto
   /// this worklist, all operands of a node must have already been processed.
-  SmallVector<SDNode *, 128> Worklist;
+  SmallVector<SDNode*, 128> Worklist;
 
   TableId getTableId(SDValue V) {
     assert(V.getNode() && "Getting TableId on SDValue()");
@@ -168,8 +166,8 @@ private:
 
 public:
   explicit DAGTypeLegalizer(SelectionDAG &dag)
-      : TLI(dag.getTargetLoweringInfo()), DAG(dag),
-        ValueTypeActions(TLI.getValueTypeActions()) {
+    : TLI(dag.getTargetLoweringInfo()), DAG(dag),
+    ValueTypeActions(TLI.getValueTypeActions()) {
     static_assert(MVT::LAST_VALUETYPE <= MVT::MAX_ALLOWED_VALUETYPE,
                   "Too many value types for ValueTypeActions to hold!");
   }
@@ -236,7 +234,8 @@ private:
 
   void ReplaceValueWith(SDValue From, SDValue To);
   void SplitInteger(SDValue Op, SDValue &Lo, SDValue &Hi);
-  void SplitInteger(SDValue Op, EVT LoVT, EVT HiVT, SDValue &Lo, SDValue &Hi);
+  void SplitInteger(SDValue Op, EVT LoVT, EVT HiVT,
+                    SDValue &Lo, SDValue &Hi);
 
   //===--------------------------------------------------------------------===//
   // Integer Promotion Support: LegalizeIntegerTypes.cpp
@@ -393,7 +392,7 @@ private:
   SDValue PromoteIntOp_VECREDUCE(SDNode *N);
   SDValue PromoteIntOp_SET_ROUNDING(SDNode *N);
 
-  void PromoteSetCCOperands(SDValue &LHS, SDValue &RHS, ISD::CondCode Code);
+  void PromoteSetCCOperands(SDValue &LHS,SDValue &RHS, ISD::CondCode Code);
 
   //===--------------------------------------------------------------------===//
   // Integer Expansion Support: LegalizeIntegerTypes.cpp
@@ -410,60 +409,60 @@ private:
 
   // Integer Result Expansion.
   void ExpandIntegerResult(SDNode *N, unsigned ResNo);
-  void ExpandIntRes_ANY_EXTEND(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_AssertSext(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_AssertZext(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_Constant(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ABS(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_CTLZ(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_CTPOP(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_CTTZ(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_LOAD(LoadSDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_READCYCLECOUNTER(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SIGN_EXTEND(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SIGN_EXTEND_INREG(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_TRUNCATE(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ZERO_EXTEND(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_FLT_ROUNDS(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_FP_TO_SINT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_FP_TO_UINT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_FP_TO_XINT_SAT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_LLROUND_LLRINT(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ANY_EXTEND        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_AssertSext        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_AssertZext        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_Constant          (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ABS               (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_CTLZ              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_CTPOP             (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_CTTZ              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_LOAD          (LoadSDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_READCYCLECOUNTER  (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SIGN_EXTEND       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SIGN_EXTEND_INREG (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_TRUNCATE          (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ZERO_EXTEND       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_FLT_ROUNDS        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_FP_TO_SINT        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_FP_TO_UINT        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_FP_TO_XINT_SAT    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_LLROUND_LLRINT    (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandIntRes_Logical(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ADDSUB(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ADDSUBC(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ADDSUBE(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ADDSUBCARRY(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SADDSUBO_CARRY(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_BITREVERSE(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_BSWAP(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_PARITY(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_MUL(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SDIV(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SREM(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_UDIV(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_UREM(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_Shift(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_Logical           (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ADDSUB            (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ADDSUBC           (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ADDSUBE           (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ADDSUBCARRY       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SADDSUBO_CARRY    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_BITREVERSE        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_BSWAP             (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_PARITY            (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_MUL               (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SDIV              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SREM              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_UDIV              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_UREM              (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_Shift             (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandIntRes_MINMAX(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_MINMAX            (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandIntRes_SADDSUBO(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_UADDSUBO(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_XMULO(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_ADDSUBSAT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_SHLSAT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_MULFIX(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_DIVFIX(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SADDSUBO          (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_UADDSUBO          (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_XMULO             (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ADDSUBSAT         (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_SHLSAT            (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_MULFIX            (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_DIVFIX            (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandIntRes_ATOMIC_LOAD(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_VECREDUCE(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_ATOMIC_LOAD       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_VECREDUCE         (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandIntRes_Rotate(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandIntRes_FunnelShift(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_Rotate            (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandIntRes_FunnelShift       (SDNode *N, SDValue &Lo, SDValue &Hi);
 
-  void ExpandShiftByConstant(SDNode *N, const APInt &Amt, SDValue &Lo,
-                             SDValue &Hi);
+  void ExpandShiftByConstant(SDNode *N, const APInt &Amt,
+                             SDValue &Lo, SDValue &Hi);
   bool ExpandShiftWithKnownAmountBit(SDNode *N, SDValue &Lo, SDValue &Hi);
   bool ExpandShiftWithUnknownAmountBit(SDNode *N, SDValue &Lo, SDValue &Hi);
 
@@ -591,42 +590,42 @@ private:
   // Float Result Expansion.
   void ExpandFloatResult(SDNode *N, unsigned ResNo);
   void ExpandFloatRes_ConstantFP(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_Unary(SDNode *N, RTLIB::Libcall LC, SDValue &Lo,
-                            SDValue &Hi);
-  void ExpandFloatRes_Binary(SDNode *N, RTLIB::Libcall LC, SDValue &Lo,
-                             SDValue &Hi);
-  void ExpandFloatRes_FABS(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FMINNUM(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FMAXNUM(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FADD(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FCBRT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FCEIL(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FCOPYSIGN(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FCOS(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FDIV(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FEXP(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FEXP2(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FFLOOR(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FLOG(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FLOG2(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FLOG10(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FMA(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FMUL(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_Unary(SDNode *N, RTLIB::Libcall LC,
+                            SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_Binary(SDNode *N, RTLIB::Libcall LC,
+                             SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FABS      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FMINNUM   (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FMAXNUM   (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FADD      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FCBRT     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FCEIL     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FCOPYSIGN (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FCOS      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FDIV      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FEXP      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FEXP2     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FFLOOR    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FLOG      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FLOG2     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FLOG10    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FMA       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FMUL      (SDNode *N, SDValue &Lo, SDValue &Hi);
   void ExpandFloatRes_FNEARBYINT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FNEG(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FP_EXTEND(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FPOW(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FPOWI(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FREEZE(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FREM(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FRINT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FROUND(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FNEG      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FP_EXTEND (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FPOW      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FPOWI     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FREEZE    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FREM      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FRINT     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FROUND    (SDNode *N, SDValue &Lo, SDValue &Hi);
   void ExpandFloatRes_FROUNDEVEN(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FSIN(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FSQRT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FSUB(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_FTRUNC(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandFloatRes_LOAD(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FSIN      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FSQRT     (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FSUB      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_FTRUNC    (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandFloatRes_LOAD      (SDNode *N, SDValue &Lo, SDValue &Hi);
   void ExpandFloatRes_XINT_TO_FP(SDNode *N, SDValue &Lo, SDValue &Hi);
 
   // Float Operand Expansion.
@@ -817,8 +816,8 @@ private:
   void SplitVecRes_InregOp(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_ExtVecInRegOp(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_StrictFPOp(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void SplitVecRes_OverflowOp(SDNode *N, unsigned ResNo, SDValue &Lo,
-                              SDValue &Hi);
+  void SplitVecRes_OverflowOp(SDNode *N, unsigned ResNo,
+                              SDValue &Lo, SDValue &Hi);
 
   void SplitVecRes_FIX(SDNode *N, SDValue &Lo, SDValue &Hi);
 
@@ -883,22 +882,22 @@ private:
 
   // Widen Vector Result Promotion.
   void WidenVectorResult(SDNode *N, unsigned ResNo);
-  SDValue WidenVecRes_MERGE_VALUES(SDNode *N, unsigned ResNo);
-  SDValue WidenVecRes_BITCAST(SDNode *N);
-  SDValue WidenVecRes_BUILD_VECTOR(SDNode *N);
-  SDValue WidenVecRes_CONCAT_VECTORS(SDNode *N);
-  SDValue WidenVecRes_EXTEND_VECTOR_INREG(SDNode *N);
-  SDValue WidenVecRes_EXTRACT_SUBVECTOR(SDNode *N);
-  SDValue WidenVecRes_INSERT_VECTOR_ELT(SDNode *N);
-  SDValue WidenVecRes_LOAD(SDNode *N);
-  SDValue WidenVecRes_MLOAD(MaskedLoadSDNode *N);
-  SDValue WidenVecRes_MGATHER(MaskedGatherSDNode *N);
-  SDValue WidenVecRes_ScalarOp(SDNode *N);
-  SDValue WidenVecRes_SELECT(SDNode *N);
+  SDValue WidenVecRes_MERGE_VALUES(SDNode* N, unsigned ResNo);
+  SDValue WidenVecRes_BITCAST(SDNode* N);
+  SDValue WidenVecRes_BUILD_VECTOR(SDNode* N);
+  SDValue WidenVecRes_CONCAT_VECTORS(SDNode* N);
+  SDValue WidenVecRes_EXTEND_VECTOR_INREG(SDNode* N);
+  SDValue WidenVecRes_EXTRACT_SUBVECTOR(SDNode* N);
+  SDValue WidenVecRes_INSERT_VECTOR_ELT(SDNode* N);
+  SDValue WidenVecRes_LOAD(SDNode* N);
+  SDValue WidenVecRes_MLOAD(MaskedLoadSDNode* N);
+  SDValue WidenVecRes_MGATHER(MaskedGatherSDNode* N);
+  SDValue WidenVecRes_ScalarOp(SDNode* N);
+  SDValue WidenVecRes_SELECT(SDNode* N);
   SDValue WidenVSELECTMask(SDNode *N);
-  SDValue WidenVecRes_SELECT_CC(SDNode *N);
-  SDValue WidenVecRes_SETCC(SDNode *N);
-  SDValue WidenVecRes_STRICT_FSETCC(SDNode *N);
+  SDValue WidenVecRes_SELECT_CC(SDNode* N);
+  SDValue WidenVecRes_SETCC(SDNode* N);
+  SDValue WidenVecRes_STRICT_FSETCC(SDNode* N);
   SDValue WidenVecRes_UNDEF(SDNode *N);
   SDValue WidenVecRes_VECTOR_SHUFFLE(ShuffleVectorSDNode *N);
 
@@ -923,12 +922,12 @@ private:
   SDValue WidenVecOp_EXTEND(SDNode *N);
   SDValue WidenVecOp_EXTRACT_VECTOR_ELT(SDNode *N);
   SDValue WidenVecOp_EXTRACT_SUBVECTOR(SDNode *N);
-  SDValue WidenVecOp_STORE(SDNode *N);
-  SDValue WidenVecOp_MSTORE(SDNode *N, unsigned OpNo);
-  SDValue WidenVecOp_MGATHER(SDNode *N, unsigned OpNo);
-  SDValue WidenVecOp_MSCATTER(SDNode *N, unsigned OpNo);
-  SDValue WidenVecOp_SETCC(SDNode *N);
-  SDValue WidenVecOp_STRICT_FSETCC(SDNode *N);
+  SDValue WidenVecOp_STORE(SDNode* N);
+  SDValue WidenVecOp_MSTORE(SDNode* N, unsigned OpNo);
+  SDValue WidenVecOp_MGATHER(SDNode* N, unsigned OpNo);
+  SDValue WidenVecOp_MSCATTER(SDNode* N, unsigned OpNo);
+  SDValue WidenVecOp_SETCC(SDNode* N);
+  SDValue WidenVecOp_STRICT_FSETCC(SDNode* N);
   SDValue WidenVecOp_VSELECT(SDNode *N);
 
   SDValue WidenVecOp_Convert(SDNode *N);
@@ -999,12 +998,12 @@ private:
   void GetPairElements(SDValue Pair, SDValue &Lo, SDValue &Hi);
 
   // Generic Result Splitting.
-  void SplitRes_MERGE_VALUES(SDNode *N, unsigned ResNo, SDValue &Lo,
-                             SDValue &Hi);
-  void SplitRes_SELECT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void SplitRes_SELECT_CC(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void SplitRes_UNDEF(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void SplitRes_FREEZE(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitRes_MERGE_VALUES(SDNode *N, unsigned ResNo,
+                             SDValue &Lo, SDValue &Hi);
+  void SplitRes_SELECT      (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitRes_SELECT_CC   (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitRes_UNDEF       (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitRes_FREEZE      (SDNode *N, SDValue &Lo, SDValue &Hi);
 
   //===--------------------------------------------------------------------===//
   // Generic Expansion: LegalizeTypesGeneric.cpp
@@ -1022,28 +1021,29 @@ private:
       GetExpandedFloat(Op, Lo, Hi);
   }
 
+
   /// This function will split the integer \p Op into \p NumElements
   /// operations of type \p EltVT and store them in \p Ops.
   void IntegerToVector(SDValue Op, unsigned NumElements,
                        SmallVectorImpl<SDValue> &Ops, EVT EltVT);
 
   // Generic Result Expansion.
-  void ExpandRes_MERGE_VALUES(SDNode *N, unsigned ResNo, SDValue &Lo,
-                              SDValue &Hi);
-  void ExpandRes_BITCAST(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandRes_BUILD_PAIR(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandRes_EXTRACT_ELEMENT(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandRes_MERGE_VALUES      (SDNode *N, unsigned ResNo,
+                                    SDValue &Lo, SDValue &Hi);
+  void ExpandRes_BITCAST           (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandRes_BUILD_PAIR        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandRes_EXTRACT_ELEMENT   (SDNode *N, SDValue &Lo, SDValue &Hi);
   void ExpandRes_EXTRACT_VECTOR_ELT(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandRes_NormalLoad(SDNode *N, SDValue &Lo, SDValue &Hi);
-  void ExpandRes_VAARG(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandRes_NormalLoad        (SDNode *N, SDValue &Lo, SDValue &Hi);
+  void ExpandRes_VAARG             (SDNode *N, SDValue &Lo, SDValue &Hi);
 
   // Generic Operand Expansion.
-  SDValue ExpandOp_BITCAST(SDNode *N);
-  SDValue ExpandOp_BUILD_VECTOR(SDNode *N);
-  SDValue ExpandOp_EXTRACT_ELEMENT(SDNode *N);
+  SDValue ExpandOp_BITCAST          (SDNode *N);
+  SDValue ExpandOp_BUILD_VECTOR     (SDNode *N);
+  SDValue ExpandOp_EXTRACT_ELEMENT  (SDNode *N);
   SDValue ExpandOp_INSERT_VECTOR_ELT(SDNode *N);
-  SDValue ExpandOp_SCALAR_TO_VECTOR(SDNode *N);
-  SDValue ExpandOp_NormalStore(SDNode *N, unsigned OpNo);
+  SDValue ExpandOp_SCALAR_TO_VECTOR (SDNode *N);
+  SDValue ExpandOp_NormalStore      (SDNode *N, unsigned OpNo);
 };
 
 } // end namespace llvm.

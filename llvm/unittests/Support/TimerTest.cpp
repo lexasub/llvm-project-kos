@@ -61,4 +61,4 @@ TEST(Timer, CheckIfTriggered) {
   EXPECT_FALSE(T1.hasTriggered());
 }
 
-} // namespace
+} // end anon namespace

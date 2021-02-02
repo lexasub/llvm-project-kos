@@ -331,9 +331,9 @@ static_assert(
 class FileEntry {
   friend class FileManager;
 
-  std::string RealPathName;            // Real path to the file; could be empty.
-  off_t Size = 0;                      // File size in bytes.
-  time_t ModTime = 0;                  // Modification time of file.
+  std::string RealPathName;   // Real path to the file; could be empty.
+  off_t Size = 0;             // File size in bytes.
+  time_t ModTime = 0;         // Modification time of file.
   const DirectoryEntry *Dir = nullptr; // Directory file lives in.
   llvm::sys::fs::UniqueID UniqueID;
   unsigned UID = 0; // A unique (small) ID for the file.

@@ -115,7 +115,7 @@ static bool containsDeclInScope(const Stmt *Node) {
 }
 
 static void removeElseAndBrackets(DiagnosticBuilder &Diag, ASTContext &Context,
-                                  const Stmt *Else, SourceLocation ElseLoc) {
+                           const Stmt *Else, SourceLocation ElseLoc) {
   auto Remap = [&](SourceLocation Loc) {
     return Context.getSourceManager().getExpansionLoc(Loc);
   };

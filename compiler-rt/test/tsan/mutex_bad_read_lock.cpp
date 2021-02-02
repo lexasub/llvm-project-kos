@@ -16,3 +16,4 @@ int main() {
 // CHECK:     #0 AnnotateRWLockAcquired
 // CHECK:     #1 main
 // CHECK: SUMMARY: ThreadSanitizer: read lock of a write locked mutex
+

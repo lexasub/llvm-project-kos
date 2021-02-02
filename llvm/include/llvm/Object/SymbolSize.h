@@ -27,7 +27,7 @@ int compareAddress(const SymEntry *A, const SymEntry *B);
 std::vector<std::pair<SymbolRef, uint64_t>>
 computeSymbolSizes(const ObjectFile &O);
 
-} // namespace object
+}
 } // namespace llvm
 
 #endif

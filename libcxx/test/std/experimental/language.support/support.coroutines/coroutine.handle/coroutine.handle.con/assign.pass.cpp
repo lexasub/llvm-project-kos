@@ -29,8 +29,7 @@ void do_test() {
   int dummy = 42;
   void* dummy_h = &dummy;
   {
-    C c;
-    ((void)c);
+    C c; ((void)c);
     static_assert(std::is_nothrow_assignable<C&, std::nullptr_t>::value, "");
     static_assert(!std::is_assignable<C&, void*>::value, "");
   }
@@ -49,9 +48,10 @@ void do_test() {
   }
 }
 
-int main(int, char**) {
-  do_test<coro::coroutine_handle<> >();
-  do_test<coro::coroutine_handle<int> >();
+int main(int, char**)
+{
+  do_test<coro::coroutine_handle<>>();
+  do_test<coro::coroutine_handle<int>>();
 
   return 0;
 }

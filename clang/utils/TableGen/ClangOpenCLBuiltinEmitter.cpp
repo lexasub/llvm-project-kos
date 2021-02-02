@@ -369,8 +369,7 @@ static void VerifySignature(const std::vector<Record *> &Signature,
       if (NVecSizes != GenTypeVecSizes && NVecSizes != 1) {
         if (GenTypeVecSizes > 1) {
           // We already saw a gentype with a different number of vector sizes.
-          PrintFatalError(
-              BuiltinRec->getLoc(),
+          PrintFatalError(BuiltinRec->getLoc(),
               "number of vector sizes should be equal or 1 for all gentypes "
               "in a declaration");
         }
@@ -383,8 +382,7 @@ static void VerifySignature(const std::vector<Record *> &Signature,
       if (NTypes != GenTypeTypes && NTypes != 1) {
         if (GenTypeTypes > 1) {
           // We already saw a gentype with a different number of types.
-          PrintFatalError(
-              BuiltinRec->getLoc(),
+          PrintFatalError(BuiltinRec->getLoc(),
               "number of types should be equal or 1 for all gentypes "
               "in a declaration");
         }
@@ -464,7 +462,8 @@ void BuiltinNameEmitter::EmitTypeTable() {
        << T.first->getValueAsInt("VecWidth") << ", "
        << T.first->getValueAsBit("IsPointer") << ", "
        << T.first->getValueAsBit("IsConst") << ", "
-       << T.first->getValueAsBit("IsVolatile") << ", " << AccessQual << ", "
+       << T.first->getValueAsBit("IsVolatile") << ", "
+       << AccessQual << ", "
        << T.first->getValueAsString("AddrSpace") << "},\n";
   }
   OS << "};\n\n";
@@ -528,7 +527,8 @@ bool BuiltinNameEmitter::CanReuseSignature(
   assert(Candidate->size() == SignatureList.size() &&
          "signature lists should have the same size");
 
-  auto &CandidateSigs = SignatureListMap.find(Candidate)->second.Signatures;
+  auto &CandidateSigs =
+      SignatureListMap.find(Candidate)->second.Signatures;
   for (unsigned Index = 0; Index < Candidate->size(); Index++) {
     const Record *Rec = SignatureList[Index].first;
     const Record *Rec2 = CandidateSigs[Index].first;
@@ -646,8 +646,8 @@ static void OCL2Qual(ASTContext &Context, const OpenCLTypeStruct &Ty,
 
   // Generate list of vector sizes for each generic type.
   for (const auto *VectList : Records.getAllDerivedDefinitions("IntList")) {
-    OS << "  constexpr unsigned List" << VectList->getValueAsString("Name")
-       << "[] = {";
+    OS << "  constexpr unsigned List"
+       << VectList->getValueAsString("Name") << "[] = {";
     for (const auto V : VectList->getValueAsListOfInts("List")) {
       OS << V << ", ";
     }
@@ -713,16 +713,15 @@ static void OCL2Qual(ASTContext &Context, const OpenCLTypeStruct &Ty,
          I++) {
       for (const auto *T :
            GenType->getValueAsDef("TypeList")->getValueAsListOfDefs("List")) {
-        OS << "Context." << T->getValueAsDef("QTName")->getValueAsString("Name")
-           << ", ";
+        OS << "Context."
+           << T->getValueAsDef("QTName")->getValueAsString("Name") << ", ";
       }
     }
     OS << "});\n";
     // GenTypeNumTypes is the number of types in the GenType
     // (e.g. float/double/half).
     OS << "      GenTypeNumTypes = "
-       << GenType->getValueAsDef("TypeList")
-              ->getValueAsListOfDefs("List")
+       << GenType->getValueAsDef("TypeList")->getValueAsListOfDefs("List")
               .size()
        << ";\n";
     // GenVectorSizes is the list of vector sizes for this GenType.

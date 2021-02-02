@@ -1,8 +1,8 @@
 // RUN: %clangxx_asan %s -o %t && %run %t 2>&1 | FileCheck %s
 
 #include <malloc/malloc.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 int main() {
   fprintf(stderr, "start\n");

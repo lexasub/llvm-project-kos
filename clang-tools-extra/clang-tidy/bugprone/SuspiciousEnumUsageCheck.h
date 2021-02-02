@@ -1,5 +1,4 @@
-//===--- SuspiciousEnumUsageCheck.h - clang-tidy--------------------------*- C++
-//-*-===//
+//===--- SuspiciousEnumUsageCheck.h - clang-tidy--------------------------*- C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -28,7 +27,7 @@ public:
   void storeOptions(ClangTidyOptions::OptionMap &Opts) override;
 
 private:
-  void checkSuspiciousBitmaskUsage(const Expr *, const EnumDecl *);
+  void checkSuspiciousBitmaskUsage(const Expr*, const EnumDecl*);
   const bool StrictMode;
 };
 

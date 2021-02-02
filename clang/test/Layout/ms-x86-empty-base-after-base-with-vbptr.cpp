@@ -3,22 +3,15 @@
 // RUN: %clang_cc1 -fno-rtti -emit-llvm-only -triple x86_64-pc-win32 -fdump-record-layouts %s 2>/dev/null \
 // RUN:            | FileCheck %s -check-prefix CHECK-X64
 
-struct U {
-  char a;
-};
-struct V {};
-struct W {};
-struct X : virtual V {
-  char a;
-};
-struct Y : virtual V {
-  char a;
-};
-struct Z : Y {};
 
-struct A : X, W {
-  char a;
-};
+struct U { char a; };
+struct V { };
+struct W { };
+struct X : virtual V { char a; };
+struct Y : virtual V { char a; };
+struct Z : Y { };
+
+struct A : X, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -47,9 +40,7 @@ struct A : X, W {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct B : X, U, W {
-  char a;
-};
+struct B : X, U, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -78,9 +69,7 @@ struct B : X, U, W {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct C : X, V, W {
-  char a;
-};
+struct C : X, V, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct C
@@ -105,9 +94,7 @@ struct C : X, V, W {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct D : X, U, V, W {
-  char a;
-};
+struct D : X, U, V, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct D
@@ -136,9 +123,7 @@ struct D : X, U, V, W {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct E : X, U, Y, V, W {
-  char a;
-};
+struct E : X, U, Y, V, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -175,9 +160,7 @@ struct E : X, U, Y, V, W {
 // CHECK-X64-NEXT:      | [sizeof=48, align=8
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=8]
 
-struct F : Z, W {
-  char a;
-};
+struct F : Z, W  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -204,9 +187,7 @@ struct F : Z, W {
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct G : X, W, Y, V {
-  char a;
-};
+struct G : X, W, Y, V  { char a; };
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct G
@@ -237,10 +218,11 @@ struct G : X, W, Y, V {
 // CHECK-X64-NEXT:      | [sizeof=48, align=8
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=8]
 
-int a[sizeof(A) +
-      sizeof(B) +
-      sizeof(C) +
-      sizeof(D) +
-      sizeof(E) +
-      sizeof(F) +
-      sizeof(G)];
+int a[
+sizeof(A)+
+sizeof(B)+
+sizeof(C)+
+sizeof(D)+
+sizeof(E)+
+sizeof(F)+
+sizeof(G)];

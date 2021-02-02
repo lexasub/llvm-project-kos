@@ -94,8 +94,7 @@ AArch64FunctionInfo::AArch64FunctionInfo(MachineFunction &MF) : MF(MF) {
     return;
   }
 
-  const StringRef BTIEnable =
-      F.getFnAttribute("branch-target-enforcement").getValueAsString();
+  const StringRef BTIEnable = F.getFnAttribute("branch-target-enforcement").getValueAsString();
   assert(BTIEnable.equals_lower("true") || BTIEnable.equals_lower("false"));
   BranchTargetEnforcement = BTIEnable.equals_lower("true");
 }

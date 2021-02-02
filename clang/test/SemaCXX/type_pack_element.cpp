@@ -4,7 +4,7 @@ static_assert(__has_builtin(__type_pack_element), "");
 
 using SizeT = decltype(sizeof(int));
 
-template <SizeT i, typename... T>
+template <SizeT i, typename ...T>
 using TypePackElement = __type_pack_element<i, T...>;
 
 template <int i>
@@ -40,6 +40,6 @@ static_assert(__is_same(TypePackElement<5, X<0>, X<1>, X<2>, X<3>, X<4>, X<5>>, 
 // Test __type_pack_element with more than 2 top-level template arguments.
 static_assert(__is_same(__type_pack_element<5, X<0>, X<1>, X<2>, X<3>, X<4>, X<5>>, X<5>), "");
 
-template <SizeT Index, typename... T>
+template <SizeT Index, typename ...T>
 using ErrorTypePackElement1 = __type_pack_element<Index, T...>; // expected-error{{may not be accessed at an out of bounds index}}
-using illformed1 = ErrorTypePackElement1<3, X<0>, X<1>>;        // expected-note{{in instantiation}}
+using illformed1 = ErrorTypePackElement1<3, X<0>, X<1>>;  // expected-note{{in instantiation}}

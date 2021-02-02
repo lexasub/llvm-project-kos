@@ -63,6 +63,7 @@ void test_cleanup() {
 // CHECK:   call x86_thiscallcc void @"??1Cleanup@@QAE@XZ"(
 // CHECK:   cleanupret from %[[CLEANUPPAD]] unwind to caller
 
+
 // CHECK-LABEL: define {{.*}} void @"??1Cleanup@@QAE@XZ"(
 // CHECK:   invoke i32 @"?f@@YAHH@Z"(i32 -1)
 // CHECK:           to label %[[LEAVE_FUNC:.*]] unwind label %[[TERMINATE:.*]]
@@ -73,3 +74,4 @@ void test_cleanup() {
 // CHECK: [[TERMINATE]]
 // CHECK:   %[[CLEANUPPAD:.*]] = cleanuppad within none []
 // CHECK-NEXT:   call void @"?terminate@@YAXXZ"() {{.*}} [ "funclet"(token %[[CLEANUPPAD]]) ]
+

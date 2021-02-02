@@ -1,9 +1,9 @@
 // RUN: %clang_cc1 -fsyntax-only -Wno-header-guard %s
 // RUN: %clang_cc1 -fsyntax-only -Wheader-guard %s 2>&1 | FileCheck %s
 
-#include "Inputs/different-define.h"
 #include "Inputs/good-header-guard.h"
 #include "Inputs/no-define.h"
+#include "Inputs/different-define.h"
 #include "Inputs/out-of-order-define.h"
 #include "Inputs/tokens-between-ifndef-and-define.h"
 #include "Inputs/unlikely-to-be-header-guard.h"
@@ -28,6 +28,9 @@
 // CHECK: {{^}}        ^~~
 // CHECK: {{^}}        foo
 
+#include "Inputs/multiple.h"
+#include "Inputs/multiple.h"
+#include "Inputs/multiple.h"
 #include "Inputs/multiple.h"
 // CHECK: In file included from {{.*}}header.cpp:{{[0-9]*}}:
 // CHECK: {{.*}}multiple.h:1:9: warning: 'multiple' is used as a header guard here, followed by #define of a different macro

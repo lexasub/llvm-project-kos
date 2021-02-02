@@ -26,7 +26,7 @@ public:
   int a;
   TestClass() : a(0) {}
   TestClass(const TestClass &C) : a(C.a) {}
-  TestClass &operator=(const TestClass &) { return *this; }
+  TestClass &operator=(const TestClass &) { return *this;}
   ~TestClass(){};
 };
 
@@ -42,10 +42,7 @@ TestClass tc;
 TestClass tc2[2];
 #pragma omp threadprivate(tc, tc2)
 
-void foo() {
-  extern void mayThrow();
-  mayThrow();
-}
+void foo() { extern void mayThrow(); mayThrow(); }
 
 struct SS {
   int a;
@@ -63,7 +60,7 @@ struct SS {
   }
 };
 
-template <typename T>
+template<typename T>
 struct SST {
   T a;
   SST() : a(T()) {
@@ -153,8 +150,8 @@ int main() {
 // CHECK-NOT:   call {{.+}} @__kmpc_cancel_barrier
 #pragma omp single copyprivate(a, c, tc, a2, tc2)
   foo();
-  // CHECK-NOT:   call i32 @__kmpc_single
-  // CHECK-NOT:   call void @__kmpc_end_single
+// CHECK-NOT:   call i32 @__kmpc_single
+// CHECK-NOT:   call void @__kmpc_end_single
   return a;
 }
 
@@ -201,6 +198,7 @@ int main() {
 // CHECK: call{{.*}} [[TEST_CLASS_TY_ASSIGN]]([[TEST_CLASS_TY]]* {{[^,]*}} %{{.+}}, [[TEST_CLASS_TY]]* {{.*}})
 // CHECK: br i1
 // CHECK: ret void
+
 
 // OMP50-LABEL: void @_ZN3SSTIdEC2Ev(
 // OMP50: getelementptr inbounds [[SST_TY]], [[SST_TY]]* %{{.+}}, i32 0, i32 0

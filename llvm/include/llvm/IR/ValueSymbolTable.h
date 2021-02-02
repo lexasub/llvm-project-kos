@@ -44,11 +44,11 @@ class ValueSymbolTable {
   friend class SymbolTableListTraits<Instruction>;
   friend class Value;
 
-  /// @name Types
-  /// @{
+/// @name Types
+/// @{
 public:
   /// A mapping of names to values.
-  using ValueMap = StringMap<Value *>;
+  using ValueMap = StringMap<Value*>;
 
   /// An iterator over a ValueMap.
   using iterator = ValueMap::iterator;
@@ -56,16 +56,16 @@ public:
   /// A const_iterator over a ValueMap.
   using const_iterator = ValueMap::const_iterator;
 
-  /// @}
-  /// @name Constructors
-  /// @{
+/// @}
+/// @name Constructors
+/// @{
 
   ValueSymbolTable() : vmap(0) {}
   ~ValueSymbolTable();
 
-  /// @}
-  /// @name Accessors
-  /// @{
+/// @}
+/// @name Accessors
+/// @{
 
   /// This method finds the value with the given \p Name in the
   /// the symbol table.
@@ -85,9 +85,9 @@ public:
   /// Print out symbol table on stderr
   void dump() const;
 
-  /// @}
-  /// @name Iteration
-  /// @{
+/// @}
+/// @name Iteration
+/// @{
 
   /// Get an iterator that from the beginning of the symbol table.
   inline iterator begin() { return vmap.begin(); }
@@ -127,10 +127,10 @@ private:
   /// @name Internal Data
   /// @{
 
-  ValueMap vmap;                   ///< The map that holds the symbol table.
-  mutable uint32_t LastUnique = 0; ///< Counter for tracking unique names
+  ValueMap vmap;                    ///< The map that holds the symbol table.
+  mutable uint32_t LastUnique = 0;  ///< Counter for tracking unique names
 
-  /// @}
+/// @}
 };
 
 } // end namespace llvm

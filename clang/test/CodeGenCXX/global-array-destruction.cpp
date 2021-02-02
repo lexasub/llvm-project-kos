@@ -10,12 +10,13 @@ struct S {
   int iS;
 };
 
+
 S arr[2][1];
 S s1;
 S arr1[3];
 static S sarr[4];
 
-int main() {}
+int main () {}
 S arr2[2];
 static S sarr1[4];
 S s2;
@@ -35,7 +36,7 @@ struct T {
   int n;
   ~T();
 };
-T t[2][3] = {1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12};
+T t[2][3] = { 1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12 };
 
 // CHECK: call {{.*}} @__cxa_atexit
 // CHECK: getelementptr inbounds ({{.*}} getelementptr inbounds ([2 x [3 x {{.*}}]], [2 x [3 x {{.*}}]]* @t, i32 0, i32 0, i32 0), i64 6)
@@ -43,7 +44,7 @@ T t[2][3] = {1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12};
 // CHECK: icmp eq {{.*}} @t
 // CHECK: br i1 {{.*}}
 
-static T t2[2][3] = {1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12};
+static T t2[2][3] = { 1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12 };
 
 // CHECK: call {{.*}} @__cxa_atexit
 // CHECK: getelementptr inbounds ({{.*}} getelementptr inbounds ([2 x [3 x {{.*}}]], [2 x [3 x {{.*}}]]* @_ZL2t2, i32 0, i32 0, i32 0), i64 6)
@@ -52,7 +53,7 @@ static T t2[2][3] = {1.0, 2, 3.0, 4, 5.0, 6, 7.0, 8, 9.0, 10, 11.0, 12};
 // CHECK: br i1 {{.*}}
 
 using U = T[2][3];
-U &&u = U{{{1.0, 2}, {3.0, 4}, {5.0, 6}}, {{7.0, 8}, {9.0, 10}, {11.0, 12}}};
+U &&u = U{ {{1.0, 2}, {3.0, 4}, {5.0, 6}}, {{7.0, 8}, {9.0, 10}, {11.0, 12}} };
 
 // CHECK: call {{.*}} @__cxa_atexit
 // CHECK: getelementptr inbounds ({{.*}}* getelementptr inbounds ([2 x [3 x {{.*}}]], [2 x [3 x {{.*}}]]* @_ZGR1u_, i32 0, i32 0, i32 0), i64 6)

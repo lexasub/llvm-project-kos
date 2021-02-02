@@ -98,14 +98,14 @@ public:
     }
 
     reference() = delete;
-    reference(const reference &) = default;
+    reference(const reference&) = default;
 
     reference &operator=(reference t) {
       *this = bool(t);
       return *this;
     }
 
-    reference &operator=(bool t) {
+    reference& operator=(bool t) {
       if (t)
         *WordRef |= BitWord(1) << BitPos;
       else
@@ -113,7 +113,9 @@ public:
       return *this;
     }
 
-    operator bool() const { return ((*WordRef) & (BitWord(1) << BitPos)) != 0; }
+    operator bool() const {
+      return ((*WordRef) & (BitWord(1) << BitPos)) != 0;
+    }
   };
 
   typedef const_set_bits_iterator_impl<BitVector> const_set_bits_iterator;
@@ -197,7 +199,9 @@ public:
   }
 
   /// none - Returns true if none of the bits are set.
-  bool none() const { return !any(); }
+  bool none() const {
+    return !any();
+  }
 
   /// find_first_in - Returns the index of the first set / unset bit,
   /// depending on \p Set, in the range [Begin, End).
@@ -342,7 +346,9 @@ public:
   }
 
   /// clear - Removes all bits from the bitvector. Does not change capacity.
-  void clear() { Size = 0; }
+  void clear() {
+    Size = 0;
+  }
 
   /// resize - Grow or shrink the bitvector.
   void resize(unsigned N, bool t = false) {
@@ -388,8 +394,7 @@ public:
     assert(I <= E && "Attempted to set backwards range!");
     assert(E <= size() && "Attempted to set out-of-bounds range!");
 
-    if (I == E)
-      return *this;
+    if (I == E) return *this;
 
     if (I / BITWORD_SIZE == E / BITWORD_SIZE) {
       BitWord EMask = BitWord(1) << (E % BITWORD_SIZE);
@@ -428,8 +433,7 @@ public:
     assert(I <= E && "Attempted to reset backwards range!");
     assert(E <= size() && "Attempted to reset out-of-bounds range!");
 
-    if (I == E)
-      return *this;
+    if (I == E) return *this;
 
     if (I / BITWORD_SIZE == E / BITWORD_SIZE) {
       BitWord EMask = BitWord(1) << (E % BITWORD_SIZE);
@@ -467,17 +471,19 @@ public:
 
   // Indexing.
   reference operator[](unsigned Idx) {
-    assert(Idx < Size && "Out-of-bounds Bit access.");
+    assert (Idx < Size && "Out-of-bounds Bit access.");
     return reference(*this, Idx);
   }
 
   bool operator[](unsigned Idx) const {
-    assert(Idx < Size && "Out-of-bounds Bit access.");
+    assert (Idx < Size && "Out-of-bounds Bit access.");
     BitWord Mask = BitWord(1) << (Idx % BITWORD_SIZE);
     return (Bits[Idx / BITWORD_SIZE] & Mask) != 0;
   }
 
-  bool test(unsigned Idx) const { return (*this)[Idx]; }
+  bool test(unsigned Idx) const {
+    return (*this)[Idx];
+  }
 
   // Push single bit to end of vector.
   void push_back(bool Val) {
@@ -499,7 +505,7 @@ public:
   /// Test if any common bits are set.
   bool anyCommon(const BitVector &RHS) const {
     unsigned ThisWords = NumBitWords(size());
-    unsigned RHSWords = NumBitWords(RHS.size());
+    unsigned RHSWords  = NumBitWords(RHS.size());
     for (unsigned i = 0, e = std::min(ThisWords, RHSWords); i != e; ++i)
       if (Bits[i] & RHS.Bits[i])
         return true;
@@ -514,12 +520,14 @@ public:
     return Bits.take_front(NumWords) == RHS.Bits.take_front(NumWords);
   }
 
-  bool operator!=(const BitVector &RHS) const { return !(*this == RHS); }
+  bool operator!=(const BitVector &RHS) const {
+    return !(*this == RHS);
+  }
 
   /// Intersection, union, disjoint union.
   BitVector &operator&=(const BitVector &RHS) {
     unsigned ThisWords = NumBitWords(size());
-    unsigned RHSWords = NumBitWords(RHS.size());
+    unsigned RHSWords  = NumBitWords(RHS.size());
     unsigned i;
     for (i = 0; i != std::min(ThisWords, RHSWords); ++i)
       Bits[i] &= RHS.Bits[i];
@@ -536,7 +544,7 @@ public:
   /// reset - Reset bits that are set in RHS. Same as *this &= ~RHS.
   BitVector &reset(const BitVector &RHS) {
     unsigned ThisWords = NumBitWords(size());
-    unsigned RHSWords = NumBitWords(RHS.size());
+    unsigned RHSWords  = NumBitWords(RHS.size());
     unsigned i;
     for (i = 0; i != std::min(ThisWords, RHSWords); ++i)
       Bits[i] &= ~RHS.Bits[i];
@@ -547,13 +555,13 @@ public:
   /// This is the same as reset(RHS) and any().
   bool test(const BitVector &RHS) const {
     unsigned ThisWords = NumBitWords(size());
-    unsigned RHSWords = NumBitWords(RHS.size());
+    unsigned RHSWords  = NumBitWords(RHS.size());
     unsigned i;
     for (i = 0; i != std::min(ThisWords, RHSWords); ++i)
       if ((Bits[i] & ~RHS.Bits[i]) != 0)
         return true;
 
-    for (; i != ThisWords; ++i)
+    for (; i != ThisWords ; ++i)
       if (Bits[i] != 0)
         return true;
 
@@ -677,8 +685,7 @@ public:
 
   // Assignment operator.
   const BitVector &operator=(const BitVector &RHS) {
-    if (this == &RHS)
-      return *this;
+    if (this == &RHS) return *this;
 
     Size = RHS.size();
 
@@ -711,8 +718,7 @@ public:
   }
 
   const BitVector &operator=(BitVector &&RHS) {
-    if (this == &RHS)
-      return *this;
+    if (this == &RHS) return *this;
 
     std::free(Bits.data());
     Bits = RHS.Bits;
@@ -825,8 +831,8 @@ private:
   }
 
   MutableArrayRef<BitWord> allocate(size_t NumWords) {
-    BitWord *RawBits =
-        static_cast<BitWord *>(safe_malloc(NumWords * sizeof(BitWord)));
+    BitWord *RawBits = static_cast<BitWord *>(
+        safe_malloc(NumWords * sizeof(BitWord)));
     return MutableArrayRef<BitWord>(RawBits, NumWords);
   }
 
@@ -836,7 +842,7 @@ private:
   }
 
   unsigned NumBitWords(unsigned S) const {
-    return (S + BITWORD_SIZE - 1) / BITWORD_SIZE;
+    return (S + BITWORD_SIZE-1) / BITWORD_SIZE;
   }
 
   // Set the unused bits in the high words.
@@ -851,18 +857,19 @@ private:
     if (ExtraBits) {
       BitWord ExtraBitMask = ~BitWord(0) << ExtraBits;
       if (t)
-        Bits[UsedWords - 1] |= ExtraBitMask;
+        Bits[UsedWords-1] |= ExtraBitMask;
       else
-        Bits[UsedWords - 1] &= ~ExtraBitMask;
+        Bits[UsedWords-1] &= ~ExtraBitMask;
     }
   }
 
   // Clear the unused bits in the high words.
-  void clear_unused_bits() { set_unused_bits(false); }
+  void clear_unused_bits() {
+    set_unused_bits(false);
+  }
 
   void grow(unsigned NewSize) {
-    size_t NewCapacity =
-        std::max<size_t>(NumBitWords(NewSize), Bits.size() * 2);
+    size_t NewCapacity = std::max<size_t>(NumBitWords(NewSize), Bits.size() * 2);
     assert(NewCapacity > 0 && "realloc-ing zero space");
     BitWord *NewBits = static_cast<BitWord *>(
         safe_realloc(Bits.data(), NewCapacity * sizeof(BitWord)));
@@ -875,7 +882,7 @@ private:
       memset(B.data(), 0 - (int)t, B.size() * sizeof(BitWord));
   }
 
-  template <bool AddBits, bool InvertMask>
+  template<bool AddBits, bool InvertMask>
   void applyMask(const uint32_t *Mask, unsigned MaskWords) {
     static_assert(BITWORD_SIZE % 32 == 0, "Unsupported BitWord size.");
     MaskWords = std::min(MaskWords, (size() + 31) / 32);
@@ -886,23 +893,17 @@ private:
       // This inner loop should unroll completely when BITWORD_SIZE > 32.
       for (unsigned b = 0; b != BITWORD_SIZE; b += 32) {
         uint32_t M = *Mask++;
-        if (InvertMask)
-          M = ~M;
-        if (AddBits)
-          BW |= BitWord(M) << b;
-        else
-          BW &= ~(BitWord(M) << b);
+        if (InvertMask) M = ~M;
+        if (AddBits) BW |=   BitWord(M) << b;
+        else         BW &= ~(BitWord(M) << b);
       }
       Bits[i] = BW;
     }
     for (unsigned b = 0; MaskWords; b += 32, --MaskWords) {
       uint32_t M = *Mask++;
-      if (InvertMask)
-        M = ~M;
-      if (AddBits)
-        Bits[i] |= BitWord(M) << b;
-      else
-        Bits[i] &= ~(BitWord(M) << b);
+      if (InvertMask) M = ~M;
+      if (AddBits) Bits[i] |=   BitWord(M) << b;
+      else         Bits[i] &= ~(BitWord(M) << b);
     }
     if (AddBits)
       clear_unused_bits();
@@ -938,8 +939,11 @@ template <> struct DenseMapInfo<BitVector> {
 } // end namespace llvm
 
 namespace std {
-/// Implement std::swap in terms of BitVector swap.
-inline void swap(llvm::BitVector &LHS, llvm::BitVector &RHS) { LHS.swap(RHS); }
+  /// Implement std::swap in terms of BitVector swap.
+  inline void
+  swap(llvm::BitVector &LHS, llvm::BitVector &RHS) {
+    LHS.swap(RHS);
+  }
 } // end namespace std
 
 #endif // LLVM_ADT_BITVECTOR_H

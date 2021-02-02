@@ -50,7 +50,7 @@ extern unsigned struct_rlimit_sz;
 extern unsigned struct_utimbuf_sz;
 
 struct __sanitizer_sem_t {
-  // u64 data[6];
+  //u64 data[6];
   u32 sem_count;
   u16 sem_type;
   u16 sem_magic;
@@ -59,13 +59,13 @@ struct __sanitizer_sem_t {
 };
 
 struct __sanitizer_ipc_perm {
-  unsigned int uid;   // uid_t
-  unsigned int gid;   // gid_t
-  unsigned int cuid;  // uid_t
-  unsigned int cgid;  // gid_t
-  unsigned int mode;  // mode_t
-  unsigned int seq;   // uint_t
-  int key;            // key_t
+  unsigned int uid;           // uid_t
+  unsigned int gid;           // gid_t
+  unsigned int cuid;          // uid_t
+  unsigned int cgid;          // gid_t
+  unsigned int mode;          // mode_t
+  unsigned int seq;           // uint_t
+  int key;                    // key_t
 #if !defined(_LP64)
   int pad[4];
 #endif
@@ -81,22 +81,22 @@ struct __sanitizer_shmid_ds {
   unsigned long shm_nattch;   // shmatt_t
   unsigned long shm_cnattch;  // ulong_t
 #if defined(_LP64)
-  long shm_atime;  // time_t
+  long shm_atime;             // time_t
   long shm_dtime;
   long shm_ctime;
   void *shm_amp;
-  u64 shm_gransize;   // uint64_t
-  u64 shm_allocated;  // uint64_t
-  u64 shm_pad4[1];    // int64_t
+  u64 shm_gransize;           // uint64_t
+  u64 shm_allocated;          // uint64_t
+  u64 shm_pad4[1];            // int64_t
 #else
-  long shm_atime;  // time_t
-  int shm_pad1;    // int32_t
-  long shm_dtime;  // time_t
-  int shm_pad2;    // int32_t
-  long shm_ctime;  // time_t
+  long shm_atime;             // time_t
+  int shm_pad1;               // int32_t
+  long shm_dtime;             // time_t
+  int shm_pad2;               // int32_t
+  long shm_ctime;             // time_t
   void *shm_amp;
-  u64 shm_gransize;   // uint64_t
-  u64 shm_allocated;  // uint64_t
+  u64 shm_gransize;           // uint64_t
+  u64 shm_allocated;          // uint64_t
 #endif
 };
 
@@ -113,14 +113,14 @@ struct __sanitizer_iovec {
 struct __sanitizer_ifaddrs {
   struct __sanitizer_ifaddrs *ifa_next;
   char *ifa_name;
-  u64 ifa_flags;      // uint64_t
-  void *ifa_addr;     // (struct sockaddr *)
-  void *ifa_netmask;  // (struct sockaddr *)
+  u64 ifa_flags;     // uint64_t
+  void *ifa_addr;    // (struct sockaddr *)
+  void *ifa_netmask; // (struct sockaddr *)
   // This is a union on Linux.
-#ifdef ifa_dstaddr
-#undef ifa_dstaddr
-#endif
-  void *ifa_dstaddr;  // (struct sockaddr *)
+# ifdef ifa_dstaddr
+# undef ifa_dstaddr
+# endif
+  void *ifa_dstaddr; // (struct sockaddr *)
   void *ifa_data;
 };
 
@@ -142,8 +142,8 @@ const int __sanitizer_XDR_FREE = 2;
 struct __sanitizer_passwd {
   char *pw_name;
   char *pw_passwd;
-  unsigned int pw_uid;  // uid_t
-  unsigned int pw_gid;  // gid_t
+  unsigned int pw_uid;    // uid_t
+  unsigned int pw_gid;    // gid_t
   char *pw_age;
   char *pw_comment;
   char *pw_gecos;
@@ -254,9 +254,8 @@ struct __sanitizer_siginfo {
 };
 
 using __sanitizer_sighandler_ptr = void (*)(int sig);
-using __sanitizer_sigactionhandler_ptr = void (*)(int sig,
-                                                  __sanitizer_siginfo *siginfo,
-                                                  void *uctx);
+using __sanitizer_sigactionhandler_ptr =
+    void (*)(int sig, __sanitizer_siginfo *siginfo, void *uctx);
 
 struct __sanitizer_sigaction {
   int sa_flags;
@@ -384,9 +383,9 @@ struct __sanitizer_ifconf {
 #define IOC_SIZEBITS 12
 #define IOC_DIRBITS 4
 #undef IOC_NONE
-#define IOC_NONE 2U  // IOC_VOID
-#define IOC_READ 4U  // IOC_OUT
-#define IOC_WRITE 8U  // IOC_IN
+#define IOC_NONE 2U     // IOC_VOID
+#define IOC_READ 4U     // IOC_OUT
+#define IOC_WRITE 8U    // IOC_IN
 
 #define IOC_NRMASK ((1 << IOC_NRBITS) - 1)
 #define IOC_TYPEMASK ((1 << IOC_TYPEBITS) - 1)
@@ -477,18 +476,18 @@ extern const int si_SEGV_ACCERR;
 #define CHECK_TYPE_SIZE(TYPE) \
   COMPILER_CHECK(sizeof(__sanitizer_##TYPE) == sizeof(TYPE))
 
-#define CHECK_SIZE_AND_OFFSET(CLASS, MEMBER)                      \
-  COMPILER_CHECK(sizeof(((__sanitizer_##CLASS *)NULL)->MEMBER) == \
-                 sizeof(((CLASS *)NULL)->MEMBER));                \
-  COMPILER_CHECK(offsetof(__sanitizer_##CLASS, MEMBER) ==         \
+#define CHECK_SIZE_AND_OFFSET(CLASS, MEMBER)                       \
+  COMPILER_CHECK(sizeof(((__sanitizer_##CLASS *) NULL)->MEMBER) == \
+                 sizeof(((CLASS *) NULL)->MEMBER));                \
+  COMPILER_CHECK(offsetof(__sanitizer_##CLASS, MEMBER) ==          \
                  offsetof(CLASS, MEMBER))
 
 // For sigaction, which is a function and struct at the same time,
 // and thus requires explicit "struct" in sizeof() expression.
-#define CHECK_STRUCT_SIZE_AND_OFFSET(CLASS, MEMBER)                      \
-  COMPILER_CHECK(sizeof(((struct __sanitizer_##CLASS *)NULL)->MEMBER) == \
-                 sizeof(((struct CLASS *)NULL)->MEMBER));                \
-  COMPILER_CHECK(offsetof(struct __sanitizer_##CLASS, MEMBER) ==         \
+#define CHECK_STRUCT_SIZE_AND_OFFSET(CLASS, MEMBER)                       \
+  COMPILER_CHECK(sizeof(((struct __sanitizer_##CLASS *) NULL)->MEMBER) == \
+                 sizeof(((struct CLASS *) NULL)->MEMBER));                \
+  COMPILER_CHECK(offsetof(struct __sanitizer_##CLASS, MEMBER) ==          \
                  offsetof(struct CLASS, MEMBER))
 
 #endif  // SANITIZER_SOLARIS

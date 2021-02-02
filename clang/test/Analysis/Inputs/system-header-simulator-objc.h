@@ -25,22 +25,22 @@ typedef UInt16 UniChar;
 #define nil ((id)0)
 
 enum {
-  NSASCIIStringEncoding = 1,
-  NSNEXTSTEPStringEncoding = 2,
-  NSJapaneseEUCStringEncoding = 3,
-  NSUTF8StringEncoding = 4,
-  NSISOLatin1StringEncoding = 5,
-  NSSymbolStringEncoding = 6,
-  NSNonLossyASCIIStringEncoding = 7,
+    NSASCIIStringEncoding = 1,
+    NSNEXTSTEPStringEncoding = 2,
+    NSJapaneseEUCStringEncoding = 3,
+    NSUTF8StringEncoding = 4,
+    NSISOLatin1StringEncoding = 5,
+    NSSymbolStringEncoding = 6,
+    NSNonLossyASCIIStringEncoding = 7,
 };
-typedef const struct __CFString *CFStringRef;
-typedef struct __CFString *CFMutableStringRef;
+typedef const struct __CFString * CFStringRef;
+typedef struct __CFString * CFMutableStringRef;
 typedef NSUInteger NSStringEncoding;
 typedef UInt32 CFStringEncoding;
 
-typedef const void *CFTypeRef;
+typedef const void * CFTypeRef;
 
-typedef const struct __CFAllocator *CFAllocatorRef;
+typedef const struct __CFAllocator * CFAllocatorRef;
 extern const CFAllocatorRef kCFAllocatorDefault;
 extern const CFAllocatorRef kCFAllocatorSystemDefault;
 extern const CFAllocatorRef kCFAllocatorMalloc;
@@ -58,19 +58,12 @@ typedef struct _NSZone NSZone;
 - (oneway void)release;
 - (id)autorelease;
 - (id)init;
-@property(readonly, copy) NSString *description;
+@property (readonly, copy) NSString *description;
+@end  @protocol NSCopying  - (id)copyWithZone:(NSZone *)zone;
+@end  @protocol NSMutableCopying  - (id)mutableCopyWithZone:(NSZone *)zone;
+@end  @protocol NSCoding  - (void)encodeWithCoder:(NSCoder *)aCoder;
 @end
-@protocol NSCopying
-- (id)copyWithZone:(NSZone *)zone;
-@end
-@protocol NSMutableCopying
-- (id)mutableCopyWithZone:(NSZone *)zone;
-@end
-@protocol NSCoding
-- (void)encodeWithCoder:(NSCoder *)aCoder;
-@end
-@interface NSObject <NSObject> {
-}
+@interface NSObject <NSObject> {}
 + (id)allocWithZone:(NSZone *)zone;
 + (id)alloc;
 - (void)dealloc;
@@ -80,41 +73,32 @@ typedef struct _NSZone NSZone;
 @end
 extern id NSAllocateObject(Class aClass, NSUInteger extraBytes, NSZone *zone);
 typedef struct {
-} NSFastEnumerationState;
-@protocol NSFastEnumeration
-- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len;
-@end
-@class NSString, NSDictionary;
+}
+NSFastEnumerationState;
+@protocol NSFastEnumeration  - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len;
+@end           @class NSString, NSDictionary;
 @interface NSValue : NSObject <NSCopying, NSCoding>
 + (NSValue *)valueWithPointer:(const void *)p;
 - (void)getValue:(void *)value;
 @end
-@interface NSNumber : NSValue
-- (char)charValue;
+@interface NSNumber : NSValue  - (char)charValue;
 - (id)initWithInt:(int)value;
 - (BOOL)boolValue;
-@end
-@class NSString;
-@interface NSArray : NSObject <NSCopying, NSMutableCopying, NSCoding, NSFastEnumeration>
-- (NSUInteger)count;
-@end
-@interface NSArray (NSArrayCreation)
-+ (id)array;
-@end
-@interface NSAutoreleasePool : NSObject {
+@end   @class NSString;
+@interface NSArray : NSObject <NSCopying, NSMutableCopying, NSCoding, NSFastEnumeration>  - (NSUInteger)count;
+@end  @interface NSArray (NSArrayCreation)  + (id)array;
+@end       @interface NSAutoreleasePool : NSObject {
 }
 - (void)drain;
-@end
-extern NSString *const NSBundleDidLoadNotification;
+@end extern NSString * const NSBundleDidLoadNotification;
 typedef double NSTimeInterval;
-@interface NSDate : NSObject <NSCopying, NSCoding>
-- (NSTimeInterval)timeIntervalSinceReferenceDate;
+@interface NSDate : NSObject <NSCopying, NSCoding>  - (NSTimeInterval)timeIntervalSinceReferenceDate;
 @end
 
 @interface NSString : NSObject <NSCopying, NSMutableCopying, NSCoding>
 - (NSUInteger)length;
 - (NSString *)stringByAppendingString:(NSString *)aString;
-- (const char *)UTF8String;
+- ( const char *)UTF8String;
 - (id)initWithUTF8String:(const char *)nullTerminatedCString;
 - (id)initWithCharactersNoCopy:(unichar *)characters length:(NSUInteger)length freeWhenDone:(BOOL)freeBuffer;
 - (id)initWithCharacters:(const unichar *)characters length:(NSUInteger)length;
@@ -122,15 +106,13 @@ typedef double NSTimeInterval;
 - (id)initWithBytesNoCopy:(void *)bytes length:(NSUInteger)len encoding:(NSStringEncoding)encoding freeWhenDone:(BOOL)freeBuffer;
 + (id)stringWithUTF8String:(const char *)nullTerminatedCString;
 + (id)stringWithString:(NSString *)string;
-@end
-@class NSString, NSURL, NSError;
+@end        @class NSString, NSURL, NSError;
 
 @interface NSMutableString : NSString
 - (void)appendFormat:(NSString *)format, ... __attribute__((format(__NSString__, 1, 2)));
 @end
 
-@interface NSData : NSObject <NSCopying, NSMutableCopying, NSCoding>
-- (NSUInteger)length;
+@interface NSData : NSObject <NSCopying, NSMutableCopying, NSCoding>  - (NSUInteger)length;
 + (id)dataWithBytesNoCopy:(void *)bytes length:(NSUInteger)length;
 + (id)dataWithBytesNoCopy:(void *)bytes length:(NSUInteger)length freeWhenDone:(BOOL)b;
 - (id)initWithBytesNoCopy:(void *)bytes length:(NSUInteger)length;
@@ -142,15 +124,18 @@ typedef double NSTimeInterval;
 @end
 
 typedef struct {
-} CFDictionaryKeyCallBacks;
+}
+CFDictionaryKeyCallBacks;
 extern const CFDictionaryKeyCallBacks kCFTypeDictionaryKeyCallBacks;
 typedef struct {
-} CFDictionaryValueCallBacks;
+}
+CFDictionaryValueCallBacks;
 extern const CFDictionaryValueCallBacks kCFTypeDictionaryValueCallBacks;
-typedef const struct __CFDictionary *CFDictionaryRef;
-typedef struct __CFDictionary *CFMutableDictionaryRef;
+typedef const struct __CFDictionary * CFDictionaryRef;
+typedef struct __CFDictionary * CFMutableDictionaryRef;
 extern CFMutableDictionaryRef CFDictionaryCreateMutable(CFAllocatorRef allocator, CFIndex capacity, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
 void CFDictionarySetValue(CFMutableDictionaryRef, const void *, const void *);
+
 
 extern void CFRelease(CFTypeRef cf);
 
@@ -166,3 +151,4 @@ void SystemHeaderFunctionWithBlockParam(void *, void (^block)(void *), unsigned)
 - (void)replacePointerAtIndex:(NSUInteger)index withPointer:(void *)item;
 - (void *)pointerAtIndex:(NSUInteger)index;
 @end
+

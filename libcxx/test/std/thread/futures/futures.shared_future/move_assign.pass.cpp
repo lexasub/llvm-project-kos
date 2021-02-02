@@ -20,58 +20,59 @@
 
 #include "test_macros.h"
 
-int main(int, char**) {
-  {
-    typedef int T;
-    std::promise<T> p;
-    std::shared_future<T> f0 = p.get_future();
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(f.valid());
-  }
-  {
-    typedef int T;
-    std::shared_future<T> f0;
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(!f.valid());
-  }
-  {
-    typedef int& T;
-    std::promise<T> p;
-    std::shared_future<T> f0 = p.get_future();
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(f.valid());
-  }
-  {
-    typedef int& T;
-    std::shared_future<T> f0;
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(!f.valid());
-  }
-  {
-    typedef void T;
-    std::promise<T> p;
-    std::shared_future<T> f0 = p.get_future();
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(f.valid());
-  }
-  {
-    typedef void T;
-    std::shared_future<T> f0;
-    std::shared_future<T> f;
-    f = std::move(f0);
-    assert(!f0.valid());
-    assert(!f.valid());
-  }
+int main(int, char**)
+{
+    {
+        typedef int T;
+        std::promise<T> p;
+        std::shared_future<T> f0 = p.get_future();
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(f.valid());
+    }
+    {
+        typedef int T;
+        std::shared_future<T> f0;
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(!f.valid());
+    }
+    {
+        typedef int& T;
+        std::promise<T> p;
+        std::shared_future<T> f0 = p.get_future();
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(f.valid());
+    }
+    {
+        typedef int& T;
+        std::shared_future<T> f0;
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(!f.valid());
+    }
+    {
+        typedef void T;
+        std::promise<T> p;
+        std::shared_future<T> f0 = p.get_future();
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(f.valid());
+    }
+    {
+        typedef void T;
+        std::shared_future<T> f0;
+        std::shared_future<T> f;
+        f = std::move(f0);
+        assert(!f0.valid());
+        assert(!f.valid());
+    }
 
   return 0;
 }

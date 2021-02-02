@@ -143,8 +143,8 @@ IndexedReference::IndexedReference(Instruction &StoreOrLoadInst,
 
   IsValid = delinearize(LI);
   if (IsValid)
-    LLVM_DEBUG(dbgs().indent(2)
-               << "Succesfully delinearized: " << *this << "\n");
+    LLVM_DEBUG(dbgs().indent(2) << "Succesfully delinearized: " << *this
+                                << "\n");
 }
 
 Optional<bool> IndexedReference::hasSpacialReuse(const IndexedReference &Other,
@@ -367,13 +367,13 @@ bool IndexedReference::delinearize(const LoopInfo &LI) {
       // In this case, reconstruct the access function using the absolute value
       // of the step recurrence.
       const SCEVAddRecExpr *AccessFnAR = dyn_cast<SCEVAddRecExpr>(AccessFn);
-      const SCEV *StepRec =
-          AccessFnAR ? AccessFnAR->getStepRecurrence(SE) : nullptr;
+      const SCEV *StepRec = AccessFnAR ? AccessFnAR->getStepRecurrence(SE) : nullptr;
 
       if (StepRec && SE.isKnownNegative(StepRec))
-        AccessFn = SE.getAddRecExpr(
-            AccessFnAR->getStart(), SE.getNegativeSCEV(StepRec),
-            AccessFnAR->getLoop(), AccessFnAR->getNoWrapFlags());
+        AccessFn = SE.getAddRecExpr(AccessFnAR->getStart(),
+                                    SE.getNegativeSCEV(StepRec),
+                                    AccessFnAR->getLoop(),
+                                    AccessFnAR->getNoWrapFlags());
       const SCEV *Div = SE.getUDivExactExpr(AccessFn, ElemSize);
       Subscripts.push_back(Div);
       Sizes.push_back(ElemSize);
@@ -480,7 +480,8 @@ raw_ostream &llvm::operator<<(raw_ostream &OS, const CacheCost &CC) {
 
 CacheCost::CacheCost(const LoopVectorTy &Loops, const LoopInfo &LI,
                      ScalarEvolution &SE, TargetTransformInfo &TTI,
-                     AAResults &AA, DependenceInfo &DI, Optional<unsigned> TRT)
+                     AAResults &AA, DependenceInfo &DI,
+                     Optional<unsigned> TRT)
     : Loops(Loops), TripCounts(), LoopCosts(),
       TRT((TRT == None) ? Optional<unsigned>(TemporalReuseThreshold) : TRT),
       LI(LI), SE(SE), TTI(TTI), AA(AA), DI(DI) {
@@ -512,8 +513,7 @@ CacheCost::getCacheCost(Loop &Root, LoopStandardAnalysisResults &AR,
     return nullptr;
   }
 
-  return std::make_unique<CacheCost>(Loops, AR.LI, AR.SE, AR.TTI, AR.AA, DI,
-                                     TRT);
+  return std::make_unique<CacheCost>(Loops, AR.LI, AR.SE, AR.TTI, AR.AA, DI, TRT);
 }
 
 void CacheCost::calculateCacheFootprint() {
@@ -562,17 +562,18 @@ bool CacheCost::populateReferenceGroups(ReferenceGroupsTy &RefGroups) const {
           dbgs().indent(2) << Representative << "\n";
         });
 
-        // FIXME: Both positive and negative access functions will be placed
-        // into the same reference group, resulting in a bi-directional array
-        // access such as:
-        //   for (i = N; i > 0; i--)
-        //     A[i] = A[N - i];
-        // having the same cost calculation as a single dimention access pattern
-        //   for (i = 0; i < N; i++)
-        //     A[i] = A[i];
-        // when in actuality, depending on the array size, the first example
-        // should have a cost closer to 2x the second due to the two cache
-        // access per iteration from opposite ends of the array
+
+       // FIXME: Both positive and negative access functions will be placed
+       // into the same reference group, resulting in a bi-directional array
+       // access such as:
+       //   for (i = N; i > 0; i--)
+       //     A[i] = A[N - i];
+       // having the same cost calculation as a single dimention access pattern
+       //   for (i = 0; i < N; i++)
+       //     A[i] = A[i];
+       // when in actuality, depending on the array size, the first example
+       // should have a cost closer to 2x the second due to the two cache
+       // access per iteration from opposite ends of the array
         Optional<bool> HasTemporalReuse =
             R->hasTemporalReuse(Representative, *TRT, *InnerMostLoop, DI, AA);
         Optional<bool> HasSpacialReuse =
@@ -635,8 +636,8 @@ CacheCost::computeLoopCacheCost(const Loop &L,
     LoopCost += RefGroupCost * TripCountsProduct;
   }
 
-  LLVM_DEBUG(dbgs().indent(2)
-             << "Loop '" << L.getName() << "' has cost=" << LoopCost << "\n");
+  LLVM_DEBUG(dbgs().indent(2) << "Loop '" << L.getName()
+                              << "' has cost=" << LoopCost << "\n");
 
   return LoopCost;
 }

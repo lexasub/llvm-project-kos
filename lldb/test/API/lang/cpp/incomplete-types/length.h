@@ -3,6 +3,6 @@
 
 #include "a.h"
 
-int length(A &a);
+int length (A &a);
 
 #endif

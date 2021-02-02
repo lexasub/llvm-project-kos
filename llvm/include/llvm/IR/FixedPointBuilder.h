@@ -179,8 +179,8 @@ public:
                                 : B.CreateUIToFP(Src, OpTy);
     // Rescale the integral-in-floating point by the scaling factor. This is
     // lossless, except for overflow to infinity which is unlikely.
-    Result = B.CreateFMul(
-        Result, ConstantFP::get(OpTy, std::pow(2, -(int)SrcSema.getScale())));
+    Result = B.CreateFMul(Result,
+        ConstantFP::get(OpTy, std::pow(2, -(int)SrcSema.getScale())));
     if (OpTy != DstTy)
       Result = B.CreateFPTrunc(Result, DstTy);
     return Result;
@@ -194,8 +194,8 @@ public:
       Result = B.CreateFPExt(Result, OpTy);
     // Rescale the floating point value so that its significant bits (for the
     // purposes of the conversion) are in the integral range.
-    Result = B.CreateFMul(
-        Result, ConstantFP::get(OpTy, std::pow(2, DstSema.getScale())));
+    Result = B.CreateFMul(Result,
+        ConstantFP::get(OpTy, std::pow(2, DstSema.getScale())));
 
     Type *ResultTy = B.getIntNTy(DstSema.getWidth());
     if (DstSema.isSaturated()) {
@@ -223,8 +223,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateAdd(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                   const FixedPointSemantics &RHSSema) {
+  Value *CreateAdd(Value *LHS, const FixedPointSemantics &LHSSema,
+                   Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
     bool UseSigned = CommonSema.isSigned() || CommonSema.hasUnsignedPadding();
 
@@ -249,8 +249,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateSub(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                   const FixedPointSemantics &RHSSema) {
+  Value *CreateSub(Value *LHS, const FixedPointSemantics &LHSSema,
+                   Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
     bool UseSigned = CommonSema.isSigned() || CommonSema.hasUnsignedPadding();
 
@@ -283,8 +283,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateMul(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                   const FixedPointSemantics &RHSSema) {
+  Value *CreateMul(Value *LHS, const FixedPointSemantics &LHSSema,
+                   Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
     bool UseSigned = CommonSema.isSigned() || CommonSema.hasUnsignedPadding();
 
@@ -311,8 +311,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateDiv(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                   const FixedPointSemantics &RHSSema) {
+  Value *CreateDiv(Value *LHS, const FixedPointSemantics &LHSSema,
+                   Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
     bool UseSigned = CommonSema.isSigned() || CommonSema.hasUnsignedPadding();
 
@@ -370,8 +370,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateEQ(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateEQ(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);
@@ -385,8 +385,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateNE(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateNE(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);
@@ -400,8 +400,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateLT(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateLT(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);
@@ -416,8 +416,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateLE(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateLE(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);
@@ -432,8 +432,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateGT(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateGT(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);
@@ -448,8 +448,8 @@ public:
   /// \p LHSSema - The semantic of the left hand side
   /// \p RHS     - The right hand side
   /// \p RHSSema - The semantic of the right hand side
-  Value *CreateGE(Value *LHS, const FixedPointSemantics &LHSSema, Value *RHS,
-                  const FixedPointSemantics &RHSSema) {
+  Value *CreateGE(Value *LHS, const FixedPointSemantics &LHSSema,
+                  Value *RHS, const FixedPointSemantics &RHSSema) {
     auto CommonSema = getCommonBinopSemantic(LHSSema, RHSSema);
 
     Value *WideLHS = CreateFixedToFixed(LHS, LHSSema, CommonSema);

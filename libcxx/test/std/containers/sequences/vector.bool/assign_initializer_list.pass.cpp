@@ -18,8 +18,9 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**) {
-  {
+int main(int, char**)
+{
+    {
     std::vector<bool> d;
     d.assign({true, false, false, true});
     assert(d.size() == 4);
@@ -27,16 +28,16 @@ int main(int, char**) {
     assert(d[1] == false);
     assert(d[2] == false);
     assert(d[3] == true);
-  }
-  {
-    std::vector<bool, min_allocator<bool> > d;
+    }
+    {
+    std::vector<bool, min_allocator<bool>> d;
     d.assign({true, false, false, true});
     assert(d.size() == 4);
     assert(d[0] == true);
     assert(d[1] == false);
     assert(d[2] == false);
     assert(d[3] == true);
-  }
+    }
 
   return 0;
 }

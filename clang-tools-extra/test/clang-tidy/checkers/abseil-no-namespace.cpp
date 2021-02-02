@@ -17,7 +17,7 @@ namespace absl {
 namespace std {
 int i = 5;
 }
-} // namespace absl
+}
 
 // Things that shouldn't trigger the check
 int i = 5;

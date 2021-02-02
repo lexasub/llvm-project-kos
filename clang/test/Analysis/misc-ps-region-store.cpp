@@ -50,16 +50,16 @@ int test_init_in_condition() {
 
 int test_init_in_condition_switch() {
   switch (int x = test_init_in_condition_aux()) { // no-warning
-  case 1:
-    return 0;
-  case 2:
-    if (x == 2)
+    case 1:
       return 0;
-    else {
-      clang_analyzer_warnIfReached(); // unreachable
-    }
-  default:
-    break;
+    case 2:
+      if (x == 2)
+        return 0;
+      else {
+        clang_analyzer_warnIfReached();  // unreachable
+      }
+    default:
+      break;
   }
   return 0;
 }
@@ -70,13 +70,14 @@ int test_init_in_condition_while() {
     if (x == 2)
       break;
   }
-
+  
   if (z == 2)
     return 0;
-
-  clang_analyzer_warnIfReached(); // unreachable
+  
+  clang_analyzer_warnIfReached();  // unreachable
   return 0;
 }
+
 
 int test_init_in_condition_for() {
   int z = 0;
@@ -86,8 +87,8 @@ int test_init_in_condition_for() {
   }
   if (z == 1)
     return 0;
-
-  clang_analyzer_warnIfReached(); // unreachable
+    
+  clang_analyzer_warnIfReached();  // unreachable
   return 0;
 }
 
@@ -98,10 +99,10 @@ int test_init_in_condition_for() {
 class TestHandleThis {
   int x;
 
-  TestHandleThis();
+  TestHandleThis();  
   int foo();
   int null_deref_negative();
-  int null_deref_positive();
+  int null_deref_positive();  
 };
 
 int TestHandleThis::foo() {
@@ -114,8 +115,8 @@ int TestHandleThis::null_deref_negative() {
   if (x == 10) {
     return 1;
   }
-  clang_analyzer_warnIfReached(); // unreachable
-  return 0;
+  clang_analyzer_warnIfReached();  // unreachable
+  return 0;  
 }
 
 int TestHandleThis::null_deref_positive() {
@@ -123,8 +124,8 @@ int TestHandleThis::null_deref_positive() {
   if (x == 9) {
     return 1;
   }
-  clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
-  return 0;
+  clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
+  return 0;  
 }
 
 // PR 7675 - passing literals by-reference
@@ -140,7 +141,7 @@ void pr7675_test() {
   pr7675_i(4.0j);
 
   // Add check to ensure we are analyzing the code up to this point.
-  clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
+  clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
 }
 
 // <rdar://problem/8375510> - CFGBuilder should handle temporaries.
@@ -151,37 +152,36 @@ struct R8375510 {
 };
 
 int r8375510(R8375510 x, R8375510 y) {
-  for (;; x++) {
-  }
+  for (; ; x++) { }
 }
 
 // PR8419 -- this used to crash.
 
 class String8419 {
-public:
-  char &get(int n);
-  char &operator[](int n);
+ public:
+  char& get(int n);
+  char& operator[](int n);
 };
 
-char &get8419();
+char& get8419();
 
 void Test8419() {
   String8419 s;
   ++(s.get(0));
-  get8419()--; // used to crash
-  --s[0];      // used to crash
-  s[0] &= 1;   // used to crash
-  s[0]++;      // used to crash
+  get8419()--;  // used to crash
+  --s[0];       // used to crash
+  s[0] &= 1;    // used to crash
+  s[0]++;       // used to crash
 }
 
 // PR8426 -- this used to crash.
 
-void Use(void *to);
+void Use(void* to);
 
 template <class T> class Foo {
   ~Foo();
   struct Bar;
-  Bar *bar_;
+  Bar* bar_;
 };
 
 template <class T> Foo<T>::~Foo() {
@@ -210,7 +210,7 @@ bool Foo2<T>::Bar() {
 
 template <typename T>
 class Foo3 {
-public:
+ public:
   void Bar();
   void Baz();
   T value_;
@@ -227,7 +227,7 @@ void Foo3<T>::Bar() {
 //===---------------------------------------------------------------------===//
 
 namespace fum {
-int i = 3;
+  int i = 3;
 };
 
 void test_namespace() {
@@ -254,21 +254,19 @@ bool RDar9203355::foo(unsigned valA, int &result) const {
 // Test handling of new[].
 void rdar9212512() {
   int *x = new int[10];
-  for (unsigned i = 0; i < 2; ++i) {
+  for (unsigned i = 0 ; i < 2 ; ++i) {
     // This previously triggered an uninitialized values warning.
-    x[i] = 1; // no-warning
+    x[i] = 1;  // no-warning
   }
 }
 
 // Test basic support for dynamic_cast<>.
-struct Rdar9212495_C {
-  virtual void bar() const;
-};
+struct Rdar9212495_C { virtual void bar() const; };
 class Rdar9212495_B : public Rdar9212495_C {};
 class Rdar9212495_A : public Rdar9212495_B {};
-const Rdar9212495_A &rdar9212495(const Rdar9212495_C *ptr) {
-  const Rdar9212495_A &val = dynamic_cast<const Rdar9212495_A &>(*ptr);
-
+const Rdar9212495_A& rdar9212495(const Rdar9212495_C* ptr) {
+  const Rdar9212495_A& val = dynamic_cast<const Rdar9212495_A&>(*ptr);
+  
   // This is not valid C++; dynamic_cast with a reference type will throw an
   // exception if the pointer does not match the expected type. However, our
   // implementation of dynamic_cast will pass through a null pointer...or a
@@ -276,12 +274,12 @@ const Rdar9212495_A &rdar9212495(const Rdar9212495_C *ptr) {
   if (&val == 0) {
     val.bar(); // expected-warning{{Called C++ object pointer is null}}
   }
-
+  
   return val;
 }
 
-const Rdar9212495_A *rdar9212495_ptr(const Rdar9212495_C *ptr) {
-  const Rdar9212495_A *val = dynamic_cast<const Rdar9212495_A *>(ptr);
+const Rdar9212495_A* rdar9212495_ptr(const Rdar9212495_C* ptr) {
+  const Rdar9212495_A* val = dynamic_cast<const Rdar9212495_A*>(ptr);
 
   if (val == 0) {
     val->bar(); // expected-warning{{Called C++ object pointer is null}}
@@ -294,10 +292,11 @@ const Rdar9212495_A *rdar9212495_ptr(const Rdar9212495_C *ptr) {
 // an uninitialized value warning.
 extern "C" void __attribute__((noreturn)) PR9645_exit(int i);
 
-class PR9645_SideEffect {
+class PR9645_SideEffect
+{
 public:
   PR9645_SideEffect(int *pi); // caches pi in i_
-  void Read(int *pi);         // copies *pi into *i_
+  void Read(int *pi); // copies *pi into *i_
 private:
   int *i_;
 };
@@ -327,13 +326,13 @@ class RDar9267815 {
 void RDar9267815::test_pos() {
   if (x == 42)
     return;
-  clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
+  clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
 }
 void RDar9267815::test() {
   if (x == 42)
     return;
   if (x == 42)
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // no-warning
 }
 
 void RDar9267815::test2() {
@@ -341,7 +340,7 @@ void RDar9267815::test2() {
     return;
   invalidate();
   if (x == 42)
-    clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
+    clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
 }
 
 // Test reference parameters.
@@ -370,7 +369,8 @@ int test_invalidate_class() {
 
 // Test correct pointer arithmetic using 'p--'.  This is to warn that we
 // were loading beyond the written characters in buf.
-char *RDar9269695(char *dst, unsigned int n) {
+char *RDar9269695(char *dst, unsigned int n)
+{
   char buff[40], *p;
 
   p = buff;
@@ -415,7 +415,7 @@ void TestAssignIntoSymbolicOffset::test(int x, int y) {
   if (stuff[x])
     return;
   if (!stuff[x]) {
-    stuff[x] = new int *[y + 1];
+    stuff[x] = new int*[y+1];
     // Previously triggered a null dereference.
     stuff[x][y] = 0; // no-warning
   }
@@ -425,75 +425,72 @@ void TestAssignIntoSymbolicOffset::test(int x, int y) {
 // value warning.
 class ClassWithStatic {
 public:
-  static const unsigned value = 1;
+    static const unsigned value = 1;
 };
 
 int rdar9948787_negative() {
-  ClassWithStatic classWithStatic;
-  unsigned value = classWithStatic.value;
-  if (value == 1)
-    return 1;
-  clang_analyzer_warnIfReached(); // no-warning
-  return 0;
+    ClassWithStatic classWithStatic;
+    unsigned value = classWithStatic.value;
+    if (value == 1)
+      return 1;
+    clang_analyzer_warnIfReached();  // no-warning
+    return 0;
 }
 
 int rdar9948787_positive() {
-  ClassWithStatic classWithStatic;
-  unsigned value = classWithStatic.value;
-  if (value == 0)
-    return 1;
-  clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
-  return 0;
+    ClassWithStatic classWithStatic;
+    unsigned value = classWithStatic.value;
+    if (value == 0)
+      return 1;
+    clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
+    return 0;
 }
 
 // Regression test against global constants and switches.
-enum rdar10202899_ValT { rdar10202899_ValTA,
-                         rdar10202899_ValTB,
-                         rdar10202899_ValTC };
+enum rdar10202899_ValT { rdar10202899_ValTA, rdar10202899_ValTB, rdar10202899_ValTC };
 const rdar10202899_ValT val = rdar10202899_ValTA;
 void rdar10202899_test1() {
   switch (val) {
-  case rdar10202899_ValTA: {
-  }
+    case rdar10202899_ValTA: {}
   };
 }
 
 void rdar10202899_test2() {
   if (val == rdar10202899_ValTA)
-    return;
-  clang_analyzer_warnIfReached(); // no-warning
+   return;
+  clang_analyzer_warnIfReached();  // no-warning
 }
 
 void rdar10202899_test3() {
   switch (val) {
-  case rdar10202899_ValTA:
-    return;
-  default:;
+    case rdar10202899_ValTA: return;
+    default: ;
   };
-  clang_analyzer_warnIfReached(); // no-warning
+  clang_analyzer_warnIfReached();  // no-warning
 }
 
 // This used to crash the analyzer because of the unnamed bitfield.
-void PR11249() {
+void PR11249()
+{
   struct {
-    char f1 : 4;
-    char : 4;
+    char f1:4;
+    char   :4;
     char f2[1];
     char f3;
-  } V = {1, {2}, 3};
+  } V = { 1, {2}, 3 };
   if (V.f1 != 1)
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // no-warning
   if (V.f2[0] != 2)
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // no-warning
   if (V.f3 != 3)
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // no-warning
 }
 
 // Handle doing a load from the memory associated with the code for
 // a function.
-extern double nan(const char *);
+extern double nan( const char * );
 double PR11450() {
-  double NaN = *(double *)nan;
+  double NaN = *(double*) nan;
   return NaN;
 }
 
@@ -516,9 +513,9 @@ void TestNullThis::test() {
 enum MyEnum { MyEnumValue };
 MyEnum rdar10892489() {
   try {
-    throw MyEnumValue;
+      throw MyEnumValue;
   } catch (MyEnum e) {
-    return e; // no-warning
+      return e; // no-warning
   }
   return MyEnumValue;
 }
@@ -537,16 +534,22 @@ MyEnum rdar10892489_positive() {
 
 // Test handling of catch with no condition variable.
 void PR11545() {
-  try {
-    throw;
-  } catch (...) {
+  try
+  {
+      throw;
+  }
+  catch (...)
+  {
   }
 }
 
 void PR11545_positive() {
-  try {
-    throw;
-  } catch (...) {
+  try
+  {
+      throw;
+  }
+  catch (...)
+  {
     int *p = 0;
     // FALSE NEGATIVE
     *p = 0xDEADBEEF; // {{null}}
@@ -567,7 +570,7 @@ struct PR11146::Entry {
 };
 
 void PR11146::baz() {
-  (void)&Entry::x;
+  (void) &Entry::x;
 }
 
 // Test symbolicating a reference.  In this example, the
@@ -584,10 +587,11 @@ void rdar10924675(unsigned short x[], int index, int index2) {
 void rdar11401827() {
   int x = int();
   if (!x) {
-    clang_analyzer_warnIfReached(); // expected-warning{{REACHABLE}}
-    ;                               // Suppress warning that both branches are identical
-  } else {
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // expected-warning{{REACHABLE}}
+    ; // Suppress warning that both branches are identical
+  }
+  else {
+    clang_analyzer_warnIfReached();  // no-warning
   }
 }
 
@@ -612,9 +616,9 @@ void test_inline() {
 }
 
 void test_alloca_in_a_recursive_function(int p1) {
-  __builtin_alloca(p1);
-  test_alloca_in_a_recursive_function(1);
-  test_alloca_in_a_recursive_function(2);
+    __builtin_alloca (p1);
+    test_alloca_in_a_recursive_function(1);
+    test_alloca_in_a_recursive_function(2);
 }
 
 //===---------------------------------------------------------------------===//
@@ -629,12 +633,12 @@ void test_alloca_in_a_recursive_function(int p1) {
 struct RDar12753384_ClassA {
   unsigned z;
 };
-struct RDar12753384_ClassB {
+struct  RDar12753384_ClassB {
   unsigned x;
-  RDar12753384_ClassA y[8];
+  RDar12753384_ClassA y[ 8 ] ;
 };
 unsigned RDar12753384() {
-  RDar12753384_ClassB w = {0x00};
+  RDar12753384_ClassB w = { 0x00 };
   RDar12753384_ClassA y[8];
   return w.x;
 }
@@ -646,29 +650,35 @@ unsigned RDar12753384() {
 // but now if a temporary object appears in an initializer we just ignore it.
 // Fixes <rdar://problem/12755044>.
 
-struct Rdar12755044_foo {
-  struct Rdar12755044_bar {
-    union baz {
-      int i;
-    };
-  } aBar;
+struct Rdar12755044_foo
+{
+    struct Rdar12755044_bar
+    {
+        union baz
+        {
+            int   i;
+        };
+    } aBar;
 };
 
-struct Rdar12755044_foo_anon {
-  struct Rdar12755044_bar {
-    union {
-      int i;
-    };
-  } aBar;
+struct Rdar12755044_foo_anon
+{
+    struct Rdar12755044_bar
+    {
+        union
+        {
+            int   i;
+        };
+    } aBar;
 };
 
 const Rdar12755044_foo_anon *radar12755044_anon() {
-  static const Rdar12755044_foo_anon Rdar12755044_foo_list[] = {{{}}};
+  static const Rdar12755044_foo_anon Rdar12755044_foo_list[] = { { { } } };
   return Rdar12755044_foo_list; // no-warning
 }
 
 const Rdar12755044_foo *radar12755044() {
-  static const Rdar12755044_foo Rdar12755044_foo_list[] = {{{}}};
+  static const Rdar12755044_foo Rdar12755044_foo_list[] = { { { } } };
   return Rdar12755044_foo_list; // no-warning
 }
 
@@ -678,7 +688,7 @@ const Rdar12755044_foo *radar12755044() {
 void rdar12759044() {
   int flag = 512;
   if (!(flag & 512)) {
-    clang_analyzer_warnIfReached(); // no-warning
+    clang_analyzer_warnIfReached();  // no-warning
   }
 }
 
@@ -686,21 +696,21 @@ void rdar12759044() {
 // from 'x' is not flagged as being uninitialized.
 typedef __complex__ float _ComplexT;
 void rdar12964481(_ComplexT *y) {
-  _ComplexT x;
-  __real__ x = 1.0;
-  __imag__ x = 1.0;
-  *y *= x; // no-warning
+   _ComplexT x;
+   __real__ x = 1.0;
+   __imag__ x = 1.0;
+   *y *= x; // no-warning
 }
 void rdar12964481_b(_ComplexT *y) {
-  _ComplexT x;
-  // Eventually this should be a warning.
-  *y *= x; // no-warning
+   _ComplexT x;
+   // Eventually this should be a warning.
+   *y *= x; // no-warning
 }
 
 // Test case for PR 12921.  This previously produced
 // a bogus warning.
-static const int pr12921_arr[] = {0, 1};
-static const int pr12921_arrcount = sizeof(pr12921_arr) / sizeof(int);
+static const int pr12921_arr[] = { 0, 1 };
+static const int pr12921_arrcount = sizeof(pr12921_arr)/sizeof(int);
 
 int pr12921(int argc, char **argv) {
   int i, retval;
@@ -712,7 +722,7 @@ int pr12921(int argc, char **argv) {
   }
 
   // No match
-  if (i == pr12921_arrcount)
-    return 66;
+  if (i == pr12921_arrcount) return 66;
   return pr12921_arr[retval];
 }
+
