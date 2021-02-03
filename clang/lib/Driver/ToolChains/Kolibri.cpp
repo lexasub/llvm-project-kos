@@ -290,15 +290,15 @@ ToolChain::CXXStdlibType Kolibri::GetDefaultCXXStdlibType() const {
 bool Kolibri::HasNativeLLVMSupport() const { return true; }
 
 Tool *Kolibri::buildLinker() const {
-  return new tools::gnutools::Linker(*this);
+  return new tools::gnutools::Linker(*this); // need aka tools::KOS
 }
 
 Tool *Kolibri::buildStaticLibTool() const {
-  return new tools::gnutools::StaticLibTool(*this);
+  return new tools::gnutools::StaticLibTool(*this); // need aka tools::KOS
 }
 
 Tool *Kolibri::buildAssembler() const {
-  return new tools::gnutools::Assembler(*this);
+  return new tools::gnutools::Assembler(*this); // need aka tools::KOS
 }
 
 std::string Kolibri::computeSysRoot() const {
