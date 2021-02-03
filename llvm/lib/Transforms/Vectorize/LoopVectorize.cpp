@@ -403,12 +403,6 @@ static Value *addFastMathFlag(Value *V) {
   return V;
 }
 
-static Value *addFastMathFlag(Value *V, FastMathFlags FMF) {
-  if (isa<FPMathOperator>(V))
-    cast<Instruction>(V)->setFastMathFlags(FMF);
-  return V;
-}
-
 /// A helper function that returns an integer or floating-point constant with
 /// value C.
 static Constant *getSignedIntOrFpConstant(Type *Ty, int64_t C) {
@@ -2146,7 +2140,8 @@ void InnerLoopVectorizer::recordVectorLoopValueForInductionCast(
   // induction update chain itself.
   Instruction *CastInst = *Casts.begin();
   if (Lane < UINT_MAX)
-    VectorLoopValueMap.setScalarValue(CastInst, {Part, Lane}, VectorLoopVal);
+    VectorLoopValueMap.setScalarValue(CastInst, VPIteration(Part, Lane),
+                                      VectorLoopVal);
   else
     VectorLoopValueMap.setVectorValue(CastInst, Part, VectorLoopVal);
 }
@@ -2366,7 +2361,7 @@ void InnerLoopVectorizer::buildScalarSteps(Value *ScalarIV, Value *Step,
              "scalable");
       auto *Mul = addFastMathFlag(Builder.CreateBinOp(MulOp, StartIdx, Step));
       auto *Add = addFastMathFlag(Builder.CreateBinOp(AddOp, ScalarIV, Mul));
-      VectorLoopValueMap.setScalarValue(EntryVal, {Part, Lane}, Add);
+      VectorLoopValueMap.setScalarValue(EntryVal, VPIteration(Part, Lane), Add);
       recordVectorLoopValueForInductionCast(ID, EntryVal, Add, Part, Lane);
     }
   }
@@ -2390,7 +2385,8 @@ Value *InnerLoopVectorizer::getOrCreateVectorValue(Value *V, unsigned Part) {
   // instead. If it has been scalarized, and we actually need the value in
   // vector form, we will construct the vector values on demand.
   if (VectorLoopValueMap.hasAnyScalarValue(V)) {
-    Value *ScalarValue = VectorLoopValueMap.getScalarValue(V, {Part, 0});
+    Value *ScalarValue =
+        VectorLoopValueMap.getScalarValue(V, VPIteration(Part, 0));
 
     // If we've scalarized a value, that value should be an instruction.
     auto *I = cast<Instruction>(V);
@@ -2412,7 +2408,7 @@ Value *InnerLoopVectorizer::getOrCreateVectorValue(Value *V, unsigned Part) {
     assert((!VF.isScalable() || LastLane == 0) &&
            "Scalable vectorization can't lead to any scalarized values.");
     auto *LastInst = cast<Instruction>(
-        VectorLoopValueMap.getScalarValue(V, {Part, LastLane}));
+        VectorLoopValueMap.getScalarValue(V, VPIteration(Part, LastLane)));
 
     // Set the insert point after the last scalarized instruction. This ensures
     // the insertelement sequence will directly follow the scalar definitions.
@@ -2436,7 +2432,7 @@ Value *InnerLoopVectorizer::getOrCreateVectorValue(Value *V, unsigned Part) {
       Value *Poison = PoisonValue::get(VectorType::get(V->getType(), VF));
       VectorLoopValueMap.setVectorValue(V, Part, Poison);
       for (unsigned Lane = 0; Lane < VF.getKnownMinValue(); ++Lane)
-        packScalarIntoVectorValue(V, {Part, Lane});
+        packScalarIntoVectorValue(V, VPIteration(Part, Lane));
       VectorValue = VectorLoopValueMap.getVectorValue(V, Part);
     }
     Builder.restoreIP(OldIP);
@@ -2579,7 +2575,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     Index += (VF.getKnownMinValue() - 1) * Group->getFactor();
 
   for (unsigned Part = 0; Part < UF; Part++) {
-    Value *AddrPart = State.get(Addr, {Part, 0});
+    Value *AddrPart = State.get(Addr, VPIteration(Part, 0));
     setDebugLocFromInst(Builder, AddrPart);
 
     // Notice current instruction could be any index. Need to adjust the address
@@ -2831,7 +2827,7 @@ void InnerLoopVectorizer::vectorizeMemoryInstruction(
           // We don't want to update the value in the map as it might be used in
           // another expression. So don't call resetVectorValue(StoredVal).
         }
-        auto *VecPtr = CreateVecPtr(Part, State.get(Addr, {0, 0}));
+        auto *VecPtr = CreateVecPtr(Part, State.get(Addr, VPIteration(0, 0)));
         if (isMaskRequired)
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
                                             BlockInMaskParts[Part]);
@@ -2855,7 +2851,7 @@ void InnerLoopVectorizer::vectorizeMemoryInstruction(
                                          nullptr, "wide.masked.gather");
       addMetadata(NewLI, LI);
     } else {
-      auto *VecPtr = CreateVecPtr(Part, State.get(Addr, {0, 0}));
+      auto *VecPtr = CreateVecPtr(Part, State.get(Addr, VPIteration(0, 0)));
       if (isMaskRequired)
         NewLI = Builder.CreateMaskedLoad(
             VecPtr, Alignment, BlockInMaskParts[Part], PoisonValue::get(DataTy),
@@ -2883,7 +2879,7 @@ void InnerLoopVectorizer::scalarizeInstruction(Instruction *Instr, VPUser &User,
   // llvm.experimental.noalias.scope.decl intrinsics must only be duplicated for
   // the first lane and part.
   if (isa<NoAliasScopeDeclInst>(Instr))
-    if (Instance.Lane != 0 || Instance.Part != 0)
+    if (!Instance.isFirstIteration())
       return;
 
   setDebugLocFromInst(Builder, Instr);
@@ -4301,16 +4297,19 @@ void InnerLoopVectorizer::fixReduction(PHINode *Phi) {
   // terminate on this line. This is the easiest way to ensure we don't
   // accidentally cause an extra step back into the loop while debugging.
   setDebugLocFromInst(Builder, LoopMiddleBlock->getTerminator());
-  for (unsigned Part = 1; Part < UF; ++Part) {
-    Value *RdxPart = VectorLoopValueMap.getVectorValue(LoopExitInst, Part);
-    if (Op != Instruction::ICmp && Op != Instruction::FCmp)
-      // Floating point operations had to be 'fast' to enable the reduction.
-      ReducedPartRdx = addFastMathFlag(
-          Builder.CreateBinOp((Instruction::BinaryOps)Op, RdxPart,
-                              ReducedPartRdx, "bin.rdx"),
-          RdxDesc.getFastMathFlags());
-    else
-      ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
+  {
+    // Floating-point operations should have some FMF to enable the reduction.
+    IRBuilderBase::FastMathFlagGuard FMFG(Builder);
+    Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+    for (unsigned Part = 1; Part < UF; ++Part) {
+      Value *RdxPart = VectorLoopValueMap.getVectorValue(LoopExitInst, Part);
+      if (Op != Instruction::ICmp && Op != Instruction::FCmp) {
+        ReducedPartRdx = Builder.CreateBinOp(
+            (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
+      } else {
+        ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
+      }
+    }
   }
 
   // Create the reduction after the loop. Note that inloop reductions create the
@@ -4408,7 +4407,7 @@ void InnerLoopVectorizer::fixLCSSAPHIs() {
     // extracted from the vectorized loop.
     Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
     Value *lastIncomingValue =
-      getOrCreateScalarValue(IncomingValue, { UF - 1, LastLane });
+        getOrCreateScalarValue(IncomingValue, VPIteration(UF - 1, LastLane));
     LCSSAPhi.addIncoming(lastIncomingValue, LoopMiddleBlock);
   }
 }
@@ -4554,8 +4553,9 @@ void InnerLoopVectorizer::widenGEP(GetElementPtrInst *GEP, VPValue *VPDef,
     for (unsigned Part = 0; Part < UF; ++Part) {
       // The pointer operand of the new GEP. If it's loop-invariant, we
       // won't broadcast it.
-      auto *Ptr = IsPtrLoopInvariant ? State.get(Operands.getOperand(0), {0, 0})
-                                     : State.get(Operands.getOperand(0), Part);
+      auto *Ptr = IsPtrLoopInvariant
+                      ? State.get(Operands.getOperand(0), VPIteration(0, 0))
+                      : State.get(Operands.getOperand(0), Part);
 
       // Collect all the indices for the new GEP. If any index is
       // loop-invariant, we won't broadcast it.
@@ -4563,7 +4563,7 @@ void InnerLoopVectorizer::widenGEP(GetElementPtrInst *GEP, VPValue *VPDef,
       for (unsigned I = 1, E = Operands.getNumOperands(); I < E; I++) {
         VPValue *Operand = Operands.getOperand(I);
         if (IsIndexLoopInvariant[I - 1])
-          Indices.push_back(State.get(Operand, {0, 0}));
+          Indices.push_back(State.get(Operand, VPIteration(0, 0)));
         else
           Indices.push_back(State.get(Operand, Part));
       }
@@ -4702,7 +4702,8 @@ void InnerLoopVectorizer::widenPHIInstruction(Instruction *PN,
           Value *SclrGep =
               emitTransformedIndex(Builder, GlobalIdx, PSE.getSE(), DL, II);
           SclrGep->setName("next.gep");
-          VectorLoopValueMap.setScalarValue(P, {Part, Lane}, SclrGep);
+          VectorLoopValueMap.setScalarValue(P, VPIteration(Part, Lane),
+                                            SclrGep);
         }
       }
       return;
@@ -4919,7 +4920,7 @@ void InnerLoopVectorizer::widenCallInstruction(CallInst &I, VPValue *Def,
       if (!UseVectorIntrinsic || !hasVectorInstrinsicScalarOpd(ID, I.index()))
         Arg = State.get(I.value(), Part);
       else
-        Arg = State.get(I.value(), {0, 0});
+        Arg = State.get(I.value(), VPIteration(0, 0));
       Args.push_back(Arg);
     }
 
@@ -4964,8 +4965,9 @@ void InnerLoopVectorizer::widenSelectInstruction(SelectInst &I, VPValue *VPDef,
   // loop. This means that we can't just use the original 'cond' value.
   // We have to take the 'vectorized' value and pick the first lane.
   // Instcombine will make this a no-op.
-  auto *InvarCond =
-      InvariantCond ? State.get(Operands.getOperand(0), {0, 0}) : nullptr;
+  auto *InvarCond = InvariantCond
+                        ? State.get(Operands.getOperand(0), VPIteration(0, 0))
+                        : nullptr;
 
   for (unsigned Part = 0; Part < UF; ++Part) {
     Value *Cond =
@@ -5576,7 +5578,8 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   const SCEV *ExitCount = SE->getAddExpr(
       BackedgeTakenCount, SE->getOne(BackedgeTakenCount->getType()));
   const SCEV *Rem = SE->getURemExpr(
-      ExitCount, SE->getConstant(BackedgeTakenCount->getType(), MaxVFtimesIC));
+      SE->applyLoopGuards(ExitCount, TheLoop),
+      SE->getConstant(BackedgeTakenCount->getType(), MaxVFtimesIC));
   if (Rem->isZero()) {
     // Accept MaxVF if we do not have a tail.
     LLVM_DEBUG(dbgs() << "LV: No tail will remain for any chosen VF.\n");
@@ -6794,6 +6797,11 @@ LoopVectorizationCostModel::getGatherScatterCost(Instruction *I,
 InstructionCost
 LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
                                                    ElementCount VF) {
+  // TODO: Once we have support for interleaving with scalable vectors
+  // we can calculate the cost properly here.
+  if (VF.isScalable())
+    return InstructionCost::getInvalid();
+
   Type *ValTy = getMemInstValueType(I);
   auto *VectorTy = cast<VectorType>(ToVectorTy(ValTy, VF));
   unsigned AS = getLoadStoreAddressSpace(I);
@@ -6802,7 +6810,6 @@ LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
   assert(Group && "Fail to get an interleaved access group.");
 
   unsigned InterleaveFactor = Group->getFactor();
-  assert(!VF.isScalable() && "scalable vectors not yet supported.");
   auto *WideVecTy = VectorType::get(ValTy, VF * InterleaveFactor);
 
   // Holds the indices of existing members in an interleaved load group.
@@ -7066,7 +7073,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       }
 
       // Choose between Interleaving, Gather/Scatter or Scalarization.
-      InstructionCost InterleaveCost = std::numeric_limits<int>::max();
+      InstructionCost InterleaveCost = InstructionCost::getInvalid();
       unsigned NumAccesses = 1;
       if (isAccessInterleaved(&I)) {
         auto Group = getInterleavedAccessGroup(&I);
@@ -7084,10 +7091,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       InstructionCost GatherScatterCost =
           isLegalGatherOrScatter(&I)
               ? getGatherScatterCost(&I, VF) * NumAccesses
-              : std::numeric_limits<int>::max();
+              : InstructionCost::getInvalid();
 
       InstructionCost ScalarizationCost =
-          getMemInstScalarizationCost(&I, VF) * NumAccesses;
+          !VF.isScalable() ? getMemInstScalarizationCost(&I, VF) * NumAccesses
+                           : InstructionCost::getInvalid();
 
       // Choose better solution for the current VF,
       // write down this decision and use it during vectorization.
@@ -7101,6 +7109,8 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         Decision = CM_GatherScatter;
         Cost = GatherScatterCost;
       } else {
+        assert(!VF.isScalable() &&
+               "We cannot yet scalarise for scalable vectors");
         Decision = CM_Scalarize;
         Cost = ScalarizationCost;
       }
@@ -7450,8 +7460,12 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
       }
     }
 
-    assert(!VF.isScalable() && "VF is assumed to be non scalable");
-    unsigned N = isScalarAfterVectorization(I, VF) ? VF.getKnownMinValue() : 1;
+    unsigned N;
+    if (isScalarAfterVectorization(I, VF)) {
+      assert(!VF.isScalable() && "VF is assumed to be non scalable");
+      N = VF.getKnownMinValue();
+    } else
+      N = 1;
     return N *
            TTI.getCastInstrCost(Opcode, VectorTy, SrcVecTy, CCH, CostKind, I);
   }
@@ -9093,8 +9107,9 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
          "Can't scalarize a scalable vector");
   for (unsigned Part = 0; Part < State.UF; ++Part)
     for (unsigned Lane = 0; Lane < EndLane; ++Lane)
-      State.ILV->scalarizeInstruction(getUnderlyingInstr(), *this, {Part, Lane},
-                                      IsPredicated, State);
+      State.ILV->scalarizeInstruction(getUnderlyingInstr(), *this,
+                                      VPIteration(Part, Lane), IsPredicated,
+                                      State);
 }
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {

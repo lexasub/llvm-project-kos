@@ -3900,6 +3900,7 @@ X86TargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   CallingConv::ID CallConv              = CLI.CallConv;
   bool &isTailCall                      = CLI.IsTailCall;
   bool isVarArg                         = CLI.IsVarArg;
+  const auto *CB                        = CLI.CB;
 
   MachineFunction &MF = DAG.getMachineFunction();
   bool Is64Bit        = Subtarget.is64Bit();
@@ -3909,14 +3910,10 @@ X86TargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   bool IsGuaranteeTCO = MF.getTarget().Options.GuaranteedTailCallOpt ||
       CallConv == CallingConv::Tail;
   X86MachineFunctionInfo *X86Info = MF.getInfo<X86MachineFunctionInfo>();
-  const auto *CI = dyn_cast_or_null<CallInst>(CLI.CB);
-  const Function *Fn = CI ? CI->getCalledFunction() : nullptr;
-  bool HasNCSR = (CI && CI->hasFnAttr("no_caller_saved_registers")) ||
-                 (Fn && Fn->hasFnAttribute("no_caller_saved_registers"));
-  const auto *II = dyn_cast_or_null<InvokeInst>(CLI.CB);
-  bool HasNoCfCheck =
-      (CI && CI->doesNoCfCheck()) || (II && II->doesNoCfCheck());
-	bool IsIndirectCall = (CI && CI->isIndirectCall());
+  bool HasNCSR = (CB && isa<CallInst>(CB) &&
+                  CB->hasFnAttr("no_caller_saved_registers"));
+  bool HasNoCfCheck = (CB && CB->doesNoCfCheck());
+  bool IsIndirectCall = (CB && isa<CallInst>(CB) && CB->isIndirectCall());
   const Module *M = MF.getMMI().getModule();
   Metadata *IsCFProtectionSupported = M->getModuleFlag("cf-protection-branch");
 
@@ -4338,11 +4335,19 @@ X86TargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
                                   RegsToPass[i].second.getValueType()));
 
   // Add a register mask operand representing the call-preserved registers.
-  // If HasNCSR is asserted (attribute NoCallerSavedRegisters exists) then we
-  // set X86_INTR calling convention because it has the same CSR mask
-  // (same preserved registers).
-  const uint32_t *Mask = RegInfo->getCallPreservedMask(
-      MF, HasNCSR ? (CallingConv::ID)CallingConv::X86_INTR : CallConv);
+  const uint32_t *Mask = [&]() {
+    auto AdaptedCC = CallConv;
+    // If HasNCSR is asserted (attribute NoCallerSavedRegisters exists),
+    // use X86_INTR calling convention because it has the same CSR mask
+    // (same preserved registers).
+    if (HasNCSR)
+      AdaptedCC = (CallingConv::ID)CallingConv::X86_INTR;
+    // If NoCalleeSavedRegisters is requested, than use GHC since it happens
+    // to use the CSR_NoRegs_RegMask.
+    if (CB && CB->hasFnAttr("no_callee_saved_registers"))
+      AdaptedCC = (CallingConv::ID)CallingConv::GHC;
+    return RegInfo->getCallPreservedMask(MF, AdaptedCC);
+  }();
   assert(Mask && "Missing call preserved mask for calling convention");
 
   // If this is an invoke in a 32-bit function using a funclet-based
@@ -18805,6 +18810,7 @@ SDValue X86TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
   MVT VT = Op.getSimpleValueType();
   MVT EltVT = VT.getVectorElementType();
   unsigned NumElts = VT.getVectorNumElements();
+  unsigned EltSizeInBits = EltVT.getScalarSizeInBits();
 
   if (EltVT == MVT::i1)
     return InsertBitToMaskVector(Op, DAG, Subtarget);
@@ -18813,9 +18819,34 @@ SDValue X86TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
   SDValue N0 = Op.getOperand(0);
   SDValue N1 = Op.getOperand(1);
   SDValue N2 = Op.getOperand(2);
-
   auto *N2C = dyn_cast<ConstantSDNode>(N2);
-  if (!N2C || N2C->getAPIntValue().uge(NumElts))
+
+  if (!N2C) {
+    // Variable insertion indices, usually we're better off spilling to stack,
+    // but AVX512 can use a variable compare+select by comparing against all
+    // possible vector indices, and FP insertion has less gpr->simd traffic.
+    if (!(Subtarget.hasBWI() ||
+          (Subtarget.hasAVX512() && EltSizeInBits >= 32) ||
+          (Subtarget.hasSSE41() && VT.isFloatingPoint())))
+      return SDValue();
+
+    MVT IdxSVT = MVT::getIntegerVT(EltSizeInBits);
+    MVT IdxVT = MVT::getVectorVT(IdxSVT, NumElts);
+    SDValue IdxExt = DAG.getZExtOrTrunc(N2, dl, IdxSVT);
+    SDValue IdxSplat = DAG.getSplatBuildVector(IdxVT, dl, IdxExt);
+    SDValue EltSplat = DAG.getSplatBuildVector(VT, dl, N1);
+
+    SmallVector<SDValue, 16> RawIndices;
+    for (unsigned I = 0; I != NumElts; ++I)
+      RawIndices.push_back(DAG.getConstant(I, dl, IdxSVT));
+    SDValue Indices = DAG.getBuildVector(IdxVT, dl, RawIndices);
+
+    // inselt N0, N1, N2 --> select (SplatN2 == {0,1,2...}) ? SplatN1 : N0.
+    return DAG.getSelectCC(dl, IdxSplat, Indices, EltSplat, N0,
+                           ISD::CondCode::SETEQ);
+  }
+
+  if (N2C->getAPIntValue().uge(NumElts))
     return SDValue();
   uint64_t IdxVal = N2C->getZExtValue();
 
@@ -18826,7 +18857,7 @@ SDValue X86TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
   // a blend shuffle with a rematerializable vector than a costly integer
   // insertion.
   if ((IsZeroElt || IsAllOnesElt) && Subtarget.hasSSE41() &&
-      16 <= EltVT.getSizeInBits()) {
+      16 <= EltSizeInBits) {
     SmallVector<int, 8> BlendMask;
     for (unsigned i = 0; i != NumElts; ++i)
       BlendMask.push_back(i == IdxVal ? i + NumElts : i);
@@ -18856,7 +18887,7 @@ SDValue X86TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
     SDValue V = extract128BitVector(N0, IdxVal, DAG, dl);
 
     // Insert the element into the desired chunk.
-    unsigned NumEltsIn128 = 128 / EltVT.getSizeInBits();
+    unsigned NumEltsIn128 = 128 / EltSizeInBits;
     assert(isPowerOf2_32(NumEltsIn128));
     // Since NumEltsIn128 is a power of 2 we can use mask instead of modulo.
     unsigned IdxIn128 = IdxVal & (NumEltsIn128 - 1);
@@ -18881,7 +18912,7 @@ SDValue X86TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
     // it to i32 first.
     if (EltVT == MVT::i16 || EltVT == MVT::i8) {
       N1 = DAG.getNode(ISD::ZERO_EXTEND, dl, MVT::i32, N1);
-      MVT ShufVT = MVT::getVectorVT(MVT::i32, VT.getSizeInBits()/32);
+      MVT ShufVT = MVT::getVectorVT(MVT::i32, VT.getSizeInBits() / 32);
       N1 = DAG.getNode(ISD::SCALAR_TO_VECTOR, dl, ShufVT, N1);
       N1 = getShuffleVectorZeroOrUndef(N1, 0, true, Subtarget, DAG);
       return DAG.getBitcast(VT, N1);
