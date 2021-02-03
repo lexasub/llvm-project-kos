@@ -9,8 +9,10 @@ For more information on how to contribute to the LLVM project, please
 take a look at the
 [Contributing to LLVM](https://llvm.org/docs/Contributing.html) guide.
 ## How add os
-https://lf-net.org/blog/posts/2020-05-17-clang-osdev/
+https://lf-net.org/blog/posts/2020-05-17-clang-osdev/ 
+
 https://wiki.osdev.org/User:MessiahAndrw/LLVM_OS_Specific_Toolchain
+
 https://praios.lf-net.org/littlefox/llvm-project/-/commit/a55e04bbf9d672a064e01eb2c916db68bd44af00
 ## Getting Started with the LLVM System
 
