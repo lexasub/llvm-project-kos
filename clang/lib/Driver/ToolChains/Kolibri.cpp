@@ -160,7 +160,7 @@ std::string KOS::getMultiarchTriple(const Driver &D,
   return TargetTriple.str();
 }
 
-static StringRef KOS::getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
+static StringRef getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
   /* if (Triple.isMIPS()) {
      // lib32 directory has a special meaning on MIPS targets.
      // It contains N32 ABI binaries. Use this folder if produce

@@ -482,7 +482,7 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
     case llvm::Triple::CloudABI:
       return new CloudABITargetInfo<X86_32TargetInfo>(Triple, Opts);
     case llvm::Triple::KOS:
-      return new KolibriTargetInfo<X86_64TargetInfo>(Triple, Opts);
+      return new KOSTargetInfo<X86_32TargetInfo>(Triple, Opts);
 
     case llvm::Triple::Linux: {
       switch (Triple.getEnvironment()) {
@@ -544,7 +544,7 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
     case llvm::Triple::CloudABI:
       return new CloudABITargetInfo<X86_64TargetInfo>(Triple, Opts);
     case llvm::Triple::KOS:
-      return new KolibriTargetInfo<X86_64TargetInfo>(Triple, Opts);
+      return new KOSTargetInfo<X86_64TargetInfo>(Triple, Opts);
     case llvm::Triple::Linux: {
       switch (Triple.getEnvironment()) {
       default:

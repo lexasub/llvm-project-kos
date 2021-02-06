@@ -223,7 +223,6 @@ void InitHeaderSearch::AddDefaultCIncludePaths(
     case llvm::Triple::NetBSD:
     case llvm::Triple::OpenBSD:
     case llvm::Triple::NaCl:
-    case llvm::Triple::KOS:
     case llvm::Triple::PS4:
     case llvm::Triple::ELFIAMCU:
     case llvm::Triple::Fuchsia:
@@ -265,6 +264,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(
   }
 
   switch (os) {
+  case llvm::Triple::KOS:
   case llvm::Triple::Linux:
   case llvm::Triple::Hurd:
   case llvm::Triple::Solaris:
@@ -341,7 +341,6 @@ void InitHeaderSearch::AddDefaultCIncludePaths(
   case llvm::Triple::NaCl:
   case llvm::Triple::ELFIAMCU:
   case llvm::Triple::Fuchsia:
-  case llvm::Triple::KOS:
     break;
   case llvm::Triple::PS4: {
     // <isysroot> gets prepended later in AddPath().
