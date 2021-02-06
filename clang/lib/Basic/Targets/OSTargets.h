@@ -367,13 +367,13 @@ public:
   MinixTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
       : OSTargetInfo<Target>(Triple, Opts) {}
 };
-// Kolibri target
+// KOS target
 template <typename Target>
-class LLVM_LIBRARY_VISIBILITY KolibriTargetInfo : public OSTargetInfo<Target> {
+class LLVM_LIBRARY_VISIBILITY KOSTargetInfo : public OSTargetInfo<Target> {
 protected:
   void getOSDefines(const LangOptions &Opts, const llvm::Triple &Triple,
                     MacroBuilder &Builder) const override {
-    // Kolibri defines; list based off of gcc output
+    // KOS defines; list based off of gcc output
     DefineStd(Builder, "unix", Opts);
     //DefineStd(Builder, "linux", Opts);
     Builder.defineMacro("__ELF__");
@@ -386,7 +386,7 @@ protected:
   }
 
 public:
-  KolibriTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
+  KOSTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
       : OSTargetInfo<Target>(Triple, Opts) {
     this->WIntType = TargetInfo::UnsignedInt;
 

@@ -38,7 +38,7 @@ using tools::addPathIfExists;
 /// a target-triple directory in the library and header search paths.
 /// Unfortunately, this triple does not align with the vanilla target triple,
 /// so we provide a rough mapping here.
-std::string Kolibri::getMultiarchTriple(const Driver &D,
+std::string KOS::getMultiarchTriple(const Driver &D,
                                         const llvm::Triple &TargetTriple,
                                         StringRef SysRoot) const {
   llvm::Triple::EnvironmentType TargetEnvironment =
@@ -77,7 +77,7 @@ std::string Kolibri::getMultiarchTriple(const Driver &D,
     }
     break;
   case llvm::Triple::x86:
-    if (D.getVFS().exists(SysRoot + "/lib/i386-Kolibri-gnu"))
+    if (D.getVFS().exists(SysRoot + "/lib/i386-KOS-gnu"))
       return "i386-kolibri-gnu";
     break;
   case llvm::Triple::x86_64:
@@ -160,7 +160,7 @@ std::string Kolibri::getMultiarchTriple(const Driver &D,
   return TargetTriple.str();
 }
 
-static StringRef getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
+static StringRef KOS::getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
   /* if (Triple.isMIPS()) {
      // lib32 directory has a special meaning on MIPS targets.
      // It contains N32 ABI binaries. Use this folder if produce
@@ -193,7 +193,7 @@ static StringRef getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
   return Triple.isArch32Bit() ? "lib" : "lib64";
 }
 
-Kolibri::Kolibri(const Driver &D, const llvm::Triple &Triple,
+KOS::KOS(const Driver &D, const llvm::Triple &Triple,
                  const ArgList &Args)
     : Generic_ELF(D, Triple, Args) {
   GCCInstallation.init(Triple, Args);
@@ -283,25 +283,25 @@ const bool IsRISCV = Triple.isRISCV();*/
   addPathIfExists(D, SysRoot + "/usr/lib", Paths);
 }
 
-ToolChain::CXXStdlibType Kolibri::GetDefaultCXXStdlibType() const {
+ToolChain::CXXStdlibType KOS::GetDefaultCXXStdlibType() const {
   return ToolChain::CST_Libstdcxx;
 }
 
-bool Kolibri::HasNativeLLVMSupport() const { return true; }
+bool KOS::HasNativeLLVMSupport() const { return true; }
 
-Tool *Kolibri::buildLinker() const {
+Tool *KOS::buildLinker() const {
   return new tools::gnutools::Linker(*this); // need aka tools::KOS
 }
 
-Tool *Kolibri::buildStaticLibTool() const {
+Tool *KOS::buildStaticLibTool() const {
   return new tools::gnutools::StaticLibTool(*this); // need aka tools::KOS
 }
 
-Tool *Kolibri::buildAssembler() const {
+Tool *KOS::buildAssembler() const {
   return new tools::gnutools::Assembler(*this); // need aka tools::KOS
 }
 
-std::string Kolibri::computeSysRoot() const {
+std::string KOS::computeSysRoot() const {
   if (!getDriver().SysRoot.empty())
     return getDriver().SysRoot;
 
@@ -331,7 +331,7 @@ std::string Kolibri::computeSysRoot() const {
     return std::string();*/
 }
 
-std::string Kolibri::getDynamicLinker(const ArgList &Args) const {
+std::string KOS::getDynamicLinker(const ArgList &Args) const {
   const llvm::Triple::ArchType Arch = getArch();
   const llvm::Triple &Triple = getTriple();
 
@@ -468,7 +468,7 @@ return "/opt/nec/ve/lib/ld-linux-ve.so.1";*/
   return "/" + LibDir + "/" + Loader;
 }
 
-void Kolibri::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
+void KOS::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
                                         ArgStringList &CC1Args) const {
   const Driver &D = getDriver();
   std::string SysRoot = computeSysRoot();
@@ -680,7 +680,7 @@ const StringRef SYSTEMZMultiarchIncludeDirs[] = {
     addSystemInclude(DriverArgs, CC1Args, ResourceDirInclude);
 }
 
-void Kolibri::addLibStdCxxIncludePaths(
+void KOS::addLibStdCxxIncludePaths(
     const llvm::opt::ArgList &DriverArgs,
     llvm::opt::ArgStringList &CC1Args) const {
   // Try generic GCC detection first.
@@ -717,17 +717,17 @@ void Kolibri::addLibStdCxxIncludePaths(
   }
 }
 
-void Kolibri::AddCudaIncludeArgs(const ArgList &DriverArgs,
+void KOS::AddCudaIncludeArgs(const ArgList &DriverArgs,
                                  ArgStringList &CC1Args) const {
   // CudaInstallation.AddCudaIncludeArgs(DriverArgs, CC1Args);
 }
 
-void Kolibri::AddHIPIncludeArgs(const ArgList &DriverArgs,
+void KOS::AddHIPIncludeArgs(const ArgList &DriverArgs,
                                 ArgStringList &CC1Args) const {
   RocmInstallation.AddHIPIncludeArgs(DriverArgs, CC1Args);
 }
 
-void Kolibri::AddIAMCUIncludeArgs(const ArgList &DriverArgs,
+void KOS::AddIAMCUIncludeArgs(const ArgList &DriverArgs,
                                   ArgStringList &CC1Args) const {
   if (GCCInstallation.isValid()) {
     CC1Args.push_back("-isystem");
@@ -737,11 +737,11 @@ void Kolibri::AddIAMCUIncludeArgs(const ArgList &DriverArgs,
   }
 }
 
-bool Kolibri::isPIEDefault() const {
+bool KOS::isPIEDefault() const {
   return getTriple().isMusl() || getSanitizerArgs().requiresPIE();
 }
 
-bool Kolibri::IsAArch64OutlineAtomicsDefault(const ArgList &Args) const {
+bool KOS::IsAArch64OutlineAtomicsDefault(const ArgList &Args) const {
   // Outline atomics for AArch64 are supported by compiler-rt
   // and libgcc since 9.3.1
   assert(getTriple().isAArch64() && "expected AArch64 target!");
@@ -754,13 +754,13 @@ bool Kolibri::IsAArch64OutlineAtomicsDefault(const ArgList &Args) const {
   return true;
 }
 
-bool Kolibri::isNoExecStackDefault() const { return false; }
+bool KOS::isNoExecStackDefault() const { return false; }
 
-bool Kolibri::IsMathErrnoDefault() const {
+bool KOS::IsMathErrnoDefault() const {
   return Generic_ELF::IsMathErrnoDefault();
 }
 
-SanitizerMask Kolibri::getSupportedSanitizers() const {
+SanitizerMask KOS::getSupportedSanitizers() const {
   const bool IsX86 = getTriple().getArch() == llvm::Triple::x86;
   const bool IsX86_64 = getTriple().getArch() == llvm::Triple::x86_64;
   /*const bool IsMIPS = getTriple().isMIPS32();
@@ -807,7 +807,7 @@ SanitizerMask Kolibri::getSupportedSanitizers() const {
   return Res;
 }
 
-void Kolibri::addProfileRTLibs(const llvm::opt::ArgList &Args,
+void KOS::addProfileRTLibs(const llvm::opt::ArgList &Args,
                                llvm::opt::ArgStringList &CmdArgs) const {
   // Add linker option -u__llvm_profile_runtime to cause runtime
   // initialization module to be linked in.
@@ -818,7 +818,7 @@ void Kolibri::addProfileRTLibs(const llvm::opt::ArgList &Args,
 }
 
 llvm::DenormalMode
-Kolibri::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
+KOS::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
                                        const JobAction &JA,
                                        const llvm::fltSemantics *FPType) const {
   switch (getTriple().getArch()) {
@@ -836,7 +836,7 @@ Kolibri::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
   }
 }
 
-void Kolibri::addExtraOpts(llvm::opt::ArgStringList &CmdArgs) const {
+void KOS::addExtraOpts(llvm::opt::ArgStringList &CmdArgs) const {
   for (const auto &Opt : ExtraOpts)
     CmdArgs.push_back(Opt.c_str());
 }

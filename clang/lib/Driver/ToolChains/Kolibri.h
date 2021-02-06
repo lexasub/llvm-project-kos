@@ -16,9 +16,9 @@ namespace clang {
 namespace driver {
 namespace toolchains {
 
-class LLVM_LIBRARY_VISIBILITY Kolibri : public Generic_ELF {
+class LLVM_LIBRARY_VISIBILITY KOS : public Generic_ELF {
 public:
-  Kolibri(const Driver &D, const llvm::Triple &Triple,
+  KOS(const Driver &D, const llvm::Triple &Triple,
         const llvm::opt::ArgList &Args);
 
   bool HasNativeLLVMSupport() const override;
